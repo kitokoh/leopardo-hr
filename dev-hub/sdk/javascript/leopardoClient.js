@@ -1720,6 +1720,126 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/dashboard/summary", options);
     },
 
+    /** Suivi public par lien borné (DELIVERY-204/#6288) */
+    getDeliveriesTrackingByToken(options = {}) {
+      return request("GET", "/deliveries/tracking/{token}", options);
+    },
+
+    /** Liste des livraisons du tenant (DELIVERY-201/#6285) */
+    getDeliveryDeliveries(options = {}) {
+      return request("GET", "/delivery/deliveries", options);
+    },
+
+    /** Crée une livraison (DELIVERY-201/#6285) */
+    postDeliveryDeliveries(options = {}) {
+      return request("POST", "/delivery/deliveries", options);
+    },
+
+    /** Détail d'une livraison (DELIVERY-201/#6285) */
+    getDeliveryDeliveriesByDelivery(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}", options);
+    },
+
+    /** Ligne du temps interne (DELIVERY-204/#6288) */
+    getDeliveryDeliveriesByDeliveryTracking(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}/tracking", options);
+    },
+
+    /** Génère un lien de suivi public borné (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesByDeliveryTrackingLink(options = {}) {
+      return request("POST", "/delivery/deliveries/{delivery}/tracking-link", options);
+    },
+
+    /** Liste des règlements COD (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlements(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements", options);
+    },
+
+    /** Remise caisse (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementCollect(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", options);
+    },
+
+    /** Réconciliation (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementReconcile(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", options);
+    },
+
+    /** Posting BC-08 + settled (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementSettle(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", options);
+    },
+
+    /** Réconciliation attendu vs collecté (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlementsReport(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements/report", options);
+    },
+
+    /** Enregistre un événement de tracking (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesEvents(options = {}) {
+      return request("POST", "/delivery/deliveries/events", options);
+    },
+
+    /** Liste des notifications (outbox) (DELIVERY-206/#6290) */
+    getDeliveryDeliveriesNotifications(options = {}) {
+      return request("GET", "/delivery/deliveries/notifications", options);
+    },
+
+    /** Opt-out destinataire (DELIVERY-206/#6290) */
+    postDeliveryDeliveriesNotificationsOptOut(options = {}) {
+      return request("POST", "/delivery/deliveries/notifications/opt-out", options);
+    },
+
+    /** Export CSV des livraisons (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsExport(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/export", options);
+    },
+
+    /** KPIs livraison du tenant (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsSummary(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/summary", options);
+    },
+
+    /** Crée une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutes(options = {}) {
+      return request("POST", "/delivery/deliveries/routes", options);
+    },
+
+    /** Détail d'une tournée (DELIVERY-202/#6286) */
+    getDeliveryDeliveriesRoutesByRoute(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/{route}", options);
+    },
+
+    /** Affecte livreur + véhicule (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteAssign(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/assign", options);
+    },
+
+    /** Clôture une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteClose(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/close", options);
+    },
+
+    /** Crée le règlement COD d'une tournée close (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesRoutesByRouteSettlement(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/settlement", options);
+    },
+
+    /** Tournée du jour du livreur (DELIVERY-203/#6287) */
+    getDeliveryDeliveriesRoutesToday(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/today", options);
+    },
+
+    /** Statut d'un arrêt (DELIVERY-203/#6287) */
+    postDeliveryDeliveriesStopsByStopStatus(options = {}) {
+      return request("POST", "/delivery/deliveries/stops/{stop}/status", options);
+    },
+
+    /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
+    getDeliveryPing(options = {}) {
+      return request("GET", "/delivery/ping", options);
+    },
+
     /** Comptes demo publics pour la documentation QA */
     getDemoUsers(options = {}) {
       return request("GET", "/demo-users", options);
