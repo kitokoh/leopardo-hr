@@ -286,7 +286,7 @@ const routes = [
       {
         path: '/travel',
         name: 'travel',
-        component: () => import('@/views/travel/TravelHomeView.vue'),
+        component: () => import('../views/travel/TravelHomeView.vue'),
         meta: {
           title: 'navigation.travel',
           icon: 'PaperAirplaneIcon'
@@ -295,7 +295,7 @@ const routes = [
       {
         path: '/travel/referential',
         name: 'travel-referential',
-        component: () => import('@/views/travel/TravelReferentialView.vue'),
+        component: () => import('../views/travel/TravelReferentialView.vue'),
         meta: {
           title: 'travel.referential.title',
           parent: 'travel'
@@ -304,7 +304,7 @@ const routes = [
       {
         path: '/travel/network',
         name: 'travel-network',
-        component: () => import('@/views/travel/TravelNetworkView.vue'),
+        component: () => import('../views/travel/TravelNetworkView.vue'),
         meta: {
           title: 'travel.network.title',
           parent: 'travel'
@@ -313,7 +313,7 @@ const routes = [
       {
         path: '/travel/bookings',
         name: 'travel-bookings',
-        component: () => import('@/views/travel/TravelBookingsView.vue'),
+        component: () => import('../views/travel/TravelBookingsView.vue'),
         meta: {
           title: 'travel.bookings.title',
           parent: 'travel'
@@ -322,7 +322,7 @@ const routes = [
       {
         path: '/travel/checkin',
         name: 'travel-checkin',
-        component: () => import('@/views/travel/TravelCheckinView.vue'),
+        component: () => import('../views/travel/TravelCheckinView.vue'),
         meta: {
           title: 'travel.checkin.title',
           parent: 'travel'
@@ -331,7 +331,7 @@ const routes = [
       {
         path: '/travel/tickets',
         name: 'travel-tickets',
-        component: () => import('@/views/travel/TravelTicketsView.vue'),
+        component: () => import('../views/travel/TravelTicketsView.vue'),
         meta: {
           title: 'travel.tickets.title',
           parent: 'travel'
@@ -340,7 +340,7 @@ const routes = [
       {
         path: '/travel/reports',
         name: 'travel-reports',
-        component: () => import('@/views/travel/TravelReportsView.vue'),
+        component: () => import('../views/travel/TravelReportsView.vue'),
         meta: {
           title: 'travel.reports.title',
           parent: 'travel'
@@ -349,7 +349,7 @@ const routes = [
       {
         path: '/travel/catalog',
         name: 'travel-catalog',
-        component: () => import('@/views/travel/TravelCatalogView.vue'),
+        component: () => import('../views/travel/TravelCatalogView.vue'),
         meta: {
           title: 'travel.catalog.title',
           parent: 'travel'
