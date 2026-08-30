@@ -72,6 +72,11 @@ export function listTravelSub(resource, id, sub, params = {}) {
   return api.get(`/travel/${resource}/${id}/${sub}`, { params })
 }
 
+/** PUT sous-ressource : /travel/{resource}/{id}/{sub}/{subId}. */
+export function updateTravelSub(resource, id, sub, subId, payload) {
+  return api.put(`/travel/${resource}/${id}/${sub}/${subId}`, payload)
+}
+
 /** DELETE sous-ressource : /travel/{resource}/{id}/{sub}/{subId}. */
 export function deleteTravelSub(resource, id, sub, subId) {
   return api.delete(`/travel/${resource}/${id}/${sub}/${subId}`)
