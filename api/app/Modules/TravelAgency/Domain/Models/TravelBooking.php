@@ -8,6 +8,7 @@ use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelBookingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +26,7 @@ class TravelBooking extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<Database\Factories\TravelBookingFactory> */
+    /** @use HasFactory<TravelBookingFactory> */
     use HasFactory;
 
     protected $fillable = [
