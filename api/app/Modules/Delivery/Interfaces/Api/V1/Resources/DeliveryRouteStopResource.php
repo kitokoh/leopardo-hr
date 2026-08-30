@@ -30,6 +30,7 @@ final class DeliveryRouteStopResource extends JsonResource
             'etd' => $this->etd?->toIso8601String(),
             'arrived_at' => $this->arrived_at?->toIso8601String(),
             'delivered_at' => $this->delivered_at?->toIso8601String(),
+            'proof_id' => $this->proof_id,
         ];
     }
 }
