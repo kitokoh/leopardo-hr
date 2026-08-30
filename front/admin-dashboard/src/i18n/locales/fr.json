@@ -4301,7 +4301,35 @@
       "routes": "Routes & étapes",
       "trips": "Trajets & tarifs",
       "publish": "Publier",
-      "cancelTrip": "Annuler le trajet"
+      "cancelTrip": "Annuler le trajet",
+      "stops": "Étapes",
+      "routeStopsTitle": "Étapes de la route",
+      "addStop": "Ajouter une étape",
+      "prices": "Tarifs",
+      "tripPricesTitle": "Tarifs du trajet",
+      "addPrice": "Ajouter un tarif",
+      "origin": "Origine",
+      "destination": "Destination",
+      "distance": "Distance (km)",
+      "duration": "Durée (min)",
+      "rank": "Rang",
+      "stopover": "Escale",
+      "minDuration": "Durée min (min)",
+      "route": "Route",
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "means": "Moyen",
+      "class": "Classe",
+      "adultPrice": "Tarif adulte",
+      "childPrice": "Tarif enfant",
+      "currency": "Devise",
+      "routeCode": "Code route",
+      "tripCode": "Code trajet",
+      "vehicle": "Véhicule",
+      "departureDate": "Date de départ",
+      "departureTime": "Heure de départ",
+      "arrivalDate": "Date d'arrivée",
+      "arrivalTime": "Heure d'arrivée"
     },
     "bookings": {
       "title": "Réservations",
@@ -4368,6 +4396,12 @@
       "train": "Train",
       "plane": "Avion",
       "boat": "Bateau"
+    },
+    "tripStatus": {
+      "draft": "Brouillon",
+      "scheduled": "Planifié",
+      "published": "Publié",
+      "cancelled": "Annulé"
     }
   }
 }
