@@ -34,12 +34,17 @@ test.describe('Error handling smoke tests', () => {
     // known benign browser message about `upgrade-insecure-requests` in a
     // report-only CSP (Chrome logs it as a console error even though the
     // directive is a no-op there — see public/_headers).
+    // The CORS message for the health-check probe is also benign: the E2E
+    // preview (http://127.0.0.1:4173) probes the deployed API which may not
+    // (yet) serve an ACAO header for that origin (issue #6457) — the probe
+    // itself is not part of the assertion.
     const unexpectedErrors = consoleErrors.filter(
       (msg) =>
         !msg.includes('favicon') &&
         !msg.includes('net::ERR_') &&
         !msg.includes('Failed to load resource') &&
-        !msg.includes('upgrade-insecure-requests'),
+        !msg.includes('upgrade-insecure-requests') &&
+        !msg.includes('blocked by CORS policy'),
     )
     expect(unexpectedErrors).toHaveLength(0)
   })
