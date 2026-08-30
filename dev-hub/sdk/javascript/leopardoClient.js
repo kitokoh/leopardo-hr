@@ -4210,6 +4210,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/travel/countries", options);
     },
 
+    /** Liste des hôtels (TRAVEL-321/#6051) */
+    getTravelHotels(options = {}) {
+      return request("GET", "/travel/hotels", options);
+    },
+
+    /** Création d'un hôtel (TRAVEL-321/#6051) */
+    postTravelHotels(options = {}) {
+      return request("POST", "/travel/hotels", options);
+    },
+
+    /** Suppression d'un hôtel (TRAVEL-321/#6051) */
+    deleteTravelHotelsByTravelHotel(options = {}) {
+      return request("DELETE", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Détail d'un hôtel (TRAVEL-321/#6051) */
+    getTravelHotelsByTravelHotel(options = {}) {
+      return request("GET", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Mise à jour d'un hôtel (TRAVEL-321/#6051) */
+    putTravelHotelsByTravelHotel(options = {}) {
+      return request("PUT", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Chambres d'un hôtel (TRAVEL-321/#6051) */
+    getTravelHotelsByTravelHotelRooms(options = {}) {
+      return request("GET", "/travel/hotels/{travelHotel}/rooms", options);
+    },
+
+    /** Création d'une chambre (TRAVEL-321/#6051) */
+    postTravelHotelsByTravelHotelRooms(options = {}) {
+      return request("POST", "/travel/hotels/{travelHotel}/rooms", options);
+    },
+
+    /** Suppression d'une chambre (TRAVEL-321/#6051) */
+    deleteTravelHotelsByTravelHotelRoomsByTravelHotelRoom(options = {}) {
+      return request("DELETE", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", options);
+    },
+
+    /** Mise à jour d'une chambre (TRAVEL-321/#6051) */
+    putTravelHotelsByTravelHotelRoomsByTravelHotelRoom(options = {}) {
+      return request("PUT", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", options);
+    },
+
     /** Liste des bureaux de vente (TRAVEL-303/#6033) */
     getTravelOffices(options = {}) {
       return request("GET", "/travel/offices", options);
@@ -4238,6 +4283,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
     getTravelPing(options = {}) {
       return request("GET", "/travel/ping", options);
+    },
+
+    /** Liste des réservations de location (TRAVEL-320/#6050) */
+    getTravelRentalBookings(options = {}) {
+      return request("GET", "/travel/rental-bookings", options);
+    },
+
+    /** Création d'une réservation de location (TRAVEL-320/#6050) */
+    postTravelRentalBookings(options = {}) {
+      return request("POST", "/travel/rental-bookings", options);
+    },
+
+    /** Détail d'une réservation de location (TRAVEL-320/#6050) */
+    getTravelRentalBookingsByTravelRentalBooking(options = {}) {
+      return request("GET", "/travel/rental-bookings/{travelRentalBooking}", options);
+    },
+
+    /** Annulation d'une réservation de location (TRAVEL-320/#6050) */
+    postTravelRentalBookingsByTravelRentalBookingCancel(options = {}) {
+      return request("POST", "/travel/rental-bookings/{travelRentalBooking}/cancel", options);
+    },
+
+    /** Liste des véhicules en location (TRAVEL-319/#6049) */
+    getTravelRentalVehicles(options = {}) {
+      return request("GET", "/travel/rental-vehicles", options);
+    },
+
+    /** Création d'un véhicule en location (TRAVEL-319/#6049) */
+    postTravelRentalVehicles(options = {}) {
+      return request("POST", "/travel/rental-vehicles", options);
+    },
+
+    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Détail d'un véhicule en location (TRAVEL-319/#6049) */
+    getTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
+    putTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Images d'un véhicule en location (TRAVEL-319/#6049) */
+    getTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
+      return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
+    },
+
+    /** Ajout d'une image (TRAVEL-319/#6049) */
+    postTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
+      return request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
+    },
+
+    /** Suppression d'une image (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicleImagesByTravelRentalVehicleImage(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", options);
     },
 
     /** Liste des routes (TRAVEL-307/#6037) */
