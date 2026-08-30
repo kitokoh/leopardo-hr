@@ -1507,3 +1507,18 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Audit partages (#5522) : actions `accounting.share.info` / `accounting.share.download` (préfixe module, convention #5439) → `GET /accounting/documents/shared/{document}/accesses` liste bien les accès (avant : 0 ligne).
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
+
+## Scenarios BC-25 RESTAURANT (verticale RestaurantManager)
+
+Note 2026-08-30 (lots RESTO-1xx..7xx) : la verticale `RestaurantManager` (préfixe `/restaurant/*`, feature flag `restaurantmanager`, middleware `module.restaurantmanager`) couvre POS & caisse, commandes, réservations, stock & achats, livraison, fidélité, promotions et rapports. Scénarios couverts par les tests Feature `api/tests/Feature/Restaurant/*` :
+
+- Activation/kill switch : `GET /restaurant/ping` 200 avec flag, 403 sans flag, 401 sans auth.
+- Isolation multitenant : toute ressource d'un autre tenant → 404 (jamais 403) ; `exists` tenant-scopées sur les requests (422 si référence étrangère).
+- RBAC `restaurant.*` : écriture référentiel/achats `principal`/`rh` ; opérationnel `manager` ; lecture `server`/`kitchen`/`rider` ; rapports via gate `restaurant.reports` (rôles opérationnels).
+- Référentiel (branches/zones/tables/catégories/produits/ingrédients/unités/menus/TVA/fournisseurs/horaires) : CRUD complet + unicité tenant-scopée.
+- Stock : niveaux + mouvements (raisons enum, référence polymorphe), invariant « jamais de stock négatif » (422), coût moyen pondéré exact à la réception, bons de commande draft→sent→received, inventaires avec approbation bloquée sur écart non justifié, alertes de seuil dédupliquées par (branche, ingrédient, jour).
+- Réservations : conflit de créneau → 409 (fenêtre ±2h), transitions confirm/check-in/no-show/cancel, disponibilité par table/couverts, politique d'annulation (pénalités serveur).
+- Livraison : cycle assign → out_for_delivery → delivered | cancel (livreur inactif refusé, annulation → commande retourne à `ready`).
+- Fidélité : opt-in RGPD requis, crédit unique par commande payée, solde jamais négatif.
+- Promotions : bornes (période, minimum, plafond d'utilisation), cumul contrôlé.
+- Rapports/KPIs : agrégats cohérents avec les données ; export CSV idempotent + URL signée (TTL 10 min, signature invalide → 403).
