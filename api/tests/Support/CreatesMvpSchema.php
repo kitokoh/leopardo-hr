@@ -2346,12 +2346,43 @@ trait CreatesMvpSchema
                 $table->unsignedInteger('expected_minor')->default(0);
                 $table->unsignedInteger('collected_minor')->default(0);
                 $table->unsignedInteger('commission_minor')->default(0);
+                $table->timestamp('collected_at')->nullable();
                 $table->string('status', 20)->default('pending');
                 $table->string('accounting_ref', 120)->nullable();
                 $table->timestamp('settled_at')->nullable();
                 $table->uuid('idempotency_key')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
+            });
+        }
+
+        // ── BC-26 DELIVERY (delivery_notifications) ────────────────────────────────────
+        if (! Schema::hasTable($this->moduleTable('delivery_notifications'))) {
+            Schema::create($this->moduleTable('delivery_notifications'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('delivery_id');
+                $table->string('event_type', 30);
+                $table->string('channel', 20)->default('whatsapp');
+                $table->string('recipient_phone', 40);
+                $table->string('template_key', 80);
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->json('payload')->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'delivery_id'], 'delivery_notifications_company_delivery_idx');
+                $table->index(['company_id', 'status'], 'delivery_notifications_company_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('delivery_recipient_opt_outs'))) {
+            Schema::create($this->moduleTable('delivery_recipient_opt_outs'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('phone', 40);
+                $table->timestamps();
+                $table->unique(['company_id', 'phone'], 'delivery_recipient_opt_outs_company_phone_unique');
             });
         }
 
