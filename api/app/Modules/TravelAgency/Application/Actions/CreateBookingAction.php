@@ -69,6 +69,7 @@ final class CreateBookingAction
         ?int $corporateAccountId = null,
         ?int $quoteId = null,
         bool $billingDeferred = false,
+        ?string $connectionGroupId = null,
     ): TravelBooking {
         $existing = TravelBooking::query()
             ->where('trip_id', $trip->id)
@@ -83,7 +84,8 @@ final class CreateBookingAction
             abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
         }
 
-        $group = (string) Str::uuid();
+        // TRAVEL-809 (#6099) — correspondances : groupe explicite partagé.
+        $group = $connectionGroupId ?? (string) Str::uuid();
 
         $booking = $this->createSingleBooking(
             trip: $trip,
@@ -101,6 +103,7 @@ final class CreateBookingAction
             corporateAccountId: $corporateAccountId,
             quoteId: $quoteId,
             billingDeferred: $billingDeferred,
+            connectionGroupId: $connectionGroupId,
         );
 
         // TRAVEL-802 — leg retour (tarif combiné optionnel).
@@ -132,6 +135,7 @@ final class CreateBookingAction
                 corporateAccountId: $corporateAccountId,
                 quoteId: $quoteId,
                 billingDeferred: $billingDeferred,
+                connectionGroupId: $connectionGroupId,
             );
 
             $booking->forceFill(['return_booking_id' => $returnBooking->id])->save();
@@ -159,6 +163,7 @@ final class CreateBookingAction
         ?int $corporateAccountId = null,
         ?int $quoteId = null,
         bool $billingDeferred = false,
+        ?string $connectionGroupId = null,
     ): TravelBooking {
         $booking = DB::transaction(function () use (
             $trip,
@@ -176,6 +181,7 @@ final class CreateBookingAction
             $corporateAccountId,
             $quoteId,
             $billingDeferred,
+            $connectionGroupId,
         ): TravelBooking {
             // Verrouille le trajet : empeche deux reservations concurrentes
             // de lire le meme inventaire.
@@ -218,6 +224,8 @@ final class CreateBookingAction
                 'corporate_account_id' => $corporateAccountId,
                 'quote_id' => $quoteId,
                 'billing_deferred' => $billingDeferred,
+                // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
+                'connection_group_id' => $connectionGroupId,
             ]);
 
             foreach ($passengers as $index => $passengerData) {

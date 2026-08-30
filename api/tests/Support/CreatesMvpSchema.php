@@ -2474,6 +2474,8 @@ trait CreatesMvpSchema
                 $table->unsignedBigInteger('corporate_account_id')->nullable();
                 $table->unsignedBigInteger('quote_id')->nullable();
                 $table->boolean('billing_deferred')->default(false);
+                // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
+                $table->uuid('connection_group_id')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');

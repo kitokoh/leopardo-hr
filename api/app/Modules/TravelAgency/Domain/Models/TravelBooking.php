@@ -55,6 +55,7 @@ class TravelBooking extends Model
         'corporate_account_id',
         'quote_id',
         'billing_deferred',
+        'connection_group_id',
     ];
 
     protected $casts = [

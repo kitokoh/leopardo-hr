@@ -50,6 +50,8 @@ class TravelBookingResource extends JsonResource
             'corporate_account_id' => $this->corporate_account_id,
             'quote_id' => $this->quote_id,
             'billing_deferred' => $this->billing_deferred,
+            // TRAVEL-809 (#6099) — correspondances (groupe de liaison).
+            'connection_group_id' => $this->connection_group_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

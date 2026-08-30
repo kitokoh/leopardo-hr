@@ -45,6 +45,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCorporateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelConnectionController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
@@ -172,6 +173,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
         Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
         Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+
+        // Correspondances multi-trajets (TRAVEL-809/#6099).
+        Route::get('/shop/connections', [TravelConnectionController::class, 'search']);
+        Route::post('/shop/connections/book', [TravelConnectionController::class, 'book']);
 
         // Boutique en ligne (TRAVEL-401..404/#6053..#6056).
         Route::get('/shop/trips', [TravelShopController::class, 'search']);
