@@ -28,7 +28,7 @@ actions à confirmer), gateway + analytics.
 | D9 | Frontend | 🟢 PRÉSENT | Assistant web + apps mobile (chat, confirmations d'actions). |
 | D10 | Performance | 🟡 PARTIEL | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; budgets de tokens non versionnés. |
 | D11 | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet. |
-| D12 | Produit | 🟡 PARTIEL | Parcours chat → intent → action → confirmation testé (17 tests locaux verts) ; pas de golden journey IA end-to-end ni seed pilote dédié. |
+| D12 | Produit | 🟢 PRÉSENT | Parcours chat → intent → action → confirmation testé (17 tests) ; **golden journey IA end-to-end + seed pilote dédié** (issue #6241) : seed `AiPilotSeeder` 100 % synthétique (tenant `ai-pilot-001`, conversation + audit démo, outils registre), test E2E chat → confirmation → effet métier → audit vérifié, entrée GJ-08 dans `golden-journeys.json` (MAT-013, garde verte). |
 
 ## Vérification locale (preuve)
 
