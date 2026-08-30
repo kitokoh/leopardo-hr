@@ -65,7 +65,12 @@ class TravelReportTest extends TestCase
     private function makeFixture(Company $company): array
     {
         return app(TenantManager::class)->withinTenant($company, function () use ($company): array {
-            $trip = TravelTrip::factory()->create(['status' => 'published', 'total_seats' => 40]);
+            $trip = TravelTrip::factory()->create([
+                'status' => 'published',
+                'total_seats' => 40,
+                'departure_date' => now()->toDateString(),
+                'arrival_date' => now()->toDateString(),
+            ]);
 
             $b1 = TravelBooking::factory()->create([
                 'trip_id' => $trip->id,
@@ -80,7 +85,7 @@ class TravelReportTest extends TestCase
                 'status' => BookingStatus::CONFIRMED->value,
                 'passenger_count' => 2,
                 'total_amount_minor' => 20000,
-                'booking_source' => 'web',
+                'booking_source' => 'online',
                 'payment_status' => PaymentStatus::PENDING->value,
             ]);
             $b3 = TravelBooking::factory()->create([
