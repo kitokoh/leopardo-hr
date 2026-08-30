@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\DB;
 /**
  * TRAVEL-317 (#6047) — Check-in / embarquement d'un billet.
  *
- * issued → checked_in : horodatage + opérateur, événement outbox
- * `travel.ticket.checked_in.v1` après commit. Un billet déjà enregistré
- * est idempotent ; un billet annulé (void) est refusé.
+ * issued → checked_in : horodatage + operateur, evenement outbox
+ * `travel.ticket.checked_in.v1` apres commit. Un billet deja enregistre
+ * est idempotent ; un billet annule (void) est refuse.
  */
 final class CheckInTicketAction
 {
@@ -28,7 +28,7 @@ final class CheckInTicketAction
         }
 
         if ($ticket->status !== TicketStatus::ISSUED) {
-            abort(422, 'Ce billet ne peut pas être enregistré.');
+            abort(422, 'Ce billet ne peut pas etre enregistre.');
         }
 
         DB::transaction(function () use ($ticket, $actor): void {

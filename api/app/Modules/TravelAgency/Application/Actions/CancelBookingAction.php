@@ -13,12 +13,12 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 
 /**
- * TRAVEL-314 (#6044) — Annulation d'une réservation.
+ * TRAVEL-314 (#6044) — Annulation d'une reservation.
  *
- * pending|confirmed → cancelled : les sièges sont libérés (`free`),
- * événement outbox `travel.booking.cancelled.v1` après commit. Le motif
- * est obligatoire (Request) et conservé dans le payload (audit). Une
- * réservation déjà annulée est idempotente.
+ * pending|confirmed → cancelled : les sieges sont liberes (`free`),
+ * evenement outbox `travel.booking.cancelled.v1` apres commit. Le motif
+ * est obligatoire (Request) et conserve dans le payload (audit). Une
+ * reservation deja annulee est idempotente.
  */
 final class CancelBookingAction
 {
@@ -31,7 +31,7 @@ final class CancelBookingAction
         }
 
         if (! in_array($booking->status, [BookingStatus::PENDING, BookingStatus::CONFIRMED], true)) {
-            abort(422, 'Cette réservation ne peut plus être annulée.');
+            abort(422, 'Cette reservation ne peut plus etre annulee.');
         }
 
         DB::transaction(function () use ($booking): void {
