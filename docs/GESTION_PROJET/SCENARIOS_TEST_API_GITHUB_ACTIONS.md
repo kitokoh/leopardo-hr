@@ -1578,3 +1578,9 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
   intacte ; rejeu idempotent (0 re-traitement) ; claim atomique (2 workers → 1 seul traite) ; outbox : aucun
   consommateur → dead-letter, erreur transitoire → retry avec backoff, attempts ≥ max → failed.
 - Couverture : `api/tests/Feature/Travel/TravelBookingExpiryTest.php` (195 tests Travel au total).
+
+## BC-24 TRAVEL — Formulaire de contact (TRAVEL-416, 2026-08-30)
+
+`POST /travel/contact` → événement `travel.contact.submitted.v1` (lead CRM par événement, jamais d'import direct).
+- Scénarios à vérifier : 202 + événement publié ; consentement absent/faux → 422 ; message > 2000 → 422 ; email invalide → 422.
+- Couverture : `api/tests/Feature/Travel/TravelContactTest.php` (198 tests Travel au total).
