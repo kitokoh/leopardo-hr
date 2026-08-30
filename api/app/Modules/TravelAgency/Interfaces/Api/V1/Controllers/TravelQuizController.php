@@ -9,18 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\ParticipateQuizAction;
 use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
-<<<<<<< HEAD
 use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ParticipateTravelQuizRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizQuestionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
-=======
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ParticipateTravelQuizRequest;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizQuestionRequest;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizRequest;
->>>>>>> origin/feat/travel-101-202-foundations
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -134,7 +128,6 @@ class TravelQuizController extends Controller
         return response()->json(['data' => ['id' => $question->id]], 201);
     }
 
-<<<<<<< HEAD
     /**
      * TRAVEL-914 (#6422) — Liste admin des questions d'un quiz AVEC la
      * bonne réponse (réservée aux rôles gestion via TravelQuizPolicy::update).
@@ -236,8 +229,6 @@ class TravelQuizController extends Controller
         return response()->json(null, 204);
     }
 
-=======
->>>>>>> origin/feat/travel-101-202-foundations
     public function participate(ParticipateTravelQuizRequest $request, TravelQuiz $travelQuiz): JsonResponse
     {
         /** @var Employee $actor */

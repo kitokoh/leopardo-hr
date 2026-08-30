@@ -109,6 +109,9 @@ jobs:
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
+      - name: Migration SQL quote guard (issue #6418)
+        run: bash dev-hub/tools/check-migration-sql-quotes.sh
+
       - name: Migration prefix inter-PR guard (issue #5437)
         run: node dev-hub/tools/check-migration-prefixes.mjs
         env:
@@ -374,6 +377,9 @@ jobs:
 
       - name: Check migration basename collisions (issue #1962)
         run: dev-hub/tools/check-migration-basename-collisions.sh
+
+      - name: Check migration SQL quotes (issue #6418)
+        run: dev-hub/tools/check-migration-sql-quotes.sh
 
       - name: Report test-schema drift vs migrations (issue #1489, non blocking)
         continue-on-error: true

@@ -271,7 +271,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
-<<<<<<< HEAD
 
     /* ── TRAVEL-914 (#6422) — GET /adverts/manage (liste admin) ── */
 
@@ -348,6 +347,4 @@ class TravelAdvertApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
-=======
->>>>>>> origin/feat/travel-101-202-foundations
 }
