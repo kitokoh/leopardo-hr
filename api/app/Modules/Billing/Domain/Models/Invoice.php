@@ -80,11 +80,13 @@ class Invoice extends Model
         return $this->belongsTo(Subscription::class);
     }
 
-    // Type de relation inféré par Larastan depuis la chaîne littérale
-    // (HasMany<Payroll\Payment, $this>) — pas de docblock générique (conflit
-    // d'inférence) ni d'import cross-module (ADR-0011).
+    // ADR-0011 : FQCN dans le PHPDoc (PHPStan/IDE) mais JAMAIS importé — la
+    // relation passe une chaîne littérale (résolution runtime par Eloquent,
+    // zéro dépendance compile-time Billing → Payroll). Le fixer Pint
+    // fully_qualified_strict_types est désactivé dans api/pint.json (aligné
+    // sur l'ADR — voir le commentaire du fichier).
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<App\Modules\Payroll\Domain\Models\Payment, $this>
+     * @return HasMany<\App\Modules\Payroll\Domain\Models\Payment, $this>
      */
     public function payments(): HasMany
     {
