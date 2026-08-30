@@ -12,8 +12,14 @@ function makeList(body) {
 
 test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
   test('affiche les quiz, crée un quiz et ouvre les résultats', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-fake-token')
+    })
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
+    )
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
@@ -29,8 +35,14 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
   })
 
   test('liste les annonces en mode gestion et les sites touristiques', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-fake-token')
+    })
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
+    )
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
