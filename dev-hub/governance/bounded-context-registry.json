@@ -699,6 +699,36 @@
         "BC-13",
         "BC-20"
       ]
+    },
+    {
+      "code": "BC-24",
+      "name": "TRAVEL",
+      "context": "TravelAgency",
+      "responsibility": "Agences, compagnies, routes, trajets, réservations, passagers, billets, paiements, locations, hôtels, rapports.",
+      "owner": "Agent 24 — BC-TRAVEL",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/TravelAgency",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\TravelAgency\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-11",
+        "BC-13",
+        "BC-20"
+      ]
     }
   ]
 }
