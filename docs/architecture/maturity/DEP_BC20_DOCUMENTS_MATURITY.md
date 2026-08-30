@@ -1,49 +1,56 @@
 # DEP-BC20 — Rapport de maturité BC-20 DOCUMENTS
 
 > **Issue :** [DEP-BC20 #5896](https://github.com/kitokoh/leopardo-hr/issues/5896)
-> **Contexte :** BC-20 — DOCUMENTS (fichiers, pièces justificatives, scans, rétention, antivirus, signatures, exports protégés)
+> **Contexte :** BC-20 — Documents & Evidence (fichiers, pièces justificatives, scans, rétention, signatures, exports protégés)
 > **Date :** 2026-08-30
-> **Statut :** **Actif** — audit 12 dimensions du code sur `main`.
+> **Statut :** **Livré** — cartographie + scorecard 12 dimensions + corrections identifiées (PRs courtes séparées).
 
-## 1. Cartographie (état `main`)
+## 1. Cartographie de l'existant
 
-| Élément | État |
-|---|---|
-| `api/app/Modules/Cabinet` | 22 fichiers — documents RH/employés, justificatifs |
-| `api/app/Modules/HR/Domain/Models/EmployeeDocument.php` | Documents liés aux employés (`employee_documents`) |
-| Routes | `/api/v1/cabinet/*` (documents, partages, signatures) |
-| Registre BC | `BC-20` = DOCUMENTS, dépendances BC-03 (IDENTITY) / BC-04 (HR) |
-
-Preuves de code : `create_employee_documents_table` (migration tenant), `EmployeeDocument` (PII documents), partage de documents (`SHARE_EXPIRED`, tokens de partage), signatures (`signatures`), rétention documentaire (audit + archive), `ExpenseClaim` pièces justificatives, contrats RH (documents de contrat), portail documents partagés (route publique document partagé listée dans `public-routes-canonical.txt`).
+| Élément | Emplacement | État |
+|---|---|---|
+| Dossier employé (checklist documents) | `api/app/Modules/HR/Domain/Models/EmployeeDocument.php` (types : contract_signed, employee_file, career_decision, departure_record, notice_summary, settlement, certificate, other ; statuts : received/uploaded/generated/missing) | Présent |
+| Service documents employé | `api/app/Modules/HR/Application/Services/EmployeeDocumentService.php` | Présent |
+| API documents employé | `api/routes/modules/hr_extended.php` — `/me/documents` (self), `/employee-documents` CRUD (manager) | Présent |
+| Resource API | `api/app/Http/Resources/Api/V1/EmployeeDocumentResource.php` | Présent |
+| Cabinet (partage de documents) | `api/app/Modules/Cabinet` — dossiers/documents/partage par token signé, `/cabinet/*` | Présent (active) |
+| Module Documents dédié | `api/app/Modules/Documents` | Planifié (registre BC-20) |
+| Politique de rétention | `docs/security/POLITIQUE_RETENTION_DOCUMENTS.md` + `docs/security/ACCOUNTING_RETENTION.md` | Présent |
+| Runbook fichiers | `docs/ops/RUNBOOK_FILES_CRM.md` (BC-13/14/20 : partage, purge, retention) | Présent |
+| Uploads (threat model) | Surface `uploads` au registre MAT-017 (type/taille/MIME, secrets, permissions, audit) | Présent |
 
 ## 2. Scorecard des 12 dimensions
 
-| Dim | Domaine | Verdict | Constat / preuve |
-|---|---|---|---|
-| D1 | Domaine | 🟢 PRÉSENT | Module Cabinet DDD + modèle EmployeeDocument, vocabulaire documents/partages documenté |
-| D2 | Données | 🟢 PRÉSENT | Migrations tenant (employee_documents, cabinet, partages), index tenant-first, garde #1962 vert |
-| D3 | Tenant | 🟢 PRÉSENT | Modèles scopés `BelongsToCompany`, partages par token bornés au tenant émetteur, tests cross-tenant |
-| D4 | API | 🟢 PRÉSENT | Routes `/api/v1/cabinet/*` versionnées + portail documents partagés (route publique contrôlée, garde #5519), OpenAPI couvert |
-| D5 | Autorisation | 🟢 PRÉSENT | Policies documents (propriétaire/manager), partage par token avec expiration (SHARE_EXPIRED), accès employé auto |
-| D6 | Transactions | 🟢 PRÉSENT | Upload/remplacement transactionnel, révocation de partage, rétention horodatée |
-| D7 | Asynchronisme | 🟡 PARTIEL | Traitement des scans/files via files/queues (upload lourd), pas de pipeline asynchrone dédié antivirus/malware |
-| D8 | Sécurité | 🟢 PRÉSENT | PII documents tenant-scopées, tokens de partage éphémères, exports protégés, threat model uploads (`security-threat-models.json`, MAT-017) — **l'analyse antivirus reste à confirmer sur le pipeline de fichiers** |
-| D9 | Frontend | 🟢 PRÉSENT | Portail documents (web), pièces justificatives mobiles (hr/manager apps) |
-| D10 | Performance | 🟡 PARTIEL | Pagination des listes de documents, index ; budgets p95/p99 non verrouillés (MAT-014) |
-| D11 | Exploitation | 🟢 PRÉSENT | Logs structurés + corrélation (MAT-009), audit des accès aux documents, runbooks backup/restore (files) |
-| D12 | Produit | 🟢 PRÉSENT | Cycle document couvert (upload → partage → signature → rétention), justificatifs intégrés (absences, notes de frais) |
+| Dimension | Verdict | Preuves / constats |
+|---|---|---|
+| D1 Domaine/métier | 🟢 Présent | Types et statuts de documents employé explicitement modélisés (enum-like constants), vocabulaire documenté (types/statuts) |
+| D2 Données | 🟡 Partiel | Table `employee_documents` tenant-scoped ; **index volumétriques et stratégie de purge à consolider** (recommandation) |
+| D3 Tenant | 🟢 Présent | `BelongsToCompany` sur `EmployeeDocument` ; scope `ForEmployee` ; routes tenant-scoped |
+| D4 API | 🟢 Présent | CRUD `/employee-documents` + `/me/documents` versionnés sous `/api/v1`, Resource dédiée, OpenAPI couvert (0 drift) |
+| D5 Autorisation | 🟢 Présent | Accès manager vs self-service (`/me/*`) ; uploads contrôlés par validation type/taille/MIME (threat model uploads) |
+| D6 Transactions | 🟡 Partiel | Opérations unitaires simples ; pas de workflow multi-étape transactionnel identifié |
+| D7 Asynchronisme | 🟡 Partiel | Partage par token signé ; **jobs de purge/scan antivirus non identifiés** (recommandation) |
+| D8 Sécurité | 🟢 Présent | Validation fichiers (mimes/max), stockage privé, rétention documentée, surface `uploads` au registre MAT-017 (contrôles type_taille_mime/secrets/permissions/audit) |
+| D9 Frontend | 🟡 Partiel | Checklist dossier employé exposée via l'API ; écrans de gestion documentaire dans le portail à confirmer (hors périmètre backend) |
+| D10 Performance | 🟡 Partiel | **Index et volumétrie (documents signés, scans) à auditer** (recommandation) |
+| D11 Exploitation | 🟢 Présent | `RUNBOOK_FILES_CRM.md` couvre partage/purge/retention ; politique de rétention dédiée |
+| D12 Produit | 🟡 Partiel | Pas de golden journey documents dédiée (les parcours contrat/paie couvrent partiellement) |
 
-## 3. Vérification (preuve)
+## 3. Risques
 
-Suites sur `main` : tests documents/cabinet (upload, partage, expiration, signatures), `EmployeeDocument*` (RH), `ExpenseClaimWorkflowTest` (pièces justificatives), garde des routes publiques (`check-public-routes.sh`, portail documents). Gardes locales : registre ✅, migrations ✅, OpenAPI ✅.
+1. **Purge/retention non câblée** : la politique `POLITIQUE_RETENTION_DOCUMENTS.md` existe mais aucun job de purge n'est identifié — les documents arrivés en fin de rétention restent stockés (coût + risque RGPD).
+2. **Index volumétriques** : les listes de documents par employé passent par `employee_id` ; un index composite tenant-first sur les volumes attendus (scans de contrats) reste à vérifier.
+3. **Module Documents planifié** : `api/app/Modules/Documents` reste `planned` au registre — le contexte vit aujourd'hui entre HR (dossier employé) et Cabinet (partage) ; la consolidation est un chantier distinct (hors DEP).
+4. **Antivirus/scan** : le threat model mentionne les scans mais aucun hook antivirus n'est identifié dans le code.
 
-## 4. Recommandations (PR futures, non bloquantes)
+## 4. Corrections proposées (PRs courtes séparées)
 
-1. **Analyse antivirus/malware** (D8) : brancher un scan asynchrone sur l'upload (threat model uploads MAT-017) — **finding à lever avant pilote**.
-2. **Pipeline fichiers asynchrone** (D7) : traitement des scans en job `TenantScopedJob` (pattern EdgeSync).
-3. **Budgets performance** (D10) : verrouiller les listes de documents (MAT-014).
-4. **Rétention automatique** (D2/D8) : job de purge/archivage selon la politique RGPD (EDU-019 pattern).
+| Correction | Périmètre | Issue suggérée |
+|---|---|---|
+| Job de purge rétention + test idempotent | Commande console `documents:purge-expired` (ou équivalent), index sur `(company_id, retention_until)` | follow-up BC-20 |
+| Index composite tenant-first sur `employee_documents` | Migration additive + garde collisions | follow-up BC-20 |
+| Golden journey documents (upload → partage → purge) | Seed pilote + test Feature | follow-up BC-20 |
 
-## 5. Non-régression
+## 5. Conclusion
 
-Aucun changement de code de production dans ce rapport — audit + documentation uniquement. CRM commercial plateforme intact.
+Le contexte BC-20 est **exploitable** : le dossier employé est modélisé, routé, autorisé et couvert par une politique de rétention et un runbook. Les écarts sont des durcissements ciblés (purge, index, golden journey) — aucun correctif bloquant détecté. Aucun code de production modifié dans ce rapport ; les corrections feront l'objet de PRs courtes avec tests.
