@@ -194,9 +194,7 @@ final class CreateBookingAction
             return $selected;
         }
 
-        $auto = $this->autoAssignSeats($available, count($passengers));
-
-        return array_values($auto);
+        return $this->autoAssignSeats($available, count($passengers));
     }
 
     /**
