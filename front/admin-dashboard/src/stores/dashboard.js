@@ -27,10 +27,17 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   // Getters
   const formattedRevenue = computed(() => {
+    // #6449 — garde anti « NaN € » : si la donnée est absente (undefined/null)
+    // ou non numérique (ex. API partielle en phase pilote), on affiche un tiret
+    // au lieu de laisser Intl.NumberFormat produire « NaN € ».
+    const value = stats.value.monthlyRevenue
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return '—'
+    }
     return new Intl.NumberFormat(toIntlLocale(localeStore.current), {
       style: 'currency',
       currency: 'EUR'
-    }).format(stats.value.monthlyRevenue)
+    }).format(value)
   })
 
   const healthStatus = computed(() => {
