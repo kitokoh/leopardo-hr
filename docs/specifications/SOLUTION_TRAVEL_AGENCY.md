@@ -662,6 +662,23 @@ rejouables.
 | Voyageur → contact CRM | Résolution par identifiant externe via contrat `TravelCustomerContactResolver` ; création de lead CRM par événement (formulaire de contact) |
 | Synthèse ventes → Accounting | Événement `travel.payment.confirmed.v1` ; Accounting construit ses écritures depuis un contrat de synthèse validé |
 | Notifications (mail/SMS/WhatsApp) | Événements → BC-13 COMMS (canal configuré + consentement) |
+
+> **TRAVEL-910 (#6113)** — le besoin de notifications de gv-back (file mail/SMS
+> manuelle) est migré vers les canaux BC-13 COMMS, sans table « notifications »
+> maison. Chaque événement notifiable porte dans son payload outbox redigé :
+> `notification_intent` (clé de template, tableau ci-dessous) et `consent`
+> (opt-in explicite — défaut `false` tant que le contrat CRM client TRAVEL-416
+> n'est pas branché ; un envoi sans consentement est refusé côté BC-13).
+
+| Événement outbox | notification_intent | Canal BC-13 cible |
+|---|---|---|
+| `travel.booking.pending.v1` | `travel.booking.pending` | email/WhatsApp (relance expiration 15 min) |
+| `travel.booking.confirmed.v1` | `travel.booking.confirmed` | email/WhatsApp confirmation |
+| `travel.booking.cancelled.v1` | `travel.booking.cancelled` | email/WhatsApp annulation |
+| `travel.payment.refunded.v1` | `travel.payment.refunded` | email/WhatsApp remboursement |
+| `travel.ticket.issued.v1` | `travel.ticket.issued` | email/WhatsApp billet électronique |
+
+
 | Billet PDF → Documents | Asset via contrat documents (BC-20) ; fallback disque tenant + URL signée |
 | Emploi du temps / personnel | HR (BC-04) reste propriétaire des employés ; la verticale référence `employee_id` par valeur (via contrat) |
 | Marketing (promos par consentement) | Événements + opt-in explicite (P2) |

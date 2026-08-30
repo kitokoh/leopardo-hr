@@ -135,6 +135,8 @@ final class CreateBookingAction
             'currency' => $booking->currency,
             'booking_source' => $source->value,
             'expires_at' => $booking->expires_at?->toIso8601String(),
+            'notification_intent' => 'travel.booking.pending',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         return $booking->load('passengers');

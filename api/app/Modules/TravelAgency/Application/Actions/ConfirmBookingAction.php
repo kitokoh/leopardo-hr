@@ -54,6 +54,8 @@ final class ConfirmBookingAction
             'trip_id' => $booking->trip_id,
             'confirmed_by' => $actor->id,
             'confirmed_at' => now()->toIso8601String(),
+            'notification_intent' => 'travel.booking.confirmed',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         return $booking->refresh()->load('passengers');

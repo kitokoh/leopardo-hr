@@ -62,6 +62,8 @@ final class RefundBookingAction
             'cancelled_by' => $actor->id,
             'cancelled_at' => now()->toIso8601String(),
             'reason' => $reason,
+            'notification_intent' => 'travel.booking.cancelled',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         $this->outbox->publish($booking->company_id, 'travel.payment.refunded.v1', [
@@ -70,6 +72,8 @@ final class RefundBookingAction
             'currency' => $booking->currency,
             'refunded_by' => $actor->id,
             'refunded_at' => now()->toIso8601String(),
+            'notification_intent' => 'travel.payment.refunded',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         return $booking->refresh()->load('passengers');
