@@ -4376,7 +4376,11 @@
     },
     "tickets": {
       "title": "Billets",
-      "subtitle": "Consultation, téléchargement PDF et révocation."
+      "subtitle": "Consultation, téléchargement PDF et révocation.",
+      "download": "PDF",
+      "revoke": "Révoquer",
+      "revokeTitle": "Révoquer le billet",
+      "revokeBody": "Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé."
     },
     "reports": {
       "title": "Rapports",
