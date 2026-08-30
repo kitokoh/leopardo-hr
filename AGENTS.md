@@ -87,6 +87,16 @@ canonique. Toute issue ouverte est etiquettee avec son BC (`BC-01 PLATFORM`,
    reste la regle anti-doublon ci-dessus (`fix/<issue>-<slug>` + claim
    marker) : si une branche existe deja pour une issue du BC, contribuer
    dessus ou s'arreter.
+2bis. **Lot d'issues d'un meme BC : une branche par lot, pas une par issue**
+   (`docs/GOUVERNANCE/BC_BATCH_BRANCH_PROTOCOL.md`, 2026-08-29) — quand
+   plusieurs issues du meme BC sont confiees a un agent, il ouvre UNE branche
+   `bc/<code-bc>-<slug>` et y accumule un commit par issue livree, puis ferme
+   toutes les issues du lot dans une seule PR (`Closes #N` repete par issue).
+   Objectif : reduire le nombre de branches/PRs/runs CI par lot (constat
+   `docs/infra/02_alignement/CI_SATURATION.md`). Le protocole `fix/<issue>-*`
+   (une branche par issue) reste la norme pour une issue isolee hors lot, un
+   hotfix, ou le programme CRM qui garde son protocole dedie plus strict
+   (`CRM_BRANCH_PROTOCOL.md`, une issue = une branche = une PR).
 3. **Nouvelle issue sans label BC** : verifier le registre
    `bounded-context-registry.json` (chemin racine -> BC) et ajouter le
    label avant de commencer.
