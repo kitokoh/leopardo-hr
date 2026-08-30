@@ -7163,6 +7163,353 @@ paths:
           description: Station introuvable ou autre tenant
         '422':
           description: Validation
+  /fuel-station/incidents:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les incidents equipement (manager, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - reported
+          - assigned
+          - in_progress
+          - resolved
+          - closed
+      - name: severity
+        in: query
+        schema:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+          - critical
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Incidents pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Signaler un incident equipement (manager, rejouable, FUEL-010)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - equipment_type
+              - severity
+              - title
+              - description
+              - idempotency_key
+              properties:
+                station_id:
+                  type: integer
+                equipment_type:
+                  type: string
+                  enum:
+                  - pump
+                  - tank
+                  - meter
+                  - other
+                equipment_id:
+                  type: integer
+                  nullable: true
+                severity:
+                  type: string
+                  enum:
+                  - low
+                  - medium
+                  - high
+                  - critical
+                title:
+                  type: string
+                description:
+                  type: string
+                assigned_to:
+                  type: integer
+                  nullable: true
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Incident signale
+        '200':
+          description: Rejeu idempotent
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+        '422':
+          description: Validation
+  /fuel-station/incidents/{incident}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un incident (attachments + taches, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Incident
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+  /fuel-station/incidents/{incident}/transition:
+    post:
+      tags:
+      - FuelStation
+      summary: Transition de workflow incident (workflow audite, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - reported
+                  - assigned
+                  - in_progress
+                  - resolved
+                  - closed
+                resolution_notes:
+                  type: string
+                  nullable: true
+                assigned_to:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Incident mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+        '422':
+          description: Validation ou transition non autorisee
+  /fuel-station/incidents/{incident}/attachments:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter une piece jointe controlee (jpg/png/pdf, max 5 Mo, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: incident
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - attachment
+              properties:
+                attachment:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Piece jointe enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Incident introuvable ou autre tenant
+        '422':
+          description: Validation (type ou taille)
+  /fuel-station/maintenance-tasks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les taches de maintenance (manager, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - in_progress
+          - done
+          - cancelled
+      - name: incident_id
+        in: query
+        schema:
+          type: integer
+      - name: due_before
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Taches paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer une tache de maintenance (manager, FUEL-010)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - station_id
+              - task_type
+              - priority
+              - title
+              properties:
+                station_id:
+                  type: integer
+                incident_id:
+                  type: integer
+                  nullable: true
+                task_type:
+                  type: string
+                  enum:
+                  - preventive
+                  - corrective
+                priority:
+                  type: string
+                  enum:
+                  - low
+                  - medium
+                  - high
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                due_at:
+                  type: string
+                  nullable: true
+                assigned_to:
+                  type: integer
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Tache creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station ou incident introuvable / autre tenant
+        '422':
+          description: Validation
+  /fuel-station/maintenance-tasks/{task}:
+    patch:
+      tags:
+      - FuelStation
+      summary: Changer le statut d'une tache (done/cancelled, FUEL-010)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - pending
+                  - in_progress
+                  - done
+                  - cancelled
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Tache mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Tache introuvable ou autre tenant
+        '422':
+          description: Validation
 
   /accounting/contacts:
     get:

@@ -15,6 +15,8 @@ use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
@@ -23,6 +25,7 @@ use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
 use App\Modules\FuelStation\Domain\Models\FuelStockMovement;
 use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
@@ -104,6 +107,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelStockMovement::class, FuelStockPolicy::class);
         Gate::policy(FuelDelivery::class, FuelStockPolicy::class);
         Gate::policy(FuelStockReconciliation::class, FuelStockPolicy::class);
+        // — FuelStation (FUEL-010 #5804 : incidents, maintenance, tâches)
+        Gate::policy(FuelIncident::class, FuelMaintenancePolicy::class);
+        Gate::policy(FuelMaintenanceTask::class, FuelMaintenancePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
