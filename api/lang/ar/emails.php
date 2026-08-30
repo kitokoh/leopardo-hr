@@ -156,9 +156,9 @@ return [
     // #R12 — تذكير الإعداد اليوم الأول
     'onboarding_reminder_subject' => 'إعداد Leopardo RH لم يكتمل بعد',
     'onboarding_reminder_heading' => 'مرحباً :name،',
-    'onboarding_reminder_intro'   => 'لقد أنشأت شركة :company أمس لكن الإعداد لم يكتمل بعد.',
-    'onboarding_reminder_cta'     => 'استئناف الإعداد',
-    'onboarding_reminder_steps'   => 'تبقت بعض الخطوات الرئيسية: إضافة الموظفين، أول تسجيل حضور، إعداد الرواتب.',
+    'onboarding_reminder_intro' => 'لقد أنشأت شركة :company أمس لكن الإعداد لم يكتمل بعد.',
+    'onboarding_reminder_cta' => 'استئناف الإعداد',
+    'onboarding_reminder_steps' => 'تبقت بعض الخطوات الرئيسية: إضافة الموظفين، أول تسجيل حضور، إعداد الرواتب.',
     'onboarding_reminder_support' => 'فريق الدعم متاح لمساعدتك في أي وقت.',
 
     'email_password_reset_subject' => 'إعادة تعيين كلمة المرور',

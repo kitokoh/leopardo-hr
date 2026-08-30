@@ -36,4 +36,10 @@ return [
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
-];
+
+    'edu_admission_converted_title' => 'تم تحويل قبول جديد',
+    'edu_admission_converted_body' => 'تم تحويل القبول :admission_number للطالب :student_name إلى طالب.',
+    'edu_absence_recorded_title' => 'تم تسجيل غياب',
+    'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
+    'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
+    'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];

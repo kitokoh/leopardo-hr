@@ -74,12 +74,12 @@ return [
     'career_event_deleted' => 'Kariyer etkinliği silindi.',
 
     // ── Départ (offboarding, issue #5324) ───────────────────────────────
-    'departure_registered' => "Ayrılış kaydedildi. Durum: ayrıldı — erişim iptal edildi.",
-    'already_departed' => "Bu çalışan şirketten zaten ayrıldı (veya arşivlendi).",
-    'departure_type_invalid' => "Geçersiz ayrılış türü.",
-    'departure_not_created' => "Ayrılış kaydedilemedi (işlem geri alındı).",
-    'departure_type_resignation' => "İstifa",
-    'departure_type_termination' => "İşten çıkarma",
-    'departure_type_end_of_contract' => "Sözleşme sonu",
-    'departure_type_retirement' => "Emeklilik",
+    'departure_registered' => 'Ayrılış kaydedildi. Durum: ayrıldı — erişim iptal edildi.',
+    'already_departed' => 'Bu çalışan şirketten zaten ayrıldı (veya arşivlendi).',
+    'departure_type_invalid' => 'Geçersiz ayrılış türü.',
+    'departure_not_created' => 'Ayrılış kaydedilemedi (işlem geri alındı).',
+    'departure_type_resignation' => 'İstifa',
+    'departure_type_termination' => 'İşten çıkarma',
+    'departure_type_end_of_contract' => 'Sözleşme sonu',
+    'departure_type_retirement' => 'Emeklilik',
 ];

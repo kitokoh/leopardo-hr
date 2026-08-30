@@ -156,9 +156,9 @@ return [
     // #R12 — Onboarding J+1 reminder
     'onboarding_reminder_subject' => 'Your Leopardo RH setup is not complete yet',
     'onboarding_reminder_heading' => 'Hello :name,',
-    'onboarding_reminder_intro'   => 'You created your company :company yesterday but your setup is not complete yet.',
-    'onboarding_reminder_cta'     => 'Resume setup',
-    'onboarding_reminder_steps'   => 'A few key steps remain: adding employees, first check-in, payroll configuration.',
+    'onboarding_reminder_intro' => 'You created your company :company yesterday but your setup is not complete yet.',
+    'onboarding_reminder_cta' => 'Resume setup',
+    'onboarding_reminder_steps' => 'A few key steps remain: adding employees, first check-in, payroll configuration.',
     'onboarding_reminder_support' => 'Our support team is available to help you at any time.',
 
     'email_password_reset_subject' => 'Password Reset',
