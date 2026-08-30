@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
