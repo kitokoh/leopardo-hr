@@ -1256,6 +1256,38 @@ trait CreatesMvpSchema
             });
         }
 
+        // BC-23-D07 (#6239) : exports asynchrones de conversations IA + DLQ.
+        if (! Schema::hasTable($this->moduleTable('ai_exports'))) {
+            Schema::create($this->moduleTable('ai_exports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('user_id');
+                $table->unsignedBigInteger('conversation_id');
+                $table->string('format', 20)->default('json');
+                $table->string('dedup_key', 191)->unique();
+                $table->string('status', 20)->default('pending');
+                $table->text('file_path')->nullable();
+                $table->text('error_message')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('ai_dead_letter_queue'))) {
+            Schema::create($this->moduleTable('ai_dead_letter_queue'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('job_class', 191);
+                $table->unsignedBigInteger('job_id')->nullable();
+                $table->string('dedup_key', 191)->nullable()->unique();
+                $table->json('payload')->nullable();
+                $table->text('error');
+                $table->unsignedInteger('attempts')->default(0);
+                $table->string('status', 20)->default('open');
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('resolved_at')->nullable();
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('client_events'))) {
             Schema::create($this->moduleTable('client_events'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -2312,6 +2344,8 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "crm_imports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "crm_outbox_events"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "client_events"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_dead_letter_queue"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "ai_exports"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_audit_logs"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_conversations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "ai_tool_registry"'.$cascade);
