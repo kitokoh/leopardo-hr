@@ -62,7 +62,7 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_academic_years_period_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_academic_years\" ADD CONSTRAINT edu_academic_years_period_check "
-                    ."CHECK (start_date < end_date); END IF; END $$"
+                    .'CHECK (start_date < end_date); END IF; END $$'
                 );
             }
         }
@@ -131,7 +131,7 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_classes_capacity_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_classes\" ADD CONSTRAINT edu_classes_capacity_check "
-                    ."CHECK (capacity IS NULL OR capacity > 0); END IF; END $$"
+                    .'CHECK (capacity IS NULL OR capacity > 0); END IF; END $$'
                 );
             }
         }
