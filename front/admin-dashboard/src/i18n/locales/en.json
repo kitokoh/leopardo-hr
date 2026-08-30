@@ -1576,7 +1576,8 @@
     "notFound": "Page not found",
     "accountingActivation": "Accounting — Get started",
     "accountingDashboard": "Accounting — Dashboard",
-    "accountingSettings": "Accounting — Settings"
+    "accountingSettings": "Accounting — Settings",
+    "travel": "Travel Agency"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -4233,5 +4234,90 @@
     "loadError": "Unable to load the kitchen queue.",
     "actionError": "Action failed, please retry.",
     "loading": "Loading kitchen queue…"
+  },
+  "travel": {
+    "common": {
+      "retry": "Retry",
+      "featureDisabledTitle": "Travel Agency module inactive",
+      "featureDisabledBody": "The travelagency flag is not enabled for the connected tenant. Contact a platform administrator to enable it.",
+      "tenantRequiredTitle": "Tenant context required",
+      "tenantRequiredBody": "Travel agency data requires a tenant session (impersonation or manager account).",
+      "loadErrorTitle": "Unable to load",
+      "loadErrorBody": "An error occurred while querying the travel API.",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "close": "Close",
+      "search": "Search",
+      "actions": "Actions",
+      "confirmDeleteTitle": "Delete this item?",
+      "confirmDeleteBody": "This action cannot be undone. Do you really want to delete \"{name}\"?",
+      "status": "Status",
+      "active": "Active",
+      "disabled": "Inactive",
+      "loading": "Loading…",
+      "noData": "No data",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "reason": "Reason",
+      "reasonRequired": "A reason is required.",
+      "previous": "Previous",
+      "next": "Next",
+      "all": "All",
+      "export": "Export",
+      "yes": "Yes",
+      "no": "No",
+      "perPage": "per page"
+    },
+    "home": {
+      "title": "Travel Agency",
+      "subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and monitoring.",
+      "flagActive": "Module active",
+      "flowTitle": "Business flow",
+      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports."
+    },
+    "referential": {
+      "title": "Referential",
+      "subtitle": "Countries, cities, stations, offices, carriers, classes and vehicles.",
+      "tabs": "Referential sections",
+      "countries": "Countries",
+      "cities": "Cities",
+      "stations": "Stations & terminals",
+      "offices": "Sales offices",
+      "carriers": "Carriers",
+      "classes": "Service classes",
+      "vehicles": "Vehicles"
+    },
+    "network": {
+      "title": "Routes & trips",
+      "subtitle": "Lines, stops, scheduling, pricing and publication.",
+      "tabs": "Network sections",
+      "routes": "Routes & stops",
+      "trips": "Trips & pricing",
+      "publish": "Publish",
+      "cancelTrip": "Cancel trip"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets."
+    },
+    "checkin": {
+      "title": "Check-in & manifest",
+      "subtitle": "Boarding per trip and passenger counter."
+    },
+    "tickets": {
+      "title": "Tickets",
+      "subtitle": "Browse, PDF download and revocation."
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Sales, occupancy, revenue, cancellations and CSV exports."
+    },
+    "catalog": {
+      "title": "Rentals & hotels",
+      "subtitle": "Rental vehicles, bookings and hotel catalog."
+    }
   }
 }
