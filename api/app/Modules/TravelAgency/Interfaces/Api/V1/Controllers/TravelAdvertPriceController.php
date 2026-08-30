@@ -26,6 +26,8 @@ class TravelAdvertPriceController extends Controller
             ->get()
             ->map(fn (TravelAdvertPrice $p) => [
                 'id' => $p->id,
+                'advert_type_id' => $p->advert_type_id,
+                'advert_position_id' => $p->advert_position_id,
                 'advert_type' => $p->advertType?->code,
                 'advert_position' => $p->advertPosition?->code,
                 'price_per_image_minor' => $p->price_per_image_minor,
