@@ -25,4 +25,18 @@ return [
         // PaymentCallbackSigner).
         'webhook_secret' => env('RESTAURANT_MOBILE_MONEY_WEBHOOK_SECRET'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Stock (spec §4.4, RESTO-411/#6198)
+    |--------------------------------------------------------------------------
+    |
+    | `block_on_insufficient` : true → la confirmation d'une commande est
+    | refusée (422) si un ingrédient est en rupture ; false → le stock peut
+    | passer en négatif (avertissement, à surveiller via les alertes RESTO-505).
+    |
+    */
+    'stock' => [
+        'block_on_insufficient' => (bool) env('RESTAURANT_STOCK_BLOCK_ON_INSUFFICIENT', true),
+    ],
 ];
