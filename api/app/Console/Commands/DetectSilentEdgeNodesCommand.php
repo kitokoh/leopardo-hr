@@ -33,6 +33,7 @@ class DetectSilentEdgeNodesCommand extends Command
         if (! DB::getSchemaBuilder()->hasTable('edge_nodes')
             || ! DB::getSchemaBuilder()->hasColumn('edge_nodes', 'node_id')) {
             $this->warn('Legacy edge_nodes schema is not installed; use edge:monitor for the canonical schema.');
+
             return self::SUCCESS;
         }
 

@@ -28,6 +28,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
@@ -77,6 +78,11 @@ class TravelAgencyServiceProvider extends ServiceProvider
                 'cash' => new CashPaymentGateway,
                 'pvit' => new PvitPaymentGateway(config('travel.payments.pvit', [])),
             ]);
+        });
+
+        // Outbox (TRAVEL-414) : registre des consommateurs d'événements.
+        $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
+            return new TravelOutboxConsumerRegistry;
         });
     }
 

@@ -30,19 +30,21 @@ class EdgeSyncDaemonCommand extends Command
         // Issue #3564 : env() lu UNIQUEMENT via config/edge.php — l'entrypoint
         // edge exécute `php artisan config:cache`, après quoi env() renvoie
         // null hors fichiers config (fallbacks `?? env(...)` morts).
-        $nodeId  = config('edge.node_id');
-        $token   = config('edge.edge_token');
+        $nodeId = config('edge.node_id');
+        $token = config('edge.edge_token');
         $cloudApiUrl = config('edge.cloud_api_url');
         $interval = (int) config('edge.sync_interval_minutes', 15);
         $batchSize = (int) config('edge.batch_size', 100);
 
-        if (!$nodeId || !$token || !$cloudApiUrl) {
+        if (! $nodeId || ! $token || ! $cloudApiUrl) {
             $this->error('[EdgeSync Daemon] EDGE_NODE_ID, EDGE_TOKEN or CLOUD_API_URL not set. Exiting.');
+
             return;
         }
 
         if ((bool) config('edge.force_offline', false)) {
             $this->warn('[EdgeSync Daemon] FORCE_OFFLINE is enabled — daemon will not contact the Cloud. Exiting.');
+
             return;
         }
 
@@ -57,7 +59,7 @@ class EdgeSyncDaemonCommand extends Command
 
         do {
             try {
-                $this->info('[EdgeSync Daemon] Running sync for node ' . $nodeId);
+                $this->info('[EdgeSync Daemon] Running sync for node '.$nodeId);
                 $log = $client->sync();
 
                 if ($log->status === 'success') {
@@ -67,10 +69,10 @@ class EdgeSyncDaemonCommand extends Command
                         $log->records_received
                     ));
                 } else {
-                    $this->warn('[EdgeSync Daemon] Sync failed: ' . ($log->error_message ?? 'unknown error'));
+                    $this->warn('[EdgeSync Daemon] Sync failed: '.($log->error_message ?? 'unknown error'));
                 }
             } catch (\Throwable $e) {
-                $this->error('[EdgeSync Daemon] Error: ' . $e->getMessage());
+                $this->error('[EdgeSync Daemon] Error: '.$e->getMessage());
             }
 
             if ($runOnce) {
