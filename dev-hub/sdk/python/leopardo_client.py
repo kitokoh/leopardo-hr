@@ -3112,6 +3112,10 @@ class LeopardoClient:
         """Détail des mouvements de stock"""
         return self.request("GET", "/restaurant/inventory-movements/{restaurantInventoryMovement}", **kwargs)
 
+    def post_restaurant_payments_by_payment_callback(self, **kwargs):
+        """Callback signé idempotent d'un paiement (RESTO-407)"""
+        return self.request("POST", "/restaurant/payments/{payment}/callback", **kwargs)
+
     def get_restaurant_ping(self, **kwargs):
         """Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)"""
         return self.request("GET", "/restaurant/ping", **kwargs)

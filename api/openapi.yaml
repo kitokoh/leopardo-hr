@@ -2121,6 +2121,31 @@ paths:
           description: Ressource introuvable (ou autre tenant)
         '422':
           description: Validation ou invariant métier non respecté
+  /restaurant/payments/{payment}/callback:
+    post:
+      tags:
+      - Restaurant
+      summary: Callback signé idempotent d'un paiement (RESTO-407)
+      security: []
+      parameters:
+      - name: payment
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Callback acquitté (idempotent)
+        '422':
+          description: Signature invalide ou montant incohérent
+
   /health:
     get:
       tags:
