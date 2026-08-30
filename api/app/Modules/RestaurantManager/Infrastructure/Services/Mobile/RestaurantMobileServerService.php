@@ -10,7 +10,6 @@ use App\Modules\RestaurantManager\Application\Services\OrderStateMachine;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 use Illuminate\Support\Facades\DB;
