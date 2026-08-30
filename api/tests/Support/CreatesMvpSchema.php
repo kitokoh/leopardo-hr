@@ -2520,6 +2520,7 @@ trait CreatesMvpSchema
 
     
         // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
+    
         if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
             Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
                 
@@ -3904,8 +3905,6 @@ trait CreatesMvpSchema
                 $table->timestamps();
             });
         }
-
-        // ── BC-25 RESTAURANT (restaurant_loyalty_customers) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
                 
@@ -3921,8 +3920,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
             });
         }
-
-        // ── BC-25 RESTAURANT (restaurant_loyalty_points_movements) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
             Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
                 
@@ -3952,8 +3949,6 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
             });
         }
-
-        // ── BC-25 RESTAURANT (restaurant_promotions) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
             Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
                 
@@ -3989,8 +3984,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
             });
         }
-
-        // ── BC-25 RESTAURANT (restaurant_outbox_events) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
             Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
                 
