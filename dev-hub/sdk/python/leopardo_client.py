@@ -3384,6 +3384,42 @@ class LeopardoClient:
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
         return self.request("GET", "/travel/ping", **kwargs)
 
+    def get_travel_routes(self, **kwargs):
+        """Liste des routes (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes", **kwargs)
+
+    def post_travel_routes(self, **kwargs):
+        """Création d'une route (TRAVEL-307/#6037)"""
+        return self.request("POST", "/travel/routes", **kwargs)
+
+    def delete_travel_routes_by_travelroute(self, **kwargs):
+        """Suppression d'une route (TRAVEL-307/#6037)"""
+        return self.request("DELETE", "/travel/routes/{travelRoute}", **kwargs)
+
+    def get_travel_routes_by_travelroute(self, **kwargs):
+        """Détail d'une route (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes/{travelRoute}", **kwargs)
+
+    def put_travel_routes_by_travelroute(self, **kwargs):
+        """Mise à jour d'une route (TRAVEL-307/#6037)"""
+        return self.request("PUT", "/travel/routes/{travelRoute}", **kwargs)
+
+    def get_travel_routes_by_travelroute_stops(self, **kwargs):
+        """Étapes d'une route, triées par rang (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes/{travelRoute}/stops", **kwargs)
+
+    def post_travel_routes_by_travelroute_stops(self, **kwargs):
+        """Ajout d'une étape à une route (TRAVEL-307/#6037)"""
+        return self.request("POST", "/travel/routes/{travelRoute}/stops", **kwargs)
+
+    def delete_travel_routes_by_travelroute_stops_by_travelroutestop(self, **kwargs):
+        """Suppression d'une étape (TRAVEL-307/#6037)"""
+        return self.request("DELETE", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", **kwargs)
+
+    def put_travel_routes_by_travelroute_stops_by_travelroutestop(self, **kwargs):
+        """Mise à jour d'une étape (TRAVEL-307/#6037)"""
+        return self.request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", **kwargs)
+
     def get_travel_stations(self, **kwargs):
         """Liste des gares/terminaux (TRAVEL-302/#6032)"""
         return self.request("GET", "/travel/stations", **kwargs)
@@ -3403,6 +3439,78 @@ class LeopardoClient:
     def put_travel_stations_by_travelstation(self, **kwargs):
         """Modification d'une gare/terminal (TRAVEL-302/#6032)"""
         return self.request("PUT", "/travel/stations/{travelStation}", **kwargs)
+
+    def get_travel_trips(self, **kwargs):
+        """Liste des trajets (TRAVEL-308/#6038)"""
+        return self.request("GET", "/travel/trips", **kwargs)
+
+    def post_travel_trips(self, **kwargs):
+        """Création d'un trajet (TRAVEL-308/#6038, génère les sièges)"""
+        return self.request("POST", "/travel/trips", **kwargs)
+
+    def delete_travel_trips_by_traveltrip(self, **kwargs):
+        """Suppression d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("DELETE", "/travel/trips/{travelTrip}", **kwargs)
+
+    def get_travel_trips_by_traveltrip(self, **kwargs):
+        """Détail d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("GET", "/travel/trips/{travelTrip}", **kwargs)
+
+    def put_travel_trips_by_traveltrip(self, **kwargs):
+        """Mise à jour d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("PUT", "/travel/trips/{travelTrip}", **kwargs)
+
+    def post_travel_trips_by_traveltrip_cancel(self, **kwargs):
+        """Annulation d'un trajet (TRAVEL-310/#6040)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/cancel", **kwargs)
+
+    def get_travel_trips_by_traveltrip_prices(self, **kwargs):
+        """Tarifs d'un trajet par classe (TRAVEL-309/#6039)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/prices", **kwargs)
+
+    def post_travel_trips_by_traveltrip_prices(self, **kwargs):
+        """Création d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/prices", **kwargs)
+
+    def delete_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Suppression d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("DELETE", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def get_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Détail d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def put_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Mise à jour d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("PUT", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def post_travel_trips_by_traveltrip_publish(self, **kwargs):
+        """Publication d'un trajet (TRAVEL-310/#6040)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/publish", **kwargs)
+
+    def get_travel_trips_search(self, **kwargs):
+        """Recherche interne de trajets (TRAVEL-311/#6041)"""
+        return self.request("GET", "/travel/trips/search", **kwargs)
+
+    def get_travel_vehicles(self, **kwargs):
+        """Liste des véhicules de la flotte (TRAVEL-306/#6036)"""
+        return self.request("GET", "/travel/vehicles", **kwargs)
+
+    def post_travel_vehicles(self, **kwargs):
+        """Création d'un véhicule de flotte (TRAVEL-306/#6036)"""
+        return self.request("POST", "/travel/vehicles", **kwargs)
+
+    def delete_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Suppression d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("DELETE", "/travel/vehicles/{travelVehicle}", **kwargs)
+
+    def get_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Détail d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("GET", "/travel/vehicles/{travelVehicle}", **kwargs)
+
+    def put_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Mise à jour d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("PUT", "/travel/vehicles/{travelVehicle}", **kwargs)
 
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""

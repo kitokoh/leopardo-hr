@@ -43,7 +43,7 @@ class TravelRouteStop extends Model
      */
     public function route(): BelongsTo
     {
-        return $this->belongsTo(TravelRoute::class);
+        return $this->belongsTo(TravelRoute::class, 'route_id');
     }
 
     /**
@@ -51,6 +51,6 @@ class TravelRouteStop extends Model
      */
     public function city(): BelongsTo
     {
-        return $this->belongsTo(TravelCity::class);
+        return $this->belongsTo(TravelCity::class, 'city_id');
     }
 }

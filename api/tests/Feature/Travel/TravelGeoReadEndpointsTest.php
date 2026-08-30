@@ -55,7 +55,7 @@ class TravelGeoReadEndpointsTest extends TestCase
         $company->save();
         $this->actingEmployee($company);
 
-        app(TenantManager::class)->withinTenant($company, function () use ($company): void {
+        app(TenantManager::class)->withinTenant($company, function (): void {
             TravelCountry::factory()->create(['iso2' => 'CM', 'name' => 'Cameroun']);
         });
 

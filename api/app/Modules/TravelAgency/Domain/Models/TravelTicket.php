@@ -88,7 +88,7 @@ class TravelTicket extends Model
      */
     public function booking(): BelongsTo
     {
-        return $this->belongsTo(TravelBooking::class);
+        return $this->belongsTo(TravelBooking::class, 'booking_id');
     }
 
     /**
@@ -96,6 +96,6 @@ class TravelTicket extends Model
      */
     public function passenger(): BelongsTo
     {
-        return $this->belongsTo(TravelPassenger::class);
+        return $this->belongsTo(TravelPassenger::class, 'passenger_id');
     }
 }

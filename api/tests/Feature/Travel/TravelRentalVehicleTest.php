@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicleImage;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -47,7 +48,7 @@ class TravelRentalVehicleTest extends TestCase
     {
         $this->tenants->withinTenant($this->companyA, function (): void {
             $this->expectException(QueryException::class);
-            TravelRentalVehicle::factory()->create(['price_per_day_minor' => 0]);
+            DB::transaction(fn () => TravelRentalVehicle::factory()->create(['price_per_day_minor' => 0]));
         });
     }
 
@@ -81,7 +82,7 @@ class TravelRentalVehicleTest extends TestCase
             TravelRentalVehicleImage::factory()->create(['vehicle_id' => $vehicle->id, 'position' => 1]);
 
             $this->expectException(QueryException::class);
-            TravelRentalVehicleImage::factory()->create(['vehicle_id' => $vehicle->id, 'position' => 1]);
+            DB::transaction(fn () => TravelRentalVehicleImage::factory()->create(['vehicle_id' => $vehicle->id, 'position' => 1]));
         });
     }
 
