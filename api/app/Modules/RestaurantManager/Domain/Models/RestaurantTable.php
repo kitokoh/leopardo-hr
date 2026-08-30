@@ -36,6 +36,12 @@ class RestaurantTable extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'capacity' => 2,
+        'is_mergeable' => false,
+    ];
+
     protected $casts = [
         'capacity' => 'integer',
         'min_covers' => 'integer',

@@ -29,6 +29,12 @@ class RestaurantLoyaltyProgram extends Model
         'is_active',
     ];
 
+    protected $attributes = [
+        'points_per_amount_minor' => 100,
+        'redeem_rate_minor' => 100,
+        'is_active' => true,
+    ];
+
     protected $casts = [
         'points_per_amount_minor' => 'integer',
         'redeem_rate_minor' => 'integer',

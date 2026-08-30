@@ -1,9 +1,16 @@
 {
   "source": "api/openapi.yaml",
+<<<<<<< HEAD
   "spec_sha256": "6739d813cab1538e19be5893f1c12306a7e2b179f19991c962a4dd24cf616d9d",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
   "operation_count": 895,
+=======
+  "spec_sha256": "e8fb9b7695e582bd6d93e974848146455de449b015f5ca7b17aac43a85c39fe1",
+  "openapi": "3.0.3",
+  "api_version": "4.24.0",
+  "operation_count": 984,
+>>>>>>> work/bc25-batch2
   "targets": [
     "javascript",
     "python"

@@ -10,7 +10,6 @@ use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
-use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
 use App\Modules\Marketing\Providers\MarketingServiceProvider;
@@ -26,7 +25,6 @@ use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\FeatureDetectionServiceProvider;
 use App\Providers\FeatureRegistryServiceProvider;
-use App\Providers\QueueCorrelationServiceProvider;
 
 return [
     AppServiceProvider::class,
@@ -34,8 +32,6 @@ return [
     EventServiceProvider::class,
     FeatureDetectionServiceProvider::class,
     FeatureRegistryServiceProvider::class,
-    // — Observabilité MAT-009 (#5867) : corrélation API→jobs + redaction PII
-    QueueCorrelationServiceProvider::class,
     HRServiceProvider::class,
     PayrollServiceProvider::class,
     AttendanceServiceProvider::class,
@@ -61,10 +57,6 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
-
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
 ];

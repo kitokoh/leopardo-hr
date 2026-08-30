@@ -33,6 +33,11 @@ class RestaurantDeliveryZone extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'fee_minor' => 0,
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'fee_minor' => 'integer',
         'min_order_minor' => 'integer',

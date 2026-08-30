@@ -30,6 +30,10 @@ class RestaurantUnit extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'status' => RestaurantRecordStatus::class,
     ];
