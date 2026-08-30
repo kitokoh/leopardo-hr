@@ -12,6 +12,12 @@
 # ouvertes référencent la MÊME issue → ::error + exit 1 (la PR en doublon doit
 # être fermée, protocole #2400 : 1 PR = 1 issue, renvoi vers la PR canonique).
 #
+# Exception (docs/GOUVERNANCE/BC_BATCH_BRANCH_PROTOCOL.md, 2026-08-29) : une PR
+# `bc/<code>-*` peut légitimement fermer PLUSIEURS issues d'un même lot BC —
+# cette garde reste valide sans modification, elle interdit seulement qu'une
+# MÊME issue soit référencée par 2+ PR ouvertes différentes, indépendamment du
+# nombre d'issues qu'une seule PR ferme.
+#
 # Usage : dev-hub/tools/check-issue-claim-unique.sh <owner/repo>
 # Requiert `gh` authentifié (GITHUB_TOKEN/GH_TOKEN suffit : lecture PRs).
 set -uo pipefail
