@@ -2570,5 +2570,14 @@
   "restaurantDinein": "Salon",
   "restaurantLoaderror": "Mutfak kuyruğu yüklenemedi.",
   "restaurantActionerror": "İşlem başarısız, tekrar deneyin.",
-  "restaurantLoading": "Mutfak kuyruğu yükleniyor…"
+  "restaurantLoading": "Mutfak kuyruğu yükleniyor…",
+  "fuelPumpistTitle": "Pompacı",
+  "fuelPumpistBackTooltip": "Geri",
+  "fuelPumpistActiveShift": "Aktif vardiya",
+  "fuelPumpistNoShiftTitle": "Aktif vardiya yok",
+  "fuelPumpistNoShiftDescription": "Bugünkü atamalarınız burada görünecek.",
+  "fuelPumpistErrorTitle": "Vardiyalar yüklenemedi",
+  "fuelPumpistReadingLabel": "Okuma değeri (alt birim)",
+  "fuelPumpistReadingHint": "örn. 12500",
+  "fuelPumpistSubmit": "Okumayı kaydet"
 }

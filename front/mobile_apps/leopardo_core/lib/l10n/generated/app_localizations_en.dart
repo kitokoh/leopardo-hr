@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1128,7 +1129,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'My leave balance';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Remaining days by type, current year';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Remaining days by type, current year';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Loading balance…';
@@ -1137,7 +1139,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLeaveBalanceError => 'Unable to load leave balance.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'No balance configured for this account.';
+  String get dashboardLeaveBalanceEmpty =>
+      'No balance configured for this account.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1242,7 +1245,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'Day of $date, status $status, $range, $hours.';
   }
 
@@ -8091,6 +8098,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsYes => 'Yes';
+  @override
+  String get fuelPumpistTitle => 'Pump attendant';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Back';
+
+  @override
+  String get fuelPumpistActiveShift => 'Active shift';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'No active shift';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Your assignments for today will appear here.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Unable to load shifts';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Reading value (minor units)';
+
+  @override
+  String get fuelPumpistReadingHint => 'e.g. 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'Submit reading';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {

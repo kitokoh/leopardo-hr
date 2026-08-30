@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1115,7 +1116,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'رصيد إجازاتي';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'الأيام المتبقية حسب النوع، السنة الحالية';
+  String get dashboardLeaveBalanceSubtitle =>
+      'الأيام المتبقية حسب النوع، السنة الحالية';
 
   @override
   String get dashboardLeaveBalanceLoading => 'جارٍ تحميل الرصيد…';
@@ -1230,7 +1232,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
@@ -8014,6 +8020,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsYes => 'نعم';
+  @override
+  String get fuelPumpistTitle => 'عامل المضخة';
+
+  @override
+  String get fuelPumpistBackTooltip => 'رجوع';
+
+  @override
+  String get fuelPumpistActiveShift => 'الوردية النشطة';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'لا توجد وردية نشطة';
+
+  @override
+  String get fuelPumpistNoShiftDescription => 'ستظهر مهامك اليوم هنا.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'تعذر تحميل الورديات';
+
+  @override
+  String get fuelPumpistReadingLabel => 'قيمة القراءة (وحدات صغرى)';
+
+  @override
+  String get fuelPumpistReadingHint => 'مثال 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'حفظ القراءة';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {

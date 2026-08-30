@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr')
+    Locale('tr'),
   ];
 
   /// No description provided for @appTitle.
@@ -2423,7 +2423,11 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status);
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  );
 
   /// No description provided for @attendanceDayToday.
   ///
@@ -15097,6 +15101,33 @@ abstract class AppLocalizations {
   /// **'Oui'**
   String get settingsYes;
 
+  /// No description provided for @fuelPumpistTitle.
+  String get fuelPumpistTitle;
+
+  /// No description provided for @fuelPumpistBackTooltip.
+  String get fuelPumpistBackTooltip;
+
+  /// No description provided for @fuelPumpistActiveShift.
+  String get fuelPumpistActiveShift;
+
+  /// No description provided for @fuelPumpistNoShiftTitle.
+  String get fuelPumpistNoShiftTitle;
+
+  /// No description provided for @fuelPumpistNoShiftDescription.
+  String get fuelPumpistNoShiftDescription;
+
+  /// No description provided for @fuelPumpistErrorTitle.
+  String get fuelPumpistErrorTitle;
+
+  /// No description provided for @fuelPumpistReadingLabel.
+  String get fuelPumpistReadingLabel;
+
+  /// No description provided for @fuelPumpistReadingHint.
+  String get fuelPumpistReadingHint;
+
+  /// No description provided for @fuelPumpistSubmit.
+  String get fuelPumpistSubmit;
+
   /// No description provided for @settingsJourneyAttachedTo.
   ///
   /// In fr, this message translates to:
@@ -15177,8 +15208,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

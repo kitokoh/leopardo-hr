@@ -40,6 +40,7 @@ import 'package:leopardo_core/features/user_auth/screens/company_request_screen.
 import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:leopardo_manager/features/fuel_station/screens/fuel_pumpist_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
@@ -272,8 +273,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) =>
-                const TwoFactorSettingsScreen(),
+            builder: (context, state) => const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/ai-chat',
@@ -282,6 +282,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/vehicle-map',
             builder: (context, state) => const VehicleMapScreen(),
+          ),
+          GoRoute(
+            path: '/fuel-pumpist',
+            builder: (context, state) => const FuelPumpistScreen(),
           ),
           GoRoute(
             path: '/approvals',
@@ -329,8 +333,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -371,9 +377,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);

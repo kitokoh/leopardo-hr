@@ -2570,5 +2570,14 @@
   "restaurantDinein": "Dine-in",
   "restaurantLoaderror": "Unable to load the kitchen queue.",
   "restaurantActionerror": "Action failed, please retry.",
-  "restaurantLoading": "Loading kitchen queue…"
+  "restaurantLoading": "Loading kitchen queue…",
+  "fuelPumpistTitle": "Pump attendant",
+  "fuelPumpistBackTooltip": "Back",
+  "fuelPumpistActiveShift": "Active shift",
+  "fuelPumpistNoShiftTitle": "No active shift",
+  "fuelPumpistNoShiftDescription": "Your assignments for today will appear here.",
+  "fuelPumpistErrorTitle": "Unable to load shifts",
+  "fuelPumpistReadingLabel": "Reading value (minor units)",
+  "fuelPumpistReadingHint": "e.g. 12500",
+  "fuelPumpistSubmit": "Submit reading"
 }

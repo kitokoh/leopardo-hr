@@ -2570,5 +2570,14 @@
   "restaurantDinein": "Sur place",
   "restaurantLoaderror": "Impossible de charger la file cuisine.",
   "restaurantActionerror": "Action impossible, réessayez.",
-  "restaurantLoading": "Chargement de la file cuisine…"
+  "restaurantLoading": "Chargement de la file cuisine…",
+  "fuelPumpistTitle": "Pompiste",
+  "fuelPumpistBackTooltip": "Retour",
+  "fuelPumpistActiveShift": "Shift actif",
+  "fuelPumpistNoShiftTitle": "Aucun shift actif",
+  "fuelPumpistNoShiftDescription": "Vos affectations du jour apparaîtront ici.",
+  "fuelPumpistErrorTitle": "Impossible de charger les shifts",
+  "fuelPumpistReadingLabel": "Valeur relevé (unités mineures)",
+  "fuelPumpistReadingHint": "ex. 12500",
+  "fuelPumpistSubmit": "Enregistrer le relevé"
 }

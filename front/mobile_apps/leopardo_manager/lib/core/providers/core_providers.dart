@@ -4,6 +4,7 @@ export 'package:leopardo_core/core/providers/core_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_manager/features/ai_chat/data/ai_chat_repository.dart';
+import 'package:leopardo_manager/features/fuel_station/data/fuel_station_repository.dart';
 import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_manager/features/approvals/data/approval_repository.dart';
 
@@ -18,6 +19,11 @@ final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
 final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return AiChatRepository(apiClient);
+});
+
+final fuelStationRepositoryProvider = Provider<FuelStationRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return FuelStationRepository(apiClient);
 });
 
 final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((

@@ -2570,5 +2570,14 @@
   "restaurantDinein": "في المكان",
   "restaurantLoaderror": "تعذر تحميل قائمة المطبخ.",
   "restaurantActionerror": "تعذر تنفيذ الإجراء، حاول مجددًا.",
-  "restaurantLoading": "جارٍ تحميل قائمة المطبخ…"
+  "restaurantLoading": "جارٍ تحميل قائمة المطبخ…",
+  "fuelPumpistTitle": "عامل المضخة",
+  "fuelPumpistBackTooltip": "رجوع",
+  "fuelPumpistActiveShift": "الوردية النشطة",
+  "fuelPumpistNoShiftTitle": "لا توجد وردية نشطة",
+  "fuelPumpistNoShiftDescription": "ستظهر مهامك اليوم هنا.",
+  "fuelPumpistErrorTitle": "تعذر تحميل الورديات",
+  "fuelPumpistReadingLabel": "قيمة القراءة (وحدات صغرى)",
+  "fuelPumpistReadingHint": "مثال 12500",
+  "fuelPumpistSubmit": "حفظ القراءة"
 }

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1129,7 +1130,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'İzin bakiyem';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Türe göre kalan günler, cari yıl';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Türe göre kalan günler, cari yıl';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Bakiye yükleniyor…';
@@ -1138,7 +1140,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLeaveBalanceError => 'İzin bakiyesi yüklenemedi.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'Bu hesap için bakiye yapılandırılmamış.';
+  String get dashboardLeaveBalanceEmpty =>
+      'Bu hesap için bakiye yapılandırılmamış.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1244,7 +1247,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
@@ -8101,6 +8108,33 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsYes => 'Evet';
+  @override
+  String get fuelPumpistTitle => 'Pompacı';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Geri';
+
+  @override
+  String get fuelPumpistActiveShift => 'Aktif vardiya';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aktif vardiya yok';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Bugünkü atamalarınız burada görünecek.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Vardiyalar yüklenemedi';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Okuma değeri (alt birim)';
+
+  @override
+  String get fuelPumpistReadingHint => 'örn. 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'Okumayı kaydet';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {

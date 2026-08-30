@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1144,16 +1145,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'Mon solde de congés';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Jours restants par type, année courante';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Jours restants par type, année courante';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Chargement du solde…';
 
   @override
-  String get dashboardLeaveBalanceError => 'Impossible de charger le solde de congés.';
+  String get dashboardLeaveBalanceError =>
+      'Impossible de charger le solde de congés.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'Aucun solde configuré pour ce compte.';
+  String get dashboardLeaveBalanceEmpty =>
+      'Aucun solde configuré pour ce compte.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1259,7 +1263,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'Journée du $date, statut $status, $range, $hours.';
   }
 
@@ -8192,6 +8200,33 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsYes => 'Oui';
+  @override
+  String get fuelPumpistTitle => 'Pompiste';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Retour';
+
+  @override
+  String get fuelPumpistActiveShift => 'Shift actif';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aucun shift actif';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Vos affectations du jour apparaîtront ici.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Impossible de charger les shifts';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Valeur relevé (unités mineures)';
+
+  @override
+  String get fuelPumpistReadingHint => 'ex. 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'Enregistrer le relevé';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {
