@@ -13,11 +13,38 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationReposito
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantMenu;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantMenuItem;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantUnit;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
+use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantHourPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantIngredientPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantMenuItemPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantMenuPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantProductIngredientPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantProductPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantTaxRatePolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -61,7 +88,27 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Policies enregistrées ici dès que les modèles des épics 2xx/3xx
-        // existent (Gate::policy(RestaurantX::class, RestaurantXPolicy::class)).
+        // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
+        // enregistrement explicite des modèles métier vers leurs policies,
+        // même pattern que TravelAgencyServiceProvider::boot().
+        Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
+        Gate::policy(RestaurantZone::class, RestaurantZonePolicy::class);
+        Gate::policy(RestaurantTable::class, RestaurantTablePolicy::class);
+
+        // Policies du référentiel catalogue/recettes + matières/fiscalité
+        // (RESTO-302/303, #6183/#6184) — même pattern d'enregistrement.
+        Gate::policy(RestaurantCategory::class, RestaurantCategoryPolicy::class);
+        Gate::policy(RestaurantProduct::class, RestaurantProductPolicy::class);
+        Gate::policy(RestaurantProductIngredient::class, RestaurantProductIngredientPolicy::class);
+        Gate::policy(RestaurantIngredient::class, RestaurantIngredientPolicy::class);
+        Gate::policy(RestaurantUnit::class, RestaurantUnitPolicy::class);
+        Gate::policy(RestaurantTaxRate::class, RestaurantTaxRatePolicy::class);
+
+        // Policies du référentiel menus/items/horaires (RESTO-304, #6185) et
+        // fournisseurs (RESTO-305, #6186) — même pattern d'enregistrement.
+        Gate::policy(RestaurantMenu::class, RestaurantMenuPolicy::class);
+        Gate::policy(RestaurantMenuItem::class, RestaurantMenuItemPolicy::class);
+        Gate::policy(RestaurantHour::class, RestaurantHourPolicy::class);
+        Gate::policy(RestaurantSupplier::class, RestaurantSupplierPolicy::class);
     }
 }
