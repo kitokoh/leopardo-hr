@@ -1848,6 +1848,14 @@ class LeopardoClient:
         """Corriger un releve (versionne, audite) — manager principal/rh"""
         return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
 
+    def get_fuel_station_reconciliations(self, **kwargs):
+        """Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/reconciliations", **kwargs)
+
+    def get_fuel_station_reconciliations_by_run(self, **kwargs):
+        """Détail d'une passe de rapprochement (manager, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/reconciliations/{run}", **kwargs)
+
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""
         return self.request("GET", "/fuel-station/sales", **kwargs)
@@ -1907,6 +1915,18 @@ class LeopardoClient:
     def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
         """Enregistrer un releve de compteur (cumulatif, idempotent)"""
         return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
+    def post_fuel_station_stations_by_station_reconciliations(self, **kwargs):
+        """Déclencher (ou rejouer) le rapprochement stock d'une station (manager, FUEL-009 #5803)"""
+        return self.request("POST", "/fuel-station/stations/{station}/reconciliations", **kwargs)
+
+    def get_fuel_station_stocks(self, **kwargs):
+        """Lister les niveaux de stock par cuve (manager, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/stocks", **kwargs)
+
+    def post_fuel_station_tanks_by_tank_deliveries(self, **kwargs):
+        """Enregistrer une livraison de carburant (manager, idempotent, FUEL-009 #5803)"""
+        return self.request("POST", "/fuel-station/tanks/{tank}/deliveries", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""

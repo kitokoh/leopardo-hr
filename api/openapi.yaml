@@ -6865,6 +6865,277 @@ paths:
         '404':
           description: Affectation introuvable ou autre tenant
 
+  /fuel-station/stocks:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les niveaux de stock par cuve (manager, FUEL-009 #5803)
+      description: "Niveaux courants (unités mineures), ratio de remplissage, filtre station/statut. Deny-by-default : manager uniquement."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - retired
+      responses:
+        '200':
+          description: Niveaux de stock par cuve
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        station_id:
+                          type: integer
+                        station_code:
+                          type: string
+                          nullable: true
+                        code:
+                          type: string
+                        product_type:
+                          type: string
+                        capacity_minor:
+                          type: integer
+                        current_level_minor:
+                          type: integer
+                        status:
+                          type: string
+                        fill_ratio:
+                          type: number
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /fuel-station/tanks/{tank}/deliveries:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une livraison de carburant (manager, idempotent, FUEL-009 #5803)
+      description: "Livraison en unités mineures entières (jamais de flottant métier). Idempotence : un rejeu du même external_id renvoie la livraison existante (zéro doublon). Le niveau courant de la cuve est incrémenté. Refus hors tenant (404)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: tank
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - quantity_minor
+              properties:
+                quantity_minor:
+                  type: integer
+                  minimum: 1
+                  description: Volume livré en unités mineures (ex. millièmes de litre)
+                unit_price_minor:
+                  type: integer
+                  nullable: true
+                  minimum: 0
+                delivered_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Livraison enregistrée (ou rejouée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      tank_id:
+                        type: integer
+                      quantity_minor:
+                        type: integer
+                      unit_price_minor:
+                        type: integer
+                        nullable: true
+                      delivered_at:
+                        type: string
+                        nullable: true
+                      external_id:
+                        type: string
+                        nullable: true
+                      notes:
+                        type: string
+                        nullable: true
+                      created_by:
+                        type: integer
+                        nullable: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Cuve introuvable ou autre tenant
+        '422':
+          description: Quantité non positive ou validation
+
+  /fuel-station/stations/{station}/reconciliations:
+    post:
+      tags:
+      - FuelStation
+      summary: Déclencher (ou rejouer) le rapprochement stock d'une station (manager, FUEL-009 #5803)
+      description: "Un seul run par (station, date) : rejouer renvoie le run existant (meta.replayed=true). L'écart attendu vs mesuré est rapporté dans summary — aucun ajustement silencieux."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                run_date:
+                  type: string
+                  format: date
+                  description: "Date du rapprochement (défaut : aujourd'hui)"
+      responses:
+        '200':
+          description: Run exécuté ou rejoué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelReconciliationRun'
+                  meta:
+                    type: object
+                    properties:
+                      replayed:
+                        type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Station introuvable ou autre tenant
+
+  /fuel-station/reconciliations:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - running
+          - completed
+          - failed
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Runs de rapprochement paginés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuelReconciliationRun'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      total:
+                        type: integer
+                      per_page:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /fuel-station/reconciliations/{run}:
+    get:
+      tags:
+      - FuelStation
+      summary: Détail d'une passe de rapprochement (manager, FUEL-009 #5803)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: run
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du run avec le rapport d'écart par cuve
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelReconciliationRun'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Run introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:
@@ -33236,3 +33507,66 @@ components:
           type: boolean
         correlation_id:
           type: string
+    FuelReconciliationRun:
+      type: object
+      properties:
+        id:
+          type: integer
+        station_id:
+          type: integer
+        run_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        summary:
+          type: object
+          nullable: true
+          description: Rapport d'écart par cuve (attendu vs mesuré) — aucun ajustement silencieux
+          properties:
+            generated_at:
+              type: string
+              format: date-time
+            run_date:
+              type: string
+              format: date
+            station_id:
+              type: integer
+            total_variance_minor:
+              type: integer
+            explainable:
+              type: boolean
+            tanks:
+              type: array
+              items:
+                type: object
+                properties:
+                  tank_id: {type: integer}
+                  tank_code: {type: string}
+                  product_type: {type: string}
+                  opening_level_minor: {type: integer}
+                  deliveries_minor: {type: integer}
+                  sales_minor: {type: integer}
+                  expected_level_minor: {type: integer}
+                  measured_level_minor: {type: integer}
+                  variance_minor: {type: integer}
+                  explainable: {type: boolean}
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_error:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true

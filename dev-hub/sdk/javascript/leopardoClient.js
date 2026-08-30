@@ -2285,6 +2285,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
     },
 
+    /** Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803) */
+    getFuelStationReconciliations(options = {}) {
+      return request("GET", "/fuel-station/reconciliations", options);
+    },
+
+    /** Détail d'une passe de rapprochement (manager, FUEL-009 #5803) */
+    getFuelStationReconciliationsByRun(options = {}) {
+      return request("GET", "/fuel-station/reconciliations/{run}", options);
+    },
+
     /** Lister les ventes (manager, pagine) */
     getFuelStationSales(options = {}) {
       return request("GET", "/fuel-station/sales", options);
@@ -2358,6 +2368,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Enregistrer un releve de compteur (cumulatif, idempotent) */
     postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
       return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Déclencher (ou rejouer) le rapprochement stock d'une station (manager, FUEL-009 #5803) */
+    postFuelStationStationsByStationReconciliations(options = {}) {
+      return request("POST", "/fuel-station/stations/{station}/reconciliations", options);
+    },
+
+    /** Lister les niveaux de stock par cuve (manager, FUEL-009 #5803) */
+    getFuelStationStocks(options = {}) {
+      return request("GET", "/fuel-station/stocks", options);
+    },
+
+    /** Enregistrer une livraison de carburant (manager, idempotent, FUEL-009 #5803) */
+    postFuelStationTanksByTankDeliveries(options = {}) {
+      return request("POST", "/fuel-station/tanks/{tank}/deliveries", options);
     },
 
     /** Candidature partenaire */

@@ -21,6 +21,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingContro
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -54,9 +55,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/me/sales', [FuelSaleController::class, 'mySales']);
 
     // FUEL-008 (#5802) — enregistrement d'une vente (tout employé authentifié).
-    Route::post('/fuel-station/sales', [FuelSaleController::class, 'store']);
-
-    // FUEL-007 (#5801) — cycle de vie des sessions de caisse (policy par
+    Route::post('/fuel-station/sales', [FuelSaleController::class, 'store']);    // FUEL-007 (#5801) — cycle de vie des sessions de caisse (policy par
     // opened_by : pompiste = ses sessions ; approbation manager).
     Route::post('/fuel-station/cash-sessions', [FuelCashSessionController::class, 'store']);
     Route::post('/fuel-station/cash-sessions/{session}/movements', [FuelCashSessionController::class, 'addMovement'])
@@ -84,5 +83,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // FUEL-008 (#5802) : ventes (manager).
         Route::get('/fuel-station/sales', [FuelSaleController::class, 'index']);
         Route::get('/fuel-station/sales/{sale}', [FuelSaleController::class, 'show'])->whereNumber('sale');
+
+        // FUEL-009 (#5803) : stocks, cuves et rapprochement (manager).
+        Route::get('/fuel-station/stocks', [FuelStockController::class, 'stocks']);
+        Route::post('/fuel-station/tanks/{tank}/deliveries', [FuelStockController::class, 'storeDelivery'])
+            ->whereNumber('tank');
+        Route::post('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'runReconciliation'])
+            ->whereNumber('station');
+        Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
+        Route::get('/fuel-station/reconciliations/{run}', [FuelStockController::class, 'showReconciliation'])
+            ->whereNumber('run');
     });
 });

@@ -7,6 +7,7 @@ namespace App\Modules\FuelStation\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -55,5 +56,11 @@ class FuelTank extends Model
             'capacity_minor' => 'integer',
             'current_level_minor' => 'integer',
         ];
+    }
+
+    /** @return BelongsTo<FuelStation, $this> */
+    public function station(): BelongsTo
+    {
+        return $this->belongsTo(FuelStation::class, 'station_id');
     }
 }

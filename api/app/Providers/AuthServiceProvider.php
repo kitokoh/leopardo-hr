@@ -16,12 +16,16 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
+use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
@@ -96,6 +100,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
         Gate::policy(FuelCashSession::class, FuelCashSessionPolicy::class);
         Gate::policy(FuelSale::class, FuelSalePolicy::class);
+        // — FuelStation stocks & rapprochement (FUEL-009 #5803)
+        Gate::policy(FuelTankDelivery::class, FuelStockPolicy::class);
+        Gate::policy(FuelReconciliationRun::class, FuelStockPolicy::class);
+        Gate::policy(FuelTank::class, FuelStockPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
