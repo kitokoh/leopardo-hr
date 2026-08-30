@@ -21,16 +21,16 @@ class DeliverySchemaTest extends TestCase
     use RefreshTenantDatabase;
 
     /**
-     * @return array<int, string>
+     * @return array<int, list<string>>
      */
     public static function deliveryTables(): array
     {
         return [
-            'delivery_deliveries',
-            'delivery_routes',
-            'delivery_stops',
-            'delivery_events',
-            'delivery_cod_settlements',
+            ['delivery_deliveries'],
+            ['delivery_routes'],
+            ['delivery_stops'],
+            ['delivery_events'],
+            ['delivery_cod_settlements'],
         ];
     }
 
