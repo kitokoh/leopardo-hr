@@ -7,14 +7,20 @@ namespace App\Modules\Billing\Domain\Models;
 // Note: App\Modules\Payroll\Domain\Models\Payment is intentionally NOT imported here.
 // Invoice (Billing) must not depend on Payroll's Domain layer — that would create a
 // circular Domain<->Domain dependency (Invoice -> Payment -> Invoice).
-// The `payments()` relation uses the FQCN string so that Eloquent can resolve the
-// model at runtime without introducing a compile-time cross-module dependency.
-// See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
+// The `payments()` relation passes the CLASS NAME AS A STRING (non-FQCN identifier)
+// so that Eloquent resolves the model at runtime without any compile-time reference
+// to Payroll — l'ADR-0011 impose le FQCN, et le fixer Pint `fully_qualified_strict_types`
+// (preset laravel) réécrit les identifiants `\Foo\Bar::class` ; une chaîne n'est
+// touchée ni par Pint ni par PHPStan.
+// See: docs/architecture/adr/0011-billing-payroll-domain-boundary.md  — Issue #1395.
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 
 /**
  * @property int $id
@@ -33,7 +39,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $pdf_path
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Invoice extends Model
 {
@@ -73,9 +80,38 @@ class Invoice extends Model
         return $this->belongsTo(Subscription::class);
     }
 
-    /** @return HasMany<\App\Modules\Payroll\Domain\Models\Payment, $this> */
+    /** @return HasMany<Model, $this> */
     public function payments(): HasMany
     {
-        return $this->hasMany(\App\Modules\Payroll\Domain\Models\Payment::class);
+        return $this->hasMany('App\Modules\Payroll\Domain\Models\Payment');
+    }
+
+    /**
+     * Transition d'état gardée (DEP-BC21 #6248).
+     *
+     * La machine à états est définie par {@see InvoiceStatus} : toute
+     * transition invalide lève InvalidArgumentException. Une transition vers
+     * le statut COURANT est idempotente (sans exception) : elle ne fait que
+     * synchroniser les attributs additionnels (paid_at, payment_method…) —
+     * contrat utilisé par les webhooks providers rejoués.
+     *
+     * @param  array<string, mixed>  $extra  attributs additionnels (paid_at, payment_method…)
+     */
+    public function transitionTo(InvoiceStatus $status, array $extra = []): self
+    {
+        $current = InvoiceStatus::tryFrom((string) $this->status) ?? InvoiceStatus::Draft;
+
+        if ($current !== $status && ! $current->canTransitionTo($status)) {
+            throw new InvalidArgumentException(
+                "Transition de facture invalide : {$current->value} → {$status->value}"
+            );
+        }
+
+        $this->forceFill([
+            'status' => $status->value,
+            ...$extra,
+        ])->save();
+
+        return $this;
     }
 }
