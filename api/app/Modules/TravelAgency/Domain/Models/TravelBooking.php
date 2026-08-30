@@ -42,6 +42,7 @@ class TravelBooking extends Model
         'payment_status',
         'expires_at',
         'idempotency_key',
+        'notify_consent',
         'version',
     ];
 
@@ -52,6 +53,7 @@ class TravelBooking extends Model
         'booking_source' => BookingSource::class,
         'payment_status' => PaymentStatus::class,
         'expires_at' => 'datetime',
+        'notify_consent' => 'boolean',
         'version' => 'integer',
     ];
 
