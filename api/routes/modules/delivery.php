@@ -24,6 +24,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+
+            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
+            // clôture idempotente, détail avec stops ordonnés.
+            // Rapports & KPIs (DELIVERY-207/#6291) — read model déterministe
+            // ventilé par source + export CSV streamé.
+            Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
+            Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
 
             // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
             // clôture idempotente, détail avec stops ordonnés.
