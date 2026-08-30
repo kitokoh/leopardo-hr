@@ -1920,6 +1920,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/edu-manager/admissions/{admission}/convert", options);
     },
 
+    /** Opt-out RGPD d'un prospect admission (EDU-015) */
+    postEduManagerAdmissionsByAdmissionOptOut(options = {}) {
+      return request("POST", "/edu-manager/admissions/{admission}/opt-out", options);
+    },
+
     /** Lister les evaluations */
     getEduManagerAssessments(options = {}) {
       return request("GET", "/edu-manager/assessments", options);
@@ -2050,6 +2055,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edu-manager/exports/{kind}", options);
     },
 
+    /** Lister les frais scolaires (direction, EDU-016) */
+    getEduManagerFees(options = {}) {
+      return request("GET", "/edu-manager/fees", options);
+    },
+
+    /** Creer un frais scolaire (idempotent, direction, EDU-016) */
+    postEduManagerFees(options = {}) {
+      return request("POST", "/edu-manager/fees", options);
+    },
+
+    /** Detail d'un frais scolaire (direction, EDU-016) */
+    getEduManagerFeesByFee(options = {}) {
+      return request("GET", "/edu-manager/fees/{fee}", options);
+    },
+
+    /** Annuler un frais (terminal, EDU-016) */
+    postEduManagerFeesByFeeCancel(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/cancel", options);
+    },
+
+    /** Regler un frais (idempotent, terminal, EDU-016) */
+    postEduManagerFeesByFeePay(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/pay", options);
+    },
+
+    /** Remise de frais (terminal, direction, EDU-016) */
+    postEduManagerFeesByFeeWaive(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/waive", options);
+    },
+
     /** Corriger une note (versionnee) */
     postEduManagerGradesByGradeCorrect(options = {}) {
       return request("POST", "/edu-manager/grades/{grade}/correct", options);
@@ -2058,6 +2093,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Publier une note */
     postEduManagerGradesByGradePublish(options = {}) {
       return request("POST", "/edu-manager/grades/{grade}/publish", options);
+    },
+
+    /** Emettre un lien d'acces expirable pour un guardian (direction, EDU-013) */
+    postEduManagerGuardiansAccessLinks(options = {}) {
+      return request("POST", "/edu-manager/guardians/access-links", options);
+    },
+
+    /** Echanger un lien d'acces expirable (usage unique, EDU-013) */
+    postEduManagerGuardiansAccessLinksRedeem(options = {}) {
+      return request("POST", "/edu-manager/guardians/access-links/redeem", options);
+    },
+
+    /** Profil du portail guardian (EDU-013) */
+    getEduManagerGuardiansMe(options = {}) {
+      return request("GET", "/edu-manager/guardians/me", options);
+    },
+
+    /** Enfants autorises du guardian (aucune enumeration, EDU-013) */
+    getEduManagerGuardiansMeStudents(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students", options);
+    },
+
+    /** Presences d'un enfant autorise (EDU-013) */
+    getEduManagerGuardiansMeStudentsByStudentPresences(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students/{student}/presences", options);
+    },
+
+    /** Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013) */
+    getEduManagerGuardiansMeStudentsByStudentReportCards(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", options);
     },
 
     /** Annuler un import avant commit */
@@ -2073,6 +2138,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Preview d un import CSV (aucune écriture) */
     postEduManagerImportsPreview(options = {}) {
       return request("POST", "/edu-manager/imports/preview", options);
+    },
+
+    /** Segments de prospects consentis pour campagnes d'admission (EDU-015) */
+    getEduManagerMarketingEligibleProspects(options = {}) {
+      return request("GET", "/edu-manager/marketing/eligible-prospects", options);
+    },
+
+    /** Historique des notifications EduManager (direction, EDU-014) */
+    getEduManagerNotifications(options = {}) {
+      return request("GET", "/edu-manager/notifications", options);
     },
 
     /** Lister les bulletins */

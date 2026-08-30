@@ -1556,6 +1556,10 @@ class LeopardoClient:
         """Convertir le dossier en eleve (idempotent, consentement requis)"""
         return self.request("POST", "/edu-manager/admissions/{admission}/convert", **kwargs)
 
+    def post_edu_manager_admissions_by_admission_opt_out(self, **kwargs):
+        """Opt-out RGPD d'un prospect admission (EDU-015)"""
+        return self.request("POST", "/edu-manager/admissions/{admission}/opt-out", **kwargs)
+
     def get_edu_manager_assessments(self, **kwargs):
         """Lister les evaluations"""
         return self.request("GET", "/edu-manager/assessments", **kwargs)
@@ -1660,6 +1664,30 @@ class LeopardoClient:
         """Exporter un CSV (students|presence|grades) audité"""
         return self.request("GET", "/edu-manager/exports/{kind}", **kwargs)
 
+    def get_edu_manager_fees(self, **kwargs):
+        """Lister les frais scolaires (direction, EDU-016)"""
+        return self.request("GET", "/edu-manager/fees", **kwargs)
+
+    def post_edu_manager_fees(self, **kwargs):
+        """Creer un frais scolaire (idempotent, direction, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees", **kwargs)
+
+    def get_edu_manager_fees_by_fee(self, **kwargs):
+        """Detail d'un frais scolaire (direction, EDU-016)"""
+        return self.request("GET", "/edu-manager/fees/{fee}", **kwargs)
+
+    def post_edu_manager_fees_by_fee_cancel(self, **kwargs):
+        """Annuler un frais (terminal, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/cancel", **kwargs)
+
+    def post_edu_manager_fees_by_fee_pay(self, **kwargs):
+        """Regler un frais (idempotent, terminal, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/pay", **kwargs)
+
+    def post_edu_manager_fees_by_fee_waive(self, **kwargs):
+        """Remise de frais (terminal, direction, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/waive", **kwargs)
+
     def post_edu_manager_grades_by_grade_correct(self, **kwargs):
         """Corriger une note (versionnee)"""
         return self.request("POST", "/edu-manager/grades/{grade}/correct", **kwargs)
@@ -1667,6 +1695,30 @@ class LeopardoClient:
     def post_edu_manager_grades_by_grade_publish(self, **kwargs):
         """Publier une note"""
         return self.request("POST", "/edu-manager/grades/{grade}/publish", **kwargs)
+
+    def post_edu_manager_guardians_access_links(self, **kwargs):
+        """Emettre un lien d'acces expirable pour un guardian (direction, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardians/access-links", **kwargs)
+
+    def post_edu_manager_guardians_access_links_redeem(self, **kwargs):
+        """Echanger un lien d'acces expirable (usage unique, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardians/access-links/redeem", **kwargs)
+
+    def get_edu_manager_guardians_me(self, **kwargs):
+        """Profil du portail guardian (EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me", **kwargs)
+
+    def get_edu_manager_guardians_me_students(self, **kwargs):
+        """Enfants autorises du guardian (aucune enumeration, EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students", **kwargs)
+
+    def get_edu_manager_guardians_me_students_by_student_presences(self, **kwargs):
+        """Presences d'un enfant autorise (EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students/{student}/presences", **kwargs)
+
+    def get_edu_manager_guardians_me_students_by_student_report_cards(self, **kwargs):
+        """Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", **kwargs)
 
     def post_edu_manager_imports_by_import_cancel(self, **kwargs):
         """Annuler un import avant commit"""
@@ -1679,6 +1731,14 @@ class LeopardoClient:
     def post_edu_manager_imports_preview(self, **kwargs):
         """Preview d un import CSV (aucune écriture)"""
         return self.request("POST", "/edu-manager/imports/preview", **kwargs)
+
+    def get_edu_manager_marketing_eligible_prospects(self, **kwargs):
+        """Segments de prospects consentis pour campagnes d'admission (EDU-015)"""
+        return self.request("GET", "/edu-manager/marketing/eligible-prospects", **kwargs)
+
+    def get_edu_manager_notifications(self, **kwargs):
+        """Historique des notifications EduManager (direction, EDU-014)"""
+        return self.request("GET", "/edu-manager/notifications", **kwargs)
 
     def get_edu_manager_report_cards(self, **kwargs):
         """Lister les bulletins"""
