@@ -36,4 +36,8 @@ return [
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
+    'restaurant_new_order_title' => 'Nouvelle commande',
+    'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
+    'restaurant_order_ready_title' => 'Commande prête',
+    'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
 ];

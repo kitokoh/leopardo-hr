@@ -518,6 +518,7 @@ PO       : draft → sent → received | cancelled
 |---|---|
 | `restaurant.order.created.v1` | Kitchen UI, Notifications, Reporting |
 | `restaurant.order.paid.v1` | Accounting, Fidélité, Reporting |
+| `restaurant.order.ready.v1` | Notifications (service) — RESTO-808 |
 | `restaurant.table.closed.v1` | Reporting, Accounting |
 | `restaurant.payment.confirmed.v1` | Accounting, Notifications |
 | `restaurant.reservation.confirmed.v1` | Notifications, CRM (activité) |

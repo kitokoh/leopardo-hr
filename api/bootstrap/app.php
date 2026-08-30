@@ -76,6 +76,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
         $schedule->command('tts:purge')->hourly();
+        // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
+        // de la verticale (notifications cuisine/service, fidélité…).
+        $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

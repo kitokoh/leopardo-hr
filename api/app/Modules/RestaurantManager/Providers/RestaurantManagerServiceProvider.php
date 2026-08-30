@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Providers;
 
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
+use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
+use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
 use App\Modules\RestaurantManager\Application\Services\CogsCalculator;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
 use App\Modules\RestaurantManager\Console\Commands\ActivateRestaurantManagerCommand;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantOutboxDispatchCommand;
 use App\Modules\RestaurantManager\Console\Commands\SeedRestaurantDemoCommand;
 use App\Modules\RestaurantManager\Console\Commands\StockAlertsCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantBranchRepositoryInterface;
@@ -51,6 +56,7 @@ use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPa
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
@@ -128,12 +134,25 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
-        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet).
+        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
+        // RESTO-808 (#6229) — dispatcher outbox (consommation des événements).
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
+            RestaurantOutboxDispatchCommand::class,
         ]);
+
+        // RESTO-808 (#6229) — registre des consommateurs d'outbox de la
+        // verticale : notifications cuisine (nouvelle commande) et service
+        // (commande prête) via CommunicationService (BC-13).
+        $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function (): RestaurantOutboxConsumerRegistry {
+            $registry = new RestaurantOutboxConsumerRegistry();
+            $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationService::class)));
+            $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationService::class)));
+
+            return $registry;
+        });
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -153,6 +172,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // RESTO-808 (#6229) — observateur de commande : émet
+        // `restaurant.order.ready.v1` quand une commande passe à ready
+        // (notifications équipe de service, découplé du flux POS).
+        RestaurantOrder::observe(RestaurantOrderObserver::class);
         // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
         // enregistrement explicite des modèles métier vers leurs policies,
         // même pattern que TravelAgencyServiceProvider::boot().
