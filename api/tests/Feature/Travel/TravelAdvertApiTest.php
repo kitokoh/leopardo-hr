@@ -271,4 +271,39 @@ class TravelAdvertApiTest extends TestCase
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
+
+    public function test_admin_scope_lists_all_statuses_with_referentials(): void
+    {
+        $this->actingManager();
+        ['type' => $type, 'position' => $position] = $this->seedPricing();
+
+        // Annonce soumise (invisible publiquement) + une validée.
+        $submittedId = $this->postJson('/api/v1/travel/adverts', [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'title' => 'Annonce soumise — admin',
+            'content' => 'Contenu',
+        ])->assertStatus(201)->json('data.id');
+
+        $validatedId = $this->postJson('/api/v1/travel/adverts', [
+            'advert_type_id' => $type->id,
+            'advert_position_id' => $position->id,
+            'title' => 'Annonce visible',
+            'content' => 'Contenu',
+        ])->assertStatus(201)->json('data.id');
+        $this->postJson("/api/v1/travel/adverts/{$validatedId}/pay")->assertOk();
+        $this->postJson("/api/v1/travel/adverts/{$validatedId}/validate")->assertOk();
+
+        // Vue publique : seule la validée apparaît.
+        $this->getJson('/api/v1/travel/adverts')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $validatedId])
+            ->assertJsonMissing(['id' => $submittedId]);
+
+        // Vue admin (?scope=admin) : toutes les annonces, avec statut + référentiels.
+        $this->getJson('/api/v1/travel/adverts?scope=admin')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $submittedId, 'status' => 'submitted', 'advert_type_id' => $type->id, 'advert_position_id' => $position->id])
+            ->assertJsonFragment(['id' => $validatedId, 'status' => 'validated']);
+    }
 }

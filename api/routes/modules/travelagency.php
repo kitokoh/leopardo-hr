@@ -230,6 +230,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
 
+        // ── Registre contacts voyageurs — admin (TRAVEL-913) ────────────────
+        Route::get('/customer-contacts', [TravelCustomerContactController::class, 'index']);
+        Route::patch('/customer-contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
         Route::post('/contact', [TravelContactController::class, 'store']);
 

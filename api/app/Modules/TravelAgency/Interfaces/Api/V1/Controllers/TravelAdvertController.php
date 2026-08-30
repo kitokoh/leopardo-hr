@@ -35,21 +35,29 @@ class TravelAdvertController extends Controller
 
     /**
      * Liste publique tenant : annonces VISIBLES uniquement.
+     * `?scope=admin` (TRAVEL-914) : liste TTEES les annonces du tenant avec
+     * statut + référentiels (soumission, paiement, validation, renouvellement).
      */
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $adminScope = $request->query('scope') === 'admin';
+
         $adverts = TravelAdvert::query()
             ->where('company_id', $actor->company_id)
+            ->orderByDesc('id')
             ->get()
-            ->filter(fn (TravelAdvert $a) => $a->isVisible())
+            ->filter(fn (TravelAdvert $a) => $adminScope || $a->isVisible())
             ->values()
             ->map(fn (TravelAdvert $a) => [
                 'id' => $a->id,
                 'title' => $a->title,
                 'content' => $a->content_redacted,
+                'status' => $a->status->value,
+                'advert_type_id' => $a->advert_type_id,
+                'advert_position_id' => $a->advert_position_id,
                 'price_minor' => $a->price_minor,
                 'currency' => $a->currency,
                 'expires_at' => $a->expires_at?->toIso8601String(),

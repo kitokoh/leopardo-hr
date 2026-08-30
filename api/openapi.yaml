@@ -4200,12 +4200,21 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Annonces visibles (payées + validées + non expirées)'
+      summary: 'TRAVEL-907/914 — Annonces visibles (payées + validées + non expirées) ; ?scope=admin = toutes les annonces du tenant avec statut + référentiels'
       security:
       - BearerAuth: []
+      parameters:
+      - name: scope
+        in: query
+        required: false
+        description: '« admin » liste toutes les annonces du tenant (tous statuts, admin-dashboard TRAVEL-914)'
+        schema:
+          type: string
+          enum:
+          - admin
       responses:
         '200':
-          description: Annonces visibles
+          description: Annonces visibles (ou toutes si scope=admin)
         '401':
           description: Non authentifié
     post:
@@ -4574,6 +4583,74 @@ paths:
       responses:
         '200':
           description: Notification envoyée (canaux respectant le consentement)
+  /travel/customer-contacts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (consentements par canal)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        description: Filtre email / prénom / nom / téléphone (ilike)
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+      responses:
+        '200':
+          description: Contacts du tenant (data + meta pagination)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+  /travel/customer-contacts/{travelCustomerContact}/consent:
+    patch:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Mettre à jour le consentement d''un canal (opt-in / opt-out horodaté)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - channel
+              - given
+              properties:
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                given:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis à jour (at = horodatage ou null si opt-out)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Validation échouée (canal inconnu)
         '403':
           description: Rôle insuffisant
         '404':
