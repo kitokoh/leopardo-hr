@@ -36,4 +36,10 @@ return [
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
-];
+
+    'edu_admission_converted_title' => 'Nouvelle admission convertie',
+    'edu_admission_converted_body' => 'L\'admission :admission_number de :student_name a été convertie en élève.',
+    'edu_absence_recorded_title' => 'Absence enregistrée',
+    'edu_absence_recorded_body' => ':student_name est :status le :date.',
+    'edu_report_card_published_title' => 'Bulletin publié',
+    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];

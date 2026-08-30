@@ -187,6 +187,24 @@ return [
             // pending_absences, pending_advances, pending_corrections.
             'vars' => ['week_start', 'team_size', 'present', 'pending_absences', 'pending_advances', 'pending_corrections'],
         ],
+        'edu_admission_converted' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_admission_converted_title',
+            'body_key' => 'notifications.edu_admission_converted_body',
+            'vars' => ['student_name', 'admission_number'],
+        ],
+        'edu_absence_recorded' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_absence_recorded_title',
+            'body_key' => 'notifications.edu_absence_recorded_body',
+            'vars' => ['student_name', 'date', 'status'],
+        ],
+        'edu_report_card_published' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_report_card_published_title',
+            'body_key' => 'notifications.edu_report_card_published_body',
+            'vars' => ['student_name', 'period'],
+        ],
         'company_announcement' => [
             'category' => 'system',
             'title_key' => 'notifications.company_announcement_title',
