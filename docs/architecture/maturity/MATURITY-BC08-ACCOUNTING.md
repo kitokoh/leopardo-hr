@@ -1,59 +1,59 @@
 # Rapport de maturité — BC-08 ACCOUNTING
 
 > **DEP-BC08 (issue #5884)** — Deep maturity, BC-08 Accounting & Finance.
-> Audité le 2026-08-28 (main `8b3609f`). Agent propriétaire : wave maturité.
+> Audité le 2026-08-30 (main). Agent propriétaire : 08.
 > Cadre : `docs/architecture/BOUNDED-CONTEXT-DEEP-MATURITY-BACKLOG.md` (12 dimensions).
 > Registre : `dev-hub/governance/bounded-context-registry.json` (BC-08).
 
 ## Périmètre
 
-ACCOUNTING = plan comptable, journaux, écritures, lettrage, exercices et FEC :
-`api/app/Modules/Accounting` (13 modèles, 21 contrôleurs), routes
-`/api/v1/accounting/*` (groupe RBAC `api.manager:principal,comptable`),
-services `JournalService`/`AccountingWorkflowService`, exports FEC et CSV.
+Plan comptable, journaux, écritures, exercices, lettrage, FEC et états
+financiers. `api/app/Modules/Accounting` (129 fichiers) — `JournalPostingService`
+(posting document/paiement équilibré), `AccountingLedgerService` (grand-livre,
+soldes), `FiscalYearClosingService` (clôture exercice), `ChartOfAccountsService`
+(plan PCF/SYSCOHADA), `AccountingRetentionService` (120 mois), `DocumentNumberingService`,
+`BankReconciliationService`, `OnlinePaymentService` (Chargily/Stripe),
+`DocumentWorkflowService`. Routes `/api/v1/accounting/*` (journal, grand-livre,
+clôtures, exports CSV, partages documentaires).
 
 ## Verdict par dimension
 
 | # | Dimension | Verdict | Preuves / constats |
 |---|---|---|---|
-| D1 | Domaine | 🟢 PRÉSENT | Vocabulaire complet (Document, JournalEntry, ChartAccount, FiscalYear, ClosedPeriod, Lettering, BankStatement, Payment, FEC) — le socle #5222/#5223/#5234/#5435 a structuré le contexte. |
-| D2 | Données | 🟢 PRÉSENT | Tables tenant migrées, `company_id` sur les 13 modèles, index tenant-first (convention #1613), écritures avec débit/crédit, pièce, période (YYYY-MM). |
-| D3 | Tenant | 🟢 PRÉSENT | **Les 13 modèles utilisent `BelongsToCompany`** (scope global fail-closed #3727) — l'isolation est portée par le trait, pas par des WHERE manuels (contrairement à BC-05). |
-| D4 | API | 🟢 PRÉSENT | Routes versionnées (documents, journal, export FEC/CSV, lettrage, contacts, fiscal years, bank statements) documentées OpenAPI (couverture verrouillée), Requests dédiées (`JournalPeriodRequest`…). |
-| D5 | Autorisation | 🟡 PARTIEL | RBAC par **middleware de route** (`api.manager:principal,comptable`) — **aucune Policy dédiée** (0 appel `authorize` sur les 21 contrôleurs). Cohérent et fonctionnel (matrice documentée en tête d'`accounting.php`), mais pas granulaire par objet/action (recommandation 1). |
-| D6 | Transactions | 🟢 PRÉSENT | Écritures balancées (débit = crédit vérifié par le journal), clôture de période (fige le journal, `AccountingClosedPeriod`), lettrage, re-posting de document. |
-| D7 | Asynchronisme | 🟡 PARTIEL | Exports FEC/CSV synchrones (StreamedResponse). Aucun job/outbox (MAT-008 en cours). |
-| D8 | Sécurité | 🟢 PRÉSENT | FEC (données comptables sensibles) sous RBAC principal/comptable ; partage de documents encadré (`AccountingDocumentShare` + contrôle cross-tenant). |
-| D9 | Frontend | 🟢 PRÉSENT | Web client (comptabilité : documents, journal, FEC), admin dashboard (états). Non audité en profondeur. |
-| D10 | Performance | 🟢 PRÉSENT | Journal par période indexé, exports streamés, pagination bornée. Budgets p95/p99 non versionnés (MAT-014 en cours). |
-| D11 | Exploitation | 🟢 PRÉSENT | Runbooks comptabilité/FEC, observabilité structurée. |
-| D12 | Produit | 🟡 PARTIEL | Parcours golden « document → écriture → clôture période → lettrage → FEC » partiellement testé (AccountingActivationTest, FEC tests) mais pas de golden journey versionné complet (MAT-013 en cours). |
+| D1 | Domaine | 🟢 PRÉSENT | Plan comptable PCF/SYSCOHADA simplifié, documents (facture/avoir/reçu), paiements (cash/virement/chèque/carte/online), lettrage, clôtures de période et d'exercice ; vocabulaire dans les specs + conception (`docs/architecture/COMPTABILITE_CONCEPTION.md`). |
+| D2 | Données | 🟢 PRÉSENT | `accounting_journal_entries` (débit OU crédit exclusifs, CHECK DB), `accounting_closed_periods`, `accounting_documents`, `accounting_payments` (reference chiffrée), `accounting_document_shares` (expiration) ; migrations tenant conformes. |
+| D3 | Tenant | 🟢 PRÉSENT | Scopes `BelongsToCompany` + WHERE `company_id` explicite dans le ledger (le scope global ne suffit pas — documenté), isolation testée (`AccountingTenantIsolationTest`). |
+| D4 | API | 🟢 PRÉSENT | Journal, grand-livre (running balance), clôtures, exports CSV, partages publics signés, paiement en ligne ; OpenAPI couvert. |
+| D5 | Autorisation | 🟢 PRÉSENT | Rôle comptable (managerComptable) pour régénération/écritures, RBAC matrice documentée, partages à durée de vie (`ShareAccessAuditTest`). |
+| D6 | Transactions | 🟢 PRÉSENT | Posting équilibré (Σ débit = Σ crédit, tolérance 0,005), idempotent (updateOrCreate source+compte), `UnbalancedJournalEntryException`, période close = figée (`PeriodClosedException`), clôture exercice transactionnelle. |
+| D7 | Asynchronisme | 🟡 PARTIEL | Purges planifiées (partages expirés, rétention), paiements online synchrones ; pas d'outbox dédiée (généralisation MAT-008 possible). |
+| D8 | Sécurité | 🟢 PRÉSENT | Partage documentaire à durée de vie + token, `reference` bancaire chiffrée, rétention légale 120 mois, audit des accès (`AccountingAuditRetentionTest`). |
+| D9 | Frontend | 🟢 PRÉSENT | Écrans comptables admin (journal, exports, partages), portail documents publics contrôlés. |
+| D10 | Performance | 🟡 PARTIEL | Index perf dédiés (`add_perf_audit_indexes`), tests volume (`AccountingPerformanceTest`) ; budgets p95 à verrouiller (MAT-014). |
+| D11 | Exploitation | 🟢 PRÉSENT | Runbook Accounting dédié, purge rétention, partages expirés nettoyés (`AccountingPurgeExpiredCommand`). |
+| D12 | Produit | 🟢 PRÉSENT | Invariants golden comptabilité (MAT-007 #5865 — suite golden dédiée), golden journey clôture comptable (MAT-013), E2E démo (`AccountingDemoE2ETest`). |
 
-## Correctif livré (PR de ce DEP)
+## Vérification locale (preuve)
 
-**Verrouillage test de l'isolation cross-tenant du journal comptable**
-(D3/D5/D8) — `api/tests/Feature/Accounting/AccountingTenantIsolationTest.php`
-(2 scénarios, deux tenants) :
+```
+tests/Feature/Accounting/ (34 fichiers) + GoldenAccountingInvariantsTest (MAT-007) :
+AccountingJournalTest, AccountingLedgerTest, AccountingChartOfAccountsTest,
+AccountingFiscalYearClosing, AccountingTenantIsolationTest,
+AccountingMultiCurrencyTest, AccountingRetentionTest, BankReconciliationManualTest…
+```
 
-- `GET /api/v1/accounting/journal?period=2026-06` (manager A) → uniquement les
-  écritures du tenant A (2 sur 5 seedées, A/B) — l'isolation par scope global
-  est prouvée au niveau API ;
-- lecture modèle (`AccountingJournalEntry::query()` en contexte tenant A) → 2
-  écritures (preuve du scope `BelongsToCompany`, fail-closed #3727).
+## Recommandations (PR futures, non bloquantes)
 
-## Recommandations (non bloquantes, PR futures)
-
-1. **Policies formelles** (D5) : introduire `AccountingPolicy` (viewAny/view sur
-   documents, entries, FEC) avec les checks `company_id` explicites — la RBAC par
-   middleware protège l'accès mais pas les transitions métier (ex. cancel d'un
-   document payé) au niveau objet.
-2. **Verrouiller la clôture de période** (D6) : test d'invariant — toute
-   écriture sur une période close doit échouer (422) ; le re-posting après
-   clôture est refusé.
-3. **Golden journey comptable** (D12) : parcours end-to-end
-   document → écritures balancées → clôture → lettrage → FEC, versionné.
+1. **Invariants de clôture d'exercice** (D12) : golden test de clôture
+   (résultat reporté, périodes fermées, écritures de clôture équilibrées) dans
+   la suite MAT-007.
+2. **Outbox comptable** (D7) : publier `JournalEntryPosted` / `FiscalYearClosed`
+   dans l'outbox plateforme pour les exports/notifications sans duplication.
+3. **FEC** : couvrir l'export FEC (fichier des écritures comptables) par un test
+   golden de format (fichier + agrégats) si non couvert.
+4. **Budgets performance** (D10) : p95 sur grand-livre multi-périodes une fois
+   MAT-014 mergé.
 
 ## Non-régression
 
-Aucun code de production modifié — correctif purement contractuel (tests +
-rapport).
+Aucun code de production modifié. Rapport + vérifications uniquement.

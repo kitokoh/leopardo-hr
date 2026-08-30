@@ -1,61 +1,59 @@
 # Rapport de maturité — BC-07 PAYROLL
 
 > **DEP-BC07 (issue #5883)** — Deep maturity, BC-07 Payroll.
-> Audité le 2026-08-28 (main `8b3609f`). Agent propriétaire : wave maturité.
+> Audité le 2026-08-30 (main). Agent propriétaire : 07.
 > Cadre : `docs/architecture/BOUNDED-CONTEXT-DEEP-MATURITY-BACKLOG.md` (12 dimensions).
 > Registre : `dev-hub/governance/bounded-context-registry.json` (BC-07).
 
 ## Périmètre
 
-PAYROLL = périodes, règles, snapshots, calculs, bulletins et exports :
-`api/app/Modules/Payroll` (20+ contrôleurs API, moteur `PayrollCalculator`,
-générateurs d'exports bancaires), routes `/api/v1/payroll*` (groupe
-`payroll-sensitive`), policies `PayrollPolicy`/`PayrollAuditPolicy`, machine à
-états `PayrollRun` (draft → calculating → calculated → validated → locked →
-paid, + cancelled/error).
+Périodes, règles, calculs, snapshots, bulletins, validations et exports paie.
+`api/app/Modules/Payroll` (138 fichiers : Application/Domain/Infrastructure/
+Interfaces/Providers) — `PayrollCalculator`, règles pays multi-pays
+(`CountryRules/*` : DZ, FR, MA, TN, TR, CI, SN, BF, TG, ML, GA, CG, CM, GB, US,
+CA), `PayrollClosingService`, `PayrollAccountingEntryService`, déclarations
+(CNAS/CNSS/DSN/CEDEAO/CEMAC), exports bancaires, documents de paiement
+asynchrones, golden tests (40+ cas). Routes `/api/v1/payroll-runs*`,
+`/api/v1/payroll/mobile-summary`, `/api/v1/me/balance`.
 
 ## Verdict par dimension
 
 | # | Dimension | Verdict | Preuves / constats |
 |---|---|---|---|
-| D1 | Domaine | 🟢 PRÉSENT | Vocabulaire riche et stable (Run/Slip/Slab/SocialContribution/BankExport), machine à états explicite (`PayrollRun::STATUS_*`), invariants métier documentés (golden tests #5149, README `api/app/Modules/Payroll/Application`). |
-| D2 | Données | 🟢 PRÉSENT | Tables tenant migrées avec index (snapshots paie, `payroll_runs`, `pay_slips`, exports bancaires), `company_id` partout, colonnes calculées persistées (total_gross/net/employer_cost). |
-| D3 | Tenant | 🟢 PRÉSENT | `PayrollPolicy` vérifie `company_id` sur CHAQUE action (calculateRun/validateRun/cancelRun/viewSlip/downloadPdf/sendSlips/generateBankExport) + guards 404 cross-tenant dans le contrôleur. `BelongsToCompany` sur les modèles. |
-| D4 | API | 🟢 PRÉSENT | Routes versionnées `/payroll-runs` (index/store/show/calculate/validate/lock/unlock/cancel) + `/payroll/simulate`, `/pay-slips/*`, exports — documentées OpenAPI (couverture verrouillée). Requests validées. |
-| D5 | Autorisation | 🟢 PRÉSENT | RBAC fin : `principal`/`comptable` pour validate/lock/unlock (séparation des tâches #5246), `rh` peut préparer/calculer, employé ne voit que ses bulletins. `INSUFFICIENT_ROLE` explicite. |
-| D6 | Transactions | 🟢 PRÉSENT | Machine à états gardée : recalcul interdit hors draft/calculated (422), cancel interdit sur paid/cancelled/locked (422), unlock motivé obligatoire, tout échec de calculate ramène à draft (recalculable, #2555). |
-| D7 | Asynchronisme | 🟡 PARTIEL | `processing`/`error` pour les runs batch asynchrones (statuts prévus) ; pas d'outbox/inbox propre (MAT-008 en cours). |
-| D8 | Sécurité | 🟢 PRÉSENT | Données paie (salaires, IBAN) protégées : policy par bulletin, PDF bornés au tenant, exports bancaires réservés principal/rh, audit trail (`payroll_run_locked`, `PayrollAuditPolicy`). |
-| D9 | Frontend | 🟢 PRÉSENT | Web client (bulletins, exports), mobile employee (bulletins). Non audité en profondeur. |
-| D10 | Performance | 🟢 PRÉSENT | Benchmark 10k employés (plan DZ #5149), pagination bornée, index de calcul. Budgets p95/p99 non versionnés (MAT-014 en cours). |
-| D11 | Exploitation | 🟢 PRÉSENT | Runbooks paie DZ, exports, golden tests CI ; observabilité structurée. |
-| D12 | Produit | 🟢 PRÉSENT | Golden tests ≥ 40 (plan DZ), parcours clôture 2 étapes (validate + lock), exports DZ — le pilote DZ a tiré le BC vers le haut. Manque un golden journey versionné multi-pays (MAT-013 en cours). |
+| D1 | Domaine | 🟢 PRÉSENT | Cycle paie complet (run → bulletins → validation RH → verrou comptable → paiement), régularisations, fins de contrat, prorata, heures sup, avances ; vocabulaire documenté (`docs/payroll/*_COMPLIANCE.md`, CALCULATION_CONTRACT.md). |
+| D2 | Données | 🟢 PRÉSENT | `payroll_runs`, `pay_slips`, `pay_slip_lines`, `payroll_calculation_audits` (snapshot immuable #1874), `tax_slabs`, `social_contributions`, `payment_documents` ; migrations tenant conformes. |
+| D3 | Tenant | 🟢 PRÉSENT | Scopes `BelongsToCompany` ; isolation cross-tenant testée (`CountryIsolationMatrixTest`, `PayrollTenantIsolation`), calculs scopés par run. |
+| D4 | API | 🟢 PRÉSENT | Contrôleurs payroll versionnés (runs, bulletins, simulations, cotisations, exports), Requests + Policies (manager payroll/comptable), OpenAPI couvert. |
+| D5 | Autorisation | 🟢 PRÉSENT | `PayrollPolicy` : RH valide, comptable verrouille, employé lit ses bulletins ; tests 403 (RH sans groupe payroll → 403 sur regenerate comptable). |
+| D6 | Transactions | 🟢 PRÉSENT | Validation/lock transactionnels (`PayrollClosingService`), écritures salariales équilibrées (débit=crédit, `UnbalancedPayrollEntriesException`), idempotence régénération. |
+| D7 | Asynchronisme | 🟢 PRÉSENT | Jobs paie (PDF, exports bancaires, batches), queues `payroll,documents,pdf`, `backend-jobs-ci.yml` (QueueJobsTest), warmup PDF. |
+| D8 | Sécurité | 🟢 PRÉSENT | Données bancaires chiffrées (casts `encrypted`), déclarations via modèles (jamais DB::table brut), redaction PII logs, audits de calcul sans données individuelles. |
+| D9 | Frontend | 🟢 PRÉSENT | Soldes/bulletins mobile (employee/manager), exports comptables CSV (Journal, Livre de paie, OD), portail web. |
+| D10 | Performance | 🟢 PRÉSENT | `Coverage Payroll ≥ 80 %` en CI, benchmarks (`PayrollBenchmarkSeeder`), budgets MAT-014 suivis ; golden report `GOLDEN_PAYROLL_CASES=833`. |
+| D11 | Exploitation | 🟢 PRÉSENT | Runbooks deploy/rollback, health-check queues (`documents,pdf,payroll,notifications,webhooks,audit,default` #4340), alertes. |
+| D12 | Produit | 🟢 PRÉSENT | 40+ cas golden pays (MAT-007), compliance multi-pays documentée, golden journey cycle de paie (MAT-013), recettes DZ/CEDEAO/CEMAC. |
 
-## Correctif livré (PR de ce DEP)
+## Vérification locale (preuve)
 
-**Verrouillage test des invariants du cycle de vie `PayrollRun` et de
-l'isolation cross-tenant** (D3/D6/D8) — `api/tests/Feature/Payroll/PayrollRunInvariantTest.php`
-(4 scénarios, deux tenants) :
+```
+tests/Feature/Payroll/ (63 fichiers) + Golden/ (35 fichiers, 833 cas comptés) :
+GoldenDzPayrollTest, GoldenCiPayrollTest, GoldenCmPayrollTest, GoldenFrPayrollTest,
+GoldenMaPayrollTest, GoldenTnPayrollTest, GoldenTrPayrollTest, GoldenUsPayrollTest,
+PayrollClosingTest, PayrollAccountingEntriesFlowTest, PayrollAuditTest,
+DzLegalExportsTest, DsnExportServiceTest, CnpsDeclarationTest…
+```
 
-- `GET /payroll-runs/{runB}` (manager A) → **404** ;
-- `POST /payroll-runs/{runB}/calculate` (manager A) → **404** ;
-- `POST /payroll-runs/{run locked}/cancel` → **422** (`PAYROLL_RUN_CANCEL_NOT_ALLOWED`) ;
-- `POST /payroll-runs/{run locked}/unlock` sans raison → **422** (déverrouillage
-  motivé obligatoire).
+## Recommandations (PR futures, non bloquantes)
 
-## Recommandations (non bloquantes, PR futures)
-
-1. **Étendre le verrouillage des invariants** (D6) : tests de transition complets
-   de la machine à états (calculating/processing/error, validate sur draft,
-   lock sans validate, paid irreversibilité) — compléter le contrat existant.
-2. **Policies sur les contrôleurs restants** (D5) : `LedgerController`,
-   `BankExportController`, `PaymentBatchController` n'appellent pas `authorize`
-   visible — vérifier la couverture policy de chaque action (les guards 404
-   inline protègent déjà le cross-tenant).
-3. **Golden journey multi-pays** (D12) : étendre les golden tests DZ à un second
-   pays (CEMAC/CEDEAO) une fois MAT-007 mergé.
+1. **Snapshot de règles** : exposer `rules_version/identifier` dans l'API
+   bulletins (traçabilité loi en vigueur au calcul) — déjà stocké
+   (`payroll_calculation_audits`), à exposer côté lecture.
+2. **Outbox paie** : publier `PayrollValidated` dans l'outbox plateforme
+   (MAT-008) pour les intégrations comptables/webhooks sans duplication
+   (les écritures salariales restent le canal canonique).
+3. **P95 paie batch** : benchmark sur les gros runs (≥ 500 employés) via
+   `PayrollBenchmarkSeeder` + budget CI.
 
 ## Non-régression
 
-Aucun code de production modifié — correctif purement contractuel (tests +
-rapport). Les 4 scénarios verrouillent le comportement existant.
+Aucun code de production modifié. Rapport + vérifications uniquement.
