@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -146,7 +146,8 @@
     "payroll": "الرواتب",
     "cabinet": "خزانة المستندات",
     "notifications": "الاشعارات",
-    "evaluations": "التقييمات"
+    "evaluations": "التقييمات",
+    "restaurant": "المطبخ"
   },
   "emails": {
     "invitation": {
@@ -3612,6 +3613,24 @@
     }
   },
   "restaurant": {
+    "kitchenTitle": "شاشة المطبخ",
+    "kitchenSubtitle": "قائمة الطلبات لحظيًا — التحضير والتجهيز",
+    "branch": "الفرع",
+    "branchAll": "جميع الفروع",
+    "inPreparation": "قيد التحضير",
+    "ready": "جاهز",
+    "empty": "لا توجد طلبات معلقة. القائمة فارغة.",
+    "start": "ابدأ",
+    "markReady": "جاهز",
+    "orderRef": "طلب",
+    "table": "طاولة",
+    "covers": "أشخاص",
+    "takeaway": "للطلب الخارجي",
+    "delivery": "توصيل",
+    "dineIn": "في المكان",
+    "loadError": "تعذر تحميل قائمة المطبخ.",
+    "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا.",
+    "loading": "جارٍ تحميل قائمة المطبخ…",
     "home": {
       "title": "مدير المطعم",
       "subtitle": "نقطة البيع والحجوزات والمخزون والتوصيل",

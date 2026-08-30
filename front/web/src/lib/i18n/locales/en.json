@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-25T00:00:00Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -146,7 +146,8 @@
     "payroll": "Payroll",
     "cabinet": "Document vault",
     "notifications": "Notifications",
-    "evaluations": "Evaluations"
+    "evaluations": "Evaluations",
+    "restaurant": "Kitchen display"
   },
   "emails": {
     "invitation": {
@@ -3612,6 +3613,24 @@
     }
   },
   "restaurant": {
+    "kitchenTitle": "Kitchen display",
+    "kitchenSubtitle": "Real-time order queue — preparation and pickup",
+    "branch": "Branch",
+    "branchAll": "All branches",
+    "inPreparation": "In preparation",
+    "ready": "Ready",
+    "empty": "No pending orders. The queue is empty.",
+    "start": "Start",
+    "markReady": "Ready",
+    "orderRef": "Order",
+    "table": "Table",
+    "covers": "covers",
+    "takeaway": "Takeaway",
+    "delivery": "Delivery",
+    "dineIn": "Dine-in",
+    "loadError": "Unable to load the kitchen queue.",
+    "actionError": "Action failed, please retry.",
+    "loading": "Loading kitchen queue…",
     "home": {
       "title": "Restaurant Manager",
       "subtitle": "POS, reservations, stock and delivery",

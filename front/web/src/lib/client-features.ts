@@ -203,6 +203,16 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['manager'],
     upgradeLabel: 'CRM Client',
   },
+  {
+    key: 'restaurant',
+    href: '/restaurant/kitchen',
+    label: 'Restaurant',
+    group: 'general',
+    capabilityKeys: ['restaurant', 'restaurant.kitchen'],
+    featureKeys: ['restaurantmanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Restaurant',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -225,6 +235,8 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/contacts': 'crm',
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
+  '/restaurant': 'restaurant',
+  '/restaurant/kitchen': 'restaurant',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
