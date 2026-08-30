@@ -1565,3 +1565,14 @@ Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `P
   transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
   manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
 - Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).
+
+## BC-24 TRAVEL — API locations, hôtels & RBAC (TRAVEL-319..322, 2026-08-30)
+
+Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images), `GET|POST /travel/rental-bookings` + cancel,
+`GET|POST /travel/hotels` + chambres, matrice RBAC globale.
+- Scénarios à vérifier : non-chevauchement des réservations de location (409) ; montant calculé serveur (prix/jour × durée) ;
+  idempotence ; classification hôtel 1-5 (422 hors bornes) ; recherche par ville ; image sous-ressource (404/403) ;
+  matrice RBAC : employé simple → 403 sur toutes les écritures, lecture ouverte, cross-tenant → 404, flag inactif → 403,
+  non authentifié → 401.
+- Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
+  (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
