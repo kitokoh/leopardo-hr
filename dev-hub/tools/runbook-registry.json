@@ -1,188 +1,196 @@
 {
- "$comment": "Registre des runbooks par bounded context (MAT-015, issue #5873). Chaque BC actif doit avoir une couverture backup/restore/rollback/incident, soit par un runbook dédié, soit via les runbooks plateforme (docs/GESTION_PROJET/). Vérifié par check-runbooks.sh. Les BC planifiés (FUEL/EDU/RETAIL/ANALYTICS) sont couverts à l'activation.",
- "drill_log": "docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md",
- "platform_runbooks": {
-  "backup_restore": "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md",
-  "rollback": "docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md",
-  "incident": "docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md",
-  "operations": "docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md"
- },
- "contexts": [
-  {
-   "code": "BC-01",
-   "name": "PLATFORM",
-   "runbooks": [
-    "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md",
-    "docs/GESTION_PROJET/RUNBOOK_MARKETING_ROLLBACK.md"
-   ],
-   "notes": "Provisioning/feature flags : rollback de déploiement + rollback marketing ; couverture backup/restore plateforme."
+  "$comment": "Registre des runbooks par bounded context (MAT-015, issue #5873). Chaque BC actif doit avoir une couverture backup/restore/rollback/incident, soit par un runbook dédié, soit via les runbooks plateforme (docs/GESTION_PROJET/). Vérifié par check-runbooks.sh. Les BC planifiés (FUEL/EDU/RETAIL/ANALYTICS) sont couverts à l'activation.",
+  "drill_log": "docs/GESTION_PROJET/RUNBOOK_DRILLS_LOG.md",
+  "platform_runbooks": {
+    "backup_restore": "docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md",
+    "rollback": "docs/GESTION_PROJET/RUNBOOK_ROLLBACK.md",
+    "incident": "docs/GESTION_PROJET/RUNBOOK_INCIDENT_P1.md",
+    "operations": "docs/GESTION_PROJET/RUNBOOK_OPERATIONS.md"
   },
-  {
-   "code": "BC-02",
-   "name": "TENANT",
-   "runbooks": [],
-   "notes": "Isolation tenant : couvert par RUNBOOK_BACKUP_RESTORE (dump schémas tenant) + RUNBOOK_ROLLBACK."
-  },
-  {
-   "code": "BC-03",
-   "name": "IDENTITY",
-   "runbooks": [
-    "docs/GESTION_PROJET/RUNBOOK_GOOGLE_OAUTH_PROD.md"
-   ],
-   "notes": "Auth/SSO : runbook OAuth production + incident P1."
-  },
-  {
-   "code": "BC-04",
-   "name": "HR",
-   "runbooks": [],
-   "notes": "Données RH couvertes par backup/restore plateforme ; exports contracts/employés documentés dans OPERATIONS."
-  },
-  {
-   "code": "BC-05",
-   "name": "WORKFORCE",
-   "runbooks": [],
-   "notes": "Présence/planning couverts par backup/restore plateforme ; kiosque : RUNBOOK_ZKTECO_CLIENT."
-  },
-  {
-   "code": "BC-06",
-   "name": "LEAVE",
-   "runbooks": [],
-   "notes": "Congés couverts par backup/restore plateforme."
-  },
-  {
-   "code": "BC-07",
-   "name": "PAYROLL",
-   "runbooks": [],
-   "notes": "Paie : données sensibles, backup chiffré + restore scratch exigés ; rollback de run de paie documenté dans OPERATIONS."
-  },
-  {
-   "code": "BC-08",
-   "name": "ACCOUNTING",
-   "runbooks": [
-    "docs/accounting/RUNBOOK.md"
-   ],
-   "notes": "Runbook comptabilité dédié (journal, clôtures, FEC)."
-  },
-  {
-   "code": "BC-09",
-   "name": "EXPENSE",
-   "runbooks": [],
-   "notes": "Dépenses/avances couvertes par backup/restore plateforme."
-  },
-  {
-   "code": "BC-10",
-   "name": "RECRUITMENT",
-   "runbooks": [],
-   "notes": "ATS couvert par backup/restore plateforme."
-  },
-  {
-   "code": "BC-11",
-   "name": "CRM",
-   "runbooks": [
-    "docs/ops/RUNBOOK_FILES_CRM.md"
-   ],
-   "notes": "Runbook files CRM dédié (pause, replay, DLQ, purge contrôlée)."
-  },
-  {
-   "code": "BC-12",
-   "name": "GROWTH",
-   "runbooks": [],
-   "notes": "Marketing client couvert par backup/restore plateforme."
-  },
-  {
-   "code": "BC-13",
-   "name": "COMMS",
-   "runbooks": [],
-   "notes": "Notifications couvertes par backup/restore + incident P1."
-  },
-  {
-   "code": "BC-14",
-   "name": "INTEGRATION",
-   "runbooks": [
-    "docs/ops/RUNBOOK_FILES_CRM.md"
-   ],
-   "notes": "Files CRM (outbox/inbox/DLQ) : runbook dédié ; webhooks : replay documenté."
-  },
-  {
-   "code": "BC-15",
-   "name": "FUEL",
-   "status": "planned",
-   "runbooks": [],
-   "notes": "À livrer avec FUEL-021 (pilote, runbook et rollback)."
-  },
-  {
-   "code": "BC-16",
-   "name": "EDU",
-   "status": "planned",
-   "runbooks": [],
-   "notes": "À livrer avec EDU-021 (pilote établissement et runbook)."
-  },
-  {
-   "code": "BC-17",
-   "name": "RETAIL",
-   "status": "planned",
-   "runbooks": [],
-   "notes": "Futur."
-  },
-  {
-   "code": "BC-18",
-   "name": "FIELD",
-   "runbooks": [],
-   "notes": "Flotte/Traccar couverts par backup/restore plateforme."
-  },
-  {
-   "code": "BC-19",
-   "name": "DEVICE",
-   "runbooks": [
-    "docs/GESTION_PROJET/RUNBOOK_ZKTECO_CLIENT.md"
-   ],
-   "notes": "Runbook client ZKTeco dédié (kiosques, synchro edge)."
-  },
-  {
-   "code": "BC-20",
-   "name": "DOCUMENTS",
-   "runbooks": [
-    "docs/ops/RUNBOOK_FILES_CRM.md"
-   ],
-   "notes": "Files/documents : runbook dédié (partage, purge, retention)."
-  },
-  {
-   "code": "BC-21",
-   "name": "BILLING",
-   "runbooks": [
-    "docs/deployment/RUNBOOK_SUPER_ADMIN.md",
-    "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md"
-   ],
-   "notes": "Abonnements/activation : runbook super-admin + deploy."
-  },
-  {
-   "code": "BC-22",
-   "name": "ANALYTICS",
-   "status": "planned",
-   "runbooks": [],
-   "notes": "À formaliser avec le module Reporting."
-  },
-  {
-   "code": "BC-23",
-   "name": "AI",
-   "runbooks": [],
-   "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1."
-  },
-  {
-   "code": "BC-25",
-   "name": "RESTAURANT",
-   "runbooks": [
-    "docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"
-   ],
-   "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)."
-  },
-  {
-   "code": "BC-26",
-   "name": "DELIVERY",
-   "runbooks": [
-    "docs/ops/RUNBOOK_DELIVERY.md"
-   ],
-   "notes": "Module de livraison dernier-kilomètre : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay, runbook rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme)."
-  }
- ]
+  "contexts": [
+    {
+      "code": "BC-01",
+      "name": "PLATFORM",
+      "runbooks": [
+        "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md",
+        "docs/GESTION_PROJET/RUNBOOK_MARKETING_ROLLBACK.md"
+      ],
+      "notes": "Provisioning/feature flags : rollback de déploiement + rollback marketing ; couverture backup/restore plateforme."
+    },
+    {
+      "code": "BC-02",
+      "name": "TENANT",
+      "runbooks": [],
+      "notes": "Isolation tenant : couvert par RUNBOOK_BACKUP_RESTORE (dump schémas tenant) + RUNBOOK_ROLLBACK."
+    },
+    {
+      "code": "BC-03",
+      "name": "IDENTITY",
+      "runbooks": [
+        "docs/GESTION_PROJET/RUNBOOK_GOOGLE_OAUTH_PROD.md"
+      ],
+      "notes": "Auth/SSO : runbook OAuth production + incident P1."
+    },
+    {
+      "code": "BC-04",
+      "name": "HR",
+      "runbooks": [],
+      "notes": "Données RH couvertes par backup/restore plateforme ; exports contracts/employés documentés dans OPERATIONS."
+    },
+    {
+      "code": "BC-05",
+      "name": "WORKFORCE",
+      "runbooks": [],
+      "notes": "Présence/planning couverts par backup/restore plateforme ; kiosque : RUNBOOK_ZKTECO_CLIENT."
+    },
+    {
+      "code": "BC-06",
+      "name": "LEAVE",
+      "runbooks": [],
+      "notes": "Congés couverts par backup/restore plateforme."
+    },
+    {
+      "code": "BC-07",
+      "name": "PAYROLL",
+      "runbooks": [],
+      "notes": "Paie : données sensibles, backup chiffré + restore scratch exigés ; rollback de run de paie documenté dans OPERATIONS."
+    },
+    {
+      "code": "BC-08",
+      "name": "ACCOUNTING",
+      "runbooks": [
+        "docs/accounting/RUNBOOK.md"
+      ],
+      "notes": "Runbook comptabilité dédié (journal, clôtures, FEC)."
+    },
+    {
+      "code": "BC-09",
+      "name": "EXPENSE",
+      "runbooks": [],
+      "notes": "Dépenses/avances couvertes par backup/restore plateforme."
+    },
+    {
+      "code": "BC-10",
+      "name": "RECRUITMENT",
+      "runbooks": [],
+      "notes": "ATS couvert par backup/restore plateforme."
+    },
+    {
+      "code": "BC-11",
+      "name": "CRM",
+      "runbooks": [
+        "docs/ops/RUNBOOK_FILES_CRM.md"
+      ],
+      "notes": "Runbook files CRM dédié (pause, replay, DLQ, purge contrôlée)."
+    },
+    {
+      "code": "BC-12",
+      "name": "GROWTH",
+      "runbooks": [],
+      "notes": "Marketing client couvert par backup/restore plateforme."
+    },
+    {
+      "code": "BC-13",
+      "name": "COMMS",
+      "runbooks": [],
+      "notes": "Notifications couvertes par backup/restore + incident P1."
+    },
+    {
+      "code": "BC-14",
+      "name": "INTEGRATION",
+      "runbooks": [
+        "docs/ops/RUNBOOK_FILES_CRM.md"
+      ],
+      "notes": "Files CRM (outbox/inbox/DLQ) : runbook dédié ; webhooks : replay documenté."
+    },
+    {
+      "code": "BC-15",
+      "name": "FUEL",
+      "status": "planned",
+      "runbooks": [],
+      "notes": "À livrer avec FUEL-021 (pilote, runbook et rollback)."
+    },
+    {
+      "code": "BC-16",
+      "name": "EDU",
+      "status": "planned",
+      "runbooks": [],
+      "notes": "À livrer avec EDU-021 (pilote établissement et runbook)."
+    },
+    {
+      "code": "BC-17",
+      "name": "RETAIL",
+      "status": "planned",
+      "runbooks": [],
+      "notes": "Futur."
+    },
+    {
+      "code": "BC-18",
+      "name": "FIELD",
+      "runbooks": [],
+      "notes": "Flotte/Traccar couverts par backup/restore plateforme."
+    },
+    {
+      "code": "BC-19",
+      "name": "DEVICE",
+      "runbooks": [
+        "docs/GESTION_PROJET/RUNBOOK_ZKTECO_CLIENT.md"
+      ],
+      "notes": "Runbook client ZKTeco dédié (kiosques, synchro edge)."
+    },
+    {
+      "code": "BC-20",
+      "name": "DOCUMENTS",
+      "runbooks": [
+        "docs/ops/RUNBOOK_FILES_CRM.md"
+      ],
+      "notes": "Files/documents : runbook dédié (partage, purge, retention)."
+    },
+    {
+      "code": "BC-21",
+      "name": "BILLING",
+      "runbooks": [
+        "docs/deployment/RUNBOOK_SUPER_ADMIN.md",
+        "docs/GESTION_PROJET/RUNBOOK_DEPLOY.md"
+      ],
+      "notes": "Abonnements/activation : runbook super-admin + deploy."
+    },
+    {
+      "code": "BC-22",
+      "name": "ANALYTICS",
+      "status": "planned",
+      "runbooks": [],
+      "notes": "À formaliser avec le module Reporting."
+    },
+    {
+      "code": "BC-23",
+      "name": "AI",
+      "runbooks": [],
+      "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1."
+    },
+    {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "runbooks": [
+        "docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"
+      ],
+      "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)."
+    },
+    {
+      "code": "BC-24",
+      "name": "TRAVEL",
+      "runbooks": [
+        "docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md"
+      ],
+      "notes": "Pilote TravelAgency : runbook dédié (tenant pilote, kill switch, backup/restore, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_TRAVELAGENCY.md (TRAVEL-050/#5998)."
+    },
+    {
+      "code": "BC-26",
+      "name": "DELIVERY",
+      "runbooks": [
+        "docs/ops/RUNBOOK_DELIVERY.md"
+      ],
+      "notes": "Module de livraison dernier-kilomètre : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay, runbook rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme)."
+    }
+  ]
 }
