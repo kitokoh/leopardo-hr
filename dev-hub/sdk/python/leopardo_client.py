@@ -1428,6 +1428,26 @@ class LeopardoClient:
         """Génère un lien de suivi public borné (DELIVERY-204/#6288)"""
         return self.request("POST", "/delivery/deliveries/{delivery}/tracking-link", **kwargs)
 
+    def get_delivery_deliveries_cod_settlements(self, **kwargs):
+        """Liste des règlements COD (DELIVERY-205/#6289)"""
+        return self.request("GET", "/delivery/deliveries/cod-settlements", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_collect(self, **kwargs):
+        """Remise caisse (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_reconcile(self, **kwargs):
+        """Réconciliation (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_settle(self, **kwargs):
+        """Posting BC-08 + settled (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", **kwargs)
+
+    def get_delivery_deliveries_cod_settlements_report(self, **kwargs):
+        """Réconciliation attendu vs collecté (DELIVERY-205/#6289)"""
+        return self.request("GET", "/delivery/deliveries/cod-settlements/report", **kwargs)
+
     def post_delivery_deliveries_events(self, **kwargs):
         """Enregistre un événement de tracking (DELIVERY-204/#6288)"""
         return self.request("POST", "/delivery/deliveries/events", **kwargs)
@@ -1455,6 +1475,18 @@ class LeopardoClient:
     def post_delivery_deliveries_routes_by_route_close(self, **kwargs):
         """Clôture une tournée (DELIVERY-202/#6286)"""
         return self.request("POST", "/delivery/deliveries/routes/{route}/close", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_settlement(self, **kwargs):
+        """Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/settlement", **kwargs)
+
+    def get_delivery_deliveries_routes_today(self, **kwargs):
+        """Tournée du jour du livreur (DELIVERY-203/#6287)"""
+        return self.request("GET", "/delivery/deliveries/routes/today", **kwargs)
+
+    def post_delivery_deliveries_stops_by_stop_status(self, **kwargs):
+        """Statut d'un arrêt (DELIVERY-203/#6287)"""
+        return self.request("POST", "/delivery/deliveries/stops/{stop}/status", **kwargs)
 
     def get_delivery_ping(self, **kwargs):
         """Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)"""

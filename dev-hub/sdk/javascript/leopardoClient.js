@@ -1760,6 +1760,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/delivery/deliveries/{delivery}/tracking-link", options);
     },
 
+    /** Liste des règlements COD (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlements(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements", options);
+    },
+
+    /** Remise caisse (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementCollect(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", options);
+    },
+
+    /** Réconciliation (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementReconcile(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", options);
+    },
+
+    /** Posting BC-08 + settled (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementSettle(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", options);
+    },
+
+    /** Réconciliation attendu vs collecté (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlementsReport(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements/report", options);
+    },
+
     /** Enregistre un événement de tracking (DELIVERY-204/#6288) */
     postDeliveryDeliveriesEvents(options = {}) {
       return request("POST", "/delivery/deliveries/events", options);
@@ -1793,6 +1818,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Clôture une tournée (DELIVERY-202/#6286) */
     postDeliveryDeliveriesRoutesByRouteClose(options = {}) {
       return request("POST", "/delivery/deliveries/routes/{route}/close", options);
+    },
+
+    /** Crée le règlement COD d'une tournée close (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesRoutesByRouteSettlement(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/settlement", options);
+    },
+
+    /** Tournée du jour du livreur (DELIVERY-203/#6287) */
+    getDeliveryDeliveriesRoutesToday(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/today", options);
+    },
+
+    /** Statut d'un arrêt (DELIVERY-203/#6287) */
+    postDeliveryDeliveriesStopsByStopStatus(options = {}) {
+      return request("POST", "/delivery/deliveries/stops/{stop}/status", options);
     },
 
     /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
