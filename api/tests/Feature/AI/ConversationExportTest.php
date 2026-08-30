@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\AI;
 
 use App\AI\Jobs\ExportAiConversationJob;
+use App\AI\Models\AIConversation;
 use App\AI\Models\AiDeadLetterEntry;
 use App\AI\Models\AiExport;
-use App\AI\Models\AIConversation;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -202,8 +202,8 @@ class ConversationExportTest extends TestCase
         // QUEUE_CONNECTION=sync : le re-dispatch exécute le job en ligne →
         // succès → DLQ résolue.
         $cmd = $this->artisan('ai:dlq:replay', ['--company-id' => $company->id]);
-        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
+        assert($cmd instanceof PendingCommand);
+        $cmd->assertExitCode(0)->execute();
 
         $this->assertDatabaseHas('ai_exports', [
             'id' => $export->id,

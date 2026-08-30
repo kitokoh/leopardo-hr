@@ -7,7 +7,6 @@ namespace App\AI\Services;
 use App\AI\Jobs\ExportAiConversationJob;
 use App\AI\Models\AiDeadLetterEntry;
 use App\AI\Models\AiExport;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -27,6 +26,8 @@ class AiDeadLetterQueue
     public function record(string $companyId, string $jobClass, ?int $jobId, string $dedupKey, string $error, array $payload = []): void
     {
         try {
+            $existing = AiDeadLetterEntry::query()->where('dedup_key', $dedupKey)->first();
+
             AiDeadLetterEntry::query()->updateOrCreate(
                 ['dedup_key' => $dedupKey],
                 [
@@ -36,7 +37,7 @@ class AiDeadLetterQueue
                     'payload' => $payload,
                     'error' => mb_substr($error, 0, 2000),
                     'status' => AiDeadLetterEntry::STATUS_OPEN,
-                    'attempts' => DB::raw('attempts + 1'),
+                    'attempts' => ($existing->attempts ?? 0) + 1,
                     'resolved_at' => null,
                 ],
             );
