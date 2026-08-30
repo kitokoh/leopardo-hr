@@ -65,7 +65,8 @@ return [
     'EDU_IMPORT_SUBJECT_UNKNOWN' => 'Subject not found (code).',
     'EDU_IMPORT_ASSESSMENT_UNKNOWN' => 'No publishable assessment for this subject.',
     'EDU_EXPORT_KIND' => 'Unknown export kind.',
-    'FUEL_READING_FUTURE' => 'The reading is dated in the future.',
+
+    'EDU_FEE_TERMINAL' => 'This fee is already terminal (paid, waived or cancelled).',    'FUEL_READING_FUTURE' => 'The reading is dated in the future.',
     'FUEL_READING_REJECTED' => 'The reading was rejected.',
     'FUEL_READING_REVIEWED' => 'This reading has already been corrected or reviewed.',
     'INVALID_CURRENT_PASSWORD' => 'The current password is incorrect.',

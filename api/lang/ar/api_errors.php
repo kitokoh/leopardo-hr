@@ -65,7 +65,8 @@ return [
     'EDU_IMPORT_SUBJECT_UNKNOWN' => 'المادة غير موجودة (الرمز).',
     'EDU_IMPORT_ASSESSMENT_UNKNOWN' => 'لا يوجد تقييم قابل للنشر لهذه المادة.',
     'EDU_EXPORT_KIND' => 'نوع تصدير غير معروف.',
-    'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
+
+    'EDU_FEE_TERMINAL' => 'هذه الرسوم في حالة نهائية بالفعل (مدفوعة أو معفاة أو ملغاة).',    'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
     'FUEL_READING_REJECTED' => 'تم رفض القراءة.',
     'FUEL_READING_REVIEWED' => 'تم تصحيح هذه القراءة أو مراجعتها بالفعل.',
     'INVALID_CURRENT_PASSWORD' => 'كلمة المرور الحالية غير صحيحة.',
