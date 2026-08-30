@@ -668,6 +668,19 @@ rejouables.
 
 ---
 
+### 8.6 Intégrations livrées (TRAVEL-414..418, #6066..#6070)
+
+- `travel:outbox-dispatch` — consommation idempotente de `travel_outbox_events`
+  (claim atomique avec lease, retry backoff, dead-letter ; pattern #5741).
+- `travel:settle-sales` — synthèse mensuelle `travel.sales.settled.v1`
+  (période, montants minor units, devise, compteurs) ; rejouable par période.
+- `travel:expire-pending-bookings` — expiration des réservations pending
+  (annulation + libération des sièges + événement `travel.booking.cancelled.v1`).
+- `POST /travel/contact` — formulaire de contact → `travel.contact.submitted.v1`
+  (le BC CRM crée le lead ; aucun import direct).
+- Notifications voyageur : registre `travel_customer_contacts` (consentement
+  par canal) + consommateur in-app BC-13 / email transactionnel externe.
+
 ## 9. Sécurité & RGPD
 
 | Sujet | Mesure |
