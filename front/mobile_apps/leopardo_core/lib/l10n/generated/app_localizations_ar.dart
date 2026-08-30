@@ -8054,4 +8054,295 @@ class AppLocalizationsAr extends AppLocalizations {
   String companydetailPlanWithPrice(Object planName, Object price) {
     return 'الخطة $planName — $price';
   }
+
+  @override
+  String get crmAccountsColcreated => 'أنشئ في';
+
+  @override
+  String get crmAccountsColemail => 'البريد';
+
+  @override
+  String get crmAccountsColname => 'الاسم';
+
+  @override
+  String get crmAccountsColphone => 'الهاتف';
+
+  @override
+  String get crmAccountsColstatus => 'الحالة';
+
+  @override
+  String get crmAccountsDescription => 'مؤسسات العملاء لشركتك';
+
+  @override
+  String get crmAccountsEmpty => 'لا توجد حسابات بعد.';
+
+  @override
+  String get crmAccountsSubtitle => 'قائمة الحسابات (نطاق المستأجر).';
+
+  @override
+  String get crmAccountsTitle => 'الحسابات';
+
+  @override
+  String get crmContactsDescription => 'الأشخاص المرتبطون بحساباتك';
+
+  @override
+  String get crmContactsEmpty => 'لا توجد جهات اتصال بعد.';
+
+  @override
+  String get crmContactsPrimary => 'أساسي';
+
+  @override
+  String get crmContactsSubtitle => 'قائمة جهات الاتصال (نطاق المستأجر).';
+
+  @override
+  String get crmContactsTitle => 'جهات الاتصال';
+
+  @override
+  String get crmErrorloading => 'تعذر تحميل البيانات.';
+
+  @override
+  String get crmFeaturelocked => 'وحدة CRM غير مفعّلة لشركتك.';
+
+  @override
+  String get crmIsolationnote => 'بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.';
+
+  @override
+  String get crmLeadsColcompany => 'الشركة';
+
+  @override
+  String get crmLeadsColcreated => 'أنشئ في';
+
+  @override
+  String get crmLeadsColemail => 'البريد';
+
+  @override
+  String get crmLeadsColname => 'الاسم';
+
+  @override
+  String get crmLeadsColsource => 'المصدر';
+
+  @override
+  String get crmLeadsColstatus => 'الحالة';
+
+  @override
+  String get crmLeadsDescription => 'فرص أعمال للتأهيل';
+
+  @override
+  String get crmLeadsEmpty => 'لا يوجد عملاء محتملون بعد.';
+
+  @override
+  String get crmLeadsSubtitle => 'قائمة العملاء المحتملين (نطاق المستأجر).';
+
+  @override
+  String get crmLeadsTitle => 'العملاء المحتملون';
+
+  @override
+  String get crmLoading => 'جارٍ التحميل…';
+
+  @override
+  String get crmPaginationnext => 'التالي';
+
+  @override
+  String get crmPaginationpage => 'صفحة';
+
+  @override
+  String get crmPaginationprev => 'السابق';
+
+  @override
+  String get crmPipelineDescription => 'نظرة عامة على الفرص حسب المرحلة';
+
+  @override
+  String get crmPipelineEmpty => 'لا توجد فرص بعد.';
+
+  @override
+  String get crmPipelineStageLost => 'خاسرة';
+
+  @override
+  String get crmPipelineStageNegotiation => 'تفاوض';
+
+  @override
+  String get crmPipelineStageProposal => 'اقتراح';
+
+  @override
+  String get crmPipelineStageProspecting => 'استكشاف';
+
+  @override
+  String get crmPipelineStageQualification => 'تأهيل';
+
+  @override
+  String get crmPipelineStageWon => 'مربوحة';
+
+  @override
+  String get crmPipelineSubtitle => 'الفرص مجمعة حسب المرحلة (نطاق المستأجر).';
+
+  @override
+  String get crmPipelineTitle => 'خط الأنابيب';
+
+  @override
+  String get crmRefresh => 'تحديث';
+
+  @override
+  String get crmSearchplaceholder => 'بحث…';
+
+  @override
+  String get crmSubtitle => 'إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).';
+
+  @override
+  String get crmTitle => 'CRM العميل';
+
+  @override
+  String get modulesRestaurant => 'المطبخ';
+
+  @override
+  String get restaurantActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
+
+  @override
+  String get restaurantAdditem => 'إضافة عنصر';
+
+  @override
+  String get restaurantBill => 'الفاتورة';
+
+  @override
+  String get restaurantBranch => 'الفرع';
+
+  @override
+  String get restaurantBranchall => 'جميع الفروع';
+
+  @override
+  String get restaurantCheckin => 'تسجيل الوصول';
+
+  @override
+  String get restaurantClosesession => 'إغلاق الصندوق';
+
+  @override
+  String get restaurantCovers => 'أشخاص';
+
+  @override
+  String get restaurantCustomername => 'اسم العميل';
+
+  @override
+  String get restaurantDelivery => 'توصيل';
+
+  @override
+  String get restaurantDinein => 'في المكان';
+
+  @override
+  String get restaurantDiscount => 'الخصم';
+
+  @override
+  String get restaurantEmpty => 'لا توجد طلبات معلقة. القائمة فارغة.';
+
+  @override
+  String get restaurantGuests => 'عدد الأشخاص';
+
+  @override
+  String get restaurantInpreparation => 'قيد التحضير';
+
+  @override
+  String get restaurantKiosktitle => 'كشك الخدمة الذاتية';
+
+  @override
+  String get restaurantKitchensubtitle => 'قائمة الطلبات لحظيًا — التحضير والتجهيز';
+
+  @override
+  String get restaurantKitchentitle => 'شاشة المطبخ';
+
+  @override
+  String get restaurantLoaderror => 'تعذر تحميل قائمة المطبخ.';
+
+  @override
+  String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
+
+  @override
+  String get restaurantMarkready => 'جاهز';
+
+  @override
+  String get restaurantNeworder => 'طلب جديد';
+
+  @override
+  String get restaurantNoshow => 'عدم الحضور';
+
+  @override
+  String get restaurantOpensession => 'فتح الصندوق';
+
+  @override
+  String get restaurantOrderitems => 'عناصر الطلب';
+
+  @override
+  String get restaurantOrderref => 'طلب';
+
+  @override
+  String get restaurantPaid => 'مدفوع';
+
+  @override
+  String get restaurantPaycash => 'الدفع نقداً';
+
+  @override
+  String get restaurantPossubtitle => 'تسجيل الطلبات والتحصيل';
+
+  @override
+  String get restaurantPostitle => 'نقطة البيع';
+
+  @override
+  String get restaurantReady => 'جاهز';
+
+  @override
+  String get restaurantReservationnew => 'حجز جديد';
+
+  @override
+  String get restaurantReservations => 'الحجوزات';
+
+  @override
+  String get restaurantSessionclosed => 'الصندوق مغلق';
+
+  @override
+  String get restaurantSessionopen => 'الصندوق مفتوح';
+
+  @override
+  String get restaurantShoptitle => 'الطلب عبر الإنترنت';
+
+  @override
+  String get restaurantStart => 'ابدأ';
+
+  @override
+  String get restaurantStatuscancelled => 'ملغي';
+
+  @override
+  String get restaurantStatusclosed => 'مغلق';
+
+  @override
+  String get restaurantStatusdraft => 'مسودة';
+
+  @override
+  String get restaurantStatusinpreparation => 'قيد التحضير';
+
+  @override
+  String get restaurantStatusopen => 'مفتوح';
+
+  @override
+  String get restaurantStatuspaid => 'مدفوع';
+
+  @override
+  String get restaurantStatusready => 'جاهز';
+
+  @override
+  String get restaurantStatusrefunded => 'مسترجع';
+
+  @override
+  String get restaurantStatusserved => 'تم التقديم';
+
+  @override
+  String get restaurantSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get restaurantTable => 'طاولة';
+
+  @override
+  String get restaurantTakeaway => 'للطلب الخارجي';
+
+  @override
+  String get restaurantTax => 'الضريبة';
+
+  @override
+  String get restaurantTotal => 'المجموع';
 }

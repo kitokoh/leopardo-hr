@@ -15096,6 +15096,200 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Oui'**
   String get settingsYes;
+  String get crmAccountsColcreated;
+
+  String get crmAccountsColemail;
+
+  String get crmAccountsColname;
+
+  String get crmAccountsColphone;
+
+  String get crmAccountsColstatus;
+
+  String get crmAccountsDescription;
+
+  String get crmAccountsEmpty;
+
+  String get crmAccountsSubtitle;
+
+  String get crmAccountsTitle;
+
+  String get crmContactsDescription;
+
+  String get crmContactsEmpty;
+
+  String get crmContactsPrimary;
+
+  String get crmContactsSubtitle;
+
+  String get crmContactsTitle;
+
+  String get crmErrorloading;
+
+  String get crmFeaturelocked;
+
+  String get crmIsolationnote;
+
+  String get crmLeadsColcompany;
+
+  String get crmLeadsColcreated;
+
+  String get crmLeadsColemail;
+
+  String get crmLeadsColname;
+
+  String get crmLeadsColsource;
+
+  String get crmLeadsColstatus;
+
+  String get crmLeadsDescription;
+
+  String get crmLeadsEmpty;
+
+  String get crmLeadsSubtitle;
+
+  String get crmLeadsTitle;
+
+  String get crmLoading;
+
+  String get crmPaginationnext;
+
+  String get crmPaginationpage;
+
+  String get crmPaginationprev;
+
+  String get crmPipelineDescription;
+
+  String get crmPipelineEmpty;
+
+  String get crmPipelineStageLost;
+
+  String get crmPipelineStageNegotiation;
+
+  String get crmPipelineStageProposal;
+
+  String get crmPipelineStageProspecting;
+
+  String get crmPipelineStageQualification;
+
+  String get crmPipelineStageWon;
+
+  String get crmPipelineSubtitle;
+
+  String get crmPipelineTitle;
+
+  String get crmRefresh;
+
+  String get crmSearchplaceholder;
+
+  String get crmSubtitle;
+
+  String get crmTitle;
+
+  String get modulesRestaurant;
+
+  String get restaurantActionerror;
+
+  String get restaurantAdditem;
+
+  String get restaurantBill;
+
+  String get restaurantBranch;
+
+  String get restaurantBranchall;
+
+  String get restaurantCheckin;
+
+  String get restaurantClosesession;
+
+  String get restaurantCovers;
+
+  String get restaurantCustomername;
+
+  String get restaurantDelivery;
+
+  String get restaurantDinein;
+
+  String get restaurantDiscount;
+
+  String get restaurantEmpty;
+
+  String get restaurantGuests;
+
+  String get restaurantInpreparation;
+
+  String get restaurantKiosktitle;
+
+  String get restaurantKitchensubtitle;
+
+  String get restaurantKitchentitle;
+
+  String get restaurantLoaderror;
+
+  String get restaurantLoading;
+
+  String get restaurantMarkready;
+
+  String get restaurantNeworder;
+
+  String get restaurantNoshow;
+
+  String get restaurantOpensession;
+
+  String get restaurantOrderitems;
+
+  String get restaurantOrderref;
+
+  String get restaurantPaid;
+
+  String get restaurantPaycash;
+
+  String get restaurantPossubtitle;
+
+  String get restaurantPostitle;
+
+  String get restaurantReady;
+
+  String get restaurantReservationnew;
+
+  String get restaurantReservations;
+
+  String get restaurantSessionclosed;
+
+  String get restaurantSessionopen;
+
+  String get restaurantShoptitle;
+
+  String get restaurantStart;
+
+  String get restaurantStatuscancelled;
+
+  String get restaurantStatusclosed;
+
+  String get restaurantStatusdraft;
+
+  String get restaurantStatusinpreparation;
+
+  String get restaurantStatusopen;
+
+  String get restaurantStatuspaid;
+
+  String get restaurantStatusready;
+
+  String get restaurantStatusrefunded;
+
+  String get restaurantStatusserved;
+
+  String get restaurantSubtotal;
+
+  String get restaurantTable;
+
+  String get restaurantTakeaway;
+
+  String get restaurantTax;
+
+  String get restaurantTotal;
+
 
   /// No description provided for @settingsJourneyAttachedTo.
   ///
