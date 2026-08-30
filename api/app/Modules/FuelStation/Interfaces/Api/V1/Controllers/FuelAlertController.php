@@ -61,7 +61,13 @@ class FuelAlertController extends Controller
         $actor = $request->user();
         $this->authorize('managePreferences', new FuelNotificationPreference);
 
-        $count = $this->service->upsertPreferences($actor->company_id, $request->input('preferences'));
+        $preferences = $request->input('preferences');
+
+        if (! is_array($preferences)) {
+            abort(422);
+        }
+
+        $count = $this->service->upsertPreferences($actor->company_id, $preferences);
 
         return response()->json(['data' => ['updated' => $count]]);
     }
