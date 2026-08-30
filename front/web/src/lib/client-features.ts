@@ -16,7 +16,8 @@ export type ClientModuleKey =
   | 'marketing'
   | 'accounting'
   | 'crm'
-  | 'restaurant';
+  | 'restaurant'
+  | 'edu_manager';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -203,6 +204,21 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Restaurant',
   },
+  // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
+  // rôle-aware : manager direction (principal/rh) → administration scolaire ;
+  // employé enseignant → espace enseignant (périmètre = ses classes, gardé
+  // par les Policies EduManager côté API). L'entrée est portée par la
+  // feature flag `edumanager` (activation tenant #5817).
+  {
+    key: 'edu_manager',
+    href: '/edu-manager',
+    label: 'EduManager',
+    group: 'hr',
+    capabilityKeys: ['edumanager', 'can_view_edumanager'],
+    featureKeys: ['edumanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'EduManager',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -227,6 +243,16 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
   '/restaurant/kitchen': 'restaurant',
+  '/edu-manager': 'edu_manager',
+  '/edu-manager/campuses': 'edu_manager',
+  '/edu-manager/academic-years': 'edu_manager',
+  '/edu-manager/subjects': 'edu_manager',
+  '/edu-manager/classes': 'edu_manager',
+  '/edu-manager/students': 'edu_manager',
+  '/edu-manager/admissions': 'edu_manager',
+  '/edu-manager/assessments': 'edu_manager',
+  '/edu-manager/report-cards': 'edu_manager',
+  '/edu-manager/teacher': 'edu_manager',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
@@ -252,6 +278,11 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
 
     if (module.key === 'crm') {
       return ['principal', 'rh'].includes(managerRole);
+    }
+
+    if (module.key === 'edu_manager') {
+      // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
+      return managerRole === '' || managerRole === 'principal' || managerRole === 'rh';
     }
 
     return true;
