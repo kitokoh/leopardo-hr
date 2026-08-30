@@ -60,18 +60,13 @@ test.describe('Réservations travel (TRAVEL-604)', () => {
     await page.route(/\/api\/v1\/travel\/trips(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: trips, meta: {} }) }),
     )
-    await page.route(/\/api\/v1\/travel\/bookings(\?.*)?$/, async (route) => {
-      const method = route.request().method()
-      if (method === 'POST') {
-        const url = String(route.request().url())
-        if (url.includes('/confirm')) {
-          bookings[0].status = 'confirmed'
-          bookings[0].payment_status = 'confirmed'
-          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { ...detail, status: 'confirmed', payment_status: 'confirmed' } }) })
-          return
-        }
-      }
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: bookings, meta: {} }) })
+    await page.route(/\/api\/v1\/travel\/bookings(\?.*)?$/, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: bookings, meta: {} }) }),
+    )
+    await page.route(/\/api\/v1\/travel\/bookings\/100\/confirm(\?.*)?$/, (route) => {
+      bookings[0].status = 'confirmed'
+      bookings[0].payment_status = 'confirmed'
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { ...detail, status: 'confirmed', payment_status: 'confirmed' } }) })
     })
     await page.route(/\/api\/v1\/travel\/bookings\/100(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: detail }) }),
@@ -94,6 +89,6 @@ test.describe('Réservations travel (TRAVEL-604)', () => {
     // Confirmation via dialogue (action critique)
     await page.getByRole('button', { name: /Confirmer/i }).click()
     await page.getByRole('button', { name: 'Confirmer', exact: true }).last().click()
-    await expect(page.getByText(/Confirmée/i).first()).toBeVisible()
+    await expect(page.getByRole('cell', { name: 'Confirmée' }).first()).toBeVisible()
   })
 })
