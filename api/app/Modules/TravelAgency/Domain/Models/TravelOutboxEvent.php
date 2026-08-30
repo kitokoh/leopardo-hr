@@ -39,6 +39,8 @@ class TravelOutboxEvent extends Model
 
     public const STATUS_PENDING = 'pending';
 
+    public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_PUBLISHED = 'published';
 
     public const STATUS_FAILED = 'failed';
@@ -57,11 +59,13 @@ class TravelOutboxEvent extends Model
         'available_at',
         'last_error',
         'idempotency_key',
+        'processed_at',
     ];
 
     protected $casts = [
         'payload_redacted' => 'array',
         'attempts' => 'integer',
         'available_at' => 'datetime',
+        'processed_at' => 'datetime',
     ];
 }

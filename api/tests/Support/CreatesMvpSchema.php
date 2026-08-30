@@ -2704,6 +2704,7 @@ trait CreatesMvpSchema
                 $table->timestampTz('available_at')->useCurrent();
                 $table->text('last_error')->nullable();
                 $table->string('idempotency_key', 255);
+                $table->timestampTz('processed_at')->nullable();
                 $table->timestamps();
                 $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
             });
