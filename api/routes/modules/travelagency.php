@@ -18,6 +18,7 @@
  */
 
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
@@ -122,6 +123,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/bookings/{travelBooking}/cancel', [TravelBookingController::class, 'cancel']);
         Route::post('/bookings/{travelBooking}/refund', [TravelBookingController::class, 'refund']);
         Route::post('/bookings/{travelBooking}/issue-ticket', [TravelBookingController::class, 'issueTickets']);
+        Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
 
         // Check-in / embarquement (TRAVEL-317/#6047).
         Route::post('/tickets/{travelTicket}/check-in', [TravelTicketController::class, 'checkIn']);
@@ -141,6 +143,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/rental-bookings', [TravelRentalBookingController::class, 'store']);
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
+
+        // Politiques d'annulation configurables (TRAVEL-813/#6103).
+        Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);
+        Route::post('/cancellation-policies', [TravelCancellationPolicyController::class, 'store']);
+        Route::put('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'update']);
+        Route::delete('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'destroy']);
 
         // Clés API transporteurs (TRAVEL-807/#6086).
         Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
