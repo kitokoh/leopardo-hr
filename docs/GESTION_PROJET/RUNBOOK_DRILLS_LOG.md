@@ -25,6 +25,5 @@ Use this file to record real drill executions (staging recommended).
 
 | Date | Type | Environnement | Trigger | Result | Duration | Evidence | Actions |
 |---|---|---|---|---|---|---|---|
+| 2026-08-30 | incident (tabletop) | staging (référence) | planned — revue runbook BC-23 AI (#6240, D11) | **pass** | ~15m | `docs/ops/RUNBOOK_AI.md` (incidents provider/budget, DLQ replay, purge RGPD, kill switch) — scénarios joués : DLQ→replay→resolved, budget dépassé → 422, purge RGPD ciblée | Tests `ConversationExportTest` (échec→DLQ, replay) + `TokenBudgetTest` couvrent les procédures |
 | 2026-08-22 | restore | local scratch (PG 16, aligné prod Neon) | planned — exercice #5283 (DoD) | **pass** | ~1m | `docs/ops/DR.md` §6.2 (log complet du run 20260822-171810) + fix bug `CREATE SCHEMA public` dans `dev-hub/scripts/backup_drill.sh` | PR #5283 ; prochain drill mensuel workflow (1er du mois) |
-
----
