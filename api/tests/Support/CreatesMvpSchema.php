@@ -2843,6 +2843,23 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-24 TRAVEL — TRAVEL-909 (issue #6112) — sites touristiques ───
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('description_redacted', 2000)->nullable();
+                $table->unsignedBigInteger('city_id')->nullable();
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->unsignedBigInteger('image_asset_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->index(['company_id', 'city_id'], 'travel_tourist_sites_company_city_idx');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
             Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
@@ -3083,6 +3100,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);

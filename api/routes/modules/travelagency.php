@@ -40,6 +40,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketControlle
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
@@ -218,6 +220,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validate']);
         Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
         Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
+
+
+        // ── Sites touristiques (TRAVEL-909/#6112) ──────────────────────────
+        Route::get('/tourist-sites', [TravelTouristSiteController::class, 'index']);
+        Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
+        Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
+        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
+
+        // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
+        Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
 
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
         Route::post('/contact', [TravelContactController::class, 'store']);
