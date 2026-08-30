@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
