@@ -2805,6 +2805,24 @@ trait CreatesMvpSchema
         }
 
         // ── BC-24 TRAVEL — TRAVEL-803 (issue #6094) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
+            Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->char('from_currency', 3);
+                $table->char('to_currency', 3);
+                $table->unsignedBigInteger('rate_minor');
+                $table->date('valid_from');
+                $table->date('valid_to')->nullable();
+                $table->timestamps();
+                $table->unique(
+                    ['company_id', 'from_currency', 'to_currency', 'valid_from'],
+                    'travel_currency_rates_company_pair_period_unique'
+                );
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-805 (issue #6096) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
@@ -2969,6 +2987,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
+        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_round_trips"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);

@@ -2892,6 +2892,215 @@ paths:
           description: Permission travel.manage requise
         '422':
           description: Seule une réservation confirmée peut émettre des billets
+  /travel/currency-rates:
+    get:
+      tags:
+      - Travel
+      summary: Liste des taux de conversion (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée des taux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelCurrencyRate'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
+    post:
+      tags:
+      - Travel
+      summary: Création d'un taux de conversion par période (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_currency
+              - to_currency
+              - rate_minor
+              - valid_from
+              properties:
+                from_currency:
+                  type: string
+                  maxLength: 3
+                to_currency:
+                  type: string
+                  maxLength: 3
+                rate_minor:
+                  type: integer
+                  description: Taux × 10000 (4 décimales, entier)
+                  minimum: 1
+                valid_from:
+                  type: string
+                  format: date
+                valid_to:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Taux créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '422':
+          description: Chevauchement de période pour la même paire
+  /travel/currency-rates/convert:
+    get:
+      tags:
+      - Travel
+      summary: Conversion multi-devise (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: amount
+        in: query
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 3
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          maxLength: 3
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Montant converti (unités mineures, math entière)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      amount_minor:
+                        type: integer
+                      currency:
+                        type: string
+                      rate_minor:
+                        type: integer
+        '422':
+          description: Aucun taux applicable à la date ou paramètres invalides
+  /travel/currency-rates/{travelCurrencyRate}:
+    get:
+      tags:
+      - Travel
+      summary: Détail d'un taux (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCurrencyRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Taux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '404':
+          description: Taux introuvable ou hors tenant
+    put:
+      tags:
+      - Travel
+      summary: Mise à jour d'un taux (TRAVEL-805/#6096)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCurrencyRate
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from_currency
+              - to_currency
+              - rate_minor
+              - valid_from
+              properties:
+                from_currency:
+                  type: string
+                  maxLength: 3
+                to_currency:
+                  type: string
+                  maxLength: 3
+                rate_minor:
+                  type: integer
+                  minimum: 1
+                valid_from:
+                  type: string
+                  format: date
+                valid_to:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '200':
+          description: Taux mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelCurrencyRate'
+        '404':
+          description: Taux introuvable ou hors tenant
+        '422':
+          description: Chevauchement de période
+
   /travel/quotes:
     get:
       tags:
@@ -29117,6 +29326,31 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TravelTicket'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelCurrencyRate:
+      type: object
+      properties:
+        id:
+          type: integer
+        from_currency:
+          type: string
+        to_currency:
+          type: string
+        rate_minor:
+          type: integer
+        valid_from:
+          type: string
+          format: date
+          nullable: true
+        valid_to:
+          type: string
+          format: date
+          nullable: true
         created_at:
           type: string
           nullable: true
