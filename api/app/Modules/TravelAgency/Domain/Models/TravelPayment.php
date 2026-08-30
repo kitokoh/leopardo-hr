@@ -30,6 +30,7 @@ class TravelPayment extends Model
     protected $fillable = [
         'reference',
         'booking_id',
+        'advert_id',
         'provider_code',
         'amount_minor',
         'currency',
@@ -70,5 +71,13 @@ class TravelPayment extends Model
     public function booking(): BelongsTo
     {
         return $this->belongsTo(TravelBooking::class, 'booking_id');
+    }
+
+    /**
+     * @return BelongsTo<TravelAdvert, $this>
+     */
+    public function advert(): BelongsTo
+    {
+        return $this->belongsTo(TravelAdvert::class, 'advert_id');
     }
 }

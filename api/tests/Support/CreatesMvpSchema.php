@@ -2678,7 +2678,8 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('reference', 40);
-                $table->unsignedBigInteger('booking_id');
+                $table->unsignedBigInteger('booking_id')->nullable();
+                $table->unsignedBigInteger('advert_id')->nullable();
                 $table->string('provider_code', 20);
                 $table->unsignedInteger('amount_minor');
                 $table->char('currency', 3);
@@ -2721,6 +2722,34 @@ trait CreatesMvpSchema
                 $table->char('currency', 3);
                 $table->timestamps();
                 $table->unique(['company_id', 'advert_type_id', 'advert_position_id', 'currency'], 'travel_advert_prices_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
+            Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('advert_type_id');
+                $table->unsignedBigInteger('advert_position_id');
+                $table->string('title', 200);
+                $table->text('body_redacted');
+                $table->string('image_path', 500)->nullable();
+                $table->unsignedInteger('character_count')->default(0);
+                $table->unsignedBigInteger('price_image_minor')->default(0);
+                $table->unsignedBigInteger('price_character_minor')->default(0);
+                $table->unsignedBigInteger('total_minor')->default(0);
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('payment_id')->nullable();
+                $table->timestamp('paid_at')->nullable();
+                $table->unsignedBigInteger('validated_by_user_id')->nullable();
+                $table->timestamp('validated_at')->nullable();
+                $table->timestamp('published_at')->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('moderation_note', 500)->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'travel_adverts_company_status_idx');
+                $table->index(['company_id', 'expires_at'], 'travel_adverts_company_expiry_idx');
             });
         }
 
