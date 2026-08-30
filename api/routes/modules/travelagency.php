@@ -22,6 +22,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPol
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCurrencyRateController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
@@ -189,6 +190,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/hotels/{travelHotel}/rooms', [TravelHotelController::class, 'storeRoom']);
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
+
+        // Formulaire de contact → lead CRM (TRAVEL-416/#6068) — publication
+        // asynchrone de l'événement travel.contact.submitted.v1 (outbox).
+        Route::post('/contact', [TravelContactController::class, 'store']);
 
     });
 
