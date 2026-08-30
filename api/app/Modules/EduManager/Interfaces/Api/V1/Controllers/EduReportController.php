@@ -23,9 +23,7 @@ class EduReportController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduReportService $reports)
-    {
-    }
+    public function __construct(private readonly EduReportService $reports) {}
 
     public function presence(Request $request): JsonResponse
     {

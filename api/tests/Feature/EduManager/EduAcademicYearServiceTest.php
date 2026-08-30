@@ -7,6 +7,7 @@ namespace Tests\Feature\EduManager;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduSubject;
 use App\Modules\EduManager\Domain\Models\EduTeacherSubject;
@@ -31,6 +32,8 @@ class EduAcademicYearServiceTest extends TestCase
 
     private Company $companyA;
 
+    private EduCampus $campusA;
+
     private Company $companyB;
 
     private Employee $managerA;
@@ -54,6 +57,13 @@ class EduAcademicYearServiceTest extends TestCase
             'manager_role' => 'principal',
         ]);
         $this->managerA = $managerA;
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
     }
 
     public function test_edu_year_tables_exist_in_tenant_schema(): void
@@ -116,8 +126,8 @@ class EduAcademicYearServiceTest extends TestCase
         DB::transaction(function (): void {
             app(EduAcademicYearService::class)->createYear($this->managerA, [
                 'name' => '2025-2026',
-                'start_date' => '2025-09-01',
-                'end_date' => '2026-08-31',
+                'start_date' => '2030-09-01',
+                'end_date' => '2031-08-31',
             ]);
         });
     }
@@ -130,7 +140,7 @@ class EduAcademicYearServiceTest extends TestCase
         $this->expectExceptionMessage('EMPLOYEE_OUTSIDE_TENANT');
 
         app(EduAcademicYearService::class)->createClass($this->managerA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => 1,
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -158,7 +168,7 @@ class EduAcademicYearServiceTest extends TestCase
             DB::transaction(function () use ($yearB): void {
                 EduClass::query()->create([
                     'company_id' => $this->companyA->id,
-                    'campus_id' => 1,
+                    'campus_id' => (int) $this->campusA->getAttribute('id'),
                     'academic_year_id' => (int) $yearB->getAttribute('id'),
                     'code' => 'CL-X',
                     'name' => 'Classe cross-tenant',
@@ -188,7 +198,7 @@ class EduAcademicYearServiceTest extends TestCase
         ]);
         /** @var EduClass $class */
         $class = $service->createClass($this->managerA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',

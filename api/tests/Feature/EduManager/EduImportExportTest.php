@@ -8,9 +8,12 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduImport;
 use App\Modules\EduManager\Domain\Models\EduStudent;
+use App\Modules\EduManager\Infrastructure\Services\EduExportService;
 use App\Modules\EduManager\Infrastructure\Services\EduImportService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -71,7 +74,7 @@ class EduImportExportTest extends TestCase
         try {
             $service->preview($this->principalA, $file, EduImport::ENTITY_STUDENTS);
             $this->fail('En-têtes invalides auraient dû être refusés.');
-        } catch (\Illuminate\Validation\ValidationException) {
+        } catch (ValidationException) {
             $this->assertTrue(true);
         } catch (\Throwable $exception) {
             $this->assertStringContainsString('EDU_IMPORT_HEADERS', $exception->getMessage());
@@ -114,13 +117,13 @@ class EduImportExportTest extends TestCase
     {
         $service = app(EduImportService::class);
         $file = $this->csvFile(
-            "student_number,display_name,birth_date,status\nSTU-1,Lina Benali,2014-03-12,active\nSTU-1,Lina Benali,2014-03-12,active\n"
+            "student_number,display_name,birth_date,status\nSTU-1,Lina Benali,2014-03-12,active\nSTU-2,Yacine Meziane,2014-03-12,inconnu\n"
         );
 
         $import = $service->preview($this->principalA, $file, EduImport::ENTITY_STUDENTS);
         $committed = $service->commit($this->principalA, $import);
 
-        // 1 ligne OK, 1 ligne en conflit (doublon) → rapportée en erreur.
+        // 1 ligne OK, 1 ligne invalide (statut hors bornes) → rapportée en erreur.
         $this->assertSame(1, (int) $committed->valid_rows);
         $this->assertSame(1, (int) $committed->error_rows);
         $this->assertNotEmpty($committed->errors);
@@ -163,7 +166,7 @@ class EduImportExportTest extends TestCase
             'manager_role' => 'principal',
         ]);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
         $service->commit($principalB, $import);
     }
@@ -185,7 +188,7 @@ class EduImportExportTest extends TestCase
             'status' => EduStudent::STATUS_ACTIVE,
         ]);
 
-        $result = app(\App\Modules\EduManager\Infrastructure\Services\EduExportService::class)
+        $result = app(EduExportService::class)
             ->export($this->principalA, 'students');
 
         $this->assertStringContainsString('STU-A-1', $result['content']);

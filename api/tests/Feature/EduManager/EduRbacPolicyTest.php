@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
@@ -31,6 +32,12 @@ class EduRbacPolicyTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
+
+    private EduStudent $studentA;
 
     private Company $companyB;
 
@@ -88,6 +95,13 @@ class EduRbacPolicyTest extends TestCase
         $otherTeacherA = Employee::factory()->create(['company_id' => $companyA->id]);
         $this->otherTeacherA = $otherTeacherA;
 
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
         $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($principalA, [
@@ -95,10 +109,11 @@ class EduRbacPolicyTest extends TestCase
             'start_date' => '2025-09-01',
             'end_date' => '2026-08-31',
         ]);
+        $this->yearA = $year;
 
         /** @var EduClass $classA */
         $classA = $yearService->createClass($principalA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -108,12 +123,20 @@ class EduRbacPolicyTest extends TestCase
 
         /** @var EduClass $classB */
         $classB = $yearService->createClass($principalA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-2',
             'name' => '6ème B',
             'teacher_id' => (int) $otherTeacherA->getAttribute('id'),
         ]);
+        /** @var EduStudent $studentA */
+        $studentA = EduStudent::query()->create([
+            'company_id' => $companyA->id,
+            'student_number' => 'STU-RBAC-1',
+            'display_name' => 'Lina Benali',
+            'status' => EduStudent::STATUS_ACTIVE,
+        ]);
+        $this->studentA = $studentA;
         $this->classB = $classB;
     }
 
@@ -157,7 +180,7 @@ class EduRbacPolicyTest extends TestCase
             'company_id' => $this->companyA->id,
             'class_id' => (int) $this->classA->getAttribute('id'),
             'subject_id' => (int) $this->subjectA->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'title' => 'DS',
             'type' => EduAssessment::TYPE_EXAM,
             'max_score' => 20,
@@ -176,7 +199,7 @@ class EduRbacPolicyTest extends TestCase
             'company_id' => $this->companyA->id,
             'class_id' => (int) $this->classB->getAttribute('id'),
             'subject_id' => (int) $this->subjectA->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'title' => 'DS B',
             'type' => EduAssessment::TYPE_EXAM,
             'max_score' => 20,
@@ -193,8 +216,8 @@ class EduRbacPolicyTest extends TestCase
         /** @var EduReportCard $card */
         $card = EduReportCard::query()->create([
             'company_id' => $this->companyA->id,
-            'student_id' => 1,
-            'academic_year_id' => 1,
+            'student_id' => (int) $this->studentA->getAttribute('id'),
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
             'status' => EduReportCard::STATUS_DRAFT,
         ]);
@@ -239,7 +262,7 @@ class EduRbacPolicyTest extends TestCase
             'company_id' => $this->companyA->id,
             'class_id' => (int) $this->classA->getAttribute('id'),
             'subject_id' => (int) $this->subjectA->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'title' => 'DS',
             'type' => EduAssessment::TYPE_EXAM,
             'max_score' => 20,

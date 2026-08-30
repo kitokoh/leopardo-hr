@@ -53,10 +53,10 @@ final class EduImportService
         abort_if($handle === false, 422, 'EDU_IMPORT_UNREADABLE');
 
         $headers = fgetcsv($handle);
-        abort_if($headers === false || ! is_array($headers), 422, 'EDU_IMPORT_EMPTY');
+        abort_if($headers === false, 422, 'EDU_IMPORT_EMPTY');
 
         $expected = self::TEMPLATES[$entityType] ?? [];
-        $headers = array_map('trim', $headers);
+        $headers = array_map(static fn (?string $v): string => trim((string) $v), $headers);
         $unknown = array_diff($headers, $expected);
         abort_if($unknown !== [], 422, 'EDU_IMPORT_HEADERS');
 
@@ -66,7 +66,7 @@ final class EduImportService
 
         while (($line = fgetcsv($handle)) !== false) {
             $rowNumber++;
-            if ($line === [null] || $line === []) {
+            if ($line === [null]) {
                 continue;
             }
 
@@ -94,9 +94,6 @@ final class EduImportService
         ];
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public function preview(Employee $actor, UploadedFile $file, string $entityType): EduImport
     {
         abort_if(! in_array($entityType, EduImport::ENTITIES, true), 422, 'EDU_IMPORT_ENTITY');

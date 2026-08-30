@@ -47,6 +47,9 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'name'], 'edu_academic_years_company_name_unique');
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant
+                // (pattern edu_campuses_id_company_unique — #5819, correctif migration).
+                $table->unique(['id', 'company_id'], 'edu_academic_years_id_company_unique');
                 $table->index(['company_id', 'status'], 'edu_academic_years_company_status_idx');
                 $table->index(['company_id', 'start_date'], 'edu_academic_years_company_start_idx');
                 $table->index(['company_id', 'created_at'], 'edu_academic_years_company_created_idx');
@@ -81,6 +84,8 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'code'], 'edu_subjects_company_code_unique');
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant.
+                $table->unique(['id', 'company_id'], 'edu_subjects_id_company_unique');
                 $table->index(['company_id', 'status'], 'edu_subjects_company_status_idx');
                 $table->index(['company_id', 'name'], 'edu_subjects_company_name_idx');
 
@@ -108,6 +113,8 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'code', 'academic_year_id'], 'edu_classes_company_code_year_unique');
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant.
+                $table->unique(['id', 'company_id'], 'edu_classes_id_company_unique');
                 $table->index(['company_id', 'academic_year_id'], 'edu_classes_company_year_idx');
                 $table->index(['company_id', 'status'], 'edu_classes_company_status_idx');
 

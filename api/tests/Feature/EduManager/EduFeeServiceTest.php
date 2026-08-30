@@ -9,7 +9,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduFee;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -87,9 +90,9 @@ class EduFeeServiceTest extends TestCase
 
     public function test_create_rejects_non_positive_amount(): void
     {
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
-        \Illuminate\Support\Facades\DB::transaction(function (): void {
+        DB::transaction(function (): void {
             app(EduFeeService::class)->create($this->principalA, [
                 'student_id' => (int) $this->studentA->getAttribute('id'),
                 'label' => 'Frais nul',
@@ -144,7 +147,7 @@ class EduFeeServiceTest extends TestCase
         $tables = ['accounting_journal_entries', 'accounting_entries', 'journal_entries'];
         foreach ($tables as $table) {
             if (Schema::hasTable($table)) {
-                $this->assertSame(0, \Illuminate\Support\Facades\DB::table($table)->count(), "table {$table} non vide");
+                $this->assertSame(0, DB::table($table)->count(), "table {$table} non vide");
             }
         }
     }
@@ -166,7 +169,7 @@ class EduFeeServiceTest extends TestCase
             'manager_role' => 'principal',
         ]);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
         $service->markPaid($principalB, $fee, ['payment_reference' => 'PAY-Z']);
     }

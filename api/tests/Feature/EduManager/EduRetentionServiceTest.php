@@ -6,11 +6,17 @@ namespace Tests\Feature\EduManager;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EduManager\Domain\Models\EduAcademicYear;
+use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
+use App\Modules\EduManager\Domain\Models\EduCampus;
+use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudent;
+use App\Modules\EduManager\Domain\Models\EduSubject;
 use App\Modules\EduManager\Infrastructure\Services\EduRetentionService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -26,6 +32,14 @@ class EduRetentionServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
+
+    private EduClass $classA;
+
+    private EduAssessment $assessmentA;
 
     private Company $companyB;
 
@@ -63,6 +77,53 @@ class EduRetentionServiceTest extends TestCase
             'status' => EduStudent::STATUS_ACTIVE,
         ]);
         $this->studentA = $studentA;
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
+
+        /** @var EduAcademicYear $yearA */
+        $yearA = EduAcademicYear::query()->create([
+            'company_id' => $companyA->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
+        $this->yearA = $yearA;
+
+        /** @var EduSubject $subjectA */
+        $subjectA = EduSubject::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'MATH',
+            'name' => 'Mathématiques',
+        ]);
+
+        /** @var EduClass $classA */
+        $classA = EduClass::query()->create([
+            'company_id' => $companyA->id,
+            'campus_id' => (int) $campusA->getAttribute('id'),
+            'academic_year_id' => (int) $yearA->getAttribute('id'),
+            'code' => 'CL-A1',
+            'name' => '6ème A',
+        ]);
+        $this->classA = $classA;
+
+        /** @var EduAssessment $assessmentA */
+        $assessmentA = EduAssessment::query()->create([
+            'company_id' => $companyA->id,
+            'class_id' => (int) $classA->getAttribute('id'),
+            'subject_id' => (int) $subjectA->getAttribute('id'),
+            'academic_year_id' => (int) $yearA->getAttribute('id'),
+            'title' => 'DS 1',
+            'type' => EduAssessment::TYPE_EXAM,
+            'max_score' => 20,
+        ]);
+        $this->assessmentA = $assessmentA;
+
     }
 
     public function test_anonymization_masks_pii_and_is_idempotent(): void
@@ -101,14 +162,14 @@ class EduRetentionServiceTest extends TestCase
         // Présence + note + bulletin pour couvrir tous les blocs.
         EduAttendance::query()->create([
             'company_id' => $this->companyA->id,
-            'class_id' => 1,
+            'class_id' => (int) $this->classA->getAttribute('id'),
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'attendance_date' => '2026-09-07',
             'status' => EduAttendance::STATUS_PRESENT,
         ]);
         EduGrade::query()->create([
             'company_id' => $this->companyA->id,
-            'assessment_id' => 1,
+            'assessment_id' => (int) $this->assessmentA->getAttribute('id'),
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'score' => 15,
             'status' => EduGrade::STATUS_PUBLISHED,
@@ -116,7 +177,7 @@ class EduRetentionServiceTest extends TestCase
         EduReportCard::query()->create([
             'company_id' => $this->companyA->id,
             'student_id' => (int) $this->studentA->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
             'status' => EduReportCard::STATUS_PUBLISHED,
         ]);
@@ -152,7 +213,7 @@ class EduRetentionServiceTest extends TestCase
 
         $service = app(EduRetentionService::class);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
         $service->anonymizeStudent($this->principalA, $studentB);
     }

@@ -6,6 +6,7 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduTeacherSubject;
 use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
@@ -24,9 +25,7 @@ class EduClassController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAcademicYearService $service)
-    {
-    }
+    public function __construct(private readonly EduAcademicYearService $service) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -39,8 +38,8 @@ class EduClassController extends Controller
         $query = EduClass::query()->with(['campus:id,code,name', 'academicYear:id,name']);
 
         // Périmètre enseignant : ses classes uniquement.
-        if (! \App\Modules\EduManager\Domain\Access\EduAccess::isAdmin($actor)) {
-            $ids = \App\Modules\EduManager\Domain\Access\EduAccess::teacherClassIds($actor);
+        if (! EduAccess::isAdmin($actor)) {
+            $ids = EduAccess::teacherClassIds($actor);
             $query->where(function ($builder) use ($actor, $ids): void {
                 $builder->where('teacher_id', $actor->id)->orWhereIn('id', $ids);
             });

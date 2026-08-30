@@ -7,6 +7,7 @@ namespace Tests\Feature\EduManager;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduCourseSlot;
 use App\Modules\EduManager\Domain\Models\EduSubject;
@@ -30,6 +31,10 @@ class EduCourseSlotServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
 
     private Employee $managerA;
 
@@ -67,6 +72,13 @@ class EduCourseSlotServiceTest extends TestCase
         $teacherB = Employee::factory()->create(['company_id' => $companyA->id]);
         $this->teacherB = $teacherB;
 
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
         $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($managerA, [
@@ -74,10 +86,11 @@ class EduCourseSlotServiceTest extends TestCase
             'start_date' => '2025-09-01',
             'end_date' => '2026-08-31',
         ]);
+        $this->yearA = $year;
 
         /** @var EduClass $classA */
         $classA = $yearService->createClass($managerA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -110,7 +123,7 @@ class EduCourseSlotServiceTest extends TestCase
         return array_merge([
             'class_id' => (int) $this->classA->getAttribute('id'),
             'subject_id' => (int) $this->math->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'teacher_id' => (int) $this->teacherA->getAttribute('id'),
             'day_of_week' => 1,
             'start_time' => '08:00',
@@ -162,16 +175,18 @@ class EduCourseSlotServiceTest extends TestCase
         ]));
     }
 
-    public function test_same_subject_same_slot_is_allowed(): void
+    public function test_exact_duplicate_slot_is_rejected_as_class_conflict(): void
     {
         $service = app(EduCourseSlotService::class);
-        $first = $service->create($this->managerA, $this->slotPayload());
+        $service->create($this->managerA, $this->slotPayload());
 
-        // Même classe + même matière + même créneau → pas un conflit (rejeu).
-        $second = $service->create($this->managerA, $this->slotPayload());
+        // Rejeu exact (même classe, même matière, même créneau) : la classe
+        // n'est pas en conflit (même matière exclue du test de classe), mais
+        // l'enseignant est déjà occupé sur cet horaire → TEACHER_CONFLICT
+        // (contrat EduCourseSlotService : 1 créneau par enseignant et horaire).
+        $this->expectExceptionMessage('EDU_COURSE_SLOT_TEACHER_CONFLICT');
 
-        $this->assertNotSame((int) $first->getAttribute('id'), (int) $second->getAttribute('id'));
-        $this->assertSame(2, EduCourseSlot::query()->where('company_id', $this->companyA->id)->count());
+        $service->create($this->managerA, $this->slotPayload());
     }
 
     public function test_incoherent_period_is_rejected(): void
@@ -213,8 +228,14 @@ class EduCourseSlotServiceTest extends TestCase
             'end_date' => '2026-08-31',
         ]);
         /** @var EduClass $classB */
+        /** @var EduCampus $campusB */
+        $campusB = EduCampus::query()->create([
+            'company_id' => $companyB->id,
+            'code' => 'CAMPUS-B',
+            'name' => 'Campus B',
+        ]);
         $classB = $yearService->createClass($managerB, [
-            'campus_id' => 2,
+            'campus_id' => (int) $campusB->getAttribute('id'),
             'academic_year_id' => (int) $yearB->getAttribute('id'),
             'code' => 'CL-B1',
             'name' => '6ème B',
@@ -227,7 +248,7 @@ class EduCourseSlotServiceTest extends TestCase
                     'company_id' => $this->companyA->id,
                     'class_id' => (int) $classB->getAttribute('id'),
                     'subject_id' => (int) $this->math->getAttribute('id'),
-                    'academic_year_id' => 1,
+                    'academic_year_id' => (int) $this->yearA->getAttribute('id'),
                     'day_of_week' => 1,
                     'start_time' => '08:00',
                     'end_time' => '09:00',

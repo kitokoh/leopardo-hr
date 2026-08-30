@@ -6,6 +6,7 @@ namespace Tests\Feature\EduManager;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Infrastructure\Services\EduMarketingService;
 use Tests\RefreshTenantDatabase;
@@ -23,6 +24,8 @@ class EduMarketingServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduAcademicYear $yearA;
 
     private Company $companyB;
 
@@ -46,6 +49,15 @@ class EduMarketingServiceTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        /** @var EduAcademicYear $yearA */
+        $yearA = EduAcademicYear::query()->create([
+            'company_id' => $companyA->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
+        $this->yearA = $yearA;
         $this->principalA = $principalA;
     }
 
@@ -57,7 +69,7 @@ class EduMarketingServiceTest extends TestCase
         /** @var EduAdmission $admission */
         $admission = EduAdmission::query()->create(array_merge([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'admission_number' => 'ADM-'.uniqid('', false),
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',
@@ -98,10 +110,18 @@ class EduMarketingServiceTest extends TestCase
 
     public function test_tenant_isolation(): void
     {
-        // Admission du tenant B.
+        // Admission du tenant B (année scolaire du tenant B).
+        /** @var EduAcademicYear $yearB */
+        $yearB = EduAcademicYear::query()->create([
+            'company_id' => $this->companyB->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
         EduAdmission::query()->create([
             'company_id' => $this->companyB->id,
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $yearB->getAttribute('id'),
             'admission_number' => 'ADM-B',
             'applicant_first_name' => 'Élève',
             'applicant_last_name' => 'B',

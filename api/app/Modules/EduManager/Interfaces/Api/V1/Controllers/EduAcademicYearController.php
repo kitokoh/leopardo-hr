@@ -24,9 +24,7 @@ class EduAcademicYearController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAcademicYearService $years)
-    {
-    }
+    public function __construct(private readonly EduAcademicYearService $years) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -115,8 +113,8 @@ class EduAcademicYearController extends Controller
         return [
             'id' => (int) $year->getAttribute('id'),
             'name' => $year->name,
-            'start_date' => $year->start_date?->toDateString(),
-            'end_date' => $year->end_date?->toDateString(),
+            'start_date' => $year->start_date->toDateString(),
+            'end_date' => $year->end_date->toDateString(),
             'status' => $year->status,
             'notes' => $year->notes,
         ];

@@ -25,9 +25,7 @@ class EduAttendanceController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduAttendanceService $attendances)
-    {
-    }
+    public function __construct(private readonly EduAttendanceService $attendances) {}
 
     public function index(Request $request, EduClass $class): JsonResponse
     {
@@ -97,7 +95,7 @@ class EduAttendanceController extends Controller
                     'display_name' => $attendance->student->display_name,
                 ]
                 : null,
-            'attendance_date' => $attendance->attendance_date?->toDateString(),
+            'attendance_date' => $attendance->attendance_date->toDateString(),
             'status' => $attendance->status,
             'reason' => $attendance->reason,
             'justification' => $attendance->justification,

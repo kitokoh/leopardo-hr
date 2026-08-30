@@ -41,11 +41,13 @@ return new class extends Migration
                 // exam | quiz | homework | project — CHECK edu_assessments_type_check
                 $table->string('type', 20);
                 $table->decimal('coefficient', 5, 2)->default(1.00);
-                $table->unsignedDecimal('max_score', 8, 2)->default(20.00);
+                $table->decimal('max_score', 8, 2)->default(20.00);
                 $table->date('assessment_date')->nullable();
                 $table->timestamp('published_at')->nullable();
                 $table->unsignedInteger('created_by')->nullable();
                 $table->timestamps();
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant.
+                $table->unique(['id', 'company_id'], 'edu_assessments_id_company_unique');
 
                 $table->index(
                     ['company_id', 'class_id', 'assessment_date'],
@@ -101,6 +103,8 @@ return new class extends Migration
                 $table->unsignedInteger('version')->default(1);
                 $table->timestamp('published_at')->nullable();
                 $table->timestamps();
+                // UNIQUE(id, company_id) requis par les FK composites anti cross-tenant.
+                $table->unique(['id', 'company_id'], 'edu_grades_id_company_unique');
 
                 $table->unique(
                     ['company_id', 'assessment_id', 'student_id'],
