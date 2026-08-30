@@ -75,8 +75,105 @@ async function mockTravelApi(page, { pingStatus = 200 } = {}) {
       }),
     }),
   )
-}
+  // ── TRAVEL-911/912 (#6416/#6417) : quiz, annonces, sites, contacts ──
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes\/\d+\/results(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, participant_name: 'Awa', participant_email: 'awa@test.cm', score: 5, bonus: 1, submitted_at: '2026-08-30T10:00:00+00:00' },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes\/\d+(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          id: 1,
+          title: 'Quiz vacances',
+          description: 'Questions de culture touristique',
+          status: 'active',
+          questions: [
+            { id: 1, question: 'Quelle est la capitale du Cameroun ?', options: ['Yaoundé', 'Douala'], points: 1 },
+          ],
+        },
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/quizzes(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, title: 'Quiz vacances', status: 'active', starts_at: null, ends_at: null },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-types(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [{ id: 1, code: 'banner', label: 'Bannière' }] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-positions(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [{ id: 1, code: 'home', label: 'Accueil' }] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/advert-prices(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/adverts(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          { id: 1, title: 'Annonce pilote', content: 'Visitez le Cameroun', price_minor: 500000, currency: 'XAF', expires_at: null },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/tourist-sites(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [{ id: 1, name: 'Mont Cameroun', city_id: 1, status: 'active' }] }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/contacts(\?.*)?$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          {
+            id: 1, first_name: 'Awa', last_name: 'Njoya', email: 'awa@test.cm', phone: '690000000',
+            email_consent_given: true, sms_consent_given: false, whatsapp_consent_given: false,
+          },
+        ],
+      }),
+    }),
+  )
+  await page.route(/^https?:\/\/[^/]+\/api\/v1\/travel\/contact(\?.*)?$/, (route) =>
+    route.fulfill({ status: 202, contentType: 'application/json', body: JSON.stringify({ status: 'received' }) }),
+  )
 
+
+}
 async function loginViaToken(page) {
   await page.addInitScript((token) => {
     sessionStorage.setItem('admin_token', token)
@@ -207,3 +304,86 @@ test.describe('TravelAgency — écrans (TRAVEL-602..608)', () => {
     await expect(page.getByRole('heading', { name: /Hôtels/i })).toBeVisible()
   })
 })
+
+
+test.describe('TravelAgency — contenu & monétisation (TRAVEL-911/#6416)', () => {
+  test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('onglet Quiz : liste, questions (bonne réponse jamais exposée), résultats', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Quiz/i }).click()
+    await expect(page.getByRole('heading', { name: /Quiz & jeux-concours/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Quiz vacances')).toBeVisible()
+
+    await page.getByRole('button', { name: /Questions/i }).click()
+    await expect(page.getByText('Quelle est la capitale du Cameroun ?')).toBeVisible({ timeout: 15_000 })
+    // La bonne réponse (correct_option_index) n'est jamais rendue par le mock ni l'API
+    await expect(page.getByText('correct_option_index')).toHaveCount(0)
+    await page.getByRole('button', { name: /Fermer/i }).click()
+
+    await page.getByRole('button', { name: /Résultats/i }).click()
+    await expect(page.getByText('awa@test.cm')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('onglet Annonces : référentiels types/positions + grille tarifaire + soumission', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Annonces/i }).click()
+    await expect(page.getByRole('tab', { name: /Types/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByRole('tab', { name: /Emplacements/i })).toBeVisible()
+    await expect(page.getByRole('tab', { name: /Grille tarifaire/i })).toBeVisible()
+
+    await page.getByRole('tab', { name: /Annonces/i }).last().click()
+    await expect(page.getByRole('heading', { name: /Annonces payantes/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Annonce pilote')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Renouveler/i })).toBeVisible()
+  })
+
+  test('onglet Sites touristiques : CRUD + filtre par ville', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Sites touristiques/i }).click()
+    await expect(page.getByRole('heading', { name: /Sites touristiques/i })).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Mont Cameroun')).toBeVisible()
+    await expect(page.locator('#travel-sites-city-filter')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Créer/i })).toBeVisible()
+  })
+})
+
+test.describe('TravelAgency — contacts voyageurs (TRAVEL-912/#6417)', () => {
+  test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('onglet Contacts : formulaire (consentement) + registre + notification manuelle', async ({ page }) => {
+    await loginViaToken(page)
+    await mockTravelApi(page)
+    await page.goto('/travel')
+
+    await page.getByRole('tab', { name: /Contacts/i }).click()
+    await expect(page.getByRole('heading', { name: /Formulaire de contact/i })).toBeVisible({ timeout: 15_000 })
+
+    // Soumission avec consentement obligatoire
+    await page.locator('#travel-contact-email').fill('visiteur@test.cm')
+    await page.locator('#travel-contact-message').fill('Je souhaite des informations sur les safaris.')
+    await page.getByRole('checkbox').check()
+    await page.getByRole('button', { name: /Envoyer la demande/i }).click()
+    await expect(page.getByText(/Demande reçue/i)).toBeVisible({ timeout: 15_000 })
+
+    // Registre + consentements + notification manuelle
+    await expect(page.getByText('awa@test.cm')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Notifier/i })).toBeVisible()
+    await page.getByRole('button', { name: /Notifier/i }).click()
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 15_000 })
+    await page.locator('#travel-notify-message').fill('Bonjour, votre agence vous informe…')
+    await page.getByRole('button', { name: /Envoyer/i }).click()
+  })
+})
+
