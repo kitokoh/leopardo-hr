@@ -21,10 +21,10 @@ use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
-use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
 use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
+>>>>>>> b1006aba0 (style(api): Pint — bootstrap/app.php, providers.php, routes/api.php (garde Backend Quality))
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -155,7 +155,6 @@ return Application::configure(basePath: dirname(__DIR__))
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
 =======
->>>>>>> 28bdbef34 (feat(travel): fondations verticale TravelAgency — BC-24 TRAVEL (TRAVEL-101..108, 201..203))
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
