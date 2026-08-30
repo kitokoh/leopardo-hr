@@ -2810,6 +2810,51 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
+            Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('title', 200);
+                $table->text('description_redacted')->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->unsignedSmallInteger('max_attempts')->default(1);
+                $table->timestamp('published_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'travel_quizzes_company_status_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
+            Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->string('question', 500);
+                $table->jsonb('options');
+                $table->unsignedSmallInteger('correct_option_index');
+                $table->unsignedSmallInteger('points')->default(1);
+                $table->unsignedSmallInteger('sort_order')->default(0);
+                $table->timestamps();
+                $table->index(['company_id', 'quiz_id'], 'travel_quiz_questions_company_quiz_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
+            Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('quiz_id');
+                $table->string('participant_type', 20);
+                $table->unsignedBigInteger('participant_id');
+                $table->jsonb('answers');
+                $table->unsignedSmallInteger('score')->default(0);
+                $table->string('status', 20)->default('completed');
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'quiz_id', 'participant_type', 'participant_id'], 'travel_quiz_participations_unique');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces (référentiels) ──
         if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
             Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
