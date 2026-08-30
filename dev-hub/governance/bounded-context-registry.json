@@ -727,34 +727,37 @@
       ]
     },
     {
-      "code": "BC-25",
-      "name": "RESTAURANT",
-      "context": "RestaurantManager",
-      "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
-      "owner": "Agent 25 — BC-RESTAURANT",
+"code": "BC-26",
+      "name": "DELIVERY",
+      "context": "Delivery",
+      "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
+      "owner": "Agent 26 — BC-DELIVERY",
       "priority": "P1",
-      "status": "active",
+      "status": "planned",
       "paths": [
         {
-          "path": "api/app/Modules/RestaurantManager",
-          "status": "active"
-        }
+          "path": "api/app/Modules/Delivery",
+          "status": "planned"        }
       ],
       "routes": [],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Modules\\RestaurantManager\\Domain\\Events"
-      ],
+"App\\Modules\\RestaurantManager\\Domain\\Events"      ],
       "dependencies": [
         "BC-02",
         "BC-03",
         "BC-04",
+"BC-05",
+        "BC-08",
         "BC-11",
         "BC-13",
-        "BC-20"
-      ]
+        "BC-14",
+        "BC-17",
+        "BC-18",
+        "BC-20",
+        "BC-22"      ]
     }
   ]
 }
