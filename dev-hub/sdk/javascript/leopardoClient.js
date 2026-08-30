@@ -1720,6 +1720,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/dashboard/summary", options);
     },
 
+    /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
+    getDeliveryPing(options = {}) {
+      return request("GET", "/delivery/ping", options);
+    },
+
     /** Comptes demo publics pour la documentation QA */
     getDemoUsers(options = {}) {
       return request("GET", "/demo-users", options);

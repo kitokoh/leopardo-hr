@@ -15,6 +15,11 @@ Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers 
 
 Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
 
+Note 2026-08-30 (BC-26 DELIVERY, DELIVERY-101/#6282) : nouvelle surface API du module de
+livraison generique — smoke `GET /api/v1/delivery/ping` (feature flag `companies.features.delivery`,
+403 FEATURE_NOT_ENABLED sans flag) ; les API livraisons/tournees/tracking/COD/rapports
+(`/api/v1/deliveries/*`) arrivent dans les lots suivants (DELIVERY-201..208).
+
 ## Perimetre
 
 - API publique
