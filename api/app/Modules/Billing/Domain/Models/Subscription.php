@@ -75,11 +75,14 @@ class Subscription extends Model
     }
 
     /**
-     * Transition d'état gardée (DEP-BC21 #5897).
+     * Transition d'état gardée (DEP-BC21 #5897/#6246).
      *
      * La machine à états est définie par {@see SubscriptionStatus} : toute
-     * transition invalide lève InvalidArgumentException (ex. suspended → rien
-     * d'autre que active/cancelled ; cancelled est terminal).
+     * transition invalide lève InvalidArgumentException. Une transition vers
+     * le statut COURANT est idempotente (sans exception) : elle ne fait que
+     * synchroniser les attributs additionnels (périodes, dates…) — c'est le
+     * contrat utilisé par les webhooks providers rejoués et les endpoints
+     * manager (upgrade/cancel/renew).
      *
      * @param  array<string, mixed>  $extra  attributs additionnels (period_end, cancelled_at…)
      */
@@ -87,7 +90,7 @@ class Subscription extends Model
     {
         $current = SubscriptionStatus::tryFrom((string) $this->status) ?? SubscriptionStatus::Trial;
 
-        if (! $current->canTransitionTo($status)) {
+        if ($current !== $status && ! $current->canTransitionTo($status)) {
             throw new InvalidArgumentException(
                 "Transition de souscription invalide : {$current->value} → {$status->value}"
             );
