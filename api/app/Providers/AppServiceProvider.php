@@ -79,6 +79,18 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading(app()->isLocal());
 
+        // FUEL-020 (#5814) : limiteur dédié aux écritures stock/incidents —
+        // opérations métier sensibles (fraude possible), bornées sous la
+        // limite générique `api`.
+        RateLimiter::for('fuel-station-write', function (Request $request) {
+            $employee = $request->user();
+            if ($employee && $employee->company_id) {
+                return Limit::perMinute(120)->by('fuel-write:company:'.$employee->company_id);
+            }
+
+            return Limit::perMinute(20)->by('fuel-write:ip:'.$request->ip());
+        });
+
         RateLimiter::for('api', function (Request $request) {
             // Exclure les healthchecks du rate limiting
             if ($request->is('api/v1/health')) {

@@ -3,7 +3,7 @@
 > **Issue :** [DEP-BC15 #5891](https://github.com/kitokoh/leopardo-hr/issues/5891)
 > **Contexte :** BC-15 — FuelStation (verticale pilote : stations, pompes, compteurs, sessions pompistes, ventes, dépôts, bilans)
 > **Date :** 2026-08-28
-> **Statut :** **Planifié** — la solution n'est pas encore sur `main` ; maturité à mesurer à l'arrivée du code (issues FUEL-001..022 en cours de livraison).
+> **Statut :** **En livraison** — FUEL-001..008 sur `main` (module FuelStation) ; lot FUEL-009/010/011/020 implémenté en PR sur `bc/bc15-fuel-operations` (2026-08-30), en attente de merge ; scorecard mise à jour au fil de l'eau.
 
 ## 1. Cartographie (état `main`)
 
@@ -19,7 +19,16 @@
 
 | Dimension | Statut | Constat |
 |---|---|---|
-| Toutes (1-12) | ⏳ Planifié | Chaque dimension sera évaluée à l'arrivée du code sur `main` — le DoD commun (12 dimensions) est le critère de sortie du pilote |
+| Dimension | Statut | Constat |
+|---|---|---|
+| D1 Domaine/métier | 🟢 Partiel | FUEL-009/010 : domain models + services (stocks, incidents) avec invariants testés |
+| D3 Transactions | 🟢 Partiel | FK composites anti cross-tenant, transitions validées en application |
+| D6 API/Policies | 🟢 Partiel | FUEL-011 : 20 routes référentiel + Policies deny-by-default, OpenAPI 0 drift |
+| D7 Asynchronisme | 🟡 Ouvert | Rapprochement rejouable (upsert idempotent) ; outbox contrat Accounting (FUEL-015) non livré |
+| D9 Sécurité | 🟢 Partiel | Threat model FUEL-020, idempotence rejeu, audit transitions, throttle dédié |
+| D10 Performance | 🟡 Ouvert | Index tenant-first posés ; budgets p95 à établir après merge |
+| D11 Observabilité | 🟢 Partiel | Logs corrélés sans PII (commande rapprochement) ; alertes à formaliser |
+| Autres (D2, D4, D5, D8, D12) | ⏳ À évaluer | Au merge du lot + golden journey GJ-06 |
 
 ## 3. Gates pilote (MAT-018 #5876)
 
