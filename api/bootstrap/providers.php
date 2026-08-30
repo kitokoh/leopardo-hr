@@ -19,7 +19,6 @@ use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
 use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
-use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Providers\AppServiceProvider;
