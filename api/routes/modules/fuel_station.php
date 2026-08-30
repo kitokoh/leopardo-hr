@@ -20,6 +20,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionControl
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
@@ -112,5 +113,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'storeTask']);
         Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
             ->whereNumber('task');
+
+        // FUEL-011 (#5805) : référentiel CRUD manager (stations, sites,
+        // pompes, cuves, compteurs, produits) — deny-by-default, filtres
+        // allowlist, pagination bornée.
+        Route::get('/fuel-station/{resource}', [FuelReferenceController::class, 'index'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products']);
+        Route::post('/fuel-station/{resource}', [FuelReferenceController::class, 'store'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products']);
+        Route::get('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'show'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
+        Route::put('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'update'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
+        Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
     });
 });

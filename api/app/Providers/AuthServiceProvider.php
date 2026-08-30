@@ -18,14 +18,20 @@ use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelIncidentPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelReferencePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelStockPolicy;
@@ -110,6 +116,13 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation incidents & maintenance (FUEL-010 #5804)
         Gate::policy(FuelIncident::class, FuelIncidentPolicy::class);
         Gate::policy(FuelMaintenanceTask::class, FuelIncidentPolicy::class);
+        // — FuelStation référentiel (FUEL-011 #5805)
+        Gate::policy(FuelStation::class, FuelReferencePolicy::class);
+        Gate::policy(FuelSite::class, FuelReferencePolicy::class);
+        Gate::policy(FuelPump::class, FuelReferencePolicy::class);
+        Gate::policy(FuelTank::class, FuelReferencePolicy::class);
+        Gate::policy(FuelMeterRegister::class, FuelReferencePolicy::class);
+        Gate::policy(FuelProduct::class, FuelReferencePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

@@ -2225,6 +2225,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Lister une ressource du référentiel (manager, paginé, FUEL-011 #5805) */
+    getFuelStationByResource(options = {}) {
+      return request("GET", "/fuel-station/{resource}", options);
+    },
+
+    /** Créer une ressource du référentiel (manager, FUEL-011 #5805) */
+    postFuelStationByResource(options = {}) {
+      return request("POST", "/fuel-station/{resource}", options);
+    },
+
+    /** Supprimer une ressource du référentiel (manager, FUEL-011 #5805) */
+    deleteFuelStationByResourceById(options = {}) {
+      return request("DELETE", "/fuel-station/{resource}/{id}", options);
+    },
+
+    /** Détail d'une ressource du référentiel (manager, FUEL-011 #5805) */
+    getFuelStationByResourceById(options = {}) {
+      return request("GET", "/fuel-station/{resource}/{id}", options);
+    },
+
+    /** Mettre à jour une ressource du référentiel (manager, FUEL-011 #5805) */
+    putFuelStationByResourceById(options = {}) {
+      return request("PUT", "/fuel-station/{resource}/{id}", options);
+    },
+
     /** Lister les sessions de caisse (manager) */
     getFuelStationCashSessions(options = {}) {
       return request("GET", "/fuel-station/cash-sessions", options);

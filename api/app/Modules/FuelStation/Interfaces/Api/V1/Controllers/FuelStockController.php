@@ -56,7 +56,7 @@ class FuelStockController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->authorize('viewStocks', FuelTank::class);
+        $this->authorize('viewStocks', FuelTankDelivery::class);
 
         $query = FuelTank::query()
             ->with('station:id,code,name')

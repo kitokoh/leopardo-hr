@@ -7522,6 +7522,223 @@ paths:
         '422':
           description: Transition interdite ou validation
 
+  /fuel-station/{resource}:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister une ressource du référentiel (manager, paginé, FUEL-011 #5805)
+      description: "Ressources : stations, sites, pumps, tanks, meters, products. Filtres allowlist (station_id, pump_id, status, product_type, unit_code) ; pagination bornée (per_page ≤ 100). Deny-by-default : manager uniquement."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stations, sites, pumps, tanks, meters, products]
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: pump_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: product_type
+        in: query
+        schema:
+          type: string
+      - name: unit_code
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Liste paginée de la ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    properties:
+                      current_page: {type: integer}
+                      last_page: {type: integer}
+                      total: {type: integer}
+                      per_page: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource inconnue
+    post:
+      tags:
+      - FuelStation
+      summary: Créer une ressource du référentiel (manager, FUEL-011 #5805)
+      description: "Validation stricte par ressource (stations, sites, pumps, tanks, meters, products) ; company_id injecté côté serveur."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stations, sites, pumps, tanks, meters, products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Ressource créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation
+
+  /fuel-station/{resource}/{id}:
+    get:
+      tags:
+      - FuelStation
+      summary: Détail d'une ressource du référentiel (manager, FUEL-011 #5805)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stations, sites, pumps, tanks, meters, products]
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre à jour une ressource du référentiel (manager, FUEL-011 #5805)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stations, sites, pumps, tanks, meters, products]
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Ressource mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer une ressource du référentiel (manager, FUEL-011 #5805)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: resource
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: [stations, sites, pumps, tanks, meters, products]
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ressource supprimée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: {type: integer}
+                      deleted: {type: boolean}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:

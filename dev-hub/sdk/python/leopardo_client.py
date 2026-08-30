@@ -1800,6 +1800,26 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def get_fuel_station_by_resource(self, **kwargs):
+        """Lister une ressource du référentiel (manager, paginé, FUEL-011 #5805)"""
+        return self.request("GET", "/fuel-station/{resource}", **kwargs)
+
+    def post_fuel_station_by_resource(self, **kwargs):
+        """Créer une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("POST", "/fuel-station/{resource}", **kwargs)
+
+    def delete_fuel_station_by_resource_by_id(self, **kwargs):
+        """Supprimer une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("DELETE", "/fuel-station/{resource}/{id}", **kwargs)
+
+    def get_fuel_station_by_resource_by_id(self, **kwargs):
+        """Détail d'une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("GET", "/fuel-station/{resource}/{id}", **kwargs)
+
+    def put_fuel_station_by_resource_by_id(self, **kwargs):
+        """Mettre à jour une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("PUT", "/fuel-station/{resource}/{id}", **kwargs)
+
     def get_fuel_station_cash_sessions(self, **kwargs):
         """Lister les sessions de caisse (manager)"""
         return self.request("GET", "/fuel-station/cash-sessions", **kwargs)
