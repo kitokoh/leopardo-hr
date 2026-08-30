@@ -7,6 +7,8 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Events\FuelCashSessionClosed;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
+use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
 
 /**
@@ -99,9 +101,37 @@ final class FuelCashSessionService
 
         $session = $session->refresh();
 
-        // Contrat Accounting (FUEL-015) : consommer l'événement pour générer
-        // les écritures comptables (état figé, statut closed).
+        // Contrat Accounting (FUEL-015, #5809) : consommer l'événement pour
+        // générer les écritures comptables (état figé, statut closed).
         FuelCashSessionClosed::dispatch($session);
+
+        // Outbox versionnée + idempotente : agrégats validés (ventes de la
+        // session, totaux, écart) — écriture locale, l'échec d'un
+        // consommateur Accounting n'affecte jamais la clôture.
+        $salesAmount = FuelSale::query()
+            ->where('company_id', $session->company_id)
+            ->where('cash_session_id', $session->id)
+            ->sum('amount');
+
+        FuelOutboxEvent::query()->firstOrCreate(
+            ['company_id' => $session->company_id, 'idempotency_key' => 'fuel-cash-closed:'.$session->id],
+            [
+                'event_type' => 'fuel.cash_session.closed.v1',
+                'payload_redacted' => [
+                    'cash_session_id' => $session->id,
+                    'station_id' => $session->station_id,
+                    'opening_balance' => $session->opening_balance,
+                    'closing_balance' => $session->closing_balance,
+                    'expected_balance' => $session->expected_balance,
+                    'variance' => $session->variance,
+                    'sales_amount' => round((float) $salesAmount, 2),
+                    'closed_at' => $session->closed_at?->toIso8601String(),
+                ],
+                'status' => FuelOutboxEvent::STATUS_PENDING,
+                'attempts' => 0,
+                'available_at' => now(),
+            ],
+        );
 
         return $session;
     }
