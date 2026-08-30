@@ -117,7 +117,7 @@ final class AccountingReportingSnapshotService
             return $this->dashboard->summary($companyId, $from, $to);
         }
 
-        throw new \InvalidArgumentException(__('accounting.errors.report_unknown', ['report' => $report]));
+        throw new \InvalidArgumentException('REPORT_UNKNOWN');
     }
 
     /**
