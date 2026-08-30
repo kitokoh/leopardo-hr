@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T12:00:00Z",
+  "_updated_at": "2026-08-30T16:35:58Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -4232,6 +4232,39 @@
     "dineIn": "في المكان",
     "loadError": "تعذر تحميل قائمة المطبخ.",
     "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا.",
-    "loading": "جارٍ تحميل قائمة المطبخ…"
+    "loading": "جارٍ تحميل قائمة المطبخ…",
+    "posTitle": "نقطة البيع",
+    "posSubtitle": "تسجيل الطلبات والتحصيل",
+    "newOrder": "طلب جديد",
+    "orderItems": "عناصر الطلب",
+    "addItem": "إضافة عنصر",
+    "bill": "الفاتورة",
+    "payCash": "الدفع نقداً",
+    "paid": "مدفوع",
+    "openSession": "فتح الصندوق",
+    "closeSession": "إغلاق الصندوق",
+    "sessionOpen": "الصندوق مفتوح",
+    "sessionClosed": "الصندوق مغلق",
+    "reservations": "الحجوزات",
+    "reservationNew": "حجز جديد",
+    "customerName": "اسم العميل",
+    "guests": "عدد الأشخاص",
+    "checkIn": "تسجيل الوصول",
+    "noShow": "عدم الحضور",
+    "shopTitle": "الطلب عبر الإنترنت",
+    "kioskTitle": "كشك الخدمة الذاتية",
+    "statusDraft": "مسودة",
+    "statusOpen": "مفتوح",
+    "statusInPreparation": "قيد التحضير",
+    "statusReady": "جاهز",
+    "statusServed": "تم التقديم",
+    "statusPaid": "مدفوع",
+    "statusClosed": "مغلق",
+    "statusCancelled": "ملغي",
+    "statusRefunded": "مسترجع",
+    "subtotal": "المجموع الفرعي",
+    "tax": "الضريبة",
+    "discount": "الخصم",
+    "total": "المجموع"
   }
 }

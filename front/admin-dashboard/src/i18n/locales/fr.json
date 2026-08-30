@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-30T12:00:00Z",
+  "_updated_at": "2026-08-30T16:35:58Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -4232,6 +4232,39 @@
     "dineIn": "Sur place",
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
-    "loading": "Chargement de la file cuisine…"
+    "loading": "Chargement de la file cuisine…",
+    "posTitle": "Point de vente",
+    "posSubtitle": "Prise de commande et encaissement",
+    "newOrder": "Nouvelle commande",
+    "orderItems": "Articles de la commande",
+    "addItem": "Ajouter un article",
+    "bill": "Addition",
+    "payCash": "Encaisser en espèces",
+    "paid": "Payée",
+    "openSession": "Ouvrir la caisse",
+    "closeSession": "Clôturer la caisse",
+    "sessionOpen": "Caisse ouverte",
+    "sessionClosed": "Caisse clôturée",
+    "reservations": "Réservations",
+    "reservationNew": "Nouvelle réservation",
+    "customerName": "Nom du client",
+    "guests": "Couverts",
+    "checkIn": "Enregistrer",
+    "noShow": "No-show",
+    "shopTitle": "Commande en ligne",
+    "kioskTitle": "Kiosque libre-service",
+    "statusDraft": "Brouillon",
+    "statusOpen": "Ouverte",
+    "statusInPreparation": "En préparation",
+    "statusReady": "Prête",
+    "statusServed": "Servie",
+    "statusPaid": "Payée",
+    "statusClosed": "Clôturée",
+    "statusCancelled": "Annulée",
+    "statusRefunded": "Remboursée",
+    "subtotal": "Sous-total",
+    "tax": "TVA",
+    "discount": "Remise",
+    "total": "Total"
   }
 }
