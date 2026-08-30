@@ -1294,6 +1294,188 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "TravelAgency (BC-24)",
+      "item": [
+        {
+          "name": "Rapports — ventes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/sales?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rapports — occupation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/occupancy?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rapports — recettes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/revenue?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rapports — annulations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/cancellations?from=2026-08-01T00:00:00Z&to=2026-08-31T23:59:59Z"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rapports — dashboard KPIs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/dashboard"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Export CSV (idempotent)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/reports/export"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report_type\": \"sales\",\n  \"from\": \"2026-08-01T00:00:00Z\",\n  \"to\": \"2026-08-31T23:59:59Z\",\n  \"idempotency_key\": \"export-demo-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Articles — création",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/articles"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"safari-nord\",\n  \"title\": \"Safari dans le Nord\",\n  \"body_redacted\": \"Guide\",\n  \"status\": \"draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Articles — modération",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/articles/1/moderate"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"published\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Commentaires — création",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/comments"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"article_id\": 1,\n  \"content\": \"Très utile\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Engagement — like",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/articles/1/like"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Engagement — note",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/articles/1/rate"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Engagement — agrégats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/travel/articles/1/engagement"
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
