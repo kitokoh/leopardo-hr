@@ -9,6 +9,7 @@ use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Infrastructure\Jobs\SendEduNotificationJob;
+use Illuminate\Support\Collection;
 
 /**
  * Notifications EduManager — EDU-014 (issue #5830).
@@ -68,7 +69,7 @@ final class EduNotificationService
      */
     private function dispatchToDirectors(string $companyId, string $templateKey, array $context): void
     {
-        /** @var \Illuminate\Support\Collection<int, int> $directorIds */
+        /** @var Collection<int, int> $directorIds */
         $directorIds = Employee::query()
             ->where('company_id', $companyId)
             ->where('role', 'manager')
