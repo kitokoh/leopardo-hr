@@ -10,8 +10,8 @@ use App\AI\Orchestrator;
 use App\AI\PendingActionStore;
 use App\AI\ToolPermissionPolicy;
 use App\AI\ToolRegistry;
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +26,7 @@ class AIGatewayController extends Controller
 
     public function chat(Request $request): JsonResponse
     {
+        /** @var array{message: string, conversation_id?: int} $validated */
         $validated = $request->validate([
             'message' => 'required|string|max:2000',
             'conversation_id' => 'nullable|integer',

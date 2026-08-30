@@ -35,20 +35,35 @@ class ToolPermissionPolicy
      */
     public function matrixFor(string $toolName): ?array
     {
-        /** @var array<string, array{role: string, permissions: list<string>}> $matrix */
+        /** @var mixed $matrix */
         $matrix = config('ai.tool_permissions', []);
 
+        if (! is_array($matrix)) {
+            return null;
+        }
+
+        /** @var mixed $entry */
         $entry = $matrix[$toolName] ?? null;
+
         if (! is_array($entry)) {
             return null;
         }
 
+        $role = $entry['role'] ?? 'employee';
+        $permissionsRaw = $entry['permissions'] ?? [];
+
+        $permissions = [];
+        if (is_array($permissionsRaw)) {
+            foreach ($permissionsRaw as $permission) {
+                if (is_scalar($permission)) {
+                    $permissions[] = (string) $permission;
+                }
+            }
+        }
+
         return [
-            'role' => (string) ($entry['role'] ?? 'employee'),
-            'permissions' => array_values(array_filter(array_map(
-                static fn (mixed $permission): string => is_scalar($permission) ? (string) $permission : '',
-                $entry['permissions'] ?? [],
-            ))),
+            'role' => is_scalar($role) ? (string) $role : 'employee',
+            'permissions' => $permissions,
         ];
     }
 
@@ -57,13 +72,19 @@ class ToolPermissionPolicy
      */
     public function permissionsForRole(string $role): array
     {
-        /** @var array<string, list<string>> $rolePermissions */
-        $rolePermissions = config('ai.role_permissions', []);
+        /** @var mixed $configured */
+        $configured = config('ai.role_permissions', []);
+        $entries = is_array($configured) && is_array($configured[$role] ?? null) ? $configured[$role] : [];
 
-        return array_values(array_filter(array_map(
-            static fn (mixed $permission): string => is_scalar($permission) ? (string) $permission : '',
-            $rolePermissions[$role] ?? [],
-        )));
+        $result = [];
+
+        foreach ($entries as $permission) {
+            if (is_scalar($permission)) {
+                $result[] = (string) $permission;
+            }
+        }
+
+        return $result;
     }
 
     public function canUse(string $toolName, string $role): bool

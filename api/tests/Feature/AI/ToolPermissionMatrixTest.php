@@ -45,7 +45,9 @@ class ToolPermissionMatrixTest extends TestCase
 
     public function test_config_matrix_covers_every_active_registry_tool(): void
     {
+        /** @var array<string, array{role: string, permissions: list<string>}> $matrix */
         $matrix = config('ai.tool_permissions', []);
+        /** @var array<int, string> $active */
         $active = AIToolRegistryEntry::query()->where('active', true)->pluck('name')->all();
 
         $this->assertNotEmpty($active);
@@ -74,8 +76,7 @@ class ToolPermissionMatrixTest extends TestCase
         $results = $engine->executeToolCalls($response, $company->id, $employee->id);
 
         $this->assertFalse($results[0]->success);
-        $payload = json_decode($results[0]->content, true);
-        $this->assertSame('AI_TOOL_PERMISSION_DENIED', $payload['error'] ?? null);
+        $this->assertSame('AI_TOOL_PERMISSION_DENIED', $this->payload($results[0]->content)['error'] ?? null);
     }
 
     public function test_manager_can_request_confirmation_for_approve_absence(): void
@@ -93,8 +94,7 @@ class ToolPermissionMatrixTest extends TestCase
         $results = $engine->executeToolCalls($response, $company->id, $manager->id);
 
         $this->assertTrue($results[0]->success);
-        $payload = json_decode($results[0]->content, true);
-        $this->assertSame('confirmation_required', $payload['status'] ?? null);
+        $this->assertSame('confirmation_required', $this->payload($results[0]->content)['status'] ?? null);
     }
 
     public function test_employee_can_request_confirmation_for_own_absence(): void
@@ -115,8 +115,7 @@ class ToolPermissionMatrixTest extends TestCase
         $results = $engine->executeToolCalls($response, $company->id, $employee->id);
 
         $this->assertTrue($results[0]->success);
-        $payload = json_decode($results[0]->content, true);
-        $this->assertSame('confirmation_required', $payload['status'] ?? null);
+        $this->assertSame('confirmation_required', $this->payload($results[0]->content)['status'] ?? null);
     }
 
     public function test_employee_cannot_read_manager_only_tool(): void
@@ -134,8 +133,7 @@ class ToolPermissionMatrixTest extends TestCase
         $results = $engine->executeToolCalls($response, $company->id, $employee->id);
 
         $this->assertFalse($results[0]->success);
-        $payload = json_decode($results[0]->content, true);
-        $this->assertSame('AI_TOOL_PERMISSION_DENIED', $payload['error'] ?? null);
+        $this->assertSame('AI_TOOL_PERMISSION_DENIED', $this->payload($results[0]->content)['error'] ?? null);
     }
 
     public function test_manager_can_read_manager_tool(): void
@@ -153,8 +151,7 @@ class ToolPermissionMatrixTest extends TestCase
         $results = $engine->executeToolCalls($response, $company->id, $manager->id);
 
         $this->assertTrue($results[0]->success);
-        $payload = json_decode($results[0]->content, true);
-        $this->assertArrayHasKey('total', $payload);
+        $this->assertArrayHasKey('total', $this->payload($results[0]->content));
     }
 
     public function test_confirmed_write_denied_returns_stable_error(): void
@@ -179,13 +176,18 @@ class ToolPermissionMatrixTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);
-        $employeeNames = collect($this->getJson('/api/v1/ai/tools')->json('data'))->pluck('name')->all();
+        /** @var array<int, array<string, mixed>> $employeeData */
+        $employeeData = $this->getJson('/api/v1/ai/tools')->json('data');
+        $employeeNames = collect($employeeData)->pluck('name')->all();
         $this->assertContains('create_absence', $employeeNames);
         $this->assertNotContains('approve_absence', $employeeNames);
         $this->assertNotContains('get_headcount', $employeeNames);
 
+        /** @var Employee $manager */
         Sanctum::actingAs($manager);
-        $managerNames = collect($this->getJson('/api/v1/ai/tools')->json('data'))->pluck('name')->all();
+        /** @var array<int, array<string, mixed>> $managerData */
+        $managerData = $this->getJson('/api/v1/ai/tools')->json('data');
+        $managerNames = collect($managerData)->pluck('name')->all();
         $this->assertContains('approve_absence', $managerNames);
         $this->assertContains('get_headcount', $managerNames);
     }
@@ -207,12 +209,31 @@ class ToolPermissionMatrixTest extends TestCase
      */
     private function aiFixture(string $role): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = $role === 'manager'
             ? Employee::factory()->manager()->create(['company_id' => $company->id])
             : Employee::factory()->create(['company_id' => $company->id]);
 
         return [$company, $employee];
+    }
+
+    /**
+     * Décode un ToolResult.content JSON (stdClass/mixed → tableau).
+     *
+     * @return array<string, mixed>
+     */
+    private function payload(string $content): array
+    {
+        $decoded = json_decode($content, true);
+
+        if (! is_array($decoded)) {
+            return [];
+        }
+
+        /** @var array<string, mixed> $decoded */
+        return $decoded;
     }
 
     private function fakeLlmClientWithWriteToolCall(): void
