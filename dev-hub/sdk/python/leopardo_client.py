@@ -3048,6 +3048,10 @@ class LeopardoClient:
         """Taux de rotation (turnover) sur N mois"""
         return self.request("GET", "/reports/turnover", **kwargs)
 
+    def get_restaurant_ping(self, **kwargs):
+        """Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)"""
+        return self.request("GET", "/restaurant/ping", **kwargs)
+
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
         return self.request("GET", "/salary-advances", **kwargs)

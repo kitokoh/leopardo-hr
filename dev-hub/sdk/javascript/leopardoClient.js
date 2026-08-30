@@ -3785,6 +3785,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/reports/turnover", options);
     },
 
+    /** Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158) */
+    getRestaurantPing(options = {}) {
+      return request("GET", "/restaurant/ping", options);
+    },
+
     /** Lister les avances sur salaire */
     getSalaryAdvances(options = {}) {
       return request("GET", "/salary-advances", options);
