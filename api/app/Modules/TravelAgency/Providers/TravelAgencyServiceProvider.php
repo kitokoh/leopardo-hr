@@ -6,18 +6,24 @@ namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
-use App\Modules\TravelAgency\Console\Commands\TravelExpirePendingBookingsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelExpirePendingBookingsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelSettleSalesCommand;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
-use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
+use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
@@ -25,22 +31,21 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
+use App\Modules\TravelAgency\Policies\TravelAdvertPolicy;
 use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
+use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
+use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
-use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
-use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
+use App\Modules\TravelAgency\Policies\TravelQuizPolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
 use Illuminate\Support\Facades\Gate;
@@ -81,6 +86,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
             TravelOutboxDispatchCommand::class,
             TravelSettleSalesCommand::class,
             TravelExpirePendingBookingsCommand::class,
+            TravelExpireAdvertsCommand::class,
         ]);
     }
 
@@ -109,5 +115,9 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelArticle::class, TravelArticlePolicy::class);
         Gate::policy(TravelComment::class, TravelCommentPolicy::class);
         Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
+
+        // Quiz & annonces payantes (TRAVEL-904..908, #6107..#6111).
+        Gate::policy(TravelQuiz::class, TravelQuizPolicy::class);
+        Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
     }
 }
