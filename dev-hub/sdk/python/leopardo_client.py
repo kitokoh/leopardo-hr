@@ -1520,6 +1520,90 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_edu_academic_years(self, **kwargs):
+        """Lister les années scolaires (tenants-scoped)"""
+        return self.request("GET", "/edu/academic-years", **kwargs)
+
+    def post_edu_academic_years(self, **kwargs):
+        """Creer une annee scolaire (direction)"""
+        return self.request("POST", "/edu/academic-years", **kwargs)
+
+    def put_edu_academic_years_by_year(self, **kwargs):
+        """Mettre a jour une annee scolaire (direction)"""
+        return self.request("PUT", "/edu/academic-years/{year}", **kwargs)
+
+    def get_edu_attendance(self, **kwargs):
+        """Lister les presences (enseignant = ses classes)"""
+        return self.request("GET", "/edu/attendance", **kwargs)
+
+    def post_edu_attendance(self, **kwargs):
+        """Enregistrer une presence (direction ou enseignant de la classe)"""
+        return self.request("POST", "/edu/attendance", **kwargs)
+
+    def post_edu_attendance_by_record_correct(self, **kwargs):
+        """Corriger une presence (versionnee + auditee)"""
+        return self.request("POST", "/edu/attendance/{record}/correct", **kwargs)
+
+    def get_edu_classes(self, **kwargs):
+        """Lister les classes"""
+        return self.request("GET", "/edu/classes", **kwargs)
+
+    def post_edu_classes(self, **kwargs):
+        """Creer une classe (direction)"""
+        return self.request("POST", "/edu/classes", **kwargs)
+
+    def put_edu_classes_by_class(self, **kwargs):
+        """Mettre a jour une classe (direction)"""
+        return self.request("PUT", "/edu/classes/{class}", **kwargs)
+
+    def get_edu_evaluations(self, **kwargs):
+        """Lister les evaluations"""
+        return self.request("GET", "/edu/evaluations", **kwargs)
+
+    def post_edu_evaluations(self, **kwargs):
+        """Creer une evaluation (direction ou enseignant de la classe)"""
+        return self.request("POST", "/edu/evaluations", **kwargs)
+
+    def get_edu_evaluations_by_evaluation_grades(self, **kwargs):
+        """Notes d'une evaluation (derniere version par eleve)"""
+        return self.request("GET", "/edu/evaluations/{evaluation}/grades", **kwargs)
+
+    def post_edu_evaluations_by_evaluation_grades(self, **kwargs):
+        """Saisir une note (draft, direction ou enseignant de la classe)"""
+        return self.request("POST", "/edu/evaluations/{evaluation}/grades", **kwargs)
+
+    def post_edu_evaluations_by_evaluation_publish(self, **kwargs):
+        """Publier une evaluation (notes immuables ensuite)"""
+        return self.request("POST", "/edu/evaluations/{evaluation}/publish", **kwargs)
+
+    def post_edu_grades_by_entry_correct(self, **kwargs):
+        """Corriger une note publiee (nouvelle version, immuabilite)"""
+        return self.request("POST", "/edu/grades/{entry}/correct", **kwargs)
+
+    def get_edu_subjects(self, **kwargs):
+        """Lister les matieres"""
+        return self.request("GET", "/edu/subjects", **kwargs)
+
+    def post_edu_subjects(self, **kwargs):
+        """Creer une matiere (direction)"""
+        return self.request("POST", "/edu/subjects", **kwargs)
+
+    def put_edu_subjects_by_subject(self, **kwargs):
+        """Mettre a jour une matiere (direction)"""
+        return self.request("PUT", "/edu/subjects/{subject}", **kwargs)
+
+    def get_edu_teachers(self, **kwargs):
+        """Lister les enseignants"""
+        return self.request("GET", "/edu/teachers", **kwargs)
+
+    def post_edu_teachers(self, **kwargs):
+        """Declarer un enseignant (direction)"""
+        return self.request("POST", "/edu/teachers", **kwargs)
+
+    def post_edu_teachers_by_teacher_assignments(self, **kwargs):
+        """Affecter un enseignant a une classe/matiere (direction)"""
+        return self.request("POST", "/edu/teachers/{teacher}/assignments", **kwargs)
+
     def get_employee_documents(self, **kwargs):
         """Lister les documents des dossiers employes (checklist G3)"""
         return self.request("GET", "/employee-documents", **kwargs)

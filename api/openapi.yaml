@@ -6865,6 +6865,704 @@ paths:
         '404':
           description: Affectation introuvable ou autre tenant
 
+  # ———— BC-16 EduManager batch 1 (EDU-003/005/007/009/010)
+  /edu/academic-years:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les années scolaires (tenants-scoped)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - archived
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Annees paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer une annee scolaire (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - start_date
+              - end_date
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - archived
+      responses:
+        '201':
+          description: Annee creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu/academic-years/{year}:
+    put:
+      tags:
+      - EduManager
+      summary: Mettre a jour une annee scolaire (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              - start_date
+              - end_date
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                start_date:
+                  type: string
+                  format: date
+                end_date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Annee mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/classes:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les classes
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Classes paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer une classe (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - academic_year_id
+              - code
+              - name
+              properties:
+                campus_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                code:
+                  type: string
+                name:
+                  type: string
+                grade_level:
+                  type: string
+                capacity:
+                  type: integer
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - archived
+      responses:
+        '201':
+          description: Classe creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu/classes/{class}:
+    put:
+      tags:
+      - EduManager
+      summary: Mettre a jour une classe (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                grade_level:
+                  type: string
+                capacity:
+                  type: integer
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Classe mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/subjects:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les matieres
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Matieres paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer une matiere (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - name
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Matiere creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu/subjects/{subject}:
+    put:
+      tags:
+      - EduManager
+      summary: Mettre a jour une matiere (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: subject
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Matiere mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/teachers:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les enseignants
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Enseignants pagines
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Declarer un enseignant (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              properties:
+                employee_id:
+                  type: integer
+      responses:
+        '201':
+          description: Enseignant declare
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu/teachers/{teacher}/assignments:
+    post:
+      tags:
+      - EduManager
+      summary: Affecter un enseignant a une classe/matiere (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: teacher
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - class_id
+              - subject_id
+              - academic_year_id
+              properties:
+                class_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+      responses:
+        '200':
+          description: Affectation enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/attendance:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les presences (enseignant = ses classes)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+      - name: session_date
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Presences paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Enregistrer une presence (direction ou enseignant de la classe)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - class_id
+              - student_id
+              properties:
+                class_id:
+                  type: integer
+                student_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                session_date:
+                  type: string
+                  format: date
+                session_label:
+                  type: string
+                status:
+                  type: string
+                  enum:
+                  - present
+                  - absent
+                  - late
+                  - excused
+                reason:
+                  type: string
+                justified:
+                  type: boolean
+      responses:
+        '201':
+          description: Presence enregistree (idempotente)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu/attendance/{record}/correct:
+    post:
+      tags:
+      - EduManager
+      summary: Corriger une presence (versionnee + auditee)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: record
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              - correction_reason
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - present
+                  - absent
+                  - late
+                  - excused
+                reason:
+                  type: string
+                justified:
+                  type: boolean
+                correction_reason:
+                  type: string
+      responses:
+        '200':
+          description: Presence corrigee (version+1)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/evaluations:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les evaluations
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+      - name: academic_year_id
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Evaluations paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Creer une evaluation (direction ou enseignant de la classe)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - class_id
+              - subject_id
+              - academic_year_id
+              - title
+              properties:
+                class_id:
+                  type: integer
+                subject_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                title:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                  - exam
+                  - quiz
+                  - homework
+                  - continuous
+                coefficient:
+                  type: number
+                max_score:
+                  type: number
+      responses:
+        '201':
+          description: Evaluation creee (draft)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu/evaluations/{evaluation}/publish:
+    post:
+      tags:
+      - EduManager
+      summary: Publier une evaluation (notes immuables ensuite)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: evaluation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Evaluation publiee (idempotent)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+  /edu/evaluations/{evaluation}/grades:
+    get:
+      tags:
+      - EduManager
+      summary: Notes d'une evaluation (derniere version par eleve)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: evaluation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Notes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+    post:
+      tags:
+      - EduManager
+      summary: Saisir une note (draft, direction ou enseignant de la classe)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: evaluation
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - score
+              properties:
+                student_id:
+                  type: integer
+                score:
+                  type: number
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Note saisie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu/grades/{entry}/correct:
+    post:
+      tags:
+      - EduManager
+      summary: Corriger une note publiee (nouvelle version, immuabilite)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: entry
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - score
+              - correction_reason
+              properties:
+                score:
+                  type: number
+                comment:
+                  type: string
+                correction_reason:
+                  type: string
+      responses:
+        '200':
+          description: Note corrigee (version+1)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:

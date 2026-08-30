@@ -1875,6 +1875,111 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/readiness", options);
     },
 
+    /** Lister les années scolaires (tenants-scoped) */
+    getEduAcademicYears(options = {}) {
+      return request("GET", "/edu/academic-years", options);
+    },
+
+    /** Creer une annee scolaire (direction) */
+    postEduAcademicYears(options = {}) {
+      return request("POST", "/edu/academic-years", options);
+    },
+
+    /** Mettre a jour une annee scolaire (direction) */
+    putEduAcademicYearsByYear(options = {}) {
+      return request("PUT", "/edu/academic-years/{year}", options);
+    },
+
+    /** Lister les presences (enseignant = ses classes) */
+    getEduAttendance(options = {}) {
+      return request("GET", "/edu/attendance", options);
+    },
+
+    /** Enregistrer une presence (direction ou enseignant de la classe) */
+    postEduAttendance(options = {}) {
+      return request("POST", "/edu/attendance", options);
+    },
+
+    /** Corriger une presence (versionnee + auditee) */
+    postEduAttendanceByRecordCorrect(options = {}) {
+      return request("POST", "/edu/attendance/{record}/correct", options);
+    },
+
+    /** Lister les classes */
+    getEduClasses(options = {}) {
+      return request("GET", "/edu/classes", options);
+    },
+
+    /** Creer une classe (direction) */
+    postEduClasses(options = {}) {
+      return request("POST", "/edu/classes", options);
+    },
+
+    /** Mettre a jour une classe (direction) */
+    putEduClassesByClass(options = {}) {
+      return request("PUT", "/edu/classes/{class}", options);
+    },
+
+    /** Lister les evaluations */
+    getEduEvaluations(options = {}) {
+      return request("GET", "/edu/evaluations", options);
+    },
+
+    /** Creer une evaluation (direction ou enseignant de la classe) */
+    postEduEvaluations(options = {}) {
+      return request("POST", "/edu/evaluations", options);
+    },
+
+    /** Notes d'une evaluation (derniere version par eleve) */
+    getEduEvaluationsByEvaluationGrades(options = {}) {
+      return request("GET", "/edu/evaluations/{evaluation}/grades", options);
+    },
+
+    /** Saisir une note (draft, direction ou enseignant de la classe) */
+    postEduEvaluationsByEvaluationGrades(options = {}) {
+      return request("POST", "/edu/evaluations/{evaluation}/grades", options);
+    },
+
+    /** Publier une evaluation (notes immuables ensuite) */
+    postEduEvaluationsByEvaluationPublish(options = {}) {
+      return request("POST", "/edu/evaluations/{evaluation}/publish", options);
+    },
+
+    /** Corriger une note publiee (nouvelle version, immuabilite) */
+    postEduGradesByEntryCorrect(options = {}) {
+      return request("POST", "/edu/grades/{entry}/correct", options);
+    },
+
+    /** Lister les matieres */
+    getEduSubjects(options = {}) {
+      return request("GET", "/edu/subjects", options);
+    },
+
+    /** Creer une matiere (direction) */
+    postEduSubjects(options = {}) {
+      return request("POST", "/edu/subjects", options);
+    },
+
+    /** Mettre a jour une matiere (direction) */
+    putEduSubjectsBySubject(options = {}) {
+      return request("PUT", "/edu/subjects/{subject}", options);
+    },
+
+    /** Lister les enseignants */
+    getEduTeachers(options = {}) {
+      return request("GET", "/edu/teachers", options);
+    },
+
+    /** Declarer un enseignant (direction) */
+    postEduTeachers(options = {}) {
+      return request("POST", "/edu/teachers", options);
+    },
+
+    /** Affecter un enseignant a une classe/matiere (direction) */
+    postEduTeachersByTeacherAssignments(options = {}) {
+      return request("POST", "/edu/teachers/{teacher}/assignments", options);
+    },
+
     /** Lister les documents des dossiers employes (checklist G3) */
     getEmployeeDocuments(options = {}) {
       return request("GET", "/employee-documents", options);

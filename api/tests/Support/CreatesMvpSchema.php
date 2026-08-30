@@ -2473,6 +2473,154 @@ trait CreatesMvpSchema
             });
         }
 
+        // — EduManager batch 1 (EDU-003/005/007, #5819/#5821/#5823) : parité
+        // fixture ↔ migrations tenant 2026_08_30_0005xx (garde #5443).
+        if (! Schema::hasTable($this->moduleTable('edu_academic_years'))) {
+            Schema::create($this->moduleTable('edu_academic_years'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->date('start_date');
+                $table->date('end_date');
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'edu_academic_years_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_classes'))) {
+            Schema::create($this->moduleTable('edu_classes'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('campus_id')->nullable()->index();
+                $table->unsignedBigInteger('academic_year_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('grade_level', 40)->nullable();
+                $table->unsignedSmallInteger('capacity')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'academic_year_id', 'code'], 'edu_classes_year_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_subjects'))) {
+            Schema::create($this->moduleTable('edu_subjects'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'edu_subjects_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_teachers'))) {
+            Schema::create($this->moduleTable('edu_teachers'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'employee_id'], 'edu_teachers_company_employee_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_teacher_assignments'))) {
+            Schema::create($this->moduleTable('edu_teacher_assignments'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('class_id')->index();
+                $table->unsignedBigInteger('subject_id')->index();
+                $table->unsignedBigInteger('teacher_id')->index();
+                $table->unsignedBigInteger('academic_year_id')->index();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'class_id', 'subject_id', 'academic_year_id'], 'edu_teacher_assignments_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_attendance_records'))) {
+            Schema::create($this->moduleTable('edu_attendance_records'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('class_id')->index();
+                $table->unsignedBigInteger('student_id')->index();
+                $table->unsignedBigInteger('subject_id')->nullable()->index();
+                $table->date('session_date');
+                $table->string('session_label', 120)->nullable();
+                $table->string('status', 20)->default('present');
+                $table->string('reason', 255)->nullable();
+                $table->boolean('justified')->default(false);
+                $table->unsignedInteger('recorded_by');
+                $table->unsignedInteger('version')->default(1);
+                $table->string('previous_status', 20)->nullable();
+                $table->string('correction_reason', 255)->nullable();
+                $table->unsignedInteger('corrected_by')->nullable();
+                $table->timestampTz('corrected_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'student_id', 'class_id', 'session_date', 'subject_id'], 'edu_attendance_record_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_attendance_corrections'))) {
+            Schema::create($this->moduleTable('edu_attendance_corrections'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('record_id')->index();
+                $table->string('from_status', 20);
+                $table->string('to_status', 20);
+                $table->string('reason', 255);
+                $table->unsignedInteger('corrected_by');
+                $table->timestampTz('corrected_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_evaluations'))) {
+            Schema::create($this->moduleTable('edu_evaluations'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('class_id')->index();
+                $table->unsignedBigInteger('subject_id')->index();
+                $table->unsignedBigInteger('academic_year_id')->index();
+                $table->string('title', 200);
+                $table->string('type', 20)->default('exam');
+                $table->decimal('coefficient', 6, 2)->default(1);
+                $table->decimal('max_score', 8, 2)->default(20);
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('created_by');
+                $table->unsignedInteger('published_by')->nullable();
+                $table->timestampTz('published_at')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_grade_entries'))) {
+            Schema::create($this->moduleTable('edu_grade_entries'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('evaluation_id')->index();
+                $table->unsignedBigInteger('student_id')->index();
+                $table->decimal('score', 8, 2);
+                $table->string('status', 20)->default('draft');
+                $table->string('comment', 500)->nullable();
+                $table->unsignedInteger('version')->default(1);
+                $table->unsignedInteger('entered_by');
+                $table->string('correction_reason', 255)->nullable();
+                $table->unsignedInteger('corrected_by')->nullable();
+                $table->timestampTz('corrected_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'evaluation_id', 'student_id', 'version'], 'edu_grade_entry_version_unique');
+            });
+        }
+
     }
 
     private function dropMvpTables(): void
