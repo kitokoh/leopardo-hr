@@ -38,7 +38,7 @@ final class RecomputeReportingSnapshotCommand extends Command
     {
         $input = $this->argument('company');
 
-        if (! is_string($input) || trim($input) === '') {
+        if (trim((string) $input) === '') {
             $this->error("Argument obligatoire : ID (uuid) ou slug de l'entreprise.");
 
             return self::FAILURE;

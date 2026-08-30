@@ -35,8 +35,6 @@ final class AccountingReportingSnapshotService
 
     /**
      * Recompute idempotent du snapshot d'un read model pour une période.
-     *
-     * @return array<string, mixed>
      */
     public function recompute(string $companyId, string $report, ?string $from = null, ?string $to = null): AccountingReportingSnapshot
     {
@@ -116,7 +114,7 @@ final class AccountingReportingSnapshotService
             return $this->dashboard->summary($companyId, $from, $to);
         }
 
-        throw new \InvalidArgumentException("Read model inconnu : {$report}");
+        throw new \InvalidArgumentException(__('accounting.errors.report_unknown', ['report' => $report]));
     }
 
     /**
