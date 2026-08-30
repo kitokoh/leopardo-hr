@@ -1,0 +1,55 @@
+name: PR Issue Guard
+
+# Anciennement "PLAN_ACTION2 Claim Guard" — renommé (nettoyage CI, PLAN_ACTION2
+# est clos depuis le 2026-07-26, cf. PILOTAGE.md « Gouvernance documentaire »).
+# Les 2 gardes spécifiques au protocole multi-agent PA2-* ont été retirés avec
+# le reste du workflow :
+#   - check-plan-action2-claim.sh (collision de claim sur un ID PA2-*)
+#   - check-plan-action2-pr-id.sh (avertissement non bloquant si aucun ID PA2-*)
+#
+# Les 2 gardes restants n'ont jamais été spécifiques à PLAN_ACTION2 :
+#   - check-issue-claim-unique.sh (issue #5442) : une issue GitHub ne doit pas
+#     être réclamée par 2 PR ouvertes en même temps (protocole #2400).
+#   - check-pr-closes-issue.sh (PA2-OPS-008) : chaque PR doit référencer une
+#     issue GitHub qu'elle ferme (sauf typage docs:/chore:) — règle toujours en
+#     vigueur, rappelée dans .github/PULL_REQUEST_TEMPLATE.md.
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: pr-issue-guard-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  issue-guard:
+    timeout-minutes: 15
+    name: Check PR/issue governance
+    # Interne : ne s'exécute que sur les PR du dépôt, jamais sur les forks
+    # (comportement inchangé depuis PLAN_ACTION2 Claim Guard, issue #1731).
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Check unique issue claim per PR (issue #5442)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-issue-claim-unique.sh
+          dev-hub/tools/check-issue-claim-unique.sh "${{ github.repository }}"
+
+      - name: Require the PR to close a GitHub Issue (PA2-OPS-008)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/check-pr-closes-issue.sh
+          dev-hub/tools/check-pr-closes-issue.sh "${{ github.repository }}" "${{ github.event.pull_request.number }}"

@@ -15,7 +15,7 @@
 
 | Secret | Used by | Purpose | Required? |
 |---|---|---|---|
-| `CLOUDFLARE_API_TOKEN` | `deploy-admin-dashboard.yml` | Déploiement Cloudflare Pages/Workers de l'admin (la vitrine est déployée via l'intégration Cloudflare Pages, pas un workflow — voir note ci-dessous) | Required for Cloudflare deploys |
+| `CLOUDFLARE_API_TOKEN` | `deploy-admin-dashboard.yml` | Déploiement Cloudflare Pages/Workers de l'admin (la vitrine `front/web` est sur Vercel, pas Cloudflare — voir note corrigée ci-dessous, 2026-08-29) | Required for Cloudflare deploys |
 | `CLOUDFLARE_ACCOUNT_ID` | `deploy-admin-dashboard.yml` | Compte Cloudflare cible | Required for Cloudflare deploys |
 | `GOOGLE_SERVICES_JSON` | `mobile-distribute*.yml` | `google-services.json` injecté dans les builds Android (employee/manager/hr/platform_admin) | Required for mobile distribution |
 | `VITE_WEBSOCKET_URL` | `deploy-admin-dashboard.yml` | URL WebSocket de l'admin (sans elle, le socket retombe sur `ws://localhost:6001` — #3392) | Optional (fallback) |
@@ -23,7 +23,16 @@
 | `K6_EMPLOYEE_TOKENS` / `K6_MANAGER_TOKENS` / `K6_PAYROLL_RUN_IDS` | `k6-load-smoke.yml` | Tokens/scénarios k6 des parcours authentifiés | Optional (health-only sans) |
 | `BRANCH_PROTECTION_TOKEN` | `branch-protection-guard.yml` | Lecture de la protection de branche (check cron) | Required for the guard |
 
-> **Déploiement de la vitrine** : la vitrine `front/web` est déployée via l'intégration Cloudflare Pages — aucun workflow de déploiement vitrine dédié n'existe (le workflow CI vitrine s'appelle `web-marketing-ci.yml`), donc aucun secret GitHub n'est requis pour ce déploiement.
+> **Déploiement de la vitrine** (corrigé le 2026-08-29 — l'affirmation précédente citant
+> Cloudflare Pages était fausse, contredite par `front/web/vercel.json` qui existe bien dans le
+> repo et contient des clés spécifiques à Vercel, ex. `ignoreCommand` s'appuyant sur
+> `$VERCEL_GIT_COMMIT_REF`/`$VERCEL_GIT_PREVIOUS_SHA`) : la vitrine `front/web` (Next.js) est
+> déployée via l'intégration Git native **Vercel** — aucun workflow de déploiement vitrine dédié
+> n'existe côté GitHub Actions (le workflow CI vitrine s'appelle `web-marketing-ci.yml`), donc
+> aucun secret GitHub n'est requis pour ce déploiement. Note : cette intégration Git native a le
+> même risque de dérive silencieuse que celui qui a affecté l'admin-dashboard sur Cloudflare
+> Pages (#1834) ; contrairement à l'admin-dashboard, la vitrine n'a ni chemin de déploiement
+> GitHub Actions de secours, ni garde de dérive équivalente à `admin-pages-deploy-guard.yml`.
 
 ## Secrets
 
@@ -56,7 +65,6 @@
 | `K6_EMPLOYEE_TOKEN` / `K6_MANAGER_TOKEN` | `k6-load-smoke.yml` | Auth tokens used by k6 load-smoke scripts | Required for that workflow |
 | `LEOPARDO_EMPLOYEE_TOKEN` / `LEOPARDO_MANAGER_TOKEN` / `LEOPARDO_PLATFORM_ADMIN_TOKEN` | `launch-api-profile-smoke.yml` | Auth tokens for API profile smoke checks | Required for that workflow |
 | `LEOPARDO_KIOSK_TOKEN` / `LEOPARDO_KIOSK_DEVICE_CODE` | `launch-api-profile-smoke.yml` | Kiosk-mode auth for API profile smoke checks | Required for that workflow |
-| `PLAN_ACTION2_PROJECT_TOKEN` | `plan-action2-project.yml` | GitHub Projects (v2) token with `project` scope, since `GITHUB_TOKEN` cannot write to Projects | Required for that workflow |
 | `GITHUB_TOKEN` | `fix-composer-lock.yml` (and implicitly most workflows via `actions/checkout`, PR comments, etc.) | Default GitHub-provided token | Auto-provided, no setup needed |
 
 ## Variables (`vars.*`, non-sensitive)
@@ -68,7 +76,7 @@
 | `CI_REPORT_FROM` | `tests.yml` | From address for the CI report email | `CI_SMTP_USERNAME` |
 | `ENABLE_CODEQL_PR` | `codeql.yml` | `"true"` runs the CodeQL (Actions) job on `pull_request` events too | Off (schedule/push only) |
 | `STAGING_API_URL` | `deploy-staging.yml` | Overrides the staging API base URL for health checks and the `environment.url` link | `https://gestionemployerbackend.onrender.com` |
-| `PLAN_ACTION2_PROJECT_NUMBER` / `PLAN_ACTION2_PROJECT_OWNER` / `PLAN_ACTION2_PROJECT_OWNER_TYPE` | `plan-action2-project.yml` | GitHub Projects (v2) coordinates for the automation | Required for that workflow |
+| `PLAN_ACTION2_WEEKLY_REPORT_ISSUE` | `fix-feat-ratio-report.yml` (anciennement `plan-action2-weekly-report.yml`) | Issue number to post the weekly fix/feat ratio report as a comment; name kept as-is to avoid silently breaking an existing repo-settings value | Optional (step summary only if unset) |
 
 ## Notes
 
