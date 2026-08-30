@@ -4515,19 +4515,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/travel/partner/sync", options);
     },
 
-    /** Statut d'un paiement (TRAVEL-408/#6060) */
-    getTravelPaymentsByTravelPayment(options = {}) {
-      return request("GET", "/travel/payments/{travelPayment}", options);
+    /** Remboursement d'un paiement (TRAVEL-411/#6063) */
+    postTravelPaymentsByTravelPaymentRefund(options = {}) {
+      return request("POST", "/travel/payments/{travelPayment}/refund", options);
     },
 
-    /** Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061) */
-    postTravelPaymentsCallback(options = {}) {
-      return request("POST", "/travel/payments/callback", options);
-    },
-
-    /** Initiation d'un paiement (TRAVEL-408/#6060) */
-    postTravelPaymentsInitiate(options = {}) {
-      return request("POST", "/travel/payments/initiate", options);
+    /** Re-conciliation d'un paiement (TRAVEL-410/#6062) */
+    postTravelPaymentsByTravelPaymentVerify(options = {}) {
+      return request("POST", "/travel/payments/{travelPayment}/verify", options);
     },
 
     /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
@@ -4670,26 +4665,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
     },
 
-    /** Réservation en ligne (TRAVEL-403/#6055) */
-    postTravelShopBookings(options = {}) {
-      return request("POST", "/travel/shop/bookings", options);
-    },
-
-    /** Suivi d'une réservation par référence (TRAVEL-404/#6056) */
-    getTravelShopBookingsByReference(options = {}) {
-      return request("GET", "/travel/shop/bookings/{reference}", options);
-    },
-
-    /** Recherche boutique en ligne (TRAVEL-401/#6053) */
-    getTravelShopTrips(options = {}) {
-      return request("GET", "/travel/shop/trips", options);
-    },
-
-    /** Détail + disponibilité d'un trajet (TRAVEL-402/#6054) */
-    getTravelShopTripsByTravelTrip(options = {}) {
-      return request("GET", "/travel/shop/trips/{travelTrip}", options);
-    },
-
     /** Liste des gares/terminaux (TRAVEL-302/#6032) */
     getTravelStations(options = {}) {
       return request("GET", "/travel/stations", options);
@@ -4718,6 +4693,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Check-in / embarquement (TRAVEL-317/#6047) */
     postTravelTicketsByTravelTicketCheckIn(options = {}) {
       return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
+    },
+
+    /** URL signée du billet PDF (TRAVEL-412/413/#6064/#6065) */
+    getTravelTicketsByTravelTicketPdf(options = {}) {
+      return request("GET", "/travel/tickets/{travelTicket}/pdf", options);
+    },
+
+    /** Révocation d'un billet (TRAVEL-413/#6065) */
+    postTravelTicketsByTravelTicketRevoke(options = {}) {
+      return request("POST", "/travel/tickets/{travelTicket}/revoke", options);
     },
 
     /** Liste des trajets (TRAVEL-308/#6038) */

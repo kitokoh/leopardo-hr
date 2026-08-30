@@ -1560,3 +1560,12 @@ Début de l'épic 4xx : `GET /travel/shop/trips` (recherche trajets publiés), `
   montant incohérent → 422, référence inconnue → 404, rejeu → `replayed: true` sans effet de bord, confirmation → payment_status
   confirmé + événement outbox ; PII jamais exposée.
 - Couverture : `api/tests/Feature/Travel/TravelShopTest.php`, `TravelPaymentTest.php` (184 tests Travel au total).
+
+## BC-24 TRAVEL — Re-conciliation, remboursement & billets PDF (TRAVEL-410..413, 2026-08-30)
+
+Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/payments/{payment}/refund`,
+`GET /travel/tickets/{ticket}/pdf` (URL signée), `POST /travel/tickets/{ticket}/revoke`.
+- Scénarios à vérifier : verify() ne re-concilie que les paiements pending (idempotent) ; refund() exige un paiement
+  confirmé + motif (422 sinon), réservé manage ; PDF généré localement (magic %PDF) ; URL signée 30 min ; révocation → void
+  + PDF supprimé + 410 au téléchargement ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelPaymentReconcileTest.php`, `TravelTicketPdfTest.php` (192 tests Travel au total).

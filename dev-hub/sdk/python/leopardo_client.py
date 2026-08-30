@@ -3632,17 +3632,13 @@ class LeopardoClient:
         """Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086)"""
         return self.request("POST", "/travel/partner/sync", **kwargs)
 
-    def get_travel_payments_by_travelpayment(self, **kwargs):
-        """Statut d'un paiement (TRAVEL-408/#6060)"""
-        return self.request("GET", "/travel/payments/{travelPayment}", **kwargs)
+    def post_travel_payments_by_travelpayment_refund(self, **kwargs):
+        """Remboursement d'un paiement (TRAVEL-411/#6063)"""
+        return self.request("POST", "/travel/payments/{travelPayment}/refund", **kwargs)
 
-    def post_travel_payments_callback(self, **kwargs):
-        """Callback provider (signé HMAC, idempotent — TRAVEL-409/#6061)"""
-        return self.request("POST", "/travel/payments/callback", **kwargs)
-
-    def post_travel_payments_initiate(self, **kwargs):
-        """Initiation d'un paiement (TRAVEL-408/#6060)"""
-        return self.request("POST", "/travel/payments/initiate", **kwargs)
+    def post_travel_payments_by_travelpayment_verify(self, **kwargs):
+        """Re-conciliation d'un paiement (TRAVEL-410/#6062)"""
+        return self.request("POST", "/travel/payments/{travelPayment}/verify", **kwargs)
 
     def get_travel_ping(self, **kwargs):
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
@@ -3756,22 +3752,6 @@ class LeopardoClient:
         """Mise à jour d'une étape (TRAVEL-307/#6037)"""
         return self.request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", **kwargs)
 
-    def post_travel_shop_bookings(self, **kwargs):
-        """Réservation en ligne (TRAVEL-403/#6055)"""
-        return self.request("POST", "/travel/shop/bookings", **kwargs)
-
-    def get_travel_shop_bookings_by_reference(self, **kwargs):
-        """Suivi d'une réservation par référence (TRAVEL-404/#6056)"""
-        return self.request("GET", "/travel/shop/bookings/{reference}", **kwargs)
-
-    def get_travel_shop_trips(self, **kwargs):
-        """Recherche boutique en ligne (TRAVEL-401/#6053)"""
-        return self.request("GET", "/travel/shop/trips", **kwargs)
-
-    def get_travel_shop_trips_by_traveltrip(self, **kwargs):
-        """Détail + disponibilité d'un trajet (TRAVEL-402/#6054)"""
-        return self.request("GET", "/travel/shop/trips/{travelTrip}", **kwargs)
-
     def get_travel_stations(self, **kwargs):
         """Liste des gares/terminaux (TRAVEL-302/#6032)"""
         return self.request("GET", "/travel/stations", **kwargs)
@@ -3795,6 +3775,14 @@ class LeopardoClient:
     def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
         """Check-in / embarquement (TRAVEL-317/#6047)"""
         return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
+
+    def get_travel_tickets_by_travelticket_pdf(self, **kwargs):
+        """URL signée du billet PDF (TRAVEL-412/413/#6064/#6065)"""
+        return self.request("GET", "/travel/tickets/{travelTicket}/pdf", **kwargs)
+
+    def post_travel_tickets_by_travelticket_revoke(self, **kwargs):
+        """Révocation d'un billet (TRAVEL-413/#6065)"""
+        return self.request("POST", "/travel/tickets/{travelTicket}/revoke", **kwargs)
 
     def get_travel_trips(self, **kwargs):
         """Liste des trajets (TRAVEL-308/#6038)"""
