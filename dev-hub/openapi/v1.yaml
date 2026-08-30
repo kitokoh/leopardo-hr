@@ -5524,7 +5524,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)'
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
       security:
       - BearerAuth: []
       parameters:
@@ -5626,7 +5626,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)'
+      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
       security:
       - BearerAuth: []
       parameters:
@@ -5644,7 +5644,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d'une question'
+      summary: 'TRAVEL-914 — Mise à jour d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -5689,7 +5689,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d'une question'
+      summary: 'TRAVEL-914 — Suppression d''une question'
       security:
       - BearerAuth: []
       parameters:
@@ -6179,7 +6179,7 @@ paths:
           description: Lien signé généré (contact_url + expires_at)
         '403':
           description: Rôle insuffisant (manager requis)
->>>>>>> 6415263b7 (feat(travel): i18n complet ×4, golden journey GJ-TRAVEL-01, Postman & guide partenaires, OpenAPI 1044/1044 (TRAVEL-1005/1006/1007/1009, Closes #6118 #6119 #6120 #6122))
+>>>>>>> 09fed9438 (fix(travel): échappement apostrophes openapi.yaml (TRAVEL-914) — YAML valide pour le lint OpenAPI (débloque PR #6127))
   /travel/contact:
     post:
       tags:
