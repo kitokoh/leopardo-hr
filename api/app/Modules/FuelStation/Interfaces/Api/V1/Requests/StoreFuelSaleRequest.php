@@ -62,6 +62,20 @@ class StoreFuelSaleRequest extends FormRequest
             'source' => ['nullable', Rule::in(FuelSale::SOURCES)],
             'external_id' => ['nullable', 'string', 'max:120'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'customer_contact_id' => [
+                'nullable',
+                'integer',
+                // FUEL-016 (#5810) : référence CRM client par valeur, validée
+                // dans le tenant courant — JAMAIS les leads commerciaux
+                // plateforme (crm_leads) ni un contact d'un autre tenant.
+                Rule::exists('crm_contacts', 'id')->where(
+                    fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
+                ),
+            ],
+            'marketing_consent' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 }

@@ -59,6 +59,8 @@ class FuelSale extends Model
         'station_id',
         'pump_id',
         'cash_session_id',
+        'customer_contact_id',
+        'marketing_consent',
         'employee_id',
         'product',
         'quantity',
