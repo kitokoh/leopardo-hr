@@ -118,7 +118,7 @@ class RecalculateTravelReadModelsCommand extends Command
                 TravelTripOccupancy::query()->updateOrCreate(
                     ['company_id' => $companyId, 'trip_id' => $trip->id],
                     [
-                        'departure_date' => $trip->departure_date?->toDateString(),
+                        'departure_date' => $trip->departure_date->toDateString(),
                         'seats_sold' => $sold,
                         'total_seats' => $total,
                         'occupancy_rate' => round($sold / $total, 4),

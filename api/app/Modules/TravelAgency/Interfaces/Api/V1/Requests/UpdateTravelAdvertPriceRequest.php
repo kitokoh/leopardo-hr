@@ -9,6 +9,4 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
  * Mêmes règles que la création (références tenant-scoped, montants en
  * unités mineures, devise cohérente avec le tenant).
  */
-class UpdateTravelAdvertPriceRequest extends StoreTravelAdvertPriceRequest
-{
-}
+class UpdateTravelAdvertPriceRequest extends StoreTravelAdvertPriceRequest {}

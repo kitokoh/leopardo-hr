@@ -58,7 +58,7 @@ final class ExpirePendingBookingsJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(TravelOutboxPublisher $outbox): void

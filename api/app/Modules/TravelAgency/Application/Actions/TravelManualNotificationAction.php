@@ -6,8 +6,8 @@ namespace App\Modules\TravelAgency\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Mail\CommunicationMail;
-use App\Shared\Contracts\Notification\EmployeeNotifier;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
+use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;

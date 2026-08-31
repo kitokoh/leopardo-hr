@@ -21,9 +21,7 @@ use Illuminate\Http\Request;
  */
 class TravelReportController extends Controller
 {
-    public function __construct(private readonly TravelReportService $reports)
-    {
-    }
+    public function __construct(private readonly TravelReportService $reports) {}
 
     public function sales(TravelReportRequest $request): JsonResponse
     {

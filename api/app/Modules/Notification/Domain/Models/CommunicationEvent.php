@@ -6,6 +6,7 @@ namespace App\Modules\Notification\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -25,7 +26,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $occurred_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class CommunicationEvent extends Model
 {
