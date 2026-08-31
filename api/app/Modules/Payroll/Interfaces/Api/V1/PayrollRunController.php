@@ -23,6 +23,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -68,14 +69,32 @@ class PayrollRunController extends Controller
 
         $validated = $request->validated();
 
-        $run = PayrollRun::create([
-            'company_id' => $actor->company_id,
-            'period_start' => $validated['period_start'],
-            'period_end' => $validated['period_end'],
-            'country_code' => $validated['country_code'],
-            'status' => 'draft',
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        // #6552 — garde anti-doublon de période : l'index unique partiel
+        // (company_id, period_start, period_end) WHERE status <> 'cancelled'
+        // transforme la concurrence en violation 23505 → 409 propre au lieu
+        // de deux runs draft calculés (double paie potentielle).
+        try {
+            $run = PayrollRun::create([
+                'company_id' => $actor->company_id,
+                'period_start' => $validated['period_start'],
+                'period_end' => $validated['period_end'],
+                'country_code' => $validated['country_code'],
+                'status' => 'draft',
+                'notes' => $validated['notes'] ?? null,
+            ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                Log::warning('Payroll run period conflict', [
+                    'company_id' => $actor->company_id,
+                    'period_start' => $validated['period_start'],
+                    'period_end' => $validated['period_end'],
+                ]);
+
+                abort(409, 'PAYROLL_RUN_PERIOD_CONFLICT');
+            }
+
+            throw $e;
+        }
 
         $response = (new PayrollRunResource($run))->response();
         $response->setStatusCode(201);
