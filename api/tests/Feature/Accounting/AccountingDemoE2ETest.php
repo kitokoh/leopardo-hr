@@ -7,6 +7,7 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
@@ -16,7 +17,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -59,7 +60,7 @@ class AccountingDemoE2ETest extends TestCase
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD', 'timezone' => 'UTC']);
         $this->companyB = $companyB;
 
-        $this->workflow = new DocumentWorkflowService;
+        $this->workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
 
         // PDF : fake tant que l'implémentation #5224 n'est pas mergée.
         app()->instance(PdfRendererInterface::class, new class implements PdfRendererInterface
@@ -250,7 +251,7 @@ class AccountingDemoE2ETest extends TestCase
         $quote = $this->createDraftDocument(DocumentType::Quote, $contact, now()->startOfDay()->subDays(10));
         $this->addLine($quote, 'Prestation E2E — lot pilote', 2.0, 75000.0);
         $this->recomputeTotals($quote, 19.0);
-        $this->workflow->transition($quote, DocumentStatus::Sent);
+        $this->workflow->send($quote);
 
         $this->assertSame(DocumentStatus::Sent->value, $quote->status);
         $this->assertStringStartsWith('DEV-', $quote->number);
@@ -260,7 +261,7 @@ class AccountingDemoE2ETest extends TestCase
         $this->addLine($invoice, 'Prestation E2E — livraison', 2.0, 75000.0);
         $this->addLine($invoice, 'Frais de mise en service', 1.0, 25000.0);
         $this->recomputeTotals($invoice, 19.0);
-        $this->workflow->transition($invoice, DocumentStatus::Sent);
+        $this->workflow->send($invoice);
 
         // PDF : fake PdfRendererInterface (implémentation réelle #5224 en vol).
         // NB : pas de assertIsString ici — PHPStan (strict) sait déjà que
@@ -279,27 +280,29 @@ class AccountingDemoE2ETest extends TestCase
         $this->assertNotNull($invoice->sent_at);
         $this->assertNotNull($invoice->pdf_path);
 
-        // ── 4. Paiement partiel → partiellement payée (workflow réel) ───────
+        // ── 4. Paiement partiel → partiellement payée (chemin canonique #5229) ─
         $partialAmount = round((float) $invoice->total_ttc * 0.40, 2);
-        $this->makePayment($invoice, $partialAmount, PaymentMethod::BankTransfer->value, 'VIR-E2E-0001', null);
-        $this->workflow->transition($invoice, DocumentStatus::PartiallyPaid);
+        $payments = app(PaymentRegistrationService::class);
+        $payments->register($invoice, $partialAmount, PaymentMethod::BankTransfer->value, 'VIR-E2E-0001');
 
-        $this->assertSame(DocumentStatus::PartiallyPaid->value, $invoice->status);
+        // `register` pose paid_amount ET fait la transition minimale locale :
+        // paid dès que soldé, sinon partially_paid.
+        $this->assertSame(DocumentStatus::PartiallyPaid->value, $invoice->refresh()->status);
 
         // ── 5. Solde + rapprochement → payée ────────────────────────────────
         $restAmount = round((float) $invoice->total_ttc - $partialAmount, 2);
-        $this->makePayment($invoice, $restAmount, PaymentMethod::BankTransfer->value, 'VIR-E2E-0002', now());
-        $this->workflow->transition($invoice, DocumentStatus::Paid);
+        $restPayment = $payments->register($invoice, $restAmount, PaymentMethod::BankTransfer->value, 'VIR-E2E-0002');
 
-        $this->assertSame(DocumentStatus::Paid->value, $invoice->status);
+        $this->assertSame(DocumentStatus::Paid->value, $invoice->refresh()->status);
         $this->assertEqualsWithDelta((float) $invoice->total_ttc, (float) $invoice->payments()->sum('amount'), 0.001);
 
-        // Le solde est rapproché (matched + reconciled_at) — DoD rapprochement.
-        // NB : `reference` est chiffrée au repos — on retrouve le paiement par
-        // le statut (colonne non chiffrée) puis on vérifie la référence en clair.
-        $matched = $invoice->payments()->where('status', 'matched')->firstOrFail();
-        $this->assertSame('VIR-E2E-0002', $matched->reference);
-        $this->assertNotNull($matched->reconciled_at);
+        // Rapprochement canonique (même service que POST .../payments/{id}/reconcile)
+        // — matched + reconciled_at, DoD rapprochement.
+        // NB : `reference` est chiffrée au repos — le cast du modèle la déchiffre.
+        $reconciled = $payments->reconcile($restPayment);
+        $this->assertSame('matched', $reconciled->status);
+        $this->assertSame('VIR-E2E-0002', $reconciled->reference);
+        $this->assertNotNull($reconciled->reconciled_at);
         $this->assertDatabaseHas('accounting_payments', [
             'company_id' => $this->companyA->id,
             'document_id' => $invoice->id,
@@ -327,9 +330,9 @@ class AccountingDemoE2ETest extends TestCase
         $invoice = $this->createDraftDocument(DocumentType::Invoice, $contact, now()->startOfDay()->subDays(30), now()->startOfDay()->subDays(5));
         $this->addLine($invoice, 'Prestation impayée', 1.0, 50000.0);
         $this->recomputeTotals($invoice, 19.0);
-        $this->workflow->transition($invoice, DocumentStatus::Sent);
+        $this->workflow->send($invoice);
 
-        $count = $this->workflow->refreshOverdue($this->companyA);
+        $count = $this->workflow->refreshOverdue((string) $this->companyA->id);
 
         // La facture du test est échue ; la facture partielle de la vitrine demo
         // (échéance J-5) l'est aussi → au moins 2 factures overdue.
@@ -429,24 +432,5 @@ class AccountingDemoE2ETest extends TestCase
             'total_ttc' => $total,
             'tva_rate' => $tvaRate,
         ]);
-    }
-
-    private function makePayment(AccountingDocument $document, float $amount, string $method, string $reference, ?Carbon $reconciledAt): AccountingPayment
-    {
-        /** @var AccountingPayment $payment */
-        $payment = AccountingPayment::query()->create([
-            'company_id' => $this->companyA->id,
-            'document_id' => $document->id,
-            'amount' => $amount,
-            'method' => $method,
-            'reference' => $reference,
-            'received_at' => now(),
-            'reconciled_at' => $reconciledAt,
-            'status' => $reconciledAt !== null ? 'matched' : 'recorded',
-        ]);
-
-        $document->update(['paid_amount' => (float) $document->payments()->sum('amount')]);
-
-        return $payment;
     }
 }

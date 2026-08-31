@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
  * Comportement STRICTEMENT identique à l'ancien code (copie), les tests de
  * régularisation + golden servent de filet.
  */
-class PayrollRegularizationService
+class PayrollRegularizationCalculator
 {
     public function __construct(
         /** Calcul des valeurs de bulletin (instance partagée avec PayrollCalculator). */
