@@ -111,9 +111,10 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
             // downloadable, instead of having to poll for it.
             $this->notifyDocumentReady($communicationService, $document);
         } catch (Throwable $e) {
+            // #6559 — code stable dans l'UI, détail technique en logs.
             $document->update([
                 'status' => PaymentDocument::STATUS_FAILED,
-                'error_message' => $e->getMessage(),
+                'error_message' => 'payment_document_generation_failed',
             ]);
 
             $this->notifyDocumentStatus($communicationService, $document, 'payment_document_failed');

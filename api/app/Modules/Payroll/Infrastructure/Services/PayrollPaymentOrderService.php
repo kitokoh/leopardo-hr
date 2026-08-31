@@ -85,7 +85,11 @@ class PayrollPaymentOrderService
 
         $total = (float) $slips->sum('net_salary');
 
-        return DB::transaction(function () use ($run, $format, $filePath, $total, $slips, $actor): PayrollPaymentOrder {
+        // #6559 — le fichier est écrit AVANT la transaction (nécessaire pour
+        // le file_path de l'ordre) ; si la transaction échoue, on supprime le
+        // fichier pour ne jamais laisser d'orphelin sur rollback.
+        try {
+            return DB::transaction(function () use ($run, $format, $filePath, $total, $slips, $actor): PayrollPaymentOrder {
             $order = PayrollPaymentOrder::create([
                 'company_id' => $run->company_id,
                 'payroll_run_id' => $run->id,
@@ -118,6 +122,17 @@ class PayrollPaymentOrderService
 
             return $order->load('items');
         });
+        } catch (\Throwable $e) {
+            if ($filePath !== null) {
+                Storage::disk('local')->delete($filePath);
+                Log::warning('payroll.payment_order.file_cleaned_on_rollback', [
+                    'payroll_run_id' => $run->id,
+                    'file_path' => $filePath,
+                ]);
+            }
+
+            throw $e;
+        }
     }
 
     /**

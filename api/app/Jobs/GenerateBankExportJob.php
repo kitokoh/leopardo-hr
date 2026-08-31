@@ -122,9 +122,12 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
                 'error_message' => null,
             ])->save();
         } catch (Throwable $e) {
+            // #6559 — le message brut (SQLSTATE, chemins internes) ne doit
+            // jamais être persisté ni exposé à l'UI : code stable uniquement,
+            // le détail reste en logs (report ci-dessous).
             $export->forceFill([
                 'status' => 'failed',
-                'error_message' => $e->getMessage(),
+                'error_message' => 'bank_export_generation_failed',
             ])->save();
 
             report($e);

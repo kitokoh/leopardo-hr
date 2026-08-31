@@ -55,7 +55,27 @@ class EdgeSyncDaemonCommand extends Command
 
         $runOnce = (bool) $this->option('once');
 
+        // #6559 — arrêt propre du daemon : les conteneurs Docker envoient
+        // SIGTERM ; un sleep() bloquant de N minutes ignorait le signal et
+        // retardait l'arrêt jusqu'à la fin du sommeil. sleep par paliers de
+        // 5 s + drapeau d'arrêt.
+        $stop = false;
+        if (function_exists('pcntl_signal')) {
+            pcntl_async_signals(true);
+            pcntl_signal(SIGTERM, static function () use (&$stop): void {
+                $stop = true;
+            });
+            pcntl_signal(SIGINT, static function () use (&$stop): void {
+                $stop = true;
+            });
+        }
+
         do {
+            if ($stop) {
+                $this->warn('[EdgeSync Daemon] Stop signal received — exiting.');
+                break;
+            }
+
             try {
                 $this->info('[EdgeSync Daemon] Running sync for node ' . $nodeId);
                 $log = $client->sync();
@@ -77,8 +97,14 @@ class EdgeSyncDaemonCommand extends Command
                 break;
             }
 
-            $this->info("[EdgeSync Daemon] Sleeping {$interval} minutes...");
-            sleep($interval * 60);
+            // Sleep par paliers de 5 s : réagit à SIGTERM/SIGINT même pendant
+            // un intervalle long (arrêt Docker < 30 s au lieu de N minutes).
+            $remaining = max(0, $interval * 60);
+            while ($remaining > 0 && ! $stop) {
+                $this->info("[EdgeSync Daemon] Sleeping {$remaining}s remaining...");
+                sleep(min(5, $remaining));
+                $remaining -= 5;
+            }
         } while (true);
     }
 }

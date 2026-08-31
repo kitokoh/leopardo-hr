@@ -97,10 +97,12 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             ->whereIn('status', ['calculated', 'validated', 'sent'])
             ->get();
 
+        $failures = 0;
         foreach ($slips as $slip) {
             try {
                 $this->archiveSlip($slip, $pdfGenerator, $company);
             } catch (Throwable $e) {
+                $failures++;
                 Log::warning('payslip_archive_failed', [
                     'run_id' => $run->id,
                     'slip_id' => $slip->id,
@@ -108,6 +110,18 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
                     'error' => $e->getMessage(),
                 ]);
             }
+        }
+
+        // #6559 — des bulletins non archivés ne doivent pas être avalés : le
+        // job échoue (retry/dead-letter) avec un résumé au lieu de « réussir »
+        // silencieusement.
+        if ($failures > 0) {
+            throw new \RuntimeException(sprintf(
+                'ArchivePaySlipsToCabinetJob: %d/%d bulletins non archivés (run #%d).',
+                $failures,
+                $slips->count(),
+                $run->id
+            ));
         }
     }
 
