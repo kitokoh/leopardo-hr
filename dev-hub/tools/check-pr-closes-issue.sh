@@ -11,7 +11,11 @@
 # that this same ticket (PA2-OPS-008) is meant to cement.
 #
 # This check is intentionally BLOCKING (unlike PA2-AUTO-004's non-blocking
+<<<<<<< HEAD
 # `::warning` on missing PA2-* IDs, dev-hub/tools/check-plan-action2-pr-id.sh — script supprimé, voir audit Vague 3 #6601)
+=======
+# `::warning` on missing PA2-* IDs)
+>>>>>>> origin/main
 # per PA2-OPS-008 acceptance criteria #3. It reuses the same docs:/chore:
 # exemption already established by PA2-AUTO-004 and documented in
 # CONVENTIONS.md §4.2, so dependency bumps (dependabot: "chore(deps): ...")
