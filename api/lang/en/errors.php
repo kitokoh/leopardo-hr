@@ -5,6 +5,7 @@ return [
     'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
+    'ACCOUNT_LOCKED_TEMPORARILY' => "Your account is temporarily locked after too many attempts. Try again in a few minutes.",
     'ACCOUNT_ARCHIVED' => 'This account is archived.',
     'TOKEN_EXPIRED' => 'Your session has expired. Please log in again.',
     'TOO_MANY_ATTEMPTS' => 'Too many attempts. Try again in :minutes minutes.',

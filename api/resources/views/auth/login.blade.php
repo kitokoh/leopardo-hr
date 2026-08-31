@@ -45,6 +45,24 @@
                 @enderror
             </div>
 
+            @if (old('two_fa_required'))
+            <div>
+                <label for="two_fa_code" class="text-sm text-slate-300">Code 2FA</label>
+                <input
+                    id="two_fa_code"
+                    name="two_fa_code"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    @error('two_fa_code') aria-invalid="true" aria-describedby="twofa-error" @enderror
+                    class="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                />
+                @error('two_fa_code')
+                    <div id="twofa-error" role="alert" class="mt-1 text-sm text-red-400">{{ $message }}</div>
+                @enderror
+            </div>
+            @endif
+
             <button type="submit" class="w-full rounded-md bg-emerald-500 px-4 py-2 font-semibold text-slate-950 hover:bg-emerald-400">
                 Se connecter
             </button>
