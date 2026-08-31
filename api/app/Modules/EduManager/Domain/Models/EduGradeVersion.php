@@ -15,6 +15,16 @@ use Illuminate\Support\Carbon;
  *
  * Chaque correction de note ajoute une version horodatée (score,
  * commentaire, auteur) — l'historique n'est jamais écrasé.
+ * Version d'une note publiée — Issue #5823 (EDU-007).
+ *
+ * Journal de VERSIONNAGE : une ligne est écrite AVANT chaque correction
+ * d'une note publiée (previous_score → new_score + justification + acteur +
+ * horodatage) — la modification d'une note publiée n'écrase jamais
+ * silencieusement l'existant, elle l'audite (spec §6.3). `changed_at`
+ * horodate la correction (timestampTz, défaut = now).
+ *
+ * PII : `reason` (justification) est bornée à 255 caractères (zone libre
+ * contrôlée) — jamais exposée hors tenant (RBAC EduGradePolicy).
  *
  * @property int $id
  * @property string $company_id
@@ -25,6 +35,16 @@ use Illuminate\Support\Carbon;
  * @property int|null $changed_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $previous_score
+ * @property string $new_score
+ * @property string|null $previous_status
+ * @property string $new_status
+ * @property string|null $reason
+ * @property int $changed_by
+ * @property Carbon $changed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read EduGrade $grade
  *
  * @mixin Builder<static>
  */
@@ -52,6 +72,25 @@ class EduGradeVersion extends Model
     /**
      * @return BelongsTo<EduGrade, $this>
      */
+        'previous_score',
+        'new_score',
+        'previous_status',
+        'new_status',
+        'reason',
+        'changed_by',
+        'changed_at',
+    ];
+
+    protected $casts = [
+        'previous_score' => 'decimal:2',
+        'new_score' => 'decimal:2',
+        'previous_status' => 'string',
+        'new_status' => 'string',
+        'changed_by' => 'integer',
+        'changed_at' => 'datetime',
+    ];
+
+    /** @return BelongsTo<EduGrade, $this> */
     public function grade(): BelongsTo
     {
         return $this->belongsTo(EduGrade::class, 'grade_id');

@@ -16,6 +16,17 @@ use Illuminate\Support\Carbon;
  * Une seule note courante par (évaluation, élève) et tenant (UNIQUE).
  * Toute correction incrémente `version` et écrit une ligne
  * `edu_grade_versions` (historique complet, jamais d'écrasement).
+ * Note d'une évaluation — Issue #5823 (EDU-007).
+ *
+ * Tenant-scoped (`company_id`, schéma tenant). Une note = (évaluation,
+ * élève) ; UNIQUE(company_id, assessment_id, student_id) en base. Statut :
+ * draft (modifiable) → published (IMMUABLE hors correction auditable —
+ * GradeService::correctGrade versionne dans edu_grade_versions AVANT de
+ * modifier, jamais d'écrasement silencieux).
+ *
+ * PII (spec §6.3) : `comment` est une zone BORNÉE à 255 caractères — un
+ * commentaire libre non borné susceptible de porter des données sensibles
+ * est rejeté côté serveur (GradeService).
  *
  * @property int $id
  * @property string $company_id
@@ -29,6 +40,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string $status
+ * @property int|null $graded_by
+ * @property Carbon|null $graded_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read EduAssessment $assessment
+ * @property-read EduStudent $student
  *
  * @mixin Builder<static>
  */
@@ -46,6 +64,9 @@ class EduGrade extends Model
         self::STATUS_DRAFT,
         self::STATUS_PUBLISHED,
         self::STATUS_CORRECTED,
+    public const STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_PUBLISHED,
     ];
 
     protected $table = 'edu_grades';
@@ -60,6 +81,9 @@ class EduGrade extends Model
         'status',
         'version',
         'published_at',
+        'status',
+        'graded_by',
+        'graded_at',
     ];
 
     protected $casts = [
@@ -74,6 +98,14 @@ class EduGrade extends Model
     /**
      * @return BelongsTo<EduAssessment, $this>
      */
+        'score' => 'decimal:2',
+        'comment' => 'string',
+        'status' => 'string',
+        'graded_by' => 'integer',
+        'graded_at' => 'datetime',
+    ];
+
+    /** @return BelongsTo<EduAssessment, $this> */
     public function assessment(): BelongsTo
     {
         return $this->belongsTo(EduAssessment::class, 'assessment_id');
@@ -82,6 +114,7 @@ class EduGrade extends Model
     /**
      * @return BelongsTo<EduStudent, $this>
      */
+    /** @return BelongsTo<EduStudent, $this> */
     public function student(): BelongsTo
     {
         return $this->belongsTo(EduStudent::class, 'student_id');

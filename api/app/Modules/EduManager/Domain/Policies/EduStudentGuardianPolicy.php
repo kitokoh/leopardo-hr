@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\EduManager\Policies;
+namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
