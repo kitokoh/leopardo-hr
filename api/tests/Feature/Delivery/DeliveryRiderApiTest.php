@@ -153,8 +153,7 @@ class DeliveryRiderApiTest extends TestCase
 
         // La livraison est passée delivered via la machine à états.
         $deliveryId = (int) $route->stops()->findOrFail($stopId)->delivery_id;
-        $delivery = Delivery::query()->find($deliveryId);
-        self::assertNotNull($delivery, 'la livraison doit exister');
+        $delivery = Delivery::query()->findOrFail($deliveryId);
         self::assertSame('delivered', $delivery->status);
         self::assertNotNull($delivery->delivered_at);
     }

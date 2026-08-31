@@ -192,7 +192,7 @@ class DeliveryAsyncTest extends TestCase
         $second = Storage::disk('local')->get($filePath);
 
         self::assertSame($first, $second);
-        self::assertStringContainsString('"success_rate_pct"', $first);
+        self::assertStringContainsString('"success_rate_pct"', (string) $first);
     }
 
     public function test_replay_dlq_redispatches_original_jobs_without_duplication(): void

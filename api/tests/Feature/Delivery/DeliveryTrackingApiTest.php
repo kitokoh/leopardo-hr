@@ -152,8 +152,7 @@ class DeliveryTrackingApiTest extends TestCase
         $second = $this->postJson('/api/v1/delivery/deliveries/events', $payload)->assertStatus(201);
 
         self::assertSame($first->json('data.id'), $second->json('data.id'));
-        $tracked = Delivery::query()->find($delivery->id);
-        self::assertNotNull($tracked, 'la livraison doit exister');
+        $tracked = Delivery::query()->findOrFail($delivery->id);
         self::assertSame(1, $tracked->events()->count());
     }
 

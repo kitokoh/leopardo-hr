@@ -169,10 +169,10 @@ class DeliveryRbacTest extends TestCase
         $routeA = $this->createRoute($riderA);
         $routeB = $this->createRoute($riderB);
 
+        /** @var Delivery $deliveryA */
         $deliveryA = DeliveryStop::query()->where('route_id', $routeA->id)->firstOrFail()->delivery;
+        /** @var Delivery $deliveryB */
         $deliveryB = DeliveryStop::query()->where('route_id', $routeB->id)->firstOrFail()->delivery;
-        self::assertNotNull($deliveryA, 'la livraison A doit exister');
-        self::assertNotNull($deliveryB, 'la livraison B doit exister');
 
         // Rider A : autorisé sur SA livraison.
         Sanctum::actingAs($riderA);
