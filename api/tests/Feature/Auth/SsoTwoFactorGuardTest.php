@@ -188,16 +188,16 @@ class SsoTwoFactorGuardTest extends TestCase
         [$company, $employee] = $this->seedEmployee('ctx@example.com', with2fa: true);
 
         $service = app(TwoFactorAuthService::class);
+        // #6540 : challenge émis pour un email DIFFÉRENT de celui de l'employé
+        // (challenge volé ou recoupement cassé) → refus avant l'émission du token.
         $challenge = $service->issueChallenge([
             'employee_id' => $employee->id,
             'company_id' => (string) $company->id,
             'tenant_schema' => 'shared_tenants',
-            'email' => 'ctx@example.com',
+            'email' => 'victim@example.com',
             'device_name' => 'test',
         ]);
 
-        // #6540 : un contexte d'email différent (challenge volé ou recoupement
-        // cassé) doit être refusé avant l'émission du token.
         $this->expectException(TwoFactorException::class);
         $service->verifyChallenge(
             $challenge['token'],
@@ -205,9 +205,9 @@ class SsoTwoFactorGuardTest extends TestCase
             recoveryCode: null,
         );
 
-        // Le challenge doit rester consommable pour le bon email (pas brûlé).
+        // Le challenge doit rester consommable (pas brûlé par le refus).
         $context = Cache::get('mfa:challenge:'.$challenge['token']);
         $this->assertIsArray($context);
-        $this->assertSame('ctx@example.com', $context['email']);
+        $this->assertSame('victim@example.com', $context['email']);
     }
 }
