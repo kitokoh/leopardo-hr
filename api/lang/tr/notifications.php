@@ -60,4 +60,8 @@ return [
     'restaurant_delivery_status_changed_body' => 'Teslimat #:delivery (sipariş #:order) artık “:status” durumunda.',
     'restaurant_reservation_reminder_title' => 'Yaklaşan rezervasyon (1 gün önce)',
     'restaurant_reservation_reminder_body' => 'Rezervasyon :reference — :date tarihinde :covers kişi. Masayı hazırlayın.',
+    'restaurant_new_order_title' => 'Yeni sipariş',
+    'restaurant_new_order_body' => 'Sipariş :reference — :covers kişi.',
+    'restaurant_order_ready_title' => 'Sipariş hazır',
+    'restaurant_order_ready_body' => 'Sipariş :reference servise hazır (masa :table).',
 ];

@@ -95,6 +95,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
         $schedule->command('restaurant:no-show-expire')->everyFifteenMinutes()->withoutOverlapping();
         $schedule->command('restaurant:send-reminders')->hourly()->withoutOverlapping();
+        // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
+        // de la verticale (notifications cuisine/service, fidélité…).
+        $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',

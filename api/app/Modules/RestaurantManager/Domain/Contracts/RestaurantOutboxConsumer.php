@@ -8,6 +8,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 
 /**
  * #6211 (RESTO-606) — Consommateur d'événement d'outbox RestaurantManager
+/**
+ * RESTO-808 (#6229) — Consommateur d'événement d'outbox RestaurantManager
  * (pattern CrmOutboxConsumer #5741).
  *
  * Un consommateur déclare les types d'événements qu'il sait traiter
@@ -24,6 +26,11 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
  * produit jamais de doublon) et distingue :
  *  - erreur transitoire  → Throwable générique (retry avec backoff) ;
  *  - erreur permanente   → une exception dédiée menant à la dead-letter.
+ * tenant du `company_id` porté par l'événement (résolu par le dispatcher
+ * `restaurant:outbox-dispatch`). Les consommateurs doivent être idempotents :
+ * le dispatcher peut rejouer un événement (retry avec backoff) — les effets
+ * sensibles sont dédupliqués par la base et les notifications par le
+ * CommunicationService (BC-13, préférences + heures calmes + quotas).
  */
 interface RestaurantOutboxConsumer
 {

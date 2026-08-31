@@ -26,6 +26,11 @@
     "restaurantmanager": {
       "label": "RestaurantManager (verticale)",
       "status": "active"
+      "status": "active"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale)",
+      "status": "planned"
     }
   },
   "journeys": [
@@ -359,6 +364,10 @@
           "action": "Créer la compagnie de transport",
           "method": "POST",
           "route": "/api/v1/travel/carriers",
+        }
+      ]
+    },
+    {
       "id": "GJ-RESTO-01",
       "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
       "solution": "restaurantmanager",

@@ -15,6 +15,7 @@ use Throwable;
 /**
  * restaurant:outbox-dispatch — Consomme l'outbox des événements
  * RestaurantManager (RESTO-606/#6211, pattern crm:outbox-dispatch #5741).
+ * RestaurantManager (RESTO-808/#6229, pattern crm:outbox-dispatch #5741).
  *
  * L'outbox est une table TENANT (schéma PostgreSQL par company) : la commande
  * itère toutes les companies et traite les événements de chaque tenant dans

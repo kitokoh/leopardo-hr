@@ -60,4 +60,8 @@ return [
     'restaurant_delivery_status_changed_body' => 'Delivery #:delivery (order #:order) is now “:status”.',
     'restaurant_reservation_reminder_title' => 'Upcoming reservation (D-1)',
     'restaurant_reservation_reminder_body' => 'Reservation :reference — :covers cover(s) on :date. Prepare the table.',
+    'restaurant_new_order_title' => 'New order',
+    'restaurant_new_order_body' => 'Order :reference — :covers cover(s).',
+    'restaurant_order_ready_title' => 'Order ready',
+    'restaurant_order_ready_body' => 'Order :reference ready to serve (table :table).',
 ];

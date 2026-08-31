@@ -172,6 +172,16 @@ return [
             'category' => 'restaurant',
             'title_key' => 'notifications.restaurant_reservation_reminder_title',
             'body_key' => 'notifications.restaurant_reservation_reminder_body',
+        // BC-25 RESTAURANT (RESTO-808/#6229) — notifications cuisine/service.
+        'restaurant_new_order' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_new_order_title',
+            'body_key' => 'notifications.restaurant_new_order_body',
+        ],
+        'restaurant_order_ready' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_order_ready_title',
+            'body_key' => 'notifications.restaurant_order_ready_body',
         ],
         'task_comment_added' => [
             'category' => 'task',

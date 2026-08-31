@@ -136,6 +136,7 @@
           "status": "validated"
           "status": "validated",
           "evidence": "RestaurantGoldenJourneyTest (caisse → commande → article → soumission → encaissement → clôture) en CI (RESTO-901/#6230)"
+          "status": "validated"
         },
         {
           "id": "api_security",
@@ -202,11 +203,13 @@
         {
           "id": "api_security",
           "label": "Matrice permissions travel.* + Policies RBAC (TRAVEL-3xx)",
+          "label": "API, Policies, matrice RBAC travel.* (TRAVEL-322)",
           "status": "validated"
         },
         {
           "id": "runbook",
           "label": "Runbook pilote + recette UAT (TRAVEL-1010)",
+          "label": "Runbook pilote + recette UAT (TRAVEL-050)",
           "status": "validated"
         },
         {
@@ -294,6 +297,11 @@
     { "id": "golden_journey", "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)", "status": "pending" },
     { "id": "recette", "label": "Recette UAT signée par le chef de projet (TRAVEL-051)", "status": "pending" }
   ] }
+          "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
           "label": "Recette UAT signée par le chef de projet (TRAVEL-051)",
           "status": "pending"
         }

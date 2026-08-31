@@ -60,4 +60,8 @@ return [
     'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
     'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
     'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
+    'restaurant_new_order_title' => 'طلب جديد',
+    'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
+    'restaurant_order_ready_title' => 'الطلب جاهز',
+    'restaurant_order_ready_body' => 'الطلب :reference جاهز للتقديم (طاولة :table).',
 ];
