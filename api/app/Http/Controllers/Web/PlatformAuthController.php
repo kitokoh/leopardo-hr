@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
+use App\Core\Auth\Infrastructure\Services\SuperAdminService;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class PlatformAuthController extends Controller
 {
+    public function __construct(
+        private readonly SuperAdminService $superAdminService,
+    ) {}
+
     public function showLogin(): View
     {
         return view('platform.auth.login');
@@ -25,6 +30,7 @@ class PlatformAuthController extends Controller
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+            'two_fa_code' => ['nullable', 'string'],
         ]);
 
         /** @var SuperAdmin|null $superAdmin */
@@ -45,6 +51,58 @@ class PlatformAuthController extends Controller
             ]);
         }
 
+        // audit(securite) #6530 : un super-admin suspendu/désactivé ne peut pas
+        // se connecter par la surface web — parité avec l'API jumelle
+        // (Core/Auth/.../PlatformAuthController, sécurité #2630).
+        if ($superAdmin->status !== 'active') {
+            Log::channel('audit')->warning('platform_login.suspended', [
+                'email' => $validated['email'],
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return back()->withInput(['email' => $validated['email']])->withErrors([
+                'email' => __('errors.ACCOUNT_SUSPENDED'),
+            ]);
+        }
+
+        // audit(securite) #6530 : challenge TOTP quand le secret existe — parité
+        // avec l'API jumelle. Un mot de passe seul ne suffit plus à piloter la
+        // plateforme quand la 2FA est activée.
+        if ($superAdmin->two_fa_secret) {
+            $code = is_string($validated['two_fa_code'] ?? null) ? trim($validated['two_fa_code']) : '';
+
+            if ($code === '') {
+                Log::channel('audit')->warning('platform_login.twofa_required', [
+                    'email' => $validated['email'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+
+                return back()->withInput([
+                    'email' => $validated['email'],
+                    'two_fa_required' => true,
+                ])->withErrors([
+                    'two_fa_code' => __('auth.twofa_code_required'),
+                ]);
+            }
+
+            if (! $this->superAdminService->verifyCode($superAdmin, $code)) {
+                Log::channel('audit')->warning('platform_login.twofa_failed', [
+                    'email' => $validated['email'],
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+
+                return back()->withInput([
+                    'email' => $validated['email'],
+                    'two_fa_required' => true,
+                ])->withErrors([
+                    'two_fa_code' => __('auth.twofa_code_invalid'),
+                ]);
+            }
+        }
+
         Auth::guard('super_admin_web')->login($superAdmin);
         $request->session()->regenerate();
 
@@ -60,4 +118,3 @@ class PlatformAuthController extends Controller
         return redirect()->route('platform.login');
     }
 }
-
