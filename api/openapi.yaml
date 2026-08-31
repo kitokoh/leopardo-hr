@@ -4382,6 +4382,75 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
   /auth/me:
+          $ref: '#/components/responses/Error422'
+  /company-requests:
+    get:
+      tags:
+      - Billing
+      summary: Demandes de création d'entreprise de l'utilisateur
+      responses:
+        '200':
+          description: Demandes
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Billing
+      summary: Soumettre une demande de création d'entreprise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_name
+              properties:
+                company_name:
+                  type: string
+                  maxLength: 200
+                sector:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                city:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Demande créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Connexion employee
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Connexion reussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /auth/me:
     get:
       tags:
       - Auth
@@ -6727,6 +6796,10 @@ paths:
       summary: 'RESTO-401 — Ouverture d''une session de caisse POS (une seule session ouverte par branche)'
       security:
       - BearerAuth: []
+          - trial
+          - suspended
+          - expired
+      - name: search
           - trial
           - suspended
           - expired
@@ -9426,6 +9499,55 @@ paths:
       tags:
       - Platform
       summary: Activites recentes plateforme (cockpit super-admin)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/dashboard/stats:
+    get:
+      tags:
+      - Platform
+      summary: Statistiques globales du cockpit super-admin
+      description: 'Agregats plateforme pour le dashboard admin (contrat SPA front/admin-dashboard, issue #1764) : utilisateurs, companies, abonnements actifs, revenu mensuel, tickets support et sante systeme.'
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Statistiques du cockpit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalUsers:
+                    type: integer
+                  totalCompanies:
+                    type: integer
+                  activeSubscriptions:
+                    type: integer
+                  monthlyRevenue:
+                    type: number
+                  newUsersToday:
+                    type: integer
+                  newCompaniesToday:
+                    type: integer
+                  supportTickets:
+                    type: integer
+                  systemHealth:
+                    type: string
+                    enum:
+                    - good
+                    - warning
+                    - error
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /admin/dashboard/activities:
+    get:
+      tags:
+      - Platform
+      summary: Activites recentes plateforme (cockpit super-admin)
       security:
       - SuperAdminBearerAuth: []
       responses:
@@ -11675,6 +11797,47 @@ paths:
       tags:
       - Employees
       summary: 'Enregistrer le depart d''un employe (offboarding, issue #5324)'
+      parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+      requestBody:
+              $ref: '#/components/schemas/StoreEmployeeRequest'
+      responses:
+        '201':
+          description: Employe cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EmployeeDetail'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /employees/{employee}:
+    get:
+      tags:
+      - Employees
+      summary: Voir un employe
+      parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+      responses:
+        '200':
+          description: Detail employe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EmployeeDetail'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      tags:
+      - Employees
+      summary: Mettre a jour un employe
       parameters:
       - $ref: '#/components/parameters/EmployeeId'
       requestBody:
@@ -13983,6 +14146,7 @@ paths:
       - BearerAuth: []
       parameters:
       - name: shift
+              $ref: '#/components/schemas/AttendanceCorrectionRequestInput'
               $ref: '#/components/schemas/AttendanceCorrectionRequestInput'
       responses:
         '201':
@@ -19209,6 +19373,9 @@ paths:
               required:
               - title
               - body
+              required:
+              - title
+              - body
               properties:
                 title:
                   type: string
@@ -21119,6 +21286,185 @@ paths:
       tags:
       - Edge
       summary: Lister les nœuds edge du tenant
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Vehicle Tracking
+      summary: Supprimer une maintenance
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Maintenance supprimee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /tracking/sync-devices:
+    post:
+      tags:
+      - Vehicle Tracking
+      summary: Synchroniser les devices Traccar
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Devices synchronises
+  /tracking/sync-positions:
+    post:
+      tags:
+      - Vehicle Tracking
+      summary: Synchroniser les positions Traccar
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Positions synchronisees
+  /tracking/sync-trips:
+    post:
+      tags:
+      - Vehicle Tracking
+      summary: Synchroniser les trajets Traccar
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Trajets synchronises
+  /fleet/overview:
+    get:
+      tags:
+      - Fleet Management
+      summary: Vue d'ensemble de la flotte
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Statistiques flotte
+  /fleet/live-map:
+    get:
+      tags:
+      - Fleet Management
+      summary: Carte temps reel des vehicules
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Positions live de tous les vehicules
+  /fleet/reports/fuel:
+    get:
+      tags:
+      - Fleet Management
+      summary: Rapport consommation carburant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport carburant
+  /fleet/reports/mileage:
+    get:
+      tags:
+      - Fleet Management
+      summary: Rapport kilometrage
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport kilometrage
+  /fleet/reports/maintenance-due:
+    get:
+      tags:
+      - Fleet Management
+      summary: Vehicules necessitant une maintenance
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste vehicules maintenance due
+  /reports/headcount:
+    get:
+      tags:
+      - HR Reports
+      summary: Effectif par département, type de contrat et genre
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Payload {total, by_department[], by_contract_type[], by_gender[]}
+  /reports/turnover:
+    get:
+      tags:
+      - HR Reports
+      summary: Taux de rotation (turnover) sur N mois
+      security:
+      - BearerAuth: []
+      parameters:
+      - in: query
+        name: months
+        required: false
+        schema:
+          type: integer
+          default: 12
+      responses:
+        '200':
+          description: Taux de rotation mensuel et agrégé
+  /reports/absenteeism:
+    get:
+      tags:
+      - HR Reports
+      summary: Absentéisme du mois/année
+      security:
+      - BearerAuth: []
+      parameters:
+      - in: query
+        name: month
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: year
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Taux d'absentéisme et ventilation
+  /reports/payroll-summary:
+    get:
+      tags:
+      - HR Reports
+      summary: Synthèse paie du mois/année
+      security:
+      - BearerAuth: []
+      parameters:
+      - in: query
+        name: month
+        required: false
+        schema:
+          type: integer
+      - in: query
+        name: year
+        required: false
+        schema:
+          type: integer
                     type: object
         '401':
           $ref: '#/components/responses/Error401'
@@ -23246,6 +23592,11 @@ paths:
       tags:
       - Salary Advances
       summary: Confirmer la reception de l'avance (employe)
+  /salary-advances/{salaryAdvance}/confirm-received:
+    put:
+      tags:
+      - Salary Advances
+      summary: Confirmer la reception de l'avance (employe)
       parameters:
       - name: salaryAdvance
         in: path
@@ -25308,6 +25659,14 @@ paths:
       - $ref: '#/components/parameters/CareerEventId'
       requestBody:
         required: false
+      responses:
+        '200':
+          description: Donnees contrat pour generation PDF
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /me/contracts:
       responses:
         '200':
           description: Donnees contrat pour generation PDF
@@ -27901,6 +28260,7 @@ paths:
       - name: restaurantMenuItem
       - name: message
                     $ref: '#/components/schemas/PayrollRun'
+                    $ref: '#/components/schemas/PayrollRun'
         '401':
           $ref: '#/components/responses/Error401'
         '422':
@@ -30204,6 +30564,21 @@ paths:
       responses:
         '200':
           description: Maintenance mise a jour
+              required:
+              - name
+              - code
+              - type
+              - calculation_type
+              properties:
+                salary_structure_id:
+                  type: integer
+                  nullable: true
+                name:
+                  type: string
+                  maxLength: 150
+                code:
+                  type: string
+                  maxLength: 50
               required:
               - name
               - code
@@ -34666,6 +35041,37 @@ paths:
         required: true
         schema:
           type: integer
+                stage:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Candidat modifie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Applicant'
+        '401':
+          $ref: '#/components/responses/Error401'
+    get:
+      tags:
+      - Recruitment
+      summary: Détail d'une candidature (manager)
+      parameters:
+      - name: applicant
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: Candidature
@@ -37036,6 +37442,12 @@ paths:
         '401':
           $ref: '#/components/responses/Error401'
     put:
+      responses:
+        '200':
+          description: Detail dossier avec documents
+        '401':
+          $ref: '#/components/responses/Error401'
+    put:
       tags:
       - Cabinet
       summary: Modifier un dossier
@@ -39026,6 +39438,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PlatformCompanyHealthResponse'
+  /predictions/notifications:
+    get:
+      tags:
+      - AI Analytics
+      summary: Notifications RH proactives generees par l'IA
+      responses:
+        '200':
+          description: Liste de notifications proactives
   /predictions/notifications:
     get:
       tags:
@@ -41345,6 +41765,86 @@ paths:
       tags:
       - AI
       summary: Synthétiser un texte en audio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - rate
+              properties:
+                rate:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+      responses:
+        '200':
+          description: Taux mis à jour
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/growth/payouts:
+    get:
+      tags:
+      - Growth
+      - Platform Admin
+      summary: Lister les demandes de versement
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des paiements partenaires
+  /ai/actions/{pendingActionId}/confirm:
+    post:
+      tags:
+      - AI
+      summary: Confirmer une action IA en attente
+      parameters:
+      - name: pendingActionId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Action exécutée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature IA non active (AIFeatureCheck)
+  /ai/actions/{pendingActionId}/reject:
+    post:
+      tags:
+      - AI
+      summary: Rejeter une action IA en attente
+      parameters:
+      - name: pendingActionId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Action rejetée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature IA non active
+  /ai/voice/transcribe:
+    post:
+      tags:
+      - AI
+      summary: Transcrire un audio (commande vocale)
+      responses:
+        '200':
+          description: Transcription
+        '401':
+          $ref: '#/components/responses/Error401'
+  /ai/voice/synthesize:
+    post:
+      tags:
+      - AI
+      summary: Synthétiser un texte en audio
       responses:
         '200':
           description: Audio généré
@@ -43203,6 +43703,7 @@ paths:
       summary: Resume de la session de paie
       parameters:
       - name: payrollRun
+  /marketing/social-posts:
   /marketing/social-posts:
     get:
       tags:
@@ -45287,6 +45788,13 @@ paths:
       - Payroll Engine
       summary: Créer un jour férié d'entreprise (manager principal)
       operationId: storePublicHoliday
+    post:
+      tags:
+      - Platform Admin
+      summary: Creer une annonce plateforme (maintenance, feature, incident, action requise)
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
     post:
       tags:
       - Platform Admin
@@ -47621,6 +48129,64 @@ paths:
       operationId: submitSocialContribution
       parameters:
       - name: socialContribution
+                    $ref: '#/components/schemas/Delivery'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/routes:
+    post:
+      tags:
+      - Delivery
+      summary: Crée une tournée (DELIVERY-202/#6286)
+      description: |
+        Crée une tournée (statut draft) + stops ordonnés à partir des colis.
+        Refus 409 si un colis est déjà planifié dans une tournée non close.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - route_date
+              - delivery_ids
+              properties:
+                route_date:
+                  type: string
+                  format: date
+                zone:
+                  type: string
+                delivery_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Tournée créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Colis déjà planifié
+  /delivery/deliveries/routes/{route}/assign:
+    post:
+      tags:
+      - Delivery
+      summary: Affecte livreur + véhicule (DELIVERY-202/#6286)
+      description: |
+        Idempotent (même affectation → même résultat). Garde anti-chevauchement :
+        un livreur = une tournée par date (409 DRIVER_ALREADY_ASSIGNED).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
         in: path
         required: true
         schema:
@@ -47629,6 +48195,22 @@ paths:
         '200':
           description: Cotisation soumise (pending_validation)
           description: Livraison
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driver_id
+              properties:
+                driver_id:
+                  type: integer
+                vehicle_code:
+                  type: string
+      responses:
+        '200':
+          description: Tournée affectée
           content:
             application/json:
               schema:
@@ -47653,6 +48235,28 @@ paths:
       responses:
         '200':
           description: Module actif
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/close:
+    post:
+      tags:
+      - Delivery
+      summary: Clôture une tournée (DELIVERY-202/#6286)
+      description: |
+        Idempotente. Refus 409 ROUTE_INCOMPLETE si des stops sont non terminés.
+        Calcule totaux colis/livrés/échecs/COD collecté (verrou SELECT FOR UPDATE).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée clôturée
           content:
             application/json:
               schema:
@@ -47731,6 +48335,23 @@ paths:
       parameters:
       - in: path
         name: webhookEndpoint
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Tournée incomplète ou vide
+  /delivery/deliveries/routes/{route}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une tournée (DELIVERY-202/#6286)
+      description: |
+        Détail scopé au tenant — 404 si absente OU hors tenant. Stops ordonnés.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
         required: true
         schema:
           type: integer
@@ -47755,6 +48376,28 @@ paths:
       operationId: socialContributionHistory
       parameters:
       - name: socialContribution
+          description: Tournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '404':
+          description: Tournée introuvable ou hors tenant
+
+  /delivery/deliveries/{delivery}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une livraison (DELIVERY-201/#6285)
+      description: |
+        Détail d'une livraison scopé au tenant — 404 si absente OU hors tenant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
         in: path
         required: true
         schema:
@@ -47762,6 +48405,7 @@ paths:
       responses:
         '200':
           description: Audit trail (tax_rate_change_log, append-only)
+          description: Livraison
           content:
             application/json:
               schema:
@@ -47792,6 +48436,35 @@ paths:
       responses:
         '200':
           description: Règles de cotisations
+                    $ref: '#/components/schemas/Delivery'
+        '404':
+          description: Livraison introuvable ou hors tenant
+
+  /delivery/ping:
+    get:
+      tags:
+      - Delivery
+      summary: Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `delivery` est actif pour le tenant courant et que le pipeline
+        middleware (auth → tenant → module) est opérationnel. Lecture pure.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - service
+                properties:
+                  status:
+                    type: string
+                    example: ok
                   service:
                     type: string
                     example: delivery
@@ -50048,6 +50721,212 @@ paths:
       responses:
         "200":
           description: "Ligne rapprochée"
+                    $ref: "#/components/schemas/AttendanceDayClosure"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /attendance/day-closures/{id}:
+    delete:
+      tags: ["Attendance"]
+      summary: "Lever une fermeture de journée (manager/RH/principal)"
+      description: "Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Verrou levé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+
+  /accounting/activation/complete:
+    post:
+      tags:
+      - Accounting
+      summary: Completer l'activation du module Comptabilite (wizard)
+      description: "Marque le wizard d'activation comme termine (RBAC principal/comptable)."
+      responses:
+        '200':
+          description: Activation completee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingActivation'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
+  /auth/2fa/verify:
+    post:
+      tags: ["Auth"]
+      summary: "Verifier le challenge 2FA et obtenir le token"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFactorVerifyRequest"
+      responses:
+        "200":
+          description: "Token Sanctum delivre"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorVerifyResponse"
+        "401":
+          description: "TWO_FACTOR_CHALLENGE_EXPIRED"
+        "422":
+          description: "TWO_FACTOR_INVALID ou validation"
+
+
+  /auth/2fa/recovery-codes:
+    post:
+      tags: ["Auth"]
+      summary: "Regenerer les codes de recuperation 2FA"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Nouveaux codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+
+
+  /auth/2fa/disable:
+    post:
+      tags: ["Auth"]
+      summary: "Desactiver la 2FA (re-verification par code)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: "2FA desactivee"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID"
+
+
+  /auth/2fa/confirm:
+    post:
+      tags: ["Auth"]
+      summary: "Confirmer l'enrolement 2FA (premier code) et activer"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: "Code TOTP a verifier"
+      responses:
+        "201":
+          description: "2FA activee + codes de recuperation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorConfirmResponse"
+        "422":
+          description: "TWO_FACTOR_INVALID (code invalide)"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+
+
+  /auth/2fa/enroll:
+    post:
+      tags: ["Auth"]
+      summary: "Demarrer l'enrolement 2FA (secret + QR)"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Secret TOTP et URL du QR code"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorEnrollResponse"
+        "409":
+          description: "TWO_FACTOR_ALREADY_ENABLED"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+
+  /auth/2fa/status:
+    get:
+      tags: ["Auth"]
+      summary: "Etat 2FA du compte connecte"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Etat 2FA (activee ? politique requise ?)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorStatusResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+
+  /accounting/bank-statement-lines/{line}/match:
+    post:
+      tags: ["Accounting"]
+      summary: "Rapprochement manuel d'une ligne"
+      description: "Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: line
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payment_id]
+              properties:
+                payment_id: { type: integer }
+      responses:
+        "200":
+          description: "Ligne rapprochée"
           content:
             application/json:
               schema:
@@ -50700,6 +51579,18 @@ paths:
       parameters:
       - name: q
         in: query
+
+  /voice/tts/{filename}:
+    get:
+      tags:
+      - AI
+      summary: Servir un fichier TTS genere (edge-tts / elevenlabs)
+      description: Retourne le fichier audio TTS genere (accel du stockage). Fail-closed si le binaire edge-tts est indisponible.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: filename
+        in: path
         required: true
         schema:
           type: string
@@ -280871,6 +281762,463 @@ components:
           type: string
           nullable: true
     LeavePolicy:
+          description: Fichier audio
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Fichier introuvable
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+    SuperAdminBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+  parameters:
+    ProjectId:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: integer
+    NotificationId:
+      name: notification
+      in: path
+      required: true
+      schema:
+        type: integer
+    TaskId:
+      name: task
+      in: path
+      required: true
+      schema:
+        type: integer
+    EvaluationId:
+      name: evaluation
+      in: path
+      required: true
+      schema:
+        type: integer
+    CareerEventId:
+      name: careerEvent
+      in: path
+      required: true
+      schema:
+        type: integer
+    EmployeeId:
+      name: employee
+      in: path
+      required: true
+      schema:
+        type: integer
+    CameraId:
+      name: camera
+      in: path
+      required: true
+      schema:
+        type: integer
+    TokenId:
+      name: token
+      in: path
+      required: true
+      schema:
+        type: integer
+    PermissionId:
+      name: permission
+      in: path
+      required: true
+      schema:
+        type: integer
+    InvitationId:
+      name: invitation
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    GenericIntId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    NumericId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    CompanyUuid:
+      name: company
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DeviceCode:
+      name: deviceCode
+      in: path
+      required: true
+      schema:
+        type: string
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+    KioskTokenHeader:
+      name: X-Kiosk-Token
+      in: header
+      required: true
+      schema:
+        type: string
+  headers:
+    XRequestId:
+      description: Identifiant de correlation a fournir au support en cas d'incident.
+      schema:
+        type: string
+    RetryAfter:
+      description: Delai conseille avant retry lorsqu'une limite de debit est atteinte.
+      schema:
+        type: integer
+  responses:
+    Error401:
+      description: Non authentifie
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error403:
+      description: Action interdite
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error404:
+      description: Ressource introuvable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error429:
+      description: Limite de debit atteinte
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error422:
+      description: Erreur de validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+    Error409:
+      description: Conflit — état déjà traité (idempotence)
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error, message]
+            properties:
+              error: { type: string }
+              message: { type: string }
+    Validation422:
+      description: Erreur de validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+  schemas:
+    DeliveryRoute:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_date:
+          type: string
+          format: date
+        zone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, assigned, in_progress, completed]
+        driver_id:
+          type: integer
+          nullable: true
+        vehicle_code:
+          type: string
+          nullable: true
+        deliveries_count:
+          type: integer
+        delivered_count:
+          type: integer
+        failed_count:
+          type: integer
+        cod_collected_minor:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryRouteStop'
+    DeliveryRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        sort_order:
+          type: integer
+        status:
+          type: string
+          enum: [pending, en_route, arrived, delivered, failed, skipped]
+        address:
+          type: string
+        contact:
+          type: string
+          nullable: true
+        eta:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: DLV-2026-000123
+        source:
+          type: string
+          enum: [manual, restaurant, retail, ecommerce, crm, field]
+        source_reference:
+          type: string
+          nullable: true
+        type:
+          type: string
+        status:
+          type: string
+          enum: [created, assigned, picked_up, out_for_delivery, arrived, delivered, failed, returned, cancelled]
+        cod_amount_minor:
+          type: integer
+          nullable: true
+        dropoff_contact:
+          type: string
+        dropoff_address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    AccountingChartAccount:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum:
+          - asset
+          - liability
+          - equity
+          - revenue
+          - expense
+        class:
+          type: integer
+        is_system:
+          type: boolean
+        is_active:
+          type: boolean
+        updated_at:
+          type: string
+          nullable: true
+    AccountingChartAccountPayload:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 20
+        label:
+          type: string
+          maxLength: 255
+        type:
+          type: string
+          enum:
+          - asset
+          - liability
+          - equity
+          - revenue
+          - expense
+        class:
+          type: integer
+          minimum: 1
+          maximum: 8
+        is_active:
+          type: boolean
+      required:
+      - code
+      - label
+      - type
+      - class
+    AccountingJournalEntryLine:
+      type: object
+      properties:
+        id:
+          type: integer
+        entry_date:
+          type: string
+          format: date
+        period:
+          type: string
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+        credit:
+          type: number
+        piece:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        running_balance:
+          type: number
+    FinancialSection:
+      type: object
+      properties:
+        section:
+          type: string
+        accounts:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              label:
+                type: string
+              balance:
+                type: number
+        total:
+          type: number
+    AccountingFiscalYear:
+      type: object
+      properties:
+        year:
+          type: integer
+        status:
+          type: string
+          enum:
+          - open
+          - closed
+        closed_at:
+          type: string
+          nullable: true
+        closed_by:
+          type: string
+          nullable: true
+    AttendanceModeSettings:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        forced_mode:
+          type: string
+          enum:
+          - manual
+          - gps
+          - qr
+          nullable: true
+        punch_photo_mode:
+          type: string
+          enum:
+          - kiosk
+          - photo_required
+          nullable: true
+          description: 'Mode de pointage mobile : kiosque (clic simple) ou photo obligatoire a chaque pointage.'
+        gps_enabled:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        radius_meters:
+          type: integer
+          default: 100
+        allow_employee_override:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+    AttendanceModeSettingsRequest:
+      type: object
+      properties:
+        gps_enabled:
+          type: boolean
+        forced_mode:
+          type: string
+          enum:
+          - manual
+          - gps
+          - qr
+          nullable: true
+        punch_photo_mode:
+          type: string
+          enum:
+          - kiosk
+          - photo_required
+          nullable: true
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        radius_meters:
+          type: integer
+          minimum: 50
+          maximum: 5000
+        allow_employee_override:
+          type: boolean
+    EmployeeAttendancePreference:
       type: object
       properties:
         id:
@@ -280936,6 +282284,42 @@ components:
           type: string
           nullable: true
     EmployeeDocument:
+          type: string
+          format: uuid
+        preferred_mode:
+          type: string
+          enum:
+          - gps_auto
+          - qr
+          - manual
+        gps_consent_given:
+          type: boolean
+        gps_consent_at:
+          type: string
+          format: date-time
+          nullable: true
+    GeoEventRequest:
+      type: object
+      required:
+      - event_type
+      - latitude
+      - longitude
+      properties:
+        event_type:
+          type: string
+          enum:
+          - zone_enter
+          - zone_exit
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        accuracy:
+          type: integer
+          description: Précision GPS en mètres
+    GeoAttendanceSession:
       type: object
       properties:
         id:
@@ -281571,6 +282955,493 @@ components:
           type: string
           format: date
     Contract:
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+        company_id:
+          type: string
+          format: uuid
+        site_id:
+          type: integer
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        duration_seconds:
+          type: integer
+          nullable: true
+        check_in_lat:
+          type: number
+          format: double
+        check_in_lng:
+          type: number
+          format: double
+        check_in_accuracy_meters:
+          type: integer
+          nullable: true
+        check_out_lat:
+          type: number
+          format: double
+          nullable: true
+        check_out_lng:
+          type: number
+          format: double
+          nullable: true
+        status:
+          type: string
+          enum:
+          - detected
+          - pending_validation
+          - approved
+          - rejected
+          - cancelled
+        attendance_log_id:
+          type: integer
+          nullable: true
+        validated_by:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        validation_note:
+          type: string
+          nullable: true
+    AttendanceDashboard:
+      type: object
+      properties:
+        today:
+          type: object
+          properties:
+            detected:
+              type: integer
+            pending_validation:
+              type: integer
+            approved:
+              type: integer
+            rejected:
+              type: integer
+            cancelled:
+              type: integer
+            total_employees_present:
+              type: integer
+        week:
+          type: object
+          properties:
+            total_sessions:
+              type: integer
+            auto_approved_rate:
+              type: number
+              format: float
+    CompanyBranding:
+      type: object
+      properties:
+        display_name:
+          type: string
+          example: TechCorp Algerie
+        logo_url:
+          type: string
+          nullable: true
+          example: https://api.example.com/storage/company-branding/logo.png
+        logo_path:
+          type: string
+          nullable: true
+        logo_disk:
+          type: string
+          nullable: true
+          example: public
+        primary_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          example: '#10B981'
+        accent_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          example: '#2563EB'
+        brand_mode:
+          type: string
+          enum:
+          - default
+          - light
+          - dark
+          - auto
+    CompanyBrandingResponse:
+      type: object
+      properties:
+        company_id:
+          type: string
+          format: uuid
+        branding:
+          $ref: '#/components/schemas/CompanyBranding'
+    CompanyBrandingUpdateRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
+        primary_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accent_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brand_mode:
+          type: string
+          enum:
+          - default
+          - light
+          - dark
+          - auto
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        start_time:
+          type: string
+          example: 08:00
+        end_time:
+          type: string
+          example: '17:00'
+        break_minutes:
+          type: integer
+          minimum: 0
+        work_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        rest_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        break_rules:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              start_time:
+                type: string
+                nullable: true
+              end_time:
+                type: string
+                nullable: true
+              minutes:
+                type: integer
+              is_paid:
+                type: boolean
+        leave_rules:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              type:
+                type: string
+                nullable: true
+              days_per_year:
+                type: number
+                nullable: true
+              policy_id:
+                type: integer
+                nullable: true
+        assignment_notes:
+          type: string
+          nullable: true
+        late_tolerance_minutes:
+          type: integer
+          minimum: 0
+        overtime_threshold_daily:
+          type: number
+        overtime_threshold_weekly:
+          type: number
+        is_default:
+          type: boolean
+    ScheduleRequest:
+      type: object
+      required:
+      - name
+      - start_time
+      - end_time
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        start_time:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+        end_time:
+          type: string
+          pattern: ^\d{2}:\d{2}$
+        break_minutes:
+          type: integer
+          minimum: 0
+          maximum: 480
+        work_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        rest_days:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        break_rules:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                maxLength: 80
+              start_time:
+                type: string
+                pattern: ^\d{2}:\d{2}$
+              end_time:
+                type: string
+                pattern: ^\d{2}:\d{2}$
+              minutes:
+                type: integer
+                minimum: 0
+                maximum: 480
+              is_paid:
+                type: boolean
+        leave_rules:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                maxLength: 120
+              type:
+                type: string
+                maxLength: 80
+              days_per_year:
+                type: number
+                minimum: 0
+                maximum: 365
+              policy_id:
+                type: integer
+                minimum: 1
+        assignment_notes:
+          type: string
+          maxLength: 1000
+        late_tolerance_minutes:
+          type: integer
+          minimum: 0
+          maximum: 120
+        overtime_threshold_daily:
+          type: number
+          minimum: 0
+        overtime_threshold_weekly:
+          type: number
+          minimum: 0
+        is_default:
+          type: boolean
+    ClientEventRequest:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          enum:
+          - login_success
+          - dashboard_loaded
+          - feature_blocked
+          - demo_user_selected
+          - kiosk_status
+        surface:
+          type: string
+          enum:
+          - web
+          - admin
+          - mobile
+          - kiosk
+          default: web
+        session_id:
+          type: string
+          nullable: true
+          maxLength: 120
+        duration_ms:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 600000
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+        properties:
+          type: object
+          additionalProperties: true
+          nullable: true
+    ClientEventResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            stored:
+              type: boolean
+    LaunchReadinessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company_id:
+              type: string
+              format: uuid
+            score:
+              type: integer
+              minimum: 0
+              maximum: 100
+            go_live_ready:
+              type: boolean
+            required_blockers:
+              type: array
+              items:
+                $ref: '#/components/schemas/LaunchReadinessBlocker'
+            next_actions:
+              type: array
+              items:
+                $ref: '#/components/schemas/LaunchReadinessAction'
+            checks:
+              type: array
+              items:
+                $ref: '#/components/schemas/LaunchReadinessCheck'
+    LaunchReadinessCheck:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+          - company_profile
+          - manager_access
+          - employee_base
+          - communication_governance
+          - payroll_base
+          - attendance_entry
+          - client_experience_tracking
+        label:
+          type: string
+        required:
+          type: boolean
+        completed:
+          type: boolean
+        metrics:
+          type: object
+          additionalProperties: true
+    LaunchReadinessBlocker:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        metrics:
+          type: object
+          additionalProperties: true
+    LaunchReadinessAction:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        required:
+          type: boolean
+    CommunicationAnalyticsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            period:
+              type: object
+              properties:
+                days:
+                  type: integer
+                since:
+                  type: string
+                  format: date-time
+            totals:
+              type: object
+              properties:
+                events:
+                  type: integer
+                sent_or_queued:
+                  type: integer
+                failed:
+                  type: integer
+                skipped:
+                  type: integer
+                failure_rate:
+                  type: number
+                  format: float
+            by_channel:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyCount'
+            by_status:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyCount'
+            by_template:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyCount'
+            daily:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  count:
+                    type: integer
+    KeyCount:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
+    Vehicle:
       type: object
       properties:
         id:
@@ -281598,6 +283469,37 @@ components:
           nullable: true
         salary_max:
           type: number
+        plate_number:
+          type: string
+        brand:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        year:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          enum:
+          - car
+          - van
+          - truck
+          - motorcycle
+          - bus
+          nullable: true
+        vin:
+          type: string
+          nullable: true
+        fuel_type:
+          type: string
+          enum:
+          - diesel
+          - gasoline
+          - electric
+          - hybrid
+          - lpg
           nullable: true
         status:
           type: string
@@ -281954,6 +283856,435 @@ components:
             last_name:
               type: string
         department:
+          - active
+          - maintenance
+          - decommissioned
+        mileage:
+          type: integer
+          nullable: true
+        insurance_expiry:
+          type: string
+          format: date
+          nullable: true
+        technical_control_expiry:
+          type: string
+          format: date
+          nullable: true
+        traccar_unique_id:
+          type: string
+          nullable: true
+        traccar_device_id:
+          type: integer
+          nullable: true
+        assigned_driver_id:
+          type: integer
+          nullable: true
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+          enum:
+          - UNAUTHENTICATED
+          - FORBIDDEN
+          - RESOURCE_NOT_FOUND
+          - COMPANY_NOT_FOUND
+          - TWO_FA_REQUIRED
+          - VALIDATION_ERROR
+          - RATE_LIMITED
+          - NOT_IMPLEMENTED
+          example: RESOURCE_NOT_FOUND
+        message:
+          type: string
+          example: Ressource introuvable.
+        localized_message:
+          type: string
+          description: Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)
+          example: Ressource introuvable.
+        request_id:
+          type: string
+          nullable: true
+          example: req_01HYZ4VY9K7M1A2B3C4D5E6F7G
+    ValidationErrorResponse:
+      type: object
+      required:
+      - error
+      - message
+      - errors
+      properties:
+        error:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: The given data was invalid.
+        localized_message:
+          type: string
+          description: Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)
+          example: Les données fournies sont invalides.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        request_id:
+          type: string
+          nullable: true
+    WebhookEndpoint:
+      type: object
+      description: App\Http\Resources\Api\V1\WebhookEndpointResource. Le champ `secret` HMAC n'est jamais expose ici, uniquement au moment de la creation.
+      properties:
+        id:
+          type: integer
+          example: 12
+        url:
+          type: string
+          format: uri
+          example: https://partner.example.com/hooks/leopardo
+        events:
+          type: array
+          items:
+            type: string
+          example:
+          - employee.created
+          - absence.approved
+        active:
+          type: boolean
+        failure_count:
+          type: integer
+          description: Nombre d'echecs consecutifs; un seuil desactive automatiquement le webhook (active=false).
+        last_triggered_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    WebhookEndpointRequest:
+      type: object
+      required:
+      - url
+      - events
+      description: App\Modules\Billing\Interfaces\Api\V1\Requests\StoreWebhookEndpointRequest.
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+          description: Rejetee si l'URL pointe vers une adresse privee/loopback (App\Rules\NotPrivateUrl, garde SSRF).
+        events:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            description: Doit appartenir a la liste retournee par GET /webhooks/events.
+    WebhookEndpointUpdateRequest:
+      type: object
+      description: App\Modules\Billing\Interfaces\Api\V1\Requests\UpdateWebhookEndpointRequest. Tous les champs sont optionnels (sometimes).
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 500
+        events:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        active:
+          type: boolean
+          description: Passer a true remet failure_count a 0.
+    WebhookDelivery:
+      type: object
+      description: App\Http\Resources\Api\V1\WebhookDeliveryResource.
+      properties:
+        id:
+          type: integer
+        webhook_endpoint_id:
+          type: integer
+        event:
+          type: string
+          example: employee.created
+        response_code:
+          type: integer
+          description: 0 si la livraison a echoue (timeout/connexion refusee) plutot qu'un vrai code HTTP.
+        response_body:
+          type: string
+          nullable: true
+        duration_ms:
+          type: integer
+        dead_lettered_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Non-null une fois les 3 tentatives (DispatchWebhook::$tries) epuisees.
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+    HealthCheck:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        latency_ms:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        error:
+          type: string
+          nullable: true
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          nullable: true
+        checks:
+          type: object
+          properties:
+            database:
+              $ref: '#/components/schemas/HealthCheck'
+            redis:
+              $ref: '#/components/schemas/HealthCheck'
+            storage:
+              $ref: '#/components/schemas/HealthCheck'
+        timestamp:
+          type: string
+          format: date-time
+    LoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        device_name:
+          type: string
+          maxLength: 100
+    PlatformLoginRequest:
+      type: object
+      required:
+      - email
+      - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        device_name:
+          type: string
+    CompanyMini:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        language:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+    CurrentEmployee:
+      type: object
+      properties:
+        id:
+          type: integer
+        matricule:
+          type: string
+          nullable: true
+        company_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        middle_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+        preferred_name:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+        personal_email:
+          type: string
+          format: email
+          nullable: true
+        recovery_email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        personal_phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum:
+          - employee
+          - manager
+        manager_role:
+          type: string
+          nullable: true
+        status:
+          type: string
+        photo_path:
+          type: string
+          nullable: true
+        biometric_face_enabled:
+          type: boolean
+        biometric_fingerprint_enabled:
+          type: boolean
+        address_line:
+          type: string
+          nullable: true
+        postal_code:
+          type: string
+          nullable: true
+        emergency_contact_name:
+          type: string
+          nullable: true
+        emergency_contact_phone:
+          type: string
+          nullable: true
+        extra_data:
+          type: object
+          additionalProperties: true
+        capabilities:
+          type: object
+          additionalProperties:
+            type: boolean
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+        suggested_home_route:
+          type: string
+        company:
+          $ref: '#/components/schemas/CompanyMini'
+    PrivacyExportResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            employee:
+              type: object
+              properties:
+                id:
+                  type: integer
+                company_id:
+                  type: string
+                  format: uuid
+                matricule:
+                  type: string
+                  nullable: true
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                preferred_name:
+                  type: string
+                  nullable: true
+                email:
+                  type: string
+                  format: email
+                personal_email:
+                  type: string
+                  format: email
+                  nullable: true
+                phone:
+                  type: string
+                  nullable: true
+                role:
+                  type: string
+                manager_role:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                preferred_language:
+                  type: string
+                  nullable: true
+                biometric_face_enabled:
+                  type: boolean
+                biometric_fingerprint_enabled:
+                  type: boolean
+                biometric_consent_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                created_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                updated_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+            activity_summary:
+              type: object
+              properties:
+                attendance_logs_count:
+                  type: integer
+                absence_requests_count:
+                  type: integer
+                pay_slips_count:
+                  type: integer
+                expense_claims_count:
+                  type: integer
+            privacy:
+              type: object
+              properties:
+                exported_at:
+                  type: string
+                  format: date-time
+                scope:
+                  type: string
+                format_version:
+                  type: string
+    PrivacyRequestResponse:
+      type: object
+      properties:
+        data:
           type: object
           properties:
             id:
@@ -282111,6 +284442,64 @@ components:
           type: string
           nullable: true
     ContractAmendment:
+            type:
+              type: string
+              example: deletion
+            status:
+              type: string
+              example: received
+            message:
+              type: string
+    BiometricConsentResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            biometric_face_enabled:
+              type: boolean
+            biometric_fingerprint_enabled:
+              type: boolean
+            biometric_consent_at:
+              type: string
+              format: date-time
+              nullable: true
+    LoginResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CurrentEmployee'
+        token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        token_expires_at:
+          type: string
+          format: date-time
+          nullable: true
+    UpdateProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        personal_email:
+          type: string
+          format: email
+          nullable: true
+        recovery_email:
+          type: string
+          format: email
+          nullable: true
+        personal_phone:
+          type: string
+          nullable: true
+    EmployeeDocument:
       type: object
       properties:
         id:
@@ -282151,6 +284540,47 @@ components:
           type: string
           nullable: true
         department_id:
+        company_id:
+          type: string
+          format: uuid
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - contract_signed
+          - employee_file
+          - career_decision
+          - departure_record
+          - notice_summary
+          - settlement
+          - certificate
+          - other
+        type_label:
+          type: string
+        status:
+          type: string
+          enum:
+          - received
+          - uploaded
+          - generated
+          - missing
+        status_label:
+          type: string
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        uploaded_by:
           type: integer
           nullable: true
         created_at:
@@ -282273,6 +284703,214 @@ components:
           type: string
           format: date-time
     ScheduleSimple:
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    StoreEmployeeDocumentRequest:
+      type: object
+      required:
+      - employee_id
+      - type
+      properties:
+        employee_id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - contract_signed
+          - employee_file
+          - career_decision
+          - departure_record
+          - notice_summary
+          - settlement
+          - certificate
+          - other
+        status:
+          type: string
+          enum:
+          - received
+          - uploaded
+          - generated
+          - missing
+          default: received
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+    UpdateEmployeeDocumentRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - contract_signed
+          - employee_file
+          - career_decision
+          - departure_record
+          - notice_summary
+          - settlement
+          - certificate
+          - other
+        status:
+          type: string
+          enum:
+          - received
+          - uploaded
+          - generated
+          - missing
+        document_date:
+          type: string
+          format: date
+          nullable: true
+        reference:
+          type: string
+          maxLength: 100
+          nullable: true
+        url:
+          type: string
+          maxLength: 2000
+          nullable: true
+        notes:
+          type: string
+          maxLength: 5000
+          nullable: true
+    EmployeeCareerResponse:
+      type: object
+      properties:
+        available_for_new_company:
+          type: boolean
+        current_company_id:
+          type: string
+          format: uuid
+          nullable: true
+        current_company_name:
+          type: string
+          nullable: true
+        timeline:
+          type: array
+          items:
+            type: object
+            properties:
+              company_id:
+                type: string
+                format: uuid
+                nullable: true
+              company_name:
+                type: string
+                nullable: true
+              start_date:
+                type: string
+                format: date
+                nullable: true
+              end_date:
+                type: string
+                format: date
+                nullable: true
+              job_title:
+                type: string
+                nullable: true
+              contract_type:
+                type: string
+                nullable: true
+              status:
+                type: string
+                nullable: true
+              current:
+                type: boolean
+        career_history:
+          type: object
+          description: 'Historique unifié paginé (issue #5328, G5) : contrats + évaluations + évolutions de carrière + départ, triés par date décroissante'
+          properties:
+            current_page:
+              type: integer
+            data:
+              type: array
+              description: Éléments de la timeline unifiée, chaque item porte type/label/date/status/data
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - contract
+                    - evaluation
+                    - career_event
+                    - departure
+                  label:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                    nullable: true
+                  status:
+                    type: string
+                    nullable: true
+                  data:
+                    type: object
+                    additionalProperties: true
+            first_page_url:
+              type: string
+              nullable: true
+            from:
+              type: integer
+              nullable: true
+            last_page:
+              type: integer
+            last_page_url:
+              type: string
+              nullable: true
+            links:
+              type: array
+              items:
+                type: object
+            next_page_url:
+              type: string
+              nullable: true
+            path:
+              type: string
+            per_page:
+              type: integer
+            prev_page_url:
+              type: string
+              nullable: true
+            to:
+              type: integer
+              nullable: true
+            total:
+              type: integer
+    ChangePasswordRequest:
+      type: object
+      required:
+      - current_password
+      - new_password
+      - new_password_confirmation
+      properties:
+        current_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+        new_password_confirmation:
+          type: string
+    SuperAdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
         name:
           type: string
         email:
@@ -283983,6 +286621,47 @@ components:
         company_code:
           type: string
     PublicHoliday:
+          items:
+            type: integer
+        project_id:
+          type: integer
+          nullable: true
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+        priority:
+          type: string
+          enum:
+          - low
+          - normal
+          - high
+          - urgent
+        estimated_minutes:
+          type: integer
+          nullable: true
+        completed_minutes:
+          type: integer
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        completion_note:
+          type: string
+          nullable: true
+        performance_score:
+          type: string
+          nullable: true
+        recurrence_rule:
+          type: string
+          nullable: true
+        template_key:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
           - todo
           - inprogress
           - review
@@ -285382,6 +288061,70 @@ components:
           items:
             type: string
     BankStatement:
+          type: string
+    CareerEventPositionMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    CareerEventDepartmentMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    CareerEventIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CareerEvent'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+    StoreCareerEventRequest:
+      type: object
+      required:
+      - employee_id
+      - type
+      - effective_date
+      - reason
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+        type:
+          type: string
+          enum:
+          - promotion
+          - raise
+          - transfer
+          - title_change
+        to_position_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+    UpdateCareerEventRequest:
       type: object
       properties:
         type:
@@ -287395,6 +290138,149 @@ components:
           format: date-time
           nullable: true
     Subscription:
+          - en
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          description: 'Taux de TVA par defaut (modifiables), ex. [{label: ''TVA standard'', rate: 19}].'
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+        number_series:
+          type: object
+          description: 'Prefixe de serie par type de document, ex. {invoice: ''FAC'', quote: ''DEV''}.'
+          additionalProperties:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    AccountingSettingsPayload:
+      type: object
+      description: Payload de mise a jour — chaque champ est optionnel et remplace la valeur existante.
+      properties:
+        currency:
+          type: string
+          nullable: true
+          description: 'Code ISO 4217 parmi les devises du registre CountryDefaults (multi-devises #5270).'
+        document_language:
+          type: string
+          enum:
+          - fr
+          - ar
+          - tr
+          - en
+          nullable: true
+        template_style:
+          type: string
+          nullable: true
+        payment_terms:
+          type: string
+          nullable: true
+        legal_mentions:
+          type: string
+          nullable: true
+        tva_rates:
+          type: array
+          items:
+            type: object
+            required:
+            - label
+            - rate
+            properties:
+              label:
+                type: string
+              rate:
+                type: number
+                minimum: 0
+                maximum: 100
+        number_series:
+          type: object
+          additionalProperties:
+            type: string
+    AccountingCheckout:
+      type: object
+      description: 'Session de paiement en ligne creee (issue #5272).'
+      required:
+      - checkout_url
+      - expires_at
+      - gateway
+      properties:
+        checkout_url:
+          type: string
+          format: uri
+          description: URL de paiement hebergee par la passerelle (Chargily / Stripe).
+        expires_at:
+          type: string
+          format: date-time
+          description: Expiration de la session de paiement.
+        gateway:
+          type: string
+          enum:
+          - chargily
+          - stripe
+    AccountingCheckoutPayload:
+      type: object
+      description: 'Payload optionnel d''initiation de checkout — URLs de retour personnalisees (defaut : portail client).'
+      properties:
+        success_url:
+          type: string
+          format: uri
+          nullable: true
+        cancel_url:
+          type: string
+          format: uri
+          nullable: true
+    VatDeclaration:
+      type: object
+      description: 'Declaration TVA simplifiee d''une periode mensuelle (issue #5271).'
+      properties:
+        period:
+          type: object
+          properties:
+            label:
+              type: string
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        currency:
+          type: string
+        collected:
+          $ref: '#/components/schemas/VatDeclarationTotals'
+        deductible:
+          $ref: '#/components/schemas/VatDeclarationTotals'
+        net:
+          type: object
+          description: Net a declarer (collectee - deductible).
+          properties:
+            base:
+              type: number
+            tax:
+              type: number
+            total:
+              type: number
+    VatDeclarationTotals:
+      type: object
+      description: Totaux d'un cote de la declaration (assiette HT, taxe, TTC) + detail par taux.
+      properties:
+        base:
+          type: number
+        tax:
           type: number
         total:
           type: number
@@ -289203,6 +292089,13 @@ components:
           type: string
           format: date-time
     AuditLog:
+        employee_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
         updated_at:
           type: string
           format: date-time
@@ -291478,6 +294371,77 @@ components:
         notes_redacted:
           type: string
           nullable: true
+        actor:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - user
+              - job
+            id:
+              type: integer
+              nullable: true
+        country_code:
+          type: string
+        period_start:
+          type: string
+          format: date
+          nullable: true
+        period_end:
+          type: string
+          format: date
+          nullable: true
+        rules_version:
+          type: string
+          nullable: true
+          description: Empreinte stable des règles effectives (permet de reproduire le calcul à l'identique).
+        rules_identifier:
+          type: string
+          nullable: true
+          description: Implémentation des règles pays appliquée.
+        input:
+          type: object
+          nullable: true
+          description: Paramètres agrégés non sensibles (ex. nombre d'employés, masse salariale brute) — jamais de salaires individuels ni de secrets.
+          additionalProperties: true
+        result:
+          type: object
+          nullable: true
+          description: Résultats agrégés (net total, coût employeur total…) — null en cas d'échec.
+          additionalProperties: true
+        status:
+          type: string
+          enum:
+          - success
+          - validation_error
+          - rule_missing
+          - provider_error
+          - fallback_forbidden
+        error_message:
+          type: string
+          nullable: true
+          description: Classe d'erreur uniquement (jamais de message brut ni de secret).
+        created_at:
+          type: string
+          format: date-time
+    SalaryStructure:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        base_salary:
+          type: number
+        currency:
+          type: string
+        is_active:
+          type: boolean
+        components:
           type: array
           items:
             $ref: '#/components/schemas/SalaryComponent'
