@@ -7,7 +7,7 @@ namespace Tests\Feature\Contracts;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\EmployeeLastContractTerminated;
-use App\Modules\HR\Application\Actions\ContractLifecycleAction;
+use App\Modules\HR\Infrastructure\Services\ContractLifecycleAction;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
 use Illuminate\Support\Facades\Event;

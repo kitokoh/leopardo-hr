@@ -14,7 +14,7 @@ class ShareDocument
         private readonly CabinetService $cabinetService,
     ) {}
 
-    public function handle(string $documentId, string $sharedWithId, string $permission = 'view'): CabinetShare
+    public function execute(string $documentId, string $sharedWithId, string $permission = 'view'): CabinetShare
     {
         $document = CabinetDocument::query()->findOrFail($documentId);
 

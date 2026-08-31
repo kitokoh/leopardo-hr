@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Infrastructure\Services;
 
-use App\Modules\Accounting\Application\Actions\ChartOfAccountsDefaults;
+use App\Modules\Accounting\Infrastructure\Services\ChartOfAccountsDefaults;
 use App\Modules\Accounting\Domain\Enums\AccountType;
 use App\Modules\Accounting\Domain\Models\AccountingChartAccount;
 use Illuminate\Database\Eloquent\Collection;

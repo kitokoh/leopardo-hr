@@ -13,7 +13,7 @@ class CreateSubscription
         private readonly StripeService $stripeService,
     ) {}
 
-    public function handle(string $companyId, string $planId, ?string $paymentMethodId = null): Subscription
+    public function execute(string $companyId, string $planId, ?string $paymentMethodId = null): Subscription
     {
         return $this->stripeService->createSubscription($companyId, $planId, $paymentMethodId);
     }

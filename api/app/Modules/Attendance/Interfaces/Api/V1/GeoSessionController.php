@@ -136,7 +136,7 @@ class GeoSessionController extends Controller
         /** @var Employee $validator */
         $validator = request()->user();
 
-        $session = $this->approveAction->handle(
+        $session = $this->approveAction->execute(
             session: $session,
             validator: $validator,
             note: $request->input('note'),
@@ -166,7 +166,7 @@ class GeoSessionController extends Controller
         /** @var Employee $validator */
         $validator = request()->user();
 
-        $session = $this->rejectAction->handle(
+        $session = $this->rejectAction->execute(
             session: $session,
             validator: $validator,
             reason: $request->input('reason'),

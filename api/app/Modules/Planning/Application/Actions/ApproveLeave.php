@@ -18,7 +18,7 @@ class ApproveLeave
     /**
      * @throws AbsenceNotPendingException
      */
-    public function handle(string $absenceId, string $approvedById): Absence
+    public function execute(string $absenceId, string $approvedById): Absence
     {
         $absence = Absence::query()->findOrFail($absenceId);
 

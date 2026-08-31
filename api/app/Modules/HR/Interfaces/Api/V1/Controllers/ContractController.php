@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
-use App\Modules\HR\Application\Actions\ContractLifecycleAction;
+use App\Modules\HR\Infrastructure\Services\ContractLifecycleAction;
 use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;

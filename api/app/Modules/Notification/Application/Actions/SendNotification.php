@@ -13,7 +13,7 @@ class SendNotification
         private readonly NotificationDispatcher $dispatcher,
     ) {}
 
-    public function handle(
+    public function execute(
         int    $userId,
         string $type,
         string $title,

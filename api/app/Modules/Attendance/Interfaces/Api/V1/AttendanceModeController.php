@@ -86,7 +86,7 @@ class AttendanceModeController extends Controller
         }
 
         try {
-            $pref = $this->setEmployeeMode->handle($employee, $request->validated());
+            $pref = $this->setEmployeeMode->execute($employee, $request->validated());
 
             return response()->json([
                 'message' => __('errors.PREFERENCE_UPDATED'),
@@ -136,7 +136,7 @@ class AttendanceModeController extends Controller
         $manager = request()->user();
         $company = currentCompany();
 
-        $settings = $this->setCompanyMode->handle(
+        $settings = $this->setCompanyMode->execute(
             companyId: (string) $company->id,
             data: $request->validated(),
             updatedBy: $manager,

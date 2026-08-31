@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Application\Actions\AccountingActivationService;
+use App\Modules\Accounting\Infrastructure\Services\AccountingActivationService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\CompleteActivationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -6,7 +6,7 @@ namespace App\Modules\Accounting\Application\Listeners;
 
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
-use App\Modules\Accounting\Application\Actions\AccountingSettingsDefaults;
+use App\Modules\Accounting\Infrastructure\Services\AccountingSettingsDefaults;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use Illuminate\Support\Facades\Log;
 use Throwable;

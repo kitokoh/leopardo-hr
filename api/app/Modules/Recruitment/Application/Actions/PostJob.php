@@ -17,7 +17,7 @@ class PostJob
     /**
      * @throws JobPostingNotFoundException
      */
-    public function handle(string $jobPostingId): JobPosting
+    public function execute(string $jobPostingId): JobPosting
     {
         $jobPosting = JobPosting::query()->find($jobPostingId);
 

@@ -40,7 +40,7 @@ final class ConvertLeadAction
     /**
      * @param  array{amount?: numeric-string, currency?: string, expected_close_date?: string, stage?: string}  $data
      */
-    public function handle(int $leadId, Employee $actor, array $data): CrmLead
+    public function execute(int $leadId, Employee $actor, array $data): CrmLead
     {
         $companyId = $this->companyId($actor);
 

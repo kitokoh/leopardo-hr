@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Application\Actions\AccountingCurrencyResolver;
+use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencyResolver;
 use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;

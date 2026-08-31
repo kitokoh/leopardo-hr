@@ -14,7 +14,7 @@ class AssignVehicle
         private readonly FleetService $fleetService,
     ) {}
 
-    public function handle(string $vehicleId, string $employeeId, string $startDate, ?string $endDate = null): VehicleAssignment
+    public function execute(string $vehicleId, string $employeeId, string $startDate, ?string $endDate = null): VehicleAssignment
     {
         $vehicle = Vehicle::query()->findOrFail($vehicleId);
 

@@ -153,6 +153,9 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Actions convention guard — execute() + no Service/Job in Actions/ (issue #6570)
+        run: bash dev-hub/tools/check-actions-convention.sh api
+
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 

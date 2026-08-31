@@ -13,7 +13,7 @@ class ExportPaySlip
         private readonly PaySlipPdfGenerator $pdfGenerator,
     ) {}
 
-    public function handle(PaySlip $paySlip): string
+    public function execute(PaySlip $paySlip): string
     {
         return $this->pdfGenerator->generate($paySlip);
     }

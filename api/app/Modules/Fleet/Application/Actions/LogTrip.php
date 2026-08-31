@@ -14,7 +14,7 @@ class LogTrip
         private readonly FleetService $fleetService,
     ) {}
 
-    public function handle(string $vehicleId, array $tripData): VehicleTrip
+    public function execute(string $vehicleId, array $tripData): VehicleTrip
     {
         $vehicle = Vehicle::query()->findOrFail($vehicleId);
 

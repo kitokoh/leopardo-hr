@@ -45,8 +45,8 @@ class GeoAttendanceController extends Controller
 
         try {
             $result = match ($dto->eventType) {
-                'zone_enter' => $this->processEntry->handle($dto),
-                'zone_exit' => $this->processExit->handle($dto),
+                'zone_enter' => $this->processEntry->execute($dto),
+                'zone_exit' => $this->processExit->execute($dto),
                 default => null,
             };
 

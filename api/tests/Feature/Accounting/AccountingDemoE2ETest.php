@@ -6,7 +6,7 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Infrastructure\Services\SeedAccountingDemoData;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;

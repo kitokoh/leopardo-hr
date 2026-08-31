@@ -13,7 +13,7 @@ class GeneratePayroll
         private readonly PayrollService $payrollService,
     ) {}
 
-    public function handle(string $companyId, string $period): PayrollRun
+    public function execute(string $companyId, string $period): PayrollRun
     {
         return $this->payrollService->generateForPeriod($companyId, $period);
     }

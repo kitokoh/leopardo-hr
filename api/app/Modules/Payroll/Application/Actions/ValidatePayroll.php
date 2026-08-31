@@ -18,7 +18,7 @@ class ValidatePayroll
     /**
      * @throws PayrollAlreadyValidatedException
      */
-    public function handle(Payroll $payroll, Employee $validator): Payroll
+    public function execute(Payroll $payroll, Employee $validator): Payroll
     {
         return $this->payrollService->validate($payroll, $validator);
     }

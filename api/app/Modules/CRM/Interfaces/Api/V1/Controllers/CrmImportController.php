@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Enums\CrmImportEntityType;
 use App\Modules\CRM\Domain\Exceptions\CrmImportException;
 use App\Modules\CRM\Domain\Models\CrmImport;
-use App\Modules\CRM\Application\Actions\CrmImportService;
+use App\Modules\CRM\Infrastructure\Services\CrmImportService;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmImportRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Resources\CrmImportResource;
 use Illuminate\Http\JsonResponse;
