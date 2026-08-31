@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Modules\EdgeSync\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;

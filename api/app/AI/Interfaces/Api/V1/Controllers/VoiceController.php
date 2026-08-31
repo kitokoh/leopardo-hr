@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\AI;
+namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\DTOs\AIRequest;
 use App\AI\Orchestrator;
