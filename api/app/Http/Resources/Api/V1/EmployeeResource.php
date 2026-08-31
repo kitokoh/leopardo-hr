@@ -94,7 +94,10 @@ class EmployeeResource extends JsonResource
             'postal_code' => $this->employeeAttribute('postal_code'),
             'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),
             'emergency_contact_phone' => $this->employeeAttribute('emergency_contact_phone'),
-            'extra_data' => $this->employeeAttribute('extra_data') ?? [],
+            // #6546 — extra_data peut contenir des données RGPD sensibles
+            // (national_id, tax_identifier, blood_group) : masquées hors du
+            // cercle salarial (même règle que #5262).
+            'extra_data' => $this->sanitizedExtraData($canViewSalary),
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
@@ -135,6 +138,29 @@ class EmployeeResource extends JsonResource
         }
 
         return $employee->getAttributeValue($key);
+    }
+
+
+    /** @var list<string> */
+    private const SENSITIVE_EXTRA_DATA_KEYS = ['national_id', 'tax_identifier', 'blood_group'];
+
+    /**
+     * #6546 — filtre les clés sensibles de extra_data hors du cercle autorisé
+     * (principal/rh/comptable, manager d'équipe scopé, employé pour son dossier).
+     */
+    private function sanitizedExtraData(bool $includeSensitive): array
+    {
+        $extra = $this->employeeAttribute('extra_data') ?? [];
+
+        if (! is_array($extra)) {
+            $extra = [];
+        }
+
+        if ($includeSensitive) {
+            return $extra;
+        }
+
+        return array_diff_key($extra, array_flip(self::SENSITIVE_EXTRA_DATA_KEYS));
     }
 
     private function capabilities(): array
