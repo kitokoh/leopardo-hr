@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
@@ -52,7 +53,7 @@ class GenerateMonthlyInvoices extends Command
                         'tax_amount' => 0,
                         'total' => $pricing['amount'],
                         'currency' => $pricing['currency'],
-                        'status' => 'pending',
+                        'status' => InvoiceStatus::Sent->value,
                         'due_date' => now()->addDays(30),
                     ]);
 

@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use InvalidArgumentException;
 
 /**
  * @property int $id
@@ -70,5 +72,35 @@ class Subscription extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Transition d'état gardée (DEP-BC21 #5897/#6246).
+     *
+     * La machine à états est définie par {@see SubscriptionStatus} : toute
+     * transition invalide lève InvalidArgumentException. Une transition vers
+     * le statut COURANT est idempotente (sans exception) : elle ne fait que
+     * synchroniser les attributs additionnels (périodes, dates…) — c'est le
+     * contrat utilisé par les webhooks providers rejoués et les endpoints
+     * manager (upgrade/cancel/renew).
+     *
+     * @param  array<string, mixed>  $extra  attributs additionnels (period_end, cancelled_at…)
+     */
+    public function transitionTo(SubscriptionStatus $status, array $extra = []): self
+    {
+        $current = SubscriptionStatus::tryFrom((string) $this->status) ?? SubscriptionStatus::Trial;
+
+        if ($current !== $status && ! $current->canTransitionTo($status)) {
+            throw new InvalidArgumentException(
+                "Transition de souscription invalide : {$current->value} → {$status->value}"
+            );
+        }
+
+        $this->forceFill([
+            'status' => $status->value,
+            ...$extra,
+        ])->save();
+
+        return $this;
     }
 }
