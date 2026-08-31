@@ -394,6 +394,11 @@ const routes = [
         component: () => import('../views/travel/TravelSitesView.vue'),
         meta: {
           title: 'travel.sites.title',
+        path: '/travel/content',
+        name: 'travel-content',
+        component: () => import('../views/travel/TravelContentView.vue'),
+        meta: {
+          title: 'travel.content.title',
           parent: 'travel'
         }
       },

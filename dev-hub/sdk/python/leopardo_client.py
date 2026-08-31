@@ -138,6 +138,7 @@ class LeopardoClient:
 
     def post_accounting_activation(self, **kwargs):
         """Activer le module Comptabilite (wizard 4 etapes, #5626)"""
+        """Activer le module Comptabilite (wizard 4 etapes,"""
         return self.request("POST", "/accounting/activation", **kwargs)
 
     def post_accounting_activation_complete(self, **kwargs):
@@ -5187,6 +5188,54 @@ class LeopardoClient:
         return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
 
     def get_travel_adverts(self, **kwargs):
+        """TRAVEL-905 — Positions de publication"""
+        return self.request("GET", "/travel/advert-positions", **kwargs)
+
+    def post_travel_advert_positions(self, **kwargs):
+        """TRAVEL-905 — Création d'une position"""
+        return self.request("POST", "/travel/advert-positions", **kwargs)
+
+    def delete_travel_advert_positions_by_traveladvertposition(self, **kwargs):
+        """TRAVEL-905 — Suppression d'une position"""
+        return self.request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
+
+    def put_travel_advert_positions_by_traveladvertposition(self, **kwargs):
+        """TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)"""
+        return self.request("PUT", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
+
+    def get_travel_advert_prices(self, **kwargs):
+        """TRAVEL-906 — Grille tarifaire des annonces"""
+        return self.request("GET", "/travel/advert-prices", **kwargs)
+
+    def post_travel_advert_prices(self, **kwargs):
+        """TRAVEL-906 — Création d'une grille tarifaire (minor units)"""
+        return self.request("POST", "/travel/advert-prices", **kwargs)
+
+    def delete_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """TRAVEL-906 — Suppression d'une grille tarifaire"""
+        return self.request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
+
+    def put_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)"""
+        return self.request("PUT", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
+
+    def get_travel_advert_types(self, **kwargs):
+        """TRAVEL-905 — Types d'annonces"""
+        return self.request("GET", "/travel/advert-types", **kwargs)
+
+    def post_travel_advert_types(self, **kwargs):
+        """TRAVEL-905 — Création d'un type d'annonce"""
+        return self.request("POST", "/travel/advert-types", **kwargs)
+
+    def delete_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """TRAVEL-905 — Suppression d'un type d'annonce"""
+        return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
+
+    def put_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)"""
+        return self.request("PUT", "/travel/advert-types/{travelAdvertType}", **kwargs)
+
+    def get_travel_adverts(self, **kwargs):
         """TRAVEL-907 — Annonces visibles (payées + validées + non expirées)"""
         return self.request("GET", "/travel/adverts", **kwargs)
 
@@ -5204,6 +5253,19 @@ class LeopardoClient:
 
     def post_travel_adverts_by_traveladvert_reject(self, **kwargs):
         """TRAVEL-907 — Rejet d''une annonce (motif)"""
+        """TRAVEL-907 — Soumission d'une annonce (prix calculé serveur)"""
+        return self.request("POST", "/travel/adverts", **kwargs)
+
+    def get_travel_adverts_by_traveladvert(self, **kwargs):
+        """TRAVEL-907 — Détail d'une annonce"""
+        return self.request("GET", "/travel/adverts/{travelAdvert}", **kwargs)
+
+    def post_travel_adverts_by_traveladvert_pay(self, **kwargs):
+        """TRAVEL-907 — Paiement d'une annonce (idempotent)"""
+        return self.request("POST", "/travel/adverts/{travelAdvert}/pay", **kwargs)
+
+    def post_travel_adverts_by_traveladvert_reject(self, **kwargs):
+        """TRAVEL-907 — Rejet d'une annonce (motif)"""
         return self.request("POST", "/travel/adverts/{travelAdvert}/reject", **kwargs)
 
     def post_travel_adverts_by_traveladvert_renew(self, **kwargs):
@@ -5220,6 +5282,19 @@ class LeopardoClient:
 
     def post_travel_article_categories(self, **kwargs):
         """TRAVEL-901 — Création d''une catégorie"""
+        """TRAVEL-907 — Validation d'une annonce (travel.manage)"""
+        return self.request("POST", "/travel/adverts/{travelAdvert}/validate", **kwargs)
+
+    def get_travel_adverts_manage(self, **kwargs):
+        """TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)"""
+        return self.request("GET", "/travel/adverts/manage", **kwargs)
+
+    def get_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Catégories d'articles"""
+        return self.request("GET", "/travel/article-categories", **kwargs)
+
+    def post_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Création d'une catégorie"""
         return self.request("POST", "/travel/article-categories", **kwargs)
 
     def get_travel_articles(self, **kwargs):
@@ -5244,6 +5319,23 @@ class LeopardoClient:
 
     def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
         """TRAVEL-903 — Agrégats d''engagement"""
+        """TRAVEL-901 — Création d'un article"""
+        return self.request("POST", "/travel/articles", **kwargs)
+
+    def delete_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Suppression d'un article"""
+        return self.request("DELETE", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Détail d'un article"""
+        return self.request("GET", "/travel/articles/{travelArticle}", **kwargs)
+
+    def put_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Mise à jour d'un article"""
+        return self.request("PUT", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
+        """TRAVEL-903 — Agrégats d'engagement"""
         return self.request("GET", "/travel/articles/{travelArticle}/engagement", **kwargs)
 
     def post_travel_articles_by_travelarticle_like(self, **kwargs):
@@ -5252,6 +5344,7 @@ class LeopardoClient:
 
     def post_travel_articles_by_travelarticle_moderate(self, **kwargs):
         """TRAVEL-901 — Modération d''un article (draft/published/flagged)"""
+        """TRAVEL-901 — Modération d'un article (draft/published/flagged)"""
         return self.request("POST", "/travel/articles/{travelArticle}/moderate", **kwargs)
 
     def post_travel_articles_by_travelarticle_rate(self, **kwargs):
@@ -5296,6 +5389,9 @@ class LeopardoClient:
 
         """Remboursement d'une réservation, total ou partiel (TRAVEL-315/#6045, TRAVEL-808/#6098)"""
         return self.request("POST", "/travel/bookings/{travelBooking}/refund", **kwargs)
+    def post_travel_bookings_by_travelbooking_refund_passenger(self, **kwargs):
+        """Remboursement partiel d'un passager (TRAVEL-808/#6098)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/refund-passenger", **kwargs)
 
     def get_travel_cancellation_policies(self, **kwargs):
         """Liste des politiques d'annulation (TRAVEL-813/#6103)"""
@@ -5320,6 +5416,13 @@ class LeopardoClient:
     def post_travel_carrier_sync_trips(self, **kwargs):
         """Synchronisation d'un trajet transporteur (TRAVEL-807/#6086, jeton X-Carrier-Token)"""
         return self.request("POST", "/travel/carrier-sync/trips", **kwargs)
+
+        """Suppression d'une politique (TRAVEL-813/#6103)"""
+        return self.request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", **kwargs)
+
+    def put_travel_cancellation_policies_by_travelcancellationpolicy(self, **kwargs):
+        """Mise à jour d'une politique (TRAVEL-813/#6103)"""
+        return self.request("PUT", "/travel/cancellation-policies/{travelCancellationPolicy}", **kwargs)
 
     def get_travel_carriers(self, **kwargs):
         """Liste des compagnies de transport (TRAVEL-304/#6034)"""
@@ -5375,6 +5478,11 @@ class LeopardoClient:
 
     def delete_travel_comments_by_travelcomment(self, **kwargs):
         """TRAVEL-902 — Suppression d''un commentaire"""
+        """TRAVEL-902 — Création d'un commentaire (pending)"""
+        return self.request("POST", "/travel/comments", **kwargs)
+
+    def delete_travel_comments_by_travelcomment(self, **kwargs):
+        """TRAVEL-902 — Suppression d'un commentaire"""
         return self.request("DELETE", "/travel/comments/{travelComment}", **kwargs)
 
     def post_travel_comments_by_travelcomment_moderate(self, **kwargs):
@@ -5571,6 +5679,8 @@ class LeopardoClient:
     def get_travel_community_tourist_sites_search(self, **kwargs):
         """Recherche de sites par ville (TRAVEL-909/#6112)"""
         return self.request("GET", "/travel/community/tourist-sites/search", **kwargs)
+        """TRAVEL-902 — Signalement d'un commentaire"""
+        return self.request("POST", "/travel/comments/{travelComment}/report", **kwargs)
 
     def post_travel_contact(self, **kwargs):
         """Formulaire de contact → lead CRM (TRAVEL-416/#6068)"""
@@ -5611,6 +5721,21 @@ class LeopardoClient:
     def get_travel_contacts(self, **kwargs):
         """Liste des contacts voyageurs (recherche, consentement) (TRAVEL-912/#6417)"""
         return self.request("GET", "/travel/contacts", **kwargs)
+    def get_travel_contacts(self, **kwargs):
+        """TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)"""
+        return self.request("GET", "/travel/contacts", **kwargs)
+
+    def patch_travel_contacts_by_travelcustomercontact_consent(self, **kwargs):
+        """TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"""
+        return self.request("PATCH", "/travel/contacts/{travelCustomerContact}/consent", **kwargs)
+
+    def post_travel_contacts_by_travelcustomercontact_consent(self, **kwargs):
+        """TRAVEL-912 — Mise à jour des consentements par canal"""
+        return self.request("POST", "/travel/contacts/{travelCustomerContact}/consent", **kwargs)
+
+    def put_travel_contacts_by_travelcustomercontact_consent(self, **kwargs):
+        """TRAVEL-912/913 — Mise à jour des consentements par canal"""
+        return self.request("PUT", "/travel/contacts/{travelCustomerContact}/consent", **kwargs)
 
     def post_travel_contacts_by_travelcustomercontact_notify(self, **kwargs):
         """TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)"""
@@ -5630,6 +5755,23 @@ class LeopardoClient:
 
     def get_travel_currency_rates_convert(self, **kwargs):
         """Conversion d'affichage (TRAVEL-805/#6096, sans perte d'arrondi)"""
+        """Liste des taux de conversion (TRAVEL-805/#6096)"""
+        return self.request("GET", "/travel/currency-rates", **kwargs)
+
+    def post_travel_currency_rates(self, **kwargs):
+        """Création d'un taux de conversion par période (TRAVEL-805/#6096)"""
+        return self.request("POST", "/travel/currency-rates", **kwargs)
+
+    def get_travel_currency_rates_by_travelcurrencyrate(self, **kwargs):
+        """Détail d'un taux (TRAVEL-805/#6096)"""
+        return self.request("GET", "/travel/currency-rates/{travelCurrencyRate}", **kwargs)
+
+    def put_travel_currency_rates_by_travelcurrencyrate(self, **kwargs):
+        """Mise à jour d'un taux (TRAVEL-805/#6096)"""
+        return self.request("PUT", "/travel/currency-rates/{travelCurrencyRate}", **kwargs)
+
+    def get_travel_currency_rates_convert(self, **kwargs):
+        """Conversion multi-devise (TRAVEL-805/#6096)"""
         return self.request("GET", "/travel/currency-rates/convert", **kwargs)
 
     def get_travel_hotels(self, **kwargs):
@@ -5700,6 +5842,22 @@ class LeopardoClient:
         """Synchronisation offline mobile (TRAVEL-704/#6091, file idempotente)"""
         return self.request("POST", "/travel/mobile/sync", **kwargs)
 
+    def get_travel_loyalty_by_contact(self, **kwargs):
+        """Solde fidélité d'un contact (TRAVEL-811/#6101)"""
+        return self.request("GET", "/travel/loyalty/{contact}", **kwargs)
+
+    def post_travel_loyalty_by_contact_redeem(self, **kwargs):
+        """Récompense — conversion points en avoir (TRAVEL-811/#6101)"""
+        return self.request("POST", "/travel/loyalty/{contact}/redeem", **kwargs)
+
+    def post_travel_loyalty_opt_in(self, **kwargs):
+        """Opt-in RGPD fidélité (TRAVEL-811/#6101)"""
+        return self.request("POST", "/travel/loyalty/opt-in", **kwargs)
+
+    def post_travel_loyalty_opt_out(self, **kwargs):
+        """Opt-out fidélité (TRAVEL-811/#6101)"""
+        return self.request("POST", "/travel/loyalty/opt-out", **kwargs)
+
     def get_travel_offices(self, **kwargs):
         """Liste des bureaux de vente (TRAVEL-303/#6033)"""
         return self.request("GET", "/travel/offices", **kwargs)
@@ -5719,6 +5877,18 @@ class LeopardoClient:
     def put_travel_offices_by_traveloffice(self, **kwargs):
         """Modification d'un bureau de vente (TRAVEL-303/#6033)"""
         return self.request("PUT", "/travel/offices/{travelOffice}", **kwargs)
+
+    def post_travel_partner_keys(self, **kwargs):
+        """Émission d'une clé API transporteur (TRAVEL-807/#6086)"""
+        return self.request("POST", "/travel/partner-keys", **kwargs)
+
+    def delete_travel_partner_keys_by_travelcarrierapikey(self, **kwargs):
+        """Révocation d'une clé API transporteur (TRAVEL-807/#6086)"""
+        return self.request("DELETE", "/travel/partner-keys/{travelCarrierApiKey}", **kwargs)
+
+    def post_travel_partner_sync(self, **kwargs):
+        """Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086)"""
+        return self.request("POST", "/travel/partner/sync", **kwargs)
 
     def get_travel_ping(self, **kwargs):
         """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
@@ -5832,6 +6002,69 @@ class LeopardoClient:
     def get_travel_quizzes_by_travelquiz_results(self, **kwargs):
         """TRAVEL-904 — Résultats (gestion)"""
         return self.request("GET", "/travel/quizzes/{travelQuiz}/results", **kwargs)
+    def post_travel_public_contact_link(self, **kwargs):
+        """TRAVEL-913 — Génération du lien public signé du formulaire de contact"""
+        return self.request("POST", "/travel/public-contact-link", **kwargs)
+
+    def post_travel_public_contact(self, **kwargs):
+        """TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)"""
+        return self.request("POST", "/travel/public/contact", **kwargs)
+
+    def get_travel_quizzes(self, **kwargs):
+        """TRAVEL-904 — Liste des quiz"""
+        return self.request("GET", "/travel/quizzes", **kwargs)
+
+    def post_travel_quizzes(self, **kwargs):
+        """TRAVEL-904 — Création d'un quiz"""
+        return self.request("POST", "/travel/quizzes", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz(self, **kwargs):
+        """TRAVEL-904 — Détail d'un quiz (questions SANS réponses correctes)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
+        """TRAVEL-904 — Participation (notation serveur)"""
+        return self.request("POST", "/travel/quizzes/{travelQuiz}/participate", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz_questions(self, **kwargs):
+        """TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
+        """TRAVEL-904 — Ajout d'une question"""
+        return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Suppression d'une question"""
+        return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d'une question"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz_results(self, **kwargs):
+        """TRAVEL-904 — Résultats (gestion)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}/results", **kwargs)
+
+    def get_travel_quotes(self, **kwargs):
+        """Liste des devis de groupe (TRAVEL-803/#6094)"""
+        return self.request("GET", "/travel/quotes", **kwargs)
+
+    def post_travel_quotes(self, **kwargs):
+        """Création d'un devis de groupe (≥ 5 passagers, TRAVEL-803/#6094)"""
+        return self.request("POST", "/travel/quotes", **kwargs)
+
+    def get_travel_quotes_by_travelquote(self, **kwargs):
+        """Détail d'un devis (TRAVEL-803/#6094)"""
+        return self.request("GET", "/travel/quotes/{travelQuote}", **kwargs)
+
+    def post_travel_quotes_by_travelquote_book(self, **kwargs):
+        """Réservation groupée depuis un devis (TRAVEL-803/#6094)"""
+        return self.request("POST", "/travel/quotes/{travelQuote}/book", **kwargs)
 
     def get_travel_rental_bookings(self, **kwargs):
         """Liste des réservations de location (TRAVEL-320/#6050)"""
@@ -5895,6 +6128,7 @@ class LeopardoClient:
 
     def get_travel_reports_export_by_travelexportasset(self, **kwargs):
         """TRAVEL-505 — Lecture d''un export (URL signée éphémère)"""
+        """TRAVEL-505 — Lecture d'un export (URL signée éphémère)"""
         return self.request("GET", "/travel/reports/export/{travelExportAsset}", **kwargs)
 
     def get_travel_reports_occupancy(self, **kwargs):
@@ -5929,6 +6163,15 @@ class LeopardoClient:
     def get_travel_reports_sales(self, **kwargs):
         """Rapport des ventes (TRAVEL-501/#6071)"""
         return self.request("GET", "/travel/reports/sales", **kwargs)
+        return self.request("GET", "/travel/reports/sales", **kwargs)
+
+    def post_travel_round_trips(self, **kwargs):
+        """Création d'un aller-retour combiné (TRAVEL-802/#6093)"""
+        return self.request("POST", "/travel/round-trips", **kwargs)
+
+    def get_travel_round_trips_by_travelroundtrip(self, **kwargs):
+        """Détail d'un aller-retour (TRAVEL-802/#6093)"""
+        return self.request("GET", "/travel/round-trips/{travelRoundTrip}", **kwargs)
 
     def get_travel_routes(self, **kwargs):
         """Liste des routes (TRAVEL-307/#6037)"""
@@ -6057,6 +6300,19 @@ class LeopardoClient:
 
     def put_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
         """TRAVEL-909 — Mise à jour d''un site touristique"""
+        """TRAVEL-909 — Création d'un site touristique"""
+        return self.request("POST", "/travel/tourist-sites", **kwargs)
+
+    def delete_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Suppression d'un site touristique"""
+        return self.request("DELETE", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def get_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Détail d'un site touristique"""
+        return self.request("GET", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def put_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """TRAVEL-909 — Mise à jour d'un site touristique"""
         return self.request("PUT", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
 
     def get_travel_trips(self, **kwargs):
@@ -6110,6 +6366,10 @@ class LeopardoClient:
     def post_travel_trips_by_traveltrip_publish(self, **kwargs):
         """Publication d'un trajet (TRAVEL-310/#6040)"""
         return self.request("POST", "/travel/trips/{travelTrip}/publish", **kwargs)
+
+    def get_travel_trips_connections(self, **kwargs):
+        """Recherche de correspondances multi-trajets (TRAVEL-809/#6099)"""
+        return self.request("GET", "/travel/trips/connections", **kwargs)
 
     def get_travel_trips_search(self, **kwargs):
         """Recherche interne de trajets (TRAVEL-311/#6041)"""

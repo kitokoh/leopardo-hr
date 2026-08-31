@@ -71,4 +71,10 @@ class TravelCancellationPolicyFactory extends Factory
 
         return $this->state(['trip_id' => $tripId, 'class_id' => $classId]);
     }
+            'hours_before_departure' => 12,
+            'penalty_percent' => 25,
+            'refundable' => true,
+            'created_by_user_id' => null,
+        ];
+    }
 }

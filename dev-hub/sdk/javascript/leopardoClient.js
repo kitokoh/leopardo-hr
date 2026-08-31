@@ -146,6 +146,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Activer le module Comptabilite (wizard 4 etapes, #5626) */
+    /** Activer le module Comptabilite (wizard 4 etapes, */
     postAccountingActivation(options = {}) {
       return request("POST", "/accounting/activation", options);
     },
@@ -10486,6 +10487,1329 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Inscrire un employe */
     postTrainingSessionsByTrainingSessionEnroll(options = {}) {
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
+    /** Lister les avances sur salaire */
+    getSalaryAdvances(options = {}) {
+      return request("GET", "/salary-advances", options);
+    },
+
+    /** Demander une avance sur salaire */
+    postSalaryAdvances(options = {}) {
+      return request("POST", "/salary-advances", options);
+    },
+
+    /** Annuler une avance (employe proprietaire) */
+    deleteSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("DELETE", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Voir une avance */
+    getSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("GET", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Approuver une avance (manager) */
+    postSalaryAdvancesBySalaryAdvanceApprove(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/approve", options);
+    },
+
+    /** Approuver une avance sur salaire (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/approve", options);
+    },
+
+    /** Confirmer la reception de l'avance (employe) */
+    putSalaryAdvancesBySalaryAdvanceConfirmReceived(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", options);
+    },
+
+    /** Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe) */
+    disputeSalaryAdvance(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/dispute", options);
+    },
+
+    /** Valider une avance avant paiement (manager/RH) */
+    postSalaryAdvancesBySalaryAdvanceManagerApprove(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/manager-approve", options);
+    },
+
+    /** Validation manager d'une avance (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceManagerApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", options);
+    },
+
+    /** Declarer l'avance comme envoyee (manager/RH) */
+    putSalaryAdvancesBySalaryAdvanceMarkPaid(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", options);
+    },
+
+    /** Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager) */
+    downloadSalaryAdvanceProof(options = {}) {
+      return request("GET", "/salary-advances/{salaryAdvance}/proof", options);
+    },
+
+    /** Rejeter une avance (manager) */
+    postSalaryAdvancesBySalaryAdvanceReject(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/reject", options);
+    },
+
+    /** Refuser une avance sur salaire (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceReject(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/reject", options);
+    },
+
+    /** Resoudre une reclamation sur une avance (manager/RH) */
+    resolveSalaryAdvanceDispute(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/resolve-dispute", options);
+    },
+
+    /** Lister les composants de salaire (manager) */
+    listSalaryComponents(options = {}) {
+      return request("GET", "/salary-components", options);
+    },
+
+    /** Creer un composant de salaire (manager) */
+    createSalaryComponent(options = {}) {
+      return request("POST", "/salary-components", options);
+    },
+
+    /** Supprimer un composant de salaire (manager) */
+    deleteSalaryComponent(options = {}) {
+      return request("DELETE", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Voir un composant de salaire (manager) */
+    showSalaryComponent(options = {}) {
+      return request("GET", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Modifier un composant de salaire (manager) */
+    updateSalaryComponent(options = {}) {
+      return request("PUT", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Lister les structures salariales (manager) */
+    listSalaryStructures(options = {}) {
+      return request("GET", "/salary-structures", options);
+    },
+
+    /** Creer une structure salariale (manager) */
+    createSalaryStructure(options = {}) {
+      return request("POST", "/salary-structures", options);
+    },
+
+    /** Supprimer une structure salariale (manager) */
+    deleteSalaryStructure(options = {}) {
+      return request("DELETE", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Voir une structure salariale avec ses composants (manager) */
+    showSalaryStructure(options = {}) {
+      return request("GET", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Modifier une structure salariale (manager) */
+    updateSalaryStructure(options = {}) {
+      return request("PUT", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Lister les horaires de l'entreprise */
+    getSchedules(options = {}) {
+      return request("GET", "/schedules", options);
+    },
+
+    /** Creer un horaire de travail */
+    postSchedules(options = {}) {
+      return request("POST", "/schedules", options);
+    },
+
+    /** Supprimer un horaire non defaut */
+    deleteSchedulesBySchedule(options = {}) {
+      return request("DELETE", "/schedules/{schedule}", options);
+    },
+
+    /** Détail d'un planning */
+    getSchedulesBySchedule(options = {}) {
+      return request("GET", "/schedules/{schedule}", options);
+    },
+
+    /** Mettre à jour un planning (manager — sécurité #2217) */
+    patchSchedulesBySchedule(options = {}) {
+      return request("PATCH", "/schedules/{schedule}", options);
+    },
+
+    /** Modifier un horaire */
+    putSchedulesBySchedule(options = {}) {
+      return request("PUT", "/schedules/{schedule}", options);
+    },
+
+    /** Affecter un horaire/regle entreprise a des employes */
+    postSchedulesByScheduleAssignEmployees(options = {}) {
+      return request("POST", "/schedules/{schedule}/assign-employees", options);
+    },
+
+    /** Lister les sites */
+    getSites(options = {}) {
+      return request("GET", "/sites", options);
+    },
+
+    /** Creer un site */
+    postSites(options = {}) {
+      return request("POST", "/sites", options);
+    },
+
+    /** Supprimer un site */
+    deleteSitesBySite(options = {}) {
+      return request("DELETE", "/sites/{site}", options);
+    },
+
+    /** Voir un site */
+    getSitesBySite(options = {}) {
+      return request("GET", "/sites/{site}", options);
+    },
+
+    /** Mettre à jour un site (manager) */
+    patchSitesBySite(options = {}) {
+      return request("PATCH", "/sites/{site}", options);
+    },
+
+    /** Modifier un site */
+    putSitesBySite(options = {}) {
+      return request("PUT", "/sites/{site}", options);
+    },
+
+    /** Lister les regles de cotisations sociales (manager) */
+    listSocialContributions(options = {}) {
+      return request("GET", "/social-contributions", options);
+    },
+
+    /** Creer une regle de cotisation sociale (manager) */
+    createSocialContribution(options = {}) {
+      return request("POST", "/social-contributions", options);
+    },
+
+    /** Supprimer une regle de cotisation sociale (manager) */
+    deleteSocialContribution(options = {}) {
+      return request("DELETE", "/social-contributions/{socialContribution}", options);
+    },
+
+    /** Modifier une regle de cotisation sociale (manager) */
+    updateSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}", options);
+    },
+
+    /** Historique immuable des modifications d''une cotisation (manager) — issue #1813 */
+    socialContributionHistory(options = {}) {
+      return request("GET", "/social-contributions/{socialContribution}/history", options);
+    },
+
+    /** Soumettre une regle de cotisation pour validation (manager) — issue #1813 */
+    submitSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}/submit", options);
+    },
+
+    /** Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs */
+    generateCnasDzDeclaration(options = {}) {
+      return request("POST", "/social-declarations/cnas-dz", options);
+    },
+
+    /** Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs */
+    generateCnssMaDeclaration(options = {}) {
+      return request("POST", "/social-declarations/cnss-ma", options);
+    },
+
+    /** Generer la declaration annuelle des salaires DAS (Algerie, #5243) */
+    generateDasDzDeclaration(options = {}) {
+      return request("POST", "/social-declarations/das-dz", options);
+    },
+
+    /** Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne */
+    generateDsnFrDeclaration(options = {}) {
+      return request("POST", "/social-declarations/dsn-fr", options);
+    },
+
+    /** Configurer le SSO de l'entreprise */
+    postSsoConfigure(options = {}) {
+      return request("POST", "/sso/configure", options);
+    },
+
+    /** Desactiver le SSO de l'entreprise */
+    deleteSsoDisable(options = {}) {
+      return request("DELETE", "/sso/disable", options);
+    },
+
+    /** Demarrer le flux OpenID Connect (SP -> IdP) */
+    getSsoOidcByCompanyIdAuthorize(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/authorize", options);
+    },
+
+    /** Callback OpenID Connect (IdP -> SP) */
+    getSsoOidcByCompanyIdCallback(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/callback", options);
+    },
+
+    /** Lister les fournisseurs SSO supportes */
+    getSsoProviders(options = {}) {
+      return request("GET", "/sso/providers", options);
+    },
+
+    /** Callback SAML 2.0 (IdP -> SP) */
+    postSsoSamlByCompanyIdCallback(options = {}) {
+      return request("POST", "/sso/saml/{companyId}/callback", options);
+    },
+
+    /** Statut SSO de l'entreprise */
+    getSsoStatus(options = {}) {
+      return request("GET", "/sso/status", options);
+    },
+
+    /** Lister les tickets de support ouverts par le tenant */
+    getSupportTickets(options = {}) {
+      return request("GET", "/support-tickets", options);
+    },
+
+    /** Ouvrir un ticket de support (employe/manager) */
+    postSupportTickets(options = {}) {
+      return request("POST", "/support-tickets", options);
+    },
+
+    /** Detail d'un ticket de support (tenant) */
+    getSupportTicketsBySupportTicket(options = {}) {
+      return request("GET", "/support-tickets/{supportTicket}", options);
+    },
+
+    /** Cloturer un ticket de support (auteur ou manager tenant) */
+    postSupportTicketsBySupportTicketClose(options = {}) {
+      return request("POST", "/support-tickets/{supportTicket}/close", options);
+    },
+
+    /** Repondre a un ticket de support (tenant) */
+    postSupportTicketsBySupportTicketReply(options = {}) {
+      return request("POST", "/support-tickets/{supportTicket}/reply", options);
+    },
+
+    /** Registre des pays supportes */
+    listSupportedCountries(options = {}) {
+      return request("GET", "/supported-countries", options);
+    },
+
+    /** Lister les taches */
+    getTasks(options = {}) {
+      return request("GET", "/tasks", options);
+    },
+
+    /** Creer une tache */
+    postTasks(options = {}) {
+      return request("POST", "/tasks", options);
+    },
+
+    /** Supprimer une tache */
+    deleteTasksByTask(options = {}) {
+      return request("DELETE", "/tasks/{task}", options);
+    },
+
+    /** Voir une tache */
+    getTasksByTask(options = {}) {
+      return request("GET", "/tasks/{task}", options);
+    },
+
+    /** Mettre a jour partiellement une tache */
+    patchTasksByTask(options = {}) {
+      return request("PATCH", "/tasks/{task}", options);
+    },
+
+    /** Mettre a jour une tache */
+    putTasksByTask(options = {}) {
+      return request("PUT", "/tasks/{task}", options);
+    },
+
+    /** Commentaires d'une tâche (auteur + employés liés) */
+    getTasksByTaskComments(options = {}) {
+      return request("GET", "/tasks/{task}/comments", options);
+    },
+
+    /** Ajouter un commentaire sur une tache */
+    postTasksByTaskComments(options = {}) {
+      return request("POST", "/tasks/{task}/comments", options);
+    },
+
+    /** Lister les taches du jour */
+    getTasksToday(options = {}) {
+      return request("GET", "/tasks/today", options);
+    },
+
+    /** Lister le bareme fiscal (tranches d'impot) (manager) */
+    listTaxSlabs(options = {}) {
+      return request("GET", "/tax-slabs", options);
+    },
+
+    /** Creer une tranche d'impot (manager) */
+    createTaxSlab(options = {}) {
+      return request("POST", "/tax-slabs", options);
+    },
+
+    /** Supprimer une tranche d'impot (manager) */
+    deleteTaxSlab(options = {}) {
+      return request("DELETE", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Modifier une tranche d'impot (manager) */
+    updateTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Historique immuable des modifications d''une tranche (manager) — issue #1813 */
+    taxSlabHistory(options = {}) {
+      return request("GET", "/tax-slabs/{taxSlab}/history", options);
+    },
+
+    /** Soumettre une tranche d''impot pour validation (manager) — issue #1813 */
+    submitTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}/submit", options);
+    },
+
+    /** Synchroniser les devices Traccar */
+    postTrackingSyncDevices(options = {}) {
+      return request("POST", "/tracking/sync-devices", options);
+    },
+
+    /** Synchroniser les positions Traccar */
+    postTrackingSyncPositions(options = {}) {
+      return request("POST", "/tracking/sync-positions", options);
+    },
+
+    /** Synchroniser les trajets Traccar */
+    postTrackingSyncTrips(options = {}) {
+      return request("POST", "/tracking/sync-trips", options);
+    },
+
+    /** Lister les formations */
+    getTrainingCourses(options = {}) {
+      return request("GET", "/training/courses", options);
+    },
+
+    /** Creer une formation */
+    postTrainingCourses(options = {}) {
+      return request("POST", "/training/courses", options);
+    },
+
+    /** Supprimer une formation */
+    deleteTrainingCoursesByTrainingCourse(options = {}) {
+      return request("DELETE", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Voir une formation */
+    getTrainingCoursesByTrainingCourse(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Modifier une formation */
+    putTrainingCoursesByTrainingCourse(options = {}) {
+      return request("PUT", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Lister les sessions d'une formation */
+    getTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Creer une session de formation */
+    postTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("POST", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Toutes les inscriptions formation du tenant */
+    getTrainingEnrollments(options = {}) {
+      return request("GET", "/training/enrollments", options);
+    },
+
+    /** Supprimer une inscription formation */
+    deleteTrainingEnrollmentsByTrainingEnrollment(options = {}) {
+      return request("DELETE", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Modifier une inscription */
+    putTrainingEnrollmentsByTrainingEnrollment(options = {}) {
+      return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Toutes les sessions de formation du tenant */
+    getTrainingSessions(options = {}) {
+      return request("GET", "/training/sessions", options);
+    },
+
+    /** Supprimer une session */
+    deleteTrainingSessionsByTrainingSession(options = {}) {
+      return request("DELETE", "/training/sessions/{trainingSession}", options);
+    },
+
+    /** Modifier une session */
+    putTrainingSessionsByTrainingSession(options = {}) {
+      return request("PUT", "/training/sessions/{trainingSession}", options);
+    },
+
+    /** Inscrire un employe */
+    postTrainingSessionsByTrainingSessionEnroll(options = {}) {
+      return request("POST", "/training/sessions/{trainingSession}/enroll", options);
+    },
+
+    /** TRAVEL-905 — Positions de publication */
+    getTravelAdvertPositions(options = {}) {
+      return request("GET", "/travel/advert-positions", options);
+    },
+
+    /** TRAVEL-905 — Création d'une position */
+    postTravelAdvertPositions(options = {}) {
+      return request("POST", "/travel/advert-positions", options);
+    },
+
+    /** TRAVEL-905 — Suppression d'une position */
+    deleteTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
+      return request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+    putTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
+      return request("PUT", "/travel/advert-positions/{travelAdvertPosition}", options);
+    },
+
+    /** TRAVEL-906 — Grille tarifaire des annonces */
+    getTravelAdvertPrices(options = {}) {
+      return request("GET", "/travel/advert-prices", options);
+    },
+
+    /** TRAVEL-906 — Création d'une grille tarifaire (minor units) */
+    postTravelAdvertPrices(options = {}) {
+      return request("POST", "/travel/advert-prices", options);
+    },
+
+    /** TRAVEL-906 — Suppression d'une grille tarifaire */
+    deleteTravelAdvertPricesByTravelAdvertPrice(options = {}) {
+      return request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+    putTravelAdvertPricesByTravelAdvertPrice(options = {}) {
+      return request("PUT", "/travel/advert-prices/{travelAdvertPrice}", options);
+    },
+
+    /** TRAVEL-905 — Types d'annonces */
+    getTravelAdvertTypes(options = {}) {
+      return request("GET", "/travel/advert-types", options);
+    },
+
+    /** TRAVEL-905 — Création d'un type d'annonce */
+    postTravelAdvertTypes(options = {}) {
+      return request("POST", "/travel/advert-types", options);
+    },
+
+    /** TRAVEL-905 — Suppression d'un type d'annonce */
+    deleteTravelAdvertTypesByTravelAdvertType(options = {}) {
+      return request("DELETE", "/travel/advert-types/{travelAdvertType}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour (code/libellé tenant-scoped) */
+    putTravelAdvertTypesByTravelAdvertType(options = {}) {
+      return request("PUT", "/travel/advert-types/{travelAdvertType}", options);
+    },
+
+    /** TRAVEL-907 — Annonces visibles (payées + validées + non expirées) */
+    getTravelAdverts(options = {}) {
+      return request("GET", "/travel/adverts", options);
+    },
+
+    /** TRAVEL-907 — Soumission d'une annonce (prix calculé serveur) */
+    postTravelAdverts(options = {}) {
+      return request("POST", "/travel/adverts", options);
+    },
+
+    /** TRAVEL-907 — Détail d'une annonce */
+    getTravelAdvertsByTravelAdvert(options = {}) {
+      return request("GET", "/travel/adverts/{travelAdvert}", options);
+    },
+
+    /** TRAVEL-907 — Paiement d'une annonce (idempotent) */
+    postTravelAdvertsByTravelAdvertPay(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/pay", options);
+    },
+
+    /** TRAVEL-907 — Rejet d'une annonce (motif) */
+    postTravelAdvertsByTravelAdvertReject(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/reject", options);
+    },
+
+    /** TRAVEL-908 — Renouvellement (nouveau paiement, prolongation) */
+    postTravelAdvertsByTravelAdvertRenew(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/renew", options);
+    },
+
+    /** TRAVEL-907 — Validation d'une annonce (travel.manage) */
+    postTravelAdvertsByTravelAdvertValidate(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/validate", options);
+    },
+
+    /** TRAVEL-914 — Annonces en gestion (tous statuts, filtrables) */
+    getTravelAdvertsManage(options = {}) {
+      return request("GET", "/travel/adverts/manage", options);
+    },
+
+    /** TRAVEL-901 — Catégories d'articles */
+    getTravelArticleCategories(options = {}) {
+      return request("GET", "/travel/article-categories", options);
+    },
+
+    /** TRAVEL-901 — Création d'une catégorie */
+    postTravelArticleCategories(options = {}) {
+      return request("POST", "/travel/article-categories", options);
+    },
+
+    /** TRAVEL-901 — Liste des articles */
+    getTravelArticles(options = {}) {
+      return request("GET", "/travel/articles", options);
+    },
+
+    /** TRAVEL-901 — Création d'un article */
+    postTravelArticles(options = {}) {
+      return request("POST", "/travel/articles", options);
+    },
+
+    /** TRAVEL-901 — Suppression d'un article */
+    deleteTravelArticlesByTravelArticle(options = {}) {
+      return request("DELETE", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Détail d'un article */
+    getTravelArticlesByTravelArticle(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Mise à jour d'un article */
+    putTravelArticlesByTravelArticle(options = {}) {
+      return request("PUT", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-903 — Agrégats d'engagement */
+    getTravelArticlesByTravelArticleEngagement(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}/engagement", options);
+    },
+
+    /** TRAVEL-903 — Like (unicité acteur/article) */
+    postTravelArticlesByTravelArticleLike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/like", options);
+    },
+
+    /** TRAVEL-901 — Modération d'un article (draft/published/flagged) */
+    postTravelArticlesByTravelArticleModerate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/moderate", options);
+    },
+
+    /** TRAVEL-903 — Note 1..5 (unicité, agrégats) */
+    postTravelArticlesByTravelArticleRate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/rate", options);
+    },
+
+    /** TRAVEL-903 — Partage (canal) */
+    postTravelArticlesByTravelArticleShare(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/share", options);
+    },
+
+    /** TRAVEL-903 — Unlike */
+    postTravelArticlesByTravelArticleUnlike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/unlike", options);
+    },
+
+    /** Liste des réservations (TRAVEL-312/#6042) */
+    getTravelBookings(options = {}) {
+      return request("GET", "/travel/bookings", options);
+    },
+
+    /** Création d'une réservation guichet (TRAVEL-312/#6042) */
+    postTravelBookings(options = {}) {
+      return request("POST", "/travel/bookings", options);
+    },
+
+    /** Détail d'une réservation (TRAVEL-312/#6042) */
+    getTravelBookingsByTravelBooking(options = {}) {
+      return request("GET", "/travel/bookings/{travelBooking}", options);
+    },
+
+    /** Annulation d'une réservation (TRAVEL-314/#6044) */
+    postTravelBookingsByTravelBookingCancel(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/cancel", options);
+    },
+
+    /** Confirmation d'une réservation (TRAVEL-313/#6043) */
+    postTravelBookingsByTravelBookingConfirm(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/confirm", options);
+    },
+
+    /** Émission des billets (TRAVEL-316/#6046) */
+    postTravelBookingsByTravelBookingIssueTicket(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/issue-ticket", options);
+    },
+
+    /** Remboursement d'une réservation (TRAVEL-315/#6045) */
+    postTravelBookingsByTravelBookingRefund(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/refund", options);
+    },
+
+    /** Remboursement partiel d'un passager (TRAVEL-808/#6098) */
+    postTravelBookingsByTravelBookingRefundPassenger(options = {}) {
+      return request("POST", "/travel/bookings/{travelBooking}/refund-passenger", options);
+    },
+
+    /** Liste des politiques d'annulation (TRAVEL-813/#6103) */
+    getTravelCancellationPolicies(options = {}) {
+      return request("GET", "/travel/cancellation-policies", options);
+    },
+
+    /** Création d'une politique d'annulation (TRAVEL-813/#6103) */
+    postTravelCancellationPolicies(options = {}) {
+      return request("POST", "/travel/cancellation-policies", options);
+    },
+
+    /** Suppression d'une politique (TRAVEL-813/#6103) */
+    deleteTravelCancellationPoliciesByTravelCancellationPolicy(options = {}) {
+      return request("DELETE", "/travel/cancellation-policies/{travelCancellationPolicy}", options);
+    },
+
+    /** Mise à jour d'une politique (TRAVEL-813/#6103) */
+    putTravelCancellationPoliciesByTravelCancellationPolicy(options = {}) {
+      return request("PUT", "/travel/cancellation-policies/{travelCancellationPolicy}", options);
+    },
+
+    /** Liste des compagnies de transport (TRAVEL-304/#6034) */
+    getTravelCarriers(options = {}) {
+      return request("GET", "/travel/carriers", options);
+    },
+
+    /** Création d'une compagnie de transport (TRAVEL-304/#6034) */
+    postTravelCarriers(options = {}) {
+      return request("POST", "/travel/carriers", options);
+    },
+
+    /** Suppression d'une compagnie de transport (TRAVEL-304/#6034) */
+    deleteTravelCarriersByTravelCarrier(options = {}) {
+      return request("DELETE", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Détail d'une compagnie de transport (TRAVEL-304/#6034) */
+    getTravelCarriersByTravelCarrier(options = {}) {
+      return request("GET", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Modification d'une compagnie de transport (TRAVEL-304/#6034) */
+    putTravelCarriersByTravelCarrier(options = {}) {
+      return request("PUT", "/travel/carriers/{travelCarrier}", options);
+    },
+
+    /** Référentiel villes en lecture (TRAVEL-301/#6031) */
+    getTravelCities(options = {}) {
+      return request("GET", "/travel/cities", options);
+    },
+
+    /** Liste des classes de service (TRAVEL-305/#6035) */
+    getTravelClasses(options = {}) {
+      return request("GET", "/travel/classes", options);
+    },
+
+    /** Création d'une classe de service (TRAVEL-305/#6035) */
+    postTravelClasses(options = {}) {
+      return request("POST", "/travel/classes", options);
+    },
+
+    /** Suppression d'une classe de service (TRAVEL-305/#6035) */
+    deleteTravelClassesByTravelClass(options = {}) {
+      return request("DELETE", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Détail d'une classe de service (TRAVEL-305/#6035) */
+    getTravelClassesByTravelClass(options = {}) {
+      return request("GET", "/travel/classes/{travelClass}", options);
+    },
+
+    /** Modification d'une classe de service (TRAVEL-305/#6035) */
+    putTravelClassesByTravelClass(options = {}) {
+      return request("PUT", "/travel/classes/{travelClass}", options);
+    },
+
+    /** TRAVEL-902 — Liste des commentaires */
+    getTravelComments(options = {}) {
+      return request("GET", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Création d'un commentaire (pending) */
+    postTravelComments(options = {}) {
+      return request("POST", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Suppression d'un commentaire */
+    deleteTravelCommentsByTravelComment(options = {}) {
+      return request("DELETE", "/travel/comments/{travelComment}", options);
+    },
+
+    /** TRAVEL-902 — Modération (approved/rejected/flagged) */
+    postTravelCommentsByTravelCommentModerate(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/moderate", options);
+    },
+
+    /** TRAVEL-902 — Signalement d'un commentaire */
+    postTravelCommentsByTravelCommentReport(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/report", options);
+    },
+
+    /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
+    postTravelContact(options = {}) {
+      return request("POST", "/travel/contact", options);
+    },
+
+    /** TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement) */
+    getTravelContacts(options = {}) {
+      return request("GET", "/travel/contacts", options);
+    },
+
+    /** TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté) */
+    patchTravelContactsByTravelCustomerContactConsent(options = {}) {
+      return request("PATCH", "/travel/contacts/{travelCustomerContact}/consent", options);
+    },
+
+    /** TRAVEL-912 — Mise à jour des consentements par canal */
+    postTravelContactsByTravelCustomerContactConsent(options = {}) {
+      return request("POST", "/travel/contacts/{travelCustomerContact}/consent", options);
+    },
+
+    /** TRAVEL-912/913 — Mise à jour des consentements par canal */
+    putTravelContactsByTravelCustomerContactConsent(options = {}) {
+      return request("PUT", "/travel/contacts/{travelCustomerContact}/consent", options);
+    },
+
+    /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
+    postTravelContactsByTravelCustomerContactNotify(options = {}) {
+      return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
+    },
+
+    /** Référentiel pays en lecture (TRAVEL-301/#6031) */
+    getTravelCountries(options = {}) {
+      return request("GET", "/travel/countries", options);
+    },
+
+    /** Liste des taux de conversion (TRAVEL-805/#6096) */
+    getTravelCurrencyRates(options = {}) {
+      return request("GET", "/travel/currency-rates", options);
+    },
+
+    /** Création d'un taux de conversion par période (TRAVEL-805/#6096) */
+    postTravelCurrencyRates(options = {}) {
+      return request("POST", "/travel/currency-rates", options);
+    },
+
+    /** Détail d'un taux (TRAVEL-805/#6096) */
+    getTravelCurrencyRatesByTravelCurrencyRate(options = {}) {
+      return request("GET", "/travel/currency-rates/{travelCurrencyRate}", options);
+    },
+
+    /** Mise à jour d'un taux (TRAVEL-805/#6096) */
+    putTravelCurrencyRatesByTravelCurrencyRate(options = {}) {
+      return request("PUT", "/travel/currency-rates/{travelCurrencyRate}", options);
+    },
+
+    /** Conversion multi-devise (TRAVEL-805/#6096) */
+    getTravelCurrencyRatesConvert(options = {}) {
+      return request("GET", "/travel/currency-rates/convert", options);
+    },
+
+    /** Liste des hôtels (TRAVEL-321/#6051) */
+    getTravelHotels(options = {}) {
+      return request("GET", "/travel/hotels", options);
+    },
+
+    /** Création d'un hôtel (TRAVEL-321/#6051) */
+    postTravelHotels(options = {}) {
+      return request("POST", "/travel/hotels", options);
+    },
+
+    /** Suppression d'un hôtel (TRAVEL-321/#6051) */
+    deleteTravelHotelsByTravelHotel(options = {}) {
+      return request("DELETE", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Détail d'un hôtel (TRAVEL-321/#6051) */
+    getTravelHotelsByTravelHotel(options = {}) {
+      return request("GET", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Mise à jour d'un hôtel (TRAVEL-321/#6051) */
+    putTravelHotelsByTravelHotel(options = {}) {
+      return request("PUT", "/travel/hotels/{travelHotel}", options);
+    },
+
+    /** Chambres d'un hôtel (TRAVEL-321/#6051) */
+    getTravelHotelsByTravelHotelRooms(options = {}) {
+      return request("GET", "/travel/hotels/{travelHotel}/rooms", options);
+    },
+
+    /** Création d'une chambre (TRAVEL-321/#6051) */
+    postTravelHotelsByTravelHotelRooms(options = {}) {
+      return request("POST", "/travel/hotels/{travelHotel}/rooms", options);
+    },
+
+    /** Suppression d'une chambre (TRAVEL-321/#6051) */
+    deleteTravelHotelsByTravelHotelRoomsByTravelHotelRoom(options = {}) {
+      return request("DELETE", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", options);
+    },
+
+    /** Mise à jour d'une chambre (TRAVEL-321/#6051) */
+    putTravelHotelsByTravelHotelRoomsByTravelHotelRoom(options = {}) {
+      return request("PUT", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", options);
+    },
+
+    /** Solde fidélité d'un contact (TRAVEL-811/#6101) */
+    getTravelLoyaltyByContact(options = {}) {
+      return request("GET", "/travel/loyalty/{contact}", options);
+    },
+
+    /** Récompense — conversion points en avoir (TRAVEL-811/#6101) */
+    postTravelLoyaltyByContactRedeem(options = {}) {
+      return request("POST", "/travel/loyalty/{contact}/redeem", options);
+    },
+
+    /** Opt-in RGPD fidélité (TRAVEL-811/#6101) */
+    postTravelLoyaltyOptIn(options = {}) {
+      return request("POST", "/travel/loyalty/opt-in", options);
+    },
+
+    /** Opt-out fidélité (TRAVEL-811/#6101) */
+    postTravelLoyaltyOptOut(options = {}) {
+      return request("POST", "/travel/loyalty/opt-out", options);
+    },
+
+    /** Liste des bureaux de vente (TRAVEL-303/#6033) */
+    getTravelOffices(options = {}) {
+      return request("GET", "/travel/offices", options);
+    },
+
+    /** Création d'un bureau de vente (TRAVEL-303/#6033) */
+    postTravelOffices(options = {}) {
+      return request("POST", "/travel/offices", options);
+    },
+
+    /** Suppression d'un bureau de vente (TRAVEL-303/#6033) */
+    deleteTravelOfficesByTravelOffice(options = {}) {
+      return request("DELETE", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Détail d'un bureau de vente (TRAVEL-303/#6033) */
+    getTravelOfficesByTravelOffice(options = {}) {
+      return request("GET", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Modification d'un bureau de vente (TRAVEL-303/#6033) */
+    putTravelOfficesByTravelOffice(options = {}) {
+      return request("PUT", "/travel/offices/{travelOffice}", options);
+    },
+
+    /** Émission d'une clé API transporteur (TRAVEL-807/#6086) */
+    postTravelPartnerKeys(options = {}) {
+      return request("POST", "/travel/partner-keys", options);
+    },
+
+    /** Révocation d'une clé API transporteur (TRAVEL-807/#6086) */
+    deleteTravelPartnerKeysByTravelCarrierApiKey(options = {}) {
+      return request("DELETE", "/travel/partner-keys/{travelCarrierApiKey}", options);
+    },
+
+    /** Synchronisation entrante des trajets transporteurs (TRAVEL-807/#6086) */
+    postTravelPartnerSync(options = {}) {
+      return request("POST", "/travel/partner/sync", options);
+    },
+
+    /** Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977) */
+    getTravelPing(options = {}) {
+      return request("GET", "/travel/ping", options);
+    },
+
+    /** TRAVEL-913 — Génération du lien public signé du formulaire de contact */
+    postTravelPublicContactLink(options = {}) {
+      return request("POST", "/travel/public-contact-link", options);
+    },
+
+    /** TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire) */
+    postTravelPublicContact(options = {}) {
+      return request("POST", "/travel/public/contact", options);
+    },
+
+    /** TRAVEL-904 — Liste des quiz */
+    getTravelQuizzes(options = {}) {
+      return request("GET", "/travel/quizzes", options);
+    },
+
+    /** TRAVEL-904 — Création d'un quiz */
+    postTravelQuizzes(options = {}) {
+      return request("POST", "/travel/quizzes", options);
+    },
+
+    /** TRAVEL-904 — Détail d'un quiz (questions SANS réponses correctes) */
+    getTravelQuizzesByTravelQuiz(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut) */
+    putTravelQuizzesByTravelQuiz(options = {}) {
+      return request("PUT", "/travel/quizzes/{travelQuiz}", options);
+    },
+
+    /** TRAVEL-904 — Participation (notation serveur) */
+    postTravelQuizzesByTravelQuizParticipate(options = {}) {
+      return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
+    },
+
+    /** TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée) */
+    getTravelQuizzesByTravelQuizQuestions(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}/questions", options);
+    },
+
+    /** TRAVEL-904 — Ajout d'une question */
+    postTravelQuizzesByTravelQuizQuestions(options = {}) {
+      return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
+    },
+
+    /** TRAVEL-914 — Suppression d'une question */
+    deleteTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
+      return request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
+    },
+
+    /** TRAVEL-914 — Mise à jour d'une question */
+    putTravelQuizzesByTravelQuizQuestionsByTravelQuizQuestion(options = {}) {
+      return request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", options);
+    },
+
+    /** TRAVEL-904 — Résultats (gestion) */
+    getTravelQuizzesByTravelQuizResults(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}/results", options);
+    },
+
+    /** Liste des devis de groupe (TRAVEL-803/#6094) */
+    getTravelQuotes(options = {}) {
+      return request("GET", "/travel/quotes", options);
+    },
+
+    /** Création d'un devis de groupe (≥ 5 passagers, TRAVEL-803/#6094) */
+    postTravelQuotes(options = {}) {
+      return request("POST", "/travel/quotes", options);
+    },
+
+    /** Détail d'un devis (TRAVEL-803/#6094) */
+    getTravelQuotesByTravelQuote(options = {}) {
+      return request("GET", "/travel/quotes/{travelQuote}", options);
+    },
+
+    /** Réservation groupée depuis un devis (TRAVEL-803/#6094) */
+    postTravelQuotesByTravelQuoteBook(options = {}) {
+      return request("POST", "/travel/quotes/{travelQuote}/book", options);
+    },
+
+    /** Liste des réservations de location (TRAVEL-320/#6050) */
+    getTravelRentalBookings(options = {}) {
+      return request("GET", "/travel/rental-bookings", options);
+    },
+
+    /** Création d'une réservation de location (TRAVEL-320/#6050) */
+    postTravelRentalBookings(options = {}) {
+      return request("POST", "/travel/rental-bookings", options);
+    },
+
+    /** Détail d'une réservation de location (TRAVEL-320/#6050) */
+    getTravelRentalBookingsByTravelRentalBooking(options = {}) {
+      return request("GET", "/travel/rental-bookings/{travelRentalBooking}", options);
+    },
+
+    /** Annulation d'une réservation de location (TRAVEL-320/#6050) */
+    postTravelRentalBookingsByTravelRentalBookingCancel(options = {}) {
+      return request("POST", "/travel/rental-bookings/{travelRentalBooking}/cancel", options);
+    },
+
+    /** Liste des véhicules en location (TRAVEL-319/#6049) */
+    getTravelRentalVehicles(options = {}) {
+      return request("GET", "/travel/rental-vehicles", options);
+    },
+
+    /** Création d'un véhicule en location (TRAVEL-319/#6049) */
+    postTravelRentalVehicles(options = {}) {
+      return request("POST", "/travel/rental-vehicles", options);
+    },
+
+    /** Suppression d'un véhicule en location (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Détail d'un véhicule en location (TRAVEL-319/#6049) */
+    getTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Mise à jour d'un véhicule en location (TRAVEL-319/#6049) */
+    putTravelRentalVehiclesByTravelRentalVehicle(options = {}) {
+      return request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", options);
+    },
+
+    /** Images d'un véhicule en location (TRAVEL-319/#6049) */
+    getTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
+      return request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
+    },
+
+    /** Ajout d'une image (TRAVEL-319/#6049) */
+    postTravelRentalVehiclesByTravelRentalVehicleImages(options = {}) {
+      return request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", options);
+    },
+
+    /** Suppression d'une image (TRAVEL-319/#6049) */
+    deleteTravelRentalVehiclesByTravelRentalVehicleImagesByTravelRentalVehicleImage(options = {}) {
+      return request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", options);
+    },
+
+    /** TRAVEL-504 — Annulations sur période */
+    getTravelReportsCancellations(options = {}) {
+      return request("GET", "/travel/reports/cancellations", options);
+    },
+
+    /** TRAVEL-507 — Dashboard KPIs */
+    getTravelReportsDashboard(options = {}) {
+      return request("GET", "/travel/reports/dashboard", options);
+    },
+
+    /** TRAVEL-505 — Export CSV idempotent */
+    postTravelReportsExport(options = {}) {
+      return request("POST", "/travel/reports/export", options);
+    },
+
+    /** TRAVEL-505 — Lecture d'un export (URL signée éphémère) */
+    getTravelReportsExportByTravelExportAsset(options = {}) {
+      return request("GET", "/travel/reports/export/{travelExportAsset}", options);
+    },
+
+    /** TRAVEL-502 — Occupation par trajet */
+    getTravelReportsOccupancy(options = {}) {
+      return request("GET", "/travel/reports/occupancy", options);
+    },
+
+    /** TRAVEL-503 — Recettes (confirmés − remboursements) */
+    getTravelReportsRevenue(options = {}) {
+      return request("GET", "/travel/reports/revenue", options);
+    },
+
+    /** TRAVEL-501 — Ventes (réservations nettes) sur période */
+    getTravelReportsSales(options = {}) {
+      return request("GET", "/travel/reports/sales", options);
+    },
+
+    /** Création d'un aller-retour combiné (TRAVEL-802/#6093) */
+    postTravelRoundTrips(options = {}) {
+      return request("POST", "/travel/round-trips", options);
+    },
+
+    /** Détail d'un aller-retour (TRAVEL-802/#6093) */
+    getTravelRoundTripsByTravelRoundTrip(options = {}) {
+      return request("GET", "/travel/round-trips/{travelRoundTrip}", options);
+    },
+
+    /** Liste des routes (TRAVEL-307/#6037) */
+    getTravelRoutes(options = {}) {
+      return request("GET", "/travel/routes", options);
+    },
+
+    /** Création d'une route (TRAVEL-307/#6037) */
+    postTravelRoutes(options = {}) {
+      return request("POST", "/travel/routes", options);
+    },
+
+    /** Suppression d'une route (TRAVEL-307/#6037) */
+    deleteTravelRoutesByTravelRoute(options = {}) {
+      return request("DELETE", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Détail d'une route (TRAVEL-307/#6037) */
+    getTravelRoutesByTravelRoute(options = {}) {
+      return request("GET", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Mise à jour d'une route (TRAVEL-307/#6037) */
+    putTravelRoutesByTravelRoute(options = {}) {
+      return request("PUT", "/travel/routes/{travelRoute}", options);
+    },
+
+    /** Étapes d'une route, triées par rang (TRAVEL-307/#6037) */
+    getTravelRoutesByTravelRouteStops(options = {}) {
+      return request("GET", "/travel/routes/{travelRoute}/stops", options);
+    },
+
+    /** Ajout d'une étape à une route (TRAVEL-307/#6037) */
+    postTravelRoutesByTravelRouteStops(options = {}) {
+      return request("POST", "/travel/routes/{travelRoute}/stops", options);
+    },
+
+    /** Suppression d'une étape (TRAVEL-307/#6037) */
+    deleteTravelRoutesByTravelRouteStopsByTravelRouteStop(options = {}) {
+      return request("DELETE", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
+    },
+
+    /** Mise à jour d'une étape (TRAVEL-307/#6037) */
+    putTravelRoutesByTravelRouteStopsByTravelRouteStop(options = {}) {
+      return request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", options);
+    },
+
+    /** Liste des gares/terminaux (TRAVEL-302/#6032) */
+    getTravelStations(options = {}) {
+      return request("GET", "/travel/stations", options);
+    },
+
+    /** Création d'une gare/terminal (TRAVEL-302/#6032) */
+    postTravelStations(options = {}) {
+      return request("POST", "/travel/stations", options);
+    },
+
+    /** Suppression d'une gare/terminal (TRAVEL-302/#6032) */
+    deleteTravelStationsByTravelStation(options = {}) {
+      return request("DELETE", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Détail d'une gare/terminal (TRAVEL-302/#6032) */
+    getTravelStationsByTravelStation(options = {}) {
+      return request("GET", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Modification d'une gare/terminal (TRAVEL-302/#6032) */
+    putTravelStationsByTravelStation(options = {}) {
+      return request("PUT", "/travel/stations/{travelStation}", options);
+    },
+
+    /** Check-in / embarquement (TRAVEL-317/#6047) */
+    postTravelTicketsByTravelTicketCheckIn(options = {}) {
+      return request("POST", "/travel/tickets/{travelTicket}/check-in", options);
+    },
+
+    /** TRAVEL-909 — Sites touristiques (recherche par ville/nom) */
+    getTravelTouristSites(options = {}) {
+      return request("GET", "/travel/tourist-sites", options);
+    },
+
+    /** TRAVEL-909 — Création d'un site touristique */
+    postTravelTouristSites(options = {}) {
+      return request("POST", "/travel/tourist-sites", options);
+    },
+
+    /** TRAVEL-909 — Suppression d'un site touristique */
+    deleteTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("DELETE", "/travel/tourist-sites/{travelTouristSite}", options);
+    },
+
+    /** TRAVEL-909 — Détail d'un site touristique */
+    getTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("GET", "/travel/tourist-sites/{travelTouristSite}", options);
+    },
+
+    /** TRAVEL-909 — Mise à jour d'un site touristique */
+    putTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("PUT", "/travel/tourist-sites/{travelTouristSite}", options);
+    },
+
+    /** Liste des trajets (TRAVEL-308/#6038) */
+    getTravelTrips(options = {}) {
+      return request("GET", "/travel/trips", options);
+    },
+
+    /** Création d'un trajet (TRAVEL-308/#6038, génère les sièges) */
+    postTravelTrips(options = {}) {
+      return request("POST", "/travel/trips", options);
+    },
+
+    /** Suppression d'un trajet (TRAVEL-308/#6038) */
+    deleteTravelTripsByTravelTrip(options = {}) {
+      return request("DELETE", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Détail d'un trajet (TRAVEL-308/#6038) */
+    getTravelTripsByTravelTrip(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Mise à jour d'un trajet (TRAVEL-308/#6038) */
+    putTravelTripsByTravelTrip(options = {}) {
+      return request("PUT", "/travel/trips/{travelTrip}", options);
+    },
+
+    /** Annulation d'un trajet (TRAVEL-310/#6040) */
+    postTravelTripsByTravelTripCancel(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/cancel", options);
+    },
+
+    /** Manifeste des passagers d'un trajet (TRAVEL-318/#6048) */
+    getTravelTripsByTravelTripManifest(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/manifest", options);
+    },
+
+    /** Tarifs d'un trajet par classe (TRAVEL-309/#6039) */
+    getTravelTripsByTravelTripPrices(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/prices", options);
+    },
+
+    /** Création d'un tarif (TRAVEL-309/#6039) */
+    postTravelTripsByTravelTripPrices(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/prices", options);
+    },
+
+    /** Suppression d'un tarif (TRAVEL-309/#6039) */
+    deleteTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("DELETE", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Détail d'un tarif (TRAVEL-309/#6039) */
+    getTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("GET", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Mise à jour d'un tarif (TRAVEL-309/#6039) */
+    putTravelTripsByTravelTripPricesByTravelTripPrice(options = {}) {
+      return request("PUT", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", options);
+    },
+
+    /** Publication d'un trajet (TRAVEL-310/#6040) */
+    postTravelTripsByTravelTripPublish(options = {}) {
+      return request("POST", "/travel/trips/{travelTrip}/publish", options);
+    },
+
+    /** Recherche de correspondances multi-trajets (TRAVEL-809/#6099) */
+    getTravelTripsConnections(options = {}) {
+      return request("GET", "/travel/trips/connections", options);
+    },
+
+    /** Recherche interne de trajets (TRAVEL-311/#6041) */
+    getTravelTripsSearch(options = {}) {
+      return request("GET", "/travel/trips/search", options);
+    },
+
+    /** Liste des véhicules de la flotte (TRAVEL-306/#6036) */
+    getTravelVehicles(options = {}) {
+      return request("GET", "/travel/vehicles", options);
+    },
+
+    /** Création d'un véhicule de flotte (TRAVEL-306/#6036) */
+    postTravelVehicles(options = {}) {
+      return request("POST", "/travel/vehicles", options);
+    },
+
+    /** Suppression d'un véhicule (TRAVEL-306/#6036) */
+    deleteTravelVehiclesByTravelVehicle(options = {}) {
+      return request("DELETE", "/travel/vehicles/{travelVehicle}", options);
+    },
+
+    /** Détail d'un véhicule (TRAVEL-306/#6036) */
+    getTravelVehiclesByTravelVehicle(options = {}) {
+      return request("GET", "/travel/vehicles/{travelVehicle}", options);
+    },
+
+    /** Mise à jour d'un véhicule (TRAVEL-306/#6036) */
+    putTravelVehiclesByTravelVehicle(options = {}) {
+      return request("PUT", "/travel/vehicles/{travelVehicle}", options);
     },
 
     /** Demande d'essai guidé / auto-service (onboarding) */

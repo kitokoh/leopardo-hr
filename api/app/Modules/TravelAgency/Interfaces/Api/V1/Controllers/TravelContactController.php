@@ -14,6 +14,9 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelContactRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Application\Actions\SubmitTravelContactAction;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelContactRequest;
+use Illuminate\Http\JsonResponse;
 
 /**
  * TRAVEL-416 (#6068) — Formulaire de contact → lead CRM.
@@ -34,6 +37,14 @@ use Illuminate\Support\Facades\DB;
 class TravelContactController extends Controller
 {
     public function __construct(private readonly TravelOutboxPublisher $outbox) {}
+ *
+ * La logique est partagée avec la route publique signée
+ * `POST /travel/public/contact` (TRAVEL-913/#6425) via
+ * `SubmitTravelContactAction`.
+ */
+class TravelContactController extends Controller
+{
+    public function __construct(private readonly SubmitTravelContactAction $submit) {}
 
     public function store(StoreTravelContactRequest $request): JsonResponse
     {
@@ -94,6 +105,7 @@ class TravelContactController extends Controller
             'submitted_at' => now()->toIso8601String(),
             'consent_email' => true,
         ]);
+        $this->submit->execute((string) $actor->company_id, $request->validated());
 
         return response()->json(['status' => 'received'], 202);
     }

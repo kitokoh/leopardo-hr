@@ -10,12 +10,17 @@ use Illuminate\Foundation\Http\FormRequest;
  * TRAVEL-813 (#6103) — Création d'une politique d'annulation.
  *
  * Bornes strictes : pénalité 0..100, délai en heures plafonné à 30 jours.
+use Illuminate\Validation\Rule;
+
+/**
+ * TRAVEL-813 (#6103) — Création/mise à jour d'une politique d'annulation.
  */
 class StoreTravelCancellationPolicyRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true; // TravelCancellationPolicyPolicy::create() tranche
+        return true;
     }
 
     /**
@@ -31,6 +36,11 @@ class StoreTravelCancellationPolicyRequest extends FormRequest
             'refundable' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
             'description' => ['nullable', 'string', 'max:255'],
+            'trip_id' => ['nullable', 'integer', Rule::exists('travel_trips', 'id')],
+            'class_id' => ['nullable', 'integer', Rule::exists('travel_classes', 'id')],
+            'hours_before_departure' => ['required', 'integer', 'min:0', 'max:8760'],
+            'penalty_percent' => ['required', 'integer', 'min:0', 'max:100'],
+            'refundable' => ['sometimes', 'boolean'],
         ];
     }
 }

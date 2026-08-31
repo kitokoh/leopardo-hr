@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * Appliquée côté serveur lors d'une annulation/remboursement : la pénalité
  * est toujours calculée par le serveur, jamais acceptée du client.
+ * Spécificité décroissante : (trajet, classe) > (classe) > (trajet) >
+ * défaut tenant. Consommée par TravelRefundPolicyResolver (TRAVEL-808).
  */
 class TravelCancellationPolicy extends Model
 {
@@ -41,6 +43,18 @@ class TravelCancellationPolicy extends Model
         'penalty_percent' => 'integer',
         'refundable' => 'boolean',
         'is_active' => 'boolean',
+        'trip_id',
+        'class_id',
+        'hours_before_departure',
+        'penalty_percent',
+        'refundable',
+        'created_by_user_id',
+    ];
+
+    protected $casts = [
+        'hours_before_departure' => 'integer',
+        'penalty_percent' => 'integer',
+        'refundable' => 'boolean',
     ];
 
     /**
@@ -55,6 +69,7 @@ class TravelCancellationPolicy extends Model
      * @return BelongsTo<TravelClass, $this>
      */
     public function travelClass(): BelongsTo
+    public function class(): BelongsTo
     {
         return $this->belongsTo(TravelClass::class, 'class_id');
     }

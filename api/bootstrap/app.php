@@ -24,6 +24,7 @@ use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
 use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
+use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -68,6 +69,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('travel:outbox-dispatch --limit=100')->everyMinute()->withoutOverlapping();
         $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('travel:rebuild-report-readmodels')->hourly();
+        // TRAVEL-418/#6070 — libère les sièges des réservations pending
+        // expirées (job tenant-scoped par compagnie, idempotent).
+        $schedule->command('travel:expire-pending-bookings')->everyFiveMinutes()->withoutOverlapping();
+        // Plan 64 — Auto-close attendance logs without check-out after 12h
+        $schedule->command('attendance:auto-close')->hourly();
+        $schedule->command('accounting:purge-expired-shares')->daily();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
@@ -178,6 +185,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'restaurant.public.shop' => \App\Http\Middleware\Restaurant\EnsureRestaurantShopPublicAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
+            // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
+            'travel.partner' => TravelPartnerAuthMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

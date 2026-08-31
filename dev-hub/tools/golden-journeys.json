@@ -37,6 +37,11 @@
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
       "status": "planned"
+      "status": "active"
+    },
+    "travelagency": {
+      "label": "TravelAgency (verticale)",
+      "status": "active"
     }
   },
   "journeys": [
@@ -384,6 +389,20 @@
           "action": "Activer la solution (flag)",
           "method": "POST",
           "route": "/api/v1/restaurant/ping",
+        }
+      ]
+    },
+    {
+      "id": "GJ-TRAVEL-01",
+      "name": "TravelAgency — recherche → réservation → paiement → billet → check-in",
+      "solution": "travelagency",
+      "acceptance": "Un agent peut rechercher un trajet, réserver au guichet, encaisser, émettre les billets et enregistrer l'embarquement.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Rechercher un trajet",
+          "method": "GET",
+          "route": "/api/v1/travel/trips/search",
           "role": "manager:principal"
         },
         {
@@ -424,12 +443,15 @@
         {
           "order": 7,
           "action": "Confirmer la réservation",
+          "order": 3,
+          "action": "Confirmer (paiement comptant)",
           "method": "POST",
           "route": "/api/v1/travel/bookings/{travelBooking}/confirm",
           "role": "manager:principal"
         },
         {
           "order": 8,
+          "order": 4,
           "action": "Émettre les billets",
           "method": "POST",
           "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
@@ -651,6 +673,11 @@
           "method": "GET",
           "route": "/api/v1/deliveries/tracking/{token}",
           "role": "public"
+          "order": 5,
+          "action": "Check-in passager",
+          "method": "POST",
+          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
+          "role": "manager:principal"
         }
       ]
     }

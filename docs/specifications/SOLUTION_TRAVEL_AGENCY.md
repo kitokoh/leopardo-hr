@@ -242,7 +242,8 @@ L'invariant « ne jamais vendre plus de places que disponibles » est modélisé
 - À la réservation : transaction `DB::transaction` + `SELECT ... FOR UPDATE` sur les lignes siège
   choisies (et sur le voyage) ; échec si indisponible → `409 SEATS_UNAVAILABLE`.
 - Réservations `pending` avec expiration (`expires_at`) : un job tenant-scoped libère les sièges
-  réservés non payés (retry + idempotence).
+  réservés non payés (retry + idempotence) — `ExpirePendingBookingsJob` + commande
+  `travel:expire-pending-bookings` (TRAVEL-418).
 - Le compteur « places restantes » exposé à la recherche est dérivé (read model recalculé par job
   idempotent), jamais un simple décrement non protégé.
 
@@ -574,6 +575,7 @@ avec événement de domaine + outbox ; jamais par assignation directe dans un co
 | GET | `/travel/tickets/{ticket}/pdf` | Télécharger le billet (URL signée) |
 | POST | `/travel/tickets/{ticket}/check-in` | Valider l'embarquement |
 | GET | `/travel/trips/{trip}/manifest` | Manifeste des passagers |
+| POST | `/travel/contact` | Formulaire de contact → événement `travel.contact.submitted.v1` (lead CRM, TRAVEL-416) |
 
 ### 7.3 Boutique en ligne (v1 : auth tenant ; P2 : publique)
 

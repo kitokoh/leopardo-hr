@@ -2,11 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-use App\Modules\Payroll\Domain\Models\SalaryAdvance;
-
-/** @extends \Illuminate\Database\Eloquent\Factories\Factory<SalaryAdvance> */
+/** @extends Factory<SalaryAdvance> */
 class SalaryAdvanceFactory extends Factory
 {
     protected $model = SalaryAdvance::class;
@@ -19,11 +18,12 @@ class SalaryAdvanceFactory extends Factory
      */
     public function newModel(array $attributes = [])
     {
-        $model = new $this->model();
+        $model = new $this->model;
         $model->forceFill($attributes);
 
         return $model;
     }
+
     public function definition(): array
     {
         $amount = round(rand(10000, 100000) / 1000) * 1000;
