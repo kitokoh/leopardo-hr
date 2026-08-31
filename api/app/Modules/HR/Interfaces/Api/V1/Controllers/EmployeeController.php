@@ -168,6 +168,11 @@ class EmployeeController extends Controller
             'salary_base',
             'hourly_rate',
             'preferred_language',
+            // Issue #6546 (audit RGPD) : extra_data reste projeté (le mobile
+            // lit department/job_title/work_location sur la liste) mais la
+            // sérialisation passe par EmployeeResource::employeeExtraData()
+            // qui applique une whitelist — national_id/tax_identifier/
+            // blood_group ne sortent jamais de l'API.
             'extra_data',
         ];
 
