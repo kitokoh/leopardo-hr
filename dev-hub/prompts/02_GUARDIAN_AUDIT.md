@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant que gardien du projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant que gardien du projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Commence par lire AGENTS.md et CHANGELOG.md pour comprendre l'état actuel.
 

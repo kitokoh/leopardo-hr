@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant que spécialiste CI/CD pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant que spécialiste CI/CD pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Commence par lire AGENTS.md (section "Stratégie CI rapide").
 

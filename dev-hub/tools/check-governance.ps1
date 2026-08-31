@@ -122,13 +122,13 @@ $mobileFeatureChanged = $false
 $webFeatureChanged = $false
 
 foreach ($line in $changedList) {
-    if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Services/|api/app/Policies/|api/app/Http/Requests/Api/)') {
+    if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Policies/|api/app/Http/Requests/Api/)') {
         $apiFeatureChanged = $true
     }
-    if ($line -match '^(mobile/lib/features/|mobile/integration_test/|mobile/test/features/)') {
+    if ($line -match '^(front/mobile_apps/)') {
         $mobileFeatureChanged = $true
     }
-    if ($line -match '^(admin-dashboard/src/|admin-dashboard/e2e/|admin-dashboard/playwright\.config\.js)') {
+    if ($line -match '^(front/admin-dashboard/src/|front/admin-dashboard/e2e/|front/admin-dashboard/playwright\.config\.js)') {
         $webFeatureChanged = $true
     }
 }

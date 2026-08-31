@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Tu viens d'arriver sur le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Tu viens d'arriver sur le projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Avant de coder quoi que ce soit, fais ces vérifications dans cet ordre exact :
 

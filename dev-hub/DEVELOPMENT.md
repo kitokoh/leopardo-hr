@@ -60,31 +60,33 @@ php artisan serve
 ## Project Structure
 
 ```
-api/                    # Laravel backend (PHP 8.4)
+api/                    # Laravel backend (PHP 8.4) — monolithe modulaire DDD
   app/
-    Http/Controllers/   # REST controllers
-    Models/             # Eloquent models
-    Services/           # Business logic
-    Events/             # Domain events
-    Listeners/          # Event listeners (AuditLogger, WebhookListener)
-    Modules/            # DDD modules (Cameras, future modules)
-      {Module}/
-        Domain/         # Models, Events, Enums, Exceptions, ValueObjects
-        Application/    # DTOs, Actions, Queries, Listeners
-        Infrastructure/ # Repositories, Services, Exports
-        Interfaces/     # Controllers, Requests, Resources
+    Core/               # Socle transversal (Auth, Tenant, Feature)
+    Shared/             # Code partagé (traits, enums, helpers)
+    Modules/{Module}/   # Modules DDD (voir api/ARCHITECTURE.md)
+      Domain/           # Models, Events, Enums, Exceptions, ValueObjects
+      Application/      # DTOs, Actions, Queries, Listeners
+      Infrastructure/   # Repositories, Services, Exports
+      Interfaces/       # Controllers, Requests, Resources
+      Providers/        # ServiceProvider du module
+    Http/
+      Middleware/       # Middlewares HTTP
+      Resources/Api/V1/ # JsonResource centralisées (dérogation PA2-ARCH-010)
   database/migrations/  # Laravel migrations
   routes/
-    api.php             # Main API routes
-    modules/            # Per-module route files
+    api.php             # Routes principales
+    modules/            # Routes par module
   tests/                # Pest/PHPUnit tests
 front/
-  admin-dashboard/      # React admin dashboard
-  web/                  # Next.js marketing site
-  mobile/               # Flutter mobile app
-  zkteco-kiosk/         # Kiosk application
-shared/                 # Shared resources (i18n)
-docs/                   # All documentation
+  admin-dashboard/      # Vue 3 + Vite — dashboard super-admin plateforme
+  web/                  # Next.js — vitrine + portail client (déployé sur Vercel)
+  web-offline/          # Next.js — PWA offline-first pour le bridge Edge
+  mobile_apps/          # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_platform_admin, leopardo_accounting)
+  zkteco-kiosk/         # Kiosque de pointage + pont local Python (desktop-bridge)
+edge/                   # Bridge on-prem ZKTeco ↔ cloud (Caddy, supervisord, install.sh)
+shared/                 # Ressources partagées (i18n, mediaForMarketing)
+docs/                   # Toute la documentation
 ```
 
 ## Creating a New Module
@@ -123,9 +125,9 @@ cd api
 
 All checks run on GitHub Actions:
 - **Backend**: `tests.yml` — PHPUnit/Pest, PHPStan, Pint
-- **Web**: `web-marketing-ci.yml` — lint, build
-- **Admin**: `web-ci.yml` — lint, build, Playwright
-- **Mobile**: triggered only on `mobile/**` changes
+- **Web**: `web-ci.yml` — lint, build (Next.js)
+- **Admin**: `web-ci.yml` (build) + `e2e-staging.yml` (Playwright)
+- **Mobile**: `mobile-apps-ci.yml` — déclenché sur `front/mobile_apps/**`
 - **Security**: `secret-scan.yml`, `codeql.yml`
 
 ## API Health Endpoints

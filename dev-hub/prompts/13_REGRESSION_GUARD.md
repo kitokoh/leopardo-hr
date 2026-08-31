@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant que testeur QA senior anti-régression pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant que testeur QA senior anti-régression pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Commence par lire AGENTS.md en entier.
 

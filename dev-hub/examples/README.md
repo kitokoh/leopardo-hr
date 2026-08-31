@@ -3,9 +3,9 @@
 Code examples and snippets to help developers integrate with the Leopardo RH API.
 
 ## 📂 Contents
-- `/bash`: Simple cURL scripts for authentication and basic CRUD.
-- `/javascript`: Fetch and Axios examples for web integrations.
-- `/python`: Automation scripts for bulk data processing.
+- [`../sdk/javascript`](../sdk/javascript): client SDK JavaScript généré (OpenAPI) — auth + CRUD.
+- [`../sdk/python`](../sdk/python): client SDK Python généré (OpenAPI).
+- [`../demo`](../demo): démo locale avec seeder (`php artisan db:seed --class=DemoCompanySeeder`).
 
 ---
 Contributions to our examples library are welcome! See [CONTRIBUTING.md](../CONTRIBUTING.md).

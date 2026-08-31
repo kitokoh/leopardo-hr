@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant qu'auditeur mobile senior pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant qu'auditeur mobile senior pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Commence par lire AGENTS.md (sections mobile, StartupGate, extractDataList, PushNotificationService, GPS, branding tenant).
 

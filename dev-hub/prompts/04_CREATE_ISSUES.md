@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant que product owner technique pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant que product owner technique pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt, dossier courant).
 
 Commence par lire AGENTS.md pour comprendre les conventions du projet.
 
