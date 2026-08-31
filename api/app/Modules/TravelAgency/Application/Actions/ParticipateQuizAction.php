@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\DB;
  */
 final class ParticipateQuizAction
 {
+    /**
+     * @param  array<int, array<string, mixed>>  $answers
+     * @return array{participation: TravelQuizParticipation, score: int, bonus: int}
+     */
     public function execute(
         TravelQuiz $quiz,
         ?string $participantEmail,

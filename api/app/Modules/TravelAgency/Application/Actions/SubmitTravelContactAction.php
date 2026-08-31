@@ -27,7 +27,7 @@ class SubmitTravelContactAction
     public function __construct(private readonly TravelOutboxPublisher $outbox) {}
 
     /**
-     * @param  array{first_name?: string|null, last_name?: string|null, email: string, phone?: string|null, message: string}  $data
+     * @param  array<string, mixed>  $data
      */
     public function execute(string $companyId, array $data): void
     {
