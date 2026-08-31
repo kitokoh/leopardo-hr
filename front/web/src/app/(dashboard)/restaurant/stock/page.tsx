@@ -16,12 +16,14 @@ import { t } from '@/lib/i18n/locale-catalog';
 
 type StockLevel = { id: number; branch_id: number; ingredient_id: number; quantity: string; avg_cost_minor: number | null; alert_threshold: string | null; is_below_threshold: boolean };
 type PurchaseOrder = { id: number; reference: string; supplier_id: number; status: string; total_minor: number | null; expected_at: string | null };
+type Supplier = { id: number; name: string };
 
 export default function RestaurantStockPage() {
   const locale = getPreferredLocale();
   const [tab, setTab] = useState<'levels' | 'purchaseOrders' | 'receivings'>('levels');
   const [levels, setLevels] = useState<StockLevel[]>([]);
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [receivings, setReceivings] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -32,16 +34,18 @@ export default function RestaurantStockPage() {
     setLoading(true);
     setError('');
     try {
-      const [l, o, r] = await Promise.all([
+      const [l, o, r, s] = await Promise.all([
         apiFetch('/restaurant/stock-levels?per_page=200'),
         apiFetch('/restaurant/purchase-orders?per_page=100'),
         apiFetch('/restaurant/receivings?per_page=100'),
+        apiFetch('/restaurant/suppliers?per_page=200'),
       ]);
       const parse = async (res: Response) => (res.ok ? ((await res.json()) as { data?: unknown[] }) : { data: [] });
-      const [l2, o2, r2] = await Promise.all([parse(l), parse(o), parse(r)]);
+      const [l2, o2, r2, s2] = await Promise.all([parse(l), parse(o), parse(r), parse(s)]);
       setLevels((l2.data ?? []) as StockLevel[]);
       setOrders((o2.data ?? []) as PurchaseOrder[]);
       setReceivings(r2.data ?? []);
+      setSuppliers((s2.data ?? []) as Supplier[]);
     } catch {
       setError(t(locale, 'restaurant.stock.loadError', 'Impossible de charger les données de stock.'));
     } finally {
@@ -52,6 +56,13 @@ export default function RestaurantStockPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // #6451 — résout le libellé fournisseur (nom) à partir de l'API
+  // GET /restaurant/suppliers ; fallback sur l'ID si inconnu.
+  const supplierName = useCallback(
+    (id: number) => suppliers.find((s) => s.id === id)?.name ?? `#${id}`,
+    [suppliers],
+  );
 
   const createPo = async () => {
     setError('');
@@ -181,7 +192,12 @@ export default function RestaurantStockPage() {
             <h3 className="font-bold text-slate-900">{t(locale, 'restaurant.stock.newPO', 'Nouveau bon de commande')}</h3>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-5">
               <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Branche ID" value={poForm.branch_id} onChange={(e) => setPoForm({ ...poForm, branch_id: e.target.value })} aria-label="Branche" />
-              <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Fournisseur ID" value={poForm.supplier_id} onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })} aria-label="Fournisseur" />
+              <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm" value={poForm.supplier_id} onChange={(e) => setPoForm({ ...poForm, supplier_id: e.target.value })} aria-label="Fournisseur">
+                <option value="">{t(locale, 'restaurant.stock.supplierPlaceholder', 'Fournisseur…')}</option>
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
               <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Ingrédient ID" value={poForm.ingredient_id} onChange={(e) => setPoForm({ ...poForm, ingredient_id: e.target.value })} aria-label="Ingrédient" />
               <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Quantité" value={poForm.quantity} onChange={(e) => setPoForm({ ...poForm, quantity: e.target.value })} aria-label="Quantité" />
               <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Prix unitaire (minor)" value={poForm.unit_price_minor} onChange={(e) => setPoForm({ ...poForm, unit_price_minor: e.target.value })} aria-label="Prix" />
@@ -206,7 +222,7 @@ export default function RestaurantStockPage() {
                 {orders.map((po) => (
                   <tr key={po.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-900">{po.reference}</td>
-                    <td className="px-4 py-3">{po.supplier_id}</td>
+                    <td className="px-4 py-3">{supplierName(po.supplier_id)}</td>
                     <td className="px-4 py-3">{po.status}</td>
                     <td className="px-4 py-3">{po.total_minor ?? '—'}</td>
                     <td className="px-4 py-3">
