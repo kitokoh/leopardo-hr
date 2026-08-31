@@ -42,7 +42,7 @@ final class RestaurantMobileSyncService
         foreach (array_slice($operations, 0, 50) as $operation) {
             $type = (string) $operation['type'];
             $key = (string) $operation['idempotency_key'];
-            $payload = is_array($operation['payload'] ?? null) ? $operation['payload'] : [];
+            $payload = $operation['payload'];
 
             if ($key === '') {
                 $results[] = ['type' => $type, 'status' => 'error', 'error' => 'clé idempotence manquante'];

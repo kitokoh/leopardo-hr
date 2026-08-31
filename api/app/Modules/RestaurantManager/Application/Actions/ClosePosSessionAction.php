@@ -89,8 +89,8 @@ final class ClosePosSessionAction
             [
                 'pos_session_id' => $session->id,
                 'branch_id' => $session->branch_id,
-                'opened_at' => $session->opened_at?->toIso8601String(),
-                'closed_at' => $session->closed_at?->toIso8601String(),
+                'opened_at' => $session->opened_at->toIso8601String(),
+                'closed_at' => $session->closed_at->toIso8601String(),
                 'opening_cash_minor' => (int) $session->opening_cash_minor,
                 'expected_cash_minor' => $expected,
                 'counted_cash_minor' => $counted,

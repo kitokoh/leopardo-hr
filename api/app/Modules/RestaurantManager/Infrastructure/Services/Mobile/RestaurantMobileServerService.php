@@ -82,8 +82,8 @@ final class RestaurantMobileServerService
 
         return $sessions->map(fn (RestaurantTableSession $session): array => [
             'id' => $session->table_id,
-            'name' => (string) $session->table?->label,
-            'zone' => $session->table?->zone instanceof RestaurantZone ? (string) $session->table?->zone?->name : null,
+            'name' => (string) $session->table->label,
+            'zone' => $session->table->zone instanceof RestaurantZone ? (string) $session->table->zone->name : null,
             'status' => 'occupied',
         ])->all();
     }

@@ -62,7 +62,7 @@ final class CogsCalculator
                     ->where('ingredient_id', $composition->ingredient_id)
                     ->first(['avg_cost_minor']);
 
-                $cost = (int) ($level?->avg_cost_minor ?? 0);
+                $cost = (int) ($level->avg_cost_minor ?? 0);
                 $total += (int) round((float) $item->quantity * (float) $composition->quantity * $cost);
             }
         }

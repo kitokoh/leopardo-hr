@@ -36,7 +36,7 @@ final class OrderStateMachine
 
     public function canTransition(OrderStatus $from, OrderStatus $to): bool
     {
-        return in_array($to->value, self::TRANSITIONS[$from->value] ?? [], true);
+        return in_array($to->value, self::TRANSITIONS[$from->value], true);
     }
 
     /**
