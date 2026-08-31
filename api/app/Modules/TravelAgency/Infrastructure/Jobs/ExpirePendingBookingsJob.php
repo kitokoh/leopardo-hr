@@ -48,7 +48,7 @@ final class ExpirePendingBookingsJob implements ShouldQueue, TenantScopedJob
 
     public function __construct(public readonly string $companyId) {}
 
-    public function tenantCompanyId(): ?string
+    public function tenantCompanyId(): string
     {
         return $this->companyId;
     }

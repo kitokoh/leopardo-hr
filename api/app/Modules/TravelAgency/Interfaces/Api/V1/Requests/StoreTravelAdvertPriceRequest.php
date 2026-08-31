@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * TRAVEL-906 (#6109) — Création d'une grille tarifaire.
@@ -49,7 +50,7 @@ class StoreTravelAdvertPriceRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator): void {
             $user = $this->user();

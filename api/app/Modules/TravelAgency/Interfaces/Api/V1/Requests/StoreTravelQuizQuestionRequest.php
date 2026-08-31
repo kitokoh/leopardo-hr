@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 /**
  * TRAVEL-904 (#6107) — Ajout d'une question à un quiz.
@@ -32,7 +33,7 @@ class StoreTravelQuizQuestionRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator): void {
             $index = (int) $this->input('correct_option_index');
