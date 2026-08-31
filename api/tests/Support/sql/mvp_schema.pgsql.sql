@@ -595,6 +595,7 @@ CREATE TABLE shared_tenants.absence_types (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+CREATE UNIQUE INDEX absence_types_company_id_code_unique ON shared_tenants.absence_types (company_id, code);
 
 CREATE TABLE shared_tenants.absences (
     id serial PRIMARY KEY,
