@@ -7,11 +7,16 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Requests;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
  * Création d'une tâche de maintenance (FUEL-010, #5804).
+ * Création d'une tâche de maintenance FuelStation (FUEL-010, #5804).
+ *
+ * `incident_id` optionnel, tenant-scopé (FK composite anti cross-tenant).
  */
 class StoreFuelMaintenanceTaskRequest extends FormRequest
 {
@@ -31,6 +36,7 @@ class StoreFuelMaintenanceTaskRequest extends FormRequest
         return [
             'station_id' => [
                 'nullable',
+                'required',
                 'integer',
                 Rule::exists('fuel_stations', 'id')->where(
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
@@ -70,6 +76,13 @@ class StoreFuelMaintenanceTaskRequest extends FormRequest
             'assigned_to' => ['nullable', 'integer', 'exists:employees,id'],
             'due_at' => ['nullable', 'date'],
             'external_id' => ['nullable', 'string', 'max:120'],
+            'task_type' => ['required', Rule::in(FuelMaintenanceTask::TYPES)],
+            'priority' => ['required', Rule::in(FuelMaintenanceTask::PRIORITIES)],
+            'title' => ['required', 'string', 'max:160'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'due_at' => ['nullable', 'date'],
+            'assigned_to' => ['nullable', 'integer'],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

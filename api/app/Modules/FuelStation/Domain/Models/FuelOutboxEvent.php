@@ -21,12 +21,17 @@ use Illuminate\Support\Carbon;
  * la transaction métier), consommés de façon asynchrone et idempotente par
  * `fuel:outbox-dispatch`. Statuts pending/processing/sent/failed ;
  * `available_at` porte le backoff ; attempts borne le dead-letter.
+ * Événement d'outbox FuelStation — contrat Accounting (FUEL-015, #5809).
+ *
+ * Événements versionnés publiés APRÈS le commit métier, consommés de façon
+ * asynchrone et idempotente. `idempotency_key` unique par tenant.
  *
  * @property int $id
  * @property string $company_id
  * @property string $event_type
  * @property string|null $aggregate_type
  * @property string|null $aggregate_id
+ * @property int|null $aggregate_id
  * @property array<string, mixed> $payload
  * @property string $status pending|processing|sent|failed
  * @property int $attempts
@@ -42,6 +47,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $last_error
  * @property Carbon|null $processed_at
  * @property string $idempotency_key
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */
@@ -83,6 +90,26 @@ class FuelOutboxEvent extends Model
     public const MAX_ATTEMPTS = 5;
 
     protected $table = 'fuel_outbox_events';
+    public const MAX_ATTEMPTS = 5;
+
+    /** Événements de contrat versionnés (contrat Accounting FUEL-015). */
+    public const TYPE_SALE_RECORDED = 'fuel.sale.recorded.v1';
+
+    public const TYPE_CASH_SESSION_CLOSED = 'fuel.cash_session.closed.v1';
+
+    public const TYPE_DELIVERY_RECEIVED = 'fuel.delivery.received.v1';
+
+    public const TYPE_STOCK_RECONCILED = 'fuel.stock.reconciled.v1';
+
+    public const TYPE_INCIDENT_RESOLVED = 'fuel.incident.resolved.v1';
+
+    public const TYPES = [
+        self::TYPE_SALE_RECORDED,
+        self::TYPE_CASH_SESSION_CLOSED,
+        self::TYPE_DELIVERY_RECEIVED,
+        self::TYPE_STOCK_RECONCILED,
+        self::TYPE_INCIDENT_RESOLVED,
+    ];
 
     protected $fillable = [
         'company_id',
@@ -102,6 +129,10 @@ class FuelOutboxEvent extends Model
     protected function casts(): array
     {
         return [
+    protected function casts(): array
+    {
+        return [
+            'aggregate_id' => 'integer',
             'payload' => 'array',
             'attempts' => 'integer',
             'available_at' => 'datetime',

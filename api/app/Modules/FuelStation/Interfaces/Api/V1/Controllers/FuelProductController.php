@@ -10,12 +10,17 @@ use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelProductRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelProductRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
  * Catalogue produits FuelStation (FUEL-011, #5805). deny-by-default
  * (FuelProductPolicy) : CRUD manager, lecture employé du tenant.
+ * Catalogue produits FuelStation (FUEL-011, #5805).
+ *
+ * Manager + solution active (fail-closed) + tenant-scoped (404
+ * cross-tenant). `code` unique par tenant, pagination bornée.
  */
 class FuelProductController extends Controller
 {
@@ -37,6 +42,7 @@ class FuelProductController extends Controller
 
         return response()->json([
             'data' => collect($products->items())->map(fn (FuelProduct $p): array => $this->payload($p)),
+            'data' => collect($products->items())->map(fn (FuelProduct $product): array => $this->payload($product)),
             'meta' => [
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),
@@ -46,6 +52,7 @@ class FuelProductController extends Controller
     }
 
     public function store(StoreFuelProductRequest $request): JsonResponse
+    public function store(SaveFuelProductRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -66,6 +73,16 @@ class FuelProductController extends Controller
     }
 
     public function update(StoreFuelProductRequest $request, FuelProduct $product): JsonResponse
+        /** @var FuelProduct $product */
+        $product = FuelProduct::query()->create([
+            'company_id' => $actor->company_id,
+            ...$request->validated(),
+        ]);
+
+        return response()->json(['data' => $this->payload($product)], 201);
+    }
+
+    public function show(Request $request, FuelProduct $product): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -73,6 +90,23 @@ class FuelProductController extends Controller
         $actor = $request->user();
 
         if ($product->company_id !== (string) $actor->company_id) {
+        if ($product->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $product);
+
+        return response()->json(['data' => $this->payload($product)]);
+    }
+
+    public function update(SaveFuelProductRequest $request, FuelProduct $product): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($product->company_id !== $actor->company_id) {
             abort(404);
         }
 
@@ -86,6 +120,14 @@ class FuelProductController extends Controller
     /**
      * @return array<string, mixed>
      */
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
+    }
+
+    /** @return array<string, mixed> */
     private function payload(FuelProduct $product): array
     {
         return [
@@ -105,5 +147,7 @@ class FuelProductController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+    }
+        ];
     }
 }

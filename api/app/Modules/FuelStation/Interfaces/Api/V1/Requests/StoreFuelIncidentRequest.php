@@ -9,11 +9,16 @@ use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
 use Illuminate\Database\Query\Builder;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
  * Signalement d'un incident équipement (FUEL-010, #5804).
+ * Signalement d'un incident FuelStation (FUEL-010, #5804).
+ *
+ * `idempotency_key` obligatoire (rejeu sûr). Station tenant-scopée (FK
+ * composite (x, company_id) → fuel_stations).
  */
 class StoreFuelIncidentRequest extends FormRequest
 {
@@ -33,6 +38,7 @@ class StoreFuelIncidentRequest extends FormRequest
         return [
             'station_id' => [
                 'nullable',
+                'required',
                 'integer',
                 Rule::exists('fuel_stations', 'id')->where(
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
@@ -71,6 +77,13 @@ class StoreFuelIncidentRequest extends FormRequest
             'attachments_metadata.*.size_bytes' => ['required_with:attachments_metadata', 'integer', 'min:1', 'max:10485760'],
             'attachments_metadata.*.mime' => ['required_with:attachments_metadata', 'string', 'max:100', 'regex:/^(image|application|text)\/[a-z0-9.+-]+$/i'],
             'external_id' => ['nullable', 'string', 'max:120'],
+            'equipment_type' => ['required', Rule::in(FuelIncident::EQUIPMENT_TYPES)],
+            'equipment_id' => ['nullable', 'integer'],
+            'severity' => ['required', Rule::in(FuelIncident::SEVERITIES)],
+            'title' => ['required', 'string', 'max:160'],
+            'description' => ['required', 'string', 'max:5000'],
+            'assigned_to' => ['nullable', 'integer'],
+            'idempotency_key' => ['required', 'string', 'max:64'],
         ];
     }
 }

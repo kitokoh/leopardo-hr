@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 
 /**
  * Mise à jour d'une tâche de maintenance (FUEL-010, #5804).
+ * Changement de statut d'une tâche de maintenance (FUEL-010, #5804).
  */
 class UpdateFuelMaintenanceTaskRequest extends FormRequest
 {
@@ -31,6 +32,8 @@ class UpdateFuelMaintenanceTaskRequest extends FormRequest
             'assigned_to' => ['nullable', 'integer'],
             'scheduled_for' => ['nullable', 'date'],
             'completion_notes' => ['nullable', 'string', 'max:2000'],
+            'status' => ['required', Rule::in(FuelMaintenanceTask::STATUSES)],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

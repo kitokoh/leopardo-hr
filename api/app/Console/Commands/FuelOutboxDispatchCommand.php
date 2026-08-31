@@ -37,6 +37,12 @@ use Throwable;
  *   3. exécution idempotente (TenantManager::withinTenant) ;
  *   4. succès → sent ; erreur transitoire → retry avec backoff exponentiel
  *      (+jitter) ; erreur permanente ou attempts ≥ max → dead-letter (failed).
+ *   3. exécution idempotente dans le contexte tenant ;
+ *   4. succès → sent ; erreur transitoire → retry avec backoff exponentiel
+ *      (+jitter) ; erreur permanente ou attempts ≥ max → dead-letter.
+ *
+ * Lease de 15 min (BC-14) : un événement `processing` orphelin (worker
+ * crash) est re-claimé sans réinitialiser le budget de tentatives.
  *
  * Usage : php artisan fuel:outbox-dispatch --limit=100
  * Scheduler : toutes les minutes (ou worker dédié).
@@ -85,6 +91,14 @@ class FuelOutboxDispatchCommand extends Command
             'processed' => $processed,
             'company_id' => request()->header('X-Tenant-Id'),
         ]);
+
+        // Trace structurée SANS PII ni payload (FUEL-020, #5814).
+        Log::channel('structured')->info('fuel.outbox.dispatched', [
+            'processed' => $processed,
+            'limit' => $limit,
+        ]);
+
+        $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s).");
 
         return self::SUCCESS;
     }
@@ -172,6 +186,11 @@ class FuelOutboxDispatchCommand extends Command
         } catch (Throwable $e) {
             // Transitoire par défaut : retry avec backoff (borné par MAX_ATTEMPTS).
             $this->retry($event, $e->getMessage());
+        } catch (PermanentFuelOutboxException $exception) {
+            $this->deadLetter($event, 'permanent: '.$exception->getMessage());
+        } catch (Throwable $exception) {
+            // Transitoire par défaut : retry avec backoff (borné par MAX_ATTEMPTS).
+            $this->retry($event, $exception->getMessage());
         }
     }
 

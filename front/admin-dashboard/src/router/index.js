@@ -227,6 +227,12 @@ const routes = [
         meta: {
           title: 'navigation.fuelStation',
           icon: 'BoltIcon'
+        path: '/fuel',
+        name: 'fuel',
+        component: () => import('@/views/fuel/FuelStationView.vue'),
+        meta: {
+          title: 'navigation.fuel',
+          icon: 'MapPinIcon'
         }
       },
       {

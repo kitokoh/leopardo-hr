@@ -28,6 +28,9 @@ final class FuelCashSessionService
 {
     public function __construct(private readonly FuelOutboxPublisher $outbox) {}
 
+    public function __construct(
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
     /**
      * @param  array<string, mixed>  $data
      */
@@ -126,6 +129,10 @@ final class FuelCashSessionService
             (string) $session->id,
             'cash-session-closed-'.$session->id,
         );
+        // Contrat Accounting (FUEL-015) : consommer l'événement pour générer
+        // les écritures comptables (état figé, statut closed).
+        FuelCashSessionClosed::dispatch($session);
+        $this->contract->cashSessionClosed($session);
 
         return $session;
     }

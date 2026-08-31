@@ -12,6 +12,15 @@ use App\Modules\FuelStation\Domain\Models\FuelStation;
  *
  * deny-by-default : seul un manager peut gérer le référentiel (CRUD
  * stations/sites) ; la consultation est ouverte aux employés du tenant.
+use App\Modules\FuelStation\Domain\Models\FuelSite;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
+
+/**
+ * RBAC des stations & sites FuelStation (FUEL-011, #5805).
+ *
+ * - Manager : gestion complète du référentiel stations/sites.
+ * - Employé : deny-by-default (lecture via les endpoints opérationnels
+ *   /fuel-station/me/* et le flux de relevés, jamais le référentiel).
  */
 class FuelStationPolicy
 {
@@ -23,6 +32,12 @@ class FuelStationPolicy
     public function view(Employee $actor, FuelStation $station): bool
     {
         return $station->company_id === (string) $actor->company_id;
+        return $actor->isManager();
+    }
+
+    public function view(Employee $actor, FuelStation|FuelSite $resource): bool
+    {
+        return $actor->isManager();
     }
 
     public function create(Employee $actor): bool
@@ -38,5 +53,8 @@ class FuelStationPolicy
     public function delete(Employee $actor, FuelStation $station): bool
     {
         return $actor->isManager() && $station->company_id === (string) $actor->company_id;
+    public function update(Employee $actor, FuelStation|FuelSite $resource): bool
+    {
+        return $actor->isManager();
     }
 }

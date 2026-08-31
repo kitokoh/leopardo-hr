@@ -60,6 +60,27 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $closed_at
  * @property array<int, array<string, mixed>>|null $attachments_metadata
  * @property string|null $external_id
+ * Incident équipement d'une station-service — FUEL-010 (#5804).
+ *
+ * Workflow audité : reported → assigned → in_progress → resolved → closed.
+ * Chaque transition est un événement de domaine ; `resolution_notes` est
+ * obligatoire avant resolved. `idempotency_key` unique par tenant (rejeu
+ * sûr). Pièces jointes contrôlées via `fuel_incident_attachments`.
+ *
+ * @property int $id
+ * @property string $company_id
+ * @property int $station_id
+ * @property string $equipment_type pump|tank|meter|other
+ * @property int|null $equipment_id
+ * @property string $severity low|medium|high|critical
+ * @property string $status reported|assigned|in_progress|resolved|closed
+ * @property string $title
+ * @property string $description
+ * @property int|null $reported_by
+ * @property int|null $assigned_to
+ * @property string|null $resolution_notes
+ * @property Carbon|null $resolved_at
+ * @property string $idempotency_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -96,6 +117,19 @@ class FuelIncident extends Model
         self::CATEGORY_SAFETY,
         self::CATEGORY_CASH,
         self::CATEGORY_OTHER,
+    public const EQUIPMENT_PUMP = 'pump';
+
+    public const EQUIPMENT_TANK = 'tank';
+
+    public const EQUIPMENT_METER = 'meter';
+
+    public const EQUIPMENT_OTHER = 'other';
+
+    public const EQUIPMENT_TYPES = [
+        self::EQUIPMENT_PUMP,
+        self::EQUIPMENT_TANK,
+        self::EQUIPMENT_METER,
+        self::EQUIPMENT_OTHER,
     ];
 
     public const SEVERITY_LOW = 'low';
@@ -128,6 +162,8 @@ class FuelIncident extends Model
 
     public const STATUS_ASSIGNED = 'assigned';
 
+    public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_RESOLVED = 'resolved';
 
     public const STATUS_CLOSED = 'closed';
@@ -135,8 +171,18 @@ class FuelIncident extends Model
     public const STATUSES = [
         self::STATUS_REPORTED,
         self::STATUS_ASSIGNED,
+        self::STATUS_IN_PROGRESS,
         self::STATUS_RESOLVED,
         self::STATUS_CLOSED,
+    ];
+
+    /** Transitions autorisées du workflow (état → états suivants). */
+    public const TRANSITIONS = [
+        self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+        self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+        self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED],
+        self::STATUS_RESOLVED => [self::STATUS_CLOSED],
+        self::STATUS_CLOSED => [],
     ];
 
     protected $fillable = [
@@ -174,6 +220,11 @@ class FuelIncident extends Model
     ];
 
     /** @return array<string, string> */
+        'resolution_notes',
+        'resolved_at',
+        'idempotency_key',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -211,11 +262,25 @@ class FuelIncident extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
+            'resolved_at' => 'datetime',
+        ];
+    }
+
+    /** @return BelongsTo<FuelStation, $this> */
+    public function station(): BelongsTo
+    {
+        return $this->belongsTo(FuelStation::class, 'station_id');
     }
 
     /** @return HasMany<FuelMaintenanceTask, $this> */
     public function tasks(): HasMany
     {
         return $this->hasMany(FuelMaintenanceTask::class, 'incident_id');
+    }
+
+    /** @return HasMany<FuelIncidentAttachment, $this> */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(FuelIncidentAttachment::class, 'incident_id');
     }
 }

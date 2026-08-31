@@ -18,6 +18,13 @@ use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer;
  * `supports()` répond true). Les consommateurs concrets du contrat
  * Accounting (écritures de synthèse, rapprochement) et des notifications
  * (FUEL-019) s'enregistrent ici via le FuelStationServiceProvider.
+ * Registre des consommateurs d'événements d'outbox FuelStation (FUEL-015,
+ * #5809).
+ *
+ * Chaque événement est routé vers UN consommateur (le premier dont
+ * `supports()` répond true). Les consommateurs concrets (Accounting,
+ * intégrations tierces) s'enregistrent ici ; le contrat est prêt à les
+ * accueillir sans modification du flux métier.
  */
 final class FuelOutboxConsumerRegistry
 {

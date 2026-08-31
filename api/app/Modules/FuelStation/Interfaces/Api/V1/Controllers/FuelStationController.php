@@ -11,6 +11,10 @@ use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelStationRequest;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelStationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,6 +24,10 @@ use Illuminate\Http\Request;
  * deny-by-default (FuelStationPolicy) : CRUD manager, lecture employé du
  * tenant. Isolation tenant fail-closed : cross-tenant → 404. Filtres
  * allowlist (status, q), pagination bornée (1..100).
+ * Référentiel stations & sites FuelStation (FUEL-011, #5805).
+ *
+ * Manager + solution active (fail-closed) + tenant-scoped (404
+ * cross-tenant). Tri/filtres allowlist, pagination bornée (1..100).
  */
 class FuelStationController extends Controller
 {
@@ -49,6 +57,23 @@ class FuelStationController extends Controller
 
         return response()->json([
             'data' => collect($stations->items())->map(fn (FuelStation $s): array => $this->payload($s)),
+        $search = $request->input('search');
+        if (is_string($search) && $search !== '') {
+            $query->where(function (\Illuminate\Database\Eloquent\Builder $q) use ($search): \Illuminate\Database\Eloquent\Builder {
+                return $q
+                    ->where('name', 'ilike', "%{$search}%")
+                    ->orWhere('code', 'ilike', "%{$search}%");
+            });
+        }
+
+        $sort = $request->input('sort', 'name');
+        $direction = $request->input('direction', 'asc') === 'desc' ? 'desc' : 'asc';
+        $query->orderBy(in_array($sort, ['name', 'code', 'created_at'], true) ? $sort : 'name', $direction);
+
+        $stations = $query->paginate(max(1, min(100, $request->integer('per_page', 15))));
+
+        return response()->json([
+            'data' => collect($stations->items())->map(fn (FuelStation $station): array => $this->payload($station)),
             'meta' => [
                 'current_page' => $stations->currentPage(),
                 'last_page' => $stations->lastPage(),
@@ -58,6 +83,7 @@ class FuelStationController extends Controller
     }
 
     public function store(StoreFuelStationRequest $request): JsonResponse
+    public function store(SaveFuelStationRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -78,6 +104,13 @@ class FuelStationController extends Controller
         ]);
 
         return response()->json(['data' => $this->payload($station->refresh())], 201);
+        /** @var FuelStation $station */
+        $station = FuelStation::query()->create([
+            'company_id' => $actor->company_id,
+            ...$request->validated(),
+        ]);
+
+        return response()->json(['data' => $this->payload($station)], 201);
     }
 
     public function show(Request $request, FuelStation $station): JsonResponse
@@ -88,6 +121,7 @@ class FuelStationController extends Controller
         $actor = $request->user();
 
         if ($station->company_id !== (string) $actor->company_id) {
+        if ($station->company_id !== $actor->company_id) {
             abort(404);
         }
 
@@ -97,6 +131,10 @@ class FuelStationController extends Controller
     }
 
     public function update(UpdateFuelStationRequest $request, FuelStation $station): JsonResponse
+        return response()->json(['data' => $this->payload($station->loadCount('sites')->load('sites'))]);
+    }
+
+    public function update(SaveFuelStationRequest $request, FuelStation $station): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -104,6 +142,7 @@ class FuelStationController extends Controller
         $actor = $request->user();
 
         if ($station->company_id !== (string) $actor->company_id) {
+        if ($station->company_id !== $actor->company_id) {
             abort(404);
         }
 
@@ -115,6 +154,7 @@ class FuelStationController extends Controller
     }
 
     public function destroy(Request $request, FuelStation $station): JsonResponse
+    public function sitesIndex(Request $request, FuelStation $station): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -135,6 +175,52 @@ class FuelStationController extends Controller
     /**
      * @return array<string, mixed>
      */
+        if ($station->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $station);
+
+        $sites = FuelSite::query()
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $station->id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['data' => $sites->map(fn (FuelSite $site): array => $this->sitePayload($site))]);
+    }
+
+    public function sitesStore(SaveFuelSiteRequest $request, FuelStation $station): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($station->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('create', FuelStation::class);
+
+        /** @var FuelSite $site */
+        $site = FuelSite::query()->create([
+            'company_id' => $actor->company_id,
+            'station_id' => $station->id,
+            ...$request->validated(),
+        ]);
+
+        return response()->json(['data' => $this->sitePayload($site)], 201);
+    }
+
+    private function assertSolutionActive(): void
+    {
+        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
+            throw new FuelSolutionInactiveException;
+        }
+    }
+
+    /** @return array<string, mixed> */
     private function payload(FuelStation $station): array
     {
         return [
@@ -157,5 +243,22 @@ class FuelStationController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+            'sites_count' => $station->sites_count ?? null,
+            'created_at' => $station->created_at?->toISOString(),
+        ];
+    }
+
+    /** @return array<string, mixed> */
+    private function sitePayload(FuelSite $site): array
+    {
+        return [
+            'id' => $site->id,
+            'station_id' => $site->station_id,
+            'code' => $site->code,
+            'name' => $site->name,
+            'address' => $site->address,
+            'status' => $site->status,
+            'created_at' => $site->created_at?->toISOString(),
+        ];
     }
 }

@@ -25,6 +25,11 @@ use Illuminate\Support\Carbon;
  * Préventive, corrective (dérivée d'un incident) ou inspection. Workflow
  * audité : open → in_progress → done | cancelled. Priorité et échéance
  * pilotent les alertes (FUEL-019). Description redacted (pas de PII).
+ * Tâche de maintenance (préventive/corrective) — FUEL-010 (#5804).
+ *
+ * Liée optionnellement à un incident (`incident_id` nullable, FK composite
+ * anti cross-tenant). Cycle : pending → in_progress → done | cancelled.
+ * `due_at` : échéance pilotant les alertes de maintenance (FUEL-019).
  *
  * @property int $id
  * @property string $company_id
@@ -52,6 +57,16 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $completed_at
  * @property int|null $created_by
  * @property string|null $external_id
+ * @property string $priority low|medium|high
+ * @property string $status pending|in_progress|done|cancelled
+ * @property string $title
+ * @property string|null $description
+ * @property Carbon|null $due_at
+ * @property int|null $assigned_to
+ * @property int|null $completed_by
+ * @property Carbon|null $completed_at
+ * @property string|null $notes
+ * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -75,6 +90,7 @@ class FuelMaintenanceTask extends Model
         self::TYPE_CORRECTIVE,
         self::TYPE_INSPECTION,
     ];
+    public const TYPES = [self::TYPE_PREVENTIVE, self::TYPE_CORRECTIVE];
 
     public const PRIORITY_LOW = 'low';
 
@@ -92,6 +108,9 @@ class FuelMaintenanceTask extends Model
     ];
 
     public const STATUS_OPEN = 'open';
+    public const PRIORITIES = [self::PRIORITY_LOW, self::PRIORITY_MEDIUM, self::PRIORITY_HIGH];
+
+    public const STATUS_PENDING = 'pending';
 
     public const STATUS_IN_PROGRESS = 'in_progress';
 
@@ -106,6 +125,7 @@ class FuelMaintenanceTask extends Model
         self::STATUS_DONE,
         self::STATUS_CANCELLED,
     ];
+    public const STATUSES = [self::STATUS_PENDING, self::STATUS_IN_PROGRESS, self::STATUS_DONE, self::STATUS_CANCELLED];
 
     protected $fillable = [
         'company_id',
@@ -136,6 +156,18 @@ class FuelMaintenanceTask extends Model
     ];
 
     /** @return array<string, string> */
+        'priority',
+        'status',
+        'title',
+        'description',
+        'due_at',
+        'assigned_to',
+        'completed_by',
+        'completed_at',
+        'notes',
+        'created_by',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -150,6 +182,11 @@ class FuelMaintenanceTask extends Model
             'due_at' => 'datetime',
             'started_at' => 'datetime',
             'completed_at' => 'datetime',
+            'due_at' => 'datetime',
+            'assigned_to' => 'integer',
+            'completed_by' => 'integer',
+            'completed_at' => 'datetime',
+            'created_by' => 'integer',
         ];
     }
 

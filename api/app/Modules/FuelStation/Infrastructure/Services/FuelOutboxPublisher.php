@@ -25,6 +25,13 @@ use Illuminate\Support\Facades\DB;
  * consommé de façon asynchrone. Idempotence : clé dérivée du
  * (event_type, payload) par défaut, ou fournie ; la contrainte unique
  * (company_id, idempotency_key) déduplique les rejets.
+ * Publication d'événements dans l'outbox FuelStation (FUEL-015, #5809).
+ *
+ * À appeler APRÈS le commit de la transaction métier (jamais dedans) :
+ * l'effet est d'abord persisté, puis consommé de façon asynchrone.
+ * Idempotence : clé dérivée du (event_type, aggregate) par défaut, ou
+ * fournie ; la contrainte unique (company_id, idempotency_key) déduplique
+ * les rejets. Pattern aligné sur l'outbox CRM (#5741).
  */
 final class FuelOutboxPublisher
 {
@@ -43,6 +50,7 @@ final class FuelOutboxPublisher
         ?string $idempotencyKey = null,
         ?string $aggregateType = null,
         ?string $aggregateId = null,
+        ?int $aggregateId = null,
         ?DateTimeInterface $availableAt = null,
     ): FuelOutboxEvent {
         $key = $idempotencyKey ?? hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
@@ -51,6 +59,7 @@ final class FuelOutboxPublisher
         // imbriquée (savepoint). Une violation unique PostgreSQL ABORTE la
         // transaction courante (25P02) : sans savepoint, le SELECT du catch
         // échoue en cascade (pattern CRM #5741).
+        // échoue en cascade (leçon outbox CRM #5741).
         $existing = FuelOutboxEvent::query()
             ->where('company_id', $companyId)
             ->where('idempotency_key', $key)
@@ -92,11 +101,14 @@ final class FuelOutboxPublisher
         } catch (UniqueConstraintViolationException) {
             /** @var FuelOutboxEvent $existingAfterRace */
             $existingAfterRace = FuelOutboxEvent::query()
+            /** @var FuelOutboxEvent $existing */
+            $existing = FuelOutboxEvent::query()
                 ->where('company_id', $companyId)
                 ->where('idempotency_key', $key)
                 ->firstOrFail();
 
             return $existingAfterRace;
+            return $existing;
         }
     }
 }

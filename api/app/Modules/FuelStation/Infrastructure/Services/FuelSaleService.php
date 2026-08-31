@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Domain\Models\FuelSale;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -34,6 +35,8 @@ final class FuelSaleService
         private readonly FuelLoyaltyService $loyalty,
     ) {}
 
+        private readonly FuelAccountingContractPublisher $contract,
+    ) {}
     /**
      * @param  array<string, mixed>  $data
      */
@@ -106,6 +109,11 @@ final class FuelSaleService
         if ($sale->customer_id !== null) {
             $this->loyalty->accruePointsForSale($sale);
         }
+        // sale_time est un défaut DB (useCurrent) : refresh pour le charger.
+        $sale = $sale->refresh();
+
+        // Contrat Accounting (FUEL-015, #5809) : publication post-commit.
+        $this->contract->saleRecorded($sale);
 
         return $sale;
     }
