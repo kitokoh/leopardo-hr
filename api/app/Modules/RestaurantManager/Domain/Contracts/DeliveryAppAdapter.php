@@ -19,6 +19,17 @@ namespace App\Modules\RestaurantManager\Domain\Contracts;
  * La commande marketplace entre dans le MÊME workflow interne
  * (RestaurantPublicOrderService / machine à états) : critère d'acceptation
  * « commande marketplace → même workflow interne ».
+use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;
+
+/**
+ * RESTO-806 (#6227) — contrat d'adaptateur d'app de livraison.
+ *
+ * Chaque marketplace (Uber Eats, Glovo…) implémente ce contrat :
+ *  - `providerCode()` : identifiant de l'adaptateur ;
+ *  - `verifySignature()` : vérifie la signature HMAC du webhook entrant
+ *    (secret par tenant, jamais en clair) ;
+ *  - `parseInbound()` : normalise le payload marketplace en DTO neutre —
+ *    le reste de la verticale ignore le format propriétaire.
  */
 interface DeliveryAppAdapter
 {
@@ -31,4 +42,10 @@ interface DeliveryAppAdapter
      * @return list<array{product_code: string, quantity: float|string}>
      */
     public function normalizeItems(array $items): array;
+    public function verifySignature(string $rawBody, string $signature, string $secret): bool;
+
+    /**
+     * @param  array<mixed>  $payload
+     */
+    public function parseInbound(array $payload): DeliveryAppOrderPayload;
 }

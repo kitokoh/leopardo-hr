@@ -49,6 +49,8 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSes
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicMenuLinkController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
@@ -325,3 +327,25 @@ Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportControl
         Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
             ->name('restaurant.reports.export.download');
     });
+        // ── Commande en ligne publique (RESTO-805/#6226) — lien signé ──────
+        Route::post('/branches/{restaurantBranch}/public-menu-link', [RestaurantPublicMenuLinkController::class, 'store']);
+    });
+
+/**
+ * Commande en ligne publique (RESTO-805 #6226) — routes PUBLIQUES protégées
+ * par le middleware `signed` (token signé expirable, le company_id est un
+ * paramètre signé) : forger un lien pour un autre tenant est impossible.
+ * Webhook apps de livraison (RESTO-806 #6227) — public, signature HMAC
+ * vérifiée avec le secret du tenant (X-Signature).
+ */
+Route::get('/restaurant/public/menu', [RestaurantPublicOrderController::class, 'menu'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('restaurant.public.menu');
+Route::post('/restaurant/public/orders', [RestaurantPublicOrderController::class, 'store'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('restaurant.public.orders.store');
+Route::post('/restaurant/public/orders/{order}/pay', [RestaurantPublicOrderController::class, 'pay'])
+    ->middleware(['signed', 'throttle:60,1'])
+    ->name('restaurant.public.orders.pay');
+Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantPublicOrderController::class, 'deliveryWebhook'])
+    ->middleware('throttle:60,1');

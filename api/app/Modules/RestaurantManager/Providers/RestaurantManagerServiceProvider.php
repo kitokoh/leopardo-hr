@@ -73,12 +73,17 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLev
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantDeliveryWebhookService;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantPublicOrderService;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
@@ -193,6 +198,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
                     RestaurantReservationJobsCommand::class,]);
+        ]);
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -246,6 +252,20 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         $this->app->singleton(RedeemLoyaltyPointsAction::class);
         $this->app->singleton(RestaurantReportService::class);
         $this->app->singleton(ExportRestaurantReportAction::class);
+
+        // RESTO-805 (#6226) — commande en ligne publique (menu par tenant via
+        // token signé, panier, paiement via le contrat PaymentGatewayInterface).
+        $this->app->singleton(RestaurantPublicOrderService::class);
+
+        // RESTO-806 (#6227) — webhooks des apps de livraison (adaptateurs
+        // Uber Eats / Glovo, signature HMAC par tenant, idempotence).
+        $this->app->singleton(RestaurantDeliveryWebhookService::class, function ($app): RestaurantDeliveryWebhookService {
+            return new RestaurantDeliveryWebhookService(
+                $app->make(RestaurantPublicOrderService::class),
+                new UberEatsAdapter,
+                new GlovoAdapter,
+            );
+        });
     }
 
     public function boot(): void
