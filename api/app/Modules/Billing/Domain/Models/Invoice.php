@@ -10,7 +10,9 @@ namespace App\Modules\Billing\Domain\Models;
 // The `payments()` relation uses the FQCN string so that Eloquent can resolve the
 // model at runtime without introducing a compile-time cross-module dependency.
 // See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
+use App\Modules\Payroll\Domain\Models\Payment;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $company_id
  * @property int|null $subscription_id
+ * @property string|null $period
  * @property string|null $number
  * @property string $amount
  * @property string $currency
@@ -33,7 +36,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $pdf_path
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Invoice extends Model
 {
@@ -42,6 +46,7 @@ class Invoice extends Model
     protected $fillable = [
         'company_id',
         'subscription_id',
+        'period',
         'number',
         'amount',
         'currency',
@@ -73,9 +78,9 @@ class Invoice extends Model
         return $this->belongsTo(Subscription::class);
     }
 
-    /** @return HasMany<\App\Modules\Payroll\Domain\Models\Payment, $this> */
+    /** @return HasMany<Payment, $this> */
     public function payments(): HasMany
     {
-        return $this->hasMany(\App\Modules\Payroll\Domain\Models\Payment::class);
+        return $this->hasMany(Payment::class);
     }
 }
