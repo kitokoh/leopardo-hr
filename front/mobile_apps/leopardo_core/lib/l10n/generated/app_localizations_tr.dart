@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -1249,7 +1250,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
@@ -8340,4 +8345,727 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
+<<<<<<< HEAD
+=======
+
+  @override
+  String get navigationTravelagency => 'Seyahat acentesi';
+
+  @override
+  String get travelLoading => 'Yükleniyor…';
+
+  @override
+  String get travelSectionTitle => 'Seyahat acentesi';
+
+  @override
+  String get travelSectionSubtitle =>
+      'TravelAgency dikeyini yönetin: referans, ağ, satışlar, biletleme ve raporlar.';
+
+  @override
+  String get travelGateDisabledtitle => 'Seyahat acentesi modülü etkin değil';
+
+  @override
+  String get travelGateDisabledbody =>
+      'TravelAgency dikeyi bağlı kiracı için etkinleştirilmemiş. Bu modüle erişmek için «travelagency» özelliğini etkinleştirin.';
+
+  @override
+  String get travelGateErrortitle => 'Modül geçici olarak kullanılamıyor';
+
+  @override
+  String get travelGateErrorbody =>
+      'TravelAgency hizmetine ulaşılamıyor. Kısa süre sonra tekrar deneyin.';
+
+  @override
+  String get travelGateRetry => 'Yeniden dene';
+
+  @override
+  String get travelTabReferentiel => 'Referans';
+
+  @override
+  String get travelTabRoutes => 'Güzergâhlar ve Seferler';
+
+  @override
+  String get travelTabBookings => 'Rezervasyonlar';
+
+  @override
+  String get travelTabCheckin => 'Check-in';
+
+  @override
+  String get travelTabTickets => 'Biletler';
+
+  @override
+  String get travelTabReports => 'Raporlar';
+
+  @override
+  String get travelTabRentals => 'Kiralama ve Oteller';
+
+  @override
+  String get travelReferentielTabslabel => 'Referans alt bölümleri';
+
+  @override
+  String get travelReferentielTabgeo => 'Ülkeler ve Şehirler';
+
+  @override
+  String get travelReferentielTabstations => 'İstasyonlar';
+
+  @override
+  String get travelReferentielTaboffices => 'Ofisler';
+
+  @override
+  String get travelReferentielTabcarriers => 'Şirketler';
+
+  @override
+  String get travelReferentielTabclasses => 'Sınıflar';
+
+  @override
+  String get travelReferentielTabvehicles => 'Araçlar';
+
+  @override
+  String get travelReferentielCountries => 'Ülkeler';
+
+  @override
+  String get travelReferentielCities => 'Şehirler';
+
+  @override
+  String get travelReferentielGeonote =>
+      'Coğrafi referans seed ile beslenir (salt okunur).';
+
+  @override
+  String get travelReferentielStations => 'İstasyonlar / terminaller';
+
+  @override
+  String get travelReferentielOffices => 'Satış ofisleri';
+
+  @override
+  String get travelReferentielCarriers => 'Ulaşım şirketleri';
+
+  @override
+  String get travelReferentielClasses => 'Hizmet sınıfları';
+
+  @override
+  String get travelReferentielVehicles => 'Araç filosu';
+
+  @override
+  String get travelSearchPlaceholder => 'Ara…';
+
+  @override
+  String get travelSearchCountry => 'Ülke ara…';
+
+  @override
+  String get travelSearchCity => 'Şehir ara…';
+
+  @override
+  String get travelSearchStation => 'İstasyon ara…';
+
+  @override
+  String get travelSearchOffice => 'Ofis ara…';
+
+  @override
+  String get travelSearchCarrier => 'Şirket ara…';
+
+  @override
+  String get travelSearchClass => 'Sınıf ara…';
+
+  @override
+  String get travelSearchVehicle => 'Araç ara…';
+
+  @override
+  String get travelSearchRoute => 'Güzergâh ara…';
+
+  @override
+  String get travelSearchTrip => 'Sefer ara…';
+
+  @override
+  String get travelSearchBooking => 'Rezervasyon ara…';
+
+  @override
+  String get travelSearchReport => 'Raporda ara…';
+
+  @override
+  String get travelSearchRentalvehicle => 'Kiralık araç ara…';
+
+  @override
+  String get travelSearchRentalbooking => 'Kiralama rezervasyonu ara…';
+
+  @override
+  String get travelSearchHotel => 'Otel ara…';
+
+  @override
+  String get travelFieldIso2 => 'ISO2';
+
+  @override
+  String get travelFieldIso3 => 'ISO3';
+
+  @override
+  String get travelFieldName => 'Ad';
+
+  @override
+  String get travelFieldPhonecode => 'Telefon kodu';
+
+  @override
+  String get travelFieldCountryiso2 => 'Ülke';
+
+  @override
+  String get travelFieldRegion => 'Bölge';
+
+  @override
+  String get travelFieldStatus => 'Durum';
+
+  @override
+  String get travelFieldCode => 'Kod';
+
+  @override
+  String get travelFieldCity => 'Şehir';
+
+  @override
+  String get travelFieldTimezone => 'Saat dilimi';
+
+  @override
+  String get travelFieldIsterminal => 'Ana terminal';
+
+  @override
+  String get travelFieldAddress => 'Adres';
+
+  @override
+  String get travelFieldContactphone => 'Telefon';
+
+  @override
+  String get travelFieldLabel => 'Etiket';
+
+  @override
+  String get travelFieldPriority => 'Öncelik';
+
+  @override
+  String get travelFieldColor => 'Renk';
+
+  @override
+  String get travelFieldRegistration => 'Plaka';
+
+  @override
+  String get travelFieldSeatcapacity => 'Koltuk';
+
+  @override
+  String get travelFieldCarrier => 'Şirket';
+
+  @override
+  String get travelFieldNotes => 'Notlar';
+
+  @override
+  String get travelFieldOrigin => 'Kalkış';
+
+  @override
+  String get travelFieldDestination => 'Varış';
+
+  @override
+  String get travelFieldDistancekm => 'Mesafe (km)';
+
+  @override
+  String get travelFieldDurationmin => 'Süre (dk)';
+
+  @override
+  String get travelFieldRank => 'Sıra';
+
+  @override
+  String get travelFieldIsstopover => 'Ara durak';
+
+  @override
+  String get travelFieldMindurationmin => 'Min (dk)';
+
+  @override
+  String get travelFieldRoute => 'Güzergâh';
+
+  @override
+  String get travelFieldDeparturedate => 'Kalkış';
+
+  @override
+  String get travelFieldDeparturetime => 'Saat';
+
+  @override
+  String get travelFieldArrivaldate => 'Varış';
+
+  @override
+  String get travelFieldArrivaltime => 'Varış saati';
+
+  @override
+  String get travelFieldMeans => 'Araç';
+
+  @override
+  String get travelFieldTotalseats => 'Koltuk';
+
+  @override
+  String get travelFieldClass => 'Sınıf';
+
+  @override
+  String get travelFieldAdultprice => 'Yetişkin';
+
+  @override
+  String get travelFieldChildprice => 'Çocuk';
+
+  @override
+  String get travelFieldCurrency => 'Para birimi';
+
+  @override
+  String get travelFieldReference => 'Referans';
+
+  @override
+  String get travelFieldTrip => 'Sefer';
+
+  @override
+  String get travelFieldPassengercount => 'Yolcular';
+
+  @override
+  String get travelFieldTotalamount => 'Tutar';
+
+  @override
+  String get travelFieldPaymentstatus => 'Ödeme';
+
+  @override
+  String get travelFieldFullname => 'Ad soyad';
+
+  @override
+  String get travelFieldAgecategory => 'Kategori';
+
+  @override
+  String get travelFieldSeat => 'Koltuk';
+
+  @override
+  String get travelFieldUnitprice => 'Birim fiyat';
+
+  @override
+  String get travelFieldTicketnumber => 'Bilet no.';
+
+  @override
+  String get travelFieldPassenger => 'Yolcu';
+
+  @override
+  String get travelFieldIssuedat => 'Düzenlenme';
+
+  @override
+  String get travelFieldPaymentref => 'Ödeme referansı';
+
+  @override
+  String get travelFieldProvider => 'Sağlayıcı';
+
+  @override
+  String get travelFieldAmount => 'Tutar';
+
+  @override
+  String get travelFieldCreatedat => 'Oluşturulma';
+
+  @override
+  String get travelFieldValidationcode => 'Doğrulama kodu';
+
+  @override
+  String get travelFieldClassification => 'Sınıflandırma';
+
+  @override
+  String get travelFieldDescription => 'Açıklama';
+
+  @override
+  String get travelFieldRoomnumber => 'Oda no.';
+
+  @override
+  String get travelFieldRoomtype => 'Tür';
+
+  @override
+  String get travelFieldCapacity => 'Kapasite';
+
+  @override
+  String get travelFieldPricepernight => 'Gece fiyatı';
+
+  @override
+  String get travelFieldStartdate => 'Başlangıç';
+
+  @override
+  String get travelFieldEnddate => 'Bitiş';
+
+  @override
+  String get travelFieldDeposit => 'Depozito';
+
+  @override
+  String get travelFieldPriceperday => 'Günlük fiyat';
+
+  @override
+  String get travelFieldAvailablefrom => 'Şu tarihten itibaren';
+
+  @override
+  String get travelFieldAvailableuntil => 'Şu tarihe kadar';
+
+  @override
+  String get travelFieldOwnercarrier => 'Sahip şirket';
+
+  @override
+  String get travelFieldTitle => 'Başlık';
+
+  @override
+  String get travelFieldVehicle => 'Araç';
+
+  @override
+  String get travelActionCreate => 'Oluştur';
+
+  @override
+  String get travelActionCreatetitle => 'Öğe oluştur';
+
+  @override
+  String get travelActionEdit => 'Düzenle';
+
+  @override
+  String get travelActionEdittitle => 'Düzenle';
+
+  @override
+  String get travelActionSave => 'Kaydet';
+
+  @override
+  String get travelActionDelete => 'Sil';
+
+  @override
+  String get travelActionDeletetitle => 'Silmeyi onayla';
+
+  @override
+  String get travelActionView => 'Görüntüle';
+
+  @override
+  String get travelActionConfirm => 'Onayla';
+
+  @override
+  String get travelActionCancel => 'İptal';
+
+  @override
+  String get travelActionRefund => 'Geri öde';
+
+  @override
+  String get travelActionIssueticket => 'Bilet';
+
+  @override
+  String get travelActionPublish => 'Yayınla';
+
+  @override
+  String get travelActionCanceltrip => 'Seferi iptal et';
+
+  @override
+  String get travelActionAddnested => 'Ekle';
+
+  @override
+  String get travelActionAdd => 'Ekle';
+
+  @override
+  String get travelStatusActive => 'Aktif';
+
+  @override
+  String get travelStatusInactive => 'Pasif';
+
+  @override
+  String get travelStatusArchived => 'Arşivlendi';
+
+  @override
+  String get travelCarriertypeBus => 'Otobüs';
+
+  @override
+  String get travelCarriertypeTrain => 'Tren';
+
+  @override
+  String get travelCarriertypeBoat => 'Gemi';
+
+  @override
+  String get travelCarriertypePlane => 'Uçak';
+
+  @override
+  String get travelMeansBus => 'Otobüs';
+
+  @override
+  String get travelMeansTrain => 'Tren';
+
+  @override
+  String get travelMeansBoat => 'Gemi';
+
+  @override
+  String get travelMeansPlane => 'Uçak';
+
+  @override
+  String get travelTripstatusDraft => 'Taslak';
+
+  @override
+  String get travelTripstatusPublished => 'Yayınlandı';
+
+  @override
+  String get travelTripstatusCancelled => 'İptal edildi';
+
+  @override
+  String get travelBookingstatusPending => 'Beklemede';
+
+  @override
+  String get travelBookingstatusConfirmed => 'Onaylandı';
+
+  @override
+  String get travelBookingstatusCancelled => 'İptal edildi';
+
+  @override
+  String get travelBookingstatusRefunded => 'Geri ödendi';
+
+  @override
+  String get travelBookingstatusExpired => 'Süresi doldu';
+
+  @override
+  String get travelPaymentstatusPending => 'Beklemede';
+
+  @override
+  String get travelPaymentstatusPaid => 'Ödendi';
+
+  @override
+  String get travelPaymentstatusFailed => 'Başarısız';
+
+  @override
+  String get travelPaymentstatusRefunded => 'Geri ödendi';
+
+  @override
+  String get travelTicketstatusIssued => 'Düzenlendi';
+
+  @override
+  String get travelTicketstatusCheckedin => 'Check-in yapıldı';
+
+  @override
+  String get travelTicketstatusRevoked => 'İptal edildi';
+
+  @override
+  String get travelTicketstatusUnknown => 'Bilinmiyor';
+
+  @override
+  String get travelRoutesTitle => 'Güzergâhlar ve güzergâhlar';
+
+  @override
+  String get travelRoutesSubtitle =>
+      'Şehirler arası güzergâhlar, sıralı duraklar.';
+
+  @override
+  String get travelRoutesStopstitle => 'Güzergâh durakları';
+
+  @override
+  String get travelTripsTitle => 'Planlı seferler';
+
+  @override
+  String get travelTripsSubtitle => 'Kalkışlar, sınıf fiyatları, yayın.';
+
+  @override
+  String get travelTripsPricestitle => 'Sınıf başına fiyatlar';
+
+  @override
+  String get travelBookingsTitle => 'Rezervasyonlar';
+
+  @override
+  String get travelBookingsFilterstatus => 'Durum';
+
+  @override
+  String get travelBookingsAllstatuses => 'Tümü';
+
+  @override
+  String get travelBookingsFiltertrip => 'Sefer';
+
+  @override
+  String get travelBookingsAlltrips => 'Tümü';
+
+  @override
+  String get travelBookingsFrom => 'Başlangıç';
+
+  @override
+  String get travelBookingsTo => 'Bitiş';
+
+  @override
+  String get travelBookingsReset => 'Sıfırla';
+
+  @override
+  String get travelBookingsPassengers => 'Yolcular';
+
+  @override
+  String get travelBookingsTickets => 'Biletler';
+
+  @override
+  String get travelBookingsPayments => 'Ödemeler';
+
+  @override
+  String get travelBookingsDetailtitle => 'Rezervasyon';
+
+  @override
+  String get travelBookingsCancelreasontitle => 'İptal nedeni';
+
+  @override
+  String get travelBookingsRefundreasontitle => 'Geri ödeme nedeni';
+
+  @override
+  String get travelBookingsReason => 'Neden';
+
+  @override
+  String get travelBookingsReasonrequired => 'Neden zorunludur.';
+
+  @override
+  String get travelCheckinSelecttrip => 'Bir sefer seçin';
+
+  @override
+  String get travelCheckinChoosetrip => '— Bir sefer seçin —';
+
+  @override
+  String get travelCheckinRefresh => 'Yenile';
+
+  @override
+  String get travelCheckinBoarded => 'Biniş yapan';
+
+  @override
+  String get travelCheckinPending => 'Bekleyen';
+
+  @override
+  String get travelCheckinSearchmanifest => 'Yolcu / bilet ara';
+
+  @override
+  String get travelCheckinSearchmanifestplaceholder => 'Ad veya bilet no…';
+
+  @override
+  String get travelCheckinCheckin => 'Biniş';
+
+  @override
+  String get travelCheckinCheckedin => 'Biniş yapıldı ✓';
+
+  @override
+  String get travelCheckinEmptymanifest => 'Bu seferde yolcu yok.';
+
+  @override
+  String get travelCheckinNoticket => 'Bu yolcuya bağlı bilet yok.';
+
+  @override
+  String get travelTicketsTitle => 'Biletleme';
+
+  @override
+  String get travelTicketsFiltertrip => 'Sefer';
+
+  @override
+  String get travelTicketsManage => 'Biletler';
+
+  @override
+  String get travelTicketsEmpty =>
+      'Bu rezervasyon için bilet düzenlenmemiş. Rezervasyonlar sekmesinde «Bilet» işlemini kullanın.';
+
+  @override
+  String get travelTicketsDownloadpdf => 'PDF';
+
+  @override
+  String get travelTicketsRevoke => 'İptal et';
+
+  @override
+  String get travelTicketsRevoketitle => 'İptal nedeni';
+
+  @override
+  String get travelTicketsPdferror => 'İndirme başarısız.';
+
+  @override
+  String get travelReportsTabslabel => 'Raporlar';
+
+  @override
+  String get travelReportsSales => 'Satışlar';
+
+  @override
+  String get travelReportsOccupancy => 'Doluluk';
+
+  @override
+  String get travelReportsRevenue => 'Gelirler';
+
+  @override
+  String get travelReportsCancellations => 'İptaller';
+
+  @override
+  String get travelReportsExportcsv => 'CSV dışa aktar';
+
+  @override
+  String get travelReportsEmpty => 'Dönem için veri yok.';
+
+  @override
+  String get travelReportsExporterror => 'Dışa aktarma başarısız.';
+
+  @override
+  String get travelRentalsVehicles => 'Kiralık araçlar';
+
+  @override
+  String get travelRentalsBookings => 'Kiralama rezervasyonları';
+
+  @override
+  String get travelRentalsHotels => 'Oteller';
+
+  @override
+  String get travelRentalsRoomstitle => 'Odalar';
+
+  @override
+  String get travelRentalsImages => 'Görseller';
+
+  @override
+  String get travelRentalsNoimages => 'Görsel yok.';
+
+  @override
+  String get travelRentalsAddimage => 'Görsel ekle';
+
+  @override
+  String get travelRentalsRentalstatusCompleted => 'Tamamlandı';
+
+  @override
+  String get travelToastSaved => 'Kaydedildi.';
+
+  @override
+  String get travelToastDeleted => 'Silindi.';
+
+  @override
+  String get travelToastPublished => 'Sefer yayınlandı.';
+
+  @override
+  String get travelToastCancelled => 'Rezervasyon iptal edildi.';
+
+  @override
+  String get travelToastConfirmed => 'Rezervasyon onaylandı.';
+
+  @override
+  String get travelToastRefunded => 'Rezervasyon geri ödendi.';
+
+  @override
+  String get travelToastTicketsissued => 'Biletler düzenlendi.';
+
+  @override
+  String get travelToastCheckedin => 'Yolcu biniş yaptı.';
+
+  @override
+  String get travelToastTicketrevoked => 'Bilet iptal edildi.';
+
+  @override
+  String get travelToastExported => 'CSV dışa aktarıldı.';
+
+  @override
+  String get travelErrorLoadfailed => 'Veriler yüklenemedi.';
+
+  @override
+  String get travelErrorSavefailed => 'Kaydetme başarısız.';
+
+  @override
+  String get travelErrorDeletefailed => 'Silme başarısız.';
+
+  @override
+  String get travelErrorActionfailed => 'İşlem başarısız oldu.';
+
+  @override
+  String get travelConfirmDeletemessage => 'Bu öğe kalıcı olarak silinsin mi?';
+
+  @override
+  String get travelConfirmCanceltrip =>
+      'Bu sefer iptal edilsin mi? Rezervasyonlar iş kurallarına göre işlenecek.';
+
+  @override
+  String get travelConfirmCancelrental =>
+      'Bu kiralama rezervasyonu iptal edilsin mi?';
+
+  @override
+  String get travelTableActions => 'İşlemler';
+
+  @override
+  String get travelTableEmptynested => 'Öğe yok.';
+
+  @override
+  String get travelFormSelectplaceholder => '— Seçin —';
+
+  @override
+  String get travelFormMoneyminor =>
+      'Para birimi cinsinden tutar (1 = 100 birim)';
+>>>>>>> origin/main
 }

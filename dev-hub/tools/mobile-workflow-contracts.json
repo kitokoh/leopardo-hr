@@ -414,6 +414,43 @@
             ".update(",
             "/company/branding"
           ]
+        },
+        {
+          "name": "restaurant_service",
+          "routes": [
+            "/restaurant",
+            "/restaurant/server",
+            "/restaurant/rider",
+            "/restaurant/manager"
+          ],
+          "endpoints": [
+            "/restaurant/mobile/server/orders",
+            "/restaurant/mobile/server/tables",
+            "/restaurant/mobile/server/orders/$orderId/serve",
+            "/restaurant/mobile/server/orders/$orderId/pay",
+            "/restaurant/mobile/rider/deliveries",
+            "/restaurant/mobile/rider/deliveries/$deliveryId/out-for-delivery",
+            "/restaurant/mobile/rider/deliveries/$deliveryId/deliver",
+            "/restaurant/mobile/manager/kpis",
+            "/restaurant/mobile/manager/stock-alerts",
+            "/restaurant/mobile/manager/pos-sessions/current",
+            "/restaurant/mobile/manager/pos-sessions/$sessionId/close",
+            "/restaurant/mobile/sync"
+          ],
+          "screenFiles": [
+            "lib/features/restaurant/screens/restaurant_hub_screen.dart",
+            "lib/features/restaurant/screens/restaurant_server_screen.dart",
+            "lib/features/restaurant/screens/restaurant_rider_screen.dart",
+            "lib/features/restaurant/screens/restaurant_manager_screen.dart"
+          ],
+          "sourceTokens": [
+            "restaurantRepositoryProvider",
+            "restaurantOfflineQueueProvider",
+            "restaurantServerOrdersProvider",
+            "restaurantRiderDeliveriesProvider",
+            "restaurantManagerKpisProvider",
+            "enqueue"
+          ]
         }
       ]
     },

@@ -7,25 +7,29 @@
 ## Instructions
 
 ```
-Agis en tant qu'architecte full-stack pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant qu'architecte full-stack pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt git).
 
 Commence par lire AGENTS.md pour comprendre l'architecture modulaire.
 
 Ton objectif est de créer un nouveau module métier complet nommé [NOM_MODULE]. Suis ces étapes dans l'ordre :
 
 ÉTAPE 1 — BACKEND (api/)
-- Crée le dossier api/app/Modules/[NomModule]/ avec la structure :
-  - Controllers/
-  - Models/
-  - Services/
-  - Infrastructure/
-  - Requests/ (FormRequests pour la validation)
-  - Events/
-  - Listeners/
-- Crée les migrations dans api/database/migrations/
+- Crée le dossier api/app/Modules/[NomModule]/ avec la structure DDD réelle
+  (template de référence : api/stubs/module-template/, garde CI Module
+  Structure Validator — issue #6581) :
+  - Application/  (Actions, DTOs, Listeners, Queries — orchestration)
+  - Domain/       (Enums, Events, Exceptions, Models, ValueObjects — règles métier)
+  - Infrastructure/ (Exports, Repositories, Services — implémentation)
+  - Interfaces/Api/V1/ (Controllers, Requests — HTTP)
+  - Providers/    (ServiceProvider du module)
+  - Console/      (Commandes artisan du module, si nécessaire)
+- Chaque fichier : namespace App\Modules\[NomModule]\*, declare(strict_types=1),
+  PHPDoc @property sur les modèles (PHPStan level max)
+- Crée les migrations tenant idempotentes dans api/database/migrations/tenant/
+  (convention #1613 : résolution search_path, préfixe date + numéro d'issue)
 - Crée les routes dans api/routes/modules/[nom_module].php
-- Enregistre le module dans le ServiceProvider
-- Ajoute les endpoints dans api/openapi.yaml
+- Enregistre les bindings/commandes dans le Providers/[NomModule]ServiceProvider.php
+- Ajoute les endpoints dans api/openapi.yaml (garde de couverture)
 - Crée au moins un test fonctionnel dans api/tests/
 
 ÉTAPE 2 — WEB (front/web/)
