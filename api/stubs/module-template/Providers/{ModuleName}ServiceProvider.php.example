@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\{ModuleName}\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+/**
+ * ServiceProvider du module {ModuleName} (issue #6586).
+ *
+ * Enregistrement : ajouter la classe au tableau de `api/bootstrap/providers.php`
+ * (Laravel 12 — plus d'appel manuel depuis AppServiceProvider).
+ * Les routes du module sont chargées ici (loadRoutesFrom).
+ */
+class {ModuleName}ServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        // Bindings d'infrastructure (interfaces de domaine → implémentations).
+    }
+
+    public function boot(): void
+    {
+        $this->loadRoutesFrom(base_path('routes/modules/{module_file}.php'));
+    }
+}
