@@ -3,6 +3,8 @@
   "solutions": {
     "hr_core": {
       "label": "HR Core (plateforme RH)",
+    "bc23_ai": {
+      "label": "BC-23 AI Assistive Services",
       "status": "active"
     },
     "crm_client": {
@@ -46,6 +48,21 @@
     "restaurantmanager": {
       "label": "RestaurantManager (verticale BC-25)",
       "status": "planned"
+    "delivery": {
+      "label": "DeliveryAgency (BC-26 DELIVERY)",
+      "status": "active"
+    },
+    "edumanager": {
+      "label": "EduManager (verticale)",
+      "status": "planned"
+    },
+    "fuelstation": {
+      "label": "FuelStation (verticale)",
+      "status": "planned"
+    },
+    "hr_core": {
+      "label": "HR Core (plateforme RH)",
+      "status": "active"
     }
   },
   "journeys": [
@@ -633,6 +650,42 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager:server"
+      "id": "GJ-08",
+      "name": "Assistant IA : chat → action confirmée → audit",
+      "solution": "bc23_ai",
+      "acceptance": "Une demande faite à l'assistant IA crée une action en attente de confirmation humaine ; la confirmation applique l'effet métier (jamais sans confirmation) et l'échange complet est tracé dans ai_audit_logs (traçabilité).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Envoyer un message à l'assistant IA",
+          "method": "POST",
+          "route": "/api/v1/ai/chat",
+          "role": "employee"
+        },
+        {
+          "order": 2,
+          "action": "Confirmer l'action d'écriture proposée",
+          "method": "POST",
+          "route": "/api/v1/ai/actions/{pendingActionId}/confirm",
+          "role": "employee"
+        },
+        {
+          "order": 3,
+          "action": "Consulter l'historique des conversations",
+          "method": "GET",
+          "route": "/api/v1/ai/chat/history",
+          "role": "employee"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier l'usage (tokens, p95, coûts)",
+          "method": "GET",
+          "route": "/api/v1/ai/analytics/usage",
+          "role": "manager:rh"
+        }
+      ]
+    },
+    {
       "id": "GJ-DELIVERY-01",
       "name": "Livraison dernier-kilomètre — parcours agence complet",
       "solution": "delivery",
@@ -730,6 +783,11 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{session}/close",
           "role": "restaurant.manager"
+        }
+      ]
+    }
+  ]
+}
         }
       ]
     }
