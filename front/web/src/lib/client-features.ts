@@ -335,8 +335,29 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   return hasGateData ? 'locked' : 'available';
 }
 
+/**
+ * #6450 — la navigation portail rendait « Encountered two children with the
+ * same key, `restaurant` » lorsque plusieurs entrées de module partagent la
+ * même `key` (collision introduite par la maturation multi-verticale BC-25).
+ * On dédoublonne par `key` (première déclaration gagnante) pour garantir des
+ * clés React uniques par construction, quelle que soit la composition de
+ * CLIENT_MODULES après merge des branches.
+ */
+function dedupeModulesByKey(modules: ClientModule[]): ClientModule[] {
+  const seen = new Set<ClientModuleKey>();
+  const unique: ClientModule[] = [];
+  for (const module of modules) {
+    if (seen.has(module.key)) {
+      continue;
+    }
+    seen.add(module.key);
+    unique.push(module);
+  }
+  return unique;
+}
+
 export function getClientModuleAccess(user?: StoredAuthUser | null): ClientModuleAccess[] {
-  return CLIENT_MODULES.map((module) => {
+  return dedupeModulesByKey(CLIENT_MODULES).map((module) => {
     const roleAllowed = hasRoleAccess(module, user);
     const state = resolveModuleState(module, user);
     const enabled = roleAllowed && state !== 'locked';
