@@ -125,6 +125,8 @@ Schedule::command('billing:generate-invoices')->monthlyOn(1, '02:00');
 Schedule::command('leave:accrue')->monthlyOn(1, '03:00');
 Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 1, '04:00');
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
+// Digest hebdomadaire manager (issue #5695) — chaque lundi à 07:00.
+Schedule::command('manager:weekly-digest')->weeklyOn(1, '07:00');
 // Fermeture automatique unique (ADR-0016 Phase 4, #5355) : pointages sans
 // check-out + sessions GPS orphelines — une seule commande, même cycle.
 Schedule::command('attendance:auto-close --threshold=12 --hours=14')

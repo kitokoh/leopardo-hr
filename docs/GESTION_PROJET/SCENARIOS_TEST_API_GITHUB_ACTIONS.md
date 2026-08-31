@@ -253,6 +253,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant
 - Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
 - `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
+- **Digest email hebdomadaire manager (issue #5695)** : la commande `manager:weekly-digest` (schedulee chaque lundi 07:00, `api/routes/console.php`) dispatche un job `SendWeeklyManagerDigestJob` par entreprise ACTIVE ; le job notifie chaque manager actif du tenant sur le canal email uniquement (template `weekly_manager_digest`, cles i18n `notifications.weekly_manager_digest_*` dans les 4 locales), avec contexte `week_start`/`team_size`/`present`/`pending_absences`/`pending_advances`/`pending_corrections`, scope manager respecte (principal/rh → toute l'entreprise ; dept → son departement ; superviseur → equipe directe, PA2-SEC-002/003) et entreprise inactive ignoree. Couvert par `WeeklyManagerDigestTest`.
 
 ### 11. Resilience et erreurs
 
@@ -312,6 +313,17 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Les endpoints privacy restent sous `auth:sanctum` + `tenant` et ne prennent jamais d'`employee_id` client pour eviter l'export d'un collegue ou d'un autre tenant
 - Les acces aux fiches employees et exports privacy creent une entree `audit_logs` avec `category=hr_data_access`, acteur, tenant et cible quand elle existe
 - Les endpoints privacy retournent `429` apres depassement du limiter `privacy-sensitive`
+
+### 17. IA — assistants bornes, budgets de tokens, exports asynchrones et DLQ (BC-23)
+
+- `POST /api/v1/ai/conversations/{conversation}/export` cree une exportation asynchrone idempotente (une seule par tenant+conversation+format via `dedup_key`) puis dispatche `ExportAiConversationJob` sur la file `ai` ; un echec passe l'exportation `failed` et consigne l'entree en dead-letter queue AI (`ai_dead_letter_queue`, une seule fois par `dedup_key`, `attempts` incrementees)
+- `GET /api/v1/ai/exports/{export}` est scope au proprietaire de la conversation et au tenant courant (404 cross-tenant/cross-user) ; le cycle d'etat est `pending → processing → done | failed`
+- `php artisan ai:dlq:replay` rejoue les entrees DLQ `open` (reset `pending` + re-dispatch), filtre par `--company-id`/`--id`/`--limit`, et resout l'entree en `resolved` quand le job aboutit
+- Budgets de tokens versionnes dans `config/ai.php` (`max_tokens_per_request`, `max_context_tokens`, `max_tokens_per_workflow`, env override `AI_BUDGET_*`) : rejet explicite 422 `AI_TOKEN_BUDGET_EXCEEDED` au depassement, cumul par conversation respecte
+- L'analytics AI expose les percentiles (p95) des tokens par requete/workflow (`/ai/analytics/usage`)
+- Matrice de permissions par outil AI versionnee (`ToolPermissionPolicy`) avec tests negatifs par role
+- Golden journey IA : seed pilote 100 % synthetique (`AiPilotSeeder`) + parcours E2E chat → action → confirmation humaine → audit (`ai_audit_logs`) couvert par `AiGoldenJourneyTest` et enregistre dans `dev-hub/tools/golden-journeys.json`
+- Suites associees : `TokenBudgetTest`, `ConversationExportTest`, `AiGoldenJourneyTest`, `ToolPermissionMatrixTest`, `AIGatewayAndAnalyticsTest` (workflow `Tests - Leopardo RH`)
 
 ## Mapping attendu vers les suites GitHub Actions
 
@@ -1507,3 +1519,14 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Audit partages (#5522) : actions `accounting.share.info` / `accounting.share.download` (préfixe module, convention #5439) → `GET /accounting/documents/shared/{document}/accesses` liste bien les accès (avant : 0 ligne).
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
+
+Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
+- Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
+- Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
+- Équipements (FUEL-003) : `fuel_pumps`, `fuel_tanks` (capacity_minor CHECK > 0, unit_code CHECK l|gal), `fuel_meter_registers` (meter_type/status/unit CHECKs, `UNIQUE (company_id, pump_id, meter_code)`) — FK composites anti cross-tenant. Tests : `FuelEquipmentTest`.
+- Relevés de compteur (FUEL-004) : `POST/GET /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings` — cumul en unités mineures, heure UTC + locale, delta/rollover/anomalie, idempotence par `UNIQUE (company_id, idempotency_key)` (zéro doublon au rejeu), correction versionnée `POST /fuel-station/meter-readings/{reading}/corrections` et revue `POST /fuel-station/meter-intervals/{interval}/review` (RBAC `api.manager`). Tests : `FuelMeterReadingTest`.
+- Shifts et affectations (FUEL-005) : `GET/POST /fuel-station/shifts`, affectations par date, chevauchements contrôlés (`FuelShiftService::assertNoOverlap`), self-service pompiste `GET /fuel-station/me/shifts`. Tests : `FuelShiftApiTest`.
+- Présence opérateur (FUEL-006) : `GET /fuel-station/me/presence`, `GET /fuel-station/shifts/{shift}/presence` — résolue via la logique Attendance (pas de duplication). Tests : `FuelPresenceApiTest`.
+- Sessions de caisse (FUEL-007) : ouverture `POST /fuel-station/cash-sessions`, mouvements, clôture idempotente `POST /fuel-station/cash-sessions/{session}/close` (écarts + approbation manager, événement `FuelCashSessionClosed`). Tests : `FuelCashSessionApiTest`.
+- Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
+- Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).

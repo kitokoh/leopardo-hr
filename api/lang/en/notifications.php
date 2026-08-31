@@ -34,8 +34,12 @@ return [
 
     'payment_document_ready_title' => 'Document ready',
     'payment_document_ready_body' => 'Your payment document is generated and available to download.',
+ HEAD
     'restaurant_delivery_status_changed_title' => 'Delivery: :status',
     'restaurant_delivery_status_changed_body' => 'Delivery #:delivery (order #:order) is now “:status”.',
     'restaurant_reservation_reminder_title' => 'Upcoming reservation (D-1)',
     'restaurant_reservation_reminder_body' => 'Reservation :reference — :covers cover(s) on :date. Prepare the table.',
+    'weekly_manager_digest_title' => 'Weekly team digest',
+    'weekly_manager_digest_body' => 'Week of :week_start — Team of :team_size person(s) · :present attendance(s) recorded · :pending_absences pending absence(s) · :pending_advances pending advance(s) · :pending_corrections pending correction(s).',
+ origin/main
 ];

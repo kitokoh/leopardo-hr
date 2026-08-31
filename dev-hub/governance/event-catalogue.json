@@ -1,0 +1,230 @@
+{
+  "$schema_version": "1.0",
+  "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.sh valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
+  "events": [
+    {
+      "name": "AbsenceApproved",
+      "class": "App\\Events\\AbsenceApproved",
+      "owner": "BC-06 LEAVE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence",
+        "approver": "App\\Core\\Auth\\Domain\\Models\\Employee"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "AbsenceRejected",
+      "class": "App\\Events\\AbsenceRejected",
+      "owner": "BC-06 LEAVE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "AbsenceRequested",
+      "class": "App\\Events\\AbsenceRequested",
+      "owner": "BC-06 LEAVE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "AttendanceCheckedIn",
+      "class": "App\\Events\\AttendanceCheckedIn",
+      "owner": "BC-05 WORKFORCE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "AttendanceCheckedOut",
+      "class": "App\\Events\\AttendanceCheckedOut",
+      "owner": "BC-05 WORKFORCE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "CandidateHired",
+      "class": "App\\Events\\CandidateHired",
+      "owner": "BC-10 RECRUITMENT",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "applicant": "App\\Modules\\Recruitment\\Domain\\Models\\Applicant",
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
+      },
+      "consumers": [],
+      "notes": "Aucun listener enregistré (ni EventServiceProvider, ni Event::listen() dans un ServiceProvider module) — dispatché mais actuellement orphelin. Constat, pas un correctif de cette issue (#5864) : voir CandidateHiringService."
+    },
+    {
+      "name": "CompanyCreated",
+      "class": "App\\Events\\CompanyCreated",
+      "owner": "BC-02 TENANT",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "company": "App\\Core\\Tenant\\Domain\\Models\\Company"
+      },
+      "consumers": [
+        "App\\Listeners\\LinkPartnerToNewCompany",
+        "App\\Modules\\Accounting\\Application\\Listeners\\ProvisionAccountingSettings",
+        "App\\Modules\\Accounting\\Application\\Listeners\\ProvisionChartOfAccounts"
+      ]
+    },
+    {
+      "name": "EmployeeArchived",
+      "class": "App\\Events\\EmployeeArchived",
+      "owner": "BC-04 HR",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "EmployeeCreated",
+      "class": "App\\Events\\EmployeeCreated",
+      "owner": "BC-04 HR",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "EmployeeDeparted",
+      "class": "App\\Events\\EmployeeDeparted",
+      "owner": "BC-04 HR",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee",
+        "departure": "App\\Modules\\HR\\Domain\\Models\\EmployeeDeparture"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"],
+      "notes": "Consommé via un mapping explicite (getEventDescriptions()) dans AuditLogger/WebhookListener, pas via le $listen de EventServiceProvider — vérifié par constant/array literal, pas par Event::listen()."
+    },
+    {
+      "name": "EmployeeLastContractTerminated",
+      "class": "App\\Events\\EmployeeLastContractTerminated",
+      "owner": "BC-04 HR",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee",
+        "contract": "App\\Modules\\HR\\Domain\\Models\\Contract"
+      },
+      "consumers": [],
+      "notes": "Aucun listener enregistré — dispatché mais actuellement orphelin. Constat, pas un correctif de cette issue (#5864) : voir ContractLifecycleAction."
+    },
+    {
+      "name": "EmployeeRoleAssigned",
+      "class": "App\\Events\\EmployeeRoleAssigned",
+      "owner": "BC-04 HR",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "employee": "App\\Core\\Auth\\Domain\\Models\\Employee",
+        "actor": "App\\Core\\Auth\\Domain\\Models\\Employee",
+        "previousRole": "?string",
+        "newRole": "?string"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger"]
+    },
+    {
+      "name": "MarketingLeadQualified",
+      "class": "App\\Events\\MarketingLeadQualified",
+      "owner": "BC-12 GROWTH",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "lead": "App\\Modules\\Marketing\\Domain\\Models\\MarketingLead",
+        "companyId": "string"
+      },
+      "consumers": ["App\\Listeners\\ConvertMarketingLeadToContact"]
+    },
+    {
+      "name": "PayrollValidated",
+      "class": "App\\Events\\PayrollValidated",
+      "owner": "BC-07 PAYROLL",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "payroll": "App\\Modules\\Payroll\\Domain\\Models\\Payroll"
+      },
+      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+    },
+    {
+      "name": "SubscriptionPaid",
+      "class": "App\\Events\\SubscriptionPaid",
+      "owner": "BC-21 BILLING",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "payment": "App\\Modules\\Payroll\\Domain\\Models\\Payment"
+      },
+      "consumers": ["App\\Listeners\\ProcessCommissionOnPayment"],
+      "notes": "Le type du payload (App\\Modules\\Payroll\\Domain\\Models\\Payment) est historique — l'événement concerne la facturation (BC-21 BILLING), pas la paie. Ne pas dupliquer ce chemin dans un nouveau code ; migration du modèle vers Billing hors périmètre de cette issue."
+    },
+    {
+      "name": "TaxRateApproved",
+      "class": "App\\Events\\TaxRateApproved",
+      "owner": "BC-07 PAYROLL",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "model": "Illuminate\\Database\\Eloquent\\Model",
+        "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin"
+      },
+      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"]
+    },
+    {
+      "name": "TaxRateRejected",
+      "class": "App\\Events\\TaxRateRejected",
+      "owner": "BC-07 PAYROLL",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "model": "Illuminate\\Database\\Eloquent\\Model",
+        "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin",
+        "reason": "string"
+      },
+      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"]
+    },
+    {
+      "name": "TaxRateSubmitted",
+      "class": "App\\Events\\TaxRateSubmitted",
+      "owner": "BC-07 PAYROLL",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "model": "Illuminate\\Database\\Eloquent\\Model",
+        "actor": "App\\Core\\Auth\\Domain\\Models\\Employee"
+      },
+      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"]
+    }
+  ],
+  "compatibility_rules": [
+    "Un événement 'active' ne peut jamais retirer une propriété de payload existante ni changer son type sans incrémenter 'version' et créer une nouvelle classe versionnée (ex: EmployeeCreatedV2) — jamais de breaking change in-place.",
+    "Ajouter une propriété nullable au payload est un changement compatible (mineur) et ne requiert pas d'incrément de version.",
+    "Un événement 'deprecated' doit lister 'replaced_by' (nom du nouvel événement) et rester fonctionnel au moins un cycle de dépréciation documenté dans CHANGELOG.md.",
+    "Toute nouvelle classe sous api/app/Events/*.php doit être ajoutée à ce catalogue dans la même PR (le guard CI échoue sinon)."
+  ]
+}
