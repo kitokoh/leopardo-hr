@@ -2645,6 +2645,10 @@
   "restaurantMobileManagerNoStockAlerts": "No threshold alert",
   "restaurantMobileManagerIngredient": "Ingredient #{id}",
   "restaurantMobileManagerStockLevel": "Stock: {quantity} / threshold: {threshold}",
+<<<<<<< HEAD
+=======
+  "navigationTravelagency": "Travel agency",
+>>>>>>> 20105c678 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelLoading": "Loading…",
   "travelSectionTitle": "Travel agency",
   "travelSectionSubtitle": "Manage the TravelAgency vertical: referential, network, sales, ticketing and reports.",
@@ -2660,10 +2664,13 @@
   "travelTabTickets": "Tickets",
   "travelTabReports": "Reports",
   "travelTabRentals": "Rentals & Hotels",
+<<<<<<< HEAD
   "travelTabQuizzes": "Quiz",
   "travelTabAdverts": "Adverts",
   "travelTabSites": "Tourist sites",
   "travelTabContacts": "Contacts",
+=======
+>>>>>>> 20105c678 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelReferentielTabslabel": "Referential sub-sections",
   "travelReferentielTabgeo": "Countries & Cities",
   "travelReferentielTabstations": "Stations",
@@ -2694,10 +2701,13 @@
   "travelSearchRentalvehicle": "Search a rental vehicle…",
   "travelSearchRentalbooking": "Search a rental booking…",
   "travelSearchHotel": "Search a hotel…",
+<<<<<<< HEAD
   "travelSearchQuiz": "Search a quiz…",
   "travelSearchAdvert": "Search an advert…",
   "travelSearchSite": "Search a site…",
   "travelSearchContact": "Search a contact…",
+=======
+>>>>>>> 20105c678 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelFieldIso2": "ISO2",
   "travelFieldIso3": "ISO3",
   "travelFieldName": "Name",
@@ -2888,6 +2898,7 @@
   "travelTableActions": "Actions",
   "travelTableEmptynested": "No item.",
   "travelFormSelectplaceholder": "— Select —",
+<<<<<<< HEAD
   "travelFormMoneyminor": "Amount in currency (1 = 100 minor)",
   "travelQuizTitle": "Quizzes & contests",
   "travelQuizSubtitle": "Create quizzes, add questions and review participations.",
@@ -2976,4 +2987,7 @@
   "travelAdvertstatusRejected": "Rejected",
   "travelAdvertstatusExpired": "Expired",
   "travelAdvertstatusArchived": "Archived"
+=======
+  "travelFormMoneyminor": "Amount in currency (1 = 100 minor)"
+>>>>>>> 20105c678 (merge: main (PM BC-24 TRAVEL — fix CI batch))
 }

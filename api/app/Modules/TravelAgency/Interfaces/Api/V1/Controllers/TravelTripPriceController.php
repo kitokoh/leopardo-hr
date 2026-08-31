@@ -80,7 +80,7 @@ class TravelTripPriceController extends Controller
         }
 
         if ($travelTripPrice->company_id !== $travelTrip->company_id
-            || $travelTripPrice->trip_id !== $travelTrip->id) {
+            || (int) $travelTripPrice->trip_id !== $travelTrip->id) {
             abort(404);
         }
 
@@ -100,7 +100,7 @@ class TravelTripPriceController extends Controller
         }
 
         if ($travelTripPrice->company_id !== $travelTrip->company_id
-            || $travelTripPrice->trip_id !== $travelTrip->id) {
+            || (int) $travelTripPrice->trip_id !== $travelTrip->id) {
             abort(404);
         }
 
@@ -138,7 +138,7 @@ class TravelTripPriceController extends Controller
         }
 
         if ($travelTripPrice->company_id !== $travelTrip->company_id
-            || $travelTripPrice->trip_id !== $travelTrip->id) {
+            || (int) $travelTripPrice->trip_id !== $travelTrip->id) {
             abort(404);
         }
 

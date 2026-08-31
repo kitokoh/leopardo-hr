@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 
+use App\Modules\TravelAgency\Domain\Enums\DocumentType;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-312..316 — Représentation API d'un passager.
@@ -16,6 +18,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * (PA2-ARCH-010).
  *
  * @mixin TravelPassenger
+ *
+ * @property-read Carbon|null $birth_date
+ * @property-read DocumentType|null $document_type
+ * @property-read string|null $document_number_encrypted
  */
 class TravelPassengerResource extends JsonResource
 {

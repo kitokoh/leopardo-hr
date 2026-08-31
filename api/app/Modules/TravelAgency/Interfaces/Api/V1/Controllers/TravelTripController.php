@@ -42,11 +42,14 @@ class TravelTripController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
+        $departureDate = $request->query('departure_date');
+        $departureDate = is_string($departureDate) ? $departureDate : null;
+
         $trips = TravelTrip::query()
             ->with(['prices', 'route.stops'])
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('route_id'), fn ($q, $routeId) => $q->where('route_id', $routeId))
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($departureDate !== null, fn ($q) => $q->whereDate('departure_date', $departureDate))
             ->orderByDesc('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
@@ -194,6 +197,13 @@ class TravelTripController extends Controller
 
         $perPage = max(1, min(1000, (int) $request->query('per_page', 50)));
 
+        $departureDate = $request->query('departure_date');
+        $departureDate = is_string($departureDate) ? $departureDate : null;
+        $dateFrom = $request->query('date_from');
+        $dateFrom = is_string($dateFrom) ? $dateFrom : null;
+        $dateTo = $request->query('date_to');
+        $dateTo = is_string($dateTo) ? $dateTo : null;
+
         $trips = TravelTrip::query()
             ->with(['prices', 'route.stops'])
             ->when($request->query('origin_city_id'), function ($q, $cityId) {
@@ -202,9 +212,9 @@ class TravelTripController extends Controller
             ->when($request->query('destination_city_id'), function ($q, $cityId) {
                 $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId));
             })
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
-            ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
-            ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
+            ->when($departureDate !== null, fn ($q) => $q->whereDate('departure_date', $departureDate))
+            ->when($dateFrom !== null, fn ($q) => $q->whereDate('departure_date', '>=', $dateFrom))
+            ->when($dateTo !== null, fn ($q) => $q->whereDate('departure_date', '<=', $dateTo))
             ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('price_min'), function ($q, $min) {

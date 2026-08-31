@@ -7,10 +7,12 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelRouteFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Ligne ville→ville de la verticale TravelAgency (TRAVEL-206, issue #6019).
@@ -18,6 +20,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * `origin_city_id` et `destination_city_id` référencent le référentiel
  * `travel_cities` (TRAVEL-202) ; une route ne peut relier une ville à
  * elle-même (contrainte DB `travel_routes_origin_destination_distinct_check`).
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property int $origin_city_id
+ * @property int $destination_city_id
+ * @property int|null $distance_km
+ * @property int|null $duration_min
+ * @property TravelRecordStatus $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelRoute extends Model
 {

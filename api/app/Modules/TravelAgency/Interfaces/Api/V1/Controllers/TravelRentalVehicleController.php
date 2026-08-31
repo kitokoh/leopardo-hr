@@ -145,7 +145,7 @@ class TravelRentalVehicleController extends Controller
         if (
             $actor->company_id !== $travelRentalVehicle->company_id
             || $image->company_id !== $travelRentalVehicle->company_id
-            || $image->vehicle_id !== $travelRentalVehicle->id
+            || (int) $image->vehicle_id !== $travelRentalVehicle->id
         ) {
             abort(404);
         }

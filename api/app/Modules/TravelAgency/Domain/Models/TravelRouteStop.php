@@ -6,9 +6,11 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelRouteStopFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Étape ordonnée d'une route (TRAVEL-206, issue #6019).
@@ -16,6 +18,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `rank` détermine l'ordre de passage sur la route ; une même ville ne peut
  * apparaître deux fois sur la même route (contrainte DB
  * `travel_route_stops_company_route_city_unique`).
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $route_id
+ * @property string $city_id
+ * @property int $rank
+ * @property bool $is_stopover
+ * @property int $min_duration_min
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelRouteStop extends Model
 {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Domain\Contracts;
 
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
+use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
+
 /**
  * #6066 (TRAVEL-414) — Contrat de consommation d'un événement d'outbox
  * TravelAgency.
@@ -11,9 +14,9 @@ namespace App\Modules\TravelAgency\Domain\Contracts;
  * Miroir du contrat `CrmOutboxConsumer` (#5741) : le consommateur applique
  * l'effet métier de façon IDEMPOTENTE (le rejeu ne produit jamais de
  * doublon). Il distingue :
- *  - erreur transitoire → {@see \App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException}
+ *  - erreur transitoire → {@see TransientTravelOutboxException}
  *    (retry avec backoff) ;
- *  - erreur permanente → {@see \App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException}
+ *  - erreur permanente → {@see PermanentTravelOutboxException}
  *    (dead-letter immédiate).
  *
  * La commande `travel:outbox-dispatch` exécute `handle()` DANS le contexte

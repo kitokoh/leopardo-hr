@@ -31,6 +31,23 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $report_type
+ * @property string $idempotency_key
+ * @property string $status
+ * @property Carbon|null $from_at
+ * @property Carbon|null $to_at
+ * @property string|null $file_path
+ * @property Carbon|null $expires_at
+ * @property string|null $error_redacted
+ * @property int|null $created_by_user_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelExportAsset extends Model
 {
     use BelongsToCompany;
