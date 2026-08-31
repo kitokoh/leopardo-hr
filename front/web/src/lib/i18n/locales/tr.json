@@ -3631,5 +3631,39 @@
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…"
+  },
+  "fuel": {
+    "pump": {
+      "nav": "Pompacı",
+      "title": "Pompacı ekranı",
+      "subtitle": "Saniyeler içinde sayaç okuma — bağlantı zayıf olsa bile.",
+      "noShift": "Bugün aktif vardiya yok — okumalar vardiyasız kaydedilecek.",
+      "shift": "Vardiya",
+      "selectStation": "1. İstasyon",
+      "selectPump": "2. Pompa",
+      "selectMeter": "3. Sayaç",
+      "reading": "Sayaç okuması",
+      "unitHint": "Litre cinsinden değer (sunucuya minor birim ×100 gönderilir).",
+      "capturedAt": "Zaman damgası",
+      "now": "Şimdi",
+      "submit": "Okumayı kaydet",
+      "submitting": "Kaydediliyor…",
+      "saved": "Okuma kaydedildi.",
+      "delta": "Fark",
+      "noDelta": "İlk okuma — henüz fark yok.",
+      "anomaly": "Anomali bildir",
+      "anomalyTitle": "Anomali başlığı",
+      "anomalySeverity": "Önem",
+      "anomalySaved": "Anomali bildirildi.",
+      "low": "düşük",
+      "medium": "orta",
+      "high": "yüksek",
+      "critical": "kritik",
+      "emptyStations": "Kullanılabilir istasyon yok.",
+      "loadError": "Veriler yüklenemedi. Yeniden deneyin.",
+      "offlineHint": "Tekrarlanabilir giriş: bağlantı kopsa bile tekrar gönderim okumayı çoğaltmaz.",
+      "retry": "Yeniden dene",
+      "back": "Geri"
+    }
   }
 }

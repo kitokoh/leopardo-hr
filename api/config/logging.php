@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Logging\RedactingJsonFormatter;
 use Monolog\Formatter\JsonFormatter;
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\SlackWebhookHandler;
 use Monolog\Handler\StreamHandler;
@@ -60,6 +62,21 @@ return [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
+        ],
+
+        // BC-15 FUEL (FUEL-020, #5814) : observabilité du domaine FuelStation.
+        'fuel-station' => [
+            'driver' => 'stack',
+            'channels' => ['fuel-station-file'],
+            'ignore_exceptions' => false,
+        ],
+
+        'fuel-station-file' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/fuel-station.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+            'formatter' => LineFormatter::class,
         ],
 
         'single' => [
@@ -139,7 +156,7 @@ return [
             'replace_placeholders' => true,
             // MAT-009 (#5867) : redaction PII/secrets au moment de la
             // sérialisation (lazy — aucune résolution anticipée du canal).
-            'formatter' => \App\Logging\RedactingJsonFormatter::class,
+            'formatter' => RedactingJsonFormatter::class,
         ],
 
         'audit' => [

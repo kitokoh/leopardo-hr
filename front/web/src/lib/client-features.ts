@@ -16,7 +16,8 @@ export type ClientModuleKey =
   | 'marketing'
   | 'accounting'
   | 'crm'
-  | 'restaurant';
+  | 'restaurant'
+  | 'fuel';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -203,6 +204,19 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Restaurant',
   },
+  // BC-15 FUEL — écran pompiste (FUEL-013, #5807) : saisie rapide de relevés
+  // compteur (station → pompe → compteur), delta, anomalies. Porté par le
+  // flag de solution `fuel_station` ; accès employé pompiste et direction.
+  {
+    key: 'fuel',
+    href: '/fuel/pump',
+    label: 'Pompiste',
+    group: 'general',
+    capabilityKeys: ['fuel_station', 'can_view_fuel'],
+    featureKeys: ['fuel_station'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'FuelStation',
+  },
 ];
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -227,6 +241,8 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
   '/restaurant/kitchen': 'restaurant',
+  '/fuel': 'fuel',
+  '/fuel/pump': 'fuel',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {

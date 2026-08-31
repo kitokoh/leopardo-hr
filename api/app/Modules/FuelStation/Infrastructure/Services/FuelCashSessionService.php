@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Events\FuelCashSessionClosed;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 
 /**
  * Cycle de vie des sessions de caisse FuelStation (FUEL-007, issue #5801).
@@ -25,6 +26,8 @@ use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
  */
 final class FuelCashSessionService
 {
+    public function __construct(private readonly FuelOutboxPublisher $outbox) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -102,6 +105,24 @@ final class FuelCashSessionService
         // Contrat Accounting (FUEL-015) : consommer l'événement pour générer
         // les écritures comptables (état figé, statut closed).
         FuelCashSessionClosed::dispatch($session);
+
+        // Publication outbox idempotente (replay sans doublon).
+        $this->outbox->publish(
+            (string) $actor->company_id,
+            FuelOutboxEvent::EVENT_CASH_SESSION_CLOSED,
+            [
+                'cash_session_id' => $session->id,
+                'station_id' => $session->station_id,
+                'opening_balance' => $session->opening_balance,
+                'closing_balance' => $session->closing_balance,
+                'expected_balance' => $session->expected_balance,
+                'variance' => $session->variance,
+                'closed_at' => $session->closed_at?->toISOString(),
+            ],
+            'fuel_cash_session',
+            (string) $session->id,
+            'cash-session-closed-'.$session->id,
+        );
 
         return $session;
     }
