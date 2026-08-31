@@ -42,10 +42,6 @@ import 'package:leopardo_core/features/user_auth/screens/company_integration_req
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
-import 'package:leopardo_manager/features/restaurant/screens/restaurant_hub_screen.dart';
-import 'package:leopardo_manager/features/restaurant/screens/restaurant_server_screen.dart';
-import 'package:leopardo_manager/features/restaurant/screens/restaurant_rider_screen.dart';
-import 'package:leopardo_manager/features/restaurant/screens/restaurant_manager_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
@@ -276,7 +272,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) => const TwoFactorSettingsScreen(),
+            builder: (context, state) =>
+                const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/ai-chat',
@@ -289,25 +286,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/approvals',
             builder: (context, state) => const ApprovalScreen(),
-          ),
-          // RESTO-028 (#6155/#6406) — surfaces mobiles RestaurantManager
-          // (serveur / livreur / gérant). Entrée pilotée par le backend
-          // `mobileExperience` (quick action) comme /ai-chat et /vehicle-map.
-          GoRoute(
-            path: '/restaurant',
-            builder: (context, state) => const RestaurantHubScreen(),
-          ),
-          GoRoute(
-            path: '/restaurant/server',
-            builder: (context, state) => const RestaurantServerScreen(),
-          ),
-          GoRoute(
-            path: '/restaurant/rider',
-            builder: (context, state) => const RestaurantRiderScreen(),
-          ),
-          GoRoute(
-            path: '/restaurant/manager',
-            builder: (context, state) => const RestaurantManagerScreen(),
           ),
 
           GoRoute(
@@ -351,10 +329,8 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts = normalized
-        .split('-')
-        .where((part) => part.isNotEmpty)
-        .toList();
+    final parts =
+        normalized.split('-').where((part) => part.isNotEmpty).toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -395,11 +371,9 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage = PlatformDispatcher.instance.locale
-        .toLanguageTag()
-        .toLowerCase();
-    final languageCode =
-        authState.employee?.language ??
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
+    final languageCode = authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
