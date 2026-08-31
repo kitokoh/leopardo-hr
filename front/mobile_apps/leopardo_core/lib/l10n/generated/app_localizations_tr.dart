@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -3419,6 +3418,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get navigationNotfound => 'Sayfa bulunamadi';
+
+  @override
+  String get navigationTravelagency => 'Seyahat acentesi';
 
   @override
   String get webhooksConfirmDelete => 'Bu webhook silinsin mi?';
@@ -8347,7 +8349,244 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
 
   @override
-  String get navigationTravelagency => 'Seyahat acentesi';
+  String get restaurantMobileHubTitle => 'Restoran';
+
+  @override
+  String get restaurantMobileHubSubtitle =>
+      'Servis, teslimat ve yönetim araçları';
+
+  @override
+  String get restaurantMobileBack => 'Geri';
+
+  @override
+  String restaurantMobileOfflinePending(Object count) {
+    return '$count çevrimdışı işlem yeniden oynatılmayı bekliyor';
+  }
+
+  @override
+  String get restaurantMobileOfflineSynced => 'Senkronizasyon tamamlandı';
+
+  @override
+  String get restaurantMobileOfflineReplay => 'Yeniden oynat';
+
+  @override
+  String get restaurantMobileHubServer => 'Servis';
+
+  @override
+  String get restaurantMobileHubServerDesc =>
+      'Sipariş kuyruğu, salon planı, tahsilat';
+
+  @override
+  String get restaurantMobileHubRider => 'Teslimat';
+
+  @override
+  String get restaurantMobileHubRiderDesc => 'Atanan turlar ve geçişler';
+
+  @override
+  String get restaurantMobileHubManager => 'Yönetim';
+
+  @override
+  String get restaurantMobileHubManagerDesc =>
+      'Günlük KPI\'lar, stok uyarıları, kasa kapanışı';
+
+  @override
+  String get restaurantMobileHubFooter =>
+      'Tutarlar ve geçişler sunucu tarafında doğrulanır. Ağ kesilirse işlemler kuyruğa alınır ve kopya oluşturmadan yeniden oynatılır.';
+
+  @override
+  String get restaurantMobileServerTitle => 'Servis';
+
+  @override
+  String get restaurantMobileServerSubtitle => 'Sipariş kuyruğu ve salon planı';
+
+  @override
+  String get restaurantMobileServerTables => 'Dolu masalar';
+
+  @override
+  String get restaurantMobileServerTablesLoading => 'Masalar yükleniyor…';
+
+  @override
+  String get restaurantMobileServerTablesError => 'Masalar kullanılamıyor';
+
+  @override
+  String get restaurantMobileServerNoTables => 'Açık masa yok';
+
+  @override
+  String get restaurantMobileServerQueue => 'Servis kuyruğu';
+
+  @override
+  String get restaurantMobileServerOrdersLoading => 'Siparişler yükleniyor…';
+
+  @override
+  String get restaurantMobileServerOrdersError => 'Siparişler kullanılamıyor';
+
+  @override
+  String get restaurantMobileServerNoOrders => 'Aktif sipariş yok';
+
+  @override
+  String restaurantMobileServerItemsCount(Object count) {
+    return '$count ürün';
+  }
+
+  @override
+  String get restaurantMobileStatusOpen => 'açık';
+
+  @override
+  String get restaurantMobileStatusInPreparation => 'hazırlanıyor';
+
+  @override
+  String get restaurantMobileStatusReady => 'hazır';
+
+  @override
+  String get restaurantMobileStatusServed => 'servis edildi';
+
+  @override
+  String get restaurantMobileServerServe => 'Servis et';
+
+  @override
+  String get restaurantMobileServerPay => 'Tahsil et';
+
+  @override
+  String restaurantMobileServerServedOk(Object reference) {
+    return '$reference siparişi servis edildi';
+  }
+
+  @override
+  String get restaurantMobileServerServeError => 'Sipariş servis edilemiyor';
+
+  @override
+  String restaurantMobileServerPayTitle(Object reference) {
+    return '$reference tahsilatı';
+  }
+
+  @override
+  String get restaurantMobileServerAmountLabel => 'Alınan tutar';
+
+  @override
+  String get restaurantMobileServerTipLabel => 'Bahşiş (isteğe bağlı)';
+
+  @override
+  String get restaurantMobileCancel => 'İptal';
+
+  @override
+  String get restaurantMobileInvalidAmount => 'Geçersiz tutar';
+
+  @override
+  String restaurantMobileServerPaidOk(Object reference) {
+    return '$reference tahsil edildi';
+  }
+
+  @override
+  String get restaurantMobileServerOfflineQueued =>
+      'Çevrimdışı: işlem kuyruğa alındı, otomatik yeniden oynatılacak';
+
+  @override
+  String get restaurantMobileRiderSubtitle => 'Atanan turlar';
+
+  @override
+  String get restaurantMobileRiderLoading => 'Teslimatlar yükleniyor…';
+
+  @override
+  String get restaurantMobileRiderError => 'Teslimatlar kullanılamıyor';
+
+  @override
+  String get restaurantMobileRiderEmpty => 'Atanmış teslimat yok';
+
+  @override
+  String get restaurantMobileRiderCustomer => 'Müşteri';
+
+  @override
+  String get restaurantMobileStatusAssigned => 'atandı';
+
+  @override
+  String get restaurantMobileStatusOutForDelivery => 'yolda';
+
+  @override
+  String get restaurantMobileStatusDelivered => 'teslim edildi';
+
+  @override
+  String get restaurantMobileRiderDepart => 'Yola çık';
+
+  @override
+  String get restaurantMobileRiderDeparted => 'Teslimata çıkıldı';
+
+  @override
+  String get restaurantMobileRiderDeliver => 'Teslim edildi';
+
+  @override
+  String get restaurantMobileRiderDeliveredOk => 'Teslimat tamamlandı';
+
+  @override
+  String get restaurantMobileRiderTransitionError =>
+      'Bu durumdan geçiş yapılamaz';
+
+  @override
+  String get restaurantMobileManagerSubtitle => 'KPI\'lar, stok ve kasa';
+
+  @override
+  String get restaurantMobileManagerKpisLoading => 'KPI\'lar yükleniyor…';
+
+  @override
+  String get restaurantMobileManagerKpisError => 'KPI\'lar kullanılamıyor';
+
+  @override
+  String get restaurantMobileManagerRevenueToday => 'Günün cirosu';
+
+  @override
+  String get restaurantMobileManagerOrders => 'Siparişler';
+
+  @override
+  String get restaurantMobileManagerAvgBasket => 'Ortalama sepet';
+
+  @override
+  String get restaurantMobileManagerTablesOpen => 'Açık masalar';
+
+  @override
+  String get restaurantMobileManagerCash => 'Kasa';
+
+  @override
+  String get restaurantMobileManagerSessionError => 'Oturum kullanılamıyor';
+
+  @override
+  String get restaurantMobileManagerNoSession => 'Açık kasa oturumu yok';
+
+  @override
+  String get restaurantMobileManagerSessionOpen => 'açık';
+
+  @override
+  String get restaurantMobileManagerClose => 'Kapat';
+
+  @override
+  String get restaurantMobileManagerCloseTitle => 'Kasayı kapat';
+
+  @override
+  String get restaurantMobileManagerCountedLabel => 'Kasadaki sayım';
+
+  @override
+  String get restaurantMobileManagerClosedOk => 'Kasa kapatıldı';
+
+  @override
+  String get restaurantMobileManagerCloseError => 'Kapatılamıyor';
+
+  @override
+  String get restaurantMobileManagerStockAlerts => 'Stok uyarıları';
+
+  @override
+  String get restaurantMobileManagerStockAlertsError =>
+      'Uyarılar kullanılamıyor';
+
+  @override
+  String get restaurantMobileManagerNoStockAlerts => 'Eşik uyarısı yok';
+
+  @override
+  String restaurantMobileManagerIngredient(Object id) {
+    return 'İçerik #$id';
+  }
+
+  @override
+  String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
+    return 'Stok: $quantity / eşik: $threshold';
+  }
 
   @override
   String get travelLoading => 'Yükleniyor…';
@@ -8396,6 +8635,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelTabRentals => 'Kiralama ve Oteller';
+
+  @override
+  String get travelTabQuizzes => 'Quiz';
+
+  @override
+  String get travelTabAdverts => 'Reklamlar';
+
+  @override
+  String get travelTabSites => 'Turistik yerler';
+
+  @override
+  String get travelTabContacts => 'Kişiler';
 
   @override
   String get travelReferentielTabslabel => 'Referans alt bölümleri';
@@ -8487,6 +8738,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelSearchHotel => 'Otel ara…';
+
+  @override
+  String get travelSearchQuiz => 'Quiz ara…';
+
+  @override
+  String get travelSearchAdvert => 'Reklam ara…';
+
+  @override
+  String get travelSearchSite => 'Yer ara…';
+
+  @override
+  String get travelSearchContact => 'Kişi ara…';
 
   @override
   String get travelFieldIso2 => 'ISO2';
@@ -9065,4 +9328,273 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get travelFormMoneyminor =>
       'Para birimi cinsinden tutar (1 = 100 birim)';
+
+  @override
+  String get travelQuizTitle => 'Quiz ve yarışmalar';
+
+  @override
+  String get travelQuizSubtitle =>
+      'Quiz oluşturun, soru ekleyin ve katılımları inceleyin.';
+
+  @override
+  String get travelQuizQuestionstitle => 'Quiz soruları';
+
+  @override
+  String get travelQuizResultstitle => 'Sonuçlar';
+
+  @override
+  String get travelQuizFieldQuestion => 'Soru';
+
+  @override
+  String get travelQuizFieldOptions => 'Seçenekler';
+
+  @override
+  String get travelQuizFieldPoints => 'Puan';
+
+  @override
+  String get travelQuizFieldCorrectindex => 'Doğru cevap indeksi';
+
+  @override
+  String get travelQuizFieldMaxparticipations => 'Kişi başına maks. katılım';
+
+  @override
+  String get travelQuizFieldParticipantname => 'Ad';
+
+  @override
+  String get travelQuizFieldParticipantemail => 'E-posta';
+
+  @override
+  String get travelQuizFieldScore => 'Puan';
+
+  @override
+  String get travelQuizFieldBonus => 'Bonus';
+
+  @override
+  String get travelQuizFieldSubmittedat => 'Gönderim';
+
+  @override
+  String get travelQuizActionQuestions => 'Sorular';
+
+  @override
+  String get travelQuizActionResults => 'Sonuçlar';
+
+  @override
+  String get travelQuizActionAddquestion => 'Soru ekle';
+
+  @override
+  String get travelQuizHintOptions => 'Her satıra bir seçenek.';
+
+  @override
+  String get travelQuizHintCorrectindex => '0\'dan başlar (ilk satır = 0).';
+
+  @override
+  String get travelQuizstatusDraft => 'Taslak';
+
+  @override
+  String get travelQuizstatusActive => 'Aktif';
+
+  @override
+  String get travelQuizstatusClosed => 'Kapalı';
+
+  @override
+  String get travelAdvertsTabslabel => 'Reklam alt bölümleri';
+
+  @override
+  String get travelAdvertsTabtypes => 'Türler';
+
+  @override
+  String get travelAdvertsTabpositions => 'Konumlar';
+
+  @override
+  String get travelAdvertsTabprices => 'Fiyat tablosu';
+
+  @override
+  String get travelAdvertsTabadverts => 'Reklamlar';
+
+  @override
+  String get travelAdvertsTitle => 'Ücretli reklamlar';
+
+  @override
+  String get travelAdvertsSubtitle =>
+      'Reklam gönderin, ödemeyi tahsil edin, onaylayın/reddedin ve yenileyin.';
+
+  @override
+  String get travelAdvertsCreatetitle => 'Reklam gönder';
+
+  @override
+  String get travelAdvertsTypes => 'Reklam türleri';
+
+  @override
+  String get travelAdvertsPositions => 'Reklam konumları';
+
+  @override
+  String get travelAdvertsPrices => 'Fiyat tablosu';
+
+  @override
+  String get travelAdvertsFieldType => 'Tür';
+
+  @override
+  String get travelAdvertsFieldPosition => 'Konum';
+
+  @override
+  String get travelAdvertsFieldValiditydays => 'Geçerlilik (gün)';
+
+  @override
+  String get travelAdvertsFieldContent => 'İçerik';
+
+  @override
+  String get travelAdvertsFieldPrice => 'Fiyat';
+
+  @override
+  String get travelAdvertsFieldPriceperimage => 'Görsel başına fiyat';
+
+  @override
+  String get travelAdvertsFieldPricepercharacter => 'Karakter başına fiyat';
+
+  @override
+  String get travelAdvertsFieldExpiresat => 'Bitiş';
+
+  @override
+  String get travelAdvertsFieldRejectreason => 'Reddetme nedeni';
+
+  @override
+  String get travelAdvertsActionRenew => 'Yenile';
+
+  @override
+  String get travelAdvertsActionSubmit => 'Gönder';
+
+  @override
+  String get travelAdvertsActionPay => 'Tahsil et';
+
+  @override
+  String get travelAdvertsActionValidate => 'Onayla';
+
+  @override
+  String get travelAdvertsActionReject => 'Reddet';
+
+  @override
+  String get travelAdvertsRejecttitle => 'Reklamı reddet';
+
+  @override
+  String get travelAdvertsRejecttarget => 'Reklam';
+
+  @override
+  String get travelSitesTitle => 'Turistik yerler';
+
+  @override
+  String get travelSitesSubtitle => 'Konum ve şehir aramalı ilgi noktaları.';
+
+  @override
+  String get travelSitesFiltercity => 'Şehre göre filtrele';
+
+  @override
+  String get travelSitesAllcities => 'Tüm şehirler';
+
+  @override
+  String get travelSitesStatusdisabled => 'Devre dışı';
+
+  @override
+  String get travelSitesFieldLatitude => 'Enlem';
+
+  @override
+  String get travelSitesFieldLongitude => 'Boylam';
+
+  @override
+  String get travelContactsFormtitle => 'İletişim formu';
+
+  @override
+  String get travelContactsFormsubtitle =>
+      'İletişim talebi gönderin — e-posta onayı zorunludur.';
+
+  @override
+  String get travelContactsRegistrytitle => 'Kişi kayıtları';
+
+  @override
+  String get travelContactsRegistrysubtitle =>
+      'Kanal bazında onaylar (zaman damgalı) ve manuel bildirim.';
+
+  @override
+  String get travelContactsRegistryunavailable =>
+      'Kayıtlar kullanılamıyor — liste ucu bu dağıtımda henüz yayınlanmadı.';
+
+  @override
+  String get travelContactsConsentlabel =>
+      'Talebimle ilgili e-posta ile iletişime geçilmesini kabul ediyorum.';
+
+  @override
+  String get travelContactsConsenton => 'Onaylı';
+
+  @override
+  String get travelContactsConsentoff => 'Onaysız';
+
+  @override
+  String get travelContactsNotifytitle => 'Manuel bildirim';
+
+  @override
+  String get travelContactsNotifytarget => 'Alıcı';
+
+  @override
+  String get travelContactsNotifyhint =>
+      'Onaysız kanal yok sayılır; onaylı kanal yoksa 422.';
+
+  @override
+  String get travelContactsChannelapp => 'Uygulama (bağlı çalışan)';
+
+  @override
+  String get travelContactsSuccess =>
+      'Talep alındı — teşekkürler, size dönüş yapacağız.';
+
+  @override
+  String get travelContactsFieldFirstname => 'Ad';
+
+  @override
+  String get travelContactsFieldLastname => 'Soyad';
+
+  @override
+  String get travelContactsFieldEmail => 'E-posta';
+
+  @override
+  String get travelContactsFieldPhone => 'Telefon';
+
+  @override
+  String get travelContactsFieldMessage => 'Mesaj';
+
+  @override
+  String get travelContactsFieldConsents => 'Onaylar';
+
+  @override
+  String get travelContactsFieldChannels => 'Kanallar';
+
+  @override
+  String get travelContactsActionSubmit => 'Talebi gönder';
+
+  @override
+  String get travelContactsActionToggleconsent => 'Onayı değiştir';
+
+  @override
+  String get travelContactsActionNotify => 'Bildir';
+
+  @override
+  String get travelContactsActionSend => 'Gönder';
+
+  @override
+  String get travelAdvertstatusDraft => 'Taslak';
+
+  @override
+  String get travelAdvertstatusSubmitted => 'Gönderildi';
+
+  @override
+  String get travelAdvertstatusPaid => 'Ödendi';
+
+  @override
+  String get travelAdvertstatusValidated => 'Onaylandı';
+
+  @override
+  String get travelAdvertstatusRejected => 'Reddedildi';
+
+  @override
+  String get travelAdvertstatusExpired => 'Süresi doldu';
+
+  @override
+  String get travelAdvertstatusArchived => 'Arşivlendi';
 }

@@ -6602,6 +6602,12 @@ abstract class AppLocalizations {
   /// **'Page non trouvee'**
   String get navigationNotfound;
 
+  /// No description provided for @navigationTravelagency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Agence de voyage'**
+  String get navigationTravelagency;
+
   /// No description provided for @webhooksConfirmDelete.
   ///
   /// In fr, this message translates to:
@@ -15668,11 +15674,443 @@ abstract class AppLocalizations {
   /// **'Chargement de la file cuisine…'**
   String get restaurantLoading;
 
-  /// No description provided for @navigationTravelagency.
+  /// No description provided for @restaurantMobileHubTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Agence de voyage'**
-  String get navigationTravelagency;
+  /// **'Restaurant'**
+  String get restaurantMobileHubTitle;
+
+  /// No description provided for @restaurantMobileHubSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Outils de service, livraison et gestion'**
+  String get restaurantMobileHubSubtitle;
+
+  /// No description provided for @restaurantMobileBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get restaurantMobileBack;
+
+  /// No description provided for @restaurantMobileOfflinePending.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} opération(s) hors ligne en attente de rejeu'**
+  String restaurantMobileOfflinePending(Object count);
+
+  /// No description provided for @restaurantMobileOfflineSynced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation effectuée'**
+  String get restaurantMobileOfflineSynced;
+
+  /// No description provided for @restaurantMobileOfflineReplay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejouer'**
+  String get restaurantMobileOfflineReplay;
+
+  /// No description provided for @restaurantMobileHubServer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Service'**
+  String get restaurantMobileHubServer;
+
+  /// No description provided for @restaurantMobileHubServerDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'File de commandes, plan de salle, encaissement'**
+  String get restaurantMobileHubServerDesc;
+
+  /// No description provided for @restaurantMobileHubRider.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison'**
+  String get restaurantMobileHubRider;
+
+  /// No description provided for @restaurantMobileHubRiderDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tournées assignées et transitions'**
+  String get restaurantMobileHubRiderDesc;
+
+  /// No description provided for @restaurantMobileHubManager.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion'**
+  String get restaurantMobileHubManager;
+
+  /// No description provided for @restaurantMobileHubManagerDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'KPIs du jour, alertes stock, clôture de caisse'**
+  String get restaurantMobileHubManagerDesc;
+
+  /// No description provided for @restaurantMobileHubFooter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les montants et transitions sont validés côté serveur. En cas de coupure réseau, les opérations sont mises en file et rejouées sans doublon.'**
+  String get restaurantMobileHubFooter;
+
+  /// No description provided for @restaurantMobileServerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Service'**
+  String get restaurantMobileServerTitle;
+
+  /// No description provided for @restaurantMobileServerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'File de commandes et plan de salle'**
+  String get restaurantMobileServerSubtitle;
+
+  /// No description provided for @restaurantMobileServerTables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables occupées'**
+  String get restaurantMobileServerTables;
+
+  /// No description provided for @restaurantMobileServerTablesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des tables…'**
+  String get restaurantMobileServerTablesLoading;
+
+  /// No description provided for @restaurantMobileServerTablesError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables indisponibles'**
+  String get restaurantMobileServerTablesError;
+
+  /// No description provided for @restaurantMobileServerNoTables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune table ouverte'**
+  String get restaurantMobileServerNoTables;
+
+  /// No description provided for @restaurantMobileServerQueue.
+  ///
+  /// In fr, this message translates to:
+  /// **'File de service'**
+  String get restaurantMobileServerQueue;
+
+  /// No description provided for @restaurantMobileServerOrdersLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des commandes…'**
+  String get restaurantMobileServerOrdersLoading;
+
+  /// No description provided for @restaurantMobileServerOrdersError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandes indisponibles'**
+  String get restaurantMobileServerOrdersError;
+
+  /// No description provided for @restaurantMobileServerNoOrders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune commande active'**
+  String get restaurantMobileServerNoOrders;
+
+  /// No description provided for @restaurantMobileServerItemsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} article(s)'**
+  String restaurantMobileServerItemsCount(Object count);
+
+  /// No description provided for @restaurantMobileStatusOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'ouverte'**
+  String get restaurantMobileStatusOpen;
+
+  /// No description provided for @restaurantMobileStatusInPreparation.
+  ///
+  /// In fr, this message translates to:
+  /// **'en préparation'**
+  String get restaurantMobileStatusInPreparation;
+
+  /// No description provided for @restaurantMobileStatusReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'prête'**
+  String get restaurantMobileStatusReady;
+
+  /// No description provided for @restaurantMobileStatusServed.
+  ///
+  /// In fr, this message translates to:
+  /// **'servie'**
+  String get restaurantMobileStatusServed;
+
+  /// No description provided for @restaurantMobileServerServe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Servir'**
+  String get restaurantMobileServerServe;
+
+  /// No description provided for @restaurantMobileServerPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser'**
+  String get restaurantMobileServerPay;
+
+  /// No description provided for @restaurantMobileServerServedOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande {reference} servie'**
+  String restaurantMobileServerServedOk(Object reference);
+
+  /// No description provided for @restaurantMobileServerServeError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de servir la commande'**
+  String get restaurantMobileServerServeError;
+
+  /// No description provided for @restaurantMobileServerPayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaissement {reference}'**
+  String restaurantMobileServerPayTitle(Object reference);
+
+  /// No description provided for @restaurantMobileServerAmountLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant reçu'**
+  String get restaurantMobileServerAmountLabel;
+
+  /// No description provided for @restaurantMobileServerTipLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourboire (optionnel)'**
+  String get restaurantMobileServerTipLabel;
+
+  /// No description provided for @restaurantMobileCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get restaurantMobileCancel;
+
+  /// No description provided for @restaurantMobileInvalidAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant invalide'**
+  String get restaurantMobileInvalidAmount;
+
+  /// No description provided for @restaurantMobileServerPaidOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'{reference} encaissée'**
+  String restaurantMobileServerPaidOk(Object reference);
+
+  /// No description provided for @restaurantMobileServerOfflineQueued.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors ligne : opération mise en file, rejeu automatique'**
+  String get restaurantMobileServerOfflineQueued;
+
+  /// No description provided for @restaurantMobileRiderSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tournées assignées'**
+  String get restaurantMobileRiderSubtitle;
+
+  /// No description provided for @restaurantMobileRiderLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des livraisons…'**
+  String get restaurantMobileRiderLoading;
+
+  /// No description provided for @restaurantMobileRiderError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons indisponibles'**
+  String get restaurantMobileRiderError;
+
+  /// No description provided for @restaurantMobileRiderEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune livraison assignée'**
+  String get restaurantMobileRiderEmpty;
+
+  /// No description provided for @restaurantMobileRiderCustomer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client'**
+  String get restaurantMobileRiderCustomer;
+
+  /// No description provided for @restaurantMobileStatusAssigned.
+  ///
+  /// In fr, this message translates to:
+  /// **'assignée'**
+  String get restaurantMobileStatusAssigned;
+
+  /// No description provided for @restaurantMobileStatusOutForDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'en cours'**
+  String get restaurantMobileStatusOutForDelivery;
+
+  /// No description provided for @restaurantMobileStatusDelivered.
+  ///
+  /// In fr, this message translates to:
+  /// **'livrée'**
+  String get restaurantMobileStatusDelivered;
+
+  /// No description provided for @restaurantMobileRiderDepart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ'**
+  String get restaurantMobileRiderDepart;
+
+  /// No description provided for @restaurantMobileRiderDeparted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ en livraison'**
+  String get restaurantMobileRiderDeparted;
+
+  /// No description provided for @restaurantMobileRiderDeliver.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livrée'**
+  String get restaurantMobileRiderDeliver;
+
+  /// No description provided for @restaurantMobileRiderDeliveredOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison effectuée'**
+  String get restaurantMobileRiderDeliveredOk;
+
+  /// No description provided for @restaurantMobileRiderTransitionError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Transition impossible depuis cet état'**
+  String get restaurantMobileRiderTransitionError;
+
+  /// No description provided for @restaurantMobileManagerSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'KPIs, stock et caisse'**
+  String get restaurantMobileManagerSubtitle;
+
+  /// No description provided for @restaurantMobileManagerKpisLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des KPIs…'**
+  String get restaurantMobileManagerKpisLoading;
+
+  /// No description provided for @restaurantMobileManagerKpisError.
+  ///
+  /// In fr, this message translates to:
+  /// **'KPIs indisponibles'**
+  String get restaurantMobileManagerKpisError;
+
+  /// No description provided for @restaurantMobileManagerRevenueToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chiffre du jour'**
+  String get restaurantMobileManagerRevenueToday;
+
+  /// No description provided for @restaurantMobileManagerOrders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandes'**
+  String get restaurantMobileManagerOrders;
+
+  /// No description provided for @restaurantMobileManagerAvgBasket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier moyen'**
+  String get restaurantMobileManagerAvgBasket;
+
+  /// No description provided for @restaurantMobileManagerTablesOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables ouvertes'**
+  String get restaurantMobileManagerTablesOpen;
+
+  /// No description provided for @restaurantMobileManagerCash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Caisse'**
+  String get restaurantMobileManagerCash;
+
+  /// No description provided for @restaurantMobileManagerSessionError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session indisponible'**
+  String get restaurantMobileManagerSessionError;
+
+  /// No description provided for @restaurantMobileManagerNoSession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session de caisse ouverte'**
+  String get restaurantMobileManagerNoSession;
+
+  /// No description provided for @restaurantMobileManagerSessionOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'ouverte'**
+  String get restaurantMobileManagerSessionOpen;
+
+  /// No description provided for @restaurantMobileManagerClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer'**
+  String get restaurantMobileManagerClose;
+
+  /// No description provided for @restaurantMobileManagerCloseTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer la caisse'**
+  String get restaurantMobileManagerCloseTitle;
+
+  /// No description provided for @restaurantMobileManagerCountedLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compté en caisse'**
+  String get restaurantMobileManagerCountedLabel;
+
+  /// No description provided for @restaurantMobileManagerClosedOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Caisse clôturée'**
+  String get restaurantMobileManagerClosedOk;
+
+  /// No description provided for @restaurantMobileManagerCloseError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôture impossible'**
+  String get restaurantMobileManagerCloseError;
+
+  /// No description provided for @restaurantMobileManagerStockAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes stock'**
+  String get restaurantMobileManagerStockAlerts;
+
+  /// No description provided for @restaurantMobileManagerStockAlertsError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes indisponibles'**
+  String get restaurantMobileManagerStockAlertsError;
+
+  /// No description provided for @restaurantMobileManagerNoStockAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune alerte de seuil'**
+  String get restaurantMobileManagerNoStockAlerts;
+
+  /// No description provided for @restaurantMobileManagerIngredient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédient #{id}'**
+  String restaurantMobileManagerIngredient(Object id);
+
+  /// No description provided for @restaurantMobileManagerStockLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock : {quantity} / seuil : {threshold}'**
+  String restaurantMobileManagerStockLevel(Object quantity, Object threshold);
 
   /// No description provided for @travelLoading.
   ///
@@ -15763,6 +16201,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Locations & Hôtels'**
   String get travelTabRentals;
+
+  /// No description provided for @travelTabQuizzes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quiz'**
+  String get travelTabQuizzes;
+
+  /// No description provided for @travelTabAdverts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annonces'**
+  String get travelTabAdverts;
+
+  /// No description provided for @travelTabSites.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites touristiques'**
+  String get travelTabSites;
+
+  /// No description provided for @travelTabContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get travelTabContacts;
 
   /// No description provided for @travelReferentielTabslabel.
   ///
@@ -15943,6 +16405,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Rechercher un hôtel…'**
   String get travelSearchHotel;
+
+  /// No description provided for @travelSearchQuiz.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un quiz…'**
+  String get travelSearchQuiz;
+
+  /// No description provided for @travelSearchAdvert.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher une annonce…'**
+  String get travelSearchAdvert;
+
+  /// No description provided for @travelSearchSite.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un site…'**
+  String get travelSearchSite;
+
+  /// No description provided for @travelSearchContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un contact…'**
+  String get travelSearchContact;
 
   /// No description provided for @travelFieldIso2.
   ///
@@ -17089,6 +17575,528 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Montant en devises (1 = 100 minor)'**
   String get travelFormMoneyminor;
+
+  /// No description provided for @travelQuizTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quiz & jeux-concours'**
+  String get travelQuizTitle;
+
+  /// No description provided for @travelQuizSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez des quiz, ajoutez des questions et consultez les participations.'**
+  String get travelQuizSubtitle;
+
+  /// No description provided for @travelQuizQuestionstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Questions du quiz'**
+  String get travelQuizQuestionstitle;
+
+  /// No description provided for @travelQuizResultstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultats'**
+  String get travelQuizResultstitle;
+
+  /// No description provided for @travelQuizFieldQuestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Question'**
+  String get travelQuizFieldQuestion;
+
+  /// No description provided for @travelQuizFieldOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choix'**
+  String get travelQuizFieldOptions;
+
+  /// No description provided for @travelQuizFieldPoints.
+  ///
+  /// In fr, this message translates to:
+  /// **'Points'**
+  String get travelQuizFieldPoints;
+
+  /// No description provided for @travelQuizFieldCorrectindex.
+  ///
+  /// In fr, this message translates to:
+  /// **'Index de la bonne réponse'**
+  String get travelQuizFieldCorrectindex;
+
+  /// No description provided for @travelQuizFieldMaxparticipations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Participations max. par contact'**
+  String get travelQuizFieldMaxparticipations;
+
+  /// No description provided for @travelQuizFieldParticipantname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelQuizFieldParticipantname;
+
+  /// No description provided for @travelQuizFieldParticipantemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get travelQuizFieldParticipantemail;
+
+  /// No description provided for @travelQuizFieldScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Score'**
+  String get travelQuizFieldScore;
+
+  /// No description provided for @travelQuizFieldBonus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonus'**
+  String get travelQuizFieldBonus;
+
+  /// No description provided for @travelQuizFieldSubmittedat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumis le'**
+  String get travelQuizFieldSubmittedat;
+
+  /// No description provided for @travelQuizActionQuestions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Questions'**
+  String get travelQuizActionQuestions;
+
+  /// No description provided for @travelQuizActionResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultats'**
+  String get travelQuizActionResults;
+
+  /// No description provided for @travelQuizActionAddquestion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une question'**
+  String get travelQuizActionAddquestion;
+
+  /// No description provided for @travelQuizHintOptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une option par ligne.'**
+  String get travelQuizHintOptions;
+
+  /// No description provided for @travelQuizHintCorrectindex.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commence à 0 (première ligne = 0).'**
+  String get travelQuizHintCorrectindex;
+
+  /// No description provided for @travelQuizstatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get travelQuizstatusDraft;
+
+  /// No description provided for @travelQuizstatusActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get travelQuizstatusActive;
+
+  /// No description provided for @travelQuizstatusClosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturé'**
+  String get travelQuizstatusClosed;
+
+  /// No description provided for @travelAdvertsTabslabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-sections annonces'**
+  String get travelAdvertsTabslabel;
+
+  /// No description provided for @travelAdvertsTabtypes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Types'**
+  String get travelAdvertsTabtypes;
+
+  /// No description provided for @travelAdvertsTabpositions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements'**
+  String get travelAdvertsTabpositions;
+
+  /// No description provided for @travelAdvertsTabprices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Grille tarifaire'**
+  String get travelAdvertsTabprices;
+
+  /// No description provided for @travelAdvertsTabadverts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annonces'**
+  String get travelAdvertsTabadverts;
+
+  /// No description provided for @travelAdvertsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annonces payantes'**
+  String get travelAdvertsTitle;
+
+  /// No description provided for @travelAdvertsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre, encaisser, valider/rejeter et renouveler les annonces.'**
+  String get travelAdvertsSubtitle;
+
+  /// No description provided for @travelAdvertsCreatetitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre une annonce'**
+  String get travelAdvertsCreatetitle;
+
+  /// No description provided for @travelAdvertsTypes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Types d’annonces'**
+  String get travelAdvertsTypes;
+
+  /// No description provided for @travelAdvertsPositions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacements publicitaires'**
+  String get travelAdvertsPositions;
+
+  /// No description provided for @travelAdvertsPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Grille tarifaire'**
+  String get travelAdvertsPrices;
+
+  /// No description provided for @travelAdvertsFieldType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get travelAdvertsFieldType;
+
+  /// No description provided for @travelAdvertsFieldPosition.
+  ///
+  /// In fr, this message translates to:
+  /// **'Emplacement'**
+  String get travelAdvertsFieldPosition;
+
+  /// No description provided for @travelAdvertsFieldValiditydays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée de validité (jours)'**
+  String get travelAdvertsFieldValiditydays;
+
+  /// No description provided for @travelAdvertsFieldContent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu'**
+  String get travelAdvertsFieldContent;
+
+  /// No description provided for @travelAdvertsFieldPrice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix'**
+  String get travelAdvertsFieldPrice;
+
+  /// No description provided for @travelAdvertsFieldPriceperimage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix par image'**
+  String get travelAdvertsFieldPriceperimage;
+
+  /// No description provided for @travelAdvertsFieldPricepercharacter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix par caractère'**
+  String get travelAdvertsFieldPricepercharacter;
+
+  /// No description provided for @travelAdvertsFieldExpiresat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le'**
+  String get travelAdvertsFieldExpiresat;
+
+  /// No description provided for @travelAdvertsFieldRejectreason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif du rejet'**
+  String get travelAdvertsFieldRejectreason;
+
+  /// No description provided for @travelAdvertsActionRenew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Renouveler'**
+  String get travelAdvertsActionRenew;
+
+  /// No description provided for @travelAdvertsActionSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre'**
+  String get travelAdvertsActionSubmit;
+
+  /// No description provided for @travelAdvertsActionPay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser'**
+  String get travelAdvertsActionPay;
+
+  /// No description provided for @travelAdvertsActionValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get travelAdvertsActionValidate;
+
+  /// No description provided for @travelAdvertsActionReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter'**
+  String get travelAdvertsActionReject;
+
+  /// No description provided for @travelAdvertsRejecttitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejeter l’annonce'**
+  String get travelAdvertsRejecttitle;
+
+  /// No description provided for @travelAdvertsRejecttarget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annonce'**
+  String get travelAdvertsRejecttarget;
+
+  /// No description provided for @travelSitesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites touristiques'**
+  String get travelSitesTitle;
+
+  /// No description provided for @travelSitesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lieux d’intérêt avec localisation et recherche par ville.'**
+  String get travelSitesSubtitle;
+
+  /// No description provided for @travelSitesFiltercity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Filtrer par ville'**
+  String get travelSitesFiltercity;
+
+  /// No description provided for @travelSitesAllcities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes les villes'**
+  String get travelSitesAllcities;
+
+  /// No description provided for @travelSitesStatusdisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get travelSitesStatusdisabled;
+
+  /// No description provided for @travelSitesFieldLatitude.
+  ///
+  /// In fr, this message translates to:
+  /// **'Latitude'**
+  String get travelSitesFieldLatitude;
+
+  /// No description provided for @travelSitesFieldLongitude.
+  ///
+  /// In fr, this message translates to:
+  /// **'Longitude'**
+  String get travelSitesFieldLongitude;
+
+  /// No description provided for @travelContactsFormtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formulaire de contact'**
+  String get travelContactsFormtitle;
+
+  /// No description provided for @travelContactsFormsubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisir une demande de contact — le consentement email est obligatoire.'**
+  String get travelContactsFormsubtitle;
+
+  /// No description provided for @travelContactsRegistrytitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Registre des contacts'**
+  String get travelContactsRegistrytitle;
+
+  /// No description provided for @travelContactsRegistrysubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consentements par canal (opt-in/opt-out horodaté) et notification manuelle.'**
+  String get travelContactsRegistrysubtitle;
+
+  /// No description provided for @travelContactsRegistryunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Registre indisponible — endpoint de liste non encore livré sur ce déploiement.'**
+  String get travelContactsRegistryunavailable;
+
+  /// No description provided for @travelContactsConsentlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'J’accepte d’être contacté par email au sujet de ma demande.'**
+  String get travelContactsConsentlabel;
+
+  /// No description provided for @travelContactsConsenton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consenti'**
+  String get travelContactsConsenton;
+
+  /// No description provided for @travelContactsConsentoff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non consenti'**
+  String get travelContactsConsentoff;
+
+  /// No description provided for @travelContactsNotifytitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notification manuelle'**
+  String get travelContactsNotifytitle;
+
+  /// No description provided for @travelContactsNotifytarget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Destinataire'**
+  String get travelContactsNotifytarget;
+
+  /// No description provided for @travelContactsNotifyhint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un canal sans consentement est ignoré ; 422 si aucun canal consenti.'**
+  String get travelContactsNotifyhint;
+
+  /// No description provided for @travelContactsChannelapp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Application (employé lié)'**
+  String get travelContactsChannelapp;
+
+  /// No description provided for @travelContactsSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande reçue — merci, nous reviendrons vers vous.'**
+  String get travelContactsSuccess;
+
+  /// No description provided for @travelContactsFieldFirstname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get travelContactsFieldFirstname;
+
+  /// No description provided for @travelContactsFieldLastname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelContactsFieldLastname;
+
+  /// No description provided for @travelContactsFieldEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get travelContactsFieldEmail;
+
+  /// No description provided for @travelContactsFieldPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelContactsFieldPhone;
+
+  /// No description provided for @travelContactsFieldMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message'**
+  String get travelContactsFieldMessage;
+
+  /// No description provided for @travelContactsFieldConsents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consentements'**
+  String get travelContactsFieldConsents;
+
+  /// No description provided for @travelContactsFieldChannels.
+  ///
+  /// In fr, this message translates to:
+  /// **'Canaux'**
+  String get travelContactsFieldChannels;
+
+  /// No description provided for @travelContactsActionSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer la demande'**
+  String get travelContactsActionSubmit;
+
+  /// No description provided for @travelContactsActionToggleconsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Basculer le consentement'**
+  String get travelContactsActionToggleconsent;
+
+  /// No description provided for @travelContactsActionNotify.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifier'**
+  String get travelContactsActionNotify;
+
+  /// No description provided for @travelContactsActionSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get travelContactsActionSend;
+
+  /// No description provided for @travelAdvertstatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get travelAdvertstatusDraft;
+
+  /// No description provided for @travelAdvertstatusSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumise'**
+  String get travelAdvertstatusSubmitted;
+
+  /// No description provided for @travelAdvertstatusPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payée'**
+  String get travelAdvertstatusPaid;
+
+  /// No description provided for @travelAdvertstatusValidated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validée'**
+  String get travelAdvertstatusValidated;
+
+  /// No description provided for @travelAdvertstatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejetée'**
+  String get travelAdvertstatusRejected;
+
+  /// No description provided for @travelAdvertstatusExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expirée'**
+  String get travelAdvertstatusExpired;
+
+  /// No description provided for @travelAdvertstatusArchived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivée'**
+  String get travelAdvertstatusArchived;
 }
 
 class _AppLocalizationsDelegate
