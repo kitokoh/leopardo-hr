@@ -64,6 +64,10 @@
   "openapi": "3.0.3",
   "api_version": "4.24.0",
   "operation_count": 1026,
+  "spec_sha256": "6144ef05a525f41354d879c7d2c081f07b8c3f831dfaa1147ec43679f43ed55e",
+  "openapi": "3.0.3",
+  "api_version": "4.24.0",
+  "operation_count": 895,
   "targets": [
     "javascript",
     "python"

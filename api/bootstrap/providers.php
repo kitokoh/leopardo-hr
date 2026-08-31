@@ -10,6 +10,7 @@ use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
@@ -81,4 +82,8 @@ return [
 
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
 ];

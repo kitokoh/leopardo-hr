@@ -1396,6 +1396,10 @@ class LeopardoClient:
         """Resume dashboard"""
         return self.request("GET", "/dashboard/summary", **kwargs)
 
+    def get_delivery_ping(self, **kwargs):
+        """Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)"""
+        return self.request("GET", "/delivery/ping", **kwargs)
+
     def get_demo_users(self, **kwargs):
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)
