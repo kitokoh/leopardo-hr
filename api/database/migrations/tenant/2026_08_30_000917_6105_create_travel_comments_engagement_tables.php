@@ -32,6 +32,7 @@ return new class extends Migration
             });
 
             DB::statement("COMMENT ON TABLE travel_comments IS 'Commentaires d''articles - modération (TRAVEL-902/#6105).'");
+            DB::statement("COMMENT ON TABLE travel_comments IS 'Commentaires d'articles - modération (TRAVEL-902/#6105).'");
         }
 
         if (! schemaTableExists('travel_likes')) {
@@ -46,6 +47,7 @@ return new class extends Migration
             });
 
             DB::statement("COMMENT ON TABLE travel_likes IS 'Likes d''articles - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
+            DB::statement("COMMENT ON TABLE travel_likes IS 'Likes d'articles - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
         }
 
         if (! schemaTableExists('travel_shares')) {
@@ -61,6 +63,7 @@ return new class extends Migration
             });
 
             DB::statement("COMMENT ON TABLE travel_shares IS 'Partages d''articles (canal) (TRAVEL-903/#6106).'");
+            DB::statement("COMMENT ON TABLE travel_shares IS 'Partages d'articles (canal) (TRAVEL-903/#6106).'");
         }
 
         if (! schemaTableExists('travel_ratings')) {
@@ -76,6 +79,7 @@ return new class extends Migration
             });
 
             DB::statement("COMMENT ON TABLE travel_ratings IS 'Notes d''articles 1..5 - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
+            DB::statement("COMMENT ON TABLE travel_ratings IS 'Notes d'articles 1..5 - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
         }
     }
 

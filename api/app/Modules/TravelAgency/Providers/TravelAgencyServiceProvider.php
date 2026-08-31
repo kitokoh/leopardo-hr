@@ -36,6 +36,12 @@ use App\Modules\TravelAgency\Console\Commands\TravelSettleSalesCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
+use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelSalesSettleCommand;
+use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
+use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
+use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
@@ -107,6 +113,16 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use App\Modules\TravelAgency\Policies\TravelAdvertPolicy;
+use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelStation;
+use App\Modules\TravelAgency\Domain\Models\TravelTicket;
+use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
+use App\Modules\TravelAgency\Infrastructure\Services\NullTravelCustomerContactResolver;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
@@ -160,6 +176,7 @@ use Illuminate\Support\ServiceProvider;
  * au fil des lots API (épic 3xx).
  * implémentations) ; les Policies métier sont enregistrées dans `boot()`
  * au fil des lots API (épic 3xx) et des extensions 8xx.
+ * implémentations) ; les Policies métier sont enregistrées dans `boot()`.
  *
  * L'activation par tenant passe par le feature flag `travelagency`
  * (companies.features) — voir EnsureTravelAgencyModuleMiddleware (TRAVEL-102)
@@ -214,10 +231,33 @@ class TravelAgencyServiceProvider extends ServiceProvider
             TravelExpirePendingBookingsCommand::class,
             TravelExpireAdvertsCommand::class,
         ]);
+        // TRAVEL-414..418 (#6066..#6070) — outbox dispatch, expiration des
+        // réservations pending, synthèse Accounting.
+        $this->commands([
+            RecalculateTravelReadModelsCommand::class,
+            TravelOutboxDispatchCommand::class,
+            TravelSalesSettleCommand::class,
+        ]);
+
+        // Registre des consommateurs d'outbox TravelAgency (TRAVEL-414) ;
+        // le consommateur Notifications BC-13 (TRAVEL-415) s'y déclare dans
+        // boot().
+        $this->app->singleton(TravelOutboxConsumerRegistry::class);
+
+        // Contrat TravelCustomerContactResolver (TRAVEL-416) : implémentation
+        // par défaut vide — le BC CRM client fournira la vraie résolution.
+        $this->app->bind(
+            TravelCustomerContactResolver::class,
+            static fn (): NullTravelCustomerContactResolver => new NullTravelCustomerContactResolver
+        );
     }
 
     public function boot(): void
     {
+        // TRAVEL-415 (#6067) — consommateur outbox → notifications voyageur.
+        $registry = $this->app->make(TravelOutboxConsumerRegistry::class);
+        $registry->register($this->app->make(TravelNotificationConsumer::class));
+
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
         Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
         Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
@@ -276,5 +316,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelQuiz::class, TravelQuizPolicy::class);
         Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
         Gate::policy(TravelTouristSite::class, TravelTouristSitePolicy::class);
+        Gate::policy(TravelComment::class, TravelCommentPolicy::class);
+        Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
     }
 }

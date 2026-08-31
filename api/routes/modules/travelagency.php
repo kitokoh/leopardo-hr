@@ -37,6 +37,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeContr
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
@@ -58,6 +60,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopContr
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelContactController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCountryController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelEngagementController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelExportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelHealthController;
@@ -97,6 +100,9 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicContactLi
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRoundTripController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRentalVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelReportController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
@@ -115,6 +121,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
@@ -659,4 +667,5 @@ Route::post('/travel/public/contact', [TravelPublicContactController::class, 'st
         Route::post('/round-trips', [TravelRoundTripController::class, 'store']);
         Route::get('/round-trips/{travelRoundTrip}', [TravelRoundTripController::class, 'show']);
         Route::post('/sync', [TravelPartnerController::class, 'sync']);
+
     });

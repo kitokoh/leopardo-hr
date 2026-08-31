@@ -1516,6 +1516,353 @@
     "today": "TODAY",
     "training": {
       "label": "Training"
+  "dashboard": {
+    "title": "Dashboard",
+    "company": "Company",
+    "active_employees": "Active",
+    "upgrade": "Upgrade",
+    "priority_actions": "Priority actions",
+    "launch_readiness": "Launch readiness",
+    "recent_activity": "Recent activity",
+    "recent_activity_hint": "Latest actions from your team",
+    "leo_ia_announcement_title": "Congratulations team",
+    "leo_ia_announcement_body": "Congrats to the whole team for this week's engagement. Keep up the momentum!",
+    "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments.",
+    "leo_presence_insight": "Today, {today} check-in(s) out of {active} active employee(s). Would you like to send a congratulations message to the team?",
+    "leo_presence_empty": "No attendance data available right now. Would you still like to send a congratulations message to the team?",
+    "leo_announcements_count": "{count} announcement(s) published in your company.",
+    "presence_today_title": "Today's attendance",
+    "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
+    "presence_today_empty": "No attendance data available.",
+    "portfolioPriorities": "Portfolio priorities",
+    "client": "Client",
+    "health": "Health",
+    "risk": "Risk",
+    "actions": "Actions",
+    "seeAll": "See all",
+    "noPriorityCompanies": "No priority companies for now.",
+    "pendingRegistrations": "Pending registrations",
+    "noPendingRequests": "No pending requests.",
+    "adoption": "Adoption",
+    "checkins30d": "Check-ins 30d",
+    "activeEmployees": "Active employees",
+    "clientsAtRisk": "At-risk clients",
+    "revenue": "Revenue",
+    "collected30d": "Collected 30d",
+    "overdue": "Overdue",
+    "activeSubscriptions": "Active subscriptions",
+    "shortcuts": "Shortcuts",
+    "clientPortfolio": "Client portfolio",
+    "subscriptions": "Subscriptions",
+    "clientRequests": "Client requests",
+    "createActivateClient": "Create or activate a client",
+    "openClientPortfolio": "Open client portfolio",
+    "processIncomingRequests": "Process incoming requests",
+    "viewClientRequests": "View client requests",
+    "monitorAtRiskClients": "Monitor at-risk clients",
+    "analyzePriorities": "Analyze priorities",
+    "manageSubscriptionsRevenue": "Manage subscriptions and revenue",
+    "openSubscriptions": "Open subscriptions",
+    "checkSystemSecurity": "Check system and security",
+    "openSystem": "Open system",
+    "preparePartnerIntegrations": "Prepare partner integrations",
+    "openWebhooks": "Open webhooks",
+    "loadError": "Unable to load the platform cockpit.",
+    "riskHigh": "High risk",
+    "riskMedium": "Medium risk",
+    "riskLow": "Low risk",
+    "notProvided": "Not provided",
+    "pending_absences": "Pending absences",
+    "departments": "Departments",
+    "kpi_total": "total",
+    "kpi_to_process": "to process",
+    "kpi_active": "active",
+    "priority_process_absences": "Process pending absences",
+    "priority_check_presences": "Check today's attendance",
+    "recent_activity_empty": "No recent activity to display for this tenant.",
+    "dashboard_load_error": "Unable to load dashboard data.",
+    "tenant_loading": "Loading tenant data...",
+    "welcome_today": "Welcome! Here is what is happening today.",
+    "go_live_ready": "Your workspace is ready for go-live",
+    "go_live_required": "Actions required before go-live",
+    "go_live_score": "Score {score}/100 based on tenant data, communication, payroll, attendance and client instrumentation.",
+    "tab_today": "Today",
+    "tab_week": "This week",
+    "system_fallback": "System",
+    "shortcut_employees": "Employees",
+    "shortcut_leave": "Leave",
+    "shortcut_attendance": "Attendance",
+    "shortcut_attendance_hint": "See your status for today.",
+    "shortcut_absences": "Absences",
+    "shortcut_payroll_hint": "View your payroll documents.",
+    "shortcut_preferences_hint": "Your interface follows your preferences.",
+    "journal": "Journal",
+    "see_all_activity": "View all activity",
+    "ai_assistant": "Smart assistant",
+    "message_sent": "Message sent to the team",
+    "sending": "Sending...",
+    "send_yes": "Yes, send",
+    "later": "Later",
+    "quick_actions": "Quick actions",
+    "quick_reports": "Reports",
+    "quick_export": "Export",
+    "emp_checkin": "Attendance",
+    "emp_checkin_hint": "See your status for today.",
+    "emp_absences": "Absences",
+    "emp_absences_hint": "Track your requests and balances.",
+    "emp_paystubs": "Paystubs",
+    "emp_paystubs_hint": "View your payroll documents.",
+    "emp_language": "Language",
+    "emp_language_hint": "Your interface follows your preferences.",
+    "employee_space": "Employee space",
+    "hello": "Hello {name}",
+    "employee_intro": "Find your useful actions without going through manager views: attendance, absences, paystubs and language.",
+    "superadmin_intro": "This surface is optimized for client workspaces. Platform administration happens from the dedicated admin dashboard.",
+    "open_admin_dashboard": "Open the admin dashboard",
+    "admin_url_hint": "Set NEXT_PUBLIC_ADMIN_URL to add the direct link to the platform administration.",
+    "platform_health": "Platform health",
+    "client_requests": "Client requests",
+    "tenants_at_risk": "Tenants at risk",
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "searchPlaceholder": "Search...",
+    "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
+    "yourCompany": "Your company",
+    "activeCompanies": "Active companies",
+    "badgeRisks": ":count risks",
+    "badgeTenants": ":count tenants",
+    "badgeToProcess": ":count to process",
+    "cards": {
+      "checkSystemDesc": "Check API health, configuration, logs, backups and incident signals.",
+      "createClientDesc": "Qualify a company, open its tenant and check its launch status.",
+      "manageSubscriptionsDesc": "Monitor MRR, outstanding payments, active plans and the platform sales trajectory.",
+      "monitorAtRiskDesc": "Identify accounts weak in adoption, attendance or operational health.",
+      "prepareIntegrationsDesc": "Track webhooks, exports, reports and API surfaces needed by integrators.",
+      "processRequestsDesc": "Track trial requests, prioritize leads and avoid blocked prospects."
+    },
+    "criticalAlerts": "Critical alerts",
+    "details": "Details",
+    "pendingRequestsTitle": "Pending requests",
+    "platformMrr": "Platform MRR",
+    "processRequests": "Process requests",
+    "leave_balance_title": "My leave balance",
+    "leave_balance_subtitle": "Remaining days by type, current year",
+    "leave_balance_loading": "Loading balance…",
+    "leave_balance_error": "Unable to load leave balance.",
+    "leave_balance_empty": "No balance configured for this account.",
+    "leave_balance_available": "{days} day(s) available",
+    "leave_balance_used": "{days} used",
+    "see_absences": "View my absences",
+    "leave_balance_unknown": "Leave"
+  },
+  "marketing": {
+    "oauth": {
+      "nav_title": "Marketing OAuth",
+      "title": "Marketing OAuth Settings",
+      "subtitle": "Connect your social media accounts via Ayrshare",
+      "ayrshare_info": "These settings are used by Ayrshare to post to your social networks.",
+      "save": "Save",
+      "saved_ok": "{provider} configuration saved",
+      "providers": {
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "Connect to LinkedIn Marketing API"
+        },
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Connect to Facebook Graph API"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Connect to Twitter API v2"
+        }
+      },
+      "fields": {
+        "client_id": "Client ID",
+        "client_secret": "Client Secret",
+        "redirect_uri": "Redirect URI",
+        "secret_hint": "(leave blank to keep current)",
+        "placeholder_id": "Your Client ID",
+        "placeholder_secret": "New secret (optional)",
+        "placeholder_uri": "https://example.com/oauth/callback"
+      }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "postContentPlaceholder": "Post content..."
+  },
+  "attendance": {
+    "sending_to_server": "Sending {label} to the server...",
+    "retry_after_failure": "{label}. Please try again.",
+    "absent": "absent",
+    "day": {
+      "summary": "Day of {date}, status {status}, {range}, {hours}.",
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "hour": {
+      "worked": "hour worked"
+    },
+    "hours": {
+      "worked": "hours worked"
+    },
+    "in": {
+      "progress": "in progress"
+    },
+    "late": "late",
+    "no": {
+      "clock": "no clock-in"
+    },
+    "on": {
+      "time": "on time"
+    },
+    "overtime": "Overtime hours",
+    "time": {
+      "range": "from {from} to {to}"
+    },
+    "future": {
+      "time": {
+        "error": "Cannot enter a future time"
+      }
+    },
+    "break": {
+      "failure": "Break not confirmed",
+      "hint": "Closes the session and starts a break",
+      "loading": "Sending break",
+      "success": "Break confirmed.",
+      "title": "Take a break"
+    },
+    "checkin": {
+      "failure": "Check-in not confirmed. Try again.",
+      "label": "Check-in",
+      "sending": "Sending check-in to server...",
+      "success": "Check-in confirmed."
+    },
+    "checkout": {
+      "failure": "Checkout not confirmed. Try again.",
+      "label": "Check-out",
+      "sending": "Sending checkout to server...",
+      "success": "Checkout confirmed."
+    },
+    "correction": {
+      "checkin": {
+        "label": "Actual check-in *"
+      },
+      "checkout": {
+        "label": "Actual check-out"
+      },
+      "direct": {
+        "hint": "The correction will be applied to the attendance record."
+      },
+      "no": {
+        "log": {
+          "warning": "No existing attendance entry to edit for this day."
+        }
+      },
+      "reason": {
+        "hint": "Reason (e.g. forgot to clock in at 8h)",
+        "required": "Reason is required"
+      },
+      "request": {
+        "hint": "The request will be sent to HR for validation."
+      },
+      "submit": {
+        "direct": "Edit",
+        "request": "Request a correction"
+      },
+      "title": "Edit attendance",
+      "checkin_time": "Actual clock-in time",
+      "checkout_time": "Actual clock-out time",
+      "checkin_required": "Enter the actual clock-in time",
+      "submit_error": "Unable to send the correction at the moment."
+    },
+    "daily": {
+      "estimate": "Estimated daily earnings"
+    },
+    "fingerprint": {
+      "enable": "Enable fingerprint (optional)",
+      "enabled": "Fingerprint enabled (optional)"
+    },
+    "history": {
+      "title": "History"
+    },
+    "menu": {
+      "edit": "Edit",
+      "monthly": "My full month",
+      "profile": "My profile"
+    },
+    "mission": {
+      "failure": "Mission not confirmed",
+      "hint": "Work time outside the usual site",
+      "loading": "Sending mission",
+      "success": "Mission started.",
+      "title": "Mission"
+    },
+    "none": "None",
+    "other": {
+      "label": "Other"
+    },
+    "overtime_failure": "Overtime not confirmed",
+    "overtime_hint": "Start an overtime session",
+    "overtime_loading": "Sending overtime",
+    "overtime_short": "OT",
+    "overtime_success": "Overtime started.",
+    "overtime_title": "Overtime",
+    "pause": {
+      "label": "Break"
+    },
+    "preferences": {
+      "title": "Preferences"
+    },
+    "press": {
+      "to": {
+        "checkin": "Tap to record your check-in",
+        "checkout": "Tap to record your checkout"
+      }
+    },
+    "resume": {
+      "failure": "Resume not confirmed",
+      "hint": "Resume after a break or leave",
+      "loading": "Sending resume",
+      "success": "Resume confirmed.",
+      "title": "Resume"
+    },
+    "role": {
+      "employee": "Employee",
+      "employee2": "Employee",
+      "finance": "Finance",
+      "hr": "HR Manager",
+      "manager": "Manager",
+      "principal": "Principal Manager"
+    },
+    "saving": "Saving...",
+    "settings": {
+      "title": "Settings"
+    },
+    "status": {
+      "complete": "Complete",
+      "in": {
+        "progress": "In progress"
+      },
+      "late": "Late",
+      "pointer": "To clock in"
+    },
+    "sync": {
+      "title": "Synchronization"
+    },
+    "tasks": {
+      "title": "Today's tasks",
+      "loading": "Loading today's tasks...",
+      "unavailable": "Tasks unavailable",
+      "unavailable_hint": "Clocking in remains functional. Retry after sync.",
+      "empty": "No tasks today",
+      "empty_hint": "You can still punch normally. Assigned tasks will appear here.",
+      "close_hint": "Close completed tasks before clocking out."
+    },
+    "this": {
+      "week": "THIS WEEK"
+    },
+    "today": "TODAY",
+    "training": {
+      "label": "Training"
     },
     "travel": {
       "failure": "Travel not confirmed",
@@ -28069,6 +28416,1324 @@
   },
   "settingsEdgeToken": "Edge token",
   "dashboardExecutiveView": "Executive view",
+  "tax_rates": {
+    "title": "Legal rates — validation",
+    "subtitle": "Tax brackets and social contributions used by the payroll engine. Any change goes through a two-step validation workflow (accountant → platform admin) with an immutable audit trail.",
+    "pending_title": "Pending validation",
+    "pending_empty": "No change pending validation.",
+    "rates_title": "Rates in force",
+    "rates_subtitle": "Only active rows are used in payslips.",
+    "rates_empty": "No rate recorded.",
+    "propose": "Propose a change",
+    "th_type": "Type",
+    "th_name": "Label",
+    "th_country": "Country",
+    "th_rate": "Rate",
+    "th_effective": "Effective",
+    "th_status": "Status",
+    "th_actions": "Actions",
+    "th_action": "Action",
+    "th_actor": "Actor",
+    "th_reason": "Reason",
+    "th_date": "Date",
+    "type_slab": "Bracket",
+    "type_contribution": "Contribution",
+    "status_active": "🟢 Active",
+    "status_pending": "🟡 Pending",
+    "status_draft": "⚪ Draft",
+    "status_superseded": "🔴 Superseded",
+    "submit": "Submit",
+    "history": "History",
+    "approve": "Approve",
+    "reject": "Reject",
+    "modal_title": "Propose a rate change",
+    "legal_ref": "Legal reference",
+    "legal_ref_required": "A legal reference is required (it is traced in the history).",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save",
+    "reject_modal_title": "Reject the change",
+    "reject_reason": "Rejection reason (required)",
+    "history_title": "Change history",
+    "history_empty": "No history entry.",
+    "history_created": "Created",
+    "history_submitted": "Submitted",
+    "history_approved": "Approved",
+    "history_rejected": "Rejected",
+    "history_superseded": "Superseded",
+    "close": "Close",
+    "load_error": "Unable to load rates.",
+    "saved": "Proposal saved.",
+    "save_error": "Unable to save the proposal.",
+    "submitted": "Change submitted for validation.",
+    "submit_error": "Unable to submit the change.",
+    "approved": "Change approved and active.",
+    "approve_error": "Unable to approve the change.",
+    "rejected": "Change rejected (back to draft).",
+    "reject_error": "Unable to reject the change.",
+    "history_error": "Unable to load history.",
+    "status_only": "Read-only (tenant action)"
+  },
+  "tax_slabs": {
+    "title": "Tax brackets by country",
+    "subtitle": "IRG/IRPP/ITSAS brackets used by the payroll engine. National management (platform admin), real-time impact simulator — nothing is persisted.",
+    "th_country": "Country",
+    "scope": "Scope",
+    "scope_national": "National",
+    "scope_company": "Company-specific",
+    "national_note": "national scope — company overrides stay on the tenant side",
+    "th_min": "Min",
+    "th_max": "Max",
+    "th_rate": "Rate",
+    "th_deduction": "Fixed deduction",
+    "th_effective": "Effective",
+    "th_actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add bracket",
+    "reset": "Reset to legal defaults",
+    "empty": "No bracket recorded for this country.",
+    "edit_title": "Edit bracket",
+    "add_title": "Add bracket",
+    "legal_ref": "Legal reference",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save",
+    "simulator_title": "Impact simulator",
+    "simulator_subtitle": "Enter a gross salary: the calculation (contributions, base, per-bracket tax, net, employer cost) runs on the real payroll engine — nothing is persisted.",
+    "sim_gross": "Gross salary",
+    "sim_run": "Simulate",
+    "sim_running": "Calculating…",
+    "sim_social": "Contributions (employee)",
+    "sim_tax": "Tax",
+    "sim_net": "Net",
+    "sim_base": "Base",
+    "sim_slab_tax": "Bracket tax",
+    "load_error": "Failed to load the tax brackets.",
+    "save_error": "Failed to save the bracket.",
+    "saved": "Bracket updated.",
+    "created": "Bracket created.",
+    "deleted": "Bracket deleted.",
+    "delete_error": "Failed to delete.",
+    "delete_confirm": "Delete bracket \"{name}\"?",
+    "reset_confirm": "Reset to the legal default values? Current brackets will be replaced.",
+    "reset_done": "Brackets reset.",
+    "reset_error": "Reset failed.",
+    "default_name": "{country} legal bracket",
+    "sim_error": "Simulation failed.",
+    "delete_confirm_title": "Delete this tax bracket?",
+    "reset_confirm_title": "Reset the tax brackets?"
+  },
+  "social_contrib": {
+    "title": "Social contributions by country",
+    "subtitle": "CNPS, CNSS, IPRES, CNAS… — rates, caps and types (employee/employer) per country. National management + simulator with/without cap and 2-country comparator.",
+    "th_country": "Country",
+    "th_org": "Scheme",
+    "th_code": "Code",
+    "th_type": "Type",
+    "th_rate": "Rate",
+    "th_cap": "Cap",
+    "th_effective": "Effective",
+    "th_actions": "Actions",
+    "type_all": "All",
+    "type_employee": "Employee",
+    "type_employer": "Employer",
+    "add": "Add contribution",
+    "edit": "Edit",
+    "delete": "Delete",
+    "empty": "No contribution recorded for this country.",
+    "add_title": "Add contribution",
+    "edit_title": "Edit contribution",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "save": "Save",
+    "sim_title": "Simulator & comparator",
+    "sim_subtitle": "Enter a gross salary: employee/employer breakdown, tax and total employer cost for two countries side by side (with or without the statutory cap).",
+    "sim_gross": "Gross salary",
+    "compare_country": "Compared country",
+    "ignore_caps": "Without statutory cap",
+    "sim_employee": "Employee contributions",
+    "sim_employer": "Employer contributions",
+    "sim_tax": "Tax",
+    "total_cost": "Total employer cost",
+    "load_error": "Failed to load the contributions.",
+    "save_error": "Failed to save the contribution.",
+    "saved": "Contribution updated.",
+    "created": "Contribution created.",
+    "deleted": "Contribution deleted.",
+    "delete_error": "Failed to delete.",
+    "delete_confirm": "Delete contribution \"{name}\"?",
+    "delete_confirm_title": "Delete this contribution?"
+  },
+  "payroll": {
+    "confidence": {
+      "label": "Payroll rules confidence",
+      "level_production": "Production",
+      "level_pilot": "Pilot",
+      "level_placeholder": "Placeholder",
+      "level_unknown": "Unknown",
+      "production": {
+        "message": "Rules validated and used in production for {country}. Always confirm current rates with a local advisor before relying on these amounts for statutory filings."
+      },
+      "pilot": {
+        "message": "Pilot rules for {country}: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations."
+      },
+      "placeholder": {
+        "message": "Placeholder without values for {country}: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced."
+      },
+      "unknown": {
+        "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
+      }
+    }
+  },
+  "pricing": {
+    "page": {
+      "hero": {
+        "badge": "Transparent pricing",
+        "headline": "Pricing built for field HR teams",
+        "subheadline": "Start for free — no credit card — and upgrade when you are ready.",
+        "primary": "Start for free",
+        "secondary": "Talk to an expert"
+      },
+      "plans": {
+        "badge": "Our plans",
+        "title": "A plan for every stage of your growth",
+        "subtitle": "Start small, scale up without switching platforms.",
+        "monthly": "Monthly",
+        "annual": "Annual",
+        "customPrice": "Custom",
+        "periodMonthly": "/month",
+        "periodAnnual": "/month billed annually",
+        "trialNote": "Free trial · No credit card required"
+      },
+      "currency": {
+        "label": "Show prices in",
+        "approx": "Approximate conversion from the EUR reference price; the contractual price stays denominated in EUR."
+      },
+      "trust": {
+        "items": {
+          "0": "Free trial — no credit card",
+          "1": "Support included from day one",
+          "2": "Data hosted in Europe",
+          "3": "Cancel anytime"
+        }
+      },
+      "comparison": {
+        "badge": "Full comparison",
+        "title": "Everything that's included",
+        "subtitle": "per plan",
+        "featureColumn": "Feature",
+        "categories": {
+          "0": {
+            "name": "HR management",
+            "features": {
+              "0": {
+                "name": "Web & mobile attendance",
+                "free": "Web only"
+              },
+              "1": {
+                "name": "Absences & leave"
+              },
+              "2": {
+                "name": "Shared calendar"
+              },
+              "3": {
+                "name": "Guided onboarding"
+              },
+              "4": {
+                "name": "Reviews & performance"
+              },
+              "5": {
+                "name": "Dynamic org chart"
+              }
+            }
+          },
+          "1": {
+            "name": "Payroll & finance",
+            "features": {
+              "0": {
+                "name": "Automated payroll"
+              },
+              "1": {
+                "name": "PDF pay slips"
+              },
+              "2": {
+                "name": "Accounting exports"
+              },
+              "3": {
+                "name": "Salary advances"
+              },
+              "4": {
+                "name": "Multi-country & currency"
+              },
+              "5": {
+                "name": "Advanced legal compliance"
+              }
+            }
+          },
+          "2": {
+            "name": "Field & mobile",
+            "features": {
+              "0": {
+                "name": "Employee mobile app"
+              },
+              "1": {
+                "name": "Manager mobile app"
+              },
+              "2": {
+                "name": "Offline mode"
+              },
+              "3": {
+                "name": "ZKTeco biometrics"
+              },
+              "4": {
+                "name": "Dedicated HR kiosk"
+              },
+              "5": {
+                "name": "GPS & geofencing"
+              }
+            }
+          },
+          "3": {
+            "name": "Security & integrations",
+            "features": {
+              "0": {
+                "name": "Document vault"
+              },
+              "1": {
+                "name": "REST API & Webhooks"
+              },
+              "2": {
+                "name": "SSO SAML / OIDC"
+              },
+              "3": {
+                "name": "Immutable audit trail"
+              },
+              "4": {
+                "name": "Isolated PostgreSQL schema"
+              },
+              "5": {
+                "name": "Dedicated SLA & support"
+              }
+            }
+          }
+        }
+      },
+      "faq": {
+        "badge": "Pricing FAQ",
+        "title": "Frequently asked questions",
+        "subtitle": "What to check before you start",
+        "all": "All",
+        "categories": {
+          "0": "Billing",
+          "1": "Trial",
+          "2": "Support",
+          "3": "Security",
+          "4": "Technical"
+        },
+        "items": {
+          "0": {
+            "question": "What does the Pilot plan include?",
+            "answer": "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.",
+            "category": "Trial"
+          },
+          "1": {
+            "question": "Can I change plan later?",
+            "answer": "Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.",
+            "category": "Billing"
+          },
+          "2": {
+            "question": "How does billing work?",
+            "answer": "Each plan includes a fixed monthly price with an included employee cap (30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.",
+            "category": "Billing"
+          },
+          "3": {
+            "question": "Is the trial really free?",
+            "answer": "Yes. Full free trial — 30 days on the Free plan, 14 days on paid plans. No credit card needed to sign up.",
+            "category": "Trial"
+          },
+          "4": {
+            "question": "What happens when the trial ends?",
+            "answer": "You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.",
+            "category": "Trial"
+          },
+          "5": {
+            "question": "What support is available?",
+            "answer": "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.",
+            "category": "Support"
+          },
+          "6": {
+            "question": "Where is my data hosted?",
+            "answer": "In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.",
+            "category": "Security"
+          },
+          "7": {
+            "question": "Are you GDPR compliant?",
+            "answer": "Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.",
+            "category": "Security"
+          },
+          "8": {
+            "question": "Is the API available?",
+            "answer": "REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.",
+            "category": "Technical"
+          }
+        },
+        "moreTitle": "Another question?",
+        "contactSupport": "Contact support"
+      },
+      "cta": {
+        "badge": "Ready to start",
+        "headline": "Launch your field HR today",
+        "subheadline": "Join teams that reduced payroll time from 2 hours to 8 minutes.",
+        "primary": "Start for free",
+        "secondary": "Contact sales"
+      },
+      "badges": {
+        "popular": "Most popular",
+        "free": "100% Free",
+        "freePrice": "Free",
+        "freeNote": "No credit card · Forever",
+        "freeTag": "free"
+      }
+    },
+    "plans": {
+      "customPrice": "Custom",
+      "free": {
+        "description": "Start without commitment — ideal for teams of up to 5 people",
+        "priceNote": "14-day free trial. Up to 5 employees.",
+        "employeeLimit": "Up to 5 employees",
+        "cta": "Start for free",
+        "features": {
+          "0": "Basic web and mobile attendance",
+          "1": "Leave and absence consultation",
+          "2": "Essential employee records",
+          "3": "PDF pay slips",
+          "4": "Employee app included",
+          "5": "Community support"
+        },
+        "period": "/month",
+        "annualPeriod": "/month"
+      },
+      "pilot": {
+        "description": "For testing Leopardo on one site, team or branch",
+        "priceNote": "14 days free. Up to 30 employees.",
+        "employeeLimit": "Up to 30 employees",
+        "cta": "Start free trial",
+        "features": {
+          "0": "Web and mobile attendance",
+          "1": "Leave, absences and balances",
+          "2": "Employee records and HR documents",
+          "3": "PDF pay slips and basic exports",
+          "4": "Client portal and manager space",
+          "5": "Employee and Manager apps included",
+          "6": "Email support within 48h"
+        },
+        "period": "/month",
+        "annualPeriod": "/month · billed 290 €/year"
+      },
+      "operations": {
+        "description": "For SMBs managing field teams, HR workflows and payroll",
+        "priceNote": "14 days free. Up to 200 employees.",
+        "employeeLimit": "Up to 200 employees",
+        "cta": "Try Operations",
+        "features": {
+          "0": "Everything in Pilot, plus:",
+          "1": "Multi-country payroll and HR validations",
+          "2": "Managers, teams and approval workflows",
+          "3": "ZKTeco, kiosk and mobile attendance",
+          "4": "HR analytics, readiness and advanced exports",
+          "5": "API, webhooks and integrations",
+          "6": "Priority support within 24h"
+        },
+        "period": "/month",
+        "annualPeriod": "/month · billed 790 €/year"
+      },
+      "enterprise": {
+        "description": "For multi-country groups, franchises, site networks and strict governance",
+        "priceNote": "14 days free. Unlimited employees.",
+        "employeeLimit": "Unlimited employees",
+        "cta": "Contact sales",
+        "features": {
+          "0": "Everything in Operations, plus:",
+          "1": "SAML/OIDC SSO and advanced policies",
+          "2": "SLA, migration guidance and training",
+          "3": "Dedicated environments or selected cloud region",
+          "4": "Audit trail, compliance exports and priority support",
+          "5": "AI, connectors and governance options"
+        }
+      }
+    },
+    "faq": {
+      "items": {
+        "0": {
+          "question": "What does the Pilot plan include?",
+          "answer": "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.",
+          "category": "Trial"
+        },
+        "1": {
+          "question": "Can I change plan later?",
+          "answer": "Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.",
+          "category": "Billing"
+        },
+        "2": {
+          "question": "How does billing work?",
+          "answer": "Each plan includes a fixed monthly price with an included employee cap (5 for Free, 30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.",
+          "category": "Billing"
+        },
+        "3": {
+          "question": "Is the trial really free?",
+          "answer": "Yes. 14 full days with all paid features included. No credit card needed to sign up.",
+          "category": "Trial"
+        },
+        "4": {
+          "question": "Is the Free plan really free?",
+          "answer": "Yes. The Free plan (€0/month) includes up to 5 employees: web attendance, leave and absences, employee records and the Employee mobile app. No credit card.",
+          "category": "Trial"
+        },
+        "5": {
+          "question": "What happens when the trial ends?",
+          "answer": "You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.",
+          "category": "Trial"
+        },
+        "6": {
+          "question": "What support is available?",
+          "answer": "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.",
+          "category": "Support"
+        },
+        "7": {
+          "question": "Where is my data hosted?",
+          "answer": "In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.",
+          "category": "Security"
+        },
+        "8": {
+          "question": "Are you GDPR compliant?",
+          "answer": "Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.",
+          "category": "Security"
+        },
+        "9": {
+          "question": "Is the API available?",
+          "answer": "REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.",
+          "category": "Technical"
+        }
+      }
+    },
+    "section": {
+      "freeLabel": "Free",
+      "toggleMonthly": "Monthly",
+      "toggleAnnual": "Annual",
+      "toggleAria": "Toggle billing period",
+      "fullComparison": "View full comparison"
+    },
+    "card": {
+      "periodDefault": "/month",
+      "customPriceDefault": "Custom"
+    }
+  },
+  "signup": {
+    "badge": "Free 14-day trial",
+    "title": "Try Leopardo with your company",
+    "subtitle": "Create your trial workspace in 2 minutes. No credit card required.",
+    "labelEmail": "Work email",
+    "placeholderEmail": "you@company.com",
+    "labelCompany": "Company",
+    "placeholderCompany": "Your company name",
+    "labelRole": "Your role",
+    "rolePlaceholder": "Select",
+    "roleFounder": "Founder / CEO",
+    "roleManager": "Manager",
+    "roleHr": "HR",
+    "roleOperations": "Field operations",
+    "roleOther": "Other",
+    "labelTeamSize": "Team size",
+    "teamPlaceholder": "Select",
+    "labelPhone": "Phone (optional)",
+    "placeholderPhone": "+1 555 000 0000",
+    "operationsNote": "We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.",
+    "agreePrefix": "I accept the",
+    "termsLink": "terms of use",
+    "privacyLink": "privacy policy",
+    "agreeSuffix": "and the",
+    "submitLabel": "Get my verification code",
+    "submittingLabel": "Sending code...",
+    "codeHint": "A 6-digit code will be sent to your email to confirm your identity.",
+    "haveAccount": "Already have an account?",
+    "loginCta": "Sign in",
+    "back": "Back",
+    "otpTitle": "Verify your email",
+    "otpSentTo": "We sent a 6-digit verification code to:",
+    "otpInvalidLength": "Please enter the 6 digits of the code.",
+    "otpInvalidCode": "Invalid or expired code.",
+    "otpVerifyError": "An error occurred during verification. Please try again.",
+    "verifyLabel": "Verify and create my workspace",
+    "verifyingLabel": "Verifying...",
+    "codeValidity": "The code is valid for 30 minutes. Check your spam folder if you cannot find it.",
+    "trackStatus": "Track my workspace status",
+    "pendingTitle": "Trial request received",
+    "pendingFallback": "Trial request received. Our team will contact you within 24 business hours.",
+    "pendingNote": "Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.",
+    "readyTitle": "Your workspace is ready!",
+    "readySubtitle": "The demo sandbox is provisioned. Access it directly:",
+    "accessCta": "Access my workspace",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!",
+    "linkEmailed": "Your access link was also sent by email.",
+    "failedTitle": "Creation interrupted",
+    "failedBody": "An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.",
+    "timeoutTitle": "Still being created",
+    "timeoutBody": "Your workspace is being prepared. We will email you the access link as soon as it is ready.",
+    "refreshStatus": "Refresh status",
+    "preparingTitle": "Preparing your workspace",
+    "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
+    "statusFor": "For:",
+    "statusEvery5s": "Status checked every 5 seconds.",
+    "successTitle": "Your workspace is ready!",
+    "emailVerified": "Your email address has been verified.",
+    "credsLabel": "Sign-in credentials",
+    "fieldEmail": "Email",
+    "fieldPassword": "Password",
+    "copyPasswordTitle": "Copy password",
+    "copied": "Copied!",
+    "credsSentByEmail": "These credentials were also sent by email to",
+    "credsEmailed": "Your sign-in credentials were just sent by email.",
+    "trialNote": "Free trial of",
+    "trialDaysUnit": "days",
+    "trialNoteSuffix": "no credit card required",
+    "downloadApp": "Download the app",
+    "changePasswordNote": "Change your password on first sign-in.",
+    "defaultError": "Something went wrong",
+    "validation": {
+      "emailInvalid": "Invalid email",
+      "emailTooShort": "Email too short",
+      "emailTooLong": "Email too long",
+      "companyTooShort": "Company name must be at least 2 characters",
+      "companyTooLong": "Company name is too long",
+      "roleRequired": "Select your role",
+      "employeesRequired": "Select a team size",
+      "phoneInvalid": "Invalid phone number",
+      "agreeTerms": "You must accept the terms of use",
+      "countryRequired": "Country is required."
+    },
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select your country"
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Unable to load the company details.",
+      "tickets_failed": "Unable to load the support tickets.",
+      "subscription_failed": "Failed to update the subscription.",
+      "features_failed": "Failed to save the module configuration."
+    },
+    "portfolio": "Client Portfolio",
+    "directory": "Companies Directory",
+    "directorySub": "Listed by health score and commercial priority.",
+    "syncing": "Syncing portfolio...",
+    "retry": "Retry",
+    "company": "Company",
+    "planMrr": "Plan & MRR",
+    "healthOp": "Op. Health",
+    "checkins30d": "Check-ins (30d)",
+    "recommendedAction": "Recommended Action",
+    "management": "Management",
+    "system": "System",
+    "companyName": "Company name *",
+    "contactEmail": "Contact email *",
+    "country": "Country *",
+    "city": "Deployment city *",
+    "currency": "Currency",
+    "timezone": "Time Zone",
+    "defaultLang": "Default Language",
+    "managerFirst": "Manager first name *",
+    "managerLast": "Manager last name *",
+    "managerEmail": "Primary manager email *",
+    "activateNow": "Activate immediately",
+    "activateClientNow": "Activate the client immediately",
+    "activateClientHint": "Otherwise the client stays on trial.",
+    "activeUnit": "active",
+    "createClient": "Create client",
+    "createError": "Unable to create this client.",
+    "created": "Client created and manager invitation sent.",
+    "loadError": "Unable to load the client cockpit.",
+    "logsUnit": "logs",
+    "newClient": "New Client",
+    "noPlan": "NO PLAN",
+    "open": "Open",
+    "portfolioSub": "Adoption, risk, recurring revenue and next action per company.",
+    "provisioning": "Provisioning...",
+    "provisioningTitle": "Client Provisioning",
+    "ras": "OK",
+    "refresh": "Refresh",
+    "statsActive": "Active Clients",
+    "statsFollowed": "Followed Clients",
+    "statsGlobalMrr": "Global MRR",
+    "statsRiskAlert": "Risk Alert"
+  },
+  "seo": {
+    "pricing": {
+      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
+    }
+  },
+  "adminChat": {
+    "conversation": "Conversation",
+    "error": "Sorry, an error occurred. Please try again.",
+    "historyEmpty": "No conversations.",
+    "new": "New conversation",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "start": "Start a conversation with the AI assistant.",
+    "subtitle": "Ask about HR, payroll, recruitment...",
+    "thinking": "Thinking...",
+    "title": "Leopardo AI Assistant",
+    "unavailableBadge": "Unavailable",
+    "unavailableBody": "The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.",
+    "unavailableTitle": "AI assistant unavailable at platform level",
+    "historyError": "Unable to load conversations.",
+    "messagesError": "Unable to load messages.",
+    "retry": "Retry"
+  },
+  "navigation": {
+    "analytics": "Analytics",
+    "audit": "Audit Log",
+    "chat": "AI Chat",
+    "companies": "Companies",
+    "contracts": "Contracts",
+    "crm": "CRM Pipeline",
+    "dashboard": "Dashboard",
+    "edge": "Edge Nodes",
+    "exports": "Exports & Reports",
+    "fleet": "Vehicle Fleet",
+    "globe": "Real-time Globe",
+    "growth": "Growth Administration",
+    "leaves": "Leave & Absence",
+    "mainMenu": "Main menu",
+    "marketing": "Marketing",
+    "payroll": "Payroll",
+    "predictions": "AI Predictive Dashboard",
+    "recruitment": "Recruitment",
+    "reports": "HR Reports",
+    "subscriptions": "Subscriptions",
+    "support": "Support",
+    "supportTickets": "Customer Support Center",
+    "system": "System",
+    "training": "Training",
+    "users": "Users",
+    "webhooks": "Webhooks",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "companyDetail": "Company detail",
+    "contributions": "Social contributions",
+    "taxBrackets": "Tax brackets",
+    "legalRates": "Legal rates",
+    "account": "My account",
+    "notFound": "Page not found",
+    "accountingActivation": "Accounting — Get started",
+    "accountingDashboard": "Accounting — Dashboard",
+    "accountingSettings": "Accounting — Settings"
+  },
+  "webhooks": {
+    "confirm_delete": "Delete this webhook?",
+    "active": "Active",
+    "cancel": "Cancel",
+    "companiesLoadError": "Unable to load companies.",
+    "company": "Company",
+    "confirmDeleteHint": "This action is irreversible.",
+    "delete": "Delete",
+    "deleteError": "Delete failed.",
+    "deleted": "Webhook deleted.",
+    "edit": "Edit",
+    "events": "Events",
+    "inactive": "Inactive",
+    "lastTriggered": "Last triggered",
+    "loadError": "Unable to load webhooks.",
+    "never": "Never",
+    "retry": "Retry",
+    "save": "Save",
+    "saveError": "Saving failed.",
+    "saved": "Webhook saved.",
+    "saving": "Saving...",
+    "searchPlaceholder": "Search webhooks...",
+    "selectCompany": "Select a company",
+    "status": "Status",
+    "subtitle": "Receive real-time events from your companies.",
+    "test": "Test",
+    "testError": "Test failed.",
+    "tested": "Test sent.",
+    "titleEdit": "Edit webhook",
+    "titleNew": "New webhook",
+    "url": "URL"
+  },
+  "a11y": {
+    "skip_to_content": "Skip to main content",
+    "close": "Close",
+    "previous_month": "Previous month",
+    "next_month": "Next month"
+  },
+  "shell": {
+    "connected": "Connected",
+    "fallbackPolling": "Fallback mode (polling)",
+    "pushUnconfigured": "Push not configured",
+    "disconnected": "Disconnected",
+    "search": "Search",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "criticalAlerts": "Critical alerts",
+    "level": "Level:",
+    "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
+    "tenantOnly": "Enterprise feature — reserved for client workspaces",
+    "settings": "Settings",
+    "team": "Team",
+    "home": "Home",
+    "attendance": "Attendance",
+    "absences": "Absences",
+    "approvals": "Approvals"
+  },
+  "exports": {
+    "reportEmployees": "Employees",
+    "reportEmployeesDesc": "Full list with positions, contracts, departments.",
+    "reportAttendance": "Attendance",
+    "reportAttendanceDesc": "Attendance register with hours and anomalies.",
+    "reportPayslips": "Payslips",
+    "reportPayslipsDesc": "Monthly payslip export with salary details.",
+    "reportAbsences": "Absences & leave",
+    "reportAbsencesDesc": "Requests and balances history per employee.",
+    "reportTraining": "Training",
+    "reportTrainingDesc": "Catalog, sessions, enrollments and progress.",
+    "reportVehicles": "Vehicles",
+    "reportVehiclesDesc": "Fleet, mileage, maintenance.",
+    "hrReportsTitle": "Custom HR reports",
+    "hrReportsSub": "Generate advanced reports with period and department filters.",
+    "reportType": "Report type",
+    "typeHeadcount": "Headcount",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteeism",
+    "typePayrollSummary": "Payroll summary",
+    "typeTrainingProgress": "Training progress",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "statusDone": "Completed",
+    "statusInProgress": "In progress",
+    "statusFailed": "Failed",
+    "download": "Download",
+    "downloading": "Downloading...",
+    "colDate": "Date",
+    "colFormat": "Format",
+    "colRequestedBy": "Requested by",
+    "colStatus": "Status",
+    "colType": "Type",
+    "downloadError": "Error downloading the report",
+    "historyEmpty": "No recent exports.",
+    "historySearchPlaceholder": "Search history...",
+    "hrReportUnavailable": "Unable to generate the HR report (endpoint unavailable).",
+    "clientSpaceNote": "Exports are available in the client space.",
+    "historyClientOnly": "History visible to clients only.",
+    "historyError": "Unable to load history."
+  },
+  "companyDetail": {
+    "analyzing": "Analyzing client data...",
+    "retry": "Retry",
+    "fieldAdoption": "Field Adoption",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30d",
+    "payrollReady": "Payroll Ready",
+    "activeEmployees30d": "Active Employees (30d)",
+    "noPriorityBlockers": "No priority blockers detected.",
+    "modulesConfig": "Modules Configuration",
+    "servicePlan": "Service plan",
+    "commercialStatus": "Commercial status",
+    "statusTrial": "Trial",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "startDate": "Start",
+    "internalNotes": "Internal notes",
+    "noSupportTickets": "No support tickets for this client.",
+    "technicalIdentity": "Technical identity",
+    "platformId": "Platform ID",
+    "slug": "Slug",
+    "countryCurrency": "Country / Currency",
+    "registeredOn": "Registered on",
+    "lastActivity": "Last activity",
+    "activateClient": "Activate client",
+    "backToPortfolio": "Back to portfolio",
+    "endDate": "End",
+    "featuresSaved": "Module configuration saved.",
+    "loadFailed": "Unable to load company details. Check that the UUID is valid.",
+    "loading": "Loading...",
+    "messagePlural": "messages",
+    "messageSingular": "message",
+    "moduleActive": "Active Module",
+    "moduleDisabled": "Disabled Module",
+    "modulesConfigHint": "Enable or disable specific features for this client.",
+    "noPunch": "No punches",
+    "notesPlaceholder": "Details on negotiation, discounts, etc.",
+    "openPlural": "open",
+    "openSingular": "open",
+    "planMissing": "Client plan missing.",
+    "priorityActions": "Priority Actions",
+    "refresh": "Refresh",
+    "revenueMrr": "Revenue (MRR)",
+    "riskLevel": "Risk level:",
+    "saveConfig": "Save configuration",
+    "saving": "Saving...",
+    "scoreHealth": "Health Score",
+    "subscription": "Subscription",
+    "subscriptionUpdated": "Subscription updated successfully.",
+    "subtitle": "Operational health, subscription and module configuration.",
+    "support": "Support",
+    "teamActive": "Active Team",
+    "updateSubscription": "Update subscription",
+    "updating": "Updating...",
+    "viewAllTickets": "View all tickets"
+  },
+  "reports": {
+    "attendance_title": "Attendance Summary",
+    "attendance_desc": "Monthly report of attendance, late arrivals and absences per employee.",
+    "month_label": "Month",
+    "payroll_title": "Payroll Summary",
+    "payroll_desc": "Gross/net totals, contributions and charges per payroll period.",
+    "period_label": "Period",
+    "leave_title": "Leave Balances",
+    "leave_desc": "Leave balances status for all employees.",
+    "year_label": "Year",
+    "headcount_title": "Headcount",
+    "headcount_desc": "Active headcount breakdown by department, contract type and gender.",
+    "training_title": "Training Progress",
+    "training_desc": "Training participation and completion rates.",
+    "contract_title": "Contract Expiry",
+    "contract_desc": "Contracts expiring within the next 30, 60, 90 days.",
+    "days_label": "Days",
+    "generate": "Generate",
+    "success": "Report downloaded successfully.",
+    "error": "Error while generating the report.",
+    "subtitle": "Generate and download your HR reports: attendance, payroll, leave, headcount, training and contracts."
+  },
+  "notifications": {
+    "channel_inapp": "In-app",
+    "channel_email_desc": "Important messages and confirmations.",
+    "channel_push_desc": "Quick alerts on registered devices.",
+    "channel_sms_desc": "Short channel for emergencies, enabled after opt-in.",
+    "channel_whatsapp_desc": "Future conversational channel, with explicit opt-in.",
+    "category_payroll": "Payroll",
+    "category_security": "Security",
+    "category_system": "System",
+    "category_product_tips": "Product tips",
+    "categories_title": "Categories",
+    "save_error": "Unable to save preferences right now.",
+    "channel_inapp_desc": "Web and mobile notification center.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Unable to mark notifications as read."
+        }
+      },
+      "read": {
+        "error": "Unable to mark notification as read."
+      }
+    },
+    "delete": {
+      "error": "Unable to delete the notification."
+    },
+    "deleted": "Notification deleted."
+  },
+  "employees": {
+    "load_error": "Unable to load employees.",
+    "title": "Team",
+    "subtitle": "Manager view connected to the HR API: employee list, status and key entry points.",
+    "total_team": "Team total",
+    "source": "Source",
+    "state": "Status",
+    "loading_short": "Loading",
+    "connected_api": "Connected to the API",
+    "recent_collaborators": "Recent collaborators",
+    "list_loading": "Loading team list...",
+    "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
+  },
+  "partnerPage": {
+    "loading": "Loading your workspace...",
+    "applyErrorPrefix": "Error while applying: ",
+    "notApplied": {
+      "title": "Become a Partner",
+      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "individual": "Apply as an Individual",
+      "agency": "Apply as an Agency"
+    },
+    "pending": {
+      "title": "Application in progress",
+      "body": "Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated."
+    },
+    "dashboard": {
+      "title": "Partner Dashboard",
+      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Total earned",
+      "pending": "Pending",
+      "withdrawable": "Withdrawable balance"
+    },
+    "commissions": {
+      "title": "Latest commissions",
+      "empty": "No commission recorded."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Status",
+      "amount": "Amount",
+      "statusPaid": "Paid",
+      "statusPending": "Pending"
+    },
+    "payout": {
+      "title": "Payout",
+      "body": "Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.",
+      "request": "Request a transfer",
+      "sending": "Sending...",
+      "insufficient": "Insufficient balance to request a transfer (minimum €100.00).",
+      "success": "Transfer request sent successfully.",
+      "errorPrefix": "Error while requesting the transfer: "
+    },
+    "referral": {
+      "title": "Referral link",
+      "unavailable": "Link unavailable",
+      "copy": "Copy my link",
+      "copied": "Copied!",
+      "copyError": "Unable to copy the link. Copy it manually."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "login_invalid_json": "Invalid request body.",
+    "login_timeout": "The server is taking too long to respond. Please try again shortly.",
+    "login_network_error": "Unable to reach the server.",
+    "login_backend_error": "Unexpected server response."
+  },
+  "settingsPage": {
+    "cancel": "Cancel",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "disable2fa": "Disable 2FA",
+    "disabled": "Disabled",
+    "email": "Email address",
+    "enable2fa": "Enable 2FA",
+    "enabled": "Enabled",
+    "enterCodeStep": "2. Enter the generated 6-digit code",
+    "fullName": "Full name",
+    "generateSecret": "Generate 2FA secret",
+    "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Manual secret:",
+    "minLengthHint": "Minimum 8 characters.",
+    "newPassword": "New password",
+    "password": "Password",
+    "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
+    "passwordTitle": "Password",
+    "passwordUpdated": "Password updated successfully.",
+    "passwordsMismatch": "Passwords do not match.",
+    "profileSubtitle": "Name and email address used to sign in.",
+    "profileTitle": "Profile information",
+    "profileUpdated": "Profile updated successfully.",
+    "saveChanges": "Save changes",
+    "scanStep": "1. Scan this link / secret in your 2FA app:",
+    "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "title": "My account",
+    "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
+    "twoFactorDisabled": "2FA disabled.",
+    "twoFactorEnabled": "2FA enabled successfully.",
+    "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
+    "twoFactorTitle": "Two-factor authentication (2FA)",
+    "updatePassword": "Update password",
+    "bankingError": "Error saving bank details.",
+    "bankingSubtitle": "Your company IBAN and BIC are required for SEPA transfer export.",
+    "bankingTitle": "SEPA Bank Details",
+    "bankingUpdated": "Bank details saved.",
+    "bankingWarning": "SEPA export will return a 422 error until the company IBAN is configured.",
+    "companyBic": "BIC / SWIFT (optional)",
+    "companyIban": "Company IBAN",
+    "ibanHint": "ISO 13616 IBAN format (uppercase, no spaces). Spaces are ignored automatically.",
+    "ibanPlaceholderDZ": "Algerian IBAN or RIB (20 digits)",
+    "saveBanking": "Save bank details",
+    "sepaNotReady": "SEPA not configured",
+    "sepaReady": "SEPA ready"
+  },
+  "systemPage": {
+    "apiError": "Error: :error",
+    "apiOperational": "API operational",
+    "apiOperationalDb": "API operational — DB :ms ms",
+    "apiServices": "API Services",
+    "apiUnavailable": "Unavailable — GET /health/live",
+    "database": "Database",
+    "dbError": "Error: :error",
+    "dbLatency": "Latency: :ms ms",
+    "dbUnavailable": "Unavailable — run a Health Check.",
+    "dbUnreachable": "database unreachable",
+    "globalError": "Aggregated probe: database unreachable.",
+    "globalHealthy": "Aggregated DB + Redis probe operational.",
+    "globalStatus": "Global Status",
+    "globalUnavailable": "Unavailable — GET /admin/dashboard/stats",
+    "globalWarning": "Aggregated probe: degradation detected.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Checking...",
+    "healthError": "Health check completed — database in error",
+    "healthLiveUnreachable": "/health/live probe unreachable.",
+    "healthOk": "Health check completed — database operational",
+    "healthUnreachable": "Health check completed — database unreachable",
+    "infraDetails": ":active active companies · PHP :php · queue :queue",
+    "infraUnavailable": "Unavailable — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Error loading platform metrics",
+    "notifObsLoadError": "Error loading notifications observability",
+    "queueObsLoadError": "Error loading jobs observability",
+    "retry": "Retry",
+    "serviceUnreachable": "service unreachable",
+    "statsLoadError": "Error loading system stats",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "title": "System Administration"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session.",
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses",
+    "mobile_title": "My Contract",
+    "back_tooltip": "Back",
+    "empty_title": "No contract",
+    "empty_description": "Your contract will appear here once configured.",
+    "label_type": "Type",
+    "label_start_date": "Start",
+    "label_end_date": "End",
+    "label_base_salary": "Base salary",
+    "loading": "Loading contracts...",
+    "status_active": "Active",
+    "status_expired": "Expired",
+    "status_draft": "Draft",
+    "status_cdi": "Permanent (CDI)"
+  },
+  "training": {
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online",
+    "tabCatalog": "Catalog",
+    "tabEnrollments": "Enrollments",
+    "activeCourses": "Active courses",
+    "category": "Category",
+    "completionRate": "Completion rate",
+    "costPerParticipant": "Cost per participant",
+    "course": "Course",
+    "description": "Description",
+    "duration": "Duration",
+    "employee": "Employee",
+    "endDate": "End date",
+    "enrollments": "Enrollments",
+    "hoursUnit": "h",
+    "instructor": "Instructor",
+    "loadError": "Unable to load trainings.",
+    "loading": "Loading trainings...",
+    "location": "Location",
+    "maxPlaces": "Max seats",
+    "noCourses": "No courses found.",
+    "noDescription": "No description.",
+    "perParticipant": "per participant",
+    "progress": "Progress",
+    "provider": "Provider",
+    "searchEnrollmentPlaceholder": "Search enrollments...",
+    "searchSessionPlaceholder": "Search sessions...",
+    "session": "Session",
+    "sessions": "Sessions",
+    "sessionsUnit": "sessions",
+    "startDate": "Start date",
+    "status": "Status",
+    "statusCancelled": "Cancelled",
+    "statusCompleted": "Completed",
+    "statusDropped": "Dropped",
+    "statusEnrolled": "Enrolled",
+    "statusInProgress": "In progress",
+    "statusPlanned": "Planned",
+    "type": "Type",
+    "uncategorized": "Uncategorized",
+    "upcomingSessions": "Upcoming sessions"
+  },
+  "access": {
+    "denied": {
+      "body": "Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.",
+      "logout": "Log out",
+      "title": "Access denied",
+      "body_hr": "Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Your presence is detected automatically as soon as you enter the company zone. No action required from you."
+      }
+    },
+    "manual": {
+      "desc": "Clock in manually using the Arrival and Departure buttons in the attendance screen."
+    },
+    "mode": {
+      "title": "Attendance mode"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scan the QR Code displayed at the company entrance to clock in and out."
+      }
+    },
+    "recommended": "Recommended",
+    "save": {
+      "error": "Unable to save your preference. Check your connection."
+    },
+    "title": "Choose how you want to clock your presence every day."
+  },
+  "approval": {
+    "approved": "Request approved",
+    "rejected": "Request rejected"
+  },
+  "approvals": {
+    "empty": "No pending approvals.",
+    "up": {
+      "to": {
+        "date": "All up to date"
+      }
+    },
+    "loading": "Loading approvals...",
+    "reject": {
+      "reason": {
+        "hint": "Explain the reason...",
+        "label": "Rejection reason"
+      }
+    },
+    "title": "Approvals"
+  },
+  "back": "Back",
+  "employee": {
+    "number": "Employee #{id}"
+  },
+  "error": {
+    "prefix": "Error: {message}",
+    "unexpected": "An error occurred"
+  },
+  "evaluation": {
+    "period": "Period: {period}"
+  },
+  "evaluations": {
+    "empty": "No evaluations",
+    "title": "My Evaluations",
+    "empty_hint": "You don't have any recorded evaluation yet."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Feature coming soon"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Complete my onboarding"
+    },
+    "onboarding": {
+      "hint": "Set up your workspace in a few steps."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Loading monthly summary..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Collapse",
+      "empty": "The org chart will be available once employees are configured.",
+      "expand": "Expand"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "The requested page was not found or the navigation failed."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "No GPS session waiting for validation.",
+      "to": {
+        "validate": "To validate"
+      },
+      "up": {
+        "to": {
+          "date": "All up to date"
+        }
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "register": {
+    "create": {
+      "account": "Create your account"
+    },
+    "creating": "Creating your account...",
+    "first": {
+      "name": "First name"
+    },
+    "min": {
+      "chars": "8 characters minimum"
+    },
+    "password": "Password",
+    "required": "Required",
+    "submit": "Create my account"
+  },
+  "retry": "Retry",
+  "sa": {
+    "approved": "Approved",
+    "config": {
+      "load": {
+        "error": "Unable to load the configuration.\n{error}"
+      }
+    },
     "dashboard": {
       "title": "GPS attendance — team dashboard"
     },
@@ -30622,5 +32287,296 @@
       "sending": "Sending…",
       "send": "Send request"
     }
+  }
+}
+<<<<<<< HEAD
+  },
+  "travel": {
+    "common": {
+      "retry": "Retry",
+      "featureDisabledTitle": "Travel Agency module inactive",
+      "featureDisabledBody": "The travelagency flag is not enabled for the connected tenant. Contact a platform administrator to enable it.",
+      "tenantRequiredTitle": "Tenant context required",
+      "tenantRequiredBody": "Travel agency data requires a tenant session (impersonation or manager account).",
+      "loadErrorTitle": "Unable to load",
+      "loadErrorBody": "An error occurred while querying the travel API.",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "close": "Close",
+      "search": "Search",
+      "actions": "Actions",
+      "confirmDeleteTitle": "Delete this item?",
+      "confirmDeleteBody": "This action cannot be undone. Do you really want to delete \"{name}\"?",
+      "status": "Status",
+      "active": "Active",
+      "disabled": "Inactive",
+      "loading": "Loading…",
+      "noData": "No data",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "reason": "Reason",
+      "reasonRequired": "A reason is required.",
+      "previous": "Previous",
+      "next": "Next",
+      "all": "All",
+      "export": "Export",
+      "yes": "Yes",
+      "no": "No",
+      "perPage": "per page",
+      "city": "City",
+      "carrier": "Carrier",
+      "saving": "Saving…",
+      "selectPlaceholder": "— Select —"
+    },
+    "home": {
+      "title": "Travel Agency",
+      "subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and monitoring.",
+      "flagActive": "Module active",
+      "flowTitle": "Business flow",
+      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports."
+    },
+    "referential": {
+      "title": "Referential",
+      "subtitle": "Countries, cities, stations, offices, carriers, classes and vehicles.",
+      "tabs": "Referential sections",
+      "countries": "Countries",
+      "cities": "Cities",
+      "stations": "Stations & terminals",
+      "offices": "Sales offices",
+      "carriers": "Carriers",
+      "classes": "Service classes",
+      "vehicles": "Vehicles"
+    },
+    "network": {
+      "title": "Routes & trips",
+      "subtitle": "Lines, stops, scheduling, pricing and publication.",
+      "tabs": "Network sections",
+      "routes": "Routes & stops",
+      "trips": "Trips & pricing",
+      "publish": "Publish",
+      "cancelTrip": "Cancel trip",
+      "stops": "Stops",
+      "routeStopsTitle": "Route stops",
+      "addStop": "Add stop",
+      "prices": "Pricing",
+      "tripPricesTitle": "Trip pricing",
+      "addPrice": "Add price",
+      "origin": "Origin",
+      "destination": "Destination",
+      "distance": "Distance (km)",
+      "duration": "Duration (min)",
+      "rank": "Rank",
+      "stopover": "Stopover",
+      "minDuration": "Min duration (min)",
+      "route": "Route",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "means": "Means",
+      "class": "Class",
+      "adultPrice": "Adult price",
+      "childPrice": "Child price",
+      "currency": "Currency",
+      "routeCode": "Route code",
+      "tripCode": "Trip code",
+      "vehicle": "Vehicle",
+      "departureDate": "Departure date",
+      "departureTime": "Departure time",
+      "arrivalDate": "Arrival date",
+      "arrivalTime": "Arrival time"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reference": "Reference",
+      "referencePlaceholder": "e.g. GV-2026-0001…",
+      "detail": "Details",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "refund": "Refund",
+      "issueTickets": "Issue tickets",
+      "detailTitle": "Booking",
+      "paymentStatus": "Payment",
+      "trip": "Trip",
+      "source": "Source",
+      "passengerCount": "Passengers",
+      "total": "Total",
+      "passengers": "Passengers",
+      "seat": "Seat",
+      "noTickets": "No tickets issued",
+      "confirmTitle": "Confirm booking",
+      "confirmBody": "Confirm booking {ref}? Seats will be marked as sold.",
+      "issueTicketsTitle": "Issue tickets",
+      "issueTicketsBody": "Issue one named ticket per passenger of {ref}?",
+      "cancelTitle": "Cancel booking",
+      "refundTitle": "Refund booking"
+    },
+    "checkin": {
+      "title": "Check-in & manifest",
+      "subtitle": "Boarding per trip and passenger counter.",
+      "trip": "Trip",
+      "selectTrip": "Select a trip…",
+      "boarded": "boarded",
+      "seat": "Seat",
+      "passenger": "Passenger",
+      "age": "Age",
+      "class": "Class",
+      "ticket": "Ticket",
+      "action": "Boarding",
+      "emptyManifest": "No passengers for this trip",
+      "noTicket": "No ticket",
+      "checkIn": "Board",
+      "done": "Boarded"
+    },
+    "tickets": {
+      "title": "Tickets",
+      "subtitle": "Browse, PDF download and revocation.",
+      "download": "PDF",
+      "revoke": "Revoke",
+      "revokeTitle": "Revoke ticket",
+      "revokeBody": "Revoke ticket {number}? The PDF will become invalid and the ticket status will change to void."
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "export": "Export CSV",
+      "kpiSales": "Sales",
+      "kpiBookings": "Bookings",
+      "kpiOccupancy": "Occupancy",
+      "kpiCancellations": "Cancellations",
+      "salesCount": "Sales",
+      "salesPassengers": "Passengers",
+      "salesAmount": "Amount",
+      "tabSales": "Sales",
+      "tabOccupancy": "Occupancy",
+      "tabRevenue": "Revenue",
+      "tabCancellations": "Cancellations",
+      "sold": "Sold",
+      "reserved": "Reserved",
+      "free": "Free",
+      "revenueConfirmed": "Confirmed",
+      "revenueRefunded": "Refunded",
+      "revenueNet": "Net",
+      "cancellationsCount": "Cancellations",
+      "cancellationsRate": "Rate",
+      "cancellationsTotal": "Final bookings",
+      "byReason": "By reason",
+      "bySource": "By source",
+      "count": "Count"
+    },
+    "catalog": {
+      "title": "Title",
+      "subtitle": "Rental vehicles, bookings and hotel catalog.",
+      "tabRentals": "Rental vehicles",
+      "tabRentalBookings": "Rental bookings",
+      "tabHotels": "Hotels",
+      "images": "Images",
+      "rentalImagesTitle": "Vehicle images",
+      "noImages": "No images",
+      "rooms": "Rooms",
+      "hotelRoomsTitle": "Hotel rooms",
+      "addRoom": "Add room",
+      "priceDay": "Price / day",
+      "start": "Start",
+      "end": "End",
+      "hotelName": "Name",
+      "classification": "Classification",
+      "roomType": "Type",
+      "roomNumber": "No.",
+      "capacity": "Capacity",
+      "priceNight": "Price / night",
+      "code": "Code",
+      "availableFrom": "Available from",
+      "availableUntil": "Available until",
+      "owner": "Owner",
+      "description": "Description"
+    },
+    "countries": {
+      "name": "Name",
+      "phoneCode": "Phone code"
+    },
+    "cities": {
+      "name": "City",
+      "country": "Country",
+      "region": "Region"
+    },
+    "stations": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address",
+      "timezone": "Timezone",
+      "isTerminal": "Terminal",
+      "code": "Code"
+    },
+    "offices": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "carriers": {
+      "name": "Name",
+      "type": "Type",
+      "phone": "Phone",
+      "code": "Code"
+    },
+    "classes": {
+      "label": "Label",
+      "color": "Color",
+      "priority": "Priority",
+      "code": "Code"
+    },
+    "vehicles": {
+      "registration": "Registration",
+      "seats": "Seats",
+      "code": "Code",
+      "notes": "Notes"
+    },
+    "carrierTypes": {
+      "bus": "Bus",
+      "train": "Train",
+      "plane": "Plane",
+      "boat": "Boat"
+    },
+    "tripStatus": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "cancelled": "Cancelled"
+    },
+    "bookingStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "completed": "Completed"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "ticketStatus": {
+      "issued": "Issued",
+      "checked_in": "Checked in",
+      "void": "Void"
+    },
+    "bookingSource": {
+      "office": "Counter",
+      "phone": "Phone",
+      "online": "Online"
+    },
+    "ageCategory": {
+      "infant": "Infant",
+      "child": "Child",
+      "adult": "Adult"
+    }
+=======
+>>>>>>> origin/feat/travel-101-202-foundations
   }
 }

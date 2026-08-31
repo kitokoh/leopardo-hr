@@ -4936,6 +4936,117 @@ class LeopardoClient:
     def delete_schedules_by_schedule(self, **kwargs):
         """Supprimer un horaire non defaut"""
         return self.request("DELETE", "/schedules/{schedule}", **kwargs)
+    def get_salary_advances(self, **kwargs):
+        """Lister les avances sur salaire"""
+        return self.request("GET", "/salary-advances", **kwargs)
+
+    def post_salary_advances(self, **kwargs):
+        """Demander une avance sur salaire"""
+        return self.request("POST", "/salary-advances", **kwargs)
+
+    def delete_salary_advances_by_salaryadvance(self, **kwargs):
+        """Annuler une avance (employe proprietaire)"""
+        return self.request("DELETE", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def get_salary_advances_by_salaryadvance(self, **kwargs):
+        """Voir une avance"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_approve(self, **kwargs):
+        """Approuver une avance (manager)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_approve(self, **kwargs):
+        """Approuver une avance sur salaire (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_confirm_received(self, **kwargs):
+        """Confirmer la reception de l'avance (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", **kwargs)
+
+    def disputesalaryadvance(self, **kwargs):
+        """Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/dispute", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
+        """Valider une avance avant paiement (manager/RH)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
+        """Validation manager d'une avance (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_mark_paid(self, **kwargs):
+        """Declarer l'avance comme envoyee (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", **kwargs)
+
+    def downloadsalaryadvanceproof(self, **kwargs):
+        """Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager)"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}/proof", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_reject(self, **kwargs):
+        """Rejeter une avance (manager)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_reject(self, **kwargs):
+        """Refuser une avance sur salaire (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def resolvesalaryadvancedispute(self, **kwargs):
+        """Resoudre une reclamation sur une avance (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/resolve-dispute", **kwargs)
+
+    def listsalarycomponents(self, **kwargs):
+        """Lister les composants de salaire (manager)"""
+        return self.request("GET", "/salary-components", **kwargs)
+
+    def createsalarycomponent(self, **kwargs):
+        """Creer un composant de salaire (manager)"""
+        return self.request("POST", "/salary-components", **kwargs)
+
+    def deletesalarycomponent(self, **kwargs):
+        """Supprimer un composant de salaire (manager)"""
+        return self.request("DELETE", "/salary-components/{salaryComponent}", **kwargs)
+
+    def showsalarycomponent(self, **kwargs):
+        """Voir un composant de salaire (manager)"""
+        return self.request("GET", "/salary-components/{salaryComponent}", **kwargs)
+
+    def updatesalarycomponent(self, **kwargs):
+        """Modifier un composant de salaire (manager)"""
+        return self.request("PUT", "/salary-components/{salaryComponent}", **kwargs)
+
+    def listsalarystructures(self, **kwargs):
+        """Lister les structures salariales (manager)"""
+        return self.request("GET", "/salary-structures", **kwargs)
+
+    def createsalarystructure(self, **kwargs):
+        """Creer une structure salariale (manager)"""
+        return self.request("POST", "/salary-structures", **kwargs)
+
+    def deletesalarystructure(self, **kwargs):
+        """Supprimer une structure salariale (manager)"""
+        return self.request("DELETE", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def showsalarystructure(self, **kwargs):
+        """Voir une structure salariale avec ses composants (manager)"""
+        return self.request("GET", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def updatesalarystructure(self, **kwargs):
+        """Modifier une structure salariale (manager)"""
+        return self.request("PUT", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def get_schedules(self, **kwargs):
+        """Lister les horaires de l'entreprise"""
+        return self.request("GET", "/schedules", **kwargs)
+
+    def post_schedules(self, **kwargs):
+        """Creer un horaire de travail"""
+        return self.request("POST", "/schedules", **kwargs)
+
+    def delete_schedules_by_schedule(self, **kwargs):
+        """Supprimer un horaire non defaut"""
+        return self.request("DELETE", "/schedules/{schedule}", **kwargs)
 
     def get_schedules_by_schedule(self, **kwargs):
         """Détail d'un planning"""
@@ -5307,6 +5418,30 @@ class LeopardoClient:
         return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
 
     def get_travel_adverts(self, **kwargs):
+    def delete_training_courses_by_trainingcourse(self, **kwargs):
+        """Supprimer une formation"""
+        return self.request("DELETE", "/training/courses/{trainingCourse}", **kwargs)
+
+    def get_training_courses_by_trainingcourse(self, **kwargs):
+        """Voir une formation"""
+        return self.request("GET", "/training/courses/{trainingCourse}", **kwargs)
+
+    def put_training_courses_by_trainingcourse(self, **kwargs):
+        """Modifier une formation"""
+        return self.request("PUT", "/training/courses/{trainingCourse}", **kwargs)
+
+    def get_training_courses_by_trainingcourse_sessions(self, **kwargs):
+        """Lister les sessions d'une formation"""
+        return self.request("GET", "/training/courses/{trainingCourse}/sessions", **kwargs)
+
+    def post_training_courses_by_trainingcourse_sessions(self, **kwargs):
+        """Creer une session de formation"""
+        return self.request("POST", "/training/courses/{trainingCourse}/sessions", **kwargs)
+
+    def get_training_enrollments(self, **kwargs):
+        """Toutes les inscriptions formation du tenant"""
+        return self.request("GET", "/training/enrollments", **kwargs)
+
     def delete_training_enrollments_by_trainingenrollment(self, **kwargs):
         """Supprimer une inscription formation"""
         return self.request("DELETE", "/training/enrollments/{trainingEnrollment}", **kwargs)
@@ -6366,6 +6501,8 @@ class LeopardoClient:
     def get_travel_round_trips_by_travelroundtrip(self, **kwargs):
         """Détail d'un aller-retour (TRAVEL-802/#6093)"""
         return self.request("GET", "/travel/round-trips/{travelRoundTrip}", **kwargs)
+
+        return self.request("GET", "/travel/reports/sales", **kwargs)
 
     def get_travel_routes(self, **kwargs):
         """Liste des routes (TRAVEL-307/#6037)"""

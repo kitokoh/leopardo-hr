@@ -25,6 +25,12 @@ use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
  * est routé vers UN consommateur (le premier dont `supports()` répond true).
  * Les consommateurs concrets (notifications BC-13, synthèse Accounting,
  * lead CRM…) sont enregistrés par leur propre issue (#6067/#6069/#6068).
+ * TRAVEL-414 (#6066) — registre des consommateurs d'outbox TravelAgency.
+ *
+ * Chaque événement est routé vers UN consommateur (le premier dont
+ * `supports()` répond true). Les adaptateurs concrets (Notifications BC-13
+ * TRAVEL-415, CRM client TRAVEL-416, Accounting TRAVEL-417) s'enregistrent
+ * ici ; le registre est prêt à les accueillir au fil des lots.
  */
 final class TravelOutboxConsumerRegistry
 {

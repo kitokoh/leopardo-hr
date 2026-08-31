@@ -188,6 +188,7 @@ class TravelEngagementController extends Controller
         );
 
         return new JsonResponse(['data' => $this->aggregateStats($actor, $travelArticle)]);
+        return new JsonResponse(['data' => $this->aggregates($actor, $travelArticle)]);
     }
 
     /**
@@ -230,12 +231,14 @@ class TravelEngagementController extends Controller
         }
 
         return new JsonResponse(['data' => $this->aggregateStats($actor, $travelArticle)]);
+        return new JsonResponse(['data' => $this->aggregates($actor, $travelArticle)]);
     }
 
     /**
      * @return array<string, mixed>
      */
     private function aggregateStats(Employee $actor, TravelArticle $article): array
+    private function aggregates(Employee $actor, TravelArticle $article): array
     {
         $likes = TravelLike::query()
             ->where('company_id', $actor->company_id)

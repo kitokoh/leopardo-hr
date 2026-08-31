@@ -66,6 +66,7 @@ class TravelOutboxEvent extends Model
         'attempts',
         'available_at',
         'last_error',
+        'processed_at',
         'idempotency_key',
         'processed_at',
         'processed_at',

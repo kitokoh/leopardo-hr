@@ -33,6 +33,16 @@ namespace App\Modules\TravelAgency\Domain\Contracts;
  *    (retry avec backoff) ;
  *  - erreur permanente   → {@see \App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException}
  *    (dead-letter immédiate).
+use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
+
+/**
+ * TRAVEL-414 (#6066) — consommateur d'événements d'outbox TravelAgency.
+ *
+ * Chaque adaptateur (Notifications BC-13, CRM client, Accounting…) implémente
+ * ce contrat et se déclare dans TravelOutboxConsumerRegistry. `supports()`
+ * route l'événement vers SON consommateur ; `handle()` est exécuté dans le
+ * contexte tenant du `company_id` de l'événement (idempotent — l'outbox
+ * garantit zéro doublon via (company_id, idempotency_key)).
  */
 interface TravelOutboxConsumer
 {
@@ -43,4 +53,7 @@ interface TravelOutboxConsumer
      */
     public function handle(string $eventType, array $payload): void;
     public function handle(array $payload): void;
+     * @param  array<mixed>  $payload  payload redigé (aucune PII brute)
+     */
+    public function handle(TravelOutboxEvent $event, array $payload): void;
 }
