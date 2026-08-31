@@ -97,7 +97,7 @@ class QueueJobsTest extends TestCase
 
         $this->assertGreaterThanOrEqual(
             600,
-            (int) config('queue.connections.redis_payroll.retry_after'),
+            (int) config('queue.connections.redis-payroll.retry_after'),
             'redis-payroll retry_after must be >= payroll job timeouts'
         );
     }
