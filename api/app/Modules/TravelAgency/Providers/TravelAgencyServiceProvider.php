@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Providers;
 
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -71,8 +73,8 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // le module TravelAgency ne déclare AUCUN `use App\Modules\Notification`,
         // l'adaptateur BC-13 est branché ici (composition root) par FQCN.
         $this->app->bind(
-            \App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier::class,
-            \App\Modules\Notification\Infrastructure\Services\PushNotificationService::class
+            CompanyPushNotifier::class,
+            PushNotificationService::class
         );
 
         // Passerelles de paiement (TRAVEL-405..407) — registre par code.

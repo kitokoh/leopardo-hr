@@ -43,8 +43,8 @@ class TravelLoyaltyController extends Controller
         return response()->json([
             'data' => [
                 'contact_identifier' => $contact,
-                'opt_in' => $account?->opt_in ?? false,
-                'points_balance' => $service->balance($actor->company_id, $contact),
+                'opt_in' => $account->opt_in ?? false,
+                'points_balance' => $service->balance((string) $actor->company_id, $contact),
             ],
         ]);
     }
@@ -60,7 +60,7 @@ class TravelLoyaltyController extends Controller
             abort(422, 'contact_identifier requis.');
         }
 
-        $entries = $service->entries($actor->company_id, $contact);
+        $entries = $service->entries((string) $actor->company_id, $contact);
 
         return response()->json([
             'data' => array_map(fn ($entry): array => [
@@ -68,7 +68,7 @@ class TravelLoyaltyController extends Controller
                 'points' => $entry->points,
                 'type' => $entry->type,
                 'reason' => $entry->reason,
-                'created_at' => $entry->created_at->toIso8601String(),
+                'created_at' => $entry->created_at?->toIso8601String(),
             ], $entries),
         ]);
     }
@@ -78,7 +78,7 @@ class TravelLoyaltyController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $account = $service->optIn($actor->company_id, $request->validated('contact_identifier'));
+        $account = $service->optIn((string) $actor->company_id, $request->validated('contact_identifier'));
 
         return response()->json([
             'data' => [
@@ -94,7 +94,7 @@ class TravelLoyaltyController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $account = $service->optOut($actor->company_id, $request->validated('contact_identifier'));
+        $account = $service->optOut((string) $actor->company_id, $request->validated('contact_identifier'));
 
         return response()->json([
             'data' => [
@@ -111,7 +111,7 @@ class TravelLoyaltyController extends Controller
         $actor = $request->user();
 
         $entry = $service->redeem(
-            companyId: $actor->company_id,
+            companyId: (string) $actor->company_id,
             contactIdentifier: $request->validated('contact_identifier'),
             rewardId: (int) $request->validated('reward_id'),
             bookingId: (int) $request->validated('booking_id'),

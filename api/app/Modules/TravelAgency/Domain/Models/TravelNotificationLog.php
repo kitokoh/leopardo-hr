@@ -5,13 +5,30 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Journal d'audit des notifications voyageur (TRAVEL-415, issue #6067).
  *
  * Chaque tentative d'envoi est tracée (sent/skipped/failed) avec le motif
  * et un payload redacted — conformité RGPD et débogage sans PII inutile.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $event_id
+ * @property string $event_type
+ * @property string $contact_identifier
+ * @property string $channel
+ * @property string $status
+ * @property string $reason
+ * @property array<string, mixed> $payload_redacted
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelNotificationLog extends Model
 {

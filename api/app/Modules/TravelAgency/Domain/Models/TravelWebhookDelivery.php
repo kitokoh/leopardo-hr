@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Livraison d'un webhook transporteur (TRAVEL-806, issue #6097).
@@ -14,6 +16,22 @@ use Illuminate\Database\Eloquent\Model;
  * de l'outbox ne crée jamais une seconde livraison. Erreur transitoire →
  * retry avec backoff (`next_attempt_at`) ; permanente ou attempts ≥ max →
  * dead-letter (status failed).
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $subscription_id
+ * @property string $event_id
+ * @property string $event_type
+ * @property array<string, mixed> $payload_redacted
+ * @property string $status
+ * @property int $attempts
+ * @property Carbon|null $next_attempt_at
+ * @property int $last_http_status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelWebhookDelivery extends Model
 {

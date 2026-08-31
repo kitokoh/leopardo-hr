@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 
 /**
@@ -15,6 +17,20 @@ use Illuminate\Support\Facades\Crypt;
  * `secret_hash` stocke un hash du secret de signature HMAC — jamais le
  * secret en clair (les réponses API n'exposent que le hash partiel).
  * `events` = liste des `travel.*.v1` auxquels le transporteur s'abonne.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $carrier_id
+ * @property string $url
+ * @property string $secret_encrypted
+ * @property array<string, mixed> $events
+ * @property bool $active
+ * @property int|null $created_by_user_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelWebhookSubscription extends Model
 {

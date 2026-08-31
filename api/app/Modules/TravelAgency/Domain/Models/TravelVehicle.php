@@ -7,9 +7,11 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelVehicleFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Véhicule de la flotte propre de l'agence (TRAVEL-205, issue #6018).
@@ -17,6 +19,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `carrier_id` nullable : un véhicule propre à l'agence n'appartient à
  * aucune compagnie tierce (`travel_carriers`), il peut aussi être rattaché
  * à un transporteur si l'agence opère pour son compte.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property string|null $registration_number
+ * @property int $seat_capacity
+ * @property int|null $carrier_id
+ * @property TravelRecordStatus $status
+ * @property string|null $notes
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelVehicle extends Model
 {

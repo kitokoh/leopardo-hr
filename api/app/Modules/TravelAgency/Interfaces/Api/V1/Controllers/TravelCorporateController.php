@@ -55,7 +55,7 @@ class TravelCorporateController extends Controller
             'name' => $data['name'],
             'contact_email' => $data['contact_email'] ?? null,
             'credit_limit_minor' => (int) $data['credit_limit_minor'],
-            'currency' => $data['currency'] ?? $actor->company?->currency ?? 'XAF',
+            'currency' => $data['currency'] ?? $actor->company->currency ?? 'XAF',
             'is_active' => true,
         ]);
 

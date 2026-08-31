@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +22,25 @@ use Illuminate\Support\Str;
  * **pas** enforced en base à ce stade (schéma seul) : le scope
  * `overlapping()` détecte les réservations concurrentes, mais c'est
  * l'Action du lot 3xx (TRAVEL-320) qui l'applique avant création.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $reference
+ * @property int $vehicle_id
+ * @property int|null $customer_contact_id
+ * @property Carbon $start_date
+ * @property Carbon $end_date
+ * @property int $total_amount_minor
+ * @property string $currency
+ * @property int|null $deposit_amount_minor
+ * @property PaymentStatus $payment_status
+ * @property RentalBookingStatus $status
+ * @property string $idempotency_key
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelRentalBooking extends Model
 {

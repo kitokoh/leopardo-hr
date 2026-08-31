@@ -108,7 +108,7 @@ class TravelAdvertController extends Controller
         ]);
 
         // Cohérence devise tenant (critère d'acceptation).
-        $data['currency'] = $data['currency'] ?? $actor->company?->currency ?? 'XAF';
+        $data['currency'] = $data['currency'] ?? $actor->company->currency ?? 'XAF';
 
         return response()->json(['data' => TravelAdvertPrice::query()->create(
             array_merge($data, ['company_id' => $actor->company_id]),
@@ -139,7 +139,7 @@ class TravelAdvertController extends Controller
             ->findOrFail($data['type_id']);
 
         $quote = $pricing->computePrice(
-            companyId: $actor->company_id,
+            companyId: (string) $actor->company_id,
             type: $type,
             positionId: (int) $data['position_id'],
             characterCount: mb_strlen($data['body']),
@@ -206,7 +206,7 @@ class TravelAdvertController extends Controller
             abort(422, 'Seule une annonce payée peut être validée.');
         }
 
-        $days = (int) $request->validate(['valid_days' => ['sometimes', 'integer', 'min:1', 'max:90']])['valid_days'] ?? 30;
+        $days = (int) ($request->validate(['valid_days' => ['sometimes', 'integer', 'min:1', 'max:90']])['valid_days'] ?? 30);
 
         $advert->forceFill([
             'status' => 'published',

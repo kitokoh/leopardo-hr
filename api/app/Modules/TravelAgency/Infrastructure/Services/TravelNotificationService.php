@@ -62,6 +62,7 @@ final class TravelNotificationService
     }
 
     /**
+     * @param  array<string, mixed>  $payload
      * @return list<TravelBooking>
      */
     private function resolveBookings(string $companyId, string $eventType, array $payload): array
@@ -101,11 +102,11 @@ final class TravelNotificationService
      */
     private function contactFor(TravelBooking $booking): array
     {
-        $email = is_string($booking->contact_email) && trim($booking->contact_email) !== ''
+        $email = trim($booking->contact_email) !== ''
             ? strtolower(trim($booking->contact_email))
             : null;
 
-        $phone = is_string($booking->contact_phone) && trim($booking->contact_phone) !== ''
+        $phone = trim($booking->contact_phone) !== ''
             ? trim($booking->contact_phone)
             : null;
 

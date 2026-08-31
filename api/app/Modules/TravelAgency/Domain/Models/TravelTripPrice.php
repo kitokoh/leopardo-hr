@@ -6,9 +6,11 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelTripPriceFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Tarif d'un trajet par classe (TRAVEL-207, issue #6020).
@@ -16,6 +18,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Montants en unités mineures (minor units, ex. centimes) — jamais de
  * flottant. Un seul prix par (trip, classe) : contrainte DB
  * `travel_trip_prices_company_trip_class_unique`.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $trip_id
+ * @property string $class_id
+ * @property int $adult_price_minor
+ * @property int $child_price_minor
+ * @property string $currency
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelTripPrice extends Model
 {

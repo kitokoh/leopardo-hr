@@ -10,7 +10,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
-use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-813 (#6103) — Résolution et application des politiques
@@ -93,7 +92,7 @@ final class TravelCancellationPolicyService
             ];
         }
 
-        $penalty = $this->penaltyFor($trip, $passenger->class_id, $departureAt, $now);
+        $penalty = $this->penaltyFor($trip, (int) $passenger->class_id, $departureAt, $now);
         $policy = $penalty['policy'];
 
         if ($policy instanceof TravelCancellationPolicy && ! $policy->refundable) {
@@ -131,10 +130,6 @@ final class TravelCancellationPolicyService
 
         $departureAt = $trip->departure_date->copy()
             ->setTimeFromTimeString((string) ($trip->departure_time ?? '00:00'));
-
-        if (! $departureAt instanceof Carbon) {
-            $departureAt = now()->addDay();
-        }
 
         $total = 0;
         $penalty = 0;

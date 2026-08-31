@@ -111,6 +111,11 @@ final class CreateBookingAction
             /** @var TravelTrip $returnTrip */
             $returnTrip = TravelTrip::query()->findOrFail($returnTripId);
 
+            // La jambe retour exige un acteur authentifié (tenant du trajet).
+            if (! $actor instanceof Employee) {
+                abort(401);
+            }
+
             if ($returnTrip->company_id !== $actor->company_id) {
                 abort(404);
             }

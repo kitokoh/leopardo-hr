@@ -48,7 +48,11 @@ class TravelPublicShopController extends Controller
             ->where('status', TripStatus::PUBLISHED)
             ->when($request->query('origin_city_id'), fn ($q, $cityId) => $q->whereHas('route', fn ($route) => $route->where('origin_city_id', $cityId)))
             ->when($request->query('destination_city_id'), fn ($q, $cityId) => $q->whereHas('route', fn ($route) => $route->where('destination_city_id', $cityId)))
-            ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($request->query('departure_date'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', $date);
+                }
+            })
             ->orderBy('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
@@ -273,7 +277,7 @@ class TravelPublicShopController extends Controller
             'name' => $token->name,
             'active' => $token->active,
             'token_prefix' => substr((string) $token->token_hash, 0, 8).'…',
-            'created_at' => $token->created_at->toIso8601String(),
+            'created_at' => $token->created_at?->toIso8601String(),
             'last_used_at' => $token->last_used_at?->toIso8601String(),
         ]]);
     }

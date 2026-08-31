@@ -202,7 +202,7 @@ class TravelQuizController extends Controller
             'participant_identifier' => $p->participant_identifier,
             'score' => $p->score,
             'total_points' => $p->total_points,
-            'completed_at' => $p->completed_at->toIso8601String(),
+            'completed_at' => $p->completed_at?->toIso8601String(),
         ])]);
     }
 

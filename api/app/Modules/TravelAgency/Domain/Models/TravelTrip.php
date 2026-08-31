@@ -8,10 +8,12 @@ use App\Modules\TravelAgency\Domain\Enums\MeansOfTransport;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelTripFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Instance datée d'une route (TRAVEL-207, issue #6020).
@@ -19,6 +21,28 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * `carrier_id`/`vehicle_id` nullables (préparation avant affectation).
  * `total_seats` pilote la génération transactionnelle des sièges
  * (TRAVEL-208, #6021).
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property int $route_id
+ * @property int|null $carrier_id
+ * @property int|null $vehicle_id
+ * @property Carbon $departure_date
+ * @property string $departure_time
+ * @property Carbon $arrival_date
+ * @property string $arrival_time
+ * @property MeansOfTransport $means_of_transport
+ * @property int $total_seats
+ * @property TripStatus $status
+ * @property Carbon|null $published_at
+ * @property int|null $created_by_user_id
+ * @property string $external_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelTrip extends Model
 {

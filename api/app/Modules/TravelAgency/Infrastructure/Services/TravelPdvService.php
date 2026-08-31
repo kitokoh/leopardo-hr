@@ -68,7 +68,7 @@ final class TravelPdvService
             abort(422, 'Aucune session de caisse ouverte.');
         }
 
-        $expected = (int) $session->opening_balance_minor + $this->cashPaidSince($companyId, $session->opened_at);
+        $expected = (int) $session->opening_balance_minor + $this->cashPaidSince($companyId, $session->opened_at ?? now());
 
         return DB::transaction(function () use ($session, $actualBalanceMinor, $expected): TravelCashSession {
             $session->forceFill([

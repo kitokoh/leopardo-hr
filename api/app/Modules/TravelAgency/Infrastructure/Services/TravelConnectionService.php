@@ -79,20 +79,12 @@ final class TravelConnectionService
         foreach ($firstLegs as $leg1) {
             $leg1Arrival = $this->departureDateTime($leg1, 'arrival');
 
-            if ($leg1Arrival === null) {
-                continue;
-            }
-
             foreach ($secondLegs as $leg2) {
                 if ($leg1->route?->destination_city_id !== $leg2->route?->origin_city_id) {
                     continue;
                 }
 
                 $leg2Departure = $this->departureDateTime($leg2, 'departure');
-
-                if ($leg2Departure === null) {
-                    continue;
-                }
 
                 $connectionMinutes = (int) $leg1Arrival->diffInMinutes($leg2Departure);
 
@@ -112,7 +104,7 @@ final class TravelConnectionService
                     'leg2' => $leg2,
                     'connection_minutes' => $connectionMinutes,
                     'total_price_minor' => $price1 + $price2,
-                    'currency' => (string) ($leg1->prices->first()?->currency ?? 'XAF'),
+                    'currency' => (string) ($leg1->prices->first()->currency ?? 'XAF'),
                 ];
             }
         }
@@ -139,6 +131,7 @@ final class TravelConnectionService
     ): array {
         $group = (string) Str::uuid();
 
+        /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $passengersLeg1 */
         $booking1 = $this->createBooking->execute(
             trip: $leg1,
             passengers: $passengersLeg1,
@@ -148,6 +141,7 @@ final class TravelConnectionService
             connectionGroupId: $group,
         );
 
+        /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $passengersLeg2 */
         $booking2 = $this->createBooking->execute(
             trip: $leg2,
             passengers: $passengersLeg2,

@@ -121,7 +121,7 @@ final class CorporateBookingService
 
         // Devis respecté : même trajet, même effectif, montant ≤ devis.
         if ($quote instanceof TravelQuote) {
-            if ($quote->corporate_account_id !== $account->id) {
+            if ((int) $quote->corporate_account_id !== $account->id) {
                 abort(422, 'Devis incohérent avec le compte corporate.');
             }
 
@@ -129,11 +129,12 @@ final class CorporateBookingService
                 abort(422, 'Devis non accepté.');
             }
 
-            if ($quote->trip_id !== $trip->id || $quote->passengers_count !== count($passengers)) {
+            if ((int) $quote->trip_id !== $trip->id || $quote->passengers_count !== count($passengers)) {
                 abort(422, 'Devis incohérent avec la réservation (trajet ou effectif).');
             }
         }
 
+        /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $passengers */
         $booking = $this->createBooking->execute(
             trip: $trip,
             passengers: $passengers,

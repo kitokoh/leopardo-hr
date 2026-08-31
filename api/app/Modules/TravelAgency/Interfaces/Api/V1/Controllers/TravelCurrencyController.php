@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-805 (#6096) — Multi-devise : taux validés par période + conversion.
@@ -74,11 +75,11 @@ class TravelCurrencyController extends Controller
         ]);
 
         $converted = $service->convert(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $data['amount_minor'],
             $data['from'],
             $data['to'],
-            isset($data['date']) ? \Illuminate\Support\Carbon::parse($data['date']) : null,
+            isset($data['date']) ? Carbon::parse($data['date']) : null,
         );
 
         return response()->json([

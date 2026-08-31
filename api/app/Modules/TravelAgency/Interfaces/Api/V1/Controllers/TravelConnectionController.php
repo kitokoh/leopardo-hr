@@ -35,7 +35,7 @@ class TravelConnectionController extends Controller
         ]);
 
         $connections = $service->search(
-            companyId: $actor->company_id,
+            companyId: (string) $actor->company_id,
             originCityId: (int) $data['origin_city_id'],
             destinationCityId: (int) $data['destination_city_id'],
             date: $data['date'],

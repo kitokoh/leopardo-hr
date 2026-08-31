@@ -98,7 +98,7 @@ class TravelShopController extends Controller
     {
         $currency = $request->query('currency');
 
-        if (! is_string($currency) || $currency === '' || strtoupper($currency) === strtoupper((string) ($actor->company?->currency ?? ''))) {
+        if (! is_string($currency) || $currency === '' || strtoupper($currency) === strtoupper((string) ($actor->company->currency ?? ''))) {
             return;
         }
 
@@ -111,16 +111,18 @@ class TravelShopController extends Controller
 
             foreach ($trip->prices as $price) {
                 $price->adult_price_minor = $service->convert(
-                    $actor->company_id,
+                    (string) $actor->company_id,
                     (int) $price->adult_price_minor,
                     (string) $price->currency,
                     strtoupper($currency),
                 );
 
-                if ($price->child_price_minor !== null) {
+                $childPriceMinor = $price->getAttribute('child_price_minor');
+
+                if ($childPriceMinor !== null) {
                     $price->child_price_minor = $service->convert(
-                        $actor->company_id,
-                        (int) $price->child_price_minor,
+                        (string) $actor->company_id,
+                        (int) $childPriceMinor,
                         (string) $price->currency,
                         strtoupper($currency),
                     );

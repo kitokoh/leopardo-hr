@@ -77,7 +77,7 @@ class TravelRouteStopController extends Controller
         }
 
         if ($travelRouteStop->company_id !== $travelRoute->company_id
-            || $travelRouteStop->route_id !== $travelRoute->id) {
+            || (int) $travelRouteStop->route_id !== $travelRoute->id) {
             abort(404);
         }
 
@@ -104,7 +104,7 @@ class TravelRouteStopController extends Controller
         }
 
         if ($travelRouteStop->company_id !== $travelRoute->company_id
-            || $travelRouteStop->route_id !== $travelRoute->id) {
+            || (int) $travelRouteStop->route_id !== $travelRoute->id) {
             abort(404);
         }
 

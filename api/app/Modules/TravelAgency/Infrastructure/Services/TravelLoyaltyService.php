@@ -243,11 +243,11 @@ final class TravelLoyaltyService
      */
     private function contactFor(TravelBooking $booking): ?string
     {
-        if (is_string($booking->contact_email) && trim($booking->contact_email) !== '') {
+        if (trim($booking->contact_email) !== '') {
             return $this->normalize($booking->contact_email);
         }
 
-        if (is_string($booking->contact_phone) && trim($booking->contact_phone) !== '') {
+        if (trim($booking->contact_phone) !== '') {
             return $this->normalize($booking->contact_phone);
         }
 

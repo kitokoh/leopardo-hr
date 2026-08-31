@@ -8,8 +8,10 @@ use App\Modules\TravelAgency\Domain\Enums\CarrierType;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelCarrierFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Compagnie de transport de la verticale TravelAgency (TRAVEL-204, issue #6017).
@@ -17,6 +19,20 @@ use Illuminate\Database\Eloquent\Model;
  * Référentiel tenant-scoped des transporteurs (bus/train/avion/bateau) —
  * code unique par tenant. Consommé par `travel_vehicles` (flotte propre,
  * carrier_id nullable) et `travel_trips`.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property string $name
+ * @property CarrierType $type
+ * @property string|null $contact_phone
+ * @property int|null $logo_asset_id
+ * @property TravelRecordStatus $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelCarrier extends Model
 {

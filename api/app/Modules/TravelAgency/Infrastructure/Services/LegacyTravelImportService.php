@@ -195,6 +195,7 @@ final class LegacyTravelImportService
     }
 
     /**
+     * @param  array<string, mixed>  $prices
      * @param  ImportReport  $report
      */
     private function importPrices(string $companyId, TravelTrip $trip, array $prices, array &$report): void

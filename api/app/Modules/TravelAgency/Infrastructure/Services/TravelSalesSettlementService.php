@@ -160,6 +160,10 @@ final class TravelSalesSettlementService
     ): TravelSalesSettlement {
         $first = reset($results);
 
+        if ($first === false) {
+            throw new \RuntimeException('Aucune devise à synthétiser.');
+        }
+
         return new TravelSalesSettlement([
             'company_id' => $companyId,
             'period_start' => $start->toDateString(),
@@ -189,7 +193,7 @@ final class TravelSalesSettlementService
                 'refunded_count' => $settlement->refunded_count,
                 'refunded_amount_minor' => $settlement->refunded_amount_minor,
                 'net_amount_minor' => $settlement->net_amount_minor,
-                'settled_at' => $settlement->settled_at->toIso8601String(),
+                'settled_at' => ($settlement->settled_at ?? now())->toIso8601String(),
             ],
             // Clé d'idempotence STABLE par période : un rejeu de la même
             // période ne republie jamais l'événement (ni doublon chez les

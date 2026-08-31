@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Session de caisse du PDV tablette (TRAVEL-810, issue #6100).
@@ -13,11 +15,28 @@ use Illuminate\Database\Eloquent\Model;
  * Une seule session ouverte par tenant ; la clôture compare l'ATTENDU
  * (solde initial + paiements cash confirmés) au RÉEL saisi → écart.
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $opened_by_user_id
+ * @property Carbon|null $opened_at
+ * @property Carbon|null $closed_at
+ * @property int $opening_balance_minor
+ * @property int|null $expected_balance_minor
+ * @property int|null $actual_balance_minor
+ * @property int|null $difference_minor
+ * @property string $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelCashSession extends Model
 {
     use BelongsToCompany;
 
     public const STATUS_OPEN = 'open';
+
     public const STATUS_CLOSED = 'closed';
 
     protected $fillable = [

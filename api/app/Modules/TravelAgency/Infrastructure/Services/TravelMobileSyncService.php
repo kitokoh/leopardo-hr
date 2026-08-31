@@ -72,6 +72,7 @@ final class TravelMobileSyncService
                 return ['type' => 'booking.create', 'status' => 'error', 'error' => 'trajet hors tenant'];
             }
 
+            /** @var list<array{full_name: string, birth_date?: string|null, document_type?: string|null, document_number?: string|null, age_category: string, class_id: int, seat_number?: int|null}> $passengers */
             $booking = $this->createBooking->execute(
                 trip: $trip,
                 passengers: $passengers,

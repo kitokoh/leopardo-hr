@@ -35,7 +35,7 @@ final class RefundPaymentAction
             abort(422, 'Seul un paiement confirmé peut être remboursé.');
         }
 
-        if ($payment->provider_reference === null) {
+        if (blank($payment->provider_reference)) {
             abort(422, 'Référence provider manquante — remboursement impossible.');
         }
 

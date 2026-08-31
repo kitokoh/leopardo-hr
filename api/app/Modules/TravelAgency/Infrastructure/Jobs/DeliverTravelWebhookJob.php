@@ -112,7 +112,7 @@ class DeliverTravelWebhookJob implements ShouldQueue
             'next_attempt_at' => now()->addMinutes($backoffMinutes),
         ])->save();
 
-        self::dispatch($delivery->id, $delivery->subscription_id)
+        self::dispatch($delivery->id, (int) $delivery->subscription_id)
             ->delay($delivery->next_attempt_at);
     }
 

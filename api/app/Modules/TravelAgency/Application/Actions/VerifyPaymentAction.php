@@ -27,7 +27,7 @@ final class VerifyPaymentAction
             return $payment; // Déjà terminal : rien à re-concilier.
         }
 
-        if ($payment->provider_reference === null) {
+        if (blank($payment->provider_reference)) {
             return $payment; // Pas de référence provider : rien à vérifier.
         }
 

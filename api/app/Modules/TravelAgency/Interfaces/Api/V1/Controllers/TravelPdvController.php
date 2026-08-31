@@ -30,7 +30,7 @@ class TravelPdvController extends Controller
             'opening_balance_minor' => ['sometimes', 'integer', 'min:0'],
         ]);
 
-        $session = $service->open($actor->company_id, $actor, (int) ($data['opening_balance_minor'] ?? 0));
+        $session = $service->open((string) $actor->company_id, $actor, (int) ($data['opening_balance_minor'] ?? 0));
 
         return response()->json(['data' => $this->payload($session)])->setStatusCode(201);
     }
@@ -40,7 +40,7 @@ class TravelPdvController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $session = $service->current($actor->company_id);
+        $session = $service->current((string) $actor->company_id);
 
         return response()->json(['data' => $session instanceof TravelCashSession ? $this->payload($session) : null]);
     }
@@ -54,7 +54,7 @@ class TravelPdvController extends Controller
             'actual_balance_minor' => ['required', 'integer', 'min:0'],
         ]);
 
-        $session = $service->close($actor->company_id, $actor, (int) $data['actual_balance_minor']);
+        $session = $service->close((string) $actor->company_id, $actor, (int) $data['actual_balance_minor']);
 
         return response()->json(['data' => $this->payload($session)]);
     }
@@ -64,7 +64,7 @@ class TravelPdvController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        return response()->json(['data' => $service->receipt($actor->company_id, $booking)]);
+        return response()->json(['data' => $service->receipt((string) $actor->company_id, $booking)]);
     }
 
     /**
@@ -75,7 +75,7 @@ class TravelPdvController extends Controller
         return [
             'id' => $session->id,
             'status' => $session->status,
-            'opened_at' => $session->opened_at->toIso8601String(),
+            'opened_at' => $session->opened_at?->toIso8601String(),
             'closed_at' => $session->closed_at?->toIso8601String(),
             'opening_balance_minor' => $session->opening_balance_minor,
             'expected_balance_minor' => $session->expected_balance_minor,

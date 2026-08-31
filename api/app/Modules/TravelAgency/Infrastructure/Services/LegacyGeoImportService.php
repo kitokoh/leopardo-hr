@@ -34,7 +34,8 @@ final class LegacyGeoImportService
             return $report;
         }
 
-        return DB::transaction(function () use ($companyId, $dump, &$report): array {
+        /** @var GeoReport $imported */
+        $imported = DB::transaction(function () use ($companyId, $dump, &$report): array {
             $countryIso2 = [];
 
             foreach ((array) ($dump['countries'] ?? []) as $country) {
@@ -105,5 +106,7 @@ final class LegacyGeoImportService
 
             return $report;
         });
+
+        return $imported;
     }
 }

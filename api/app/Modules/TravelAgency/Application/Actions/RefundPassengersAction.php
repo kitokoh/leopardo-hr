@@ -172,7 +172,7 @@ final class RefundPassengersAction
     private function departureAt(TravelBooking $booking): Carbon
     {
         $departure = $booking->trip?->departure_date?->copy()
-            ->setTimeFromTimeString((string) ($booking->trip?->departure_time ?? '00:00'));
+            ->setTimeFromTimeString((string) ($booking->trip->departure_time ?? '00:00'));
 
         return $departure instanceof Carbon ? $departure : now()->addDay();
     }

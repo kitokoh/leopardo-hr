@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Consentement de notification voyageur (TRAVEL-415, issue #6067).
@@ -13,6 +15,19 @@ use Illuminate\Database\Eloquent\Model;
  * Explicitement accordé (guichet/boutique, source tracée) et révocable :
  * un consentement révoqué (`revoked_at`) n'autorise plus aucun envoi sur
  * ce canal pour ce contact.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $contact_identifier
+ * @property string $channel
+ * @property string $source
+ * @property Carbon|null $granted_at
+ * @property Carbon|null $revoked_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelNotificationConsent extends Model
 {

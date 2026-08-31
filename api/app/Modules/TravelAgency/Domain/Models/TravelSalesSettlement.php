@@ -6,8 +6,10 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelSalesSettlementFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Synthèse périodique des ventes TravelAgency pour Accounting
@@ -17,6 +19,24 @@ use Illuminate\Database\Eloquent\Model;
  * garantit qu'un même période n'est jamais synthétisée deux fois avec des
  * montants différents. L'événement `travel.sales.settled.v1` est la source
  * de vérité pour les écritures côté Accounting.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property Carbon $period_start
+ * @property Carbon $period_end
+ * @property string $currency
+ * @property int $confirmed_payments_count
+ * @property int $confirmed_amount_minor
+ * @property int $refunded_count
+ * @property int $refunded_amount_minor
+ * @property int $net_amount_minor
+ * @property string $status
+ * @property Carbon|null $settled_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelSalesSettlement extends Model
 {

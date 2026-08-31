@@ -9,10 +9,12 @@ use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelBookingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +23,40 @@ use Illuminate\Support\Str;
  * `reference` est générée automatiquement (`GV-…`) si absente à la création.
  * `idempotency_key` garantit qu'une requête rejouée (retry réseau, double
  * clic guichet) ne crée jamais deux réservations pour le même tenant.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $reference
+ * @property int $trip_id
+ * @property BookingStatus $status
+ * @property int $passenger_count
+ * @property int $total_amount_minor
+ * @property string $currency
+ * @property BookingSource $booking_source
+ * @property int|null $customer_contact_id
+ * @property int|null $booked_by_user_id
+ * @property PaymentStatus $payment_status
+ * @property Carbon|null $cancelled_at
+ * @property string $cancel_reason
+ * @property Carbon|null $expires_at
+ * @property string $idempotency_key
+ * @property int $version
+ * @property string $contact_email
+ * @property string $contact_phone
+ * @property bool $notify_consent
+ * @property Carbon|null $consent_recorded_at
+ * @property string $round_trip_group_id
+ * @property int $return_booking_id
+ * @property string $leg
+ * @property int $corporate_account_id
+ * @property int $quote_id
+ * @property bool $billing_deferred
+ * @property string $connection_group_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelBooking extends Model
 {

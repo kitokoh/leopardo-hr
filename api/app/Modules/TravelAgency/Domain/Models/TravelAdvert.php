@@ -5,10 +5,36 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Annonce publicitaire (TRAVEL-907/908, issues #6110/#6111). Cycle submit → paid → validated → published → expired|archived ; visible seulement payée ET validée.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $type_id
+ * @property string $position_id
+ * @property string $title
+ * @property string $body_redacted
+ * @property string $image_path
+ * @property int $character_count
+ * @property int $price_minor
+ * @property string $currency
+ * @property string $status
+ * @property Carbon|null $paid_at
+ * @property string $payment_id
+ * @property Carbon|null $validated_at
+ * @property string $validated_by_user_id
+ * @property Carbon|null $published_at
+ * @property Carbon|null $valid_until
+ * @property string $moderation_note
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelAdvert extends Model
 {
