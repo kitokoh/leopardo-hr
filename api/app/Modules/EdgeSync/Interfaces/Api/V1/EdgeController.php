@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

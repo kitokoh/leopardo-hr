@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\EdgeSync\Application\Actions;
 
-use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Illuminate\Support\Str;

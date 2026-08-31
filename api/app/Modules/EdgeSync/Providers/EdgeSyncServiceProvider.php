@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\EdgeSync\Providers;
 
-use App\Modules\EdgeSync\Application\Services\CloudDeltaBuilder;
-use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Support\ServiceProvider;
 
 class EdgeSyncServiceProvider extends ServiceProvider
