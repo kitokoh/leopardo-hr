@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/restaurant_pos_session.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/restaurant/providers/restaurant_providers.dart';
@@ -32,6 +33,7 @@ class _RestaurantManagerScreenState
   }
 
   Future<void> _closeSession(RestaurantPosSession session) async {
+    final l10n = context.l10n;
     if (_busy) return;
     final controller = TextEditingController(
       text: session.expectedMinor != null
@@ -44,22 +46,24 @@ class _RestaurantManagerScreenState
         backgroundColor: MobileSurface.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Clôturer la caisse',
+          l10n.restaurantMobileManagerCloseTitle,
           style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
         ),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(labelText: 'Compté en caisse'),
+          decoration: InputDecoration(
+            labelText: l10n.restaurantMobileManagerCountedLabel,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annuler'),
+            child: Text(l10n.restaurantMobileCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Clôturer'),
+            child: Text(l10n.restaurantMobileManagerClose),
           ),
         ],
       ),
@@ -69,8 +73,8 @@ class _RestaurantManagerScreenState
     final countedMinor = (double.tryParse(controller.text) ?? 0) * 100 ~/ 1;
     if (countedMinor <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Montant invalide'),
+        SnackBar(
+          content: Text(l10n.restaurantMobileInvalidAmount),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -84,14 +88,15 @@ class _RestaurantManagerScreenState
           .closePosSession(session.id, countedCashMinor: countedMinor);
       await _refresh();
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Caisse clôturée')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.restaurantMobileManagerClosedOk)),
+        );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Clôture impossible'),
+          SnackBar(
+            content: Text(l10n.restaurantMobileManagerCloseError),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -103,19 +108,19 @@ class _RestaurantManagerScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final kpisAsync = ref.watch(restaurantManagerKpisProvider);
     final alertsAsync = ref.watch(restaurantManagerStockAlertsProvider);
     final sessionAsync = ref.watch(restaurantManagerPosSessionProvider);
-    const background = MobileSurface.background;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Gestion',
-        subtitle: 'KPIs, stock et caisse',
+        title: l10n.restaurantMobileHubManager,
+        subtitle: l10n.restaurantMobileManagerSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: l10n.restaurantMobileBack,
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -131,25 +136,30 @@ class _RestaurantManagerScreenState
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
           children: [
             kpisAsync.when(
-              loading: () =>
-                  const MobileEmptyLoading(label: 'Chargement des KPIs…'),
-              error: (_, __) =>
-                  const MobileErrorPanel(message: 'KPIs indisponibles'),
+              loading: () => MobileEmptyLoading(
+                label: l10n.restaurantMobileManagerKpisLoading,
+              ),
+              error: (_, __) => MobileErrorPanel(
+                message: l10n.restaurantMobileManagerKpisError,
+              ),
               data: (kpis) => Wrap(
                 spacing: 12,
                 runSpacing: 12,
                 children: [
                   _KpiTile(
-                    label: 'Chiffre du jour',
+                    label: l10n.restaurantMobileManagerRevenueToday,
                     value: _formatMinor(kpis.todayRevenueMinor, kpis.currency),
                   ),
-                  _KpiTile(label: 'Commandes', value: '${kpis.ordersCount}'),
                   _KpiTile(
-                    label: 'Panier moyen',
+                    label: l10n.restaurantMobileManagerOrders,
+                    value: '${kpis.ordersCount}',
+                  ),
+                  _KpiTile(
+                    label: l10n.restaurantMobileManagerAvgBasket,
                     value: _formatMinor(kpis.avgBasketMinor, kpis.currency),
                   ),
                   _KpiTile(
-                    label: 'Tables ouvertes',
+                    label: l10n.restaurantMobileManagerTablesOpen,
                     value: '${kpis.tablesOpenedToday}',
                   ),
                 ],
@@ -157,17 +167,18 @@ class _RestaurantManagerScreenState
             ),
             const SizedBox(height: 24),
             Text(
-              'Caisse',
+              l10n.restaurantMobileManagerCash,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 8),
             sessionAsync.when(
               loading: () => const SizedBox.shrink(),
-              error: (_, __) =>
-                  const MobileErrorPanel(message: 'Session indisponible'),
+              error: (_, __) => MobileErrorPanel(
+                message: l10n.restaurantMobileManagerSessionError,
+              ),
               data: (session) => session == null
                   ? Text(
-                      'Aucune session de caisse ouverte',
+                      l10n.restaurantMobileManagerNoSession,
                       style: AppTypography.bodySmall.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -175,31 +186,35 @@ class _RestaurantManagerScreenState
                   : MobileListCard(
                       icon: Icons.point_of_sale_outlined,
                       iconColor: AppColors.finance,
-                      title: 'Session #${session.id}',
-                      subtitle: session.isOpen ? 'ouverte' : session.status,
+                      title:
+                          '${l10n.restaurantMobileManagerCash} #${session.id}',
+                      subtitle: session.isOpen
+                          ? l10n.restaurantMobileManagerSessionOpen
+                          : session.status,
                       trailing: session.isOpen
                           ? FilledButton(
                               onPressed: _busy
                                   ? null
                                   : () => _closeSession(session),
-                              child: const Text('Clôturer'),
+                              child: Text(l10n.restaurantMobileManagerClose),
                             )
                           : null,
                     ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Alertes stock',
+              l10n.restaurantMobileManagerStockAlerts,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 8),
             alertsAsync.when(
               loading: () => const SizedBox.shrink(),
-              error: (_, __) =>
-                  const MobileErrorPanel(message: 'Alertes indisponibles'),
+              error: (_, __) => MobileErrorPanel(
+                message: l10n.restaurantMobileManagerStockAlertsError,
+              ),
               data: (alerts) => alerts.isEmpty
                   ? Text(
-                      'Aucune alerte de seuil',
+                      l10n.restaurantMobileManagerNoStockAlerts,
                       style: AppTypography.bodySmall.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -209,9 +224,13 @@ class _RestaurantManagerScreenState
                         return MobileListCard(
                           icon: Icons.warning_amber_outlined,
                           iconColor: AppColors.warning,
-                          title: alert.ingredient ?? 'Ingrédient #${alert.id}',
-                          subtitle:
-                              'Stock : ${alert.quantity} / seuil : ${alert.alertThreshold ?? '-'}',
+                          title:
+                              alert.ingredient ??
+                              l10n.restaurantMobileManagerIngredient(alert.id),
+                          subtitle: l10n.restaurantMobileManagerStockLevel(
+                            alert.quantity,
+                            alert.alertThreshold ?? '-',
+                          ),
                         );
                       }).toList(),
                     ),

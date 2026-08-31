@@ -5,6 +5,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/features/restaurant/data/restaurant_repository.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/restaurant_delivery.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/restaurant/providers/restaurant_providers.dart';
@@ -46,8 +47,8 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Transition impossible depuis cet état'),
+          SnackBar(
+            content: Text(context.l10n.restaurantMobileRiderTransitionError),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -59,17 +60,17 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final deliveriesAsync = ref.watch(restaurantRiderDeliveriesProvider);
-    const background = MobileSurface.background;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Livraison',
-        subtitle: 'Tournées assignées',
+        title: l10n.restaurantMobileHubRider,
+        subtitle: l10n.restaurantMobileRiderSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: l10n.restaurantMobileBack,
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -86,11 +87,11 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
           children: [
             deliveriesAsync.when(
               loading: () =>
-                  const MobileEmptyLoading(label: 'Chargement des livraisons…'),
+                  MobileEmptyLoading(label: l10n.restaurantMobileRiderLoading),
               error: (_, __) =>
-                  const MobileErrorPanel(message: 'Livraisons indisponibles'),
+                  MobileErrorPanel(message: l10n.restaurantMobileRiderError),
               data: (deliveries) => deliveries.isEmpty
-                  ? const MobileEmptyLoading(label: 'Aucune livraison assignée')
+                  ? MobileEmptyLoading(label: l10n.restaurantMobileRiderEmpty)
                   : Column(
                       children: deliveries.map((delivery) {
                         return MobileListCard(
@@ -98,9 +99,10 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                           iconColor: AppColors.finance,
                           title: delivery.reference,
                           subtitle: [
-                            delivery.customerName ?? 'Client',
+                            delivery.customerName ??
+                                l10n.restaurantMobileRiderCustomer,
                             if (delivery.address != null) delivery.address!,
-                            _statusLabel(delivery.status),
+                            _statusLabel(l10n, delivery.status),
                           ].join(' · '),
                           trailing: delivery.feeMinor != null
                               ? Text(
@@ -125,9 +127,11 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                                                   (repo) => repo.outForDelivery(
                                                     delivery.id,
                                                   ),
-                                                  'Départ en livraison',
+                                                  l10n.restaurantMobileRiderDeparted,
                                                 ),
-                                          child: const Text('Départ'),
+                                          child: Text(
+                                            l10n.restaurantMobileRiderDepart,
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -141,9 +145,11 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
                                                   delivery,
                                                   (repo) =>
                                                       repo.deliver(delivery.id),
-                                                  'Livraison effectuée',
+                                                  l10n.restaurantMobileRiderDeliveredOk,
                                                 ),
-                                          child: const Text('Livrée'),
+                                          child: Text(
+                                            l10n.restaurantMobileRiderDeliver,
+                                          ),
                                         ),
                                       ),
                                   ],
@@ -159,14 +165,14 @@ class _RestaurantRiderScreenState extends ConsumerState<RestaurantRiderScreen> {
     );
   }
 
-  String _statusLabel(String status) {
+  String _statusLabel(AppLocalizations l10n, String status) {
     switch (status) {
       case 'assigned':
-        return 'assignée';
+        return l10n.restaurantMobileStatusAssigned;
       case 'out_for_delivery':
-        return 'en cours';
+        return l10n.restaurantMobileStatusOutForDelivery;
       case 'delivered':
-        return 'livrée';
+        return l10n.restaurantMobileStatusDelivered;
       default:
         return status;
     }

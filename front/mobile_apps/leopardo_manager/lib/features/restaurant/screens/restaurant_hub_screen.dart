@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_manager/features/restaurant/providers/restaurant_providers.dart';
 
 /// Hub RestaurantManager (RESTO-028/#6155, #6406).
@@ -16,19 +17,18 @@ class RestaurantHubScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
     final queue = ref.watch(restaurantOfflineQueueProvider);
-    const text = MobileSurface.text;
     const muted = MobileSurface.secondary;
-    const background = MobileSurface.background;
 
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Restaurant',
-        subtitle: 'Outils de service, livraison et gestion',
+        title: l10n.restaurantMobileHubTitle,
+        subtitle: l10n.restaurantMobileHubSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: l10n.restaurantMobileBack,
           onPressed: () => context.pop(),
         ),
       ),
@@ -47,7 +47,7 @@ class RestaurantHubScreen extends ConsumerWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      '${queue.pending.length} opération(s) hors ligne en attente de rejeu',
+                      l10n.restaurantMobileOfflinePending(queue.pending.length),
                       style: AppTypography.bodySmall.copyWith(color: muted),
                     ),
                   ),
@@ -56,13 +56,13 @@ class RestaurantHubScreen extends ConsumerWidget {
                       await queue.flush();
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Synchronisation effectuée'),
+                          SnackBar(
+                            content: Text(l10n.restaurantMobileOfflineSynced),
                           ),
                         );
                       }
                     },
-                    child: const Text('Rejouer'),
+                    child: Text(l10n.restaurantMobileOfflineReplay),
                   ),
                 ],
               ),
@@ -71,27 +71,27 @@ class RestaurantHubScreen extends ConsumerWidget {
           ],
           _HubCard(
             icon: Icons.table_restaurant_outlined,
-            title: 'Service',
-            subtitle: 'File de commandes, plan de salle, encaissement',
+            title: l10n.restaurantMobileHubServer,
+            subtitle: l10n.restaurantMobileHubServerDesc,
             onTap: () => context.push('/restaurant/server'),
           ),
           const SizedBox(height: 14),
           _HubCard(
             icon: Icons.delivery_dining_outlined,
-            title: 'Livraison',
-            subtitle: 'Tournées assignées et transitions',
+            title: l10n.restaurantMobileHubRider,
+            subtitle: l10n.restaurantMobileHubRiderDesc,
             onTap: () => context.push('/restaurant/rider'),
           ),
           const SizedBox(height: 14),
           _HubCard(
             icon: Icons.insights_outlined,
-            title: 'Gestion',
-            subtitle: 'KPIs du jour, alertes stock, clôture de caisse',
+            title: l10n.restaurantMobileHubManager,
+            subtitle: l10n.restaurantMobileHubManagerDesc,
             onTap: () => context.push('/restaurant/manager'),
           ),
           const SizedBox(height: 20),
           Text(
-            'Les montants et transitions sont validés côté serveur. En cas de coupure réseau, les opérations sont mises en file et rejouées sans doublon.',
+            l10n.restaurantMobileHubFooter,
             style: AppTypography.bodySmall.copyWith(color: muted),
           ),
         ],
