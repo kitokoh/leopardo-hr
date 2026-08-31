@@ -42,6 +42,8 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `RestaurantManager` | Verticale restauration (BC-25) : référentiel (branches/tables/produits), POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
+| `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
+| `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.
