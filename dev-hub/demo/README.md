@@ -11,7 +11,7 @@ Run our seeder to populate your local database with rich, realistic sample data:
 
 ```bash
 cd api
-php artisan db:seed --class=DemoSeeder
+php artisan db:seed --class=DemoCompanySeeder
 ```
 
 ---
