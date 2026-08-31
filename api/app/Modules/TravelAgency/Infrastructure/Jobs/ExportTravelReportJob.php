@@ -51,7 +51,7 @@ class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(TravelCsvExporter $exporter): void

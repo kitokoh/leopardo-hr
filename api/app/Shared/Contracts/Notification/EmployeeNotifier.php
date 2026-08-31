@@ -25,7 +25,7 @@ interface EmployeeNotifier
      *
      * @param  array<string, mixed>  $context  (title, body, category, metadata…)
      * @param  list<string>|null  $channels  canaux demandés (null = défaut config)
-     * @return array<string, mixed>  résultat de l'envoi par canal
+     * @return array<string, mixed> résultat de l'envoi par canal
      */
     public function notifyEmployee(Employee $employee, string $templateKey, array $context = [], ?array $channels = null): array;
 }
