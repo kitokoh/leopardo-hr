@@ -280,4 +280,6 @@ return [
     'MANAGER_ONLY_ACTION' => 'This action is reserved for managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'You already have a pending request for this company.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Integration request not found.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Too many attempts. Check your inbox and try again in 15 minutes.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Too many attempts. The code was invalidated, please sign in again.',
 ];
