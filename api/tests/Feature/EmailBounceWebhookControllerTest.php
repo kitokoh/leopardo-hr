@@ -60,6 +60,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         $response->assertOk()->assertJsonPath('received', true);
 
         $fresh = $employee->fresh();
+        $this->assertInstanceOf(Employee::class, $fresh);
         $this->assertNotNull($fresh->email_bounced_at);
         $this->assertSame('mailbox does not exist', $fresh->email_bounce_reason);
 
@@ -83,7 +84,9 @@ class EmailBounceWebhookControllerTest extends TestCase
         ]);
 
         $response->assertOk()->assertJsonPath('received', true);
-        $this->assertNull($employee->fresh()->email_bounced_at);
+        $fresh = $employee->fresh();
+        $this->assertInstanceOf(Employee::class, $fresh);
+        $this->assertNull($fresh->email_bounced_at);
 
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
@@ -158,7 +161,9 @@ class EmailBounceWebhookControllerTest extends TestCase
         ]);
 
         $response->assertOk()->assertJsonPath('received', true);
-        $this->assertNotNull($employee->fresh()->email_bounced_at);
+        $fresh = $employee->fresh();
+        $this->assertInstanceOf(Employee::class, $fresh);
+        $this->assertNotNull($fresh->email_bounced_at);
     }
 
     public function test_invalid_shared_secret_is_rejected(): void
@@ -173,7 +178,9 @@ class EmailBounceWebhookControllerTest extends TestCase
         ], ['X-Bounce-Webhook-Secret' => 'wrong-secret']);
 
         $response->assertStatus(400);
-        $this->assertNull($employee->fresh()->email_bounced_at);
+        $fresh = $employee->fresh();
+        $this->assertInstanceOf(Employee::class, $fresh);
+        $this->assertNull($fresh->email_bounced_at);
     }
 
     public function test_valid_shared_secret_is_accepted(): void
@@ -188,7 +195,9 @@ class EmailBounceWebhookControllerTest extends TestCase
         ], ['X-Bounce-Webhook-Secret' => 'super-secret']);
 
         $response->assertOk();
-        $this->assertNotNull($employee->fresh()->email_bounced_at);
+        $fresh = $employee->fresh();
+        $this->assertInstanceOf(Employee::class, $fresh);
+        $this->assertNotNull($fresh->email_bounced_at);
     }
 
     private function bindLookupStub(?Employee $employee): void
