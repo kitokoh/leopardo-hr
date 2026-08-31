@@ -286,13 +286,7 @@ class ProcessBulkPaymentJobTest extends TestCase
 
         // Simule le worker mort : le claim du slip existe déjà (jamais libéré),
         // le slip est toujours éligible et n'a aucun document de paiement.
-        $claimed = Redis::connection('default')->set( // @phpstan-ignore argument.type, arguments.count
-            "bulk_pay:slip:{$run->id}:{$slip->id}",
-            '1',
-            'EX',
-            21600,
-            'NX',
-        );
+        $claimed = (bool) Redis::connection('default')->set("bulk_pay:slip:{$run->id}:{$slip->id}", '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
         $this->assertTrue((bool) $claimed, 'Pre-claim Redis doit réussir pour simuler le worker mort.');
 
         (new ProcessBulkPaymentJob($run->id, $manager->id))->handle();
