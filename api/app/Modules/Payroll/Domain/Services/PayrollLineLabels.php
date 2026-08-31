@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Payroll\Infrastructure\Services;
+namespace App\Modules\Payroll\Domain\Services;
 
 /**
  * Issue #5257 — i18n paie ×4 : localisation des NOMS DE LIGNES de bulletin au
