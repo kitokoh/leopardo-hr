@@ -52,9 +52,14 @@ class MonNouveauModuleServiceProvider extends ServiceProvider
 ```
 
 ### 4. Enregistrer le ServiceProvider
-Dans `api/app/Providers/AppServiceProvider.php`, ajouter :
+Le mécanisme réel (issue #6586) est le registre `api/bootstrap/providers.php`
+(Laravel 12 auto-discovers les providers listés dans le tableau retourné) —
+ajouter la classe dans le tableau :
 ```php
-$this->app->register(\App\Modules\MonNouveauModule\Providers\MonNouveauModuleServiceProvider::class);
+return [
+    // ... providers existants ...
+    \App\Modules\MonNouveauModule\Providers\MonNouveauModuleServiceProvider::class,
+];
 ```
 
 ### 5. Créer le controller
@@ -84,21 +89,29 @@ Nouveau module opérationnel, isolé, testable, sans impact sur les autres modul
 api/app/Modules/MonNouveauModule/
 ├── Application/
 │   ├── Actions/         ← Use cases
-│   └── DTOs/            ← Data Transfer Objects
+│   ├── DTOs/            ← Data Transfer Objects
+│   ├── Listeners/       ← Event listeners
+│   └── Queries/         ← Queries CQRS
 ├── Domain/
 │   ├── Models/          ← Eloquent models
+│   ├── Enums/           ← Enums métier
 │   ├── Exceptions/      ← Domain exceptions
-│   └── Events/          ← Domain events
+│   ├── Events/          ← Domain events
+│   └── ValueObjects/    ← Value objects
 ├── Infrastructure/
 │   ├── Services/        ← Service layer
+│   ├── Exports/         ← Exports (PDF, CSV…)
 │   └── Repositories/    ← Data access
 ├── Interfaces/
 │   └── Api/V1/
 │       ├── Controllers/ ← HTTP controllers
 │       └── Requests/    ← Form requests
-└── Providers/
-    └── MonNouveauModuleServiceProvider.php
+├── Providers/
+│   └── MonNouveauModuleServiceProvider.php
+└── Console/              ← Commandes artisan du module (optionnel)
 ```
+Les routes du module vivent dans `api/routes/modules/[nom_module].php` et sont
+chargées via `loadRoutesFrom()` dans le ServiceProvider (étape 3).
 
 > **API Resources : namespace centralise (derogation documentee PA2-ARCH-010)**
 > Les classes `JsonResource` de ton nouveau module vont dans `app/Http/Resources/Api/V1/`
