@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Actions;
 
 use App\Mail\DocumentShareMail;
-use App\Modules\Accounting\Application\Jobs\GenerateDocumentPdf;
+use App\Modules\Accounting\Infrastructure\Jobs\GenerateDocumentPdf;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;

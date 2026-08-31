@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\HR\Application\Services;
+namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;

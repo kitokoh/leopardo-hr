@@ -7,7 +7,7 @@ namespace App\Modules\Accounting\Interfaces\Api\V1;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Accounting\Application\Jobs\GenerateDocumentPdf;
+use App\Modules\Accounting\Infrastructure\Jobs\GenerateDocumentPdf;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;

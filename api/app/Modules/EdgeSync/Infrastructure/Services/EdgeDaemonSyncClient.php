@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
  *
  * Runs exclusively inside the `edge:sync-daemon` command, on an Edge
  * deployment (APP_ENV=edge, local SQLite database). Unlike
- * {@see \App\Modules\EdgeSync\Application\Services\SyncEngineService}
+ * {@see \App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService}
  * (which applies queued records directly against whatever DB connection
  * Laravel is currently using — correct when it runs on Cloud in response to
  * a real Edge push, but a silent no-op if it were ever run on Edge, since

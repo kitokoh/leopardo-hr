@@ -6,7 +6,7 @@ namespace App\Modules\EdgeSync\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

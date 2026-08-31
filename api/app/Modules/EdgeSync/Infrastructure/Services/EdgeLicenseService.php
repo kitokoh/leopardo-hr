@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\EdgeSync\Application\Services;
+namespace App\Modules\EdgeSync\Infrastructure\Services;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;

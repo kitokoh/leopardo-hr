@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Edge;
 
-use App\Modules\EdgeSync\Application\Services\EdgeLicenseService;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 

@@ -6,7 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\HR\Application\Services\CandidateHiringService;
+use App\Modules\HR\Infrastructure\Services\CandidateHiringService;
 use App\Modules\HR\Domain\Exceptions\CandidateAlreadyHiredException;
 use App\Modules\HR\Domain\Exceptions\OnboardingIncompleteException;
 use Illuminate\Http\JsonResponse;
