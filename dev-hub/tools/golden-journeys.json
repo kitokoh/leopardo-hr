@@ -30,6 +30,12 @@
     },
     "restaurantmanager": {
       "label": "RestaurantManager (verticale)",
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale)",
+      "status": "planned"
+    },
+    "delivery": {
+      "label": "DeliveryAgency (BC-26 DELIVERY)",
       "status": "planned"
     }
   },
@@ -592,6 +598,59 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager:server"
+      "id": "GJ-DELIVERY-01",
+      "name": "Livraison dernier-kilomètre — parcours agence complet",
+      "solution": "delivery",
+      "acceptance": "3 colis (dont 1 COD) → tournée affectée livreur+véhicule → events mobile picked_up→delivered (POD) / failed→returned → clôture (totaux) → rapport manager (taux de succès, COD) → lien destinataire. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Créer les colis (dont 1 COD)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 2,
+          "action": "Créer la tournée du jour",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 3,
+          "action": "Affecter livreur + véhicule",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes/{route}/assign",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 4,
+          "action": "Événements mobile (picked_up→delivered avec POD, failed→returned)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/events",
+          "role": "delivery.rider"
+        },
+        {
+          "order": 5,
+          "action": "Clôturer la tournée (totaux, idempotente)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes/{route}/close",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 6,
+          "action": "Rapport manager (taux de succès, COD)",
+          "method": "GET",
+          "route": "/api/v1/delivery/deliveries/reports/summary",
+          "role": "delivery.manager"
+        },
+        {
+          "order": 7,
+          "action": "Suivi destinataire par lien borné",
+          "method": "GET",
+          "route": "/api/v1/deliveries/tracking/{token}",
+          "role": "public"
         }
       ]
     }

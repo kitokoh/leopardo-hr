@@ -112,5 +112,8 @@ return [
         "quantity_invalid" => "Pazar yeri siparişinde geçersiz miktar.",
         "empty_order" => "Pazar yeri siparişi ürün içermiyor.",
         "no_branch" => "Bu kiracı için aktif şube yok.",
+return [
+    'order' => [
+        'quantity_positive' => 'Miktar kesinlikle pozitif olmalıdır.',
     ],
 ];

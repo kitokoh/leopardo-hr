@@ -19,7 +19,7 @@ use Illuminate\Console\Command;
  */
 final class StockAlertsCommand extends Command
 {
-    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID de la company à scanner (défaut : toutes)}';
+    protected $signature = 'leopardo:restaurant:stock-alerts {company? : UUID of the company to scan (default: all)}';
 
     protected $description = 'Publie les alertes de seuil de stock RestaurantManager (restaurant.stock.alert.v1)';
 
@@ -37,7 +37,7 @@ final class StockAlertsCommand extends Command
             }
 
             $count = $tenants->withinTenant($company, fn (): int => $alerts->scan($company->id));
-            $this->info("Alertes publiées pour {$company->id} : {$count}.");
+            $this->info("Alerts published for {$company->id}: {$count}.");
 
             return self::SUCCESS;
         }
@@ -50,7 +50,7 @@ final class StockAlertsCommand extends Command
             $total += $count;
         }
 
-        $this->info("Alertes publiées pour {$companies->count()} tenants : {$total} au total.");
+        $this->info("Alerts published for {$companies->count()} tenants: {$total} in total.");
 
         return self::SUCCESS;
     }

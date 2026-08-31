@@ -447,6 +447,7 @@
       "owner": "Agent 15 — BC-FUEL",
       "priority": "P0",
       "status": "active",
+      "status": "planned",
       "paths": [
         {
           "path": "api/app/Solutions/FuelStation",
@@ -479,6 +480,7 @@
       "owner": "Agent 16 — BC-EDU",
       "priority": "P1",
       "status": "active",
+      "status": "planned",
       "paths": [
         {
           "path": "api/app/Solutions/EduManager",
@@ -492,11 +494,15 @@
       "routes": [
         "api/routes/modules/edu_manager.php"
       ],
+        }
+      ],
+      "routes": [],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
         "App\\Modules\\EduManager\\Domain\\Events"
+        "App\\Solutions\\EduManager\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",
@@ -723,6 +729,14 @@
       "routes": [
         "api/routes/modules/travelagency.php"
       ],
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/TravelAgency",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -736,6 +750,34 @@
         "BC-11",
         "BC-13",
         "BC-20"
+      ]
+    },
+    {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "RestaurantManager",
+      "responsibility": "Branches, zones, tables, catégories, produits, recettes, ingrédients, unités, taxes, menus, fournisseurs, stock, achats, POS, commandes, paiements, réservations, livraison, fidélité, promotions, rapports, kiosque.",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/RestaurantManager",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/restaurantmanager.php"
+      ],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\RestaurantManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03"
       ]
     },
     {

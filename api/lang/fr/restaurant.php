@@ -112,5 +112,8 @@ return [
         "quantity_invalid" => "Quantité invalide dans la commande marketplace.",
         "empty_order" => "La commande marketplace ne contient aucun article.",
         "no_branch" => "Aucune branche active pour ce tenant.",
+return [
+    'order' => [
+        'quantity_positive' => 'Quantité strictement positive requise.',
     ],
 ];

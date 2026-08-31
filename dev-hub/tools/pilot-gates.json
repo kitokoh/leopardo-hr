@@ -256,6 +256,7 @@
           "status": "pending"
           "status": "validated",
           "evidence": "GJ-RESTO-01 enregistré (dev-hub/tools/golden-journeys.json) + RestaurantGoldenJourneyTest en CI (RESTO-901/#6230)"
+          "status": "pending"
         },
         {
           "id": "recette",
