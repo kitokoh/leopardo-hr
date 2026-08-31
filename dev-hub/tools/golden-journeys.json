@@ -1,4 +1,5 @@
 {
+  "$comment": "Golden journeys end-to-end par solution (MAT-013, issue #5871). Chaque parcours liste les étapes métier critiques (action, route API, rôle) ; le garde check-golden-journeys.sh vérifie que les routes référencées existent dans api/routes/** et que les contrôleurs existent. Couverture : solutions HR core, CRM client, FuelStation (pilote), EduManager (pilote).",
   "solutions": {
     "hr_core": {
       "label": "HR Core (plateforme RH)",
@@ -16,12 +17,12 @@
       "label": "EduManager (verticale)",
       "status": "planned"
     },
-    "restaurantmanager": {
-      "label": "RestaurantManager (verticale)",
-      "status": "planned"
-    },
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
+      "status": "planned"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale BC-25)",
       "status": "planned"
     }
   },
@@ -293,70 +294,6 @@
       ]
     },
     {
-      "id": "GJ-RESTO-01",
-      "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
-      "solution": "restaurantmanager",
-      "acceptance": "Session de caisse ouverte → commande salle créée avec articles → servie → encaissée (cash) → caisse clôturée avec écart nul ; événements outbox publiés.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Activer la solution (flag)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/ping",
-          "role": "manager:principal"
-        },
-        {
-          "order": 2,
-          "action": "Ouvrir une session de caisse",
-          "method": "POST",
-          "route": "/api/v1/restaurant/pos-sessions",
-          "role": "manager:server"
-        },
-        {
-          "order": 3,
-          "action": "Créer une commande (salle)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders",
-          "role": "manager:server"
-        },
-        {
-          "order": 4,
-          "action": "Ajouter un article",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
-          "role": "manager:server"
-        },
-        {
-          "order": 5,
-          "action": "Soumettre et confirmer la commande",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{restaurantOrder}/submit",
-          "role": "manager:server"
-        },
-        {
-          "order": 6,
-          "action": "Servir la commande",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{restaurantOrder}/serve",
-          "role": "manager:server"
-        },
-        {
-          "order": 7,
-          "action": "Encaisser (cash)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
-          "role": "manager:server"
-        },
-        {
-          "order": 8,
-          "action": "Clôturer la caisse",
-          "method": "POST",
-          "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
-          "role": "manager:server"
-        }
-      ]
-    },
-    {
       "id": "GJ-DELIVERY-01",
       "name": "Livraison dernier-kilomètre — parcours agence complet",
       "solution": "delivery",
@@ -410,6 +347,63 @@
           "method": "GET",
           "route": "/api/v1/deliveries/tracking/{token}",
           "role": "public"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Restaurant — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande sur table → ajout d'articles → addition → paiement (cash) → clôture de session : totaux cohérents, caisse immuable, idempotent. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Activer la solution",
+          "method": "POST",
+          "route": "/api/v1/solutions/restaurantmanager/activate",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 3,
+          "action": "Créer une commande (table)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter des articles",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/items",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 5,
+          "action": "Éditer l'addition",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/bill",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 6,
+          "action": "Encaisser (paiement cash)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/payments",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 7,
+          "action": "Clôturer la session de caisse (idempotente)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{session}/close",
+          "role": "restaurant.manager"
         }
       ]
     }
