@@ -21,14 +21,14 @@ actions à confirmer), gateway + analytics.
 | D2 | Données | 🟢 PRÉSENT | Migrations tenant (conversations, pending actions), index cohérents. |
 | D3 | Tenant | 🟢 PRÉSENT | Contexte tenant injecté (AITenantInjector), conversations scopées, isolation par company. |
 | D4 | API | 🟢 PRÉSENT | Routes `/api/v1/ai/*` (chat, history, tools, actions confirm/reject, workflows), Requests validées, OpenAPI couvert. |
-| D5 | Autorisation | 🟡 PARTIEL | Gardes employé/manager ; **WriteToolPolicy** (actions d'écriture bornées + confirmation humaine) — solide ; pas de matrice de permission fine par outil AI (recommandation 1). |
+| D5 | Autorisation | 🟢 PRÉSENT | Gardes employé/manager ; **WriteToolPolicy** (actions d'écriture bornées + confirmation humaine) ; **matrice de permissions par outil AI versionnée** (`ai.tool_permissions` + `ai.role_permissions`, issue #6237) : rôle minimal + permissions requises, enforce à l'exécution (lecture ET écriture, y compris à la confirmation), refus fail-closed `AI_TOOL_PERMISSION_DENIED`, exposition `/ai/tools` filtrée par rôle, garde anti-dérive config ↔ registre. |
 | D6 | Transactions | 🟢 PRÉSENT | **Écriture IA = confirmation humaine obligatoire** (AIWriteActionConfirmationTest) — garde anti-actions non désirées. |
-| D7 | Asynchronisme | 🟡 PARTIEL | Workflows IA synchrones ou par jobs ; pas de DLQ dédié AI. |
+| D7 | Asynchronisme | 🟢 PRÉSENT | Workflows IA synchrones ou par jobs ; **file AI + DLQ dédiée** (issue #6239) : exports asynchrones de conversations (job `ExportAiConversationJob` tenant-scoped, file `ai`, idempotent par `dedup_key`), dead-letter queue `ai_dead_letter_queue` + replay contrôlé `ai:dlq:replay`, corrélation workflow `conversation_export` dans l'audit. |
 | D8 | Sécurité | 🟢 PRÉSENT | **AIAuditLogger** (traçabilité des décisions), prompts bornés, pas de secret provider en clair (clé LLM via env/Pulumi). |
 | D9 | Frontend | 🟢 PRÉSENT | Assistant web + apps mobile (chat, confirmations d'actions). |
-| D10 | Performance | 🟡 PARTIEL | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; budgets de tokens non versionnés. |
-| D11 | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet. |
-| D12 | Produit | 🟡 PARTIEL | Parcours chat → intent → action → confirmation testé (17 tests locaux verts) ; pas de golden journey IA end-to-end ni seed pilote dédié. |
+| D10 | Performance | 🟢 PRÉSENT | Throttle AI dédié (`ai-sensitive`, `ai-plan`) ; **budgets de tokens versionnés** (`ai.budgets.*`, issue #6238) : cumul par requête, par contexte de conversation et par exécution d'agent, fail-closed 422 `AI_TOKEN_BUDGET_EXCEEDED` + p95 par requête/workflow dans l'analytics. |
+| D11 | Exploitation | 🟢 PRÉSENT | Analytics IA (AIGatewayAndAnalyticsTest), logs structurés, audit trail complet ; **runbook d'exploitation dédié** `docs/ops/RUNBOOK_AI.md` (issue #6240 : supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch, backup/rollback) enregistré dans `runbook-registry.json` (MAT-015) + preuve d'exercice datée. |
+| D12 | Produit | 🟢 PRÉSENT | Parcours chat → intent → action → confirmation testé (17 tests) ; **golden journey IA end-to-end + seed pilote dédié** (issue #6241) : seed `AiPilotSeeder` 100 % synthétique (tenant `ai-pilot-001`, conversation + audit démo, outils registre), test E2E chat → confirmation → effet métier → audit vérifié, entrée GJ-08 dans `golden-journeys.json` (MAT-013, garde verte). |
 
 ## Vérification locale (preuve)
 
@@ -39,11 +39,21 @@ php artisan test --filter="AIWriteActionConfirmationTest|AIWorkflowTest|AIGatewa
 
 ## Recommandations (PR futures, non bloquantes)
 
-1. **Matrice de permissions par outil** (D5) : versionner la liste des
-   write-tools autorisés par rôle (WriteToolPolicy) avec tests négatifs par
-   rôle.
-2. **Budgets de tokens** (D10) : verrouiller les limites par requête/workflow
-   (p95) une fois le référentiel MAT-014 mergé.
+1. ~~**Matrice de permissions par outil** (D5)~~ **LIVRÉ (BC-23-D05, issue #6237)** :
+   `ai.tool_permissions` + `ai.role_permissions` (config versionnée, alignée
+   sur `ai_tool_registry`), `ToolPermissionPolicy` (rôle minimal + permissions
+   requises, hiérarchie employee<manager<admin<super_admin), enforcement dans
+   l'IntentEngine (lecture ET écriture, y compris à la confirmation — refus
+   fail-closed `AI_TOOL_PERMISSION_DENIED`, aucune pending action ni effet de
+   bord), `/ai/tools` filtré par rôle, garde `ToolPermissionMatrixCoverageTest`
+   (config ↔ registre). 9 tests (`ToolPermissionMatrixTest`).
+2. ~~**Budgets de tokens** (D10)~~ **LIVRÉ (BC-23-D10, issue #6238)** :
+   `config/ai.php` → `ai.budgets.{max_tokens_per_request,max_context_tokens,
+   max_tokens_per_workflow}` (env override), `TokenBudgetGuard` (fail-closed
+   422 `AI_TOKEN_BUDGET_EXCEEDED`, tracé dans `ai_audit_logs.error`), cumul
+   de contexte par conversation, budget workflow sur `agent_run`, colonne
+   `ai_audit_logs.workflow` + p95 par requête/workflow dans
+   `/ai/analytics/usage`. 9 tests (`TokenBudgetTest`).
 3. **Golden journey** (D12) : seed pilote IA (intents + outils simulés,
    aucune donnée réelle) + test end-to-end chat → action → confirmation →
    audit.
