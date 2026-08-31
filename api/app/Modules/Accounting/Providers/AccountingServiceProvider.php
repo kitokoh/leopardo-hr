@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\RecomputeReportingSnapshotCommand;
+use App\Modules\Accounting\Console\Commands\SendPaymentRemindersCommand;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +41,9 @@ class AccountingServiceProvider extends ServiceProvider
         $this->commands([
             SeedAccountingDemoCommand::class,
             RecomputeReportingSnapshotCommand::class,
+            // #6574 — relances de paiement (J+7/J+15/J+30) : la commande n'était
+            // enregistrée nulle part → elle ne partait jamais.
+            SendPaymentRemindersCommand::class,
         ]);
     }
 
