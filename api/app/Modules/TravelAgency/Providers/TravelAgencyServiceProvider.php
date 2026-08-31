@@ -31,6 +31,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
 use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
+use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
@@ -58,6 +59,7 @@ use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelQuizPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
+use App\Modules\TravelAgency\Policies\TravelWebhookSubscriptionPolicy;
 use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
 use App\Modules\TravelAgency\Policies\TravelTouristSitePolicy;
 use App\Modules\TravelAgency\Policies\TravelTripPolicy;
@@ -107,6 +109,7 @@ class TravelAgencyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(TravelStation::class, TravelStationPolicy::class);
+        Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
         Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
         Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
         Gate::policy(TravelClass::class, TravelClassPolicy::class);

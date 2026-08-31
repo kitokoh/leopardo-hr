@@ -4108,6 +4108,26 @@ class LeopardoClient:
         """Mise à jour d'un véhicule (TRAVEL-306/#6036)"""
         return self.request("PUT", "/travel/vehicles/{travelVehicle}", **kwargs)
 
+    def get_travel_webhook_subscriptions(self, **kwargs):
+        """TRAVEL-806 — Liste des abonnements webhook transporteurs"""
+        return self.request("GET", "/travel/webhook-subscriptions", **kwargs)
+
+    def post_travel_webhook_subscriptions(self, **kwargs):
+        """TRAVEL-806 — Créer un abonnement webhook (secret renvoyé une fois)"""
+        return self.request("POST", "/travel/webhook-subscriptions", **kwargs)
+
+    def delete_travel_webhook_subscriptions_by_travelwebhooksubscription(self, **kwargs):
+        """TRAVEL-806 — Supprimer un abonnement webhook"""
+        return self.request("DELETE", "/travel/webhook-subscriptions/{travelWebhookSubscription}", **kwargs)
+
+    def get_travel_webhook_subscriptions_by_travelwebhooksubscription(self, **kwargs):
+        """TRAVEL-806 — Détail d'un abonnement webhook"""
+        return self.request("GET", "/travel/webhook-subscriptions/{travelWebhookSubscription}", **kwargs)
+
+    def put_travel_webhook_subscriptions_by_travelwebhooksubscription(self, **kwargs):
+        """TRAVEL-806 — Mettre à jour un abonnement webhook"""
+        return self.request("PUT", "/travel/webhook-subscriptions/{travelWebhookSubscription}", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)

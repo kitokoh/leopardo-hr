@@ -55,6 +55,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteCont
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
@@ -290,6 +291,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
         // ── Notifications manuelles legacy → canaux plateforme (TRAVEL-910/#6113)
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
+
+        // ── Webhooks sortants transporteurs (TRAVEL-806/#6097) ─────────────
+        Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
+        Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
+        Route::get('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'show']);
+        Route::put('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'update']);
+        Route::delete('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
 
         // ── Formulaire de contact → lead CRM (TRAVEL-416/#6068) ────────────
         Route::post('/contact', [TravelContactController::class, 'store']);

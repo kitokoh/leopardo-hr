@@ -5110,6 +5110,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/travel/vehicles/{travelVehicle}", options);
     },
 
+    /** TRAVEL-806 — Liste des abonnements webhook transporteurs */
+    getTravelWebhookSubscriptions(options = {}) {
+      return request("GET", "/travel/webhook-subscriptions", options);
+    },
+
+    /** TRAVEL-806 — Créer un abonnement webhook (secret renvoyé une fois) */
+    postTravelWebhookSubscriptions(options = {}) {
+      return request("POST", "/travel/webhook-subscriptions", options);
+    },
+
+    /** TRAVEL-806 — Supprimer un abonnement webhook */
+    deleteTravelWebhookSubscriptionsByTravelWebhookSubscription(options = {}) {
+      return request("DELETE", "/travel/webhook-subscriptions/{travelWebhookSubscription}", options);
+    },
+
+    /** TRAVEL-806 — Détail d'un abonnement webhook */
+    getTravelWebhookSubscriptionsByTravelWebhookSubscription(options = {}) {
+      return request("GET", "/travel/webhook-subscriptions/{travelWebhookSubscription}", options);
+    },
+
+    /** TRAVEL-806 — Mettre à jour un abonnement webhook */
+    putTravelWebhookSubscriptionsByTravelWebhookSubscription(options = {}) {
+      return request("PUT", "/travel/webhook-subscriptions/{travelWebhookSubscription}", options);
+    },
+
     /** Demande d'essai guidé / auto-service (onboarding) */
     postTrialSignup(options = {}) {
       return request("POST", "/trial/signup", options);
