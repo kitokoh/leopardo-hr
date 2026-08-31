@@ -321,4 +321,132 @@ class PlatformAuthTest extends TestCase
 
         $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');
     }
+
+    // ======================= Web login (#6530) =======================
+
+    public function test_web_login_succeeds_without_2fa_if_not_enabled(): void
+    {
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('platform.companies.index'));
+        $this->assertAuthenticated('super_admin_web');
+    }
+
+    public function test_web_login_rejects_invalid_credentials(): void
+    {
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_blocks_suspended_super_admin(): void
+    {
+        // Issue #6530 : un super-admin suspendu/désactivé ne doit pas pouvoir
+        // se connecter par la surface web (alors que la garde existait déjà
+        // côté API, #2630).
+        $this->superAdmin->status = 'suspended';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_requires_2fa_code_when_enabled(): void
+    {
+        $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('two_fa_code');
+        $response->assertSessionHas('two_fa_required');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_rejects_invalid_2fa_code(): void
+    {
+        $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'two_fa_code' => '123456', // Code invalide
+        ]);
+
+        $response->assertSessionHasErrors('two_fa_code');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_succeeds_with_valid_2fa_code(): void
+    {
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->two_fa_secret = $secret;
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'two_fa_code' => $this->totpAt($secret, time()),
+        ]);
+
+        $response->assertRedirect(route('platform.companies.index'));
+        $this->assertAuthenticated('super_admin_web');
+    }
+
+    /**
+     * TOTP RFC 6238 (SHA1, 6 digits, fenêtre 30 s) — miroir de
+     * SuperAdminService::totpAt pour les tests du login web (#6530).
+     */
+    private function totpAt(string $secret, int $timestamp): string
+    {
+        $counter = intdiv($timestamp, 30);
+        $binaryCounter = pack('N2', 0, $counter);
+        $key = $this->base32Decode($secret);
+        $hash = hash_hmac('sha1', $binaryCounter, $key, true);
+        $offset = ord(substr($hash, -1)) & 0x0F;
+        $chunk = substr($hash, $offset, 4);
+        $value = unpack('N', $chunk)[1] & 0x7FFFFFFF;
+
+        return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function base32Decode(string $value): string
+    {
+        $alphabet = array_flip(str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'));
+        $normalized = strtoupper(rtrim($value, '='));
+        $bits = '';
+
+        foreach (str_split($normalized) as $char) {
+            if (! array_key_exists($char, $alphabet)) {
+                continue;
+            }
+            $bits .= str_pad(decbin($alphabet[$char]), 5, '0', STR_PAD_LEFT);
+        }
+
+        $decoded = '';
+        foreach (str_split($bits, 8) as $chunk) {
+            if (strlen($chunk) < 8) {
+                continue;
+            }
+            $decoded .= chr(bindec($chunk));
+        }
+
+        return $decoded;
+    }
 }
