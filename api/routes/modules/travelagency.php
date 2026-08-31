@@ -36,6 +36,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceCont
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCityController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelClassController;
@@ -104,6 +105,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTouristSiteController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTripPriceController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelVehicleController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelRouteStopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelStationController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelTicketController;
@@ -591,3 +594,69 @@ Route::post('/travel/public/contact', [TravelPublicContactController::class, 'st
 Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
     ->middleware(['signed', 'throttle:60,1'])
     ->name('travel.public.contact.store');
+
+        Route::post('/reports/export', [TravelExportController::class, 'store']);
+        Route::get('/reports/export/{travelExportAsset}', [TravelExportController::class, 'show']);
+        Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
+        Route::put('/articles/{travelArticle}', [TravelArticleController::class, 'update']);
+        Route::post('/articles/{travelArticle}/moderate', [TravelArticleController::class, 'moderate']);
+        Route::delete('/articles/{travelArticle}', [TravelArticleController::class, 'destroy']);
+        Route::get('/article-categories', [TravelArticleController::class, 'indexCategories']);
+        Route::post('/article-categories', [TravelArticleController::class, 'storeCategory']);
+        Route::get('/comments', [TravelCommentController::class, 'index']);
+        Route::post('/comments', [TravelCommentController::class, 'store']);
+        Route::post('/comments/{travelComment}/moderate', [TravelCommentController::class, 'moderate']);
+        Route::post('/comments/{travelComment}/report', [TravelCommentController::class, 'report']);
+        Route::delete('/comments/{travelComment}', [TravelCommentController::class, 'destroy']);
+        Route::get('/quizzes/{travelQuiz}', [TravelQuizController::class, 'show']);
+        Route::post('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'storeQuestion']);
+        Route::get('/quizzes/{travelQuiz}/questions', [TravelQuizController::class, 'questionsIndex']); // TRAVEL-914/#6422 — admin (avec bonne réponse)
+        Route::put('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'updateQuestion']); // TRAVEL-914/#6422
+        Route::delete('/quizzes/{travelQuiz}/questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']); // TRAVEL-914/#6422
+        Route::put('/quizzes/{travelQuiz}', [TravelQuizController::class, 'update']); // TRAVEL-914/#6422
+        Route::post('/quizzes/{travelQuiz}/participate', [TravelQuizController::class, 'participate']);
+        Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
+        Route::put('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'destroy']);
+        Route::put('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'destroy']);
+        Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']); // TRAVEL-914/#6422
+        Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
+        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
+        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
+        Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validate']);
+        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
+        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
+        Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
+        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
+        Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+        Route::post('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+        Route::put('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsent']);
+        Route::patch('/contacts/{travelCustomerContact}/consent', [TravelCustomerContactController::class, 'updateConsentChannel']); // TRAVEL-913/#6425
+        Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
+        Route::post('/public-contact-link', [TravelPublicContactLinkController::class, 'store']);
+        Route::post('/articles/{travelArticle}/like', [TravelEngagementController::class, 'like']);
+        Route::post('/articles/{travelArticle}/unlike', [TravelEngagementController::class, 'unlike']);
+        Route::post('/articles/{travelArticle}/share', [TravelEngagementController::class, 'share']);
+        Route::post('/articles/{travelArticle}/rate', [TravelEngagementController::class, 'rate']);
+        Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
+
+        Route::get('/trips/connections', [TravelTripController::class, 'connections']); // TRAVEL-809/#6099 — AVANT {trip}
+        Route::post('/bookings/{travelBooking}/refund-passenger', [TravelBookingController::class, 'refundPassenger']); // TRAVEL-808/#6098
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
+        Route::post('/partner-keys', [TravelPartnerController::class, 'storePartnerKey']);
+        Route::delete('/partner-keys/{travelCarrierApiKey}', [TravelPartnerController::class, 'revokePartnerKey']);
+        Route::get('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'show']);
+        Route::put('/currency-rates/{travelCurrencyRate}', [TravelCurrencyRateController::class, 'update']);
+        Route::get('/quotes', [TravelQuoteController::class, 'index']);
+        Route::post('/quotes', [TravelQuoteController::class, 'store']);
+        Route::get('/quotes/{travelQuote}', [TravelQuoteController::class, 'show']);
+        Route::post('/quotes/{travelQuote}/book', [TravelQuoteController::class, 'book']);
+        Route::post('/round-trips', [TravelRoundTripController::class, 'store']);
+        Route::get('/round-trips/{travelRoundTrip}', [TravelRoundTripController::class, 'show']);
+        Route::post('/sync', [TravelPartnerController::class, 'sync']);
+    });

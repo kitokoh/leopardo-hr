@@ -41,7 +41,6 @@ class TravelTrip extends Model
         'status',
         'published_at',
         'created_by_user_id',
-        'external_id',
     ];
 
     protected $casts = [
@@ -83,13 +82,5 @@ class TravelTrip extends Model
     public function prices(): HasMany
     {
         return $this->hasMany(TravelTripPrice::class, 'trip_id');
-    }
-
-    /**
-     * @return HasMany<TravelTripSeat, $this>
-     */
-    public function seats(): HasMany
-    {
-        return $this->hasMany(TravelTripSeat::class, 'trip_id');
     }
 }

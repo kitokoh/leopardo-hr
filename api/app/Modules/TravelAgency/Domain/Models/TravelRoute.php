@@ -33,8 +33,6 @@ class TravelRoute extends Model
         'distance_km',
         'duration_min',
         'status',
-        'carrier_id',
-        'external_id',
     ];
 
     protected $casts = [

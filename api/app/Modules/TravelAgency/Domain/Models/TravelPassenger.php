@@ -42,9 +42,6 @@ class TravelPassenger extends Model
         'class_id',
         'seat_number',
         'unit_price_minor',
-        'refunded_at',
-        'refunded_amount_minor',
-        'refund_reason',
     ];
 
     protected $casts = [
@@ -53,8 +50,6 @@ class TravelPassenger extends Model
         'age_category' => AgeCategory::class,
         'seat_number' => 'integer',
         'unit_price_minor' => 'integer',
-        'refunded_at' => 'datetime',
-        'refunded_amount_minor' => 'integer',
     ];
 
     protected $hidden = [

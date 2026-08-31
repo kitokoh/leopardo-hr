@@ -3146,6 +3146,14 @@ trait CreatesMvpSchema
         // envoi sans opt-in explicite (spéc §8.5, RGPD).
         if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
             Schema::create($this->moduleTable('travel_customer_contacts'), function (Blueprint $table): void {
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-415 (issue #6067) ────────────────────────
+        // Contacts voyageurs + registre de consentement par canal : aucun
+        // envoi sans opt-in explicite (spéc §8.5, RGPD).
+        if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
+            Schema::create($this->moduleTable('travel_customer_contacts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('first_name', 120)->nullable();
@@ -5274,6 +5282,88 @@ trait CreatesMvpSchema
                 $table->timestamp('installed_at')->nullable();
                 $table->timestamp('retired_at')->nullable();
                 $table->string('status', 20)->default('active');
+                $table->string('status', 20)->default('draft');
+                $table->string('payment_reference', 60)->nullable();
+                $table->timestampTz('paid_at')->nullable();
+                $table->unsignedBigInteger('validated_by_user_id')->nullable();
+                $table->timestampTz('validated_at')->nullable();
+                $table->string('rejected_reason', 500)->nullable();
+                $table->unsignedInteger('validity_days')->default(30);
+                $table->timestampTz('starts_at')->nullable();
+                $table->timestampTz('expires_at')->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status', 'expires_at'], 'travel_adverts_company_status_expiry_idx');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-909 (issue #6112) — sites touristiques ───
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('description_redacted', 2000)->nullable();
+                $table->unsignedBigInteger('city_id')->nullable();
+                $table->decimal('latitude', 10, 7)->nullable();
+                $table->decimal('longitude', 10, 7)->nullable();
+                $table->unsignedBigInteger('image_asset_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->index(['company_id', 'city_id'], 'travel_tourist_sites_company_city_idx');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
+            Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('title', 160);
+                $table->unsignedBigInteger('city_id');
+                $table->unsignedInteger('price_per_day_minor');
+                $table->char('currency', 3);
+                $table->date('available_from')->nullable();
+                $table->date('available_until')->nullable();
+                $table->unsignedBigInteger('owner_carrier_id')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->text('notes')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'travel_rental_vehicles_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicle_images'))) {
+            Schema::create($this->moduleTable('travel_rental_vehicle_images'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('vehicle_id');
+                $table->unsignedBigInteger('asset_id');
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->timestamps();
+                $table->unique(['company_id', 'vehicle_id', 'position'], 'travel_rental_images_company_vehicle_position_unique');
+            });
+        }
+
+        // ── BC-24 TRAVEL — TRAVEL-213 (issue #6026) ────────────────────────
+        if (! Schema::hasTable($this->moduleTable('travel_rental_bookings'))) {
+            Schema::create($this->moduleTable('travel_rental_bookings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('vehicle_id');
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->date('start_date');
+                $table->date('end_date');
+                $table->unsignedInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->unsignedInteger('deposit_amount_minor')->nullable();
+                $table->string('payment_status', 20)->default('pending');
+                $table->string('status', 20)->default('pending');
+                $table->string('idempotency_key', 255);
+                $table->timestamps();
+                $table->unique(['company_id', 'reference'], 'travel_rental_bookings_company_reference_unique');
                 $table->unique(['company_id', 'idempotency_key'], 'travel_rental_bookings_company_idempotency_unique');
             });
         }
