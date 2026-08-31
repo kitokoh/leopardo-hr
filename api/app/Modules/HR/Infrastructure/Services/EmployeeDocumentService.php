@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\HR\Application\Services;
+namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Modules\HR\Domain\Models\EmployeeDocument;
 use Illuminate\Support\Collection;

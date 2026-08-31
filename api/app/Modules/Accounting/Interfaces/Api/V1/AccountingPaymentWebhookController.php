@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Application\Services\OnlinePaymentService;
+use App\Modules\Accounting\Infrastructure\Services\OnlinePaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

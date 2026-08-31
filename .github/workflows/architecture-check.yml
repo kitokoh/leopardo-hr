@@ -153,6 +153,9 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Application layer placement guard — no Services/Jobs in Application/ (issue #6571)
+        run: bash dev-hub/tools/check-application-layer-placement.sh api
+
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 
