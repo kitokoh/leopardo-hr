@@ -280,12 +280,13 @@ class ProcessBulkPaymentJobTest extends TestCase
 
         [$company, $manager] = $this->companyAndManager();
         $run = $this->payrollRun($company);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $slip = $this->paySlip($run, $employee);
 
         // Simule le worker mort : le claim du slip existe déjà (jamais libéré),
         // le slip est toujours éligible et n'a aucun document de paiement.
-        $claimed = Redis::connection('default')->set(
+        $claimed = Redis::connection('default')->set( // @phpstan-ignore method.protected, method.parameter
             "bulk_pay:slip:{$run->id}:{$slip->id}",
             '1',
             'EX',
@@ -319,6 +320,9 @@ class ProcessBulkPaymentJobTest extends TestCase
         $this->assertSame($slip->id, $audit->metadata['failures'][0]['pay_slip_id']);
     }
 
+    /**
+     * @return array{0: Company, 1: Employee}
+     */
     private function companyAndManager(): array
     {
         $company = Company::factory()->create();

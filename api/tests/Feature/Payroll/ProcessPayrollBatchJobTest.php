@@ -120,8 +120,10 @@ class ProcessPayrollBatchJobTest extends TestCase
         // #6529 — un retry après échec (statut `error`) doit reprendre le
         // calcul au lieu de skip silencieusement (la paie restait bloquée
         // pour toujours, aucun recalcul possible).
+        /** @var Company $company */
         $company = Company::factory()->create(['status' => 'active']);
 
+        /** @var PayrollRun $run */
         $run = PayrollRun::withoutGlobalScopes()->create([
             'company_id' => $company->id,
             'country_code' => 'DZ',
@@ -147,8 +149,10 @@ class ProcessPayrollBatchJobTest extends TestCase
         // #6529 — un worker mort entre la transition `processing` et la fin
         // du calcul laisse le run en `processing` ; le retry (re-délivré
         // après retry_after) doit reprendre le run, pas le laisser bloqué.
+        /** @var Company $company */
         $company = Company::factory()->create(['status' => 'active']);
 
+        /** @var PayrollRun $run */
         $run = PayrollRun::withoutGlobalScopes()->create([
             'company_id' => $company->id,
             'country_code' => 'DZ',

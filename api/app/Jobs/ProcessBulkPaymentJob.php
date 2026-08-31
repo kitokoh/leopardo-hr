@@ -175,7 +175,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
                     $failures[] = [
                         'pay_slip_id' => $slip->id,
-                        'employee_id' => $slip->employee_id,
+                        'employee_id' => (int) $slip->employee_id,
                         'error' => 'slip_claim_unavailable_but_unprocessed',
                     ];
                     $hasUnprocessedSlips = true;

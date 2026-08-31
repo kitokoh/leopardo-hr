@@ -36,6 +36,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_generates_one_invoice_per_subscription_for_the_period(): void
     {
+/** @var Company $company */
         $company = Company::factory()->create();
         $subscription = $this->activeSubscription($company);
 
@@ -56,6 +57,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_second_run_does_not_duplicate_invoices_for_the_same_period(): void
     {
+/** @var Company $company */
         $company = Company::factory()->create();
         $this->activeSubscription($company);
 
@@ -91,6 +93,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_subscription_already_billed_for_period_is_skipped(): void
     {
+/** @var Company $company */
         $company = Company::factory()->create();
         $subscription = $this->activeSubscription($company);
 
