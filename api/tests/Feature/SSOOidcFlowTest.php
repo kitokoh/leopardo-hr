@@ -194,6 +194,56 @@ class SSOOidcFlowTest extends TestCase
             ->assertStatus(422);
     }
 
+    public function test_callback_rejects_unknown_kid(): void
+    {
+        // #6542 — fail-closed : un kid inconnu du JWKS doit être rejeté
+        // (plus de repli sur la première clé RSA du JWKS).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        // Même clé, mais header kid qui ne matche aucun kid du JWKS.
+        $idToken = $this->signIdToken($privateKey, $nonce, kid: 'unknown-key');
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(422);
+    }
+
+    public function test_callback_accepts_rs384_token(): void
+    {
+        // #6542 — l'algorithme du header (RS384) doit être mappé vers
+        // OPENSSL_ALGO_SHA384 (avant : toujours SHA256 → login SSO cassé).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce, alg: 'RS384');
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertOk()
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
+    }
+
     public function test_callback_rejects_wrong_issuer(): void
     {
         $this->configureOidc();
@@ -364,11 +414,11 @@ class SSOOidcFlowTest extends TestCase
         return [$res, $jwks];
     }
 
-    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null): string
+    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null, string $alg = 'RS256', string $kid = 'test-key-1'): string
     {
         $header = $this->base64UrlEncode((string) json_encode([
-            'alg' => 'RS256',
-            'kid' => 'test-key-1',
+            'alg' => $alg,
+            'kid' => $kid,
             'typ' => 'JWT',
         ]));
 
@@ -386,7 +436,11 @@ class SSOOidcFlowTest extends TestCase
         $payload = $this->base64UrlEncode((string) json_encode($claims));
         $signingInput = $header.'.'.$payload;
 
-        openssl_sign($signingInput, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        openssl_sign($signingInput, $signature, $privateKey, match ($alg) {
+            'RS384' => OPENSSL_ALGO_SHA384,
+            'RS512' => OPENSSL_ALGO_SHA512,
+            default => OPENSSL_ALGO_SHA256,
+        });
 
         return $signingInput.'.'.$this->base64UrlEncode($signature);
     }
