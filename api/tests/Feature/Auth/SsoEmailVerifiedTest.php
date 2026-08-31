@@ -56,8 +56,9 @@ class SsoEmailVerifiedTest extends TestCase
     {
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn($email);
+        $abstractUser->shouldReceive('getId')->andReturn('sub-'.md5($email));
         $abstractUser->shouldReceive('getName')->andReturn('Google User');
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => $email, 'email_verified' => $emailVerified]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => $email, 'email_verified' => $emailVerified, 'sub' => 'sub-'.md5($email)]);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);

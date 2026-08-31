@@ -21,12 +21,13 @@ class AuthGoogleSignInTest extends TestCase
     {
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn($email);
+        $abstractUser->shouldReceive('getId')->andReturn('sub-'.md5($email));
         $abstractUser->shouldReceive('getName')->andReturn($name);
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Google');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
         // #5580 : la garde SSO mergée lit getRaw()['email_verified'] — les
         // comptes de test sont vérifiés par défaut.
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => $email, 'email_verified' => true]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => $email, 'email_verified' => true, 'sub' => 'sub-'.md5($email)]);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);

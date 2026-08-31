@@ -68,11 +68,12 @@ class SsoTwoFactorGuardTest extends TestCase
     {
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn($email);
+        $abstractUser->shouldReceive('getId')->andReturn('sub-'.md5($email));
         $abstractUser->shouldReceive('getName')->andReturn('Google User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Google');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
         $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email_verified' => true, 'email' => $email]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email_verified' => true, 'email' => $email, 'sub' => 'sub-'.md5($email)]);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);

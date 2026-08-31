@@ -43,11 +43,12 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // 3. Mock Socialite to return the email of the employee in Tenant A
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('shared@example.com');
+        $abstractUser->shouldReceive('getId')->andReturn('sub-shared');
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
         // #5580 : la garde SSO mergée lit getRaw()['email_verified'].
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'shared@example.com', 'email_verified' => true]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'shared@example.com', 'email_verified' => true, 'sub' => 'sub-shared']);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);
@@ -87,11 +88,12 @@ class GoogleAuthGlobalLookupTest extends TestCase
         //    controller does: Socialite::driver('google')->stateless()->userFromToken($token)
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('token-shared@example.com');
+        $abstractUser->shouldReceive('getId')->andReturn('sub-token-shared');
         $abstractUser->shouldReceive('getName')->andReturn('Existing User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Existing');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
         // #5580 : la garde SSO mergée lit getRaw()['email_verified'].
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'token-shared@example.com', 'email_verified' => true]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'token-shared@example.com', 'email_verified' => true, 'sub' => 'sub-token-shared']);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         // stateless() returns $this so method chaining works
@@ -119,8 +121,9 @@ class GoogleAuthGlobalLookupTest extends TestCase
         // Arrange: no employee exists for the Google email being presented
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn('nobody@unknown.example');
+        $abstractUser->shouldReceive('getId')->andReturn('sub-ghost');
         // #5580 : email vérifié — le rejet attendu reste EMPLOYEE_NOT_FOUND.
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'nobody@unknown.example', 'email_verified' => true]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email' => 'nobody@unknown.example', 'email_verified' => true, 'sub' => 'sub-ghost']);
 
         $provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider');
         $provider->shouldReceive('stateless')->once()->andReturn($provider);

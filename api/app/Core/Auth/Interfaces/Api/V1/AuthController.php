@@ -19,6 +19,7 @@ use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
+use App\Exceptions\GoogleIdentityMismatchException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
@@ -310,7 +311,10 @@ class AuthController extends Controller
         }
 
         /** @var Employee|null $employee */
-        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
+        $employee = $this->resolveGoogleEmployee(
+            (string) $googleUser->getEmail(),
+            (string) $googleUser->getId(),
+        );
 
         if (! $employee) {
             // Issue #3724 : pas d'auto-provisionnement silencieux en production.
@@ -424,7 +428,10 @@ class AuthController extends Controller
         }
 
         /** @var Employee|null $employee */
-        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
+        $employee = $this->resolveGoogleEmployee(
+            (string) $googleUser->getEmail(),
+            (string) $googleUser->getId(),
+        );
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => __('errors.GOOGLE_ACCOUNT_NOT_FOUND')], 401);
@@ -474,5 +481,51 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ])
             ->response();
+    }
+
+    /**
+     * #6531 — audit sécurité : résout l'employé par email sur les flux
+     * Google/SSO en vérifiant ET liant le sub Google (`google_id`).
+     *
+     * - Employé déjà lié à un autre sub → 401 (email Workspace réattribué,
+     *   compte Google compromis, ou lien cassé) : refus fail-closed.
+     * - Première connexion Google → le sub est lié au compte (le champ
+     *   `google_id` existait mais n'était jamais écrit).
+     * - Plusieurs employés avec le même email (recherche cross-tenant) →
+     *   refus : ambiguïté non résolvable sans contexte tenant.
+     */
+    private function resolveGoogleEmployee(string $email, string $googleId): ?Employee
+    {
+        $employees = Employee::withoutGlobalScopes()->where('email', $email)->get();
+
+        if ($employees->isEmpty()) {
+            return null;
+        }
+
+        if ($employees->count() > 1) {
+            Log::warning('auth.google.ambiguous_email', ['email' => $email]);
+
+            throw new GoogleIdentityMismatchException;
+        }
+
+        /** @var Employee $employee */
+        $employee = $employees->first();
+
+        if ($employee->google_id !== null && ! hash_equals($employee->google_id, $googleId)) {
+            Log::warning('auth.google.identity_mismatch', [
+                'email' => $email,
+                'employee_id' => $employee->id,
+            ]);
+
+            throw new GoogleIdentityMismatchException;
+        }
+
+        if ($employee->google_id === null) {
+            $employee->google_id = $googleId;
+            $employee->save();
+            Log::info('auth.google.identity_bound', ['email' => $email, 'employee_id' => $employee->id]);
+        }
+
+        return $employee;
     }
 }
