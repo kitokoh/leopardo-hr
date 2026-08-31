@@ -247,10 +247,17 @@ const navigation = computed(() => [
     icon: TruckIcon
   },
   {
+<<<<<<< HEAD
     name: 'fuel-station',
     title: t('navigation.fuelStation', 'Stations-service'),
     path: '/fuel-station',
     icon: FireIcon
+=======
+    name: 'travel',
+    title: t('navigation.travelAgency', 'Agence de voyage'),
+    path: '/travel',
+    icon: GlobeAltIcon
+>>>>>>> origin/main
   },
   {
     name: 'chat',
