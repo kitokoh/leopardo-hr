@@ -62,7 +62,7 @@ export default function TravelPublicContactPage() {
     setFieldErrors({});
 
     if (!signed.valid) {
-      setError(t(locale, 'travel.publicContact.invalidLink', "Lien de contact invalide ou expiré. Demandez un nouveau lien à l'agence."));
+      setError(t(locale, 'travel.publicContact.invalidLink'));
       return;
     }
 
@@ -80,12 +80,12 @@ export default function TravelPublicContactPage() {
           setFieldErrors(Object.fromEntries(Object.entries(payload.errors).map(([k, v]) => [k, Array.isArray(v) ? v[0] : String(v)])));
           return;
         }
-        setError(payload.message || t(locale, 'travel.publicContact.sendFailed', "L'envoi a échoué. Réessayez."));
+        setError(payload.message || t(locale, 'travel.publicContact.sendFailed'));
         return;
       }
       setSent(true);
     } catch {
-      setError(t(locale, 'travel.publicContact.sendFailed', "L'envoi a échoué. Réessayez."));
+      setError(t(locale, 'travel.publicContact.sendFailed'));
     } finally {
       setSending(false);
     }
@@ -97,10 +97,10 @@ export default function TravelPublicContactPage() {
         <div className="w-full rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center dark:border-emerald-800 dark:bg-emerald-900/20">
           <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-500" />
           <h1 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">
-            {t(locale, 'travel.publicContact.ackTitle', 'Demande bien reçue')}
+            {t(locale, 'travel.publicContact.ackTitle')}
           </h1>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            {t(locale, 'travel.publicContact.ackBody', "Merci ! L'agence vous répondra dans les meilleurs délais.")}
+            {t(locale, 'travel.publicContact.ackBody')}
           </p>
         </div>
       </main>
@@ -111,10 +111,10 @@ export default function TravelPublicContactPage() {
     <main dir={dir} className="mx-auto max-w-xl px-4 py-16">
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          {t(locale, 'travel.publicContact.title', 'Contactez l’agence de voyage')}
+          {t(locale, 'travel.publicContact.title')}
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {t(locale, 'travel.publicContact.subtitle', 'Une question sur vos trajets, réservations ou billets ? Écrivez-nous.')}
+          {t(locale, 'travel.publicContact.subtitle')}
         </p>
       </div>
 
@@ -122,7 +122,7 @@ export default function TravelPublicContactPage() {
         <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200" role="alert">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            {t(locale, 'travel.publicContact.noLink', "Ce formulaire nécessite le lien de contact fourni par l'agence (lien signé).")}
+            {t(locale, 'travel.publicContact.noLink')}
           </p>
         </div>
       )}
@@ -137,7 +137,7 @@ export default function TravelPublicContactPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="first-name" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {t(locale, 'travel.publicContact.firstName', 'Prénom')}
+              {t(locale, 'travel.publicContact.firstName')}
             </label>
             <input
               id="first-name"
@@ -150,7 +150,7 @@ export default function TravelPublicContactPage() {
           </div>
           <div>
             <label htmlFor="last-name" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {t(locale, 'travel.publicContact.lastName', 'Nom')}
+              {t(locale, 'travel.publicContact.lastName')}
             </label>
             <input
               id="last-name"
@@ -165,7 +165,7 @@ export default function TravelPublicContactPage() {
 
         <div>
           <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-            {t(locale, 'travel.publicContact.email', 'Email')} *
+            {t(locale, 'travel.publicContact.email')} *
           </label>
           <input
             id="email"
@@ -181,7 +181,7 @@ export default function TravelPublicContactPage() {
 
         <div>
           <label htmlFor="phone" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-            {t(locale, 'travel.publicContact.phone', 'Téléphone')}
+            {t(locale, 'travel.publicContact.phone')}
           </label>
           <input
             id="phone"
@@ -195,7 +195,7 @@ export default function TravelPublicContactPage() {
 
         <div>
           <label htmlFor="message" className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-            {t(locale, 'travel.publicContact.message', 'Message')} *
+            {t(locale, 'travel.publicContact.message')} *
           </label>
           <textarea
             id="message"
@@ -218,7 +218,7 @@ export default function TravelPublicContactPage() {
             onChange={(e) => set('consent_email', e.target.checked)}
           />
           <span>
-            {t(locale, 'travel.publicContact.consent', "J'accepte d'être contacté(e) par email au sujet de ma demande.")} *
+            {t(locale, 'travel.publicContact.consent')} *
           </span>
         </label>
         {fieldErrors.consent_email && <p className="text-xs text-red-600">{fieldErrors.consent_email}</p>}
@@ -230,8 +230,8 @@ export default function TravelPublicContactPage() {
         >
           <Send className="h-4 w-4" />
           {sending
-            ? t(locale, 'travel.publicContact.sending', 'Envoi…')
-            : t(locale, 'travel.publicContact.send', 'Envoyer la demande')}
+            ? t(locale, 'travel.publicContact.sending')
+            : t(locale, 'travel.publicContact.send')}
         </button>
       </form>
     </main>
