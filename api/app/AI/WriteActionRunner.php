@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\AI;
 
+use App\AI\ToolPermissionPolicy;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Core\Auth\Domain\Models\Employee;
@@ -11,6 +12,12 @@ use Illuminate\Support\Carbon;
 
 class WriteActionRunner
 {
+    public function __construct(
+        // #6533 — réutilise la matrice ai.tool_permissions (BC-23-D05) pour
+        // les write-tools : rôle + permissions au moment de l'exécution.
+        private readonly ToolPermissionPolicy $toolPermissionPolicy,
+    ) {}
+
     /**
      * Issue #5625 : liste statique des write tools qui ont un handler PHP.
      *
@@ -70,6 +77,13 @@ class WriteActionRunner
     private function createAbsence(string $companyId, int $userId, array $arguments): array
     {
         $employeeId = $this->intArgument($arguments, 'employee_id', $userId);
+
+        // #6533 — un employé ne peut créer une absence que pour lui-même ;
+        // seul un manager peut viser un autre employé (miroir AbsencePolicy).
+        if ($employeeId !== $userId && ! $this->actorIsManager($companyId, $userId)) {
+            return ['error' => 'PERMISSION_DENIED: you may only create absences for yourself'];
+        }
+
         $employee = Employee::query()
             ->where('company_id', $companyId)
             ->where('id', $employeeId)
@@ -114,6 +128,13 @@ class WriteActionRunner
     private function approveAbsence(string $companyId, int $userId, array $arguments): array
     {
         $absenceId = $this->intArgument($arguments, 'absence_id', 0);
+
+        // #6533 — seule une personne avec le rôle manager peut approuver
+        // (miroir de AbsencePolicy::approve : même company + isManager).
+        if (! $this->actorIsManager($companyId, $userId)) {
+            return ['error' => 'PERMISSION_DENIED: approval requires the manager role'];
+        }
+
         $absence = Absence::query()
             ->where('company_id', $companyId)
             ->where('id', $absenceId)
@@ -193,5 +214,13 @@ class WriteActionRunner
 
         return is_scalar($value) ? (string) $value : $default;
     }
-}
 
+    /**
+     * #6533 — l'acteur est-il manager ? (résolution de la matrice
+     * ai.tool_permissions, miroir du REST).
+     */
+    private function actorIsManager(string $companyId, int $userId): bool
+    {
+        return $this->toolPermissionPolicy->resolveRole($userId, $companyId) === 'manager';
+    }
+}
