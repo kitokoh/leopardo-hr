@@ -48,6 +48,7 @@ return [
     'VALIDATION_FAILED' => 'Certains champs sont incorrects.',
     'TOO_MANY_REQUESTS' => 'Trop de requêtes. Réessayez plus tard.',
     'AI_QUOTA_EXCEEDED' => 'Quota IA du mois atteint. Réessayez le mois prochain.',
+    'AI_TOKEN_BUDGET_EXCEEDED' => 'Budget de jetons IA dépassé. Réduisez la longueur du message ou démarrez une nouvelle conversation.',
     'SERVICE_UNAVAILABLE' => 'Service temporairement indisponible.',
     'HTTP_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
