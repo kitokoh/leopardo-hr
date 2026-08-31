@@ -2362,6 +2362,16 @@ paths:
       responses:
         '201':
           description: Ressource creee
+  /edu-manager/dashboard:
+    get:
+      tags:
+      - EduManager
+      summary: Tableau de bord administration scolaire (EDU-011)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -2377,6 +2387,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: import
+  /edu-manager/classes/{class}/enrollments:
+    get:
+      tags:
+      - EduManager
+      summary: Effectifs d'une classe (direction ou enseignant de la classe)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
         in: path
         required: true
         schema:
@@ -2384,6 +2403,8 @@ paths:
       responses:
         '201':
           description: Ressource creee
+        '200':
+          description: Succes
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -2399,10 +2420,36 @@ paths:
       - BearerAuth: []
       parameters:
       - name: import
+    post:
+      tags:
+      - EduManager
+      summary: Inscrire un eleve dans une classe (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
         in: path
         required: true
         schema:
           type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - academic_year_id
+              properties:
+                student_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                enrolled_at:
+                  type: string
+                  format: date
+                  nullable: true
       responses:
         '201':
           description: Ressource creee
@@ -2421,6 +2468,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: kind
+  /edu-manager/class-enrollments/{enrollment}:
+    delete:
+      tags:
+      - EduManager
+      summary: Desinscrire un eleve (direction, soft-status)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: enrollment
         in: path
         required: true
         schema:
@@ -2454,6 +2510,13 @@ paths:
         in: query
         schema:
           type: string
+  /edu-manager/teacher/workspace:
+    get:
+      tags:
+      - EduManager
+      summary: Espace enseignant - classes et saisie en attente (EDU-012)
+      security:
+      - BearerAuth: []
       responses:
         '200':
           description: Succes
@@ -2543,10 +2606,42 @@ paths:
       - BearerAuth: []
       parameters:
       - name: student
+  /edu-manager/admissions/{admission}/follow-ups:
+    post:
+      tags:
+      - EduManager
+      summary: Relance marketing consentie sur un dossier d'admission (EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
         in: path
         required: true
         schema:
           type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - campaign_code
+              - channel
+              properties:
+                campaign_code:
+                  type: string
+                channel:
+                  type: string
+                  enum:
+                  - email
+                  - sms
+                  - phone
+                  - mail
+                sent_at:
+                  type: string
+                  format: date
+                  nullable: true
       responses:
         '201':
           description: Ressource creee
@@ -2565,6 +2660,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: student
+  /edu-manager/admissions/{admission}/opt-out:
+    post:
+      tags:
+      - EduManager
+      summary: Revocation du consentement marketing (opt-out RGPD, EDU-015)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: admission
         in: path
         required: true
         schema:
@@ -2601,6 +2705,13 @@ paths:
         required: false
         schema:
           type: integer
+  /edu-manager/fee-types:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les types de frais scolaires (EDU-016)
+      security:
+      - BearerAuth: []
       responses:
         '200':
           description: Succes
@@ -2614,6 +2725,42 @@ paths:
       summary: Creer un frais scolaire (idempotent, direction, EDU-016)
       security:
       - BearerAuth: []
+      summary: Creer un type de frais scolaire (direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - amount
+              - currency
+              - billing_frequency
+              properties:
+                campus_id:
+                  type: integer
+                  nullable: true
+                code:
+                  type: string
+                label:
+                  type: string
+                amount:
+                  type: number
+                currency:
+                  type: string
+                billing_frequency:
+                  type: string
+                  enum:
+                  - once
+                  - term
+                  - monthly
+                is_active:
+                  type: boolean
+                  nullable: true
       responses:
         '201':
           description: Ressource creee
@@ -2636,6 +2783,13 @@ paths:
         required: true
         schema:
           type: integer
+  /edu-manager/fee-charges:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les facturations de frais (EDU-016)
+      security:
+      - BearerAuth: []
       responses:
         '200':
           description: Succes
@@ -2661,6 +2815,45 @@ paths:
       responses:
         '200':
           description: Succes
+    post:
+      tags:
+      - EduManager
+      summary: Facturer un frais a un eleve (idempotent, direction)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - fee_type_id
+              - academic_year_id
+              properties:
+                student_id:
+                  type: integer
+                fee_type_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                amount:
+                  type: number
+                  nullable: true
+                currency:
+                  type: string
+                  nullable: true
+                due_date:
+                  type: string
+                  format: date
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -2676,6 +2869,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: fee
+  /edu-manager/fee-charges/{charge}/payments:
+    post:
+      tags:
+      - EduManager
+      summary: Encaisser un paiement sur une charge (idempotent)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
         in: path
         required: true
         schema:
@@ -2683,6 +2885,42 @@ paths:
       responses:
         '200':
           description: Succes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                currency:
+                  type: string
+                  nullable: true
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - transfer
+                  - card
+                  - mobile_money
+                  - other
+                reference:
+                  type: string
+                  nullable: true
+                external_id:
+                  type: string
+                  nullable: true
+                paid_at:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -2698,6 +2936,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: fee
+  /edu-manager/fee-charges/{charge}/waive:
+    post:
+      tags:
+      - EduManager
+      summary: Abandonner une charge de frais (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
         in: path
         required: true
         schema:
@@ -2745,6 +2992,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: admission
+  /edu-manager/fee-charges/{charge}/cancel:
+    post:
+      tags:
+      - EduManager
+      summary: Annuler une charge de frais (direction)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
         in: path
         required: true
         schema:
@@ -2802,6 +3058,13 @@ paths:
       tags:
       - EduManager
       summary: Enfants autorises du guardian (aucune enumeration, EDU-013)
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/fee-accounting-entries:
+    get:
+      tags:
+      - EduManager
+      summary: Ecritures comptables du contrat Accounting (EDU-016)
       security:
       - BearerAuth: []
       responses:
@@ -2820,6 +3083,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: student
+  /edu-manager/guardians/{guardian}/portal-link:
+    post:
+      tags:
+      - EduManager
+      summary: Generer un lien de portail guardian expirable (EDU-013)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: guardian
         in: path
         required: true
         schema:
@@ -2827,6 +3099,21 @@ paths:
       responses:
         '200':
           description: Succes
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                  nullable: true
+      responses:
+        '201':
+          description: Ressource creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -2885,6 +3172,22 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           description: Lien invalide, expire ou deja utilise
+  /edu-manager/portal/{token}:
+    get:
+      tags:
+      - EduManager
+      summary: Portail guardian - resume via token expirable (public, EDU-013)
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          description: Lien inconnu, expire ou revoque
   /demo-users:
     get:
       tags:
@@ -12476,6 +12779,8 @@ paths:
         in: query
         schema:
           type: integer
+      - BearerAuth: []
+      parameters:
       - name: status
         in: query
         schema:
@@ -12488,6 +12793,19 @@ paths:
         in: query
         schema:
           type: string
+          enum:
+          - open
+          - closed
+          - approved
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
       - name: per_page
         in: query
         schema:
@@ -12513,6 +12831,9 @@ paths:
                       total: {type: integer}
                       per_page: {type: integer}
           description: Exports pagines
+      responses:
+        '200':
+          description: Sessions paginees
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -12521,6 +12842,7 @@ paths:
       tags:
       - FuelStation
       summary: Lancer un export CSV asynchrone (manager, FUEL-017)
+      summary: Ouvrir une session de caisse (pompiste)
       security:
       - BearerAuth: []
       requestBody:
@@ -12565,6 +12887,32 @@ paths:
       - BearerAuth: []
       parameters:
       - name: export
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                opening_balance:
+                  type: number
+                  default: 0
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /fuel-station/cash-sessions/{session}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une session (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -12572,6 +12920,7 @@ paths:
       responses:
         '200':
           description: Fichier CSV
+          description: Session avec mouvements
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -12635,6 +12984,20 @@ paths:
         schema:
           type: string
           enum: [stations, sites, pumps, tanks, meters, products]
+          description: Session introuvable ou autre tenant
+  /fuel-station/cash-sessions/{session}/movements:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter un mouvement in/out (proprietaire, session ouverte)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -12734,6 +13097,42 @@ paths:
           type: string
           enum: [stations, sites, pumps, tanks, meters, products]
       - name: id
+              required:
+              - type
+              - amount
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                amount:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement ajoute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+        '422':
+          description: SESSION_NOT_OPEN ou validation
+  /fuel-station/cash-sessions/{session}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer une session (proprietaire, idempotente)
+      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -12759,6 +13158,34 @@ paths:
       - BearerAuth: []
       parameters:
       - name: import
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - closing_balance
+              properties:
+                closing_balance:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Session close (ou etat courant si deja close)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+  /fuel-station/cash-sessions/{session}/approve:
+    post:
+      tags:
+      - FuelStation
+      summary: Approuver une cloture (manager, verrouille l'ecart)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -12942,6 +13369,68 @@ paths:
         in: query
         schema:
           type: integer
+          description: Session approuvee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager requis
+        '422':
+          description: SESSION_NOT_CLOSED
+  /fuel-station/me/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Sessions de caisse du pompiste connecte (self-service)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      responses:
+        '200':
+          description: Sessions du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les ventes (manager, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: pump_id
+        in: query
+        schema:
+          type: integer
+      - name: cash_session_id
+        in: query
+        schema:
+          type: integer
+      - name: product
+        in: query
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
       - name: per_page
         in: query
         schema:
@@ -12949,6 +13438,7 @@ paths:
       responses:
         '200':
           description: Alertes paginees
+          description: Ventes paginees
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -12958,6 +13448,11 @@ paths:
       tags:
       - FuelStation
       summary: Synchroniser des ventes (idempotent par external_id)
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une vente (pompiste, idempotent via external_id)
+      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
       security:
       - BearerAuth: []
       requestBody:
@@ -13033,6 +13528,60 @@ paths:
       - BearerAuth: []
       parameters:
       - name: alert
+              - product
+              - quantity
+              - unit_price
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                pump_id:
+                  type: integer
+                  nullable: true
+                cash_session_id:
+                  type: integer
+                  nullable: true
+                product:
+                  type: string
+                  maxLength: 80
+                quantity:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                unit_price:
+                  type: number
+                  minimum: 0
+                sale_time:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - kiosk
+                  - pos
+                external_id:
+                  type: string
+                  maxLength: 120
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Vente enregistree (ou vente existante si rejeu external_id)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation ou session/cash hors tenant
+  /fuel-station/sales/{sale}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une vente (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
         in: path
         required: true
         schema:
@@ -13040,6 +13589,7 @@ paths:
       responses:
         '200':
           description: Alerte acknowledgee
+          description: Vente
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -13104,6 +13654,46 @@ paths:
                         type: integer
                       generated_at:
                         type: string
+          description: Vente introuvable ou autre tenant
+  /fuel-station/me/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes du pompiste connecte (self-service, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Ventes du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shift-assignments/{assignment}:
+    delete:
+      tags:
+      - FuelStation
+      summary: Annuler une affectation (manager, statut cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectation annulee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -13112,6 +13702,7 @@ paths:
           description: Ressource introuvable ou autre tenant
         '429':
           description: Rate limit (30/min)
+          description: Affectation introuvable ou autre tenant
 
   /accounting/contacts:
     get:

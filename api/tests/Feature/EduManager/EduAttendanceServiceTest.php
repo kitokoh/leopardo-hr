@@ -86,6 +86,7 @@ class EduAttendanceServiceTest extends TestCase
         /** @var EduClass $classA */
         $classA = $yearService->createClass($managerA, [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+            'campus_id' => 1,
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -214,12 +215,15 @@ class EduAttendanceServiceTest extends TestCase
         ]);
         $classB = $yearService->createClass($managerB, [
             'campus_id' => (int) $campusB->getAttribute('id'),
+        $classB = $yearService->createClass($managerB, [
+            'campus_id' => 2,
             'academic_year_id' => (int) $yearB->getAttribute('id'),
             'code' => 'CL-B1',
             'name' => '6ème B',
         ]);
 
         $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionCode(404);
 
         app(EduAttendanceService::class)->record($this->teacherA, $classB, [
             'student_id' => (int) $this->studentA->getAttribute('id'),

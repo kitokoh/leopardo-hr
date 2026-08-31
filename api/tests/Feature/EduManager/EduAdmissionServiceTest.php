@@ -11,6 +11,9 @@ use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Services\EduAdmissionService;
 use Illuminate\Support\Facades\DB;
+use App\Modules\EduManager\Domain\Models\EduAdmission;
+use App\Modules\EduManager\Domain\Models\EduStudent;
+use App\Modules\EduManager\Infrastructure\Services\EduAdmissionService;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -66,6 +69,7 @@ class EduAdmissionServiceTest extends TestCase
     {
         return array_merge([
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',
             'applicant_email' => 'lina@example.com',
@@ -152,5 +156,6 @@ class EduAdmissionServiceTest extends TestCase
         $this->assertSame('crm-contract-1', $admission->crm_contact_id);
         // Aucune table CRM touchée : la référence est une simple colonne.
         $this->assertSame(0, DB::table('crm_imports')->count());
+        $this->assertSame(0, \Illuminate\Support\Facades\DB::table('crm_imports')->count());
     }
 }

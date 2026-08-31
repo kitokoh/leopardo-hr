@@ -11128,6 +11128,26 @@ paths:
       - BearerAuth: []
       parameters:
       - name: customer
+                  default: 0
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /fuel-station/cash-sessions/{session}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une session (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -11148,6 +11168,22 @@ paths:
       - BearerAuth: []
       parameters:
       - name: customer
+          description: Session avec mouvements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Session introuvable ou autre tenant
+  /fuel-station/cash-sessions/{session}/movements:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter un mouvement in/out (proprietaire, session ouverte)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -11194,6 +11230,41 @@ paths:
       - BearerAuth: []
       parameters:
       - name: account
+              - type
+              - amount
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                amount:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement ajoute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+        '422':
+          description: SESSION_NOT_OPEN ou validation
+  /fuel-station/cash-sessions/{session}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer une session (proprietaire, idempotente)
+      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
         in: path
         required: true
         schema:
@@ -11309,6 +11380,49 @@ paths:
       - BearerAuth: []
       parameters:
       - name: format
+              - closing_balance
+              properties:
+                closing_balance:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Session close (ou etat courant si deja close)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+  /fuel-station/cash-sessions/{session}/approve:
+    post:
+      tags:
+      - FuelStation
+      summary: Approuver une cloture (manager, verrouille l'ecart)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session approuvee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager requis
+        '422':
+          description: SESSION_NOT_CLOSED
+  /fuel-station/me/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Sessions de caisse du pompiste connecte (self-service)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
         in: query
         schema:
           type: string
@@ -11411,6 +11525,48 @@ paths:
         in: query
         schema:
           type: string
+          - open
+          - closed
+          - approved
+      responses:
+        '200':
+          description: Sessions du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les ventes (manager, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: pump_id
+        in: query
+        schema:
+          type: integer
+      - name: cash_session_id
+        in: query
+        schema:
+          type: integer
+      - name: product
+        in: query
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
       - name: per_page
         in: query
         schema:
@@ -11435,6 +11591,9 @@ paths:
                       last_page: {type: integer}
                       total: {type: integer}
                       per_page: {type: integer}
+      responses:
+        '200':
+          description: Ventes paginees
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -11471,6 +11630,13 @@ paths:
         schema:
           type: string
           enum: [stations, sites, pumps, tanks, meters, products]
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une vente (pompiste, idempotent via external_id)
+      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -11529,6 +11695,61 @@ paths:
           type: string
           enum: [stations, sites, pumps, tanks, meters, products]
       - name: id
+              required:
+              - product
+              - quantity
+              - unit_price
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                pump_id:
+                  type: integer
+                  nullable: true
+                cash_session_id:
+                  type: integer
+                  nullable: true
+                product:
+                  type: string
+                  maxLength: 80
+                quantity:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                unit_price:
+                  type: number
+                  minimum: 0
+                sale_time:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - kiosk
+                  - pos
+                external_id:
+                  type: string
+                  maxLength: 120
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Vente enregistree (ou vente existante si rejeu external_id)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation ou session/cash hors tenant
+  /fuel-station/sales/{sale}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une vente (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
         in: path
         required: true
         schema:
@@ -11543,6 +11764,7 @@ paths:
                 properties:
                   data:
                     type: object
+          description: Vente
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -11702,6 +11924,40 @@ paths:
           type: string
           enum: [stations, sites, pumps, tanks, meters, products]
       - name: id
+        '404':
+          description: Vente introuvable ou autre tenant
+  /fuel-station/me/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes du pompiste connecte (self-service, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Ventes du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shift-assignments/{assignment}:
+    delete:
+      tags:
+      - FuelStation
+      summary: Annuler une affectation (manager, statut cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
         in: path
         required: true
         schema:
@@ -11719,12 +11975,14 @@ paths:
                     properties:
                       id: {type: integer}
                       deleted: {type: boolean}
+          description: Affectation annulee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '404':
           description: Ressource introuvable ou autre tenant
+          description: Affectation introuvable ou autre tenant
 
   /accounting/contacts:
     get:

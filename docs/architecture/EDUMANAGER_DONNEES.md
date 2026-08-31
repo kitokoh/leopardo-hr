@@ -105,3 +105,57 @@ EDU_COURSE_SLOT_TEACHER_CONFLICT). Index tenant-first `(class, day)` et
   `student_number`/`admission_number` jamais réutilisés après archivage.
 - **Confidentialité** : notes/bulletins visibles uniquement par l'enseignant
   de la classe, la direction et le guardian autorisé.
+
+---
+
+## Lot batch 3 (EDU-011/012/013/015/016 — #5827/#5828/#5829/#5831/#5832)
+
+### `edu_class_enrollments` (#5827, EDU-011) — inscriptions
+`UNIQUE (company_id, class_id, student_id)` → idempotence ; FK composites
+classe + élève + année (cross-tenant impossible) ; statut CHECK
+`active|inactive|archived` (retrait = soft-status, historique conservé).
+Alimente la présence (EDU-005), l'espace enseignant (EDU-012) et les
+effectifs du tableau de bord (EDU-011).
+
+### `edu_fee_types` + `edu_fee_charges` + `edu_fee_payments` (#5832, EDU-016)
+- `edu_fee_types` : catalogue des frais — `UNIQUE (company_id, code)` ;
+  CHECK `billing_frequency IN (once|term|monthly)`, CHECK `amount >= 0` ;
+  FK composite campus optionnelle.
+- `edu_fee_charges` : facturation élève/année — `UNIQUE (company_id,
+  external_id)` (rejeu idempotent) ; statut CHECK `pending|partial|paid|
+  waived|cancelled` ; montant figé à la création (copie du tarif).
+- `edu_fee_payments` : encaissements — `UNIQUE (company_id, external_id)` ;
+  CHECK `method IN (cash|transfer|card|mobile_money|other)`, CHECK
+  `amount > 0` ; non-surdébit porté par EduFeeService (EDU_FEE_OVERPAYMENT).
+
+### `edu_accounting_entries` (#5832, EDU-016) — contrat Accounting
+Lignes d'écriture équilibrées (débit = crédit) produites par
+EduAccountingEntryService (pattern PayrollAccountingEntry #5239) :
+charge → 411/706 ; encaissement → 512|531/411 ; abandon → 654/411 (créance
+restante). `UNIQUE (company_id, source_type, source_id, account_code)` →
+régénération idempotente sans doublon ; `reference` stable pour le
+rapprochement audité. Le module Accounting consomme ces lignes.
+
+### `edu_outbox_events` (#5832, EDU-016) — événements versionnés
+Pattern `crm_outbox_events` (#5741) : persistance APRÈS commit,
+consommation asynchrone idempotente (`edu:outbox-dispatch`), `UNIQUE
+(company_id, idempotency_key)`. Event types versionnés :
+`edu.fee.charge.created.v1`, `edu.fee.payment.recorded.v1`,
+`edu.fee.charge.waived.v1`, `edu.fee.charge.cancelled.v1`,
+`edu.admission.followup.v1`, `edu.admission.opted_out.v1`,
+`edu.guardian.portal_link_created.v1`.
+
+### `edu_admission_followups` (#5831, EDU-015) — relances consenties
+`UNIQUE (company_id, admission_id, campaign_code, channel)` → idempotence ;
+CHECK `channel IN (email|sms|phone|mail)` ; `consent_snapshot` figé à
+l'envoi (RGPD). Aucune relance sans `consent_contact`
+(EDU_CONSENT_REQUIRED) ; opt-out → `consent_revoked_at` sur
+`edu_admissions` + relances pending passées à `opted_out`.
+
+### `edu_guardian_portal_links` + `edu_portal_access_logs` (#5829, EDU-013)
+- `edu_guardian_portal_links` : lien expirable — `portal_token` (64
+  caractères, UNIQUE) = credential (pattern AccountingDocumentShare #5428) ;
+  `expires_at` (1..30 j), `revoked_at`, `last_accessed_at`.
+- `edu_portal_access_logs` : journal d'audit de chaque consultation
+  (guardian, lien, horodatage). Le portail ne renvoie QUE les enfants liés
+  à CE guardian (edu_student_guardians, même tenant) — jamais d'énumération.

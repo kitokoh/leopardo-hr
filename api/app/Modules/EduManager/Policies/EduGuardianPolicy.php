@@ -71,5 +71,12 @@ class EduGuardianPolicy
 
         return $guardian->company_id === $actor->company_id
             && $guardian->employee_id === $actor->id;
+    /**
+     * #5829 (EDU-013) — génération d'un lien de portail : direction
+     * uniquement (le lien expose des PII d'enfants au responsable légal).
+     */
+    public function createPortalLink(Employee $actor, EduGuardian $guardian): bool
+    {
+        return $this->update($actor, $guardian);
     }
 }

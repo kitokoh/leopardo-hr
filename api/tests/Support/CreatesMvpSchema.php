@@ -2242,6 +2242,73 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
+        // EduManager (issue #5818) — parité fixture ↔ migrations tenant #5443.
+        if (! Schema::hasTable($this->moduleTable('edu_campuses'))) {
+            Schema::create($this->moduleTable('edu_campuses'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('code', 50);
+                $table->string('name', 191);
+                $table->string('address', 255)->nullable();
+                $table->string('timezone', 100)->default('UTC');
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'edu_campuses_company_code_unique');
+                $table->unique(['id', 'company_id'], 'edu_campuses_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_campuses_company_status_idx');
+                $table->index(['company_id', 'name'], 'edu_campuses_company_name_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_students'))) {
+            Schema::create($this->moduleTable('edu_students'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('student_number', 50);
+                $table->string('display_name', 191);
+                $table->string('birth_date_encrypted', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->jsonb('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'student_number'], 'edu_students_company_number_unique');
+                $table->unique(['id', 'company_id'], 'edu_students_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_students_company_status_idx');
+                $table->index(['company_id', 'display_name'], 'edu_students_company_name_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardians'))) {
+            Schema::create($this->moduleTable('edu_guardians'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('first_name', 80)->nullable();
+                $table->string('last_name', 80)->nullable();
+                $table->string('contact_reference', 255)->nullable();
+                $table->string('relationship_code', 30)->default('parent');
+                $table->timestampTz('verified_at')->nullable();
+                $table->timestamps();
+                $table->unique(['id', 'company_id'], 'edu_guardians_id_company_unique');
+                $table->index(['company_id', 'employee_id'], 'edu_guardians_company_employee_idx');
+                $table->index(['company_id', 'last_name'], 'edu_guardians_company_last_name_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_student_guardians'))) {
+            Schema::create($this->moduleTable('edu_student_guardians'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('student_id');
+                $table->unsignedBigInteger('guardian_id');
+                $table->string('relationship_code', 30)->default('parent');
+                $table->boolean('can_view_grades')->default(false);
+                $table->boolean('can_receive_notifications')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'student_id', 'guardian_id'], 'edu_student_guardians_company_student_guardian_unique');
+                $table->index(['company_id', 'student_id'], 'edu_student_guardians_company_student_idx');
+                $table->index(['company_id', 'guardian_id'], 'edu_student_guardians_company_guardian_idx');
+            });
+        }
 
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
@@ -2470,6 +2537,7 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
+
             });
         }
 

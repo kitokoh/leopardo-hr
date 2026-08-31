@@ -128,6 +128,8 @@ class EduAcademicYearServiceTest extends TestCase
                 'name' => '2025-2026',
                 'start_date' => '2030-09-01',
                 'end_date' => '2031-08-31',
+                'start_date' => '2025-09-01',
+                'end_date' => '2026-08-31',
             ]);
         });
     }
@@ -141,6 +143,7 @@ class EduAcademicYearServiceTest extends TestCase
 
         app(EduAcademicYearService::class)->createClass($this->managerA, [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+            'campus_id' => 1,
             'academic_year_id' => 1,
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -169,6 +172,7 @@ class EduAcademicYearServiceTest extends TestCase
                 EduClass::query()->create([
                     'company_id' => $this->companyA->id,
                     'campus_id' => (int) $this->campusA->getAttribute('id'),
+                    'campus_id' => 1,
                     'academic_year_id' => (int) $yearB->getAttribute('id'),
                     'code' => 'CL-X',
                     'name' => 'Classe cross-tenant',
@@ -199,6 +203,7 @@ class EduAcademicYearServiceTest extends TestCase
         /** @var EduClass $class */
         $class = $service->createClass($this->managerA, [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+            'campus_id' => 1,
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',

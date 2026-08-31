@@ -26,6 +26,9 @@ class EduClassController extends Controller
     use ChecksEduSolution;
 
     public function __construct(private readonly EduAcademicYearService $service) {}
+    public function __construct(private readonly EduAcademicYearService $service)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -40,6 +43,8 @@ class EduClassController extends Controller
         // Périmètre enseignant : ses classes uniquement.
         if (! EduAccess::isAdmin($actor)) {
             $ids = EduAccess::teacherClassIds($actor);
+        if (! \App\Modules\EduManager\Domain\Access\EduAccess::isAdmin($actor)) {
+            $ids = \App\Modules\EduManager\Domain\Access\EduAccess::teacherClassIds($actor);
             $query->where(function ($builder) use ($actor, $ids): void {
                 $builder->where('teacher_id', $actor->id)->orWhereIn('id', $ids);
             });

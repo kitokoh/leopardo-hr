@@ -20,6 +20,14 @@ use App\Modules\EduManager\Policies\EduGuardianPortalPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Domain\Models\EduGuardian;
+use App\Modules\EduManager\Infrastructure\Services\EduGuardianPortalService;
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\CreateEduGuardianPortalLinkRequest;
+use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Portail guardian — EDU-013 (issue #5829).
@@ -33,6 +41,13 @@ use Illuminate\Support\Str;
  *   une seule fois (`/access-links/{token}/redeem` — le token passe en body).
  * - Aucune énumération d'élèves : chaque lecture est bornée aux enfants
  *   liés ; consentement + audit (`edu.guardian.link_*`) tracés.
+ * - `createLink` : la direction génère un lien d'accès expirable
+ *   (1..30 jours) pour un responsable légal (audit + événement outbox) ;
+ * - `summary` : endpoint PUBLIC — le `portal_token` (64 caractères) EST la
+ *   credential (pattern AccountingDocumentShare #5428) : ni auth Sanctum ni
+ *   TenantMiddleware, résolution O(1), expiration/révocation vérifiées, et
+ *   chaque consultation journalisée (edu_portal_access_logs). Le résumé ne
+ *   renvoie QUE les enfants autorisés de CE guardian (jamais d'énumération).
  */
 class EduGuardianPortalController extends Controller
 {
@@ -87,6 +102,11 @@ class EduGuardianPortalController extends Controller
     }
 
     public function presences(Request $request, EduStudent $student): JsonResponse
+    public function __construct(private readonly EduGuardianPortalService $portal)
+    {
+    }
+
+    public function createLink(CreateEduGuardianPortalLinkRequest $request, EduGuardian $guardian): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -189,6 +209,19 @@ class EduGuardianPortalController extends Controller
                 'guardian_id' => (int) $guardian->getAttribute('id'),
                 'token' => $plainToken, // affiché UNE seule fois, jamais persisté
                 'expires_at' => $accessToken->expires_at->toIso8601String(),
+        $this->assertSameTenant($guardian, $actor->company_id);
+        $this->authorize('createPortalLink', $guardian);
+
+        $days = (int) ($request->validated()['expires_in_days'] ?? 7);
+        $link = $this->portal->createLink($actor, $guardian, $days);
+
+        $url = url('/api/v1/edu-manager/portal/'.$link->portal_token);
+
+        return response()->json([
+            'data' => [
+                'portal_link_id' => (int) $link->getAttribute('id'),
+                'url' => $url,
+                'expires_at' => $link->expires_at->toIso8601String(),
             ],
         ], 201);
     }
@@ -283,5 +316,21 @@ class EduGuardianPortalController extends Controller
                     'can_view_grades' => (bool) ($student->getRelation('pivot')->can_view_grades ?? false),
                 ])->values(),
         ];
+    /**
+     * Endpoint public (token = credential) — résumé du portail guardian.
+     */
+    public function summary(Request $request, string $token): JsonResponse
+    {
+        $link = $this->portal->resolveToken($token);
+
+        if ($link === null) {
+            abort(404, 'EDU_PORTAL_LINK_NOT_FOUND');
+        }
+
+        $this->portal->logAccess($link);
+
+        return response()->json(['data' => $this->portal->summary($link)])
+            ->header('Referrer-Policy', 'no-referrer')
+            ->header('Cache-Control', 'no-store');
     }
 }

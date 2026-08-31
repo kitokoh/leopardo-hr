@@ -110,6 +110,7 @@ final class EduReportCardService
             // ligne de bulletin ne dépendait jamais de a.published_at, qui
             // restait NULL → aucun bulletin généré).
             ->where('g.status', EduGrade::STATUS_PUBLISHED)
+            ->where('a.published_at', '!=', null)
             ->selectRaw('a.subject_id, COUNT(g.id) as cnt, AVG(g.score) as avg, MAX(a.coefficient) as coeff')
             ->groupBy('a.subject_id')
             ->get();

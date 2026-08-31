@@ -93,6 +93,9 @@ use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduCourseSlot;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduImport;
+use App\Modules\EduManager\Domain\Models\EduClass;
+use App\Modules\EduManager\Domain\Models\EduCourseSlot;
+use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudent;
@@ -109,6 +112,11 @@ use App\Modules\EduManager\Policies\EduClassPolicy;
 use App\Modules\EduManager\Policies\EduCourseSlotPolicy;
 use App\Modules\EduManager\Policies\EduGradePolicy;
 use App\Modules\EduManager\Policies\EduImportPolicy;
+use App\Modules\EduManager\Policies\EduClassEnrollmentPolicy;
+use App\Modules\EduManager\Policies\EduClassPolicy;
+use App\Modules\EduManager\Policies\EduCourseSlotPolicy;
+use App\Modules\EduManager\Policies\EduFeePolicy;
+use App\Modules\EduManager\Policies\EduGradePolicy;
 use App\Modules\EduManager\Policies\EduGuardianPolicy;
 use App\Modules\EduManager\Policies\EduReportCardPolicy;
 use App\Modules\EduManager\Policies\EduStudentGuardianPolicy;
@@ -257,6 +265,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
         Gate::policy(FuelReportExport::class, FuelReportPolicy::class);
         // — EduManager fondations (EDU-002, #5818)
+        // — EduManager (EDU-002, issue #5818)
         Gate::policy(EduCampus::class, EduCampusPolicy::class);
         Gate::policy(EduStudent::class, EduStudentPolicy::class);
         Gate::policy(EduGuardian::class, EduGuardianPolicy::class);
@@ -274,6 +283,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(EduGrade::class, EduGradePolicy::class);
         Gate::policy(EduImport::class, EduImportPolicy::class);
         Gate::policy(EduReportCard::class, EduReportCardPolicy::class);
+        Gate::policy(EduReportCard::class, EduReportCardPolicy::class);
+        // — EduManager batch 3 (#5827/#5832) : inscriptions, frais & Accounting
+        Gate::policy(EduClassEnrollment::class, EduClassEnrollmentPolicy::class);
+        Gate::policy(EduFeeType::class, EduFeePolicy::class);
+        Gate::policy(EduFeeCharge::class, EduFeePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

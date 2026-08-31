@@ -67,6 +67,7 @@ return [
     'EDU_EXPORT_KIND' => 'نوع تصدير غير معروف.',
 
     'EDU_FEE_TERMINAL' => 'هذه الرسوم في حالة نهائية بالفعل (مدفوعة أو معفاة أو ملغاة).',    'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
+    'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
     'FUEL_READING_REJECTED' => 'تم رفض القراءة.',
     'FUEL_READING_REVIEWED' => 'تم تصحيح هذه القراءة أو مراجعتها بالفعل.',
     'INVALID_CURRENT_PASSWORD' => 'كلمة المرور الحالية غير صحيحة.',

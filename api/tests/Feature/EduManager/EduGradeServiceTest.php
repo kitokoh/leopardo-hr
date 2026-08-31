@@ -86,6 +86,7 @@ class EduGradeServiceTest extends TestCase
             'manager_role' => 'principal',
         ]), [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+            'campus_id' => 1,
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -225,6 +226,20 @@ class EduGradeServiceTest extends TestCase
         $this->expectException(NotFoundHttpException::class);
 
         app(EduGradeService::class)->grade($teacherB, $this->assessmentA, [
+        /** @var EduAssessment $assessmentB */
+        $assessmentB = EduAssessment::query()->create([
+            'company_id' => $this->companyB->id,
+            'class_id' => 1,
+            'subject_id' => 1,
+            'academic_year_id' => 1,
+            'title' => 'DS B',
+            'type' => EduAssessment::TYPE_EXAM,
+            'max_score' => 20,
+        ]);
+
+        $this->expectExceptionCode(404);
+
+        app(EduGradeService::class)->grade($this->teacherA, $assessmentB, [
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'score' => 12,
         ]);

@@ -67,6 +67,7 @@ return [
     'EDU_EXPORT_KIND' => 'Type d\'export inconnu.',
 
     'EDU_FEE_TERMINAL' => 'Ce frais est déjà soldé (payé, remis ou annulé).',    'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
+    'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
     'FUEL_READING_REJECTED' => 'Le relevé a été rejeté.',
     'FUEL_READING_REVIEWED' => 'Ce relevé a déjà été corrigé ou revu.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',

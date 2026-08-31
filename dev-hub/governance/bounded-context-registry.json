@@ -478,7 +478,7 @@
       "responsibility": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions.",
       "owner": "Agent 16 — BC-EDU",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Solutions/EduManager",

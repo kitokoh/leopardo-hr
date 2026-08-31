@@ -25,6 +25,9 @@ class EduAdmissionController extends Controller
     use ChecksEduSolution;
 
     public function __construct(private readonly EduAdmissionService $admissions) {}
+    public function __construct(private readonly EduAdmissionService $admissions)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -83,6 +86,7 @@ class EduAdmissionController extends Controller
     }
 
     public function convert(ConvertEduAdmissionRequest $request, EduAdmission $admission): JsonResponse
+    public function convert(Request $request, EduAdmission $admission): JsonResponse
     {
         $this->assertSolutionActive();
 
@@ -120,6 +124,7 @@ class EduAdmissionController extends Controller
             'source' => $admission->source,
             'consent_contact' => $admission->consent_contact,
             'applied_at' => $admission->applied_at->toDateString(),
+            'applied_at' => $admission->applied_at?->toDateString(),
             'converted_at' => $admission->converted_at?->toIso8601String(),
             'student' => $admission->relationLoaded('student') && $admission->student !== null
                 ? [

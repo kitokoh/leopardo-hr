@@ -93,6 +93,10 @@ class EduReportCardServiceTest extends TestCase
         /** @var EduClass $class */
         $class = $yearService->createClass($principalA, [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+
+        /** @var EduClass $class */
+        $class = $yearService->createClass($principalA, [
+            'campus_id' => 1,
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -148,6 +152,7 @@ class EduReportCardServiceTest extends TestCase
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -157,6 +162,7 @@ class EduReportCardServiceTest extends TestCase
         $line = EduReportCardLine::query()->where('report_card_id', (int) $card->getAttribute('id'))->firstOrFail();
         $this->assertSame('14.00', $line->average);
         $this->assertSame('2.00', $line->coefficient);
+        $this->assertSame('2', $line->coefficient);
         $this->assertSame(1, (int) $line->assessment_count);
     }
 
@@ -170,6 +176,11 @@ class EduReportCardServiceTest extends TestCase
         ]);
         $second = $service->generate($this->principalA, $this->studentA, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
+            'period' => EduReportCard::PERIOD_TERM1,
+        ]);
+        $second = $service->generate($this->principalA, $this->studentA, [
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -183,6 +194,7 @@ class EduReportCardServiceTest extends TestCase
 
         app(EduReportCardService::class)->generate($this->principalA, $this->studentA, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'period' => 'semester9',
         ]);
     }
@@ -192,6 +204,7 @@ class EduReportCardServiceTest extends TestCase
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -208,6 +221,7 @@ class EduReportCardServiceTest extends TestCase
 
         $service->generate($this->principalA, $published->student()->firstOrFail(), [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
     }
@@ -217,6 +231,7 @@ class EduReportCardServiceTest extends TestCase
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -239,6 +254,10 @@ class EduReportCardServiceTest extends TestCase
 
         app(EduReportCardService::class)->generate($this->principalA, $studentB, [
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+        $this->expectExceptionCode(404);
+
+        app(EduReportCardService::class)->generate($this->principalA, $studentB, [
+            'academic_year_id' => 1,
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
     }

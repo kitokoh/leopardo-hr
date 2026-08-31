@@ -28,6 +28,9 @@ trait ChecksEduSolution
     private function assertSameTenant(Model $model, ?string $companyId): void
     {
         if ($companyId === null || $model->getAttribute('company_id') !== $companyId) {
+    private function assertSameTenant(Model $model, string $companyId): void
+    {
+        if ($model->getAttribute('company_id') !== $companyId) {
             abort(404);
         }
     }

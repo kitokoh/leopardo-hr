@@ -28,6 +28,9 @@ class EduAssessmentController extends Controller
     use ChecksEduSolution;
 
     public function __construct(private readonly EduGradeService $grades) {}
+    public function __construct(private readonly EduGradeService $grades)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {

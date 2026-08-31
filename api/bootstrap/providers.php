@@ -51,6 +51,8 @@ return [
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
+    // — EduManager module (solution verticale, EDU-001)
+    EduManagerServiceProvider::class,
     NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)
     PlatformServiceProvider::class,

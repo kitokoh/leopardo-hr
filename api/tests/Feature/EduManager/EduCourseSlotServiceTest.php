@@ -91,6 +91,10 @@ class EduCourseSlotServiceTest extends TestCase
         /** @var EduClass $classA */
         $classA = $yearService->createClass($managerA, [
             'campus_id' => (int) $this->campusA->getAttribute('id'),
+
+        /** @var EduClass $classA */
+        $classA = $yearService->createClass($managerA, [
+            'campus_id' => 1,
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -124,6 +128,7 @@ class EduCourseSlotServiceTest extends TestCase
             'class_id' => (int) $this->classA->getAttribute('id'),
             'subject_id' => (int) $this->math->getAttribute('id'),
             'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+            'academic_year_id' => 1,
             'teacher_id' => (int) $this->teacherA->getAttribute('id'),
             'day_of_week' => 1,
             'start_time' => '08:00',
@@ -187,6 +192,16 @@ class EduCourseSlotServiceTest extends TestCase
         $this->expectExceptionMessage('EDU_COURSE_SLOT_TEACHER_CONFLICT');
 
         $service->create($this->managerA, $this->slotPayload());
+    public function test_same_subject_same_slot_is_allowed(): void
+    {
+        $service = app(EduCourseSlotService::class);
+        $first = $service->create($this->managerA, $this->slotPayload());
+
+        // Même classe + même matière + même créneau → pas un conflit (rejeu).
+        $second = $service->create($this->managerA, $this->slotPayload());
+
+        $this->assertNotSame((int) $first->getAttribute('id'), (int) $second->getAttribute('id'));
+        $this->assertSame(2, EduCourseSlot::query()->where('company_id', $this->companyA->id)->count());
     }
 
     public function test_incoherent_period_is_rejected(): void
@@ -236,6 +251,8 @@ class EduCourseSlotServiceTest extends TestCase
         ]);
         $classB = $yearService->createClass($managerB, [
             'campus_id' => (int) $campusB->getAttribute('id'),
+        $classB = $yearService->createClass($managerB, [
+            'campus_id' => 2,
             'academic_year_id' => (int) $yearB->getAttribute('id'),
             'code' => 'CL-B1',
             'name' => '6ème B',
@@ -249,6 +266,7 @@ class EduCourseSlotServiceTest extends TestCase
                     'class_id' => (int) $classB->getAttribute('id'),
                     'subject_id' => (int) $this->math->getAttribute('id'),
                     'academic_year_id' => (int) $this->yearA->getAttribute('id'),
+                    'academic_year_id' => 1,
                     'day_of_week' => 1,
                     'start_time' => '08:00',
                     'end_time' => '09:00',

@@ -74,6 +74,8 @@ final class EduManagerManifest implements SolutionManifest
             'edu.admin' => 'Administration scolaire : campus, élèves, inscriptions, années, classes',
             'edu.teacher' => 'Enseignant : classes affectées, évaluations, notes, présence',
             'edu.guardian' => 'Responsable légal : élèves autorisés uniquement',
+            'edu.fees' => 'Frais scolaires : tarifs, facturation, encaissements, écritures comptables (EDU-016)',
+            'edu.admissions.campaigns' => 'Marketing admissions : relances consenties et opt-out (EDU-015)',
         ];
     }
 }

@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduTeacherSubject;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Socle RBAC EduManager — EDU-009 (issue #5825).

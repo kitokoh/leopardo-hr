@@ -22,6 +22,9 @@ class EduCourseSlotController extends Controller
     use ChecksEduSolution;
 
     public function __construct(private readonly EduCourseSlotService $slots) {}
+    public function __construct(private readonly EduCourseSlotService $slots)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
