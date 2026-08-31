@@ -3,8 +3,6 @@
   "solutions": {
     "hr_core": {
       "label": "HR Core (plateforme RH)",
-    "bc23_ai": {
-      "label": "BC-23 AI Assistive Services",
       "status": "active"
     },
     "crm_client": {
@@ -21,47 +19,18 @@
     },
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
-      "status": "planned"
-    "travelagency": {
-      "label": "TravelAgency (verticale)",
-      "status": "active"
-    "restaurantmanager": {
-      "label": "RestaurantManager (verticale)",
-      "status": "active"
-      "status": "active"
-    },
-    "restaurantmanager": {
-      "label": "RestaurantManager (verticale)",
-    "restaurantmanager": {
-      "label": "RestaurantManager (verticale)",
-      "status": "planned"
-    },
-    "delivery": {
-      "label": "DeliveryAgency (BC-26 DELIVERY)",
-      "status": "planned"
-      "status": "active"
-    },
-    "travelagency": {
-      "label": "TravelAgency (verticale)",
       "status": "active"
     },
     "restaurantmanager": {
       "label": "RestaurantManager (verticale BC-25)",
       "status": "planned"
-    "delivery": {
-      "label": "DeliveryAgency (BC-26 DELIVERY)",
+    },
+    "travelagency": {
+      "label": "TravelAgency (verticale)",
       "status": "active"
     },
-    "edumanager": {
-      "label": "EduManager (verticale)",
-      "status": "planned"
-    },
-    "fuelstation": {
-      "label": "FuelStation (verticale)",
-      "status": "planned"
-    },
-    "hr_core": {
-      "label": "HR Core (plateforme RH)",
+    "bc23_ai": {
+      "label": "BC-23 AI Assistive Services",
       "status": "active"
     }
   },
@@ -386,6 +355,67 @@
           "method": "GET",
           "route": "/api/v1/deliveries/tracking/{token}",
           "role": "public"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Restaurant — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande sur table → ajout d'articles → addition → paiement (cash) → clôture de session : totaux cohérents, caisse immuable, idempotent. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Activer la solution",
+          "method": "POST",
+          "route": "/api/v1/solutions/restaurantmanager/activate",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 3,
+          "action": "Créer une commande (table)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter des articles",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/items",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 5,
+          "action": "Éditer l'addition",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/bill",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 6,
+          "action": "Encaisser (paiement cash)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/payments",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 7,
+          "action": "Clôturer la session de caisse (idempotente)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{session}/close",
+          "role": "restaurant.manager"
+        }
+      ]
+    },
+    {
       "id": "GJ-TRAVEL-01",
       "name": "Vente de billets de voyage complète",
       "solution": "travelagency",
@@ -396,43 +426,6 @@
           "action": "Créer la compagnie de transport",
           "method": "POST",
           "route": "/api/v1/travel/carriers",
-        }
-      ]
-    },
-    {
-      "id": "GJ-RESTO-01",
-      "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
-      "solution": "restaurantmanager",
-      "acceptance": "Session de caisse ouverte → commande salle créée avec articles → servie → encaissée (cash) → caisse clôturée avec écart nul ; événements outbox publiés.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Activer la solution (flag)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/ping",
-        }
-      ]
-    },
-    {
-      "id": "GJ-TRAVEL-01",
-      "name": "TravelAgency — recherche → réservation → paiement → billet → check-in",
-      "solution": "travelagency",
-      "acceptance": "Un agent peut rechercher un trajet, réserver au guichet, encaisser, émettre les billets et enregistrer l'embarquement.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Rechercher un trajet",
-          "method": "GET",
-          "route": "/api/v1/travel/trips/search",
-      "name": "Restaurant — caisse → commande → paiement → clôture",
-      "solution": "restaurantmanager",
-      "acceptance": "Session de caisse ouverte → commande sur table → ajout d'articles → addition → paiement (cash) → clôture de session : totaux cohérents, caisse immuable, idempotent. Deux clôtures → mêmes totaux.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Activer la solution",
-          "method": "POST",
-          "route": "/api/v1/solutions/restaurantmanager/activate",
           "role": "manager:principal"
         },
         {
@@ -473,15 +466,12 @@
         {
           "order": 7,
           "action": "Confirmer la réservation",
-          "order": 3,
-          "action": "Confirmer (paiement comptant)",
           "method": "POST",
           "route": "/api/v1/travel/bookings/{travelBooking}/confirm",
           "role": "manager:principal"
         },
         {
           "order": 8,
-          "order": 4,
           "action": "Émettre les billets",
           "method": "POST",
           "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
@@ -509,16 +499,22 @@
           "role": "manager:principal"
         }
       ]
-    }
-  ]
-}
+    },
+    {
       "id": "GJ-RESTO-01",
-      "name": "Service en salle complet (flux roi)",
+      "name": "Pilote RestaurantManager — caisse → commande → paiement → clôture",
       "solution": "restaurantmanager",
-      "acceptance": "La caisse est ouverte, la commande passe de la création au paiement puis la session est clôturée — sans fuite cross-tenant (RESTO-901, issue #6230).",
+      "acceptance": "Session de caisse ouverte → commande salle créée avec articles → servie → encaissée (cash) → caisse clôturée avec écart nul ; événements outbox publiés.",
       "steps": [
         {
           "order": 1,
+          "action": "Activer la solution (flag)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/ping",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
           "action": "Ouvrir une session de caisse",
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions",
@@ -587,11 +583,6 @@
           "method": "POST",
           "route": "/api/v1/restaurant/orders",
           "role": "server"
-          "order": 2,
-          "action": "Créer la commande",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders",
-          "role": "manager:server"
         },
         {
           "order": 3,
@@ -599,7 +590,6 @@
           "method": "POST",
           "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
           "role": "server"
-          "role": "manager:server"
         },
         {
           "order": 4,
@@ -635,6 +625,41 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Service en salle complet (flux roi)",
+      "solution": "restaurantmanager",
+      "acceptance": "La caisse est ouverte, la commande passe de la création au paiement puis la session est clôturée — sans fuite cross-tenant (RESTO-901, issue #6230).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "manager:server"
+        },
+        {
+          "order": 2,
+          "action": "Créer la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "manager:server"
+        },
+        {
+          "order": 3,
+          "action": "Ajouter un article",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
+          "role": "manager:server"
+        },
+        {
+          "order": 4,
+          "action": "Soumettre la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/submit",
           "role": "manager:server"
         },
         {
@@ -650,6 +675,53 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager:server"
+        }
+      ]
+    },
+    {
+      "id": "GJ-TRAVEL-01",
+      "name": "TravelAgency — recherche → réservation → paiement → billet → check-in",
+      "solution": "travelagency",
+      "acceptance": "Un agent peut rechercher un trajet, réserver au guichet, encaisser, émettre les billets et enregistrer l'embarquement.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Rechercher un trajet",
+          "method": "GET",
+          "route": "/api/v1/travel/trips/search",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
+          "action": "Réserver au guichet (multi-passagers)",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings",
+          "role": "manager:principal"
+        },
+        {
+          "order": 3,
+          "action": "Confirmer (paiement comptant)",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings/{travelBooking}/confirm",
+          "role": "manager:principal"
+        },
+        {
+          "order": 4,
+          "action": "Émettre les billets",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
+          "role": "manager:principal"
+        },
+        {
+          "order": 5,
+          "action": "Check-in passager",
+          "method": "POST",
+          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
+          "role": "manager:principal"
+        }
+      ]
+    },
+    {
       "id": "GJ-08",
       "name": "Assistant IA : chat → action confirmée → audit",
       "solution": "bc23_ai",
@@ -682,112 +754,6 @@
           "method": "GET",
           "route": "/api/v1/ai/analytics/usage",
           "role": "manager:rh"
-        }
-      ]
-    },
-    {
-      "id": "GJ-DELIVERY-01",
-      "name": "Livraison dernier-kilomètre — parcours agence complet",
-      "solution": "delivery",
-      "acceptance": "3 colis (dont 1 COD) → tournée affectée livreur+véhicule → events mobile picked_up→delivered (POD) / failed→returned → clôture (totaux) → rapport manager (taux de succès, COD) → lien destinataire. Deux clôtures → mêmes totaux.",
-      "steps": [
-        {
-          "order": 1,
-          "action": "Créer les colis (dont 1 COD)",
-          "method": "POST",
-          "route": "/api/v1/delivery/deliveries",
-          "role": "delivery.dispatcher"
-        },
-        {
-          "order": 2,
-          "action": "Créer la tournée du jour",
-          "method": "POST",
-          "route": "/api/v1/delivery/deliveries/routes",
-          "role": "delivery.dispatcher"
-        },
-        {
-          "order": 3,
-          "action": "Affecter livreur + véhicule",
-          "method": "POST",
-          "route": "/api/v1/delivery/deliveries/routes/{route}/assign",
-          "role": "delivery.dispatcher"
-        },
-        {
-          "order": 4,
-          "action": "Événements mobile (picked_up→delivered avec POD, failed→returned)",
-          "method": "POST",
-          "route": "/api/v1/delivery/deliveries/events",
-          "role": "delivery.rider"
-        },
-        {
-          "order": 5,
-          "action": "Clôturer la tournée (totaux, idempotente)",
-          "method": "POST",
-          "route": "/api/v1/delivery/deliveries/routes/{route}/close",
-          "role": "delivery.dispatcher"
-        },
-        {
-          "order": 6,
-          "action": "Rapport manager (taux de succès, COD)",
-          "method": "GET",
-          "route": "/api/v1/delivery/deliveries/reports/summary",
-          "role": "delivery.manager"
-        },
-        {
-          "order": 7,
-          "action": "Suivi destinataire par lien borné",
-          "method": "GET",
-          "route": "/api/v1/deliveries/tracking/{token}",
-          "role": "public"
-          "order": 5,
-          "action": "Check-in passager",
-          "method": "POST",
-          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
-          "role": "manager:principal"
-          "action": "Ouvrir une session de caisse",
-          "method": "POST",
-          "route": "/api/v1/restaurant/pos-sessions",
-          "role": "restaurant.cashier"
-        },
-        {
-          "order": 3,
-          "action": "Créer une commande (table)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders",
-          "role": "restaurant.cashier"
-        },
-        {
-          "order": 4,
-          "action": "Ajouter des articles",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{order}/items",
-          "role": "restaurant.cashier"
-        },
-        {
-          "order": 5,
-          "action": "Éditer l'addition",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{order}/bill",
-          "role": "restaurant.cashier"
-        },
-        {
-          "order": 6,
-          "action": "Encaisser (paiement cash)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/orders/{order}/payments",
-          "role": "restaurant.cashier"
-        },
-        {
-          "order": 7,
-          "action": "Clôturer la session de caisse (idempotente)",
-          "method": "POST",
-          "route": "/api/v1/restaurant/pos-sessions/{session}/close",
-          "role": "restaurant.manager"
-        }
-      ]
-    }
-  ]
-}
         }
       ]
     }
