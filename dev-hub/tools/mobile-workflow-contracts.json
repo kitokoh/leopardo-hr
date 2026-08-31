@@ -446,10 +446,10 @@
           "sourceTokens": [
             "restaurantRepositoryProvider",
             "restaurantOfflineQueueProvider",
-            "serverOrders",
-            "riderDeliveries",
-            "managerKpis",
-            "syncOffline"
+            "restaurantServerOrdersProvider",
+            "restaurantRiderDeliveriesProvider",
+            "restaurantManagerKpisProvider",
+            "enqueue"
           ]
         }
       ]
