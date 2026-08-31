@@ -388,8 +388,6 @@ jobs:
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: bash dev-hub/tools/check-architecture-docs-parity.sh
 
-      - name: Cross-module import guard — no new inter-module imports (issue #5584)
-        if: needs.detect-changes.outputs.api_changed == 'true'
       - name: Bounded context dependencies guard (MAT-002 / issue #5860)
         # Matrice versionnée deny-by-default : toute arête inter-contextes
         # absente de bounded-context-dependencies.json fait échouer la CI
@@ -425,8 +423,6 @@ jobs:
       - name: Check migration SQL quotes (issue #6418)
         run: dev-hub/tools/check-migration-sql-quotes.sh
 
-      - name: Report test-schema drift vs migrations (issue #1489, non blocking)
-        if: needs.detect-changes.outputs.api_changed == 'true'
       - name: Event catalogue guard self-test (MAT-006 / issue #5864)
         run: python3 dev-hub/tools/check-event-catalogue-test.py
 
@@ -522,8 +518,6 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
 
-      - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
-        if: needs.detect-changes.outputs.api_changed == 'true'
       - name: Golden tests required guard (MAT-007 #5865)
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
