@@ -1,14 +1,6 @@
 {
   "$schema_version": "1.0",
-<<<<<<< HEAD
-<<<<<<< HEAD
   "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.sh valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
-=======
-  "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.py valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
->>>>>>> 20105c678 (merge: main (PM BC-24 TRAVEL — fix CI batch))
-=======
-  "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.py valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
->>>>>>> origin/main
   "events": [
     {
       "name": "AbsenceApproved",
@@ -20,7 +12,10 @@
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence",
         "approver": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AbsenceRejected",
@@ -31,7 +26,10 @@
       "payload": {
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AbsenceRequested",
@@ -42,7 +40,10 @@
       "payload": {
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AttendanceCheckedIn",
@@ -53,7 +54,10 @@
       "payload": {
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AttendanceCheckedOut",
@@ -64,7 +68,10 @@
       "payload": {
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "CandidateHired",
@@ -103,7 +110,10 @@
       "payload": {
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "EmployeeCreated",
@@ -114,7 +124,10 @@
       "payload": {
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "EmployeeDeparted",
@@ -126,7 +139,10 @@
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee",
         "departure": "App\\Modules\\HR\\Domain\\Models\\EmployeeDeparture"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"],
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ],
       "notes": "Consommé via un mapping explicite (getEventDescriptions()) dans AuditLogger/WebhookListener, pas via le $listen de EventServiceProvider — vérifié par constant/array literal, pas par Event::listen()."
     },
     {
@@ -154,7 +170,9 @@
         "previousRole": "?string",
         "newRole": "?string"
       },
-      "consumers": ["App\\Listeners\\AuditLogger"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger"
+      ]
     },
     {
       "name": "MarketingLeadQualified",
@@ -166,7 +184,9 @@
         "lead": "App\\Modules\\Marketing\\Domain\\Models\\MarketingLead",
         "companyId": "string"
       },
-      "consumers": ["App\\Listeners\\ConvertMarketingLeadToContact"]
+      "consumers": [
+        "App\\Listeners\\ConvertMarketingLeadToContact"
+      ]
     },
     {
       "name": "PayrollValidated",
@@ -177,7 +197,10 @@
       "payload": {
         "payroll": "App\\Modules\\Payroll\\Domain\\Models\\Payroll"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "SubscriptionPaid",
@@ -188,7 +211,9 @@
       "payload": {
         "payment": "App\\Modules\\Payroll\\Domain\\Models\\Payment"
       },
-      "consumers": ["App\\Listeners\\ProcessCommissionOnPayment"],
+      "consumers": [
+        "App\\Listeners\\ProcessCommissionOnPayment"
+      ],
       "notes": "Le type du payload (App\\Modules\\Payroll\\Domain\\Models\\Payment) est historique — l'événement concerne la facturation (BC-21 BILLING), pas la paie. Ne pas dupliquer ce chemin dans un nouveau code ; migration du modèle vers Billing hors périmètre de cette issue."
     },
     {
@@ -201,7 +226,9 @@
         "model": "Illuminate\\Database\\Eloquent\\Model",
         "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"
+      ]
     },
     {
       "name": "TaxRateRejected",
@@ -214,7 +241,9 @@
         "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin",
         "reason": "string"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"
+      ]
     },
     {
       "name": "TaxRateSubmitted",
@@ -226,7 +255,9 @@
         "model": "Illuminate\\Database\\Eloquent\\Model",
         "actor": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"
+      ]
     }
   ],
   "compatibility_rules": [
