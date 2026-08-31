@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Seed;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Seed\PilotSeedGuard;
 use App\Core\Tenant\Domain\Models\Company;
-use Database\Seeders\CrmPilotSeeder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -40,50 +38,24 @@ class PilotSeedCommandTest extends TestCase
 
     public function test_pilot_seed_creates_pilots_and_is_idempotent(): void
     {
+        // PM 2026-08-30 : échec d'environnement CI (artisan+db:seed vs transaction
+        // RefreshDatabase) — les guards sont couverts par les tests dédiés et le
+        // seeder par CrmPilotSeederTest. À rouvrir avec debug local (le corps du
+        // test est conservé dans l'historique git).
         $this->markTestSkipped(
             'PM 2026-08-30 : échec d\'environnement CI (artisan+db:seed vs transaction RefreshDatabase) — '
             .'les guards sont couverts par les tests dédiés et le seeder par CrmPilotSeederTest. À rouvrir avec debug local.'
         );
-        $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
-        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
-
-        foreach (['crm-pilot-alpha', 'crm-pilot-beta'] as $slug) {
-            $company = Company::query()->where('slug', $slug)->first();
-
-            if (! $company instanceof Company) {
-                $this->fail("Pilote [{$slug}] absent après seed");
-            }
-
-            $this->assertSame(2, Employee::query()->where('company_id', $company->id)->count());
-        }
-
-        // Réentrance : second run sans erreur, aucun doublon.
-        $cmd = $this->artisan('pilot:seed', ['vertical' => 'crm']);
-        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
-        $this->assertSame(1, Company::query()->where('slug', 'crm-pilot-alpha')->count());
     }
 
     public function test_pilot_cleanup_removes_pilot_tenants_and_is_idempotent(): void
     {
+        // PM 2026-08-30 : échec d'environnement CI (artisan vs transaction
+        // RefreshDatabase) — voir test_pilot_seed_creates_pilots (corps conservé
+        // dans l'historique git).
         $this->markTestSkipped(
             'PM 2026-08-30 : échec d\'environnement CI (artisan vs transaction RefreshDatabase) — voir test_pilot_seed_creates_pilots.'
         );
-        $this->seed(CrmPilotSeeder::class);
-
-        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
-        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
-
-        $this->assertNull(Company::query()->where('slug', 'crm-pilot-alpha')->first());
-        $this->assertNull(Company::query()->where('slug', 'crm-pilot-beta')->first());
-        $this->assertSame(0, DB::table('crm_accounts')->count());
-
-        // Second run : no-op.
-        $cmd = $this->artisan('pilot:cleanup', ['vertical' => 'crm']);
-        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
-        $cmd->assertExitCode(0);
     }
 
     public function test_pilot_cleanup_targets_only_allowlisted_slugs(): void
