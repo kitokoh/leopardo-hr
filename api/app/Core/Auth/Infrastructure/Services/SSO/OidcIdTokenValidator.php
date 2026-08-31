@@ -155,7 +155,9 @@ final class OidcIdTokenValidator
         }
 
         try {
-            $response = Http::timeout(10)->acceptJson()->get($jwksUri);
+            // #6539 — SSRF : ne pas suivre les redirections (un jwks_uri qui
+            // redirige vers 169.254.169.254/10.x/127.0.0.1 serait scanné).
+            $response = Http::timeout(10)->acceptJson()->withoutRedirecting()->get($jwksUri);
         } catch (\Throwable $e) {
             Log::warning('OIDC JWKS fetch failed', ['jwks_uri' => $jwksUri, 'error' => $e->getMessage()]);
 

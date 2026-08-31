@@ -225,7 +225,10 @@ final class OidcFlowService
     private function exchangeCodeForIdToken(SSOProviderConfig $config, string $code): string
     {
         try {
-            $response = Http::asForm()->timeout(15)->acceptJson()->post((string) $config->tokenUrl, [
+            // #6539 — SSRF : ne jamais suivre une redirection (302/307) vers un
+            // hôte non vérifié ; le client_secret ne doit pas être envoyé à
+            // une cible intermédiaire. allow_redirects=false → 3xx = rejet.
+            $response = Http::asForm()->timeout(15)->acceptJson()->withoutRedirecting()->post((string) $config->tokenUrl, [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
                 'redirect_uri' => (string) $config->redirectUri,
