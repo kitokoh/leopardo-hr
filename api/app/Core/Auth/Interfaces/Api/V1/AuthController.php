@@ -344,6 +344,9 @@ class AuthController extends Controller
             // Sensitive fields set explicitly (not mass-assignable, #3597)
             $employee->role = 'ordinary';
             $employee->status = 'active';
+            // #6531 : le sub Google est lié dès la création (pas seulement au
+            // deuxième login).
+            $employee->google_id = (string) $googleUser->getId();
             $employee->save();
         }
 
