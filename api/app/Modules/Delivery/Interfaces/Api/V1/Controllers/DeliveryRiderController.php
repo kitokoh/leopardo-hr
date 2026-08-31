@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryEventService;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStopStatusRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteResource;
-use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryStopResource;
+use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,9 @@ final class DeliveryRiderController
         $companyId = $this->companyId($request);
         $today = now()->toDateString();
 
+        /** @var Employee $employee */
+        $employee = $request->user();
+
         $query = DeliveryRoute::query()
             ->where('company_id', $companyId)
             ->where('route_date', $today);
@@ -66,7 +70,7 @@ final class DeliveryRiderController
         $employee = $request->user();
         $companyId = $this->companyId($request);
 
-        $updated = DB::transaction(function () use ($stop, $companyId, $validated, $employee): DeliveryStop {
+        $updated = DB::transaction(function () use ($request, $stop, $companyId, $validated): DeliveryStop {
             /** @var DeliveryStop|null $found */
             $found = DeliveryStop::query()
                 ->where('company_id', $companyId)
@@ -80,7 +84,7 @@ final class DeliveryRiderController
 
             $route = $found->route()->where('company_id', $companyId)->first();
 
-            if ($route === null || ! $this->canOperate($employee, $route)) {
+            if ($route === null || ! $this->canOperate($request, $route)) {
                 abort(403, 'ROUTE_NOT_ASSIGNED_TO_RIDER');
             }
 
@@ -126,14 +130,22 @@ final class DeliveryRiderController
                 'proof_id' => $status === 'delivered' ? $proofId : $found->proof_id,
             ])->save();
 
-            return $found->fresh();
+            /** @var DeliveryStop|null $fresh */
+            $fresh = $found->fresh();
+
+            if (! $fresh instanceof DeliveryStop) {
+                throw new \RuntimeException('DeliveryStop disappeared during update');
+            }
+
+            return $fresh;
         });
 
-        return (new DeliveryStopResource($updated))->response();
+        return (new DeliveryRouteStopResource($updated))->response();
     }
 
     private function canOperate(Request $request, DeliveryRoute $route): bool
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         // Un manager peut opérer sur toutes les tournées du tenant ; un

@@ -19,6 +19,25 @@ use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapte
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use Illuminate\Support\Facades\Event;
+use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
+use App\Modules\Delivery\Console\Commands\CloseDeliveryRouteCommand;
+use App\Modules\Delivery\Console\Commands\ExportDeliveryReportCommand;
+use App\Modules\Delivery\Console\Commands\ReplayDeliveryDlqCommand;
+use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
+use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
+use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
+use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
+use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
+use App\Modules\Delivery\Domain\Models\Delivery;
+use App\Modules\Delivery\Domain\Models\DeliveryEvent;
+use App\Modules\Delivery\Domain\Models\DeliveryRoute;
+use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
+use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
+use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
+use App\Modules\Delivery\Policies\DeliveryPolicy;
+use App\Modules\Delivery\Policies\DeliveryRoutePolicy;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -34,6 +53,11 @@ use Illuminate\Support\ServiceProvider;
  * `register()` enregistre les ports & adapters du module (contrats →
  * implémentations) et le manifest de solution ; les Policies métier seront
  * enregistrées dans `boot()` au fil des lots API (épics 2xx).
+ * implémentations), le manifest de solution, les contrats inter-contextes
+ * (BC-08 comptabilité COD, BC-13 COMMS notifications) et les commandes
+ * console (BC-26-D07 : clôture/export asynchrones + rejeu DLQ) ; `boot()`
+ * enregistre les Policies RBAC (BC-26-D05) et le listener de planification
+ * des notifications (DELIVERY-206).
  *
  * L'activation par tenant passe par le feature flag `delivery`
  * (companies.features) — voir EnsureDeliveryModuleMiddleware (DELIVERY-101)
@@ -63,12 +87,27 @@ class DeliveryServiceProvider extends ServiceProvider
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
+
+        // BC-26-D07 (#6295) : asynchronisme du module (clôture lourde,
+        // exports, rejeu DLQ) — pattern AccountingServiceProvider.
+        $this->commands([
+            CloseDeliveryRouteCommand::class,
+            ExportDeliveryReportCommand::class,
+            ReplayDeliveryDlqCommand::class,
+        ]);
     }
 
     public function boot(): void
     {
         // Policies enregistrées ici dès que les modèles des épics 2xx/3xx
         // existent (Gate::policy(Delivery::class, DeliveryPolicy::class)).
+        // BC-26-D05 (#6294) : Policies RBAC du module — deny-by-default,
+        // matrice docs/architecture/DELIVERY_RBAC.md. La garde de routes
+        // (`delivery.role`) est complétée ici par les décisions par ressource
+        // (ownership livreur, scope tenant) portées par les Policies.
+        Gate::policy(Delivery::class, DeliveryPolicy::class);
+        Gate::policy(DeliveryRoute::class, DeliveryRoutePolicy::class);
+
         // Notifications destinataire (DELIVERY-206/#6290) : chaque événement de
         // tracking inséré planifie la notification (outbox tenant-scoped) — le
         // listener ne tire QUE sur les inserts (l'idempotence des événements

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
@@ -48,18 +49,21 @@ final class DeliveryNotificationController
 
         // RGPD : le numéro n'est visible en clair que pour les admins
         // (manager principal — la matrice fine est BC-26-D05/#6312).
+        /** @var Employee $employee */
         $employee = $request->user();
         $maskPhone = ! ($employee->isManager() && $employee->hasManagerRole('principal'));
         // RGPD : le numéro n'est visible en clair que pour les admins.
         $maskPhone = ! (new DeliveryRoleResolver())->hasAnyRole($request->user(), ['admin']);
 
         $notifications = $query->paginate(min((int) $request->integer('per_page', 15), 100));
+        $collection = DeliveryNotificationResource::collection($notifications)
+            ->additional(['meta' => ['phone_masked' => $maskPhone]]);
 
-        return DeliveryNotificationResource::collection($notifications)
-            ->additional(['meta' => ['phone_masked' => $maskPhone]])
-            ->each(function (DeliveryNotificationResource $resource) use ($maskPhone): void {
-                $resource->withMask($maskPhone);
-            });
+        foreach ($collection as $resource) {
+            $resource->withMask($maskPhone);
+        }
+
+        return $collection;
     }
 
     private function companyId(Request $request): string

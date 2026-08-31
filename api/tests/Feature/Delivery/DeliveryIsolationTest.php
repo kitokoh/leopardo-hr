@@ -71,6 +71,7 @@ class DeliveryIsolationTest extends TestCase
         }
 
         self::assertSame(2, DB::table('delivery_deliveries')->where('company_id', $companyA->id)->count());
+        self::assertSame(1, DB::table('delivery_deliveries')->where('company_id', $companyA->id)->count());
     }
 
     public function test_routes_and_events_are_scoped_per_company(): void

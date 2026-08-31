@@ -1911,6 +1911,121 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/dashboard/summary", options);
     },
 
+    /** Suivi public par lien borné (DELIVERY-204/#6288) */
+    getDeliveriesTrackingByToken(options = {}) {
+      return request("GET", "/deliveries/tracking/{token}", options);
+    },
+
+    /** Liste des livraisons du tenant (DELIVERY-201/#6285) */
+    getDeliveryDeliveries(options = {}) {
+      return request("GET", "/delivery/deliveries", options);
+    },
+
+    /** Crée une livraison (DELIVERY-201/#6285) */
+    postDeliveryDeliveries(options = {}) {
+      return request("POST", "/delivery/deliveries", options);
+    },
+
+    /** Détail d'une livraison (DELIVERY-201/#6285) */
+    getDeliveryDeliveriesByDelivery(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}", options);
+    },
+
+    /** Ligne du temps interne (DELIVERY-204/#6288) */
+    getDeliveryDeliveriesByDeliveryTracking(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}/tracking", options);
+    },
+
+    /** Génère un lien de suivi public borné (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesByDeliveryTrackingLink(options = {}) {
+      return request("POST", "/delivery/deliveries/{delivery}/tracking-link", options);
+    },
+
+    /** Liste des règlements COD (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlements(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements", options);
+    },
+
+    /** Remise caisse (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementCollect(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", options);
+    },
+
+    /** Réconciliation (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementReconcile(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", options);
+    },
+
+    /** Posting BC-08 + settled (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementSettle(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", options);
+    },
+
+    /** Réconciliation attendu vs collecté (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlementsReport(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements/report", options);
+    },
+
+    /** Enregistre un événement de tracking (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesEvents(options = {}) {
+      return request("POST", "/delivery/deliveries/events", options);
+    },
+
+    /** Liste des notifications (outbox) (DELIVERY-206/#6290) */
+    getDeliveryDeliveriesNotifications(options = {}) {
+      return request("GET", "/delivery/deliveries/notifications", options);
+    },
+
+    /** Opt-out destinataire (DELIVERY-206/#6290) */
+    postDeliveryDeliveriesNotificationsOptOut(options = {}) {
+      return request("POST", "/delivery/deliveries/notifications/opt-out", options);
+    },
+
+    /** Export CSV des livraisons (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsExport(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/export", options);
+    },
+
+    /** KPIs livraison du tenant (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsSummary(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/summary", options);
+    },
+
+    /** Crée une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutes(options = {}) {
+      return request("POST", "/delivery/deliveries/routes", options);
+    },
+
+    /** Détail d'une tournée (DELIVERY-202/#6286) */
+    getDeliveryDeliveriesRoutesByRoute(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/{route}", options);
+    },
+
+    /** Affecte livreur + véhicule (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteAssign(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/assign", options);
+    },
+
+    /** Clôture une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteClose(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/close", options);
+    },
+
+    /** Crée le règlement COD d'une tournée close (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesRoutesByRouteSettlement(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/settlement", options);
+    },
+
+    /** Tournée du jour du livreur (DELIVERY-203/#6287) */
+    getDeliveryDeliveriesRoutesToday(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/today", options);
+    },
+
+    /** Statut d'un arrêt (DELIVERY-203/#6287) */
+    postDeliveryDeliveriesStopsByStopStatus(options = {}) {
+      return request("POST", "/delivery/deliveries/stops/{stop}/status", options);
+    },
+
     /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
     getDeliveryPing(options = {}) {
       return request("GET", "/delivery/ping", options);
@@ -13639,6 +13754,2379 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Supprimer un abonnement webhook transporteur */
     deleteTravelWebhookSubscriptionsBySubscription(options = {}) {
       return request("DELETE", "/travel/webhook-subscriptions/{subscription}", options);
+    /** Lister les documents des dossiers employes (checklist G3) */
+    getEmployeeDocuments(options = {}) {
+      return request("GET", "/employee-documents", options);
+    },
+
+    /** Enregistrer un document du dossier employe */
+    postEmployeeDocuments(options = {}) {
+      return request("POST", "/employee-documents", options);
+    },
+
+    /** Supprimer un document du dossier employe */
+    deleteEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("DELETE", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Lire un document du dossier employe */
+    getEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("GET", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Patch un document du dossier employe */
+    patchEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("PATCH", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Mettre a jour un document du dossier employe */
+    putEmployeeDocumentsByEmployeeDocument(options = {}) {
+      return request("PUT", "/employee-documents/{employeeDocument}", options);
+    },
+
+    /** Lister les employes */
+    getEmployees(options = {}) {
+      return request("GET", "/employees", options);
+    },
+
+    /** Creer un employe */
+    postEmployees(options = {}) {
+      return request("POST", "/employees", options);
+    },
+
+    /** Voir un employe */
+    getEmployeesByEmployee(options = {}) {
+      return request("GET", "/employees/{employee}", options);
+    },
+
+    /** Patch employe */
+    patchEmployeesByEmployee(options = {}) {
+      return request("PATCH", "/employees/{employee}", options);
+    },
+
+    /** Mettre a jour un employe */
+    putEmployeesByEmployee(options = {}) {
+      return request("PUT", "/employees/{employee}", options);
+    },
+
+    /** Archiver un employe */
+    postEmployeesByEmployeeArchive(options = {}) {
+      return request("POST", "/employees/{employee}/archive", options);
+    },
+
+    /** Assigner un role manager a un employe (principal) */
+    postEmployeesByEmployeeAssignRole(options = {}) {
+      return request("POST", "/employees/{employee}/assign-role", options);
+    },
+
+    /** Solde de congés d'un employé (manager/RH) */
+    getEmployeesByEmployeeBalance(options = {}) {
+      return request("GET", "/employees/{employee}/balance", options);
+    },
+
+    /** Certificat de travail PDF (fin de contrat, F-08) */
+    getEmployeesByEmployeeCertificateOfEmployment(options = {}) {
+      return request("GET", "/employees/{employee}/certificate-of-employment", options);
+    },
+
+    /** Resume journalier d'un employe */
+    getEmployeesByEmployeeDailySummary(options = {}) {
+      return request("GET", "/employees/{employee}/daily-summary", options);
+    },
+
+    /** Lire le depart d''un employe (manager : entreprise ; employe : le sien) */
+    getEmployeesByEmployeeDeparture(options = {}) {
+      return request("GET", "/employees/{employee}/departure", options);
+    },
+
+    /** Enregistrer le depart d''un employe (offboarding, issue #5324) */
+    postEmployeesByEmployeeDeparture(options = {}) {
+      return request("POST", "/employees/{employee}/departure", options);
+    },
+
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
+    },
+
+    /** Solde de tout compte (fin de contrat, F-08) */
+    getEmployeesByEmployeeEndOfContract(options = {}) {
+      return request("GET", "/employees/{employee}/end-of-contract", options);
+    },
+
+    /** Journal de paie d'un employé (manager/RH) */
+    getEmployeesByEmployeeLedger(options = {}) {
+      return request("GET", "/employees/{employee}/ledger", options);
+    },
+
+    /** Estimation sur periode */
+    getEmployeesByEmployeeQuickEstimate(options = {}) {
+      return request("GET", "/employees/{employee}/quick-estimate", options);
+    },
+
+    /** Telecharger le PDF d'estimation */
+    getEmployeesByEmployeeReceipt(options = {}) {
+      return request("GET", "/employees/{employee}/receipt", options);
+    },
+
+    /** Importer des employes par CSV */
+    postEmployeesImport(options = {}) {
+      return request("POST", "/employees/import", options);
+    },
+
+    /** Template CSV import */
+    getEmployeesImportTemplate(options = {}) {
+      return request("GET", "/employees/import-template", options);
+    },
+
+    /** Manager — lie un utilisateur ordinaire à un employé du tenant */
+    postEmployeesLinkUser(options = {}) {
+      return request("POST", "/employees/link-user", options);
+    },
+
+    /** Lister les evaluations */
+    getEvaluations(options = {}) {
+      return request("GET", "/evaluations", options);
+    },
+
+    /** Creer une evaluation */
+    postEvaluations(options = {}) {
+      return request("POST", "/evaluations", options);
+    },
+
+    /** Supprimer une evaluation */
+    deleteEvaluationsByEvaluation(options = {}) {
+      return request("DELETE", "/evaluations/{evaluation}", options);
+    },
+
+    /** Voir une evaluation */
+    getEvaluationsByEvaluation(options = {}) {
+      return request("GET", "/evaluations/{evaluation}", options);
+    },
+
+    /** Mettre a jour partiellement une evaluation */
+    patchEvaluationsByEvaluation(options = {}) {
+      return request("PATCH", "/evaluations/{evaluation}", options);
+    },
+
+    /** Mettre a jour une evaluation */
+    putEvaluationsByEvaluation(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}", options);
+    },
+
+    /** Accuser reception d'une evaluation */
+    putEvaluationsByEvaluationAcknowledge(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}/acknowledge", options);
+    },
+
+    /** Soumettre une evaluation */
+    putEvaluationsByEvaluationSubmit(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}/submit", options);
+    },
+
+    /** Lister les notes de frais */
+    getExpenseClaims(options = {}) {
+      return request("GET", "/expense-claims", options);
+    },
+
+    /** Creer une note de frais */
+    postExpenseClaims(options = {}) {
+      return request("POST", "/expense-claims", options);
+    },
+
+    /** Supprimer une note de frais */
+    deleteExpenseClaimsByExpenseClaim(options = {}) {
+      return request("DELETE", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Voir une note de frais */
+    getExpenseClaimsByExpenseClaim(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Modifier une note de frais */
+    putExpenseClaimsByExpenseClaim(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Ecritures comptables d'une note de frais approuvee (#5235) */
+    getExpenseClaimsByExpenseClaimAccountingEntries(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) */
+    postExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
+    },
+
+    /** Approuver une note de frais */
+    postExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/approve", options);
+    },
+
+    /** Approuver une note de frais (déprécié — utiliser POST) */
+    putExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/approve", options);
+    },
+
+    /** Rejeter une note de frais */
+    postExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Refuser une note de frais (déprécié — utiliser POST) */
+    putExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Soumettre une note de frais */
+    putExpenseClaimsByExpenseClaimSubmit(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/submit", options);
+    },
+
+    /** Exporter les absences */
+    getExportAbsences(options = {}) {
+      return request("GET", "/export/absences", options);
+    },
+
+    /** Exporter l'ordre de virement (OD) */
+    getExportAccountingOd(options = {}) {
+      return request("GET", "/export/accounting-od", options);
+    },
+
+    /** Exporter le pointage */
+    getExportAttendance(options = {}) {
+      return request("GET", "/export/attendance", options);
+    },
+
+    /** Export CSV mensuel des presences par employe */
+    getExportAttendanceMonthly(options = {}) {
+      return request("GET", "/export/attendance/monthly", options);
+    },
+
+    /** Exporter les contrats */
+    getExportContracts(options = {}) {
+      return request("GET", "/export/contracts", options);
+    },
+
+    /** Exporter les employes */
+    getExportEmployees(options = {}) {
+      return request("GET", "/export/employees", options);
+    },
+
+    /** Historique des exports du portail manager (issue #2199) - manager uniquement */
+    exportHistory(options = {}) {
+      return request("GET", "/export/history", options);
+    },
+
+    /** Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement */
+    exportPaySlips(options = {}) {
+      return request("GET", "/export/pay-slips", options);
+    },
+
+    /** Exporter le journal de paie */
+    getExportPayrollJournal(options = {}) {
+      return request("GET", "/export/payroll-journal", options);
+    },
+
+    /** Exporter le grand livre de paie */
+    getExportPayrollLedger(options = {}) {
+      return request("GET", "/export/payroll-ledger", options);
+    },
+
+    /** Exporter les formations */
+    getExportTraining(options = {}) {
+      return request("GET", "/export/training", options);
+    },
+
+    /** Exporter la flotte */
+    getExportVehicles(options = {}) {
+      return request("GET", "/export/vehicles", options);
+    },
+
+    /** Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante */
+    checkFeatureFlag(options = {}) {
+      return request("GET", "/feature-flags/check/{featureKey}", options);
+    },
+
+    /** Voir la matrice complete feature x plan */
+    getFeatureFlagMatrix(options = {}) {
+      return request("GET", "/feature-flags/matrix", options);
+    },
+
+    /** Voir le detail d'une fonctionnalite du registre */
+    getFeatureByKey(options = {}) {
+      return request("GET", "/features/{key}", options);
+    },
+
+    /** Statistiques du registre de fonctionnalites (admin) */
+    getFeatureRegistryStatistics(options = {}) {
+      return request("GET", "/features/admin/statistics", options);
+    },
+
+    /** Synchroniser manuellement le registre de fonctionnalites (admin) */
+    synchronizeFeatureRegistry(options = {}) {
+      return request("POST", "/features/admin/synchronize", options);
+    },
+
+    /** Lister les fonctionnalites compatibles avec une version mobile donnee */
+    getCompatibleFeatures(options = {}) {
+      return request("GET", "/features/compatible/{version}", options);
+    },
+
+    /** Obtenir le manifeste des fonctionnalites disponibles pour l'utilisateur courant */
+    getFeatureManifest(options = {}) {
+      return request("GET", "/features/manifest", options);
+    },
+
+    /** Carte temps reel des vehicules */
+    getFleetLiveMap(options = {}) {
+      return request("GET", "/fleet/live-map", options);
+    },
+
+    /** Vue d'ensemble de la flotte */
+    getFleetOverview(options = {}) {
+      return request("GET", "/fleet/overview", options);
+    },
+
+    /** Rapport consommation carburant */
+    getFleetReportsFuel(options = {}) {
+      return request("GET", "/fleet/reports/fuel", options);
+    },
+
+    /** Vehicules necessitant une maintenance */
+    getFleetReportsMaintenanceDue(options = {}) {
+      return request("GET", "/fleet/reports/maintenance-due", options);
+    },
+
+    /** Rapport kilometrage */
+    getFleetReportsMileage(options = {}) {
+      return request("GET", "/fleet/reports/mileage", options);
+    },
+
+    /** Lister les sessions de caisse (manager) */
+    getFuelStationCashSessions(options = {}) {
+      return request("GET", "/fuel-station/cash-sessions", options);
+    },
+
+    /** Ouvrir une session de caisse (pompiste) */
+    postFuelStationCashSessions(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions", options);
+    },
+
+    /** Detail d'une session (proprietaire ou manager) */
+    getFuelStationCashSessionsBySession(options = {}) {
+      return request("GET", "/fuel-station/cash-sessions/{session}", options);
+    },
+
+    /** Approuver une cloture (manager, verrouille l'ecart) */
+    postFuelStationCashSessionsBySessionApprove(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/approve", options);
+    },
+
+    /** Cloturer une session (proprietaire, idempotente) */
+    postFuelStationCashSessionsBySessionClose(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/close", options);
+    },
+
+    /** Ajouter un mouvement in/out (proprietaire, session ouverte) */
+    postFuelStationCashSessionsBySessionMovements(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
+    },
+
+    /** Sessions de caisse du pompiste connecte (self-service) */
+    getFuelStationMeCashSessions(options = {}) {
+      return request("GET", "/fuel-station/me/cash-sessions", options);
+    },
+
+    /** Presence du pompiste connecte pour une date (self-service) */
+    getFuelStationMePresence(options = {}) {
+      return request("GET", "/fuel-station/me/presence", options);
+    },
+
+    /** Ventes du pompiste connecte (self-service, pagine) */
+    getFuelStationMeSales(options = {}) {
+      return request("GET", "/fuel-station/me/sales", options);
+    },
+
+    /** Affectations de shifts du pompiste connecte (self-service) */
+    getFuelStationMeShifts(options = {}) {
+      return request("GET", "/fuel-station/me/shifts", options);
+    },
+
+    /** Revoir un intervalle en anomalie (accept/reject) — manager principal/rh */
+    postFuelStationMeterIntervalsByIntervalReview(options = {}) {
+      return request("POST", "/fuel-station/meter-intervals/{interval}/review", options);
+    },
+
+    /** Corriger un releve (versionne, audite) — manager principal/rh */
+    postFuelStationMeterReadingsByReadingCorrections(options = {}) {
+      return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
+    },
+
+    /** Lister les ventes (manager, pagine) */
+    getFuelStationSales(options = {}) {
+      return request("GET", "/fuel-station/sales", options);
+    },
+
+    /** Enregistrer une vente (pompiste, idempotent via external_id) */
+    postFuelStationSales(options = {}) {
+      return request("POST", "/fuel-station/sales", options);
+    },
+
+    /** Detail d'une vente (proprietaire ou manager) */
+    getFuelStationSalesBySale(options = {}) {
+      return request("GET", "/fuel-station/sales/{sale}", options);
+    },
+
+    /** Annuler une affectation (manager, statut cancelled) */
+    deleteFuelStationShiftAssignmentsByAssignment(options = {}) {
+      return request("DELETE", "/fuel-station/shift-assignments/{assignment}", options);
+    },
+
+    /** Lister les shifts (manager) */
+    getFuelStationShifts(options = {}) {
+      return request("GET", "/fuel-station/shifts", options);
+    },
+
+    /** Creer un shift (manager) */
+    postFuelStationShifts(options = {}) {
+      return request("POST", "/fuel-station/shifts", options);
+    },
+
+    /** Supprimer un shift (manager, refus si affectations actives) */
+    deleteFuelStationShiftsByShift(options = {}) {
+      return request("DELETE", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Detail d'un shift (manager) */
+    getFuelStationShiftsByShift(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Mettre a jour un shift (manager) */
+    putFuelStationShiftsByShift(options = {}) {
+      return request("PUT", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Affectations d'un shift (manager) */
+    getFuelStationShiftsByShiftAssignments(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}/assignments", options);
+    },
+
+    /** Affecter un employe a un shift pour une date (manager) */
+    postFuelStationShiftsByShiftAssignments(options = {}) {
+      return request("POST", "/fuel-station/shifts/{shift}/assignments", options);
+    },
+
+    /** Roster de presence du shift pour une date (manager) */
+    getFuelStationShiftsByShiftPresence(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}/presence", options);
+    },
+
+    /** Lister les intervalles calcules d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
+    },
+
+    /** Lister les releves d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Enregistrer un releve de compteur (cumulatif, idempotent) */
+    postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Candidature partenaire */
+    postGrowthPartnerApply(options = {}) {
+      return request("POST", "/growth/partner/apply", options);
+    },
+
+    /** Entreprises parrainées par le partenaire */
+    getGrowthPartnerCompanies(options = {}) {
+      return request("GET", "/growth/partner/companies", options);
+    },
+
+    /** Tableau de bord de l'espace partenaire */
+    getGrowthPartnerDashboard(options = {}) {
+      return request("GET", "/growth/partner/dashboard", options);
+    },
+
+    /** Demande de versement commission */
+    postGrowthPartnerPayout(options = {}) {
+      return request("POST", "/growth/partner/payout", options);
+    },
+
+    /** Statistiques partenaire connecté */
+    getGrowthPartnerStats(options = {}) {
+      return request("GET", "/growth/partner/stats", options);
+    },
+
+    /** Healthcheck live + ready */
+    getHealth(options = {}) {
+      return request("GET", "/health", options);
+    },
+
+    /** Liveness probe — processus API vivant (sans dépendances) */
+    getHealthLive(options = {}) {
+      return request("GET", "/health/live", options);
+    },
+
+    /** Readiness probe — base de données disponible */
+    getHealthReady(options = {}) {
+      return request("GET", "/health/ready", options);
+    },
+
+    /** Embauche d'un candidat (principal/RH) */
+    postHrCandidatesByApplicantHire(options = {}) {
+      return request("POST", "/hr/candidates/{applicant}/hire", options);
+    },
+
+    /** Dashboard RH — indicateurs et actions en attente */
+    getHrDashboard(options = {}) {
+      return request("GET", "/hr/dashboard", options);
+    },
+
+    /** Liste des employés (scope RH) */
+    getHrEmployees(options = {}) {
+      return request("GET", "/hr/employees", options);
+    },
+
+    /** Ajoute un employé (scope RH — sans changement de rôle manager) */
+    postHrEmployees(options = {}) {
+      return request("POST", "/hr/employees", options);
+    },
+
+    /** Détail d'un employé (scope RH) */
+    getHrEmployeesByEmployee(options = {}) {
+      return request("GET", "/hr/employees/{employee}", options);
+    },
+
+    /** Modifie un employé (scope RH — sans changement de rôle manager) */
+    patchHrEmployeesByEmployee(options = {}) {
+      return request("PATCH", "/hr/employees/{employee}", options);
+    },
+
+    /** Profil de l'utilisateur RH connecté (manager_role rh/principal) */
+    getHrMe(options = {}) {
+      return request("GET", "/hr/me", options);
+    },
+
+    /** Vue d'ensemble de l'équipe (effectifs, répartition) */
+    getHrTeamOverview(options = {}) {
+      return request("GET", "/hr/team-overview", options);
+    },
+
+    /** Catalogue de traductions complet */
+    getI18nCatalog(options = {}) {
+      return request("GET", "/i18n/catalog", options);
+    },
+
+    /** Traductions pour une locale */
+    getI18nCatalogByLocale(options = {}) {
+      return request("GET", "/i18n/catalog/{locale}", options);
+    },
+
+    /** Verification interne MediaMTX */
+    getInternalCameraTokenVerify(options = {}) {
+      return request("GET", "/internal/camera-token/verify", options);
+    },
+
+    /** Lister les invitations de l'entreprise */
+    getInvitations(options = {}) {
+      return request("GET", "/invitations", options);
+    },
+
+    /** Renvoyer une invitation */
+    postInvitationsByInvitationResend(options = {}) {
+      return request("POST", "/invitations/{invitation}/resend", options);
+    },
+
+    /** Enregistrer un kiosk */
+    postKiosks(options = {}) {
+      return request("POST", "/kiosks", options);
+    },
+
+    /** Annonces du kiosk (device token) */
+    getKiosksByDeviceCodeAnnouncements(options = {}) {
+      return request("GET", "/kiosks/{deviceCode}/announcements", options);
+    },
+
+    /** Infos employe pour ecran kiosk (device token) */
+    postKiosksByDeviceCodeEmployeeInfo(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/employee-info", options);
+    },
+
+    /** Solde conges employe pour kiosk (device token) */
+    postKiosksByDeviceCodeLeaveBalance(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/leave-balance", options);
+    },
+
+    /** Pointage via kiosk */
+    postKiosksByDeviceCodePunch(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/punch", options);
+    },
+
+    /** Pointage QR via kiosk (device token) */
+    postKiosksByDeviceCodeQrPunch(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/qr-punch", options);
+    },
+
+    /** Roster biometrie d'un kiosk */
+    getKiosksByDeviceCodeRoster(options = {}) {
+      return request("GET", "/kiosks/{deviceCode}/roster", options);
+    },
+
+    /** Synchroniser des evenements offline */
+    postKiosksByDeviceCodeSync(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/sync", options);
+    },
+
+    /** Lire le score de readiness lancement du tenant */
+    getLaunchReadiness(options = {}) {
+      return request("GET", "/launch-readiness", options);
+    },
+
+    /** Lister les accruals */
+    getLeaveAccruals(options = {}) {
+      return request("GET", "/leave-accruals", options);
+    },
+
+    /** Creer un accrual */
+    postLeaveAccruals(options = {}) {
+      return request("POST", "/leave-accruals", options);
+    },
+
+    /** Soldes de conges globaux (manager) */
+    getLeaveBalances(options = {}) {
+      return request("GET", "/leave-balances", options);
+    },
+
+    /** Lister les politiques de conges */
+    getLeavePolicies(options = {}) {
+      return request("GET", "/leave-policies", options);
+    },
+
+    /** Creer une politique de conges */
+    postLeavePolicies(options = {}) {
+      return request("POST", "/leave-policies", options);
+    },
+
+    /** Supprimer une politique */
+    deleteLeavePoliciesByLeavePolicy(options = {}) {
+      return request("DELETE", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Voir une politique */
+    getLeavePoliciesByLeavePolicy(options = {}) {
+      return request("GET", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Modifier une politique */
+    putLeavePoliciesByLeavePolicy(options = {}) {
+      return request("PUT", "/leave-policies/{leavePolicy}", options);
+    },
+
+    /** Lister les prets */
+    getLoans(options = {}) {
+      return request("GET", "/loans", options);
+    },
+
+    /** Demander un pret */
+    postLoans(options = {}) {
+      return request("POST", "/loans", options);
+    },
+
+    /** Voir un pret */
+    getLoansByEmployeeLoan(options = {}) {
+      return request("GET", "/loans/{employeeLoan}", options);
+    },
+
+    /** Approuver un pret */
+    postLoansByEmployeeLoanApprove(options = {}) {
+      return request("POST", "/loans/{employeeLoan}/approve", options);
+    },
+
+    /** Approuver un prêt (déprécié — utiliser POST) */
+    putLoansByEmployeeLoanApprove(options = {}) {
+      return request("PUT", "/loans/{employeeLoan}/approve", options);
+    },
+
+    /** Decaisser un pret */
+    postLoansByEmployeeLoanDisburse(options = {}) {
+      return request("POST", "/loans/{employeeLoan}/disburse", options);
+    },
+
+    /** Décaisser un prêt (déprécié — utiliser POST) */
+    putLoansByEmployeeLoanDisburse(options = {}) {
+      return request("PUT", "/loans/{employeeLoan}/disburse", options);
+    },
+
+    /** Persister un lead marketing (vitrine) */
+    postMarketingLeads(options = {}) {
+      return request("POST", "/marketing/leads", options);
+    },
+
+    /** Lire le contact comptabilite cree depuis un lead qualifie */
+    getMarketingLeadsByLeadContact(options = {}) {
+      return request("GET", "/marketing/leads/{lead}/contact", options);
+    },
+
+    /** Qualifier un lead et creer le contact comptabilite associe */
+    postMarketingLeadsByLeadQualify(options = {}) {
+      return request("POST", "/marketing/leads/{lead}/qualify", options);
+    },
+
+    /** Lister les publications (alias court de /social-posts) */
+    getMarketingPosts(options = {}) {
+      return request("GET", "/marketing/posts", options);
+    },
+
+    /** Créer une publication (alias court de /social-posts) */
+    postMarketingPosts(options = {}) {
+      return request("POST", "/marketing/posts", options);
+    },
+
+    /** Supprimer une publication (alias court) */
+    deleteMarketingPostsBySocialPost(options = {}) {
+      return request("DELETE", "/marketing/posts/{socialPost}", options);
+    },
+
+    /** Détail d'une publication (alias court) */
+    getMarketingPostsBySocialPost(options = {}) {
+      return request("GET", "/marketing/posts/{socialPost}", options);
+    },
+
+    /** Mettre à jour une publication (alias court) */
+    patchMarketingPostsBySocialPost(options = {}) {
+      return request("PATCH", "/marketing/posts/{socialPost}", options);
+    },
+
+    /** Publier une publication planifiée (alias court) */
+    postMarketingPostsBySocialPostPublish(options = {}) {
+      return request("POST", "/marketing/posts/{socialPost}/publish", options);
+    },
+
+    /** Compte social connecte du tenant */
+    getMarketingSocialAccount(options = {}) {
+      return request("GET", "/marketing/social-account", options);
+    },
+
+    /** Connecter un compte social (agregateur Ayrshare) */
+    postMarketingSocialAccountConnect(options = {}) {
+      return request("POST", "/marketing/social-account/connect", options);
+    },
+
+    /** Deconnecter le compte social du tenant */
+    postMarketingSocialAccountDisconnect(options = {}) {
+      return request("POST", "/marketing/social-account/disconnect", options);
+    },
+
+    /** Comptes sociaux connectés (alias pluriel de /social-account) */
+    getMarketingSocialAccounts(options = {}) {
+      return request("GET", "/marketing/social-accounts", options);
+    },
+
+    /** Connecter un compte social (alias pluriel) */
+    postMarketingSocialAccountsConnect(options = {}) {
+      return request("POST", "/marketing/social-accounts/connect", options);
+    },
+
+    /** Déconnecter un compte social (alias pluriel) */
+    postMarketingSocialAccountsDisconnect(options = {}) {
+      return request("POST", "/marketing/social-accounts/disconnect", options);
+    },
+
+    /** Lister les publications reseaux sociaux du tenant */
+    getMarketingSocialPosts(options = {}) {
+      return request("GET", "/marketing/social-posts", options);
+    },
+
+    /** Creer une publication (brouillon, ou planifiee/publiee si scheduled_at fourni) */
+    postMarketingSocialPosts(options = {}) {
+      return request("POST", "/marketing/social-posts", options);
+    },
+
+    /** Supprimer une publication (draft uniquement) */
+    deleteMarketingSocialPostsBySocialPost(options = {}) {
+      return request("DELETE", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Detail d'une publication */
+    getMarketingSocialPostsBySocialPost(options = {}) {
+      return request("GET", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Modifier une publication (draft uniquement) */
+    patchMarketingSocialPostsBySocialPost(options = {}) {
+      return request("PATCH", "/marketing/social-posts/{socialPost}", options);
+    },
+
+    /** Publier immediatement ou (re)planifier une publication */
+    postMarketingSocialPostsBySocialPostPublish(options = {}) {
+      return request("POST", "/marketing/social-posts/{socialPost}/publish", options);
+    },
+
+    /** Anomalies de pointage de l'employé courant */
+    getMeAttendanceAnomalies(options = {}) {
+      return request("GET", "/me/attendance-anomalies", options);
+    },
+
+    /** Mon solde de paie courant */
+    getMeBalance(options = {}) {
+      return request("GET", "/me/balance", options);
+    },
+
+    /** Lire le parcours professionnel durable de l'employe courant */
+    getMeCareer(options = {}) {
+      return request("GET", "/me/career", options);
+    },
+
+    /** Soumettre une demande d'integration via QR entreprise */
+    postMeCompanyQrScan(options = {}) {
+      return request("POST", "/me/company-qr/scan", options);
+    },
+
+    /** Contrat actif de l'employé connecté */
+    getMeContract(options = {}) {
+      return request("GET", "/me/contract", options);
+    },
+
+    /** Mes contrats */
+    getMeContracts(options = {}) {
+      return request("GET", "/me/contracts", options);
+    },
+
+    /** Resume journalier utilisateur courant */
+    getMeDailySummary(options = {}) {
+      return request("GET", "/me/daily-summary", options);
+    },
+
+    /** Mon depart (self-service, issue #5324) */
+    getMeDeparture(options = {}) {
+      return request("GET", "/me/departure", options);
+    },
+
+    /** Lire les documents de SON dossier employe (self-service) */
+    getMeDocuments(options = {}) {
+      return request("GET", "/me/documents", options);
+    },
+
+    /** Mes soldes de conges */
+    getMeLeaveBalances(options = {}) {
+      return request("GET", "/me/leave-balances", options);
+    },
+
+    /** Journal de paie de l'employé courant */
+    getMeLedger(options = {}) {
+      return request("GET", "/me/ledger", options);
+    },
+
+    /** Mes prets */
+    getMeLoans(options = {}) {
+      return request("GET", "/me/loans", options);
+    },
+
+    /** Mes remboursements de pret */
+    getMeLoansByLoanIdRepayments(options = {}) {
+      return request("GET", "/me/loans/{loanId}/repayments", options);
+    },
+
+    /** Resume mensuel utilisateur courant */
+    getMeMonthlySummary(options = {}) {
+      return request("GET", "/me/monthly-summary", options);
+    },
+
+    /** Mes bulletins de paie */
+    getMePaySlips(options = {}) {
+      return request("GET", "/me/pay-slips", options);
+    },
+
+    /** Voir un de mes bulletins de paie */
+    showMyPaySlip(options = {}) {
+      return request("GET", "/me/pay-slips/{paySlip}", options);
+    },
+
+    /** Telecharger mon bulletin archive dans le Cabinet (PDF) */
+    archivedMyPaySlipDocument(options = {}) {
+      return request("GET", "/me/pay-slips/{paySlip}/document", options);
+    },
+
+    /** Telecharger un de mes bulletins de paie en PDF */
+    downloadMyPaySlipPdf(options = {}) {
+      return request("GET", "/me/pay-slips/{paySlip}/pdf", options);
+    },
+
+    /** Mes documents de paiement */
+    getMePaymentDocuments(options = {}) {
+      return request("GET", "/me/payment-documents", options);
+    },
+
+    /** Telecharger un document de paiement */
+    getMePaymentDocumentsByPaymentDocumentDownload(options = {}) {
+      return request("GET", "/me/payment-documents/{paymentDocument}/download", options);
+    },
+
+    /** Generer le QR profil employe */
+    getMeQrProfile(options = {}) {
+      return request("GET", "/me/qr-profile", options);
+    },
+
+    /** Estimation utilisateur courant */
+    getMeQuickEstimate(options = {}) {
+      return request("GET", "/me/quick-estimate", options);
+    },
+
+    /** Mes inscriptions formation (alias mobile employee) */
+    getMeTrainingEnrollments(options = {}) {
+      return request("GET", "/me/training-enrollments", options);
+    },
+
+    /** Mes formations */
+    getMeTrainings(options = {}) {
+      return request("GET", "/me/trainings", options);
+    },
+
+    /** Auto-inscription a une formation */
+    postMeTrainingsBySessionIdEnroll(options = {}) {
+      return request("POST", "/me/trainings/{sessionId}/enroll", options);
+    },
+
+    /** Vehicules assignes a l'employe connecte (mobile) */
+    getMeVehicles(options = {}) {
+      return request("GET", "/me/vehicles", options);
+    },
+
+    /** Métriques plateforme (super-admin) */
+    getMetrics(options = {}) {
+      return request("GET", "/metrics", options);
+    },
+
+    /** Lire les preferences de notification de l'utilisateur courant */
+    getNotificationPreferences(options = {}) {
+      return request("GET", "/notification-preferences", options);
+    },
+
+    /** Mettre a jour les preferences de notification de l'utilisateur courant */
+    patchNotificationPreferences(options = {}) {
+      return request("PATCH", "/notification-preferences", options);
+    },
+
+    /** Lister les notifications de l'utilisateur courant */
+    getNotifications(options = {}) {
+      return request("GET", "/notifications", options);
+    },
+
+    /** Supprimer une notification */
+    deleteNotificationsByNotification(options = {}) {
+      return request("DELETE", "/notifications/{notification}", options);
+    },
+
+    /** Marquer une notification comme lue */
+    patchNotificationsByNotificationRead(options = {}) {
+      return request("PATCH", "/notifications/{notification}/read", options);
+    },
+
+    /** Marquer toutes les notifications comme lues */
+    postNotificationsMarkAllRead(options = {}) {
+      return request("POST", "/notifications/mark-all-read", options);
+    },
+
+    /** Marquer toutes les notifications comme lues */
+    postNotificationsReadAll(options = {}) {
+      return request("POST", "/notifications/read-all", options);
+    },
+
+    /** Émettre un token SSE temporaire pour le flux temps réel */
+    postNotificationsSseToken(options = {}) {
+      return request("POST", "/notifications/sse-token", options);
+    },
+
+    /** Flux SSE temps réel des notifications (employee/manager) */
+    getNotificationsStream(options = {}) {
+      return request("GET", "/notifications/stream", options);
+    },
+
+    /** Notifications non lues de l'employe */
+    getNotificationsUnread(options = {}) {
+      return request("GET", "/notifications/unread", options);
+    },
+
+    /** Marquer une étape complète (déprécié — utiliser POST) */
+    patchOnboardingSetupByStepKeyComplete(options = {}) {
+      return request("PATCH", "/onboarding-setup/{stepKey}/complete", options);
+    },
+
+    /** Marquer une étape comme complète */
+    postOnboardingSetupByStepKeyComplete(options = {}) {
+      return request("POST", "/onboarding-setup/{stepKey}/complete", options);
+    },
+
+    /** Passer une étape (déprécié — utiliser POST) */
+    patchOnboardingSetupByStepKeySkip(options = {}) {
+      return request("PATCH", "/onboarding-setup/{stepKey}/skip", options);
+    },
+
+    /** Ignorer une étape d'onboarding */
+    postOnboardingSetupByStepKeySkip(options = {}) {
+      return request("POST", "/onboarding-setup/{stepKey}/skip", options);
+    },
+
+    /** Récupérer la checklist d'onboarding */
+    getOnboardingSetupChecklist(options = {}) {
+      return request("GET", "/onboarding-setup/checklist", options);
+    },
+
+    /** Progression globale de l'onboarding */
+    getOnboardingSetupProgress(options = {}) {
+      return request("GET", "/onboarding-setup/progress", options);
+    },
+
+    /** Checklist d'onboarding de l'employé authentifié */
+    getOnboardingChecklist(options = {}) {
+      return request("GET", "/onboarding/checklist", options);
+    },
+
+    /** Consulter une invitation d'onboarding (token public) */
+    getOnboardingInvitationByToken(options = {}) {
+      return request("GET", "/onboarding/invitation/{token}", options);
+    },
+
+    /** Activer une invitation (définir le mot de passe) */
+    postOnboardingInvitationByTokenActivate(options = {}) {
+      return request("POST", "/onboarding/invitation/{token}/activate", options);
+    },
+
+    /** Organigramme complet */
+    getOrgChart(options = {}) {
+      return request("GET", "/org-chart", options);
+    },
+
+    /** Chaine hierarchique */
+    getOrgChartByEmployeeManagerChain(options = {}) {
+      return request("GET", "/org-chart/{employee}/manager-chain", options);
+    },
+
+    /** Subordonnes d'un employe */
+    getOrgChartByEmployeeSubordinates(options = {}) {
+      return request("GET", "/org-chart/{employee}/subordinates", options);
+    },
+
+    /** Lister les bulletins du tenant (manager) */
+    getPaySlips(options = {}) {
+      return request("GET", "/pay-slips", options);
+    },
+
+    /** Voir un bulletin de paie */
+    getPaySlipsByPaySlip(options = {}) {
+      return request("GET", "/pay-slips/{paySlip}", options);
+    },
+
+    /** Telecharger bulletin PDF */
+    getPaySlipsByPaySlipPdf(options = {}) {
+      return request("GET", "/pay-slips/{paySlip}/pdf", options);
+    },
+
+    /** Lister les lots de paiement */
+    getPaymentBatches(options = {}) {
+      return request("GET", "/payment-batches", options);
+    },
+
+    /** Creer un lot de paiement depuis un cycle paie */
+    postPaymentBatches(options = {}) {
+      return request("POST", "/payment-batches", options);
+    },
+
+    /** Detail d'un lot de paiement */
+    getPaymentBatchesByPaymentBatch(options = {}) {
+      return request("GET", "/payment-batches/{paymentBatch}", options);
+    },
+
+    /** Declarer un lot de paiement comme envoye */
+    postPaymentBatchesByPaymentBatchMarkPaid(options = {}) {
+      return request("POST", "/payment-batches/{paymentBatch}/mark-paid", options);
+    },
+
+    /** Confirmer la reception d'un paiement */
+    postPaymentConfirmationsByPaymentItemConfirm(options = {}) {
+      return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
+    },
+
+    /** Lister les ordres de virement du tenant (pagine) */
+    getPaymentOrders(options = {}) {
+      return request("GET", "/payment-orders", options);
+    },
+
+    /** Detail d'un ordre de virement */
+    getPaymentOrdersByPaymentOrder(options = {}) {
+      return request("GET", "/payment-orders/{paymentOrder}", options);
+    },
+
+    /** Executer un ordre de virement prepare (comptable) */
+    postPaymentOrdersByPaymentOrderExecute(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/execute", options);
+    },
+
+    /** Rapprocher un ordre de virement execute (comptable) */
+    postPaymentOrdersByPaymentOrderReconcile(options = {}) {
+      return request("POST", "/payment-orders/{paymentOrder}/reconcile", options);
+    },
+
+    /** Documents de paiement d.un cycle paie */
+    getPaymentsByPayrollRunDocuments(options = {}) {
+      return request("GET", "/payments/{payrollRun}/documents", options);
+    },
+
+    /** Lister les sessions de paie */
+    getPayrollRuns(options = {}) {
+      return request("GET", "/payroll-runs", options);
+    },
+
+    /** Creer une session de paie */
+    postPayrollRuns(options = {}) {
+      return request("POST", "/payroll-runs", options);
+    },
+
+    /** Voir une session de paie */
+    getPayrollRunsByPayrollRun(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}", options);
+    },
+
+    /** Ecrires comptables d'un run de paie valide (#5239) */
+    getPayrollRunsByPayrollRunAccountingEntries(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'un run (comptable, idempotent) */
+    postPayrollRunsByPayrollRunAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/accounting-entries/regenerate", options);
+    },
+
+    /** Rapport d'anomalies pre-cloture (F-20) */
+    getPayrollRunsByPayrollRunAnomalies(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/anomalies", options);
+    },
+
+    /** Generer un export bancaire pour un run valide (alias chemin) */
+    postPayrollRunsByPayrollRunBankExport(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
+    },
+
+    /** Bordereau de paie d''un run (totaux par cotisation + recap, #5243) */
+    getPayrollRunsByPayrollRunBordereau(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/bordereau", options);
+    },
+
+    /** Lancer le paiement groupé du run (virements) */
+    postPayrollRunsByPayrollRunBulkPay(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bulk-pay", options);
+    },
+
+    /** Statut du paiement groupé du run */
+    getPayrollRunsByPayrollRunBulkPayStatus(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/bulk-pay/status", options);
+    },
+
+    /** Calculer la paie */
+    postPayrollRunsByPayrollRunCalculate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
+    },
+
+    /** Annuler une session de paie */
+    postPayrollRunsByPayrollRunCancel(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/cancel", options);
+    },
+
+    /** Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823) */
+    downloadCnpsCmDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", options);
+    },
+
+    /** Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158) */
+    downloadCnssBfDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", options);
+    },
+
+    /** Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155) */
+    downloadCnssCgDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", options);
+    },
+
+    /** Déclaration CNSS mensuelle Côte d''Ivoire — CSV (CEDEAO #1830) */
+    downloadCnssCiDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
+    },
+
+    /** Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155) */
+    downloadCnssGaDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", options);
+    },
+
+    /** Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158) */
+    downloadInpsMlDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/inps-ml", options);
+    },
+
+    /** Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830) */
+    downloadIpresSnDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", options);
+    },
+
+    /** Export comptable du run (CSV/Excel streamé) */
+    getPayrollRunsByPayrollRunExport(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/export", options);
+    },
+
+    /** Journal de paie mensuel CSV (F-10) */
+    getPayrollRunsByPayrollRunJournal(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/journal", options);
+    },
+
+    /** Verrouiller la session de paie (cloture comptable, F-11) */
+    postPayrollRunsByPayrollRunLock(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/lock", options);
+    },
+
+    /** Lister les bulletins de paie d'une session */
+    listPayrollRunPaySlips(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
+    },
+
+    /** Preparer un ordre de virement pour un run valide (comptable) */
+    postPayrollRunsByPayrollRunPaymentOrder(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/payment-order", options);
+    },
+
+    /** Lister les régularisations d''un run (DZ-DEPTH #1818) */
+    listPayrollRunRegularizations(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/regularizations", options);
+    },
+
+    /** Créer un run de régularisation (DZ-DEPTH #1818) */
+    regularizePayrollRun(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/regularize", options);
+    },
+
+    /** Envoyer les bulletins du run aux employés */
+    postPayrollRunsByPayrollRunSendSlips(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/send-slips", options);
+    },
+
+    /** Resume de la session de paie */
+    getPayrollRunsByPayrollRunSummary(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/summary", options);
+    },
+
+    /** Deverrouiller une session cloturee (raison obligatoire, F-11) */
+    postPayrollRunsByPayrollRunUnlock(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/unlock", options);
+    },
+
+    /** Valider la session de paie */
+    postPayrollRunsByPayrollRunValidate(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/validate", options);
+    },
+
+    /** Lister les enregistrements d''audit des calculs de paie (manager principal/RH) — issue #1874 */
+    listPayrollAudits(options = {}) {
+      return request("GET", "/payroll/audit", options);
+    },
+
+    /** Détail d''un enregistrement d''audit de calcul de paie (manager principal/RH) — issue #1874 */
+    getPayrollAudit(options = {}) {
+      return request("GET", "/payroll/audit/{correlationId}", options);
+    },
+
+    /** Réglages du cycle de paie (société) */
+    getPayrollCycleSettings(options = {}) {
+      return request("GET", "/payroll/cycle-settings", options);
+    },
+
+    /** Mettre à jour les réglages du cycle de paie */
+    putPayrollCycleSettings(options = {}) {
+      return request("PUT", "/payroll/cycle-settings", options);
+    },
+
+    /** Historique des cycles de paie */
+    getPayrollCycles(options = {}) {
+      return request("GET", "/payroll/cycles", options);
+    },
+
+    /** Cycle de paie courant */
+    getPayrollCyclesCurrent(options = {}) {
+      return request("GET", "/payroll/cycles/current", options);
+    },
+
+    /** Previsualiser un cycle de paie candidat */
+    getPayrollCyclesPreview(options = {}) {
+      return request("GET", "/payroll/cycles/preview", options);
+    },
+
+    /** Resume mobile des soldes paie equipe */
+    getPayrollMobileSummary(options = {}) {
+      return request("GET", "/payroll/mobile-summary", options);
+    },
+
+    /** Simuler l''impact d''un barème (manager, dry-run) — issue #1814 */
+    simulatePayroll(options = {}) {
+      return request("POST", "/payroll/simulate", options);
+    },
+
+    /** Liste des campagnes de paie (tenant) */
+    getPayrolls(options = {}) {
+      return request("GET", "/payrolls", options);
+    },
+
+    /** Crée une campagne de paie */
+    postPayrolls(options = {}) {
+      return request("POST", "/payrolls", options);
+    },
+
+    /** Supprimer un run de paie (manager) */
+    deletePayrollsByPayroll(options = {}) {
+      return request("DELETE", "/payrolls/{payroll}", options);
+    },
+
+    /** Détail d'un run de paie */
+    getPayrollsByPayroll(options = {}) {
+      return request("GET", "/payrolls/{payroll}", options);
+    },
+
+    /** Mettre à jour partiellement un run de paie (manager) */
+    patchPayrollsByPayroll(options = {}) {
+      return request("PATCH", "/payrolls/{payroll}", options);
+    },
+
+    /** Mettre à jour un run de paie (manager) */
+    putPayrollsByPayroll(options = {}) {
+      return request("PUT", "/payrolls/{payroll}", options);
+    },
+
+    /** Valider un run de paie (manager, même société) */
+    postPayrollsByPayrollValidate(options = {}) {
+      return request("POST", "/payrolls/{payroll}/validate", options);
+    },
+
+    /** Valider un run de paie (déprécié — utiliser POST) */
+    putPayrollsByPayrollValidate(options = {}) {
+      return request("PUT", "/payrolls/{payroll}/validate", options);
+    },
+
+    /** Suggestions de rééquilibrage des équipes */
+    getPlanningShiftRebalancing(options = {}) {
+      return request("GET", "/planning/shift-rebalancing", options);
+    },
+
+    /** Optimisation hebdomadaire du planning (suggestions) */
+    getPlanningWeeklyOptimization(options = {}) {
+      return request("GET", "/planning/weekly-optimization", options);
+    },
+
+    /** Lister les annonces plateforme (super-admin) */
+    getPlatformAnnouncements(options = {}) {
+      return request("GET", "/platform/announcements", options);
+    },
+
+    /** Creer une annonce plateforme (maintenance, feature, incident, action requise) */
+    postPlatformAnnouncements(options = {}) {
+      return request("POST", "/platform/announcements", options);
+    },
+
+    /** Supprimer une annonce plateforme */
+    deletePlatformAnnouncementsByAnnouncement(options = {}) {
+      return request("DELETE", "/platform/announcements/{announcement}", options);
+    },
+
+    /** Detail d'une annonce plateforme */
+    getPlatformAnnouncementsByAnnouncement(options = {}) {
+      return request("GET", "/platform/announcements/{announcement}", options);
+    },
+
+    /** Désactiver la 2FA (mot de passe requis) */
+    postPlatformAuth2faDisable(options = {}) {
+      return request("POST", "/platform/auth/2fa/disable", options);
+    },
+
+    /** Activer la 2FA avec le code de confirmation */
+    postPlatformAuth2faEnable(options = {}) {
+      return request("POST", "/platform/auth/2fa/enable", options);
+    },
+
+    /** Démarrer la configuration 2FA (secret TOTP) */
+    postPlatformAuth2faSetup(options = {}) {
+      return request("POST", "/platform/auth/2fa/setup", options);
+    },
+
+    /** Changer le mot de passe du super-admin */
+    postPlatformAuthChangePassword(options = {}) {
+      return request("POST", "/platform/auth/change-password", options);
+    },
+
+    /** Connexion super-admin */
+    postPlatformAuthLogin(options = {}) {
+      return request("POST", "/platform/auth/login", options);
+    },
+
+    /** Deconnexion super-admin */
+    postPlatformAuthLogout(options = {}) {
+      return request("POST", "/platform/auth/logout", options);
+    },
+
+    /** Super-admin courant */
+    getPlatformAuthMe(options = {}) {
+      return request("GET", "/platform/auth/me", options);
+    },
+
+    /** Mettre à jour le profil du super-admin */
+    patchPlatformAuthProfile(options = {}) {
+      return request("PATCH", "/platform/auth/profile", options);
+    },
+
+    /** Lister les societes */
+    getPlatformCompanies(options = {}) {
+      return request("GET", "/platform/companies", options);
+    },
+
+    /** Creer une societe shared */
+    postPlatformCompanies(options = {}) {
+      return request("POST", "/platform/companies", options);
+    },
+
+    /** Reformer/choisir le pays legal d'un tenant (invariant 9) */
+    patchPlatformCompaniesByCompanyCountry(options = {}) {
+      return request("PATCH", "/platform/companies/{company}/country", options);
+    },
+
+    /** Lire les feature flags d'une societe */
+    getPlatformCompaniesByCompanyFeatures(options = {}) {
+      return request("GET", "/platform/companies/{company}/features", options);
+    },
+
+    /** Mettre a jour les feature flags d'une societe */
+    patchPlatformCompaniesByCompanyFeatures(options = {}) {
+      return request("PATCH", "/platform/companies/{company}/features", options);
+    },
+
+    /** Health detaille d'une societe */
+    getPlatformCompaniesByCompanyHealth(options = {}) {
+      return request("GET", "/platform/companies/{company}/health", options);
+    },
+
+    /** Lire l'abonnement plateforme d'une societe */
+    getPlatformCompaniesByCompanySubscription(options = {}) {
+      return request("GET", "/platform/companies/{company}/subscription", options);
+    },
+
+    /** Mettre a jour l'abonnement plateforme d'une societe */
+    patchPlatformCompaniesByCompanySubscription(options = {}) {
+      return request("PATCH", "/platform/companies/{company}/subscription", options);
+    },
+
+    /** Vue portefeuille health des societes */
+    getPlatformCompaniesHealth(options = {}) {
+      return request("GET", "/platform/companies/health", options);
+    },
+
+    /** Lister les demandes de creation de societe */
+    getPlatformCompanyRequests(options = {}) {
+      return request("GET", "/platform/company-requests", options);
+    },
+
+    /** Lire une demande de creation de societe */
+    getPlatformCompanyRequestsById(options = {}) {
+      return request("GET", "/platform/company-requests/{id}", options);
+    },
+
+    /** Approuver ou rejeter une demande de creation de societe */
+    patchPlatformCompanyRequestsById(options = {}) {
+      return request("PATCH", "/platform/company-requests/{id}", options);
+    },
+
+    /** Lister les pays supportes et leurs defaults */
+    getPlatformCountryDefaults(options = {}) {
+      return request("GET", "/platform/country-defaults", options);
+    },
+
+    /** Pipeline CRM des demandes clients (leads, essais, actifs, rejetes) */
+    getPlatformCrmPipeline(options = {}) {
+      return request("GET", "/platform/crm/pipeline", options);
+    },
+
+    /** Lister les nœuds edge de la plateforme (super-admin) */
+    getPlatformEdgeNodes(options = {}) {
+      return request("GET", "/platform/edge/nodes", options);
+    },
+
+    /** Révoquer un nœud edge (super-admin) */
+    deletePlatformEdgeNodesByNodeId(options = {}) {
+      return request("DELETE", "/platform/edge/nodes/{nodeId}", options);
+    },
+
+    /** Forcer la synchronisation d'un nœud edge (super-admin) */
+    postPlatformEdgeNodesByNodeIdSync(options = {}) {
+      return request("POST", "/platform/edge/nodes/{nodeId}/sync", options);
+    },
+
+    /** Historique des opérations growth (super-admin) */
+    getPlatformGrowthHistory(options = {}) {
+      return request("GET", "/platform/growth/history", options);
+    },
+
+    /** Lister les partenaires (admin) */
+    getPlatformGrowthPartners(options = {}) {
+      return request("GET", "/platform/growth/partners", options);
+    },
+
+    /** Mettre à jour le statut de candidature d'un partenaire (super-admin) */
+    patchPlatformGrowthPartnersByPartnerApplication(options = {}) {
+      return request("PATCH", "/platform/growth/partners/{partner}/application", options);
+    },
+
+    /** Mettre à jour le taux de commission d'un partenaire */
+    patchPlatformGrowthPartnersByPartnerRate(options = {}) {
+      return request("PATCH", "/platform/growth/partners/{partner}/rate", options);
+    },
+
+    /** Lister les demandes de versement */
+    getPlatformGrowthPayouts(options = {}) {
+      return request("GET", "/platform/growth/payouts", options);
+    },
+
+    /** Mettre à jour le statut d'un payout partenaire (super-admin) */
+    patchPlatformGrowthPayoutsByPayout(options = {}) {
+      return request("PATCH", "/platform/growth/payouts/{payout}", options);
+    },
+
+    /** Lister les sessions d'impersonation (super-admin) */
+    getPlatformImpersonations(options = {}) {
+      return request("GET", "/platform/impersonations", options);
+    },
+
+    /** Creer une session d'impersonation (login en tant que) */
+    postPlatformImpersonations(options = {}) {
+      return request("POST", "/platform/impersonations", options);
+    },
+
+    /** Terminer une session d'impersonation */
+    deletePlatformImpersonationsBySession(options = {}) {
+      return request("DELETE", "/platform/impersonations/{session}", options);
+    },
+
+    /** Agregats business du cockpit super-admin */
+    getPlatformMetricsOverview(options = {}) {
+      return request("GET", "/platform/metrics/overview", options);
+    },
+
+    /** Taux d'echec de notifications cross-tenant sur 24h (super-admin) */
+    getPlatformObservabilityNotifications(options = {}) {
+      return request("GET", "/platform/observability/notifications", options);
+    },
+
+    /** Profondeur des queues Redis et jobs echoues (super-admin) */
+    getPlatformObservabilityQueues(options = {}) {
+      return request("GET", "/platform/observability/queues", options);
+    },
+
+    /** Lister le catalogue des plans SaaS */
+    getPlatformPlans(options = {}) {
+      return request("GET", "/platform/plans", options);
+    },
+
+    /** Lister tous les tickets de support (super-admin, cross-tenant) */
+    getPlatformSupportTickets(options = {}) {
+      return request("GET", "/platform/support-tickets", options);
+    },
+
+    /** Detail d'un ticket de support (super-admin) */
+    getPlatformSupportTicketsBySupportTicket(options = {}) {
+      return request("GET", "/platform/support-tickets/{supportTicket}", options);
+    },
+
+    /** Repondre a un ticket (super-admin) */
+    postPlatformSupportTicketsBySupportTicketReply(options = {}) {
+      return request("POST", "/platform/support-tickets/{supportTicket}/reply", options);
+    },
+
+    /** Trier un ticket (statut, priorite, assignation) */
+    patchPlatformSupportTicketsBySupportTicketTriage(options = {}) {
+      return request("PATCH", "/platform/support-tickets/{supportTicket}/triage", options);
+    },
+
+    /** Lister les utilisateurs plateforme (super-admins) */
+    getPlatformUsers(options = {}) {
+      return request("GET", "/platform/users", options);
+    },
+
+    /** Creer un utilisateur plateforme */
+    postPlatformUsers(options = {}) {
+      return request("POST", "/platform/users", options);
+    },
+
+    /** Desactiver un utilisateur plateforme (jamais de suppression physique) */
+    deletePlatformUsersByUser(options = {}) {
+      return request("DELETE", "/platform/users/{user}", options);
+    },
+
+    /** Detail d'un utilisateur plateforme */
+    getPlatformUsersByUser(options = {}) {
+      return request("GET", "/platform/users/{user}", options);
+    },
+
+    /** Mettre a jour un utilisateur plateforme */
+    patchPlatformUsersByUser(options = {}) {
+      return request("PATCH", "/platform/users/{user}", options);
+    },
+
+    /** Activer un utilisateur plateforme */
+    postPlatformUsersByUserActivate(options = {}) {
+      return request("POST", "/platform/users/{user}/activate", options);
+    },
+
+    /** Desactiver un utilisateur plateforme */
+    postPlatformUsersByUserDeactivate(options = {}) {
+      return request("POST", "/platform/users/{user}/deactivate", options);
+    },
+
+    /** Suspendre un utilisateur plateforme */
+    postPlatformUsersByUserSuspend(options = {}) {
+      return request("POST", "/platform/users/{user}/suspend", options);
+    },
+
+    /** Lister les postes */
+    getPositions(options = {}) {
+      return request("GET", "/positions", options);
+    },
+
+    /** Creer un poste */
+    postPositions(options = {}) {
+      return request("POST", "/positions", options);
+    },
+
+    /** Supprimer un poste */
+    deletePositionsByPosition(options = {}) {
+      return request("DELETE", "/positions/{position}", options);
+    },
+
+    /** Voir un poste */
+    getPositionsByPosition(options = {}) {
+      return request("GET", "/positions/{position}", options);
+    },
+
+    /** Mettre à jour un poste (manager) */
+    patchPositionsByPosition(options = {}) {
+      return request("PATCH", "/positions/{position}", options);
+    },
+
+    /** Modifier un poste */
+    putPositionsByPosition(options = {}) {
+      return request("PUT", "/positions/{position}", options);
+    },
+
+    /** Predire les risques d'absenteisme */
+    getPredictionsAbsenteeism(options = {}) {
+      return request("GET", "/predictions/absenteeism", options);
+    },
+
+    /** Notifications RH proactives generees par l'IA */
+    getPredictionsNotifications(options = {}) {
+      return request("GET", "/predictions/notifications", options);
+    },
+
+    /** Predire le risque de turnover par employe */
+    getPredictionsTurnover(options = {}) {
+      return request("GET", "/predictions/turnover", options);
+    },
+
+    /** Enregistrer ou retirer le consentement biometrique */
+    patchPrivacyBiometricConsent(options = {}) {
+      return request("PATCH", "/privacy/biometric-consent", options);
+    },
+
+    /** Creer une demande de suppression non destructive */
+    postPrivacyDeletionRequest(options = {}) {
+      return request("POST", "/privacy/deletion-request", options);
+    },
+
+    /** Exporter les donnees personnelles de l'employe authentifie */
+    getPrivacyExport(options = {}) {
+      return request("GET", "/privacy/export", options);
+    },
+
+    /** Lister les projets */
+    getProjects(options = {}) {
+      return request("GET", "/projects", options);
+    },
+
+    /** Creer un projet */
+    postProjects(options = {}) {
+      return request("POST", "/projects", options);
+    },
+
+    /** Supprimer un projet */
+    deleteProjectsByProject(options = {}) {
+      return request("DELETE", "/projects/{project}", options);
+    },
+
+    /** Voir un projet */
+    getProjectsByProject(options = {}) {
+      return request("GET", "/projects/{project}", options);
+    },
+
+    /** Mettre a jour partiellement un projet */
+    patchProjectsByProject(options = {}) {
+      return request("PATCH", "/projects/{project}", options);
+    },
+
+    /** Mettre a jour un projet */
+    putProjectsByProject(options = {}) {
+      return request("PUT", "/projects/{project}", options);
+    },
+
+    /** Lister les jours fériés du pays (manager principal : nationaux + entreprise) */
+    listPublicHolidays(options = {}) {
+      return request("GET", "/public-holidays", options);
+    },
+
+    /** Créer un jour férié d'entreprise (manager principal) */
+    storePublicHoliday(options = {}) {
+      return request("POST", "/public-holidays", options);
+    },
+
+    /** Supprimer un jour férié d'entreprise (manager principal) */
+    destroyPublicHoliday(options = {}) {
+      return request("DELETE", "/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Modifier un jour férié d'entreprise (manager principal) */
+    updatePublicHoliday(options = {}) {
+      return request("PUT", "/public-holidays/{publicHoliday}", options);
+    },
+
+    /** Offres d'emploi publiques d'une entreprise */
+    getPublicCareersByCompanySlug(options = {}) {
+      return request("GET", "/public/careers/{companySlug}", options);
+    },
+
+    /** Flux XML des offres (agrégateurs) */
+    getPublicCareersByCompanySlugFeedXml(options = {}) {
+      return request("GET", "/public/careers/{companySlug}/feed.xml", options);
+    },
+
+    /** Détail d'une offre publique */
+    getPublicCareersByCompanySlugJobsByJobPosting(options = {}) {
+      return request("GET", "/public/careers/{companySlug}/jobs/{jobPosting}", options);
+    },
+
+    /** Postuler à une offre publique (anti-doublon par email, #3860) */
+    postPublicCareersByCompanySlugJobsByJobPostingApply(options = {}) {
+      return request("POST", "/public/careers/{companySlug}/jobs/{jobPosting}/apply", options);
+    },
+
+    /** Envoyer une notification push de test a un employe */
+    postPushNotificationsSend(options = {}) {
+      return request("POST", "/push-notifications/send", options);
+    },
+
+    /** Supprimer une candidature (manager) */
+    deleteRecruitmentApplicantsByApplicant(options = {}) {
+      return request("DELETE", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Détail d'une candidature (manager) */
+    getRecruitmentApplicantsByApplicant(options = {}) {
+      return request("GET", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Modifier un candidat */
+    putRecruitmentApplicantsByApplicant(options = {}) {
+      return request("PUT", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Planifier un entretien */
+    postRecruitmentApplicantsByApplicantInterviews(options = {}) {
+      return request("POST", "/recruitment/applicants/{applicant}/interviews", options);
+    },
+
+    /** Changer le statut d'une candidature (principal/rh) */
+    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
+    },
+
+    /** Supprimer un entretien (manager) */
+    deleteRecruitmentInterviewsByInterview(options = {}) {
+      return request("DELETE", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Modifier un entretien */
+    putRecruitmentInterviewsByInterview(options = {}) {
+      return request("PUT", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByInterviewFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{interview}/feedback", options);
+    },
+
+    /** Lister les offres d'emploi */
+    getRecruitmentJobs(options = {}) {
+      return request("GET", "/recruitment/jobs", options);
+    },
+
+    /** Creer une offre d'emploi */
+    postRecruitmentJobs(options = {}) {
+      return request("POST", "/recruitment/jobs", options);
+    },
+
+    /** Supprimer une offre d'emploi (manager) */
+    deleteRecruitmentJobsByJobPosting(options = {}) {
+      return request("DELETE", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Voir une offre */
+    getRecruitmentJobsByJobPosting(options = {}) {
+      return request("GET", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Modifier une offre */
+    putRecruitmentJobsByJobPosting(options = {}) {
+      return request("PUT", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Lister les candidats */
+    getRecruitmentJobsByJobPostingApplicants(options = {}) {
+      return request("GET", "/recruitment/jobs/{jobPosting}/applicants", options);
+    },
+
+    /** Ajouter un candidat */
+    postRecruitmentJobsByJobPostingApplicants(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/applicants", options);
+    },
+
+    /** Cloturer une offre */
+    postRecruitmentJobsByJobPostingClose(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/close", options);
+    },
+
+    /** Publier une offre */
+    postRecruitmentJobsByJobPostingPublish(options = {}) {
+      return request("POST", "/recruitment/jobs/{jobPosting}/publish", options);
+    },
+
+    /** Absentéisme du mois/année */
+    getReportsAbsenteeism(options = {}) {
+      return request("GET", "/reports/absenteeism", options);
+    },
+
+    /** Analyse des coûts (masse salariale par département) */
+    getReportsCostAnalysis(options = {}) {
+      return request("GET", "/reports/cost-analysis", options);
+    },
+
+    /** Ventilation démographique des employés */
+    getReportsDemographics(options = {}) {
+      return request("GET", "/reports/demographics", options);
+    },
+
+    /** Effectif par département, type de contrat et genre */
+    getReportsHeadcount(options = {}) {
+      return request("GET", "/reports/headcount", options);
+    },
+
+    /** Synthèse des avances/prêts employés */
+    getReportsLoanSummary(options = {}) {
+      return request("GET", "/reports/loan-summary", options);
+    },
+
+    /** Heures supplémentaires du mois/année */
+    getReportsOvertime(options = {}) {
+      return request("GET", "/reports/overtime", options);
+    },
+
+    /** Synthèse paie du mois/année */
+    getReportsPayrollSummary(options = {}) {
+      return request("GET", "/reports/payroll-summary", options);
+    },
+
+    /** Pipeline recrutement (candidatures par statut) */
+    getReportsRecruitmentPipeline(options = {}) {
+      return request("GET", "/reports/recruitment-pipeline", options);
+    },
+
+    /** Taux de complétion des formations */
+    getReportsTrainingCompletion(options = {}) {
+      return request("GET", "/reports/training-completion", options);
+    },
+
+    /** Taux de rotation (turnover) sur N mois */
+    getReportsTurnover(options = {}) {
+      return request("GET", "/reports/turnover", options);
+    },
+
+    /** Lister les avances sur salaire */
+    getSalaryAdvances(options = {}) {
+      return request("GET", "/salary-advances", options);
+    },
+
+    /** Demander une avance sur salaire */
+    postSalaryAdvances(options = {}) {
+      return request("POST", "/salary-advances", options);
+    },
+
+    /** Annuler une avance (employe proprietaire) */
+    deleteSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("DELETE", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Voir une avance */
+    getSalaryAdvancesBySalaryAdvance(options = {}) {
+      return request("GET", "/salary-advances/{salaryAdvance}", options);
+    },
+
+    /** Approuver une avance (manager) */
+    postSalaryAdvancesBySalaryAdvanceApprove(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/approve", options);
+    },
+
+    /** Approuver une avance sur salaire (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/approve", options);
+    },
+
+    /** Confirmer la reception de l'avance (employe) */
+    putSalaryAdvancesBySalaryAdvanceConfirmReceived(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", options);
+    },
+
+    /** Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe) */
+    disputeSalaryAdvance(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/dispute", options);
+    },
+
+    /** Valider une avance avant paiement (manager/RH) */
+    postSalaryAdvancesBySalaryAdvanceManagerApprove(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/manager-approve", options);
+    },
+
+    /** Validation manager d'une avance (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceManagerApprove(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", options);
+    },
+
+    /** Declarer l'avance comme envoyee (manager/RH) */
+    putSalaryAdvancesBySalaryAdvanceMarkPaid(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", options);
+    },
+
+    /** Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager) */
+    downloadSalaryAdvanceProof(options = {}) {
+      return request("GET", "/salary-advances/{salaryAdvance}/proof", options);
+    },
+
+    /** Rejeter une avance (manager) */
+    postSalaryAdvancesBySalaryAdvanceReject(options = {}) {
+      return request("POST", "/salary-advances/{salaryAdvance}/reject", options);
+    },
+
+    /** Refuser une avance sur salaire (déprécié — utiliser POST) */
+    putSalaryAdvancesBySalaryAdvanceReject(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/reject", options);
+    },
+
+    /** Resoudre une reclamation sur une avance (manager/RH) */
+    resolveSalaryAdvanceDispute(options = {}) {
+      return request("PUT", "/salary-advances/{salaryAdvance}/resolve-dispute", options);
+    },
+
+    /** Lister les composants de salaire (manager) */
+    listSalaryComponents(options = {}) {
+      return request("GET", "/salary-components", options);
+    },
+
+    /** Creer un composant de salaire (manager) */
+    createSalaryComponent(options = {}) {
+      return request("POST", "/salary-components", options);
+    },
+
+    /** Supprimer un composant de salaire (manager) */
+    deleteSalaryComponent(options = {}) {
+      return request("DELETE", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Voir un composant de salaire (manager) */
+    showSalaryComponent(options = {}) {
+      return request("GET", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Modifier un composant de salaire (manager) */
+    updateSalaryComponent(options = {}) {
+      return request("PUT", "/salary-components/{salaryComponent}", options);
+    },
+
+    /** Lister les structures salariales (manager) */
+    listSalaryStructures(options = {}) {
+      return request("GET", "/salary-structures", options);
+    },
+
+    /** Creer une structure salariale (manager) */
+    createSalaryStructure(options = {}) {
+      return request("POST", "/salary-structures", options);
+    },
+
+    /** Supprimer une structure salariale (manager) */
+    deleteSalaryStructure(options = {}) {
+      return request("DELETE", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Voir une structure salariale avec ses composants (manager) */
+    showSalaryStructure(options = {}) {
+      return request("GET", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Modifier une structure salariale (manager) */
+    updateSalaryStructure(options = {}) {
+      return request("PUT", "/salary-structures/{salaryStructure}", options);
+    },
+
+    /** Lister les horaires de l'entreprise */
+    getSchedules(options = {}) {
+      return request("GET", "/schedules", options);
+    },
+
+    /** Creer un horaire de travail */
+    postSchedules(options = {}) {
+      return request("POST", "/schedules", options);
+    },
+
+    /** Supprimer un horaire non defaut */
+    deleteSchedulesBySchedule(options = {}) {
+      return request("DELETE", "/schedules/{schedule}", options);
+    },
+
+    /** Détail d'un planning */
+    getSchedulesBySchedule(options = {}) {
+      return request("GET", "/schedules/{schedule}", options);
+    },
+
+    /** Mettre à jour un planning (manager — sécurité #2217) */
+    patchSchedulesBySchedule(options = {}) {
+      return request("PATCH", "/schedules/{schedule}", options);
+    },
+
+    /** Modifier un horaire */
+    putSchedulesBySchedule(options = {}) {
+      return request("PUT", "/schedules/{schedule}", options);
+    },
+
+    /** Affecter un horaire/regle entreprise a des employes */
+    postSchedulesByScheduleAssignEmployees(options = {}) {
+      return request("POST", "/schedules/{schedule}/assign-employees", options);
+    },
+
+    /** Lister les sites */
+    getSites(options = {}) {
+      return request("GET", "/sites", options);
+    },
+
+    /** Creer un site */
+    postSites(options = {}) {
+      return request("POST", "/sites", options);
+    },
+
+    /** Supprimer un site */
+    deleteSitesBySite(options = {}) {
+      return request("DELETE", "/sites/{site}", options);
+    },
+
+    /** Voir un site */
+    getSitesBySite(options = {}) {
+      return request("GET", "/sites/{site}", options);
+    },
+
+    /** Mettre à jour un site (manager) */
+    patchSitesBySite(options = {}) {
+      return request("PATCH", "/sites/{site}", options);
+    },
+
+    /** Modifier un site */
+    putSitesBySite(options = {}) {
+      return request("PUT", "/sites/{site}", options);
+    },
+
+    /** Lister les regles de cotisations sociales (manager) */
+    listSocialContributions(options = {}) {
+      return request("GET", "/social-contributions", options);
+    },
+
+    /** Creer une regle de cotisation sociale (manager) */
+    createSocialContribution(options = {}) {
+      return request("POST", "/social-contributions", options);
+    },
+
+    /** Supprimer une regle de cotisation sociale (manager) */
+    deleteSocialContribution(options = {}) {
+      return request("DELETE", "/social-contributions/{socialContribution}", options);
+    },
+
+    /** Modifier une regle de cotisation sociale (manager) */
+    updateSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}", options);
+    },
+
+    /** Historique immuable des modifications d''une cotisation (manager) — issue #1813 */
+    socialContributionHistory(options = {}) {
+      return request("GET", "/social-contributions/{socialContribution}/history", options);
+    },
+
+    /** Soumettre une regle de cotisation pour validation (manager) — issue #1813 */
+    submitSocialContribution(options = {}) {
+      return request("PUT", "/social-contributions/{socialContribution}/submit", options);
+    },
+
+    /** Generer la declaration trimestrielle CNAS (Algerie) pour tous les employes actifs */
+    generateCnasDzDeclaration(options = {}) {
+      return request("POST", "/social-declarations/cnas-dz", options);
+    },
+
+    /** Generer la declaration trimestrielle CNSS (Maroc) pour tous les employes actifs */
+    generateCnssMaDeclaration(options = {}) {
+      return request("POST", "/social-declarations/cnss-ma", options);
+    },
+
+    /** Generer la declaration annuelle des salaires DAS (Algerie, #5243) */
+    generateDasDzDeclaration(options = {}) {
+      return request("POST", "/social-declarations/das-dz", options);
+    },
+
+    /** Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne */
+    generateDsnFrDeclaration(options = {}) {
+      return request("POST", "/social-declarations/dsn-fr", options);
+    },
+
+    /** Configurer le SSO de l'entreprise */
+    postSsoConfigure(options = {}) {
+      return request("POST", "/sso/configure", options);
+    },
+
+    /** Desactiver le SSO de l'entreprise */
+    deleteSsoDisable(options = {}) {
+      return request("DELETE", "/sso/disable", options);
+    },
+
+    /** Demarrer le flux OpenID Connect (SP -> IdP) */
+    getSsoOidcByCompanyIdAuthorize(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/authorize", options);
+    },
+
+    /** Callback OpenID Connect (IdP -> SP) */
+    getSsoOidcByCompanyIdCallback(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/callback", options);
+    },
+
+    /** Lister les fournisseurs SSO supportes */
+    getSsoProviders(options = {}) {
+      return request("GET", "/sso/providers", options);
+    },
+
+    /** Callback SAML 2.0 (IdP -> SP) */
+    postSsoSamlByCompanyIdCallback(options = {}) {
+      return request("POST", "/sso/saml/{companyId}/callback", options);
+    },
+
+    /** Statut SSO de l'entreprise */
+    getSsoStatus(options = {}) {
+      return request("GET", "/sso/status", options);
+    },
+
+    /** Lister les tickets de support ouverts par le tenant */
+    getSupportTickets(options = {}) {
+      return request("GET", "/support-tickets", options);
+    },
+
+    /** Ouvrir un ticket de support (employe/manager) */
+    postSupportTickets(options = {}) {
+      return request("POST", "/support-tickets", options);
+    },
+
+    /** Detail d'un ticket de support (tenant) */
+    getSupportTicketsBySupportTicket(options = {}) {
+      return request("GET", "/support-tickets/{supportTicket}", options);
+    },
+
+    /** Cloturer un ticket de support (auteur ou manager tenant) */
+    postSupportTicketsBySupportTicketClose(options = {}) {
+      return request("POST", "/support-tickets/{supportTicket}/close", options);
+    },
+
+    /** Repondre a un ticket de support (tenant) */
+    postSupportTicketsBySupportTicketReply(options = {}) {
+      return request("POST", "/support-tickets/{supportTicket}/reply", options);
+    },
+
+    /** Registre des pays supportes */
+    listSupportedCountries(options = {}) {
+      return request("GET", "/supported-countries", options);
+    },
+
+    /** Lister les taches */
+    getTasks(options = {}) {
+      return request("GET", "/tasks", options);
+    },
+
+    /** Creer une tache */
+    postTasks(options = {}) {
+      return request("POST", "/tasks", options);
+    },
+
+    /** Supprimer une tache */
+    deleteTasksByTask(options = {}) {
+      return request("DELETE", "/tasks/{task}", options);
+    },
+
+    /** Voir une tache */
+    getTasksByTask(options = {}) {
+      return request("GET", "/tasks/{task}", options);
+    },
+
+    /** Mettre a jour partiellement une tache */
+    patchTasksByTask(options = {}) {
+      return request("PATCH", "/tasks/{task}", options);
+    },
+
+    /** Mettre a jour une tache */
+    putTasksByTask(options = {}) {
+      return request("PUT", "/tasks/{task}", options);
+    },
+
+    /** Commentaires d'une tâche (auteur + employés liés) */
+    getTasksByTaskComments(options = {}) {
+      return request("GET", "/tasks/{task}/comments", options);
+    },
+
+    /** Ajouter un commentaire sur une tache */
+    postTasksByTaskComments(options = {}) {
+      return request("POST", "/tasks/{task}/comments", options);
+    },
+
+    /** Lister les taches du jour */
+    getTasksToday(options = {}) {
+      return request("GET", "/tasks/today", options);
+    },
+
+    /** Lister le bareme fiscal (tranches d'impot) (manager) */
+    listTaxSlabs(options = {}) {
+      return request("GET", "/tax-slabs", options);
+    },
+
+    /** Creer une tranche d'impot (manager) */
+    createTaxSlab(options = {}) {
+      return request("POST", "/tax-slabs", options);
+    },
+
+    /** Supprimer une tranche d'impot (manager) */
+    deleteTaxSlab(options = {}) {
+      return request("DELETE", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Modifier une tranche d'impot (manager) */
+    updateTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}", options);
+    },
+
+    /** Historique immuable des modifications d''une tranche (manager) — issue #1813 */
+    taxSlabHistory(options = {}) {
+      return request("GET", "/tax-slabs/{taxSlab}/history", options);
+    },
+
+    /** Soumettre une tranche d''impot pour validation (manager) — issue #1813 */
+    submitTaxSlab(options = {}) {
+      return request("PUT", "/tax-slabs/{taxSlab}/submit", options);
+    },
+
+    /** Synchroniser les devices Traccar */
+    postTrackingSyncDevices(options = {}) {
+      return request("POST", "/tracking/sync-devices", options);
+    },
+
+    /** Synchroniser les positions Traccar */
+    postTrackingSyncPositions(options = {}) {
+      return request("POST", "/tracking/sync-positions", options);
+    },
+
+    /** Synchroniser les trajets Traccar */
+    postTrackingSyncTrips(options = {}) {
+      return request("POST", "/tracking/sync-trips", options);
+    },
+
+    /** Lister les formations */
+    getTrainingCourses(options = {}) {
+      return request("GET", "/training/courses", options);
+    },
+
+    /** Creer une formation */
+    postTrainingCourses(options = {}) {
+      return request("POST", "/training/courses", options);
+    },
+
+    /** Supprimer une formation */
+    deleteTrainingCoursesByTrainingCourse(options = {}) {
+      return request("DELETE", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Voir une formation */
+    getTrainingCoursesByTrainingCourse(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Modifier une formation */
+    putTrainingCoursesByTrainingCourse(options = {}) {
+      return request("PUT", "/training/courses/{trainingCourse}", options);
+    },
+
+    /** Lister les sessions d'une formation */
+    getTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("GET", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Creer une session de formation */
+    postTrainingCoursesByTrainingCourseSessions(options = {}) {
+      return request("POST", "/training/courses/{trainingCourse}/sessions", options);
+    },
+
+    /** Toutes les inscriptions formation du tenant */
+    getTrainingEnrollments(options = {}) {
+      return request("GET", "/training/enrollments", options);
+    },
+
+    /** Supprimer une inscription formation */
+    deleteTrainingEnrollmentsByTrainingEnrollment(options = {}) {
+      return request("DELETE", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Modifier une inscription */
+    putTrainingEnrollmentsByTrainingEnrollment(options = {}) {
+      return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Toutes les sessions de formation du tenant */
+    getTrainingSessions(options = {}) {
+      return request("GET", "/training/sessions", options);
+    },
+
+    /** Supprimer une session */
+    deleteTrainingSessionsByTrainingSession(options = {}) {
+      return request("DELETE", "/training/sessions/{trainingSession}", options);
+    },
+
+    /** Modifier une session */
+    putTrainingSessionsByTrainingSession(options = {}) {
+      return request("PUT", "/training/sessions/{trainingSession}", options);
+    },
+
+    /** Inscrire un employe */
+    postTrainingSessionsByTrainingSessionEnroll(options = {}) {
+      return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
     /** Demande d'essai guidé / auto-service (onboarding) */

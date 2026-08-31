@@ -12,6 +12,8 @@ use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware;
+use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\EnsureKioskSearchPathReset;
@@ -196,6 +198,11 @@ return Application::configure(basePath: dirname(__DIR__))
             // + flag tenant `crm`, ADR-CRM-004) — à appliquer sur le groupe
             // /api/v1/crm/* (api/routes/modules/crm.php).
             'crm.enabled' => EnsureCrmEnabledMiddleware::class,
+            'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            // BC-26-D05 (#6294) : garde RBAC du module Delivery
+            // (delivery.admin/dispatcher/manager/rider/reports) — deny-by-default,
+            // matrice docs/architecture/DELIVERY_RBAC.md.
+            'delivery.role' => EnsureDeliveryRoleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

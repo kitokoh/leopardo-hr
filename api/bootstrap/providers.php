@@ -22,6 +22,9 @@ use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
+use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
+use App\Modules\Expense\Providers\ExpenseServiceProvider;
+use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
 use App\Modules\Growth\Providers\GrowthServiceProvider;
 use App\Modules\HR\Providers\HRServiceProvider;
@@ -97,4 +100,9 @@ return [
     CrmServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
+
 ];

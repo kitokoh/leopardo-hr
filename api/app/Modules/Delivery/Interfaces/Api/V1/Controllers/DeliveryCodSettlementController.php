@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryCodSettlementService;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliverySettlementCollectRequest;
@@ -11,6 +12,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryCodSettlementResour
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -86,7 +88,7 @@ final class DeliveryCodSettlementController
      */
     public function report(Request $request): JsonResponse
     {
-        $rows = DeliveryCodSettlement::query()
+        $rows = DB::table('delivery_cod_settlements')
             ->where('company_id', $this->companyId($request))
             ->selectRaw(
                 'status,
@@ -126,6 +128,7 @@ final class DeliveryCodSettlementController
      */
     private function requireAdmin(Request $request): void
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         if (! $employee->isManager() || ! $employee->hasManagerRole('principal')) {

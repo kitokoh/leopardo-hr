@@ -35,6 +35,9 @@ final class DeliveryRouteService
      */
     private const TERMINAL_STOP_STATUSES = ['delivered', 'failed', 'skipped'];
 
+    /** États terminaux d'une livraison (machine à états, DELIVERY-103). */
+    private const TERMINAL_DELIVERY_STATUSES = ['delivered', 'failed', 'returned', 'cancelled'];
+
     /**
      * Crée une tournée + ses stops ordonnés (statut `draft`).
      *
@@ -165,11 +168,60 @@ final class DeliveryRouteService
 
             $openStops = $stops->whereNotIn('status', self::TERMINAL_STOP_STATUSES);
 
+            // Un arrêt dont la LIVRAISON est en état terminal (delivered/
+            // failed/returned/cancelled) est considéré terminé : le statut
+            // des arrêts est porté par le mobile, celui des livraisons par
+            // les événements — les deux chemins convergent ici (golden
+            // journey : events seuls, sans update d'arrêt).
+            if ($openStops->isNotEmpty()) {
+                $terminalDeliveryIds = Delivery::query()
+                    ->where('company_id', $companyId)
+                    ->whereIn('status', self::TERMINAL_DELIVERY_STATUSES)
+                    ->pluck('id');
+
+                $openStops = $openStops->reject(
+                    fn ($stop) => $terminalDeliveryIds->contains($stop->delivery_id)
+                );
+            }
+
             if ($openStops->isNotEmpty()) {
                 abort(409, 'ROUTE_INCOMPLETE');
             }
 
-            $deliveredIds = $stops->where('status', 'delivered')->pluck('delivery_id');
+            // Totaux : statut d'arrêt terminal OU statut de livraison terminal
+            // (événements) — déterminisme : deux clôtures → mêmes résultats.
+            $deliveries = Delivery::query()
+                ->where('company_id', $companyId)
+                ->whereIn('id', $stops->pluck('delivery_id'))
+                ->get()
+                ->keyBy('id');
+
+            $deliveredCount = $stops->filter(function ($stop) use ($deliveries): bool {
+                if ($stop->status === 'delivered') {
+                    return true;
+                }
+
+                return $deliveries->get($stop->delivery_id)?->status === 'delivered';
+            })->count();
+
+            $failedCount = $stops->filter(function ($stop) use ($deliveries): bool {
+                if ($stop->status === 'failed') {
+                    return true;
+                }
+
+                $deliveryStatus = $deliveries->get($stop->delivery_id)?->status;
+
+                return in_array($deliveryStatus, ['failed', 'returned', 'cancelled'], true);
+            })->count();
+
+            $deliveredIds = $stops->filter(function ($stop) use ($deliveries): bool {
+                if ($stop->status === 'delivered') {
+                    return true;
+                }
+
+                return $deliveries->get($stop->delivery_id)?->status === 'delivered';
+            })->pluck('delivery_id');
+
             $codCollected = (int) Delivery::query()
                 ->where('company_id', $companyId)
                 ->whereIn('id', $deliveredIds)
@@ -177,8 +229,8 @@ final class DeliveryRouteService
 
             $route->forceFill([
                 'deliveries_count' => $stops->count(),
-                'delivered_count' => $deliveredIds->count(),
-                'failed_count' => $stops->where('status', 'failed')->count(),
+                'delivered_count' => $deliveredCount,
+                'failed_count' => $failedCount,
                 'cod_collected_minor' => $codCollected,
                 'status' => 'completed',
                 'closed_at' => now(),

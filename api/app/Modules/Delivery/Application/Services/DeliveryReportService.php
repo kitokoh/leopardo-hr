@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Application\Services;
 
-use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -63,7 +62,8 @@ final class DeliveryReportService
      */
     private function totals(string $companyId, Carbon $from, Carbon $to): array
     {
-        $row = Delivery::query()
+        /** @var \stdClass|null $row */
+        $row = DB::table('delivery_deliveries')
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw(
@@ -90,11 +90,11 @@ final class DeliveryReportService
     }
 
     /**
-     * @return list<array{source: string, deliveries: int, delivered: int, success_rate_pct: float}>
+     * @return array<int, array{source: string, deliveries: int, delivered: int, success_rate_pct: float}>
      */
     private function bySource(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
+        return DB::table('delivery_deliveries')
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw(
@@ -104,23 +104,24 @@ final class DeliveryReportService
                 ['delivered'],
             )
             ->groupBy('source')
-            ->orderBy('deliveries', 'desc')
+            ->orderByDesc('deliveries')
             ->get()
             ->map(fn ($row): array => [
                 'source' => (string) $row->source,
                 'deliveries' => (int) $row->deliveries,
                 'delivered' => (int) $row->delivered,
-                'success_rate_pct' => $row->deliveries > 0 ? round(((int) $row->delivered / (int) $row->deliveries) * 100, 1) : 0.0,
+                'success_rate_pct' => (int) $row->deliveries > 0 ? round(((int) $row->delivered / (int) $row->deliveries) * 100, 1) : 0.0,
             ])
+            ->values()
             ->all();
     }
 
     /**
-     * @return list<array{date: string, deliveries: int, delivered: int}>
+     * @return array<int, array{date: string, deliveries: int, delivered: int}>
      */
     private function byDay(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
+        return DB::table('delivery_deliveries')
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw(
@@ -137,20 +138,20 @@ final class DeliveryReportService
                 'deliveries' => (int) $row->deliveries,
                 'delivered' => (int) $row->delivered,
             ])
+            ->values()
             ->all();
     }
 
     /**
-     * @return list<array{driver_id: int|null, deliveries: int, delivered: int}>
+     * @return array<int, array{driver_id: int|null, deliveries: int, delivered: int}>
      */
     private function byDriver(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('created_at', [$from, $to])
+        return DB::table('delivery_deliveries')
+            ->where('delivery_deliveries.company_id', $companyId)
+            ->whereBetween('delivery_deliveries.created_at', [$from, $to])
             ->leftJoin('delivery_stops', 'delivery_stops.delivery_id', '=', 'delivery_deliveries.id')
             ->leftJoin('delivery_routes', 'delivery_routes.id', '=', 'delivery_stops.route_id')
-            ->whereNull('delivery_stops.deleted_at')
             ->selectRaw(
                 'delivery_routes.driver_id AS driver_id,
                  COUNT(DISTINCT delivery_deliveries.id) AS deliveries,
@@ -165,6 +166,7 @@ final class DeliveryReportService
                 'deliveries' => (int) $row->deliveries,
                 'delivered' => (int) $row->delivered,
             ])
+            ->values()
             ->all();
     }
 

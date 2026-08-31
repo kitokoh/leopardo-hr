@@ -11,6 +11,7 @@ use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
+use App\Modules\Delivery\Domain\Models\DeliveryTrackingShare;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -193,7 +194,7 @@ class DeliveryTenantIsolationMatrixTest extends TestCase
 
         // Un lien généré par le tenant A reste résolvable publiquement.
         Sanctum::actingAs($this->managerA);
-        $share = \App\Modules\Delivery\Domain\Models\DeliveryTrackingShare::query()->create([
+        $share = DeliveryTrackingShare::query()->create([
             'company_id' => $this->companyA->id,
             'delivery_id' => $this->ids['delivery'],
             'share_token' => str_repeat('c', 64),

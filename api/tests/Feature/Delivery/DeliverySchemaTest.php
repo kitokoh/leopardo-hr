@@ -42,6 +42,9 @@ class DeliverySchemaTest extends TestCase
             'delivery_notifications',
             'delivery_recipient_opt_outs',
             'delivery_exports',
+            ['delivery_tracking_shares'],
+            ['delivery_notifications'],
+            ['delivery_recipient_opt_outs'],
         ];
     }
 
@@ -69,5 +72,12 @@ class DeliverySchemaTest extends TestCase
     public function test_delivery_events_has_idempotency_unique_index(): void
     {
         self::assertTrue(Schema::hasIndex('delivery_events', 'delivery_events_company_delivery_type_at_unique'));
+    }
+
+    public function test_delivery_stops_has_perf_route_sort_index(): void
+    {
+        // BC-26-D10 (#6296) : index (route_id, sort_order) pour la lecture
+        // ordonnée des stops d'une tournée (mobile livreur / détail dispatcher).
+        self::assertTrue(Schema::hasIndex('delivery_stops', 'delivery_stops_route_sort_idx'));
     }
 }
