@@ -38,6 +38,7 @@
 /api/app/Modules/Cabinet/   @kitokoh
 /api/app/Modules/Billing/   @kitokoh
 /api/app/Modules/Fleet/     @kitokoh
+/api/app/Modules/Delivery/  @kitokoh
 /api/app/AI/                @kitokoh
 
 # Frontend web (Next.js)

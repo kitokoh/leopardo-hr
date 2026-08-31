@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $company_id
  * @property int $assessment_id
  * @property int $student_id
- * @property string $score
+ * @property float|string $score
  * @property string|null $comment
  * @property string $status
  * @property int|null $graded_by
