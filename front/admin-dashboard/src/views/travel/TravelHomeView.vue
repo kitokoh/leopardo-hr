@@ -2,9 +2,9 @@
   <div class="space-y-6">
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">
           {{ t('travel.home.title', 'Agence de voyage') }}
-        </h1>
+        </h2>
         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {{ t('travel.home.subtitle', 'Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.') }}
         </p>
