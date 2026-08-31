@@ -150,9 +150,18 @@ final class OidcIdTokenValidator
         }
 
         try {
-            $response = Http::timeout(10)->acceptJson()->get($jwksUri);
+            // audit(securite) #6539 : withoutRedirecting() — le fetch JWKS ne
+            // doit jamais suivre une redirection vers une cible interne (SSRF)
+            // ni vers un hôte différent de celui validé (NotPrivateUrl).
+            $response = Http::timeout(10)->acceptJson()->withoutRedirecting()->get($jwksUri);
         } catch (\Throwable $e) {
             Log::warning('OIDC JWKS fetch failed', ['jwks_uri' => $jwksUri, 'error' => $e->getMessage()]);
+
+            return [];
+        }
+
+        if ($response->status() < 200 || $response->status() >= 300) {
+            Log::warning('OIDC JWKS fetch non-2xx', ['jwks_uri' => $jwksUri, 'status' => $response->status()]);
 
             return [];
         }

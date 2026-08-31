@@ -395,4 +395,57 @@ class SSOOidcFlowTest extends TestCase
     {
         return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
     }
+
+    public function test_callback_does_not_follow_token_endpoint_redirect(): void
+    {
+        // audit(securite) #6539 : un 307/302 sur l'échange de code ne doit
+        // jamais être suivi (le POST avec client_secret serait rejoué vers la
+        // cible de redirection — fuite de secret + SSRF).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response('Redirecting', 307, ['Location' => 'http://169.254.169.254/latest/meta-data/']),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+
+        // La cible interne n'a jamais été appelée.
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '169.254.169.254'));
+    }
+
+    public function test_jwks_fetch_does_not_follow_redirect(): void
+    {
+        // audit(securite) #6539 : le fetch JWKS ne suit pas les redirections —
+        // une redirection vers une cible interne (SSRF) casse la validation de
+        // signature au lieu d'être suivie.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response(['id_token' => 'ignored'], 200),
+            $this->issuer.'/jwks*' => Http::response('Redirecting', 302, ['Location' => 'http://127.0.0.1/internal-jwks']),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '127.0.0.1'));
+    }
 }

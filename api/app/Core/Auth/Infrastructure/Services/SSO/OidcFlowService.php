@@ -225,7 +225,12 @@ final class OidcFlowService
     private function exchangeCodeForIdToken(SSOProviderConfig $config, string $code): string
     {
         try {
-            $response = Http::asForm()->timeout(15)->acceptJson()->post((string) $config->tokenUrl, [
+            // audit(securite) #6539 : withoutRedirecting() — un IdP compromis
+            // (ou un MITM sur token_url) ne peut pas faire rejouer le POST
+            // contenant le client_secret vers une autre cible via un 307/302
+            // (Laravel rejouerait le corps du POST en suivant la redirection),
+            // ni rediriger vers une adresse interne (SSRF).
+            $response = Http::asForm()->timeout(15)->acceptJson()->withoutRedirecting()->post((string) $config->tokenUrl, [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
                 'redirect_uri' => (string) $config->redirectUri,
@@ -236,7 +241,9 @@ final class OidcFlowService
             throw new \RuntimeException('SSO_TOKEN_EXCHANGE_FAILED: '.$e->getMessage());
         }
 
-        if ($response->failed()) {
+        // Toute réponse non-2xx (y compris 3xx, désormais non suivies) est un
+        // échec d'échange : jamais de fallback silencieux vers une autre cible.
+        if ($response->status() < 200 || $response->status() >= 300) {
             throw new \RuntimeException('SSO_TOKEN_EXCHANGE_FAILED: l\'IdP a refusé l\'échange du code ('.$response->status().').');
         }
 
