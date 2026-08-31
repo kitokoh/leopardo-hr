@@ -48,7 +48,7 @@ test.describe('Navigation and routing', () => {
       page.getByRole('heading', { name: /Leopardo RH/i }),
     ).toBeVisible()
     await expect(
-      page.getByText(/Connectez-vous a votre espace/i),
+      page.getByText(/Connectez-vous à votre espace/i),
     ).toBeVisible()
     await expect(page.locator('#email')).toBeVisible()
     await expect(page.locator('#password')).toBeVisible()
