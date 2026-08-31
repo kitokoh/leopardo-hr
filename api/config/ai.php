@@ -89,16 +89,16 @@ return [
     // ToolPermissionMatrixCoverageTest) : tout outil actif du registre sans
     // entrée ici → CI rouge (promesse fantôme / trou de permission).
     'tool_permissions' => [
-        'get_employees' => ['role' => 'employee', 'permissions' => ['employees.view']],
-        'get_employee_details' => ['role' => 'employee', 'permissions' => ['employees.view']],
+        'get_employees' => ['role' => 'manager', 'permissions' => ['employees.view']],
+        'get_employee_details' => ['role' => 'manager', 'permissions' => ['employees.view']],
         'get_departments' => ['role' => 'employee', 'permissions' => ['departments.view']],
         'get_headcount' => ['role' => 'manager', 'permissions' => ['reports.view']],
-        'search_employees' => ['role' => 'employee', 'permissions' => ['employees.view']],
+        'search_employees' => ['role' => 'manager', 'permissions' => ['employees.view']],
         'get_attendance_today' => ['role' => 'manager', 'permissions' => ['attendance.view']],
         'get_attendance_anomalies' => ['role' => 'manager', 'permissions' => ['attendance.view']],
         'get_monthly_report' => ['role' => 'manager', 'permissions' => ['attendance.view']],
         'get_absences' => ['role' => 'employee', 'permissions' => ['absences.view']],
-        'get_daily_summary' => ['role' => 'employee', 'permissions' => ['estimations.view']],
+        'get_daily_summary' => ['role' => 'manager', 'permissions' => ['estimations.view']],
         'get_notifications' => ['role' => 'employee', 'permissions' => ['notifications.view']],
         'get_leave_balances' => ['role' => 'employee', 'permissions' => ['leave.view']],
         'get_payroll_summary' => ['role' => 'manager', 'permissions' => ['payroll.view']],

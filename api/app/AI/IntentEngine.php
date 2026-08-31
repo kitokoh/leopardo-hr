@@ -240,19 +240,19 @@ class IntentEngine
     private function readToolHandlers(string $companyId, int $userId): array
     {
         return [
-            'get_employees' => function (array $arguments) use ($companyId): array {
+            'get_employees' => function (array $arguments) use ($companyId, $userId): array {
                 /** @var array<string, mixed> $arguments */
-                return $this->getEmployees($companyId, $arguments);
+                return $this->getEmployees($companyId, $userId, $arguments);
             },
-            'get_employee_details' => function (array $arguments) use ($companyId): array {
+            'get_employee_details' => function (array $arguments) use ($companyId, $userId): array {
                 /** @var array<string, mixed> $arguments */
-                return $this->getEmployeeDetails($companyId, $arguments);
+                return $this->getEmployeeDetails($companyId, $userId, $arguments);
             },
             'get_departments' => fn (array $arguments): array => $this->getDepartments($companyId),
             'get_headcount' => fn (array $arguments): array => $this->getHeadcount($companyId),
-            'search_employees' => function (array $arguments) use ($companyId): array {
+            'search_employees' => function (array $arguments) use ($companyId, $userId): array {
                 /** @var array<string, mixed> $arguments */
-                return $this->searchEmployees($companyId, $arguments);
+                return $this->searchEmployees($companyId, $userId, $arguments);
             },
             'get_attendance_today' => fn (array $arguments): array => $this->getAttendanceToday($companyId, $userId),
             'get_attendance_anomalies' => function (array $arguments) use ($companyId): array {
@@ -264,7 +264,7 @@ class IntentEngine
                 /** @var array<string, mixed> $arguments */
                 return $this->getAbsences($companyId, $userId, $arguments);
             },
-            'get_daily_summary' => fn (array $arguments): array => $this->getDailySummary($companyId),
+            'get_daily_summary' => fn (array $arguments): array => $this->getDailySummary($companyId, $userId),
             'get_notifications' => function (array $arguments) use ($companyId, $userId): array {
                 /** @var array<string, mixed> $arguments */
                 return $this->getNotifications($companyId, $userId, $arguments);
@@ -302,9 +302,16 @@ class IntentEngine
      * @param  array<string, mixed>  $args
      * @return array<string, mixed>
      */
-    private function getEmployees(string $companyId, array $args): array
+    private function getEmployees(string $companyId, int $userId, array $args): array
     {
         $query = Employee::where('company_id', $companyId);
+
+        // #6532 — défense en profondeur : un acteur non-manager ne reçoit
+        // que ses propres données (le gate principal est la matrice
+        // ai.tool_permissions, rôle manager pour cet outil).
+        if (! $this->actorIsManager($companyId, $userId)) {
+            $query->where('id', $userId);
+        }
 
         if (isset($args['status'])) {
             $query->where('status', $args['status']);
@@ -326,10 +333,17 @@ class IntentEngine
      * @param  array<string, mixed>  $args
      * @return array<string, mixed>
      */
-    private function getEmployeeDetails(string $companyId, array $args): array
+    private function getEmployeeDetails(string $companyId, int $userId, array $args): array
     {
+        // #6532 — non-manager : uniquement son propre profil (pas de fuite
+        // d'existence sur les autres employés).
+        $requestedId = $this->intArgument($args, 'employee_id', 0);
+        if (! $this->actorIsManager($companyId, $userId) && $requestedId !== $userId) {
+            return ['error' => 'Employee not found'];
+        }
+
         $employee = Employee::where('company_id', $companyId)
-            ->where('id', $args['employee_id'] ?? 0)
+            ->where('id', $requestedId)
             ->select(['id', 'first_name', 'last_name', 'email', 'post', 'department_id', 'status', 'phone', 'hire_date'])
             ->first();
 
@@ -367,9 +381,15 @@ class IntentEngine
      * @param  array<string, mixed>  $args
      * @return array<string, mixed>
      */
-    private function searchEmployees(string $companyId, array $args): array
+    private function searchEmployees(string $companyId, int $userId, array $args): array
     {
         $query = Employee::where('company_id', $companyId);
+
+        // #6532 — non-manager : recherche bornée à soi-même.
+        if (! $this->actorIsManager($companyId, $userId)) {
+            $query->where('id', $userId);
+        }
+
         $search = $this->stringArgument($args, 'query', '');
 
         if ($search !== '') {
@@ -509,26 +529,39 @@ class IntentEngine
     /**
      * @return array<string, mixed>
      */
-    private function getDailySummary(string $companyId): array
+    private function getDailySummary(string $companyId, int $userId): array
     {
         $today = Carbon::today()->toDateString();
 
+        // #6532 — non-manager : agrégats restreints à soi-même.
         $checkins = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', $today)
-            ->count();
+            ->whereDate('date', $today);
 
         $onLeave = Absence::where('company_id', $companyId)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('end_date', '>=', $today)
-            ->where('status', 'approved')
-            ->distinct('employee_id')
-            ->count('employee_id');
+            ->where('status', 'approved');
+
+        if (! $this->actorIsManager($companyId, $userId)) {
+            $checkins->where('employee_id', $userId);
+            $onLeave->where('employee_id', $userId);
+        }
 
         return [
             'date' => $today,
-            'checkins' => $checkins,
-            'employees_on_leave' => $onLeave,
+            'checkins' => $checkins->count(),
+            'employees_on_leave' => $onLeave->distinct('employee_id')->count('employee_id'),
         ];
+    }
+
+    /**
+     * #6532 — un acteur non-manager (employé) ne voit que ses propres
+     * données sur les outils PII (défense en profondeur, par-dessus la
+     * matrice ai.tool_permissions qui exige déjà le rôle manager).
+     */
+    private function actorIsManager(string $companyId, int $userId): bool
+    {
+        return $this->toolPermissionPolicy->resolveRole($userId, $companyId) === 'manager';
     }
 
     /**
