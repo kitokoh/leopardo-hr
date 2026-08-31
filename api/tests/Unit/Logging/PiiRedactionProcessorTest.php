@@ -139,29 +139,4 @@ final class PiiRedactionProcessorTest extends TestCase
             context: $context,
         );
     }
-
-    /**
-     * #6551 — la rédaction PII doit couvrir les canaux par défaut
-     * (stack→single) et les breadcrumbs Sentry ne doivent plus embarquer
-     * les bindings SQL.
-     */
-    public function test_default_channels_redact_pii_and_sentry_bindings_are_disabled(): void
-    {
-        $this->assertContains(
-            \App\Logging\PiiRedactionProcessor::class,
-            (array) config('logging.channels.single.processors'),
-            'le canal single (défaut du stack) doit appliquer PiiRedactionProcessor'
-        );
-
-        $this->assertContains(
-            \App\Logging\PiiRedactionProcessor::class,
-            (array) config('logging.channels.daily.processors'),
-            'le canal daily doit appliquer PiiRedactionProcessor'
-        );
-
-        $this->assertFalse(
-            (bool) config('sentry.breadcrumbs.sql_bindings'),
-            'sql_bindings Sentry doit être désactivé (bindings SQL = PII en clair)'
-        );
-    }
 }

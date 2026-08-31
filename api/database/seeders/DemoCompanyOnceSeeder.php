@@ -27,16 +27,21 @@ class DemoCompanyOnceSeeder extends Seeder
 
         DB::statement('SET search_path TO public');
 
+        // #6543 (audit-secu M4) : le reset des credentials super-admin démo
+        // (password123 + 2FA retirée) ne s'exécute JAMAIS en production.
+        // DISABLE_DEMO_SEEDING, lui, ne bloque QUE la création/réparation des
+        // compagnies démo : le sync du compte super-admin reste un contrat
+        // existant (DemoSuperAdminSyncTest, AGENTS.md v4.16.234) — il tourne
+        // aussi quand le flag est posé, mais jamais sur APP_ENV=production.
+        if (! $isProduction) {
+            $this->syncDemoSuperAdmin();
+        }
+
         $existingDemoSlugs = DB::table('companies')
             ->whereIn('slug', self::DEMO_SLUGS)
             ->pluck('slug');
 
-        // #6543 (audit-secu M4) : le reset des credentials super-admin démo
-        // (password123 + 2FA retirée) est un acte sensible — il ne doit JAMAIS
-        // s'exécuter quand le seed démo est désactivé, ni en production
-        // (gate AVANT syncDemoSuperAdmin, qui était appelée avant la lecture
-        // de DISABLE_DEMO_SEEDING).
-        if ($disabled || $isProduction) {
+        if ($disabled) {
             // Backfills non destructifs des démos existantes conservés quand
             // le seed est désactivé (réparation — AGENTS.md v4.16.247), mais
             // jamais en production.
@@ -45,12 +50,16 @@ class DemoCompanyOnceSeeder extends Seeder
                 $this->backfillDemoLaunchReadinessSignals();
             }
 
-            $this->command?->info('DemoCompanyOnceSeeder skipped ('.($disabled ? 'DISABLE_DEMO_SEEDING=true' : 'APP_ENV=production').').');
+            $this->command?->info('DemoCompanyOnceSeeder skipped creation (DISABLE_DEMO_SEEDING=true).');
 
             return;
         }
 
-        $this->syncDemoSuperAdmin();
+        if ($isProduction) {
+            $this->command?->warn('DemoCompanyOnceSeeder skipped (APP_ENV=production).');
+
+            return;
+        }
 
         $alreadyRan = DB::table('seed_locks')
             ->where('lock_key', self::LOCK_KEY)
