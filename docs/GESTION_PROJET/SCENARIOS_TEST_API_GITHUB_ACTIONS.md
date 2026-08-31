@@ -15,6 +15,8 @@ Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers 
 
 Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
 
+Note 2026-08-31 (BC-15 FUEL, FuelStation — PR #6373) : surface API `/fuel-station/*` (maturation BC-15) — référentiel multi-stations/sites/pompes/cuves/produits, stocks & mouvements (livraisons, ajustements, rapprochements), incidents & maintenance, clients CRM (consentement + fidélité), agrégats Accounting, reporting (daily-sales, shift-summary, rapprochements), import/export CSV sécurisé (journal `fuel_imports`), alertes/notifications outbox `fuel.*` (événement partagé `App\Events\FuelStationAlert` → `CommunicationService`). Scénarios : `api/tests/Feature/Fuel/*` (RBAC manager/pompiste/opérateur, isolation cross-tenant 404, idempotence imports/relevés, invariants stock, écarts jamais silencieux, pagination bornée, 401/403 feature-gate). Actif via le flag `companies.features.fuelstation` (kill switch).
+
 ## Perimetre
 
 - API publique

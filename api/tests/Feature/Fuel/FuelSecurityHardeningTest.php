@@ -118,6 +118,7 @@ class FuelSecurityHardeningTest extends TestCase
         Sanctum::actingAs($this->manager($company));
 
         $response = $this->getJson('/api/v1/fuel-station/stations?per_page=100000')->assertStatus(200)->json('meta');
+        $this->assertIsArray($response);
         $this->assertLessThanOrEqual(100, $response['per_page'] ?? 100);
     }
 

@@ -7,10 +7,10 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelImport;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
-use App\Modules\HR\Domain\Models\ExportHistory;
 use App\Support\CsvCellSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -34,8 +34,11 @@ final class FuelImportExportService
     {
         $filename = $filenamePrefix.'_'.now()->format('Y-m-d').'.csv';
 
+        // Isolation des modules (#5584) : pas d'import du modèle HR
+        // ExportHistory — écriture via DB::table sur la table partagée
+        // (schéma résolu par le search_path tenant, pattern SectorTemplateService).
         if (Schema::hasTable('export_history')) {
-            ExportHistory::query()->create([
+            DB::table('export_history')->insert([
                 'company_id' => (string) $actor->company_id,
                 'employee_id' => (string) $actor->id,
                 'type' => $type,

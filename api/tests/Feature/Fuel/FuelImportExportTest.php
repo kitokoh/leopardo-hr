@@ -73,7 +73,8 @@ class FuelImportExportTest extends TestCase
         $this->assertSame(1, $response['count']);
 
         // Injection neutralisée : la cellule ne commence pas par '='.
-        $content = (string) $response['content'];
+        $this->assertIsString($response['content']);
+        $content = $response['content'];
         $this->assertStringNotContainsString('"=SUM', $content);
 
         // Export audité.

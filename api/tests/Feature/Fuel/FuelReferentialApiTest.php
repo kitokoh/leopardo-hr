@@ -118,6 +118,8 @@ class FuelReferentialApiTest extends TestCase
 
         $this->assertSame('tank', $tank['kind']);
 
+        $this->assertIsInt($pump['id']);
+
         /** @var array<string, mixed> $meter */
         $meter = $this->postJson('/api/v1/fuel-station/equipment', [
             'kind' => 'meter',

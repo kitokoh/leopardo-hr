@@ -90,7 +90,9 @@ class FuelReportApiTest extends TestCase
             ->assertJsonPath('data.average_basket', 2200);
 
         $data = $this->getJson('/api/v1/fuel-station/reports/daily-sales')->json('data');
+        $this->assertIsArray($data);
         $this->assertArrayHasKey('top_products', $data);
+        $this->assertIsArray($data['top_products']);
         $this->assertArrayHasKey('Essence', $data['top_products']);
     }
 
@@ -114,6 +116,7 @@ class FuelReportApiTest extends TestCase
             ->assertJsonPath('data.shift_id', $shift->id)
             ->json('data');
 
+        $this->assertIsArray($data);
         $this->assertArrayHasKey('sales_count', $data);
         $this->assertArrayHasKey('assignments_count', $data);
     }

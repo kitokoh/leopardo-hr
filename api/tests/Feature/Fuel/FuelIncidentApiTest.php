@@ -87,7 +87,8 @@ class FuelIncidentApiTest extends TestCase
 
         $this->assertNotNull($event);
 
-        $payload = json_decode((string) $event->payload, true);
+        $this->assertIsString($event->payload);
+        $payload = json_decode($event->payload, true);
         $this->assertIsArray($payload);
         // Aucune PII dans l'événement : ni titre ni description.
         $this->assertArrayNotHasKey('title', $payload);

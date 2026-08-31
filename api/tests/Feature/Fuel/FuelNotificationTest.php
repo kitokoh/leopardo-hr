@@ -60,7 +60,8 @@ class FuelNotificationTest extends TestCase
         ])->assertStatus(201);
 
         // Dispatch de l'outbox → notification app aux managers.
-        $this->artisan('fuel:outbox-dispatch', ['--limit' => 10])->assertExitCode(0);
+        $cmd = $this->artisan('fuel:outbox-dispatch', ['--limit' => 10]);
+        $cmd->assertExitCode(0);
 
         $notifications = Notification::query()
             ->where('company_id', $company->id)

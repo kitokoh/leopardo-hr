@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Events\FuelStationAlert;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -17,14 +17,17 @@ use Illuminate\Support\Facades\Log;
  * - session de caisse clôturée avec écart → alerte manager.
  *
  * Aucune PII dans les notifications (pas de nom client, pas de description
- * d'incident, montants agrégés). Templates i18n `fuel_*` (fr/en/tr/ar) ;
- * respect des préférences/quotas via CommunicationService. Les échecs sont
- * journalisés et rejoués par l'outbox (retry borné, dead-letter).
+ * d'incident, montants agrégés). Templates i18n `fuel_*` (fr/en/tr/ar).
+ *
+ * Isolation des modules (#5584) : FuelStation n'importe PAS le module
+ * Notification — il émet l'événement partagé `App\Events\FuelStationAlert`
+ * (Events Shared), traduit en notifications par le listener global
+ * `App\Listeners\FuelStationAlertListener` (préférences + quotas via
+ * CommunicationService). Les échecs sont journalisés et rejoués par
+ * l'outbox (retry borné, dead-letter).
  */
 final class FuelAlertService
 {
-    public function __construct(private readonly CommunicationService $communication) {}
-
     /**
      * @param  array<string, mixed>  $payload
      */
@@ -43,16 +46,6 @@ final class FuelAlertService
             return;
         }
 
-        foreach ($managers as $manager) {
-            try {
-                $this->communication->notifyEmployee($manager, $templateKey, $payload, ['app']);
-            } catch (\Throwable $e) {
-                Log::channel('fuel-station')->warning('fuel.alert.failed', [
-                    'template' => $templateKey,
-                    'employee_id' => $manager->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-        }
+        FuelStationAlert::dispatch($managers, $templateKey, $payload, $category);
     }
 }
