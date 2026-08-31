@@ -294,6 +294,31 @@ class AccountingJournalTest extends TestCase
         $response->assertJsonPath('entries.0.piece', 'FAC-2026-0001');
     }
 
+    public function test_journal_index_respects_bounded_limit(): void
+    {
+        $company = $this->company();
+        $this->bindCompany($company);
+        $invoice = $this->document($company, 'invoice', 'sent', '2026-08-05', 1000.0, 190.0);
+        app(JournalPostingService::class)->postDocument($invoice);
+        $this->forgetCompany();
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Sanctum::actingAs($manager);
+
+        // Issue #6562 : ?limit= borne la reponse, plafond a 1000.
+        $limited = $this->getJson('/api/v1/accounting/journal?period=2026-08&limit=2');
+        $limited->assertOk();
+        $limited->assertJsonCount(2, 'entries');
+        $limited->assertJsonPath('limit', 2);
+
+        // Plafond : limit=9999 est ramene a 1000.
+        $capped = $this->getJson('/api/v1/accounting/journal?period=2026-08&limit=9999');
+        $capped->assertOk();
+        $capped->assertJsonPath('limit', 1000);
+        $capped->assertJsonCount(3, 'entries');
+    }
+
     public function test_journal_export_csv_is_expert_ready(): void
     {
         $company = $this->company();

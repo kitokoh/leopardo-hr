@@ -29,9 +29,12 @@ class ZktecoController extends Controller
 
         $company = currentCompany();
 
+        // Issue #6562 : liste bornee (defaut 500, plafond 1000) — reponse
+        // volumineuse = lenteur/DoS sur un grand parc.
         $devices = ZktecoDevice::query()
             ->where('company_id', $company->id)
             ->orderBy('name')
+            ->limit($this->boundedLimit($request, 500, 1000))
             ->get();
 
         return new JsonResponse(['data' => $devices]);
