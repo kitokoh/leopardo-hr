@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Exceptions\SalaryAdvanceNotPendingException;
+use App\Modules\Payroll\Domain\Exceptions\SalaryAdvanceNotPendingException;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Http\UploadedFile;
