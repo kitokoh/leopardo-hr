@@ -115,6 +115,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Google authentication is unavailable.',
     'GOOGLE_TOKEN_INVALID' => 'The Google token is invalid or has expired.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'No account found for this Google account.',
+    'GOOGLE_IDENTITY_MISMATCH' => "This Google account does not match the identity linked to the Leopardo HR account. Contact your administrator.",
     'GOOGLE_INVITATION_REQUIRED' => 'No account exists for this Google email. Ask your administrator for an invitation.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google sign-in is not configured yet. Please try again later.',
     'NO_ACTIVE_SUBSCRIPTION' => 'No active subscription.',
