@@ -94,7 +94,11 @@ class EmployeeResource extends JsonResource
             'postal_code' => $this->employeeAttribute('postal_code'),
             'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),
             'emergency_contact_phone' => $this->employeeAttribute('emergency_contact_phone'),
-            'extra_data' => $this->employeeAttribute('extra_data') ?? [],
+            // Issue #6546 (audit RGPD) : extra_data n'expose que des clés NON
+            // sensibles (whitelist) — national_id, tax_identifier et
+            // blood_group (pièce d'identité + données de santé) ne sortent
+            // jamais de l'API.
+            'extra_data' => $this->employeeExtraData(),
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
@@ -123,6 +127,34 @@ class EmployeeResource extends JsonResource
                 return EmployeeDocumentService::dossierSummary((string) $this->status, $documents);
             }),
         ];
+    }
+
+    /**
+     * Issue #6546 — whitelist défensive des clés non sensibles d'extra_data.
+     * Les données d'identité (national_id, tax_identifier) et de santé
+     * (blood_group) restent stockées pour les traitements métier (paie,
+     * déclarations) mais ne sont jamais sérialisées côté API.
+     *
+     * @return array<string, mixed>
+     */
+    private function employeeExtraData(): array
+    {
+        $extra = $this->employeeAttribute('extra_data');
+
+        if (! is_array($extra)) {
+            return [];
+        }
+
+        $allowed = ['department', 'job_title', 'work_location', 'education_level'];
+
+        $filtered = [];
+        foreach ($extra as $key => $value) {
+            if (is_string($key) && in_array($key, $allowed, true)) {
+                $filtered[$key] = $value;
+            }
+        }
+
+        return $filtered;
     }
 
     private function employeeAttribute(string $key): mixed
