@@ -8,9 +8,17 @@ use App\Exceptions\DomainException;
 
 class InsufficientLeaveBalanceException extends DomainException
 {
-    public function __construct(string $message = 'Solde de congés insuffisant.')
+    /**
+     * Issue #6573 — signature alignee sur l'exception legacy (available,
+     * requested) pour que les sites d'appel existants fonctionnent sans
+     * modification.
+     */
+    public function __construct(float $available, float $requested)
     {
-        parent::__construct($message, 422);
+        parent::__construct(
+            "Solde de congés insuffisant. Solde disponible : {$available} jours, demandé : {$requested} jours.",
+            422
+        );
     }
 
     public function errorCode(): string
