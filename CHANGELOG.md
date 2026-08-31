@@ -1,3 +1,10 @@
+## [Unreleased]
+> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
+> les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via
+> les PRs de merge en cours). Pour l'état réel par bounded context, se référer au registre
+> canonique `dev-hub/governance/bounded-context-registry.json` (MAT-001, #6602).
+- **docs(governance): BC-25 RESTAURANT ajouté au registre canonique des bounded contexts (MAT-001, Closes #6602).** Le registre passait de « BC-01…BC-24 + BC-26 » (25 entrées, trou BC-25) à **26 BCs** — alors que BC-25 était déjà présent et actif dans `runbook-registry.json`, `golden-journeys.json` (GJ-RESTO-01) et `pilot-gates.json` (pilote `restaurantmanager`). BC-25 ajouté avec `status: planned` (le module `api/app/Modules/RestaurantManager` n'est pas encore sur `main` — en cours de merge, cohérent avec BC-24 TRAVEL / BC-26 DELIVERY). Garde `check-bounded-context-registry.sh` verte (26 BCs, CODEOWNERS, chemins).
+
 - **fix(travel): régénération `flutter gen-l10n` — clés travel* des ARB (BC-24 TRAVEL, PR #6389).** Les 239 clés par locale (952 au total) ajoutées aux ARB `app_{fr,en,ar,tr}.arb` n'avaient pas été régénérées dans `generated/app_localizations*.dart` → garde `check-mobile-l10n-sync.sh` (#4762) rouge. Régénération avec Flutter stable (3.47.2, même version que CI) ; `check-mobile-l10n-sync.sh` ✅.
 - **docs(fuel): mobile pompiste FuelStation — contrats backend + gel UI (BC-15 FUEL, Closes #5807).** FUEL-013 : `docs/mobile/FUEL_MOBILE.md` documente la surface pompiste déjà en production sur `main` (`/fuel-station/me/shifts|presence|cash-sessions|sales`, saisies vente/relevé/caisse, résolution par employee_id, isolation tenant). L'écran mobile (UI Flutter) reste **gelé** par le freeze 60 jours (FREEZE_SCOPE_60J.md, « apps mobiles non-employee ») — intégration prévue au gate J60 ou via exception fondateur, avec file idempotente hors-ligne (pattern RESTO-804/TRAVEL-704). Aucun code de production modifié — livrable documentation + preuve de couverture backend.
 
