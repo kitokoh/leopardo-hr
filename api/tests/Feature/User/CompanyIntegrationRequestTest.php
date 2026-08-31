@@ -31,6 +31,50 @@ class CompanyIntegrationRequestTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    // ── #6566 (audit F-ORG-4) ───────────────────────────────────────────────
+    // Vérifie qu'il n'y a PAS de doublon de méthode+URI entre le groupe
+    // employé (prefix `user`) et le groupe manager : les deux GET distincts
+    // résolvent vers leurs contrôleurs respectifs (aucun shadowing).
+    public function test_employee_and_manager_integration_request_routes_are_distinct(): void
+    {
+        $router = app('router')->getRoutes();
+
+        $employeeRoute = $router->match(
+            app('request')->create('/api/v1/user/company-integration-requests', 'GET')
+        );
+        $this->assertSame(
+            \App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController::class.'@index',
+            $employeeRoute->getActionName(),
+            'GET /user/company-integration-requests doit résoudre vers index (employé)'
+        );
+
+        $managerRoute = $router->match(
+            app('request')->create('/api/v1/company-integration-requests', 'GET')
+        );
+        $this->assertSame(
+            \App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController::class.'@managerIndex',
+            $managerRoute->getActionName(),
+            'GET /company-integration-requests doit résoudre vers managerIndex (manager) — jamais masquée'
+        );
+
+        // Aucun doublon de (méthode, URI) pour CES DEUX endpoints (le scan est
+        // borné aux URIs du contrat — d'autres doublons préexistants du repo
+        // sont suivis séparément, cf. audit #6562).
+        $count = static function (string $uri) use ($router): int {
+            $n = 0;
+            foreach ($router->getRoutes() as $route) {
+                if ($route->methods()[0] === 'GET' && $route->uri() === $uri) {
+                    $n++;
+                }
+            }
+
+            return $n;
+        };
+
+        $this->assertSame(1, $count('user/company-integration-requests'));
+        $this->assertSame(1, $count('company-integration-requests'));
+    }
+
     // ── USER-SIDE ──────────────────────────────────────────────────────────
 
     public function test_user_can_submit_integration_request(): void

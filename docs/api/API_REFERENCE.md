@@ -56,7 +56,7 @@ curl -X POST https://gestionemployerbackend.onrender.com/api/v1/auth/login \
 We provide official SDKs and integration examples to accelerate your development:
 -   **JavaScript/TypeScript:** `sdk/javascript/`
 -   **Python:** `sdk/python/`
--   **PHP:** `sdk/php/`
+-   **PHP:** pas de SDK PHP officiel — générer le client depuis `api/openapi.yaml` (voir la [spécification OpenAPI](../../api/openapi.yaml))
 -   **Integration Samples:** See [`/examples`](../../examples/) for real-world integration code.
 
 ---
