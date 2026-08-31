@@ -89,6 +89,10 @@ final class TravelLegacyImportService
     /**
      * @param  list<array<string, mixed>>  $routes
      */
+    /**
+     * @param  list<mixed>  $routes
+     * @param  array<string, mixed>  $cityByKey
+     */
     private function countResolvableRoutes(array $routes, array $cityByKey): int
     {
         $count = 0;

@@ -7,7 +7,6 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 use App\Modules\TravelAgency\Domain\Enums\TravelWebhookDeliveryStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -80,7 +79,7 @@ final class TravelWebhookDispatcher
             $this->markFailed($delivery, (int) $response->status(), 'HTTP '.$response->status());
 
             return false;
-        } catch (ConnectionException|Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->markFailed($delivery, null, $this->truncateError($exception->getMessage()));
 
             return false;
@@ -120,17 +119,22 @@ final class TravelWebhookDispatcher
             ->retry(0); // retries gérés par le journal de livraison (backoff)
     }
 
-    /** @param array<string, mixed> $payload */
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
     private function redactedPayload(array $payload): array
     {
         $redacted = [];
         foreach ($payload as $key => $value) {
             if (is_array($value)) {
                 $redacted[$key] = $this->redactedPayload($value);
+
                 continue;
             }
             if (in_array($key, ['secret', 'token', 'password', 'validation_code', 'document_number'], true)) {
                 $redacted[$key] = '[REDACTED]';
+
                 continue;
             }
             $redacted[$key] = $value;
