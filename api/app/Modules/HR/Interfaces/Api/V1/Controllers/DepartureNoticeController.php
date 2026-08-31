@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Gate;
+
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
@@ -32,9 +34,8 @@ class DepartureNoticeController extends Controller
         if ($employee->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        // #6545 — garde mutualisée EmployeePolicy::view (équipe manager).
+        Gate::authorize('view', $employee);
 
         $this->auditLogger->recordSensitive($request, $actor, 'hr.departure_notice_viewed', $employee, [
             'resource' => 'employee_departure_notice',

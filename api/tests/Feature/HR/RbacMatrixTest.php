@@ -89,6 +89,37 @@ class RbacMatrixTest extends TestCase
         ])->assertStatus(201);
     }
 
+    public function test_payroll_and_offboarding_endpoints_are_team_scoped(): void
+    {
+        // #6545 — les 5 endpoints paie/offboarding (balance, ledger,
+        // end-of-contract, certificate, departure/notice) appliquent
+        // EmployeePolicy::view : un manager dept ne lit pas les données d'un
+        // employé hors équipe (avant : isManager() seul → 200).
+        [$company, $manager] = $this->createActors();
+        $ownDepartment = $this->createDepartment($company, 'Dept A', $manager);
+        $otherDepartment = $this->createDepartment($company, 'Dept B', null);
+
+        $deptManager = $this->createEmployee($company, 'dept.payroll@a.test', 'manager', 'dept');
+        $deptManager->forceFill(['department_id' => $ownDepartment->id])->save();
+
+        $inScope = $this->createEmployee($company, 'inscope.payroll@a.test', 'employee', null);
+        $inScope->forceFill(['department_id' => $ownDepartment->id])->save();
+        $outOfScope = $this->createEmployee($company, 'outofscope.payroll@a.test', 'employee', null);
+        $outOfScope->forceFill(['department_id' => $otherDepartment->id])->save();
+
+        Sanctum::actingAs($deptManager);
+
+        // Hors équipe → 403 sur les 5 endpoints sensibles.
+        $this->getJson("/api/v1/employees/{$outOfScope->id}/balance")->assertForbidden();
+        $this->getJson("/api/v1/employees/{$outOfScope->id}/ledger")->assertForbidden();
+        $this->getJson("/api/v1/employees/{$outOfScope->id}/end-of-contract")->assertForbidden();
+        $this->getJson("/api/v1/employees/{$outOfScope->id}/certificate-of-employment")->assertForbidden();
+        $this->getJson("/api/v1/employees/{$outOfScope->id}/departure/notice")->assertForbidden();
+
+        // Dans l'équipe → accès légitime (pas de 403).
+        $this->getJson("/api/v1/employees/{$inScope->id}/ledger")->assertOk();
+    }
+
     public function test_department_scoped_manager_sees_only_own_department(): void
     {
         [$company, $manager] = $this->createActors();

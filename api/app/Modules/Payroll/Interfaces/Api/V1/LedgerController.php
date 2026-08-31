@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use Illuminate\Support\Facades\Gate;
+
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\LedgerEntry;
@@ -41,10 +43,6 @@ class LedgerController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->id !== $employee && ! $actor->isManager()) {
-            abort(403);
-        }
-
         /** @var Employee|null $target */
         $target = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -53,6 +51,9 @@ class LedgerController extends Controller
         if ($target === null) {
             abort(404);
         }
+
+        // #6545 — garde mutualisée EmployeePolicy::view.
+        Gate::authorize('view', $target);
 
         return $this->historyResponse($request, $target);
     }

@@ -13,6 +13,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -177,10 +178,6 @@ class PayrollCycleController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->id !== $employee && ! $actor->isManager()) {
-            abort(403);
-        }
-
         /** @var Employee|null $targetEmployee */
         $targetEmployee = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -189,6 +186,10 @@ class PayrollCycleController extends Controller
         if ($targetEmployee === null) {
             abort(404);
         }
+
+        // #6545 — garde mutualisée EmployeePolicy::view (cross-tenant,
+        // self-service, équipe pour les managers team-scoped).
+        Gate::authorize('view', $targetEmployee);
 
         $payload = $this->cycleService->getEmployeeBalance($targetEmployee);
 

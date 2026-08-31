@@ -11,6 +11,7 @@ use App\Modules\Payroll\Infrastructure\Services\EndOfContractService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -35,9 +36,8 @@ class EndOfContractController extends Controller
         if ($employee->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        // #6545 — garde mutualisée EmployeePolicy::view (équipe manager).
+        Gate::authorize('view', $employee);
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.settlement', $employee);
 
@@ -64,9 +64,8 @@ class EndOfContractController extends Controller
         if ($employee->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
-            abort(403);
-        }
+        // #6545 — garde mutualisée EmployeePolicy::view (équipe manager).
+        Gate::authorize('view', $employee);
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.certificate', $employee);
 
