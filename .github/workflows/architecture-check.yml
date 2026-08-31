@@ -132,6 +132,9 @@ jobs:
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
       - name: Migrations BC conventions guard (MAT-005 #5863)
         run: bash dev-hub/tools/check-migrations-bc-conventions.sh
+
+      - name: Event catalogue guard (MAT-006 #5864)
+        run: bash dev-hub/tools/check-event-catalogue.sh
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
@@ -161,6 +164,11 @@ jobs:
 
       - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
+      - name: Route owner guard — platform/tenant (MAT-003 / issue #5861)
+        # Une route platform ne doit pas être exposée dans l'espace tenant et
+        # inversement. Couche statique (fichiers de routes) + classification
+        # route:list (middleware résolus) — bloque si violation, warning sinon.
+        run: bash dev-hub/tools/check-route-owner-guard.sh
 
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
@@ -382,6 +390,19 @@ jobs:
 
       - name: Cross-module import guard — no new inter-module imports (issue #5584)
         if: needs.detect-changes.outputs.api_changed == 'true'
+      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
+        # Matrice versionnée deny-by-default : toute arête inter-contextes
+        # absente de bounded-context-dependencies.json fait échouer la CI
+        # (message actionnable fichier + import + arête).
+        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
+
+      - name: Check for orphan (unrouted) controllers
+        run: dev-hub/tools/check-unrouted-controllers.sh api
+
+      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        run: bash dev-hub/tools/check-architecture-docs-parity.sh
+
+      - name: Cross-module import guard — no new inter-module imports (issue #5584)
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -503,6 +524,23 @@ jobs:
 
       - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
         if: needs.detect-changes.outputs.api_changed == 'true'
+      - name: Golden tests required guard (MAT-007 #5865)
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+          bash dev-hub/tools/check-golden-tests-required.sh
+
+      - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}

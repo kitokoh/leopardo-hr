@@ -62,6 +62,9 @@ class BillingDelinquencyPolicyTest extends TestCase
         self::assertTrue(SubscriptionStatus::Cancelled->canTransitionTo(SubscriptionStatus::Active));
         self::assertFalse(SubscriptionStatus::Cancelled->canTransitionTo(SubscriptionStatus::Expired));
         self::assertFalse(SubscriptionStatus::Trial->canTransitionTo(SubscriptionStatus::PastDue));
+        self::assertFalse(SubscriptionStatus::Expired->canTransitionTo(SubscriptionStatus::PastDue));
+        self::assertFalse(SubscriptionStatus::Cancelled->canTransitionTo(SubscriptionStatus::Active));
+        self::assertTrue(SubscriptionStatus::Cancelled->isTerminal());
     }
 
     public function test_invalid_transition_throws(): void
@@ -76,6 +79,13 @@ class BillingDelinquencyPolicyTest extends TestCase
             self::fail('une transition invalide doit être refusée');
         } catch (InvalidArgumentException) {
             self::assertSame(SubscriptionStatus::Trial->value, $subscription->status);
+        $subscription = $this->subscription($company, SubscriptionStatus::Cancelled->value);
+
+        try {
+            $subscription->transitionTo(SubscriptionStatus::Active);
+            self::fail('une transition depuis cancelled doit être refusée');
+        } catch (InvalidArgumentException) {
+            self::assertSame(SubscriptionStatus::Cancelled->value, $subscription->status);
         }
     }
 

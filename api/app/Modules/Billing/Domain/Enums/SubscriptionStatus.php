@@ -23,6 +23,12 @@ namespace App\Modules\Billing\Domain\Enums;
  * (`billing:enforce-delinquency`) — l'ENFORCEMENT opérationnel (accès coupé)
  * est porté par `companies.status` (active/suspended), distinct de l'état de
  * la souscription.
+ *     └──────────┴────────► cancelled (résiliation explicite, terminal)
+ *
+ * `cancelled` est terminal. `expired` est l'état de défaut appliqué par la
+ * politique explicite de recouvrement (`billing:enforce-delinquency`) —
+ * l'ENFORCEMENT opérationnel (accès coupé) est porté par `companies.status`
+ * (active/suspended), distinct de l'état de la souscription.
  */
 enum SubscriptionStatus: string
 {
@@ -36,6 +42,11 @@ enum SubscriptionStatus: string
 
     case Cancelled = 'cancelled';
 
+    public function isTerminal(): bool
+    {
+        return $this === self::Cancelled;
+    }
+
     /**
      * @return list<self>
      */
@@ -47,6 +58,9 @@ enum SubscriptionStatus: string
             self::PastDue => [self::Active, self::Expired, self::Cancelled],
             self::Expired => [self::Active, self::Cancelled],
             self::Cancelled => [self::Active],
+            self::PastDue => [self::Active, self::Expired],
+            self::Expired => [self::Active],
+            self::Cancelled => [],
         };
     }
 

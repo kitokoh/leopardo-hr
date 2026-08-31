@@ -83,6 +83,11 @@ class Subscription extends Model
      * synchroniser les attributs additionnels (périodes, dates…) — c'est le
      * contrat utilisé par les webhooks providers rejoués et les endpoints
      * manager (upgrade/cancel/renew).
+     * Transition d'état gardée (DEP-BC21 #5897).
+     *
+     * La machine à états est définie par {@see SubscriptionStatus} : toute
+     * transition invalide lève InvalidArgumentException (ex. suspended → rien
+     * d'autre que active/cancelled ; cancelled est terminal).
      *
      * @param  array<string, mixed>  $extra  attributs additionnels (period_end, cancelled_at…)
      */
@@ -91,6 +96,7 @@ class Subscription extends Model
         $current = SubscriptionStatus::tryFrom((string) $this->status) ?? SubscriptionStatus::Trial;
 
         if ($current !== $status && ! $current->canTransitionTo($status)) {
+        if (! $current->canTransitionTo($status)) {
             throw new InvalidArgumentException(
                 "Transition de souscription invalide : {$current->value} → {$status->value}"
             );
