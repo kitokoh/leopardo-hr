@@ -22,7 +22,8 @@ use Illuminate\Support\Carbon;
  * @property bool $is_read
  * @property Carbon|null $read_at
  * @property Carbon|null $created_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Notification extends Model
 {

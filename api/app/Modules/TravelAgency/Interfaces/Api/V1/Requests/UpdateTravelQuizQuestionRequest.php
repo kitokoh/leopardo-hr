@@ -9,6 +9,4 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
  * `correct_option_index` est accepté en entrée uniquement (jamais exposé
  * en lecture par les endpoints publics/participants).
  */
-class UpdateTravelQuizQuestionRequest extends StoreTravelQuizQuestionRequest
-{
-}
+class UpdateTravelQuizQuestionRequest extends StoreTravelQuizQuestionRequest {}

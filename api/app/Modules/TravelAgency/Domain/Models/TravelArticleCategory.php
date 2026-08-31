@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 class TravelArticleCategory extends Model
 {
     use BelongsToCompany;
-
     use HasFactory;
 
     protected $table = 'travel_article_categories';
-    protected $fillable = ["company_id", "slug", "name"];
+
+    protected $fillable = ['company_id', 'slug', 'name'];
 }

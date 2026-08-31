@@ -17,10 +17,11 @@ use Illuminate\Database\Eloquent\Model;
 class TravelRating extends Model
 {
     use BelongsToCompany;
-
     use HasFactory;
 
     protected $table = 'travel_ratings';
-    protected $fillable = ["company_id", "article_id", "actor_type", "actor_id", "rating"];
-    protected $casts = ["rating" => "integer"];
+
+    protected $fillable = ['company_id', 'article_id', 'actor_type', 'actor_id', 'rating'];
+
+    protected $casts = ['rating' => 'integer'];
 }
