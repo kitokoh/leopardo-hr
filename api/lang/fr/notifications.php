@@ -49,3 +49,10 @@ return [
     'fuel_maintenance_due_title' => 'Maintenance en retard',
     'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
 ];
+
+    'edu_admission_converted_title' => 'Nouvelle admission convertie',
+    'edu_admission_converted_body' => 'L\'admission :admission_number de :student_name a été convertie en élève.',
+    'edu_absence_recorded_title' => 'Absence enregistrée',
+    'edu_absence_recorded_body' => ':student_name est :status le :date.',
+    'edu_report_card_published_title' => 'Bulletin publié',
+    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];

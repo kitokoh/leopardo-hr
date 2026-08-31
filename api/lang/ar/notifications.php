@@ -49,3 +49,10 @@ return [
     'fuel_maintenance_due_title' => 'صيانة متأخرة',
     'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
 ];
+
+    'edu_admission_converted_title' => 'تم تحويل قبول جديد',
+    'edu_admission_converted_body' => 'تم تحويل القبول :admission_number للطالب :student_name إلى طالب.',
+    'edu_absence_recorded_title' => 'تم تسجيل غياب',
+    'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
+    'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
+    'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];

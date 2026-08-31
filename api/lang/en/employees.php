@@ -74,12 +74,12 @@ return [
     'career_event_deleted' => 'Career event deleted.',
 
     // ── Départ (offboarding, issue #5324) ───────────────────────────────
-    'departure_registered' => "Departure registered. Status: departed — access revoked.",
-    'already_departed' => "This employee has already left the company (or is archived).",
-    'departure_type_invalid' => "Invalid departure type.",
-    'departure_not_created' => "Could not register the departure (transaction rolled back).",
-    'departure_type_resignation' => "Resignation",
-    'departure_type_termination' => "Termination",
-    'departure_type_end_of_contract' => "End of contract",
-    'departure_type_retirement' => "Retirement",
+    'departure_registered' => 'Departure registered. Status: departed — access revoked.',
+    'already_departed' => 'This employee has already left the company (or is archived).',
+    'departure_type_invalid' => 'Invalid departure type.',
+    'departure_not_created' => 'Could not register the departure (transaction rolled back).',
+    'departure_type_resignation' => 'Resignation',
+    'departure_type_termination' => 'Termination',
+    'departure_type_end_of_contract' => 'End of contract',
+    'departure_type_retirement' => 'Retirement',
 ];

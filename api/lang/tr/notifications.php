@@ -49,3 +49,10 @@ return [
     'fuel_maintenance_due_title' => 'Gecikmiş bakım',
     'fuel_maintenance_due_body' => '“:task_title” görevi süresi geçmiş.',
 ];
+
+    'edu_admission_converted_title' => 'Yeni kayıt dönüştürüldü',
+    'edu_admission_converted_body' => ':student_name için :admission_number kaydı öğrenciye dönüştürüldü.',
+    'edu_absence_recorded_title' => 'Devamsızlık kaydedildi',
+    'edu_absence_recorded_body' => ':student_name :date tarihinde :status.',
+    'edu_report_card_published_title' => 'Karne yayınlandı',
+    'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.', ];

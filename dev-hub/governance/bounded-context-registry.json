@@ -483,14 +483,20 @@
         {
           "path": "api/app/Solutions/EduManager",
           "status": "planned"
+        },
+        {
+          "path": "api/app/Modules/EduManager",
+          "status": "active"
         }
       ],
-      "routes": [],
+      "routes": [
+        "api/routes/modules/edu_manager.php"
+      ],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Solutions\\EduManager\\Domain\\Events"
+        "App\\Modules\\EduManager\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",

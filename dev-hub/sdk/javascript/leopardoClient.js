@@ -1875,6 +1875,391 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/readiness", options);
     },
 
+    /** Lister les annees scolaires (direction) */
+    getEduManagerAcademicYears(options = {}) {
+      return request("GET", "/edu-manager/academic-years", options);
+    },
+
+    /** Creer une annee scolaire */
+    postEduManagerAcademicYears(options = {}) {
+      return request("POST", "/edu-manager/academic-years", options);
+    },
+
+    /** Supprimer une annee scolaire */
+    deleteEduManagerAcademicYearsByYear(options = {}) {
+      return request("DELETE", "/edu-manager/academic-years/{year}", options);
+    },
+
+    /** Consulter une annee scolaire */
+    getEduManagerAcademicYearsByYear(options = {}) {
+      return request("GET", "/edu-manager/academic-years/{year}", options);
+    },
+
+    /** Modifier une annee scolaire */
+    putEduManagerAcademicYearsByYear(options = {}) {
+      return request("PUT", "/edu-manager/academic-years/{year}", options);
+    },
+
+    /** Lister les dossiers d admission (direction) */
+    getEduManagerAdmissions(options = {}) {
+      return request("GET", "/edu-manager/admissions", options);
+    },
+
+    /** Creer un dossier d admission (idempotent) */
+    postEduManagerAdmissions(options = {}) {
+      return request("POST", "/edu-manager/admissions", options);
+    },
+
+    /** Consulter un dossier d admission */
+    getEduManagerAdmissionsByAdmission(options = {}) {
+      return request("GET", "/edu-manager/admissions/{admission}", options);
+    },
+
+    /** Convertir le dossier en eleve (idempotent, consentement requis) */
+    postEduManagerAdmissionsByAdmissionConvert(options = {}) {
+      return request("POST", "/edu-manager/admissions/{admission}/convert", options);
+    },
+
+    /** Opt-out RGPD d'un prospect admission (EDU-015) */
+    postEduManagerAdmissionsByAdmissionOptOut(options = {}) {
+      return request("POST", "/edu-manager/admissions/{admission}/opt-out", options);
+    },
+
+    /** Lister les evaluations */
+    getEduManagerAssessments(options = {}) {
+      return request("GET", "/edu-manager/assessments", options);
+    },
+
+    /** Creer une evaluation */
+    postEduManagerAssessments(options = {}) {
+      return request("POST", "/edu-manager/assessments", options);
+    },
+
+    /** Supprimer une evaluation */
+    deleteEduManagerAssessmentsByAssessment(options = {}) {
+      return request("DELETE", "/edu-manager/assessments/{assessment}", options);
+    },
+
+    /** Consulter une evaluation */
+    getEduManagerAssessmentsByAssessment(options = {}) {
+      return request("GET", "/edu-manager/assessments/{assessment}", options);
+    },
+
+    /** Modifier une evaluation */
+    putEduManagerAssessmentsByAssessment(options = {}) {
+      return request("PUT", "/edu-manager/assessments/{assessment}", options);
+    },
+
+    /** Saisir une note (bareme serveur) */
+    postEduManagerAssessmentsByAssessmentGrades(options = {}) {
+      return request("POST", "/edu-manager/assessments/{assessment}/grades", options);
+    },
+
+    /** Corriger une presence (versionnee) */
+    postEduManagerAttendancesByAttendanceCorrect(options = {}) {
+      return request("POST", "/edu-manager/attendances/{attendance}/correct", options);
+    },
+
+    /** Lister les campus (direction) */
+    getEduManagerCampuses(options = {}) {
+      return request("GET", "/edu-manager/campuses", options);
+    },
+
+    /** Creer un campus (direction) */
+    postEduManagerCampuses(options = {}) {
+      return request("POST", "/edu-manager/campuses", options);
+    },
+
+    /** Supprimer un campus */
+    deleteEduManagerCampusesByCampus(options = {}) {
+      return request("DELETE", "/edu-manager/campuses/{campus}", options);
+    },
+
+    /** Consulter un campus */
+    getEduManagerCampusesByCampus(options = {}) {
+      return request("GET", "/edu-manager/campuses/{campus}", options);
+    },
+
+    /** Modifier un campus */
+    putEduManagerCampusesByCampus(options = {}) {
+      return request("PUT", "/edu-manager/campuses/{campus}", options);
+    },
+
+    /** Lister les classes (perimetre enseignant) */
+    getEduManagerClasses(options = {}) {
+      return request("GET", "/edu-manager/classes", options);
+    },
+
+    /** Creer une classe */
+    postEduManagerClasses(options = {}) {
+      return request("POST", "/edu-manager/classes", options);
+    },
+
+    /** Supprimer une classe */
+    deleteEduManagerClassesByClass(options = {}) {
+      return request("DELETE", "/edu-manager/classes/{class}", options);
+    },
+
+    /** Consulter une classe */
+    getEduManagerClassesByClass(options = {}) {
+      return request("GET", "/edu-manager/classes/{class}", options);
+    },
+
+    /** Modifier une classe */
+    putEduManagerClassesByClass(options = {}) {
+      return request("PUT", "/edu-manager/classes/{class}", options);
+    },
+
+    /** Lister les presences d une classe */
+    getEduManagerClassesByClassAttendances(options = {}) {
+      return request("GET", "/edu-manager/classes/{class}/attendances", options);
+    },
+
+    /** Saisir une presence (idempotente) */
+    postEduManagerClassesByClassAttendances(options = {}) {
+      return request("POST", "/edu-manager/classes/{class}/attendances", options);
+    },
+
+    /** Affecter un enseignant a une matiere dans la classe */
+    postEduManagerClassesByClassTeachers(options = {}) {
+      return request("POST", "/edu-manager/classes/{class}/teachers", options);
+    },
+
+    /** Lister les creneaux */
+    getEduManagerCourseSlots(options = {}) {
+      return request("GET", "/edu-manager/course-slots", options);
+    },
+
+    /** Creer un creneau (conflits detectes) */
+    postEduManagerCourseSlots(options = {}) {
+      return request("POST", "/edu-manager/course-slots", options);
+    },
+
+    /** Supprimer un creneau */
+    deleteEduManagerCourseSlotsBySlot(options = {}) {
+      return request("DELETE", "/edu-manager/course-slots/{slot}", options);
+    },
+
+    /** Consulter un creneau */
+    getEduManagerCourseSlotsBySlot(options = {}) {
+      return request("GET", "/edu-manager/course-slots/{slot}", options);
+    },
+
+    /** Modifier un creneau */
+    putEduManagerCourseSlotsBySlot(options = {}) {
+      return request("PUT", "/edu-manager/course-slots/{slot}", options);
+    },
+
+    /** Exporter un CSV (students|presence|grades) audité */
+    getEduManagerExportsByKind(options = {}) {
+      return request("GET", "/edu-manager/exports/{kind}", options);
+    },
+
+    /** Lister les frais scolaires (direction, EDU-016) */
+    getEduManagerFees(options = {}) {
+      return request("GET", "/edu-manager/fees", options);
+    },
+
+    /** Creer un frais scolaire (idempotent, direction, EDU-016) */
+    postEduManagerFees(options = {}) {
+      return request("POST", "/edu-manager/fees", options);
+    },
+
+    /** Detail d'un frais scolaire (direction, EDU-016) */
+    getEduManagerFeesByFee(options = {}) {
+      return request("GET", "/edu-manager/fees/{fee}", options);
+    },
+
+    /** Annuler un frais (terminal, EDU-016) */
+    postEduManagerFeesByFeeCancel(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/cancel", options);
+    },
+
+    /** Regler un frais (idempotent, terminal, EDU-016) */
+    postEduManagerFeesByFeePay(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/pay", options);
+    },
+
+    /** Remise de frais (terminal, direction, EDU-016) */
+    postEduManagerFeesByFeeWaive(options = {}) {
+      return request("POST", "/edu-manager/fees/{fee}/waive", options);
+    },
+
+    /** Corriger une note (versionnee) */
+    postEduManagerGradesByGradeCorrect(options = {}) {
+      return request("POST", "/edu-manager/grades/{grade}/correct", options);
+    },
+
+    /** Publier une note */
+    postEduManagerGradesByGradePublish(options = {}) {
+      return request("POST", "/edu-manager/grades/{grade}/publish", options);
+    },
+
+    /** Emettre un lien d'acces expirable pour un guardian (direction, EDU-013) */
+    postEduManagerGuardiansAccessLinks(options = {}) {
+      return request("POST", "/edu-manager/guardians/access-links", options);
+    },
+
+    /** Echanger un lien d'acces expirable (usage unique, EDU-013) */
+    postEduManagerGuardiansAccessLinksRedeem(options = {}) {
+      return request("POST", "/edu-manager/guardians/access-links/redeem", options);
+    },
+
+    /** Profil du portail guardian (EDU-013) */
+    getEduManagerGuardiansMe(options = {}) {
+      return request("GET", "/edu-manager/guardians/me", options);
+    },
+
+    /** Enfants autorises du guardian (aucune enumeration, EDU-013) */
+    getEduManagerGuardiansMeStudents(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students", options);
+    },
+
+    /** Presences d'un enfant autorise (EDU-013) */
+    getEduManagerGuardiansMeStudentsByStudentPresences(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students/{student}/presences", options);
+    },
+
+    /** Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013) */
+    getEduManagerGuardiansMeStudentsByStudentReportCards(options = {}) {
+      return request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", options);
+    },
+
+    /** Annuler un import avant commit */
+    postEduManagerImportsByImportCancel(options = {}) {
+      return request("POST", "/edu-manager/imports/{import}/cancel", options);
+    },
+
+    /** Commit idempotent d un import */
+    postEduManagerImportsByImportCommit(options = {}) {
+      return request("POST", "/edu-manager/imports/{import}/commit", options);
+    },
+
+    /** Preview d un import CSV (aucune écriture) */
+    postEduManagerImportsPreview(options = {}) {
+      return request("POST", "/edu-manager/imports/preview", options);
+    },
+
+    /** Segments de prospects consentis pour campagnes d'admission (EDU-015) */
+    getEduManagerMarketingEligibleProspects(options = {}) {
+      return request("GET", "/edu-manager/marketing/eligible-prospects", options);
+    },
+
+    /** Historique des notifications EduManager (direction, EDU-014) */
+    getEduManagerNotifications(options = {}) {
+      return request("GET", "/edu-manager/notifications", options);
+    },
+
+    /** Lister les bulletins */
+    getEduManagerReportCards(options = {}) {
+      return request("GET", "/edu-manager/report-cards", options);
+    },
+
+    /** Consulter un bulletin avec lignes */
+    getEduManagerReportCardsByCard(options = {}) {
+      return request("GET", "/edu-manager/report-cards/{card}", options);
+    },
+
+    /** Publier un bulletin (direction) */
+    postEduManagerReportCardsByCardPublish(options = {}) {
+      return request("POST", "/edu-manager/report-cards/{card}/publish", options);
+    },
+
+    /** Valider un bulletin (direction) */
+    postEduManagerReportCardsByCardValidate(options = {}) {
+      return request("POST", "/edu-manager/report-cards/{card}/validate", options);
+    },
+
+    /** Generer un bulletin (recalculable) */
+    postEduManagerReportCardsGenerate(options = {}) {
+      return request("POST", "/edu-manager/report-cards/generate", options);
+    },
+
+    /** Capacité par campus (direction) */
+    getEduManagerReportsCapacity(options = {}) {
+      return request("GET", "/edu-manager/reports/capacity", options);
+    },
+
+    /** Rapport d inscriptions par campus (direction) */
+    getEduManagerReportsEnrollment(options = {}) {
+      return request("GET", "/edu-manager/reports/enrollment", options);
+    },
+
+    /** Rapport de présence agrégé (direction) */
+    getEduManagerReportsPresence(options = {}) {
+      return request("GET", "/edu-manager/reports/presence", options);
+    },
+
+    /** Moyennes par matière (direction) */
+    getEduManagerReportsResults(options = {}) {
+      return request("GET", "/edu-manager/reports/results", options);
+    },
+
+    /** Lister les eleves (direction, PII) */
+    getEduManagerStudents(options = {}) {
+      return request("GET", "/edu-manager/students", options);
+    },
+
+    /** Creer un eleve */
+    postEduManagerStudents(options = {}) {
+      return request("POST", "/edu-manager/students", options);
+    },
+
+    /** Archiver un eleve (RGPD) */
+    deleteEduManagerStudentsByStudent(options = {}) {
+      return request("DELETE", "/edu-manager/students/{student}", options);
+    },
+
+    /** Consulter un eleve */
+    getEduManagerStudentsByStudent(options = {}) {
+      return request("GET", "/edu-manager/students/{student}", options);
+    },
+
+    /** Modifier un eleve */
+    putEduManagerStudentsByStudent(options = {}) {
+      return request("PUT", "/edu-manager/students/{student}", options);
+    },
+
+    /** Anonymiser un élève (RGPD, direction) */
+    postEduManagerStudentsByStudentAnonymize(options = {}) {
+      return request("POST", "/edu-manager/students/{student}/anonymize", options);
+    },
+
+    /** Export individuel RGPD (direction) */
+    getEduManagerStudentsByStudentPrivacyExport(options = {}) {
+      return request("GET", "/edu-manager/students/{student}/privacy-export", options);
+    },
+
+    /** Lister les matieres */
+    getEduManagerSubjects(options = {}) {
+      return request("GET", "/edu-manager/subjects", options);
+    },
+
+    /** Creer une matiere */
+    postEduManagerSubjects(options = {}) {
+      return request("POST", "/edu-manager/subjects", options);
+    },
+
+    /** Supprimer une matiere */
+    deleteEduManagerSubjectsBySubject(options = {}) {
+      return request("DELETE", "/edu-manager/subjects/{subject}", options);
+    },
+
+    /** Consulter une matiere */
+    getEduManagerSubjectsBySubject(options = {}) {
+      return request("GET", "/edu-manager/subjects/{subject}", options);
+    },
+
+    /** Modifier une matiere */
+    putEduManagerSubjectsBySubject(options = {}) {
+      return request("PUT", "/edu-manager/subjects/{subject}", options);
+    },
+
+    /** Retirer une affectation enseignant */
+    deleteEduManagerTeacherSubjectsByAssignment(options = {}) {
+      return request("DELETE", "/edu-manager/teacher-subjects/{assignment}", options);
+    },
+
     /** Lister les documents des dossiers employes (checklist G3) */
     getEmployeeDocuments(options = {}) {
       return request("GET", "/employee-documents", options);

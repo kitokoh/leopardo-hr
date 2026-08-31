@@ -1520,6 +1520,314 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_edu_manager_academic_years(self, **kwargs):
+        """Lister les annees scolaires (direction)"""
+        return self.request("GET", "/edu-manager/academic-years", **kwargs)
+
+    def post_edu_manager_academic_years(self, **kwargs):
+        """Creer une annee scolaire"""
+        return self.request("POST", "/edu-manager/academic-years", **kwargs)
+
+    def delete_edu_manager_academic_years_by_year(self, **kwargs):
+        """Supprimer une annee scolaire"""
+        return self.request("DELETE", "/edu-manager/academic-years/{year}", **kwargs)
+
+    def get_edu_manager_academic_years_by_year(self, **kwargs):
+        """Consulter une annee scolaire"""
+        return self.request("GET", "/edu-manager/academic-years/{year}", **kwargs)
+
+    def put_edu_manager_academic_years_by_year(self, **kwargs):
+        """Modifier une annee scolaire"""
+        return self.request("PUT", "/edu-manager/academic-years/{year}", **kwargs)
+
+    def get_edu_manager_admissions(self, **kwargs):
+        """Lister les dossiers d admission (direction)"""
+        return self.request("GET", "/edu-manager/admissions", **kwargs)
+
+    def post_edu_manager_admissions(self, **kwargs):
+        """Creer un dossier d admission (idempotent)"""
+        return self.request("POST", "/edu-manager/admissions", **kwargs)
+
+    def get_edu_manager_admissions_by_admission(self, **kwargs):
+        """Consulter un dossier d admission"""
+        return self.request("GET", "/edu-manager/admissions/{admission}", **kwargs)
+
+    def post_edu_manager_admissions_by_admission_convert(self, **kwargs):
+        """Convertir le dossier en eleve (idempotent, consentement requis)"""
+        return self.request("POST", "/edu-manager/admissions/{admission}/convert", **kwargs)
+
+    def post_edu_manager_admissions_by_admission_opt_out(self, **kwargs):
+        """Opt-out RGPD d'un prospect admission (EDU-015)"""
+        return self.request("POST", "/edu-manager/admissions/{admission}/opt-out", **kwargs)
+
+    def get_edu_manager_assessments(self, **kwargs):
+        """Lister les evaluations"""
+        return self.request("GET", "/edu-manager/assessments", **kwargs)
+
+    def post_edu_manager_assessments(self, **kwargs):
+        """Creer une evaluation"""
+        return self.request("POST", "/edu-manager/assessments", **kwargs)
+
+    def delete_edu_manager_assessments_by_assessment(self, **kwargs):
+        """Supprimer une evaluation"""
+        return self.request("DELETE", "/edu-manager/assessments/{assessment}", **kwargs)
+
+    def get_edu_manager_assessments_by_assessment(self, **kwargs):
+        """Consulter une evaluation"""
+        return self.request("GET", "/edu-manager/assessments/{assessment}", **kwargs)
+
+    def put_edu_manager_assessments_by_assessment(self, **kwargs):
+        """Modifier une evaluation"""
+        return self.request("PUT", "/edu-manager/assessments/{assessment}", **kwargs)
+
+    def post_edu_manager_assessments_by_assessment_grades(self, **kwargs):
+        """Saisir une note (bareme serveur)"""
+        return self.request("POST", "/edu-manager/assessments/{assessment}/grades", **kwargs)
+
+    def post_edu_manager_attendances_by_attendance_correct(self, **kwargs):
+        """Corriger une presence (versionnee)"""
+        return self.request("POST", "/edu-manager/attendances/{attendance}/correct", **kwargs)
+
+    def get_edu_manager_campuses(self, **kwargs):
+        """Lister les campus (direction)"""
+        return self.request("GET", "/edu-manager/campuses", **kwargs)
+
+    def post_edu_manager_campuses(self, **kwargs):
+        """Creer un campus (direction)"""
+        return self.request("POST", "/edu-manager/campuses", **kwargs)
+
+    def delete_edu_manager_campuses_by_campus(self, **kwargs):
+        """Supprimer un campus"""
+        return self.request("DELETE", "/edu-manager/campuses/{campus}", **kwargs)
+
+    def get_edu_manager_campuses_by_campus(self, **kwargs):
+        """Consulter un campus"""
+        return self.request("GET", "/edu-manager/campuses/{campus}", **kwargs)
+
+    def put_edu_manager_campuses_by_campus(self, **kwargs):
+        """Modifier un campus"""
+        return self.request("PUT", "/edu-manager/campuses/{campus}", **kwargs)
+
+    def get_edu_manager_classes(self, **kwargs):
+        """Lister les classes (perimetre enseignant)"""
+        return self.request("GET", "/edu-manager/classes", **kwargs)
+
+    def post_edu_manager_classes(self, **kwargs):
+        """Creer une classe"""
+        return self.request("POST", "/edu-manager/classes", **kwargs)
+
+    def delete_edu_manager_classes_by_class(self, **kwargs):
+        """Supprimer une classe"""
+        return self.request("DELETE", "/edu-manager/classes/{class}", **kwargs)
+
+    def get_edu_manager_classes_by_class(self, **kwargs):
+        """Consulter une classe"""
+        return self.request("GET", "/edu-manager/classes/{class}", **kwargs)
+
+    def put_edu_manager_classes_by_class(self, **kwargs):
+        """Modifier une classe"""
+        return self.request("PUT", "/edu-manager/classes/{class}", **kwargs)
+
+    def get_edu_manager_classes_by_class_attendances(self, **kwargs):
+        """Lister les presences d une classe"""
+        return self.request("GET", "/edu-manager/classes/{class}/attendances", **kwargs)
+
+    def post_edu_manager_classes_by_class_attendances(self, **kwargs):
+        """Saisir une presence (idempotente)"""
+        return self.request("POST", "/edu-manager/classes/{class}/attendances", **kwargs)
+
+    def post_edu_manager_classes_by_class_teachers(self, **kwargs):
+        """Affecter un enseignant a une matiere dans la classe"""
+        return self.request("POST", "/edu-manager/classes/{class}/teachers", **kwargs)
+
+    def get_edu_manager_course_slots(self, **kwargs):
+        """Lister les creneaux"""
+        return self.request("GET", "/edu-manager/course-slots", **kwargs)
+
+    def post_edu_manager_course_slots(self, **kwargs):
+        """Creer un creneau (conflits detectes)"""
+        return self.request("POST", "/edu-manager/course-slots", **kwargs)
+
+    def delete_edu_manager_course_slots_by_slot(self, **kwargs):
+        """Supprimer un creneau"""
+        return self.request("DELETE", "/edu-manager/course-slots/{slot}", **kwargs)
+
+    def get_edu_manager_course_slots_by_slot(self, **kwargs):
+        """Consulter un creneau"""
+        return self.request("GET", "/edu-manager/course-slots/{slot}", **kwargs)
+
+    def put_edu_manager_course_slots_by_slot(self, **kwargs):
+        """Modifier un creneau"""
+        return self.request("PUT", "/edu-manager/course-slots/{slot}", **kwargs)
+
+    def get_edu_manager_exports_by_kind(self, **kwargs):
+        """Exporter un CSV (students|presence|grades) audité"""
+        return self.request("GET", "/edu-manager/exports/{kind}", **kwargs)
+
+    def get_edu_manager_fees(self, **kwargs):
+        """Lister les frais scolaires (direction, EDU-016)"""
+        return self.request("GET", "/edu-manager/fees", **kwargs)
+
+    def post_edu_manager_fees(self, **kwargs):
+        """Creer un frais scolaire (idempotent, direction, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees", **kwargs)
+
+    def get_edu_manager_fees_by_fee(self, **kwargs):
+        """Detail d'un frais scolaire (direction, EDU-016)"""
+        return self.request("GET", "/edu-manager/fees/{fee}", **kwargs)
+
+    def post_edu_manager_fees_by_fee_cancel(self, **kwargs):
+        """Annuler un frais (terminal, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/cancel", **kwargs)
+
+    def post_edu_manager_fees_by_fee_pay(self, **kwargs):
+        """Regler un frais (idempotent, terminal, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/pay", **kwargs)
+
+    def post_edu_manager_fees_by_fee_waive(self, **kwargs):
+        """Remise de frais (terminal, direction, EDU-016)"""
+        return self.request("POST", "/edu-manager/fees/{fee}/waive", **kwargs)
+
+    def post_edu_manager_grades_by_grade_correct(self, **kwargs):
+        """Corriger une note (versionnee)"""
+        return self.request("POST", "/edu-manager/grades/{grade}/correct", **kwargs)
+
+    def post_edu_manager_grades_by_grade_publish(self, **kwargs):
+        """Publier une note"""
+        return self.request("POST", "/edu-manager/grades/{grade}/publish", **kwargs)
+
+    def post_edu_manager_guardians_access_links(self, **kwargs):
+        """Emettre un lien d'acces expirable pour un guardian (direction, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardians/access-links", **kwargs)
+
+    def post_edu_manager_guardians_access_links_redeem(self, **kwargs):
+        """Echanger un lien d'acces expirable (usage unique, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardians/access-links/redeem", **kwargs)
+
+    def get_edu_manager_guardians_me(self, **kwargs):
+        """Profil du portail guardian (EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me", **kwargs)
+
+    def get_edu_manager_guardians_me_students(self, **kwargs):
+        """Enfants autorises du guardian (aucune enumeration, EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students", **kwargs)
+
+    def get_edu_manager_guardians_me_students_by_student_presences(self, **kwargs):
+        """Presences d'un enfant autorise (EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students/{student}/presences", **kwargs)
+
+    def get_edu_manager_guardians_me_students_by_student_report_cards(self, **kwargs):
+        """Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013)"""
+        return self.request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", **kwargs)
+
+    def post_edu_manager_imports_by_import_cancel(self, **kwargs):
+        """Annuler un import avant commit"""
+        return self.request("POST", "/edu-manager/imports/{import}/cancel", **kwargs)
+
+    def post_edu_manager_imports_by_import_commit(self, **kwargs):
+        """Commit idempotent d un import"""
+        return self.request("POST", "/edu-manager/imports/{import}/commit", **kwargs)
+
+    def post_edu_manager_imports_preview(self, **kwargs):
+        """Preview d un import CSV (aucune écriture)"""
+        return self.request("POST", "/edu-manager/imports/preview", **kwargs)
+
+    def get_edu_manager_marketing_eligible_prospects(self, **kwargs):
+        """Segments de prospects consentis pour campagnes d'admission (EDU-015)"""
+        return self.request("GET", "/edu-manager/marketing/eligible-prospects", **kwargs)
+
+    def get_edu_manager_notifications(self, **kwargs):
+        """Historique des notifications EduManager (direction, EDU-014)"""
+        return self.request("GET", "/edu-manager/notifications", **kwargs)
+
+    def get_edu_manager_report_cards(self, **kwargs):
+        """Lister les bulletins"""
+        return self.request("GET", "/edu-manager/report-cards", **kwargs)
+
+    def get_edu_manager_report_cards_by_card(self, **kwargs):
+        """Consulter un bulletin avec lignes"""
+        return self.request("GET", "/edu-manager/report-cards/{card}", **kwargs)
+
+    def post_edu_manager_report_cards_by_card_publish(self, **kwargs):
+        """Publier un bulletin (direction)"""
+        return self.request("POST", "/edu-manager/report-cards/{card}/publish", **kwargs)
+
+    def post_edu_manager_report_cards_by_card_validate(self, **kwargs):
+        """Valider un bulletin (direction)"""
+        return self.request("POST", "/edu-manager/report-cards/{card}/validate", **kwargs)
+
+    def post_edu_manager_report_cards_generate(self, **kwargs):
+        """Generer un bulletin (recalculable)"""
+        return self.request("POST", "/edu-manager/report-cards/generate", **kwargs)
+
+    def get_edu_manager_reports_capacity(self, **kwargs):
+        """Capacité par campus (direction)"""
+        return self.request("GET", "/edu-manager/reports/capacity", **kwargs)
+
+    def get_edu_manager_reports_enrollment(self, **kwargs):
+        """Rapport d inscriptions par campus (direction)"""
+        return self.request("GET", "/edu-manager/reports/enrollment", **kwargs)
+
+    def get_edu_manager_reports_presence(self, **kwargs):
+        """Rapport de présence agrégé (direction)"""
+        return self.request("GET", "/edu-manager/reports/presence", **kwargs)
+
+    def get_edu_manager_reports_results(self, **kwargs):
+        """Moyennes par matière (direction)"""
+        return self.request("GET", "/edu-manager/reports/results", **kwargs)
+
+    def get_edu_manager_students(self, **kwargs):
+        """Lister les eleves (direction, PII)"""
+        return self.request("GET", "/edu-manager/students", **kwargs)
+
+    def post_edu_manager_students(self, **kwargs):
+        """Creer un eleve"""
+        return self.request("POST", "/edu-manager/students", **kwargs)
+
+    def delete_edu_manager_students_by_student(self, **kwargs):
+        """Archiver un eleve (RGPD)"""
+        return self.request("DELETE", "/edu-manager/students/{student}", **kwargs)
+
+    def get_edu_manager_students_by_student(self, **kwargs):
+        """Consulter un eleve"""
+        return self.request("GET", "/edu-manager/students/{student}", **kwargs)
+
+    def put_edu_manager_students_by_student(self, **kwargs):
+        """Modifier un eleve"""
+        return self.request("PUT", "/edu-manager/students/{student}", **kwargs)
+
+    def post_edu_manager_students_by_student_anonymize(self, **kwargs):
+        """Anonymiser un élève (RGPD, direction)"""
+        return self.request("POST", "/edu-manager/students/{student}/anonymize", **kwargs)
+
+    def get_edu_manager_students_by_student_privacy_export(self, **kwargs):
+        """Export individuel RGPD (direction)"""
+        return self.request("GET", "/edu-manager/students/{student}/privacy-export", **kwargs)
+
+    def get_edu_manager_subjects(self, **kwargs):
+        """Lister les matieres"""
+        return self.request("GET", "/edu-manager/subjects", **kwargs)
+
+    def post_edu_manager_subjects(self, **kwargs):
+        """Creer une matiere"""
+        return self.request("POST", "/edu-manager/subjects", **kwargs)
+
+    def delete_edu_manager_subjects_by_subject(self, **kwargs):
+        """Supprimer une matiere"""
+        return self.request("DELETE", "/edu-manager/subjects/{subject}", **kwargs)
+
+    def get_edu_manager_subjects_by_subject(self, **kwargs):
+        """Consulter une matiere"""
+        return self.request("GET", "/edu-manager/subjects/{subject}", **kwargs)
+
+    def put_edu_manager_subjects_by_subject(self, **kwargs):
+        """Modifier une matiere"""
+        return self.request("PUT", "/edu-manager/subjects/{subject}", **kwargs)
+
+    def delete_edu_manager_teacher_subjects_by_assignment(self, **kwargs):
+        """Retirer une affectation enseignant"""
+        return self.request("DELETE", "/edu-manager/teacher-subjects/{assignment}", **kwargs)
+
     def get_employee_documents(self, **kwargs):
         """Lister les documents des dossiers employes (checklist G3)"""
         return self.request("GET", "/employee-documents", **kwargs)

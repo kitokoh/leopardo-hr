@@ -49,3 +49,10 @@ return [
     'fuel_maintenance_due_title' => 'Overdue maintenance',
     'fuel_maintenance_due_body' => 'Task “:task_title” is past due.',
 ];
+
+    'edu_admission_converted_title' => 'New admission converted',
+    'edu_admission_converted_body' => 'Admission :admission_number for :student_name was converted to a student.',
+    'edu_absence_recorded_title' => 'Absence recorded',
+    'edu_absence_recorded_body' => ':student_name is :status on :date.',
+    'edu_report_card_published_title' => 'Report card published',
+    'edu_report_card_published_body' => ':student_name report card (:period) has been published.', ];

@@ -156,9 +156,9 @@ return [
     // #R12 — 1. gün kurulum hatırlatıcı
     'onboarding_reminder_subject' => 'Leopardo RH kurulumunuz henüz tamamlanmadı',
     'onboarding_reminder_heading' => 'Merhaba :name,',
-    'onboarding_reminder_intro'   => ':company şirketini dün oluşturdunuz ancak kurulum henüz tamamlanmadı.',
-    'onboarding_reminder_cta'     => 'Kuruluma devam et',
-    'onboarding_reminder_steps'   => 'Birkaç temel adım kaldı: çalışan ekleme, ilk giriş, bordro yapılandırması.',
+    'onboarding_reminder_intro' => ':company şirketini dün oluşturdunuz ancak kurulum henüz tamamlanmadı.',
+    'onboarding_reminder_cta' => 'Kuruluma devam et',
+    'onboarding_reminder_steps' => 'Birkaç temel adım kaldı: çalışan ekleme, ilk giriş, bordro yapılandırması.',
     'onboarding_reminder_support' => 'Destek ekibimiz her zaman yardımcı olmaya hazır.',
 
     'email_password_reset_subject' => 'Şifre Sıfırlama',
