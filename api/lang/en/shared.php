@@ -118,5 +118,6 @@ return [
         'cabinet' => 'Document vault',
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
+        'restaurant' => 'Kitchen display',
     ],
 ];
