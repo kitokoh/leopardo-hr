@@ -6,6 +6,7 @@ namespace Tests\Feature\HR;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Infrastructure\Services\SectorTemplateService;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -95,7 +96,7 @@ class AbsenceTypesTenantUniqueRegressionTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
         // Même (company_id, code) → doit violer l'index unique composite.
         DB::table($this->table())->insert([

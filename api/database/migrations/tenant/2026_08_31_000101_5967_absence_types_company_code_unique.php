@@ -31,11 +31,11 @@ return new class extends Migration
         if ($driver === 'pgsql') {
             // Drop de l'index unique global (le nom par défaut Laravel est
             // <table>_<colonne>_unique). On tente aussi le nom de contrainte.
-            DB::statement('ALTER TABLE ' . $schema . '.absence_types DROP CONSTRAINT IF EXISTS absence_types_code_unique');
-            DB::statement('DROP INDEX IF EXISTS ' . $schema . '.absence_types_code_unique');
+            DB::statement('ALTER TABLE '.$schema.'.absence_types DROP CONSTRAINT IF EXISTS absence_types_code_unique');
+            DB::statement('DROP INDEX IF EXISTS '.$schema.'.absence_types_code_unique');
             DB::statement('DROP INDEX IF EXISTS absence_types_code_unique');
             // Création de l'index unique composite (company_id, code).
-            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS absence_types_company_id_code_unique ON ' . $schema . '.absence_types (company_id, code)');
+            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS absence_types_company_id_code_unique ON '.$schema.'.absence_types (company_id, code)');
 
             return;
         }
@@ -54,9 +54,9 @@ return new class extends Migration
         $driver = DB::getDriverName();
 
         if ($driver === 'pgsql') {
-            DB::statement('DROP INDEX IF EXISTS ' . $schema . '.absence_types_company_id_code_unique');
+            DB::statement('DROP INDEX IF EXISTS '.$schema.'.absence_types_company_id_code_unique');
             DB::statement('DROP INDEX IF EXISTS absence_types_company_id_code_unique');
-            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS absence_types_code_unique ON ' . $schema . '.absence_types (code)');
+            DB::statement('CREATE UNIQUE INDEX IF NOT EXISTS absence_types_code_unique ON '.$schema.'.absence_types (code)');
 
             return;
         }
