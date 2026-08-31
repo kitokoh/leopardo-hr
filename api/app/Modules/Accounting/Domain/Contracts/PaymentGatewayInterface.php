@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Domain\Contracts;
 
-use App\Modules\Accounting\Domain\DTOs\PaymentCheckout;
-use App\Modules\Accounting\Domain\DTOs\PaymentWebhookData;
+use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
+use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 
 /**

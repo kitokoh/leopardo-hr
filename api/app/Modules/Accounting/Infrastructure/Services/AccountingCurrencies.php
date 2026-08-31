@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Domain\Support;
+namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Support\CountryDefaults;
 

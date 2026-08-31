@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Domain\DTOs;
+namespace App\Modules\Accounting\Application\DTOs;
 
 /**
  * #5272 — Informations de paiement extraites d'un webhook passerelle

@@ -6,6 +6,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\PlatformAiChatRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -61,12 +62,9 @@ class PlatformAdminAiConversationController extends Controller
      * 404), mais l'assistant indique explicitement qu'il n'est pas
      * disponible au niveau plateforme. Aucune écriture cross-tenant.
      */
-    public function chat(Request $request): JsonResponse
+    public function chat(PlatformAiChatRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'message' => ['required', 'string', 'max:4000'],
-            'conversation_id' => ['nullable', 'integer'],
-        ]);
+        $validated = $request->validated();
 
         if (! empty($validated['conversation_id'])) {
             $exists = DB::table(self::TENANT_SCHEMA.'.ai_conversations')

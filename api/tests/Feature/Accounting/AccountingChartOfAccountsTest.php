@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Accounting;
 
-use App\Modules\Accounting\Domain\Registries\AccountingChartOfAccounts;
+use App\Modules\Accounting\Infrastructure\Services\AccountingChartOfAccounts;
 use App\Support\CountryDefaults;
 use Tests\TestCase;
 
