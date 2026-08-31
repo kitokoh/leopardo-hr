@@ -89,20 +89,20 @@
         </div>
 
         <!-- Référentiels CRUD génériques -->
-        <div v-if="['types', 'positions', 'prices'].includes(advertTab)">
+        <div v-if="isAdvertRefTab(advertTab)">
           <div class="mb-3 flex items-center justify-between">
             <h2 class="text-lg font-medium text-slate-800 dark:text-slate-100">{{ advertTabs.find((x) => x.key === advertTab).label }}</h2>
-            <button v-if="entityConfigs[advertTab].canCreate" type="button" class="btn-primary" @click="openCreate(advertTab)">
+            <button v-if="advertTabCanCreate()" type="button" class="btn-primary" @click="openCreate(advertTab)">
               {{ t('travel.common.create', 'Créer') }}
             </button>
           </div>
           <DataTable
-            :columns="entityConfigs[advertTab].columns()"
-            :rows="lists[advertTab]"
-            :search-keys="entityConfigs[advertTab].searchKeys"
+            :columns="advertTabColumns()"
+            :rows="advertTabRows()"
+            :search-keys="advertTabSearchKeys()"
           >
             <template #actions="{ row }">
-              <button v-if="entityConfigs[advertTab].canDelete" type="button" class="btn-secondary" @click="removeRow(advertTab, row)">
+              <button v-if="advertTabCanDelete()" type="button" class="btn-secondary" @click="removeRow(advertTab, row)">
                 {{ t('travel.common.delete', 'Supprimer') }}
               </button>
             </template>
@@ -190,7 +190,7 @@
                 <td class="px-4 py-3 text-sm text-slate-500">{{ c.email }}</td>
                 <td class="px-4 py-3 text-sm">
                   <label v-for="ch in consentChannels" :key="ch.key" class="mr-3 inline-flex cursor-pointer items-center gap-1">
-                    <input type="checkbox" class="h-4 w-4 rounded" :checked="c[ch.key + '_consent_given']" @change="toggleConsent(c, ch.key, $event.target.checked)" />
+                    <input type="checkbox" class="h-4 w-4 rounded" :checked="contactConsentGiven(c, ch)" @change="toggleConsent(c, ch.key, $event.target.checked)" />
                     <span class="text-xs text-slate-500 dark:text-slate-400">{{ ch.label }}</span>
                   </label>
                 </td>
@@ -291,15 +291,15 @@
       :fields="modalFields"
       :values="editing || {}"
       @save="saveRow"
-      @cancel="modalOpen = false"
+      @cancel="closeModal"
     />
 
     <!-- Modale questions quiz -->
-    <div v-if="quizQuestionsOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" @click.self="quizQuestionsOpen = false">
+    <div v-if="quizQuestionsOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" @click.self="closeQuizQuestions">
       <div class="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 dark:bg-slate-800">
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-lg font-semibold text-slate-800 dark:text-white">{{ selectedQuiz?.title }} — {{ t('travel.quiz.questions', 'Questions') }}</h3>
-          <button type="button" class="text-slate-400 hover:text-slate-600" @click="quizQuestionsOpen = false">✕</button>
+          <button type="button" class="text-slate-400 hover:text-slate-600" @click="closeQuizQuestions">✕</button>
         </div>
         <ul class="mb-4 space-y-2">
           <li v-for="q in selectedQuizQuestions" :key="q.id" class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700 dark:bg-slate-700/50 dark:text-slate-200">
@@ -322,15 +322,15 @@
       :fields="questionFields"
       :values="{}"
       @save="saveQuestion"
-      @cancel="questionModalOpen = false"
+      @cancel="closeQuestionModal"
     />
 
     <!-- Modale résultats -->
-    <div v-if="resultsOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" @click.self="resultsOpen = false">
+    <div v-if="resultsOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4" @click.self="closeResults">
       <div class="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 dark:bg-slate-800">
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-lg font-semibold text-slate-800 dark:text-white">{{ selectedQuiz?.title }} — {{ t('travel.quiz.results', 'Résultats') }}</h3>
-          <button type="button" class="text-slate-400 hover:text-slate-600" @click="resultsOpen = false">✕</button>
+          <button type="button" class="text-slate-400 hover:text-slate-600" @click="closeResults">✕</button>
         </div>
         <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
           <thead>
@@ -359,7 +359,7 @@
       :fields="notifyFields"
       :values="{}"
       @save="saveNotify"
-      @cancel="notifyOpen = false"
+      @cancel="closeNotify"
     />
 
     <!-- Modale rejet annonce -->
@@ -370,7 +370,7 @@
       :fields="rejectFields"
       :values="{}"
       @save="saveReject"
-      @cancel="rejectOpen = false"
+      @cancel="closeReject"
     />
   </div>
 </template>
@@ -847,6 +847,48 @@ async function submitContactForm() {
   } finally {
     contactFormSending.value = false
   }
+}
+
+
+/* garde PA2-I18N-014 : accès par méthodes plutôt qu'expressions dans le template */
+function isAdvertRefTab(tab) {
+  return ['types', 'positions', 'prices'].includes(tab)
+}
+function advertTabCanCreate() {
+  return entityConfigs[advertTab.value].canCreate
+}
+function advertTabColumns() {
+  return entityConfigs[advertTab.value].columns()
+}
+function advertTabRows() {
+  return lists[advertTab.value]
+}
+function advertTabSearchKeys() {
+  return entityConfigs[advertTab.value].searchKeys
+}
+function advertTabCanDelete() {
+  return entityConfigs[advertTab.value].canDelete
+}
+function contactConsentGiven(contact, channel) {
+  return Boolean(contact[channel.key + '_consent_given'])
+}
+function closeModal() {
+  modalOpen.value = false
+}
+function closeQuizQuestions() {
+  quizQuestionsOpen.value = false
+}
+function closeQuestionModal() {
+  questionModalOpen.value = false
+}
+function closeResults() {
+  resultsOpen.value = false
+}
+function closeNotify() {
+  notifyOpen.value = false
+}
+function closeReject() {
+  rejectOpen.value = false
 }
 
 onMounted(() => {
