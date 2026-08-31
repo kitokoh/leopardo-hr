@@ -138,6 +138,29 @@ class EmailBounceWebhookControllerTest extends TestCase
         $this->assertSame(0, CommunicationEvent::query()->count());
     }
 
+    public function test_invalid_payload_does_not_leave_orphan_idempotency_reservation(): void
+    {
+        // Issue #6561 (audit) : la validation est exécutée AVANT begin() —
+        // un payload invalide (422) ne doit plus laisser de réservation
+        // d'idempotence orpheline qui répondrait « vide » aux redélivrances.
+        $this->postJson('/api/v1/webhooks/email-bounce', [
+            'event' => 'bounce',
+        ])->assertStatus(422)->assertJsonValidationErrors(['email']);
+
+        // Même flux retenté avec un payload VALIDE → traité normalement (200),
+        // preuve qu'aucune réservation orpheline ne bloque le traitement.
+        $employee = $this->employee();
+        $this->bindLookupStub($employee);
+
+        $response = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => $employee->email,
+            'event' => 'bounce',
+        ]);
+
+        $response->assertOk()->assertJsonPath('received', true);
+        $this->assertNotNull($employee->fresh()->email_bounced_at);
+    }
+
     public function test_invalid_shared_secret_is_rejected(): void
     {
         config()->set('services.mail_bounce_webhook.secret', 'super-secret');

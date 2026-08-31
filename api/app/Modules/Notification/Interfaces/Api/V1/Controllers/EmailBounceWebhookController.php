@@ -54,6 +54,21 @@ class EmailBounceWebhookController extends Controller
 
         // #5444 — idempotence persistée : le registre clé (payload brut) sert de
         // verrou anti-rejeu AVANT tout traitement (begin → complete/release).
+        // #6561 (audit) : la validation du payload a été déplacée AVANT begin()
+        // — une validation qui échouait (422) laissait une réservation orpheline
+        // et les redélivrances suivantes étaient répondues vide.
+        /** @var array{email: string, event: string, reason?: string|null} $payload */
+        $payload = $request->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:320'],
+            'event' => [
+                'required',
+                'string',
+                'max:64',
+                'in:bounce,hard_bounce,complaint,spam_complaint,delivered,opened,clicked,deferred',
+            ],
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
         $rawPayload = $request->getContent();
         $eventId = $this->registry->eventId($rawPayload);
         $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $rawPayload));
@@ -66,18 +81,6 @@ class EmailBounceWebhookController extends Controller
                 $replay['code'],
             );
         }
-
-        /** @var array{email: string, event: string, reason?: string|null} $payload */
-        $payload = $request->validate([
-            'email' => ['required', 'string', 'email:rfc', 'max:320'],
-            'event' => [
-                'required',
-                'string',
-                'max:64',
-                'in:bounce,hard_bounce,complaint,spam_complaint,delivered,opened,clicked,deferred',
-            ],
-            'reason' => ['nullable', 'string', 'max:255'],
-        ]);
 
         $email = $payload['email'];
         $event = $payload['event'];
