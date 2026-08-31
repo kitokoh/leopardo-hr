@@ -1,6 +1,6 @@
 {
   "$schema_version": "1.0",
-  "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.sh valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
+  "description": "Issue #5864 (MAT-006) — catalogue versionné des événements Laravel du domaine (App\\Events). Chaque entrée déclare le schema (payload), l'owner (bounded context, cf. BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md), la version, les consommateurs connus et le statut de dépréciation. dev-hub/tools/check-event-catalogue.py valide que ce fichier reste synchronisé avec le code réel (api/app/Events/*.php + api/app/Providers/EventServiceProvider.php + Event::listen() explicites) et bloque toute PR qui casse un consumer sans mise à jour du catalogue.",
   "events": [
     {
       "name": "AbsenceApproved",
