@@ -26,9 +26,9 @@ use Illuminate\Support\Facades\Log;
  */
 final class ReplayDeliveryDlqCommand extends Command
 {
-    protected $signature = 'delivery:replay-dlq {--id= : Rejouer une DLQ précise (id)}';
+    protected $signature = 'delivery:replay-dlq {--id= : Rejouer une DLQ precise (id)}';
 
-    protected $description = 'Rejoue les dead letters des jobs Delivery (clôture/export) sans doublon métier';
+    protected $description = 'Rejoue les dead letters des jobs Delivery (cloture/export) sans doublon metier';
 
     public function handle(): int
     {
@@ -74,7 +74,7 @@ final class ReplayDeliveryDlqCommand extends Command
             }
         });
 
-        $this->info("DLQ Delivery — rejouées : {$replayed}, échecs : {$failed}.");
+        $this->info(__('delivery.commands.dlq_replayed', ['replayed' => $replayed, 'failed' => $failed]));
 
         return $failed > 0 ? self::FAILURE : self::SUCCESS;
     }

@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
  */
 final class ExportDeliveryReportCommand extends Command
 {
-    protected $signature = 'delivery:export-report {company : company_id (uuid)} {--from= : date début Y-m-d} {--to= : date fin Y-m-d}';
+    protected $signature = 'delivery:export-report {company : company_id (uuid)} {--from= : date debut Y-m-d} {--to= : date fin Y-m-d}';
 
     protected $description = 'Planifie l\'export JSON du rapport livraison (job asynchrone)';
 
@@ -32,7 +32,7 @@ final class ExportDeliveryReportCommand extends Command
             ->exists();
 
         if (! $exists) {
-            $this->error("Aucune livraison pour ce tenant ({$companyId}).");
+            $this->error(__('delivery.commands.no_deliveries_for_tenant', ['company' => $companyId]));
 
             return self::INVALID;
         }
@@ -42,7 +42,7 @@ final class ExportDeliveryReportCommand extends Command
 
         ExportDeliveryReportJob::dispatch($companyId, $from, $to, (string) Str::uuid());
 
-        $this->info("Export rapport planifié ({$from} → {$to}).");
+        $this->info(__('delivery.commands.export_report_planned', ['from' => $from, 'to' => $to]));
 
         return self::SUCCESS;
     }

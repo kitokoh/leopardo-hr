@@ -90,11 +90,15 @@ final class EnsureDeliveryRoleMiddleware
             return false;
         }
 
-        return match ($role) {
-            'admin' => $employee->manager_role === 'principal',
-            'dispatcher' => in_array($employee->manager_role, ['principal', 'manager'], true),
-            'manager', 'reports' => in_array($employee->manager_role, ['principal', 'manager', 'rh'], true),
-            default => false,
-        };
+        if ($role === 'admin') {
+            return $employee->manager_role === 'principal';
+        }
+
+        if ($role === 'dispatcher') {
+            return in_array($employee->manager_role, ['principal', 'manager'], true);
+        }
+
+        // manager et reports : même périmètre (lecture + rapports).
+        return in_array($employee->manager_role, ['principal', 'manager', 'rh'], true);
     }
 }

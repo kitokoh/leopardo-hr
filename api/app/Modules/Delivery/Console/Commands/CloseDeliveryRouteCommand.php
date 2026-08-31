@@ -19,9 +19,9 @@ use Illuminate\Console\Command;
  */
 final class CloseDeliveryRouteCommand extends Command
 {
-    protected $signature = 'delivery:close-route {route : ID de la tournée} {company : company_id (uuid)}';
+    protected $signature = 'delivery:close-route {route : ID de la tournee} {company : company_id (uuid)}';
 
-    protected $description = 'Clôture asynchrone d\'une tournée Delivery (idempotente, DLQ sur échec)';
+    protected $description = 'Cloture asynchrone d\'une tournee Delivery (idempotente, DLQ sur echec)';
 
     public function handle(): int
     {
@@ -34,14 +34,14 @@ final class CloseDeliveryRouteCommand extends Command
             ->first();
 
         if ($route === null) {
-            $this->error("Tournée #{$routeId} introuvable pour ce tenant.");
+            $this->error(__('delivery.commands.route_not_found', ['route' => $routeId]));
 
             return self::INVALID;
         }
 
         CloseDeliveryRouteJob::dispatch($routeId, $companyId);
 
-        $this->info("Clôture de la tournée #{$routeId} planifiée (job asynchrone).");
+        $this->info(__('delivery.commands.close_route_planned', ['route' => $routeId]));
 
         return self::SUCCESS;
     }

@@ -93,11 +93,13 @@ class DeliveryAsyncTest extends TestCase
 
         CloseDeliveryRouteJob::dispatchSync($route->id, $this->company->id);
         $first = $route->fresh();
+        self::assertNotNull($first);
 
         // Deuxième exécution : même résultat (clôture idempotente, 2 recalculs
         // → mêmes totaux — exigence sortie BC-26).
         CloseDeliveryRouteJob::dispatchSync($route->id, $this->company->id);
         $second = $route->fresh();
+        self::assertNotNull($second);
 
         self::assertSame('completed', $second->status);
         self::assertSame($first->deliveries_count, $second->deliveries_count);
