@@ -72,6 +72,9 @@ class TravelReportController extends Controller
     /**
      * @param  callable(string, CarbonImmutable, CarbonImmutable, array<string, mixed>): array  $aggregate
      */
+    /**
+     * @param  callable(string, CarbonImmutable, CarbonImmutable, array<string, mixed>): array<string, mixed>  $aggregate
+     */
     private function report(TravelReportRequest $request, callable $aggregate): JsonResponse
     {
         /** @var Employee $actor */

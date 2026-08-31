@@ -19,8 +19,11 @@ class TravelAdvertPriceController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $prices = TravelAdvertPrice::query()
-            ->where('company_id', $request->user()->company_id)
+            ->where('company_id', $actor->company_id)
             ->with(['advertType:id,code,label', 'advertPosition:id,code,label'])
             ->orderBy('id')
             ->get()
