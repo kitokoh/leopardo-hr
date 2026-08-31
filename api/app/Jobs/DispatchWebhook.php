@@ -152,11 +152,19 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
                     'failure_count' => 0,
                     'last_triggered_at' => now(),
                 ]);
+            } elseif ($response->status() >= 500) {
+                // #6550 — 5xx = erreur transitoire du partenaire : on rethrow
+                // pour que la file retente (backoff 30/120/600 s) puis
+                // dead-letter via failed() après épuisement. Sans rethrow, le
+                // webhook était perdu silencieusement (seul failure_count
+                // s'incrémentait).
+                $this->recordFailure('partner 5xx', (string) $response->status());
+
+                throw new \RuntimeException('Webhook delivery failed with HTTP '.$response->status().'.');
             } else {
-                $this->endpoint->increment('failure_count');
-                if ($this->endpoint->failure_count >= 10) {
-                    $this->endpoint->update(['active' => false]);
-                }
+                // 4xx = erreur permanente du partenaire : inutile de retenter,
+                // mais on compte l'échec pour la désactivation.
+                $this->recordFailure('partner 4xx', (string) $response->status());
             }
         } catch (Throwable $e) {
             $durationMs = (int) ((microtime(true) - $start) * 1000);
@@ -170,7 +178,10 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
                 'duration_ms' => $durationMs,
             ]);
 
-            $this->endpoint->increment('failure_count');
+            // #6550 — la désactivation après N échecs consécutifs s'applique
+            // aussi aux exceptions (DNS injoignable, timeout) : avant, seule
+            // la branche réponse non-2xx la déclenchait.
+            $this->recordFailure('exception', $e->getMessage());
 
             Log::warning('Webhook delivery failed', [
                 'endpoint_id' => $this->endpoint->id,
@@ -179,6 +190,23 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             ]);
 
             throw $e;
+        }
+    }
+
+    /**
+     * #6550 — échec consécutif : incrémente failure_count et désactive
+     * l'endpoint après le seuil (10 échecs consécutifs, reset au 2xx).
+     */
+    private function recordFailure(string $kind, string $detail): void
+    {
+        $this->endpoint->increment('failure_count');
+        if ($this->endpoint->failure_count >= 10) {
+            $this->endpoint->update(['active' => false]);
+            Log::error('Webhook endpoint deactivated after consecutive failures', [
+                'endpoint_id' => $this->endpoint->id,
+                'kind' => $kind,
+                'detail' => mb_substr($detail, 0, 500),
+            ]);
         }
     }
 }

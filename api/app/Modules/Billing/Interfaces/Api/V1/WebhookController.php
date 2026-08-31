@@ -189,6 +189,12 @@ class WebhookController extends Controller
                 'duration_ms' => $durationMs,
             ]);
 
+            // #6550 — un test réussi réactive un endpoint désactivé
+            // (mécanisme de réactivation après N échecs consécutifs).
+            if ($response->successful() && ! $webhookEndpoint->active) {
+                $webhookEndpoint->update(['active' => true, 'failure_count' => 0]);
+            }
+
             return response()->json([
                 'message' => $response->successful()
                     ? 'Webhook delivered successfully.'
