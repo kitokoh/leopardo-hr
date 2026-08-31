@@ -1,5 +1,6 @@
 <?php
 
+use App\AI\Exceptions\TokenBudgetExceededException;
 use App\Core\Http\Middleware\HttpCacheMiddleware;
 use App\Core\Http\Middleware\IdempotencyMiddleware;
 use App\Exceptions\DomainException;
@@ -161,6 +162,25 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
+
+        // BC-23-D10 (issue #6238) : budget de tokens AI dépassé → 422
+        // fail-closed avec code stable AI_TOKEN_BUDGET_EXCEEDED. Le message
+        // interne (détails de service) ne fuite jamais : il est tracé en logs
+        // (report) et dans ai_audit_logs par l'Orchestrator. Enregistré AVANT
+        // le renderer DomainException (TokenBudgetExceededException en hérite).
+        $exceptions->render(function (TokenBudgetExceededException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            report($exception);
+
+            return new JsonResponse([
+                'error' => $exception->errorCode(),
+                'message' => $exception->errorCode(),
+                'localized_message' => __('errors.AI_TOKEN_BUDGET_EXCEEDED'),
+            ], $exception->statusCode());
+        });
 
         $exceptions->render(function (DomainException $exception, Request $request) {
             if (! ($request->expectsJson() || $request->is('api/*'))) {
