@@ -249,5 +249,80 @@ class AIWriteActionConfirmationTest extends TestCase
             'active' => true,
         ]);
     }
-}
 
+    public function test_employee_cannot_approve_absence_via_ai(): void
+    {
+        // audit(securite) #6533 : approbation d'absence via IA réservée aux
+        // managers (AbsencePolicy::approve) — un employé qui tente d'approuver
+        // reçoit un refus explicite, l'absence reste pending.
+        [$company] = $this->aiFixture();
+        $type = $this->seedAbsenceType($company->id);
+        $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+
+        $absence = Absence::create([
+            'company_id' => $company->id,
+            'employee_id' => $employeeActor->id,
+            'absence_type_id' => $type->id,
+            'start_date' => '2026-06-01',
+            'end_date' => '2026-06-02',
+            'days_count' => 2,
+            'status' => 'pending',
+        ]);
+
+        Sanctum::actingAs($employeeActor);
+
+        $pendingId = app(PendingActionStore::class)->store(
+            $company->id,
+            $employeeActor->id,
+            'approve_absence',
+            ['absence_id' => $absence->id],
+        );
+
+        $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'AI_TOOL_PERMISSION_DENIED');
+
+        $this->assertDatabaseHas('absences', [
+            'id' => $absence->id,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_employee_create_absence_for_other_is_forced_to_self(): void
+    {
+        // audit(securite) #6533 : un employé (non-manager) ne peut pas créer
+        // une absence pour un collègue via l'IA — l'employee_id fourni est
+        // ignoré, l'absence est créée pour le demandeur.
+        [$company] = $this->aiFixture();
+        $this->seedAbsenceType($company->id);
+        $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $colleague = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+
+        Sanctum::actingAs($employeeActor);
+
+        $pendingId = app(PendingActionStore::class)->store(
+            $company->id,
+            $employeeActor->id,
+            'create_absence',
+            [
+                'employee_id' => $colleague->id,
+                'start_date' => '2026-06-10',
+                'end_date' => '2026-06-12',
+                'reason' => 'Conges',
+            ],
+        );
+
+        $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
+            ->assertOk()
+            ->assertJsonPath('data.result.employee_id', $employeeActor->id);
+
+        $this->assertDatabaseHas('absences', [
+            'company_id' => $company->id,
+            'employee_id' => $employeeActor->id,
+        ]);
+        $this->assertDatabaseMissing('absences', [
+            'company_id' => $company->id,
+            'employee_id' => $colleague->id,
+        ]);
+    }
+}
