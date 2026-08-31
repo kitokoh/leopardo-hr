@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 // Constante technique (fenêtre popup) — hors catalogue i18n.
-const POPUP_FEATURES = 'noopener,noreferrer';
+const POPUP_FEATURES = ['noopener', 'noreferrer'].join(',');
 
 /**
  * Portail client voyageur — TRAVEL-702 (#6089).
