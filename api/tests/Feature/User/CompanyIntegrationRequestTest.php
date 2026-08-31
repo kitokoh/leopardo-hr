@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Modules\HR\Domain\Models\UserEmployeeLink;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -43,7 +44,7 @@ class CompanyIntegrationRequestTest extends TestCase
             app('request')->create('/api/v1/user/company-integration-requests', 'GET')
         );
         $this->assertSame(
-            \App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController::class.'@index',
+            CompanyIntegrationRequestController::class.'@index',
             $employeeRoute->getActionName(),
             'GET /user/company-integration-requests doit résoudre vers index (employé)'
         );
@@ -52,7 +53,7 @@ class CompanyIntegrationRequestTest extends TestCase
             app('request')->create('/api/v1/company-integration-requests', 'GET')
         );
         $this->assertSame(
-            \App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController::class.'@managerIndex',
+            CompanyIntegrationRequestController::class.'@managerIndex',
             $managerRoute->getActionName(),
             'GET /company-integration-requests doit résoudre vers managerIndex (manager) — jamais masquée'
         );
