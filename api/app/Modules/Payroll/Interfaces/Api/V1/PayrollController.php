@@ -52,6 +52,12 @@ class PayrollController extends Controller
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 (audit) : un manager dept/superviseur ne voit que
+            // les fiches de paie de SON équipe (pattern visibleToManager,
+            // PA2-SEC-002/003) — l'énumération des salaires de toute la
+            // société est fermée.
+            $query->whereIn('employee_id', Employee::query()->select('id')->visibleToManager($actor));
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
         }
@@ -95,8 +101,16 @@ class PayrollController extends Controller
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager() && $payroll->employee_id !== $actor->id) {
+        if ($actor->id === $payroll->employee_id) {
+            // self-service conservé.
+        } elseif (! $actor->isManager()) {
             abort(403);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 : manager team-scoped → uniquement son équipe.
+            $target = $payroll->employee;
+            if ($target === null || ! $actor->managesTeamMemberOf($target)) {
+                abort(403);
+            }
         }
 
         return (new PayrollResource($payroll->load('employee')))->response();

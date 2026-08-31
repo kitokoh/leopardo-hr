@@ -43,6 +43,11 @@ class SalaryAdvanceController extends Controller
 
         if (! $actor->isManager()) {
             $query->where('employee_id', $actor->id);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 (audit) : un manager dept/superviseur ne voit que
+            // les avances de SON équipe (montants, échéanciers) — pattern
+            // visibleToManager (PA2-SEC-002/003).
+            $query->whereIn('employee_id', Employee::query()->select('id')->visibleToManager($actor));
         } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->integer('employee_id'));
         }
@@ -102,8 +107,16 @@ class SalaryAdvanceController extends Controller
         if ($salaryAdvance->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager() && $salaryAdvance->employee_id !== $actor->id) {
+        if ($actor->id === $salaryAdvance->employee_id) {
+            // self-service conservé.
+        } elseif (! $actor->isManager()) {
             abort(403);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 : manager team-scoped → uniquement son équipe.
+            $target = $salaryAdvance->employee;
+            if ($target === null || ! $actor->managesTeamMemberOf($target)) {
+                abort(403);
+            }
         }
 
         return (new SalaryAdvanceResource($salaryAdvance->load(['employee:id,first_name,last_name,email,company_id', 'employee.company:id,currency'])))->response();
