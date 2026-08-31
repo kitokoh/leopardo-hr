@@ -155,6 +155,17 @@ maybe_reset_test_database_once() {
         return 0
     fi
 
+    # Issue #6537 (audit securite E-1) : fail-closed — RESET_TEST_DB_ONCE
+    # exécute un DROP de TOUTES les tables/séquences/vues + DROP SCHEMA
+    # shared_tenants CASCADE. Cette variable est documentée pour les
+    # environnements de TEST uniquement ; positionnée sur un environnement
+    # de production (APP_ENV=production, défaut du Dockerfile.prod), on
+    # REFUSE de démarrer plutôt que de risquer l'effacement total de la base.
+    if [ "${APP_ENV:-production}" = "production" ]; then
+        echo "REFUSED (fail-closed): RESET_TEST_DB_ONCE=true est interdit en production (APP_ENV=production). Abandon du demarrage." >&2
+        exit 1
+    fi
+
     reset_key="${RESET_TEST_DB_LOCK_KEY:-render_test_db_reset_v1}"
 
     if php <<PHP
