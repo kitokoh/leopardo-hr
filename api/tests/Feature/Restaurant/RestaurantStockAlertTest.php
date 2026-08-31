@@ -7,8 +7,10 @@ namespace Tests\Feature\Restaurant;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -74,7 +76,7 @@ class RestaurantStockAlertTest extends TestCase
             'reason_code' => 'waste',
         ])->assertStatus(201);
 
-        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.stock.alert.v1')
             ->count());
 
@@ -82,10 +84,10 @@ class RestaurantStockAlertTest extends TestCase
 
         // Rescan du même jour : la clé d'idempotence (jour) déduplique.
         app(TenantManager::class)->withinTenant($company, function () use ($company): void {
-            app(\App\Modules\RestaurantManager\Application\Services\StockAlertService::class)->scan($company->id);
+            app(StockAlertService::class)->scan($company->id);
         });
 
-        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.stock.alert.v1')
             ->count());
 
@@ -118,7 +120,7 @@ class RestaurantStockAlertTest extends TestCase
             'reason_code' => 'waste',
         ])->assertStatus(201);
 
-        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.stock.alert.v1')
             ->count());
 

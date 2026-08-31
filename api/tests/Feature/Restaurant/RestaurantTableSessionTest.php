@@ -7,6 +7,7 @@ namespace Tests\Feature\Restaurant;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -81,7 +82,7 @@ class RestaurantTableSessionTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('data.status', 'closed');
 
-        $events = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $events = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.table.closed.v1')
             ->count());
 

@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -84,7 +85,7 @@ class RestaurantStockMovementTest extends TestCase
         $this->assertEqualsWithDelta(12.5, (float) $level->quantity, 0.001);
 
         // Journal tracé avec la raison et la note.
-        $movement = app(TenantManager::class)->withinTenant($company, fn () => \App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement::query()
+        $movement = app(TenantManager::class)->withinTenant($company, fn () => RestaurantInventoryMovement::query()
             ->where('ingredient_id', $ingredient->id)
             ->first());
 

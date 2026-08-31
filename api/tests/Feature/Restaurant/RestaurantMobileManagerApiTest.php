@@ -53,7 +53,7 @@ class RestaurantMobileManagerApiTest extends TestCase
         $this->activateRestaurant($company);
         $this->manager($company);
 
-        app(TenantManager::class)->withinTenant($company, function () use ($company): void {
+        app(TenantManager::class)->withinTenant($company, function (): void {
             $branch = RestaurantBranch::factory()->create(['currency' => 'XAF']);
             RestaurantOrder::factory()->create([
                 'branch_id' => $branch->id,
@@ -77,7 +77,7 @@ class RestaurantMobileManagerApiTest extends TestCase
         $this->activateRestaurant($company);
         $this->manager($company);
 
-        app(TenantManager::class)->withinTenant($company, function () use ($company): void {
+        app(TenantManager::class)->withinTenant($company, function (): void {
             $branch = RestaurantBranch::factory()->create();
             RestaurantStockLevel::factory()->create([
                 'branch_id' => $branch->id,

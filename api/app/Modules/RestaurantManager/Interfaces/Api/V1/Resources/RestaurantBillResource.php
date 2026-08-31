@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class RestaurantBillResource extends JsonResource
 {
     /**
-     * @param  array{subtotal_minor: int, tax_minor: int, discount_minor: int, total_minor: int, currency: string, promotion?: \App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion|null}  $totals
+     * @param  array{subtotal_minor: int, tax_minor: int, discount_minor: int, total_minor: int, currency: string, promotion?: RestaurantPromotion|null}  $totals
      */
     public function __construct(RestaurantOrder $order, private readonly array $totals)
     {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Application\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\RestaurantManager\Application\Services\BillCalculator;
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderSource;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
@@ -36,8 +35,7 @@ final class RestaurantPublicOrderService
     public function __construct(
         private readonly BillCalculator $calculator,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<array{product_code: string, quantity: float|string, menu_id?: int|null}>  $items

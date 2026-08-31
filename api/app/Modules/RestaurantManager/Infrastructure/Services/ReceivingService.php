@@ -19,9 +19,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class ReceivingService
 {
-    public function __construct(private readonly StockMovementService $movements)
-    {
-    }
+    public function __construct(private readonly StockMovementService $movements) {}
 
     /**
      * @param  array<int, array{ingredient_id: int, quantity: float, unit_price_minor: int}>  $lines

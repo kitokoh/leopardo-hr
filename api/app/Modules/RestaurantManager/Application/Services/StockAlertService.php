@@ -20,9 +20,7 @@ final class StockAlertService
 {
     public const EVENT_STOCK_ALERT = 'restaurant.stock.alert.v1';
 
-    public function __construct(private readonly RestaurantOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
     /**
      * Vérifie un niveau de stock précis (appel après chaque mouvement).

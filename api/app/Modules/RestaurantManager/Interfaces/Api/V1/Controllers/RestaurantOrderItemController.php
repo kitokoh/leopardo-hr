@@ -27,8 +27,7 @@ class RestaurantOrderItemController extends Controller
     public function __construct(
         private readonly AddOrderItemAction $addAction,
         private readonly CancelOrderItemAction $cancelAction,
-    ) {
-    }
+    ) {}
 
     public function store(StoreRestaurantOrderItemRequest $request, RestaurantOrder $restaurantOrder): JsonResponse
     {

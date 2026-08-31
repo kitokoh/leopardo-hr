@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -61,7 +62,7 @@ class RestaurantPosSessionCloseEventTest extends TestCase
             'variance_reason' => 'Erreur de caisse',
         ])->assertStatus(200);
 
-        $event = app(TenantManager::class)->withinTenant($company, fn () => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $event = app(TenantManager::class)->withinTenant($company, fn () => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.pos.closed.v1')
             ->first());
 
@@ -93,7 +94,7 @@ class RestaurantPosSessionCloseEventTest extends TestCase
         // Seconde clôture : refusée (immuable) — pas de second événement.
         $this->postJson("/api/v1/restaurant/pos-sessions/{$sessionId}/close", ['counted_cash_minor' => 10000])->assertStatus(409);
 
-        $count = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $count = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.pos.closed.v1')
             ->count());
 

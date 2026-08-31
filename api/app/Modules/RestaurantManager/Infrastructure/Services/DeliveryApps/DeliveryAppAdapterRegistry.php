@@ -18,9 +18,7 @@ final class DeliveryAppAdapterRegistry
     /**
      * @param  iterable<DeliveryAppAdapter>  $adapters
      */
-    public function __construct(private readonly iterable $adapters)
-    {
-    }
+    public function __construct(private readonly iterable $adapters) {}
 
     public function resolve(string $providerCode): ?DeliveryAppAdapter
     {

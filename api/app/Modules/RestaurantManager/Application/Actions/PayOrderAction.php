@@ -39,8 +39,7 @@ final class PayOrderAction
         private readonly PaymentGatewayRegistry $registry,
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{provider_code: string, amount_minor: int, tip_minor?: int|null, idempotency_key?: string|null}  $data

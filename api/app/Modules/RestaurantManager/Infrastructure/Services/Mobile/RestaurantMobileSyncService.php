@@ -28,8 +28,7 @@ final class RestaurantMobileSyncService
         private readonly CreateOrderAction $createOrder,
         private readonly AddOrderItemAction $addItem,
         private readonly PayOrderAction $payOrder,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  list<array{type: string, payload: array<string, mixed>, idempotency_key: string}>  $operations

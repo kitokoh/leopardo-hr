@@ -29,9 +29,7 @@ use RuntimeException;
  */
 final class AddOrderItemAction
 {
-    public function __construct(private readonly BillCalculator $calculator)
-    {
-    }
+    public function __construct(private readonly BillCalculator $calculator) {}
 
     /**
      * @param  array{product_id: int, quantity: float|string, menu_id?: int|null}  $data

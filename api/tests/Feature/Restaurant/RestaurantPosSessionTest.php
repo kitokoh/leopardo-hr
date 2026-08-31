@@ -8,7 +8,9 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -148,7 +150,7 @@ class RestaurantPosSessionTest extends TestCase
 
         // Encaissement confirmé de 2000 + pourboire 300 → expected = 12300.
         app(TenantManager::class)->withinTenant($company, function () use ($sessionId): void {
-            \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment::query()->create([
+            RestaurantOrderPayment::query()->create([
                 'company_id' => $company->id,
                 'order_id' => 1,
                 'pos_session_id' => $sessionId,
@@ -157,7 +159,7 @@ class RestaurantPosSessionTest extends TestCase
                 'currency' => 'DZD',
                 'status' => 'confirmed',
                 'tip_minor' => 300,
-                'idempotency_key' => (string) \Illuminate\Support\Str::uuid(),
+                'idempotency_key' => (string) Str::uuid(),
             ]);
         });
 

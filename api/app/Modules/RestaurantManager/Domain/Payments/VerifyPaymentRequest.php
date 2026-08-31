@@ -19,6 +19,5 @@ final class VerifyPaymentRequest
         public readonly int $amountMinor,
         public readonly string $currency,
         public readonly array $payload = [],
-    ) {
-    }
+    ) {}
 }

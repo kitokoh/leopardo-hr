@@ -27,8 +27,7 @@ final class StockDecrementer
     public function __construct(
         private readonly StockMovementService $movements,
         private readonly bool $blockOnInsufficient,
-    ) {
-    }
+    ) {}
 
     public function decrementForOrder(RestaurantOrder $order): void
     {

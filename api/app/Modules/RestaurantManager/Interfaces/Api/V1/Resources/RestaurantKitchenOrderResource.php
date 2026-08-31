@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
+use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -33,7 +34,7 @@ class RestaurantKitchenOrderResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'items' => $this->items
-                ->filter(fn ($item) => $item->status === \App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus::ACTIVE)
+                ->filter(fn ($item) => $item->status === OrderItemStatus::ACTIVE)
                 ->map(fn ($item) => [
                     'id' => $item->id,
                     'product_id' => $item->product_id,

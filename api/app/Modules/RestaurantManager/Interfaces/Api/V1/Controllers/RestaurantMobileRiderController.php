@@ -19,9 +19,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantMobileRiderController extends Controller
 {
-    public function __construct(private readonly RestaurantMobileRiderService $service)
-    {
-    }
+    public function __construct(private readonly RestaurantMobileRiderService $service) {}
 
     public function deliveries(Request $request): JsonResponse
     {

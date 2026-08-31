@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -123,7 +124,7 @@ class RestaurantInventoryCountTest extends TestCase
 
         $this->assertEqualsWithDelta(8, (float) $level->quantity, 0.001);
 
-        $countMovements = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement::query()
+        $countMovements = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantInventoryMovement::query()
             ->where('reason_code', 'count')
             ->count());
 

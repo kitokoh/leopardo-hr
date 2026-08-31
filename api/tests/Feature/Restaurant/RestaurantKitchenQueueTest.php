@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use Laravel\Sanctum\Sanctum;
@@ -82,7 +83,7 @@ class RestaurantKitchenQueueTest extends TestCase
             $orderOpen = RestaurantOrder::factory()->create(['branch_id' => $branch->id, 'status' => 'open', 'currency' => $branch->currency]);
 
             foreach ([$orderInPreparation, $orderReady] as $order) {
-                \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem::query()->create([
+                RestaurantOrderItem::query()->create([
                     'company_id' => $company->id,
                     'order_id' => $order->id,
                     'product_id' => $product->id,
@@ -164,7 +165,7 @@ class RestaurantKitchenQueueTest extends TestCase
             'currency' => $branch->currency,
         ]));
 
-        \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem::query()->create([
+        RestaurantOrderItem::query()->create([
             'company_id' => $company->id,
             'order_id' => $openOrder->id,
             'product_id' => RestaurantProduct::factory()->create(['branch_id' => $branch->id, 'currency' => $branch->currency, 'is_available' => true])->id,

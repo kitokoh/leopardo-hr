@@ -26,9 +26,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantKitchenController extends Controller
 {
-    public function __construct(private readonly TransitionOrderAction $transitionAction)
-    {
-    }
+    public function __construct(private readonly TransitionOrderAction $transitionAction) {}
 
     public function index(Request $request): JsonResponse
     {

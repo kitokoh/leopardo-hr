@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use Laravel\Sanctum\Sanctum;
@@ -87,11 +88,11 @@ class RestaurantOrderTransitionTest extends TestCase
             ->assertStatus(200)
             ->assertJsonPath('data.status', 'open');
 
-        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $eventCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.order.created.v1')
             ->count());
 
-        $event = app(TenantManager::class)->withinTenant($company, fn () => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $event = app(TenantManager::class)->withinTenant($company, fn () => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.order.created.v1')
             ->first());
 
