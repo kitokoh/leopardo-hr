@@ -23,25 +23,34 @@ class DemoCompanyOnceSeeder extends Seeder
     public function run(): void
     {
         $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
+        $isProduction = app()->environment('production');
 
         DB::statement('SET search_path TO public');
-
-        $this->syncDemoSuperAdmin();
 
         $existingDemoSlugs = DB::table('companies')
             ->whereIn('slug', self::DEMO_SLUGS)
             ->pluck('slug');
 
-        if ($disabled) {
-            if ($existingDemoSlugs->isNotEmpty()) {
+        // #6543 (audit-secu M4) : le reset des credentials super-admin démo
+        // (password123 + 2FA retirée) est un acte sensible — il ne doit JAMAIS
+        // s'exécuter quand le seed démo est désactivé, ni en production
+        // (gate AVANT syncDemoSuperAdmin, qui était appelée avant la lecture
+        // de DISABLE_DEMO_SEEDING).
+        if ($disabled || $isProduction) {
+            // Backfills non destructifs des démos existantes conservés quand
+            // le seed est désactivé (réparation — AGENTS.md v4.16.247), mais
+            // jamais en production.
+            if (! $isProduction && $existingDemoSlugs->isNotEmpty()) {
                 $this->backfillDemoLeaveBalances();
                 $this->backfillDemoLaunchReadinessSignals();
             }
 
-            $this->command?->info('DemoCompanyOnceSeeder skipped creation (DISABLE_DEMO_SEEDING=true).');
+            $this->command?->info('DemoCompanyOnceSeeder skipped ('.($disabled ? 'DISABLE_DEMO_SEEDING=true' : 'APP_ENV=production').').');
 
             return;
         }
+
+        $this->syncDemoSuperAdmin();
 
         $alreadyRan = DB::table('seed_locks')
             ->where('lock_key', self::LOCK_KEY)
