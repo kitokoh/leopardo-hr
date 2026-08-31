@@ -1581,6 +1581,7 @@
     "fuel": "Stations-service"
     "fuelStation": "Stations-service",
     "travelAgency": "Agence de voyage"
+    "travel": "Agence de voyage"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -2047,6 +2048,497 @@
     "approve": "Approuver",
     "cancel": "Annuler",
     "reject": "Refuser"
+  "shell": {
+    "connected": "Connecte",
+    "fallbackPolling": "Mode secours (polling)",
+    "pushUnconfigured": "Push non configure",
+    "disconnected": "Deconnecte",
+    "search": "Rechercher",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune notification",
+    "criticalAlerts": "Alertes critiques",
+    "level": "Niveau :",
+    "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "settings": "Réglages",
+    "team": "Équipe",
+    "home": "Accueil",
+    "attendance": "Pointage",
+    "absences": "Absences",
+    "approvals": "Validations"
+  },
+  "exports": {
+    "reportEmployees": "Employes",
+    "reportEmployeesDesc": "Liste complete avec postes, contrats, departements.",
+    "reportAttendance": "Pointage",
+    "reportAttendanceDesc": "Registre de presence avec heures et anomalies.",
+    "reportPayslips": "Bulletins de paie",
+    "reportPayslipsDesc": "Export mensuel bulletins avec details salaire.",
+    "reportAbsences": "Absences & conges",
+    "reportAbsencesDesc": "Historique demandes et soldes par employe.",
+    "reportTraining": "Formations",
+    "reportTrainingDesc": "Catalogue, sessions, inscriptions et progression.",
+    "reportVehicles": "Vehicules",
+    "reportVehiclesDesc": "Flotte, kilometrage, maintenances.",
+    "hrReportsTitle": "Rapports RH personnalises",
+    "hrReportsSub": "Générez des rapports avancés avec filtres de période et département.",
+    "reportType": "Type de rapport",
+    "typeHeadcount": "Effectifs",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteisme",
+    "typePayrollSummary": "Resume paie",
+    "typeTrainingProgress": "Formations",
+    "startDate": "Date debut",
+    "endDate": "Date fin",
+    "generate": "Generer",
+    "generating": "Generation...",
+    "statusDone": "Termine",
+    "statusInProgress": "En cours",
+    "statusFailed": "Echec",
+    "download": "Telecharger",
+    "downloading": "Telechargement...",
+    "colDate": "Date",
+    "colFormat": "Format",
+    "colRequestedBy": "Demande par",
+    "colStatus": "Statut",
+    "colType": "Type",
+    "downloadError": "Erreur lors du téléchargement du rapport",
+    "historyEmpty": "Aucun export recent.",
+    "historySearchPlaceholder": "Rechercher dans l'historique...",
+    "hrReportUnavailable": "Impossible de générer le rapport HR (endpoint indisponible).",
+    "clientSpaceNote": "Les exports sont disponibles dans l'espace client.",
+    "historyClientOnly": "Historique visible uniquement pour les clients.",
+    "historyError": "Impossible de charger l'historique."
+  },
+  "companyDetail": {
+    "analyzing": "Analyse des données client...",
+    "retry": "Réessayer",
+    "fieldAdoption": "Adoption Terrain",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30j",
+    "payrollReady": "Paie Prete",
+    "activeEmployees30d": "Employes Actifs (30j)",
+    "noPriorityBlockers": "Aucun blocage prioritaire detecte.",
+    "modulesConfig": "Configuration des Modules",
+    "servicePlan": "Plan de services",
+    "commercialStatus": "Statut Commercial",
+    "statusTrial": "Essai (Trial)",
+    "statusActive": "Actif",
+    "statusSuspended": "Suspendu",
+    "statusExpired": "Expire",
+    "startDate": "Debut",
+    "internalNotes": "Notes Internes",
+    "noSupportTickets": "Aucun ticket de support pour ce client.",
+    "technicalIdentity": "Identite Technique",
+    "platformId": "ID Plateforme",
+    "slug": "Slug",
+    "countryCurrency": "Pays / Devise",
+    "registeredOn": "Inscrit le",
+    "lastActivity": "Derniere Activite",
+    "activateClient": "Activer client",
+    "backToPortfolio": "Retour au portefeuille",
+    "endDate": "Fin",
+    "featuresSaved": "Configuration des modules enregistrée.",
+    "loadFailed": "Impossible de charger le detail entreprise. Verifiez que l'UUID est valide.",
+    "loading": "Chargement...",
+    "messagePlural": "messages",
+    "messageSingular": "message",
+    "moduleActive": "Module Actif",
+    "moduleDisabled": "Module Désactivé",
+    "modulesConfigHint": "Activez ou désactivez les fonctionnalités spécifiques pour ce client.",
+    "noPunch": "Aucun pointage",
+    "notesPlaceholder": "Détails sur la négociation, remises, etc.",
+    "openPlural": "ouverts",
+    "openSingular": "ouvert",
+    "planMissing": "Plan client manquant.",
+    "priorityActions": "Actions Prioritaires",
+    "refresh": "Actualiser",
+    "revenueMrr": "Revenu (MRR)",
+    "riskLevel": "Niveau de risque :",
+    "saveConfig": "Sauvegarder la configuration",
+    "saving": "Enregistrement...",
+    "scoreHealth": "Score Santé",
+    "subscription": "Abonnement",
+    "subscriptionUpdated": "Abonnement mis à jour avec succès.",
+    "subtitle": "Santé opérationnelle, abonnement et configuration des modules.",
+    "support": "Support",
+    "teamActive": "Équipe Active",
+    "updateSubscription": "Mettre à jour l'abonnement",
+    "updating": "Mise à jour...",
+    "viewAllTickets": "Voir tous les tickets"
+  },
+  "reports": {
+    "attendance_title": "Résumé Présences",
+    "attendance_desc": "Rapport mensuel des présences, retards et absences par employé.",
+    "month_label": "Mois",
+    "payroll_title": "Résumé Paie",
+    "payroll_desc": "Total brut/net, cotisations et charges par période de paie.",
+    "period_label": "Période",
+    "leave_title": "Soldes Congés",
+    "leave_desc": "État des soldes de congés pour tous les employés.",
+    "year_label": "Année",
+    "headcount_title": "Effectifs",
+    "headcount_desc": "Répartition des effectifs actifs par département, type de contrat et genre.",
+    "training_title": "Suivi Formations",
+    "training_desc": "Taux de participation et complétion des formations.",
+    "contract_title": "Échéances Contrats",
+    "contract_desc": "Contrats arrivant à échéance dans les 30, 60, 90 prochains jours.",
+    "days_label": "Jours",
+    "generate": "Générer",
+    "success": "Rapport téléchargé avec succès.",
+    "error": "Erreur lors de la génération du rapport.",
+    "subtitle": "Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats."
+  },
+  "notifications": {
+    "channel_inapp": "Dans l'app",
+    "channel_email_desc": "Messages importants et confirmations.",
+    "channel_push_desc": "Alertes rapides sur les appareils enregistrés.",
+    "channel_sms_desc": "Canal court pour urgences, activé après opt-in.",
+    "channel_whatsapp_desc": "Canal conversationnel futur, avec opt-in explicite.",
+    "category_payroll": "Paie",
+    "category_security": "Sécurité",
+    "category_system": "Système",
+    "category_product_tips": "Conseils produit",
+    "categories_title": "Catégories",
+    "save_error": "Impossible d'enregistrer les préférences pour le moment.",
+    "channel_inapp_desc": "Centre de notifications web et mobile.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Impossible de marquer les notifications comme lues."
+        }
+      },
+      "read": {
+        "error": "Impossible de marquer la notification comme lue."
+      }
+    },
+    "delete": {
+      "error": "Impossible de supprimer la notification."
+    },
+    "deleted": "Notification supprimée."
+  },
+  "employees": {
+    "load_error": "Impossible de charger les employés.",
+    "title": "Équipe",
+    "subtitle": "Vue manager branchée à l'API RH : liste des collaborateurs, statut et points d'entrée essentiels.",
+    "total_team": "Total équipe",
+    "source": "Source",
+    "state": "État",
+    "loading_short": "Chargement",
+    "connected_api": "Connecté à l'API",
+    "recent_collaborators": "Collaborateurs récents",
+    "list_loading": "Chargement de la liste équipe...",
+    "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
+  },
+  "partnerPage": {
+    "loading": "Chargement de votre espace...",
+    "applyErrorPrefix": "Erreur lors de la candidature : ",
+    "notApplied": {
+      "title": "Devenir Partenaire",
+      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "individual": "Postuler en tant qu'Individuel",
+      "agency": "Postuler en tant qu'Agence"
+    },
+    "pending": {
+      "title": "Candidature en cours",
+      "body": "Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé."
+    },
+    "dashboard": {
+      "title": "Dashboard Partenaire",
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Gains totaux",
+      "pending": "En attente",
+      "withdrawable": "Solde retirable"
+    },
+    "commissions": {
+      "title": "Dernières commissions",
+      "empty": "Aucune commission enregistrée."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Statut",
+      "amount": "Montant",
+      "statusPaid": "Payée",
+      "statusPending": "En attente"
+    },
+    "payout": {
+      "title": "Paiement",
+      "body": "Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.",
+      "request": "Demander un virement",
+      "sending": "Envoi...",
+      "insufficient": "Solde insuffisant pour demander un virement (minimum 100,00 €).",
+      "success": "Demande de virement envoyée avec succès.",
+      "errorPrefix": "Erreur lors de la demande de virement : "
+    },
+    "referral": {
+      "title": "Lien de parrainage",
+      "unavailable": "Lien indisponible",
+      "copy": "Copier mon lien",
+      "copied": "Copié !",
+      "copyError": "Impossible de copier le lien. Copiez-le manuellement."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expirée. Reconnexion en cours...",
+    "accessDenied": "Accès refusé sur :endpoint. Permissions insuffisantes.",
+    "notFound": "Ressource introuvable : :endpoint",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter quelques secondes.",
+    "serverError": "Erreur serveur sur :endpoint. :detail",
+    "serverErrorRetry": "Réessayez plus tard.",
+    "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
+    "genericError": "Erreur :status sur :endpoint.",
+    "invalidData": "Données invalides.",
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "login_invalid_json": "Corps de requête invalide.",
+    "login_timeout": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+    "login_network_error": "Impossible de contacter le serveur.",
+    "login_backend_error": "Réponse serveur inattendue."
+  },
+  "settingsPage": {
+    "cancel": "Annuler",
+    "confirmPassword": "Confirmer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "disable2fa": "Désactiver le 2FA",
+    "disabled": "Désactivé",
+    "email": "Adresse email",
+    "enable2fa": "Activer le 2FA",
+    "enabled": "Activé",
+    "enterCodeStep": "2. Entrez le code à 6 chiffres généré",
+    "fullName": "Nom complet",
+    "generateSecret": "Générer un secret 2FA",
+    "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Secret manuel :",
+    "minLengthHint": "Minimum 8 caractères.",
+    "newPassword": "Nouveau mot de passe",
+    "password": "Mot de passe",
+    "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
+    "passwordTitle": "Mot de passe",
+    "passwordUpdated": "Mot de passe mis à jour avec succès.",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+    "profileSubtitle": "Nom et adresse email utilisés pour vous connecter.",
+    "profileTitle": "Informations du profil",
+    "profileUpdated": "Profil mis à jour avec succès.",
+    "saveChanges": "Enregistrer les modifications",
+    "scanStep": "1. Scannez ce lien / secret dans votre application 2FA :",
+    "subtitle": "Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.",
+    "title": "Mon compte",
+    "twoFactorActiveHint": "Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.",
+    "twoFactorDisabled": "2FA désactivé.",
+    "twoFactorEnabled": "2FA activé avec succès.",
+    "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
+    "twoFactorTitle": "Authentification à deux facteurs (2FA)",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "bankingError": "Erreur lors de l'enregistrement des coordonnées bancaires.",
+    "bankingSubtitle": "IBAN et BIC de votre entreprise requis pour l'export SEPA des virements.",
+    "bankingTitle": "Coordonnées Bancaires SEPA",
+    "bankingUpdated": "Coordonnées bancaires enregistrées.",
+    "bankingWarning": "L'export SEPA retournera une erreur 422 tant que l'IBAN de l'entreprise n'est pas configuré.",
+    "companyBic": "BIC / SWIFT (optionnel)",
+    "companyIban": "IBAN de l'entreprise",
+    "ibanHint": "Format IBAN ISO 13616 (majuscules, sans espaces). Les espaces sont ignorés automatiquement.",
+    "ibanPlaceholderDZ": "IBAN ou RIB algérien (20 chiffres)",
+    "saveBanking": "Enregistrer les coordonnées",
+    "sepaNotReady": "SEPA non configuré",
+    "sepaReady": "SEPA prêt"
+  },
+  "systemPage": {
+    "apiError": "Erreur : :error",
+    "apiOperational": "API opérationnelle",
+    "apiOperationalDb": "API opérationnelle — DB :ms ms",
+    "apiServices": "Services API",
+    "apiUnavailable": "Non disponible — GET /health/live",
+    "database": "Base de Données",
+    "dbError": "Erreur : :error",
+    "dbLatency": "Latence : :ms ms",
+    "dbUnavailable": "Non disponible — lancez un Health Check.",
+    "dbUnreachable": "base injoignable",
+    "globalError": "Sonde agrégée : base de données injoignable.",
+    "globalHealthy": "Sonde agrégée DB + Redis opérationnelle.",
+    "globalStatus": "Statut Global",
+    "globalUnavailable": "Non disponible — GET /admin/dashboard/stats",
+    "globalWarning": "Sonde agrégée : dégradation détectée.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Analyse...",
+    "healthError": "Health check terminé — base de données en erreur",
+    "healthLiveUnreachable": "Sonde /health/live injoignable.",
+    "healthOk": "Health check terminé — base de données opérationnelle",
+    "healthUnreachable": "Health check terminé — base de données injoignable",
+    "infraDetails": ":active compagnies actives · PHP :php · queue :queue",
+    "infraUnavailable": "Non disponible — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Erreur lors du chargement des métriques plateforme",
+    "notifObsLoadError": "Erreur lors du chargement de l'observabilité des notifications",
+    "queueObsLoadError": "Erreur lors du chargement de l'observabilité des jobs",
+    "retry": "Réessayer",
+    "serviceUnreachable": "service injoignable",
+    "statsLoadError": "Erreur lors du chargement des stats système",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "title": "Administration Système"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement.",
+    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts",
+    "mobile_title": "Mon Contrat",
+    "back_tooltip": "Retour",
+    "empty_title": "Aucun contrat",
+    "empty_description": "Votre contrat apparaîtra ici une fois configuré.",
+    "label_type": "Type",
+    "label_start_date": "Début",
+    "label_end_date": "Fin",
+    "label_base_salary": "Salaire de base",
+    "loading": "Chargement des contrats...",
+    "status_active": "Actif",
+    "status_expired": "Expiré",
+    "status_draft": "Brouillon",
+    "status_cdi": "CDI"
+  },
+  "training": {
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne",
+    "tabCatalog": "Catalogue",
+    "tabEnrollments": "Inscriptions",
+    "activeCourses": "Cours actifs",
+    "category": "Catégorie",
+    "completionRate": "Taux de complétion",
+    "costPerParticipant": "Coût / participant",
+    "course": "Cours",
+    "description": "Description",
+    "duration": "Durée",
+    "employee": "Employé",
+    "endDate": "Date de fin",
+    "enrollments": "Inscriptions",
+    "hoursUnit": "h",
+    "instructor": "Formateur",
+    "loadError": "Impossible de charger les formations.",
+    "loading": "Chargement des formations...",
+    "location": "Lieu",
+    "maxPlaces": "Places max",
+    "noCourses": "Aucun cours trouvé.",
+    "noDescription": "Aucune description.",
+    "perParticipant": "/ participant",
+    "progress": "Progression",
+    "provider": "Organisme",
+    "searchEnrollmentPlaceholder": "Rechercher une inscription...",
+    "searchSessionPlaceholder": "Rechercher une session...",
+    "session": "Session",
+    "sessions": "Sessions",
+    "sessionsUnit": "sessions",
+    "startDate": "Date de début",
+    "status": "Statut",
+    "statusCancelled": "Annulé",
+    "statusCompleted": "Terminé",
+    "statusDropped": "Abandonné",
+    "statusEnrolled": "Inscrit",
+    "statusInProgress": "En cours",
+    "statusPlanned": "Planifié",
+    "type": "Type",
+    "uncategorized": "Non catégorisé",
+    "upcomingSessions": "Sessions à venir"
+  },
+  "access": {
+    "denied": {
+      "body": "Votre compte n'a pas le rôle Manager requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.",
+      "logout": "Se déconnecter",
+      "title": "Accès refusé",
+      "body_hr": "Votre compte n'a pas le rôle RH requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Votre présence est détectée automatiquement dès que vous entrez dans la zone de l'entreprise. Aucune action requise de votre part."
+      }
+    },
+    "manual": {
+      "desc": "Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l'écran de présence."
+    },
+    "mode": {
+      "title": "Mode de pointage"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ."
+      }
+    },
+    "recommended": "Recommandé",
+    "save": {
+      "error": "Impossible de sauvegarder votre préférence. Vérifiez votre connexion."
+    },
+    "title": "Choisissez comment vous souhaitez pointer votre présence chaque jour."
+  },
+  "approval": {
+    "approved": "Demande approuvée",
+    "rejected": "Demande refusée"
+  },
+  "approvals": {
+    "empty": "Aucune approbation en attente.",
+    "up": {
+      "to": {
+        "date": "Tout est à jour"
+      }
+    },
+    "loading": "Chargement des approbations...",
+    "reject": {
+      "reason": {
+        "hint": "Expliquez la raison...",
+        "label": "Motif du refus"
+      }
+    },
+    "title": "Approbations"
+  },
+  "back": "Retour",
+  "employee": {
+    "number": "Employé #{id}"
+  },
+  "error": {
+    "prefix": "Erreur : {message}",
+    "unexpected": "Une erreur est survenue"
   },
   "evaluation": {
     "period": "Période : {period}"
@@ -2233,6 +2725,130 @@
   },
   "attendanceToday": "AUJOURD'HUI",
   "teamRevokeHrSuccess": "Permissions RH retirées.",
+  "evaluations": {
+    "empty": "Aucune évaluation",
+    "title": "Mes Évaluations",
+    "empty_hint": "Vous n'avez pas encore d'évaluation enregistrée."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Fonction bientôt disponible"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Compléter mon onboarding"
+    },
+    "onboarding": {
+      "hint": "Configurez votre espace en quelques étapes."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Chargement du résumé mensuel..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Réduire",
+      "empty": "L'organigramme sera disponible une fois les employés configurés.",
+      "expand": "Développer"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "La page demandée est introuvable ou la navigation a échoué."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "Aucune session GPS en attente de validation.",
+      "to": {
+        "validate": "À valider"
+      },
+      "up": {
+        "to": {
+          "date": "Tout est à jour"
+        }
+      }
+    }
+  },
+  "refresh": "Actualiser",
+  "register": {
+    "create": {
+      "account": "Créer votre compte"
+    },
+    "creating": "Création de compte en cours...",
+    "first": {
+      "name": "Prénom"
+    },
+    "min": {
+      "chars": "8 caractères minimum"
+    },
+    "password": "Mot de passe",
+    "required": "Obligatoire",
+    "submit": "Créer mon compte"
+  },
+  "retry": "Réessayer",
+  "sa": {
+    "approved": "Approuvées",
+    "config": {
+      "load": {
+        "error": "Impossible de charger la configuration.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "Pointage GPS — tableau de bord équipe"
+    },
+    "detected": "Détectées",
+    "disable": {
+      "auto": {
+        "gps": "Désactiver le GPS automatique"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Activer le GPS automatique"
+      }
+    },
+    "forced": "Imposé",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
+    },
+    "presence": {
+      "in": {
+        "progress": "Présence en cours depuis {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Sessions récentes"
+    },
+    "rejected": "Rejetées",
+    "sessions": {
+      "load": {
+        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
+      }
+    },
+    "status": {
+      "approved": "Approuvée",
+      "cancelled": "Annulée",
+      "detected": "Détectée",
+      "pending": "En validation",
+      "rejected": "Rejetée"
+    }
+  },
   "session": {
     "approved": "Session approuvée ✓",
     "entry": {
@@ -10536,6 +11152,1256 @@
   "attendanceMenuMonthly": "Mon mois complet",
   "settingsRecoveryEmailHint": "Email de récupération (optionnel)",
   "settingsCompanyQrLabel": "QR de l’entreprise"
+  "sessions": {
+    "to": {
+      "validate": "Sessions à valider"
+    }
+  },
+  "back_to": {
+    "home": "Retour à l'accueil"
+  },
+  "absences": {
+    "title": "Mes absences",
+    "subtitle": "Demandes, soldes et décisions RH",
+    "request": "Demander",
+    "empty_title": "Aucune absence",
+    "empty_hint": "Demandez une absence depuis le bouton principal, puis suivez la décision RH ici.",
+    "employee_label": "Employé",
+    "type_fallback": "Absence",
+    "loading": "Chargement des absences",
+    "approve": "Approuver",
+    "reject": "Refuser",
+    "cancel_request": "Annuler la demande",
+    "view_proof": "Voir le justificatif",
+    "proof_downloaded": "Justificatif téléchargé : ",
+    "failure": "Échec : ",
+    "reason_missing": "Motif non renseigné",
+    "date_missing": "Date de demande non renseignée",
+    "current_company": "Entreprise courante",
+    "requester_label": "Demandeur : ",
+    "company_label": "Entreprise : ",
+    "request_label": "Demande : ",
+    "reason_label": "Motif : ",
+    "approve_title": "Approuver cette absence ?",
+    "reason_not_provided": "non renseigné",
+    "approve_body": "La demande passera en statut approuvé et l'employé sera notifié.",
+    "approved_snack": "Absence approuvée.",
+    "reject_title": "Refuser l'absence",
+    "reject_helper": "Le motif sera visible par l'employé.",
+    "rejected_snack": "Absence refusée.",
+    "cancel_title": "Annuler cette demande ?",
+    "cancel_body": "La demande en attente sera retirée et le RH verra le statut annulé.",
+    "keep": "Garder",
+    "cancel": "Annuler",
+    "cancelled_snack": "Demande d'absence annulée.",
+    "status_approved": "approuvée",
+    "status_pending": "en attente",
+    "status_rejected": "rejetée",
+    "status_cancelled": "annulée",
+    "new_absence": "Nouvelle absence",
+    "new_absence_hint": "Choisissez le type de solde et la période à transmettre au RH.",
+    "no_type_available": "Aucun type d'absence disponible pour ce compte. Contactez le RH pour configurer les soldes.",
+    "type": "Type",
+    "type_required": "Type d'absence requis",
+    "balances_loading": "Chargement des soldes",
+    "start": "Début",
+    "end": "Fin",
+    "reason": "Motif",
+    "reasonHint": "Ex : rendez-vous médical, congé familial…",
+    "reasonRequired": "Motif obligatoire",
+    "attach_proof": "Joindre un justificatif (optionnel)",
+    "proof_attached": "Justificatif joint",
+    "submit_to_hr": "Soumettre au RH",
+    "submitted_snack": "Demande d'absence transmise au RH.",
+    "days_available": " j disponibles",
+    "days_short": " j",
+    "empty": "Aucune absence",
+    "list": {
+      "subtitle": "Demandes, soldes et décisions RH",
+      "title": "Mes Absences"
+    }
+  },
+  "settings": {
+    "journey": {
+      "load": {
+        "error": "Impossible de charger votre parcours."
+      },
+      "in": {
+        "progress": "En cours"
+      },
+      "title": "Parcours professionnel",
+      "unknown": {
+        "company": "Entreprise",
+        "date": "Date inconnue",
+        "position": "Poste non renseigné"
+      }
+    },
+    "stats": {
+      "load": {
+        "error": "Impossible de charger les statistiques."
+      }
+    },
+    "account": {
+      "portable": {
+        "hint": "Votre compte reste utile même quand vous changez d'entreprise."
+      },
+      "subtitle": "Profil, langue et sécurité",
+      "title": "Compte"
+    },
+    "biometric": {
+      "approved": "Approuvé",
+      "consent": "Je consens au traitement de mes données biométriques.",
+      "device": "Appareil de référence (optionnel)",
+      "face": "Visage",
+      "fingerprint": "Empreinte digitale",
+      "manager": {
+        "hint": "Réservée aux profils employés dans cette app manager."
+      },
+      "none": "Aucun enrôlement",
+      "note": "Note (optionnel)",
+      "pending": "En attente",
+      "rejected": "Rejeté",
+      "saved": "Préparation biométrique enregistrée.",
+      "terminal": {
+        "hint": "Préparation doigt et visage pour les bornes terrain."
+      }
+    },
+    "confirm": {
+      "password": "Confirmer le mot de passe"
+    },
+    "current": {
+      "password": "Mot de passe actuel"
+    },
+    "edge": {
+      "saved": "Paramètres Edge enregistrés."
+    },
+    "email": {
+      "invalid": "Email invalide",
+      "label": "Email",
+      "required": "Email requis"
+    },
+    "employee": {
+      "profile": {
+        "hint": "Profil employé : accès au pointage, à l'historique personnel et aux paramètres de préparation biométrie."
+      }
+    },
+    "first": {
+      "name": "Prénom",
+      "name_required": "Prénom requis"
+    },
+    "kiosk": {
+      "biometric": {
+        "title": "Biométrie kiosk"
+      }
+    },
+    "language": {
+      "saved": "Langue enregistrée.",
+      "subtitle": "La langue choisie pilote aussi les notifications et textes futurs.",
+      "title": "Langue"
+    },
+    "last": {
+      "name": {
+        "label": "Nom",
+        "required": "Nom requis"
+      }
+    },
+    "logout": "Déconnexion",
+    "manager": {
+      "account": {
+        "hint": "Un compte manager doit rester clair, sécurisé et prêt pour les décisions terrain."
+      }
+    },
+    "mobile": {
+      "access": "Accès mobile"
+    },
+    "my": {
+      "profile": "Mon profil",
+      "qr": {
+        "employee": "Mon QR code",
+        "manager": "Mon QR manager"
+      }
+    },
+    "new": {
+      "password": "Nouveau mot de passe"
+    },
+    "no": {
+      "company": {
+        "qr": "Aucun QR entreprise dans le presse-papiers."
+      },
+      "journey": "Aucun parcours enregistré pour le moment."
+    },
+    "notifications": {
+      "subtitle": "Canaux, heures calmes et alertes manager opérationnelles.",
+      "title": "Notifications"
+    },
+    "password": {
+      "changed": "Mot de passe modifié.",
+      "min": {
+        "length": "8 caractères minimum"
+      },
+      "mismatch": "Mots de passe différents"
+    },
+    "paste": {
+      "qr": "Coller le QR fourni par le manager ou le RH"
+    },
+    "personal": {
+      "contacts": "Contacts personnels",
+      "email": "Email personnel (optionnel)",
+      "phone": "Téléphone personnel (optionnel)"
+    },
+    "portable": {
+      "account": {
+        "hint": "Vos informations personnelles restent attachées au compte."
+      }
+    },
+    "preferred": {
+      "language": "Langue préférée",
+      "language_label": "Langue préférée"
+    },
+    "profile": {
+      "saved": "Profil enregistré."
+    },
+    "qr": {
+      "copy": {
+        "token": "Copier aussi le jeton"
+      },
+      "manager": {
+        "hint": "Un collègue ou un RH peut le scanner pour pré-remplir une invitation."
+      }
+    },
+    "recovery": {
+      "email": "Email de secours (optionnel)"
+    },
+    "save": "Enregistrer",
+    "save_enrollment": "Enregistrer la préparation",
+    "save_profile": "Enregistrer le profil",
+    "saving": "Enregistrement...",
+    "security": {
+      "title": "Sécurité"
+    },
+    "session": {
+      "subtitle": "La déconnexion reste volontairement en bas de page.",
+      "title": "Session"
+    },
+    "team": {
+      "drive": "Pilotage équipe",
+      "drive_hint": "Profil, rôle et permissions restent lisibles pour les actions RH."
+    }
+  },
+  "cabinet": {
+    "screen": {
+      "title_root": "Mon placard",
+      "empty_title": "Placard vide",
+      "empty_description": "Ajoutez des dossiers et documents pour organiser votre espace.",
+      "folders": "Dossiers",
+      "documents": "Documents",
+      "new_folder": "Nouveau dossier",
+      "add_document": "Ajouter un document",
+      "add_document_subtitle": "Depuis vos fichiers ou la camera",
+      "folder_name_hint": "Nom du dossier",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "uploading": "Envoi en cours...",
+      "document_added": "Document ajouté avec succès",
+      "upload_failed": "Échec de l'envoi du document. Réessayez.",
+      "share_title": "Partager « {name} »",
+      "create_share_link": "Créer un lien de partage",
+      "link_copied": "Lien copié : {url}",
+      "share_by_email": "Partager par email",
+      "email_hint": "Email du destinataire",
+      "send": "Envoyer",
+      "share_sent": "Partage envoyé à {email}",
+      "delete_title": "Supprimer le document ?",
+      "delete_body": "Le document « {name} » sera supprimé définitivement.",
+      "delete": "Supprimer",
+      "documents_count": "{count, plural, =1{1 doc} other{{count} docs}}"
+    }
+  },
+  "absence": {
+    "cancel": {
+      "body": "La demande en attente sera retirée et le RH verra le statut annulé.",
+      "request": "Annuler la demande",
+      "title": "Annuler cette demande ?"
+    },
+    "cancelled": "Demande d'absence annulée.",
+    "label": "Absence",
+    "new": {
+      "hint": "Choisissez le type de solde et la période à transmettre au RH.",
+      "title": "Nouvelle absence"
+    },
+    "no": {
+      "type": "Aucun type d'absence disponible pour ce compte. Contactez le RH pour configurer les soldes."
+    },
+    "request": "Demander",
+    "view": {
+      "proof": "Voir le justificatif"
+    }
+  },
+  "action": {
+    "approve": "Approuver",
+    "cancel": "Annuler",
+    "reject": "Refuser"
+  },
+  "cancel": {
+    "request": "Annuler la demande"
+  },
+  "confirm": {
+    "receipt": "Confirmer la réception"
+  },
+  "empty": {
+    "absences": "Aucune absence",
+    "advances": "Aucune avance",
+    "history": "Aucun historique",
+    "payslips": "Aucune fiche de paie",
+    "sessions": "Aucune session"
+  },
+  "load": {
+    "error": "Erreur de chargement"
+  },
+  "no": {
+    "data": "Aucune donnée",
+    "reason": "Aucun motif",
+    "tasks": {
+      "today": "Aucune tâche aujourd'hui"
+    }
+  },
+  "salary": {
+    "advance": {
+      "attach": {
+        "hint": "Joindre une pièce (optionnel)"
+      },
+      "attachment": {
+        "label": "Pièce jointe"
+      },
+      "cancel": {
+        "action": "Annuler",
+        "body": "La demande en attente sera retirée avant décision RH.",
+        "request": "Annuler la demande",
+        "title": "Annuler cette avance ?"
+      },
+      "cancelled": "Demande d'avance annulée.",
+      "confirm": {
+        "action": "Confirmer",
+        "received": "Confirmer réception",
+        "received_body": "Confirmez seulement si le montant est effectivement arrivé. Cette action sera historisée.",
+        "received_title": "Confirmer la réception ?"
+      },
+      "keep": "Garder",
+      "list": {
+        "subtitle": "Demandes, statuts et remboursement",
+        "title": "Avances"
+      },
+      "no": {
+        "reason": "Aucun motif"
+      },
+      "payment": {
+        "declared": "Le manager a déclaré le paiement. Confirmez uniquement après réception effective."
+      },
+      "request": "Demander",
+      "request_title": "Demande d'avance",
+      "submitted": "Demande d'avance transmise au RH.",
+      "view": {
+        "proof": "Voir la pièce jointe"
+      }
+    },
+    "advances": {
+      "empty": "Aucune avance",
+      "empty_hint": "Demandez une avance en quelques secondes, puis suivez la décision RH ici.",
+      "loading": "Chargement des avances"
+    },
+    "status": {
+      "active": "active",
+      "approved": "approuvée",
+      "cancelled": "annulée",
+      "pending": "en attente",
+      "received": "reçue",
+      "rejected": "rejetée",
+      "to": {
+        "confirm": "à confirmer"
+      },
+      "validated": "validée"
+    }
+  },
+  "save": {
+    "profile": "Enregistrer le profil"
+  },
+  "saving": {
+    "profile": "Enregistrement…"
+  },
+  "tax": {
+    "slabs": {
+      "sim": {
+        "compare": "Salaire à comparer"
+      }
+    }
+  },
+  "team": {
+    "add": "Ajouter",
+    "add_collaborator": "Ajouter un collaborateur",
+    "add_from_qr": "Depuis QR employé",
+    "add_from_qr_hint": "Coller le code fourni",
+    "add_manual_form": "Formulaire classique",
+    "add_manual_hint": "Saisie manuelle complète",
+    "archive": "Archiver",
+    "archive_confirm_action": "Archiver",
+    "archive_confirm_title": "Archiver cet employé ?",
+    "archive_success": "Employé archivé.",
+    "confirm": {
+      "cancel": "Annuler"
+    },
+    "edit": {
+      "profile": "Modifier la fiche",
+      "profile_hint": "Mettre à jour les champs RH essentiels"
+    },
+    "employee": {
+      "label": "Employé"
+    },
+    "employees": {
+      "tab": "Employés"
+    },
+    "empty": "Aucun collaborateur",
+    "empty_hint": "Commencez par ajouter votre équipe avec le bouton ci-dessous.",
+    "invitations": {
+      "tab": "Invitations"
+    },
+    "make": {
+      "hr": "Nommer RH",
+      "hr_confirm_action": "Nommer RH",
+      "hr_confirm_title": "Nommer RH ?",
+      "hr_hint": "Donner les permissions RH à ce collaborateur",
+      "hr_success": "RH nommé."
+    },
+    "manager": {
+      "label": "Manager",
+      "required": "Accès manager/RH requis"
+    },
+    "revoke": {
+      "hr": "Révoquer RH",
+      "hr_confirm_action": "Révoquer",
+      "hr_confirm_title": "Révoquer RH ?",
+      "hr_hint": "Retirer les permissions RH de ce compte",
+      "hr_success": "Permissions RH retirées."
+    },
+    "subtitle": "Collaborateurs et invitations",
+    "title": "Équipe",
+    "view": {
+      "attendance": "Statistiques et pointages",
+      "attendance_hint": "Présence, anomalies, historique",
+      "profile": "Voir la fiche",
+      "profile_hint": "Coordonnées, poste, salaire, horaire",
+      "tasks": "Tâches",
+      "tasks_hint": "Voir ou assigner des tâches terrain"
+    }
+  },
+  "attendanceBreakFailure": "Pause non confirmée",
+  "attendanceBreakHint": "Ferme la session et marque une pause",
+  "attendanceBreakLoading": "Envoi de la pause",
+  "attendanceBreakSuccess": "Pause confirmée.",
+  "attendanceBreakTitle": "Partir en pause",
+  "attendanceCheckinFailure": "Arrivée non confirmée. Réessayez.",
+  "attendanceCheckinLabel": "Arrivée",
+  "attendanceCheckinSending": "Envoi de l'arrivée vers le serveur...",
+  "attendanceCheckinSuccess": "Arrivée confirmée.",
+  "attendanceCheckoutFailure": "Départ non confirmé. Réessayez.",
+  "attendanceCheckoutLabel": "Départ",
+  "attendanceCheckoutSending": "Envoi du départ vers le serveur...",
+  "attendanceCheckoutSuccess": "Départ confirmé.",
+  "attendanceCorrectionCheckinLabel": "Arrivée réelle *",
+  "attendanceCorrectionCheckoutLabel": "Départ réel",
+  "attendanceCorrectionDirectHint": "La correction sera appliquée au dossier de pointage.",
+  "attendanceCorrectionNoLogWarning": "Aucune ligne de pointage existante à modifier pour ce jour.",
+  "attendanceCorrectionReasonHint": "Motif (ex: oubli de pointage à 8h)",
+  "attendanceCorrectionReasonRequired": "Motif obligatoire",
+  "attendanceCorrectionRequestHint": "La demande sera transmise au RH pour validation.",
+  "attendanceCorrectionSubmitDirect": "Modifier",
+  "attendanceCorrectionSubmitRequest": "Demander une modification",
+  "attendanceDailyEstimate": "Gain estimé du jour",
+  "attendanceFingerprintEnable": "Activer l'empreinte (optionnel)",
+  "attendanceFingerprintEnabled": "Empreinte activée (optionnel)",
+  "attendanceHistoryTitle": "Historique",
+  "attendanceMenuEdit": "Modifier",
+  "attendanceMenuMonthly": "Mon mois complet",
+  "attendanceMenuProfile": "Mon profil",
+  "attendanceMissionFailure": "Mission non confirmée",
+  "attendanceMissionHint": "Temps de travail hors site habituel",
+  "attendanceMissionLoading": "Envoi mission",
+  "attendanceMissionSuccess": "Mission démarrée.",
+  "attendanceMissionTitle": "Mission",
+  "attendanceNone": "Aucun",
+  "attendanceOtherLabel": "Autre",
+  "attendanceOvertimeFailure": "Heures supplémentaires non confirmées",
+  "attendanceOvertimeHint": "Démarrer une session d'heures supp",
+  "attendanceOvertimeLoading": "Envoi heures supplémentaires",
+  "attendanceOvertimeShort": "Heure supp",
+  "attendanceOvertimeSuccess": "Heures supplémentaires démarrées.",
+  "attendanceOvertimeTitle": "Heures supplémentaires",
+  "attendancePauseLabel": "Pause",
+  "attendancePreferencesTitle": "Préférences",
+  "attendancePressToCheckin": "Appuyez pour enregistrer votre arrivée",
+  "attendancePressToCheckout": "Appuyez pour enregistrer votre départ",
+  "attendanceResumeFailure": "Reprise non confirmée",
+  "attendanceResumeHint": "Reprendre après une pause ou une sortie",
+  "attendanceResumeLoading": "Envoi reprise",
+  "attendanceResumeSuccess": "Reprise confirmée.",
+  "attendanceResumeTitle": "Reprise",
+  "attendanceRoleEmployee": "Employé",
+  "attendanceRoleEmployee2": "Employé",
+  "attendanceRoleHr": "Responsable RH",
+  "attendanceRoleManager": "Manager",
+  "attendanceRolePrincipal": "Manager principal",
+  "attendanceSaving": "Enregistrement en cours...",
+  "attendanceSettingsTitle": "Paramètres",
+  "attendanceStatusComplete": "Complet",
+  "attendanceStatusInProgress": "En cours",
+  "attendanceStatusLate": "Retard",
+  "attendanceStatusPointer": "À pointer",
+  "attendanceSyncTitle": "Synchronisation",
+  "attendanceTasksTitle": "Tâches du jour",
+  "attendanceThisWeek": "CETTE SEMAINE",
+  "attendanceToday": "AUJOURD'HUI",
+  "attendanceTrainingLabel": "Formation",
+  "attendanceTravelFailure": "Déplacement non confirmé",
+  "attendanceTravelHint": "Temps de déplacement professionnel",
+  "attendanceTravelLoading": "Envoi déplacement",
+  "attendanceTravelSuccess": "Déplacement démarré.",
+  "attendanceTravelTitle": "Déplacement",
+  "attendanceWeekEarnings": "Gain estimé",
+  "attendanceWeekHours": "Heures semaine",
+  "attendanceWeekLate": "Retard cumulé",
+  "attendanceWeekUnavailable": "Semaine indisponible pour l'instant. Le pointage reste utilisable.",
+  "attendanceWorkTypeTitle": "Type de pointage",
+  "emptyHistory": "Aucun historique",
+  "emptyPayslips": "Aucune fiche de paie",
+  "loadError": "Erreur de chargement",
+  "noData": "Aucune donnée",
+  "salaryAdvanceAttachHint": "Joindre une pièce (optionnel)",
+  "salaryAdvanceAttachmentLabel": "Pièce jointe",
+  "salaryAdvanceCancelAction": "Annuler",
+  "salaryAdvanceCancelBody": "La demande en attente sera retirée avant décision RH.",
+  "salaryAdvanceCancelRequest": "Annuler la demande",
+  "salaryAdvanceCancelTitle": "Annuler cette avance ?",
+  "salaryAdvanceCancelled": "Demande d'avance annulée.",
+  "salaryAdvanceConfirmAction": "Confirmer",
+  "salaryAdvanceConfirmReceived": "Confirmer réception",
+  "salaryAdvanceConfirmReceivedBody": "Confirmez seulement si le montant est effectivement arrivé. Cette action sera historisée.",
+  "salaryAdvanceConfirmReceivedTitle": "Confirmer la réception ?",
+  "salaryAdvanceKeep": "Garder",
+  "salaryAdvanceListSubtitle": "Demandes, statuts et remboursement",
+  "salaryAdvanceListTitle": "Avances",
+  "salaryAdvanceNoReason": "Aucun motif",
+  "salaryAdvancePaymentDeclared": "Le manager a déclaré le paiement. Confirmez uniquement après réception effective.",
+  "salaryAdvanceRequest": "Demander",
+  "salaryAdvanceRequestTitle": "Demande d'avance",
+  "salaryAdvanceSubmitted": "Demande d'avance transmise au RH.",
+  "salaryAdvanceViewProof": "Voir la pièce jointe",
+  "salaryAdvancesEmpty": "Aucune avance",
+  "salaryAdvancesEmptyHint": "Demandez une avance en quelques secondes, puis suivez la décision RH ici.",
+  "salaryAdvancesLoading": "Chargement des avances",
+  "salaryStatusActive": "active",
+  "salaryStatusApproved": "approuvée",
+  "salaryStatusCancelled": "annulée",
+  "salaryStatusPending": "en attente",
+  "salaryStatusReceived": "reçue",
+  "salaryStatusRejected": "rejetée",
+  "salaryStatusToConfirm": "à confirmer",
+  "salaryStatusValidated": "validée",
+  "settingsAccountPortableHint": "Votre compte reste utile même quand vous changez d'entreprise.",
+  "settingsAccountSubtitle": "Profil, langue et sécurité",
+  "settingsAccountTitle": "Compte",
+  "settingsBiometricManagerHint": "Réservée aux profils employés dans cette app manager.",
+  "settingsBiometricTerminalHint": "Préparation doigt et visage pour les bornes terrain.",
+  "settingsCurrentPassword": "Mot de passe actuel",
+  "settingsEdgeSaved": "Paramètres Edge enregistrés.",
+  "settingsEmailInvalid": "Email invalide",
+  "settingsEmailLabel": "Email",
+  "settingsEmailRequired": "Email requis",
+  "settingsEmployeeProfileHint": "Profil employé : accès au pointage, à l'historique personnel et aux paramètres de préparation biométrie.",
+  "settingsFirstName": "Prénom",
+  "settingsFirstNameRequired": "Prénom requis",
+  "settingsKioskBiometricTitle": "Biométrie kiosk",
+  "settingsLanguageTitle": "Langue",
+  "settingsLastNameLabel": "Nom",
+  "settingsLastNameRequired": "Nom requis",
+  "settingsLogout": "Déconnexion",
+  "settingsManagerAccountHint": "Un compte manager doit rester clair, sécurisé et prêt pour les décisions terrain.",
+  "settingsManagerProfileHint": "Profil RH/manager : accès au suivi de l'équipe et à l'historique.",
+  "settingsMobileAccess": "Accès mobile",
+  "settingsMyProfile": "Mon profil",
+  "settingsNewPassword": "Nouveau mot de passe",
+  "settingsNoCompanyQr": "Aucun QR entreprise dans le presse-papiers.",
+  "settingsNoJourney": "Aucun parcours enregistré pour le moment.",
+  "settingsNotificationsSubtitle": "Canaux, heures calmes et alertes manager opérationnelles.",
+  "settingsNotificationsTitle": "Notifications",
+  "settingsOverview": "Vue d'ensemble",
+  "settingsPortableAccountHint": "Vos informations personnelles restent attachées au compte.",
+  "settingsPreferredLanguage": "Langue préférée",
+  "settingsSave": "Enregistrer",
+  "settingsSaveProfile": "Enregistrer le profil",
+  "settingsSaving": "Enregistrement...",
+  "settingsSecurityTitle": "Sécurité",
+  "settingsSessionSubtitle": "La déconnexion reste volontairement en bas de page.",
+  "settingsSessionTitle": "Session",
+  "settingsTeamDrive": "Pilotage équipe",
+  "settingsTeamDriveHint": "Profil, rôle et permissions restent lisibles pour les actions RH.",
+  "teamAdd": "Ajouter",
+  "teamAddCollaborator": "Ajouter un collaborateur",
+  "teamAddFromQr": "Depuis QR employé",
+  "teamAddFromQrHint": "Coller le code fourni",
+  "teamAddManualForm": "Formulaire classique",
+  "teamAddManualHint": "Saisie manuelle complète",
+  "teamArchive": "Archiver",
+  "teamArchiveConfirmAction": "Archiver",
+  "teamArchiveConfirmTitle": "Archiver cet employé ?",
+  "teamArchiveSuccess": "Employé archivé.",
+  "teamConfirmCancel": "Annuler",
+  "teamEditProfile": "Modifier la fiche",
+  "teamEditProfileHint": "Mettre à jour les champs RH essentiels",
+  "teamEmployeeLabel": "Employé",
+  "teamEmployeesTab": "Employés",
+  "teamEmpty": "Aucun collaborateur",
+  "teamEmptyHint": "Commencez par ajouter votre équipe avec le bouton ci-dessous.",
+  "teamInvitationsTab": "Invitations",
+  "teamLoading": "Chargement de l'équipe",
+  "teamMakeHr": "Nommer RH",
+  "teamMakeHrConfirmAction": "Nommer RH",
+  "teamMakeHrConfirmTitle": "Nommer RH ?",
+  "teamMakeHrHint": "Donner les permissions RH à ce collaborateur",
+  "teamMakeHrSuccess": "RH nommé.",
+  "teamManagerRequired": "Accès manager/RH requis",
+  "teamManagerRequiredHint": "Seuls les managers principaux et RH peuvent gérer l'équipe depuis le mobile.",
+  "teamRevokeHr": "Révoquer RH",
+  "teamRevokeHrConfirmAction": "Révoquer",
+  "teamRevokeHrConfirmTitle": "Révoquer RH ?",
+  "teamRevokeHrHint": "Retirer les permissions RH de ce compte",
+  "teamRevokeHrSuccess": "Permissions RH retirées.",
+  "teamSubtitle": "Collaborateurs et invitations",
+  "teamTitle": "Équipe",
+  "teamViewAttendance": "Statistiques et pointages",
+  "teamViewAttendanceHint": "Présence, anomalies, historique",
+  "teamViewProfile": "Voir la fiche",
+  "teamViewProfileHint": "Coordonnées, poste, salaire, horaire",
+  "teamViewTasks": "Tâches",
+  "teamViewTasksHint": "Voir ou assigner des tâches terrain",
+  "actionApprove": "Approuver",
+  "actionCancel": "Annuler",
+  "actionReject": "Refuser",
+  "approvalsLoading": "Chargement des approbations...",
+  "approvalsRejectReasonHint": "Expliquez la raison...",
+  "approvalsRejectReasonLabel": "Motif du refus",
+  "approvalsTitle": "Approbations",
+  "attendanceCorrectionTitle": "Modifier le pointage",
+  "attendanceRoleFinance": "Finance",
+  "salaryAdvanceError": "Échec : {error}",
+  "salaryAdvanceMonths": "{reason} - {months} mois",
+  "salaryAdvanceProofDownloaded": "Pièce jointe téléchargée: {path}",
+  "salaryAdvanceSemantics": "Avance de {amount}, motif : {reason}, statut {status}.",
+  "settingsJourneyInProgress": "En cours",
+  "settingsJourneyTitle": "Parcours professionnel",
+  "settingsJourneyToday": "Aujourd'hui",
+  "settingsJourneyUnknownCompany": "Entreprise",
+  "settingsJourneyUnknownDate": "Date inconnue",
+  "settingsJourneyUnknownPosition": "Poste non renseigné",
+  "settingsLanguageSubtitle": "La langue choisie pilote aussi les notifications et textes futurs.",
+  "settingsMyQrManager": "Mon QR manager",
+  "settingsPasteQr": "Coller le QR fourni par le manager ou le RH",
+  "settingsPersonalContacts": "Contacts personnels",
+  "settingsPersonalEmail": "Email personnel (optionnel)",
+  "settingsPersonalPhone": "Téléphone personnel (optionnel)",
+  "settingsQrCopyToken": "Copier aussi le jeton",
+  "settingsQrManagerHint": "Un collègue ou un RH peut le scanner pour pré-remplir une invitation.",
+  "settingsRecoveryEmail": "Email de secours (optionnel)",
+  "settingsShareProfile": "Partagez votre profil ou scannez le QR d'une entreprise.",
+  "teamActionError": "Échec : {error}",
+  "attendanceAccountSuspended": "Compte suspendu ou accès refusé.",
+  "attendanceBeforeDeductions": "Avant déductions légales",
+  "attendanceBreakRegistered": "Pause enregistrée.",
+  "attendanceCheckinConfirmed": "Arrivée confirmée.",
+  "attendanceCheckinNormal": "Arrivée normale",
+  "attendanceCheckinNotConfirmed": "Arrivée non confirmée",
+  "attendanceCheckinRegistered": "Arrivée enregistrée à l'instant.",
+  "attendanceCheckoutConfirmed": "Départ confirmé.",
+  "attendanceCheckoutNotConfirmed": "Départ non confirmé",
+  "attendanceCheckoutRegistered": "Départ enregistré à l'instant.",
+  "attendanceCloseTask": "Clôturer la tâche",
+  "attendanceCorrectionApplied": "La correction sera appliquée au dossier de pointage.",
+  "attendanceCorrectionDirectBody": "Corriger directement cette ligne de pointage.",
+  "attendanceCorrectionDirectSnack": "Pointage du {date} modifié.",
+  "attendanceCorrectionEditDateTitle": "Modifier le {date}",
+  "attendanceCorrectionRequestBody": "Soumettre une correction au RH pour validation.",
+  "attendanceCorrectionRequestSnack": "Demande du {date} soumise au RH - vous serez notifié de la décision.",
+  "attendanceCorrectionSentToHr": "La demande sera transmise au RH pour validation.",
+  "attendanceCurrentMonth": "Mois actuel",
+  "attendanceDayDetail": "Détail par jour",
+  "attendanceDayDetails": "Détails de la journée",
+  "attendanceDayDetailsBody": "Voir les pointages, pauses, heures supp et temps réel.",
+  "attendanceDayNoSessionsYet": "Cette journée ne contient pas encore de pointage.",
+  "attendanceDaySessionsSummary": "{sessions} session(s) - {hours} travaillées.",
+  "attendanceDayTodayLabel": "Aujourd'hui",
+  "attendanceDayYesterdayLabel": "Hier",
+  "attendanceDaysAbsentShort": "{count} abs.",
+  "attendanceDaysPresentRatio": "{present} jours présents / {working} ouvrés",
+  "attendanceDeductionsLabel": "Retenues",
+  "attendanceDeductionsSub": "Déductions : {amount}",
+  "attendanceEndWork": "Terminer le travail",
+  "attendanceEstimateDisclaimer": "Estimation non officielle. Le bulletin de paie fait foi.",
+  "attendanceEstimatedEarnings": "Gain estimé",
+  "attendanceFinish": "Terminer",
+  "attendanceGrossEstimate": "Gain brut estimé",
+  "attendanceGrossLabel": "Brut",
+  "attendanceHistoryEmpty": "Rien ici pour le moment. Vos pointages apparaîtront au fur et à mesure.",
+  "attendanceHoursLabel": "Heures",
+  "attendanceHoursWorkedLabel": "Heures travaillées",
+  "attendanceIncludedGross": "Incluses dans le gain brut",
+  "attendanceIncludedGrossShort": "Incluses brut",
+  "attendanceInvalidDuration": "Durée invalide",
+  "attendanceInvalidPayload": "Données de pointage invalides.",
+  "attendanceLateMinutes": "{minutes} min",
+  "attendanceLoadDegradedNotice": "Les données du jour prennent plus de temps que prévu. L'écran reste utilisable, vous pouvez actualiser.",
+  "attendanceLoadFailed": "Impossible de charger les données : {error}",
+  "attendanceMarkDone": "Marquer terminée",
+  "attendanceMonthEmptyHint": "Si aucune donnée n'existe encore, un résumé vide sera affiché.",
+  "attendanceMonthLoadedHint": "Le mois est bien chargé. Les gains et heures resteront à zéro tant qu'aucun pointage valide n'existe.",
+  "attendanceMonthSyncing": "Synchronisation du mois...",
+  "attendanceMyMonth": "Mon mois",
+  "attendanceNetEstimate": "Net estimé",
+  "attendanceNextMonth": "Mois suivant",
+  "attendanceNoHistory": "Aucun historique",
+  "attendanceNoLogToEdit": "Aucune ligne de pointage existante à modifier pour ce jour.",
+  "attendanceNoPunchForDay": "Aucun pointage enregistré pour cette journée.",
+  "attendanceNoSession": "Aucune session",
+  "attendanceOutsideZoneManagerNotice": "{fallback} Pointage hors zone détecté; contrôlez le contexte avant validation RH.",
+  "attendanceOutsideZoneNotice": "{fallback} Vous semblez hors de la zone autorisée; votre manager sera notifié si la règle entreprise l'exige.",
+  "attendanceOvertimeLabel": "Heures supplémentaires",
+  "attendanceOvertimeShortLabel": "Heures supp",
+  "attendancePersonalTracking": "Suivi personnel",
+  "attendancePresence": "Présence",
+  "attendancePreviousMonth": "Mois précédent",
+  "attendancePunchFailed": "Le pointage n'a pas pu être confirmé. Vérifiez la connexion puis réessayez.",
+  "attendanceRealCheckinRequired": "Arrivée réelle *",
+  "attendanceRealCheckout": "Départ réel",
+  "attendanceRealTime": "Temps réel",
+  "attendanceRealTimeHint": "Indiquez le temps réel et une note courte avant le départ.",
+  "attendanceRefresh": "Actualiser",
+  "attendanceRequestCorrection": "Demander une modification",
+  "attendanceRetry": "Réessayer",
+  "attendanceRoleForbidden": "Votre rôle ne permet pas cette action de pointage.",
+  "attendanceSaveDeparture": "Enregistrer le départ de cette session",
+  "attendanceSeeHistory": "Voir l'historique",
+  "attendanceSendCheckin": "Envoi de l'arrivée",
+  "attendanceSendCheckout": "Envoi du départ",
+  "attendanceSendModificationFailed": "Impossible d'envoyer la modification pour le moment.",
+  "attendanceSessionRange": "{from} -> {to}",
+  "attendanceStartDay": "Démarrer la journée",
+  "attendanceSummaryUnavailable": "Résumé indisponible",
+  "attendanceTask": "Tâche",
+  "attendanceTaskDone": "Tâche terminée.",
+  "attendanceTaskFailed": "Échec : {error}",
+  "attendanceTaskNote": "Note de réalisation",
+  "attendanceTasksSectionTitle": "TACHES DU JOUR",
+  "attendanceTasksSyncing": "Synchronisation des tâches du jour...",
+  "attendanceToPunch": "À pointer",
+  "attendanceTotalDays": "Total jours",
+  "attendanceTotalHours": "Total heures",
+  "attendanceTotalLate": "Retard cumulé",
+  "attendanceWorkedTime": "Temps travaillé",
+  "payrollAdvancesDeducted": "Avances déduites",
+  "payrollAlreadyPaid": "Déjà payé",
+  "payrollBalanceUnavailable": "Solde temporairement indisponible",
+  "payrollDocsUnavailable": "Documents temporairement indisponibles",
+  "payrollDocumentDownloaded": "Document téléchargé : {path}",
+  "payrollDownloadPayslip": "Télécharger le bulletin PDF",
+  "payrollDownloading": "Téléchargement en cours",
+  "payrollEmptyHint": "Vos fiches de paie apparaîtront ici dès qu'elles seront validées.",
+  "payrollError": "Erreur : {error}",
+  "payrollLoading": "Chargement des fiches de paie",
+  "payrollMonthLabel": "Mois {month}/{year}",
+  "payrollMyBalance": "Mon solde",
+  "payrollNextPayment": "Prochaine paie prévue le {date}",
+  "payrollNoCycleDocuments": "Aucun document généré pour ce cycle. Les reçus apparaîtront après paiement.",
+  "payrollNoPayslips": "Aucune fiche de paie",
+  "payrollNoReceipts": "Aucun reçu ou bordereau disponible pour le moment.",
+  "payrollOvertimeLabel": "heures supp",
+  "payrollPaymentDocuments": "Documents paiement",
+  "payrollPaymentDocumentsTitle": "Documents de paiement",
+  "payrollPdfDownloaded": "PDF téléchargé : {path}",
+  "payrollPeriodRange": "{start} - {end}",
+  "payrollRecentPayslips": "Bulletins récents",
+  "payrollRemainingToPay": "Reste à payer",
+  "payrollRemainingToReceive": "Reste à recevoir",
+  "payrollSubtitle": "Solde courant, avances et bulletins",
+  "payrollSummaryUnavailable": "Résumé paie temporairement indisponible",
+  "payrollTeamBalance": "Solde équipe",
+  "payrollTeamMembers": "{count} collaborateur(s)",
+  "payrollTeamSubtitle": "Soldes, avances et bulletins",
+  "payrollTeamTitle": "Paie équipe",
+  "payrollTitle": "Paie et solde",
+  "payrollValidatedHint": "Les bulletins valides apparaîtront ici après traitement.",
+  "smartAttendanceActiveMode": "Mode actif",
+  "smartAttendanceApprove": "Approuver",
+  "smartAttendanceCancel": "Annuler",
+  "smartAttendanceChangeMode": "Changer mon mode de pointage",
+  "smartAttendanceConfirm": "Confirmer",
+  "smartAttendanceDashboard": "Pointage GPS — tableau de bord",
+  "smartAttendanceDashboardTitle": "Pointage GPS — tableau de bord",
+  "smartAttendanceError": "Erreur : {message}",
+  "smartAttendanceForced": "Imposé",
+  "smartAttendanceGpsAuto": "GPS Automatique",
+  "smartAttendanceGpsTitle": "Smart Attendance — GPS",
+  "smartAttendanceManual": "Manuel",
+  "smartAttendanceNoGpsSessions": "Aucune session GPS pour le moment.",
+  "smartAttendanceNoPending": "Aucune session en attente",
+  "smartAttendanceNoPendingSessions": "Aucune session en attente de validation",
+  "smartAttendancePending": "En attente",
+  "smartAttendancePendingCount": "{count} en attente",
+  "smartAttendanceQr": "QR Code",
+  "smartAttendanceReject": "Rejeter",
+  "smartAttendanceRejectHint": "Expliquez la raison du rejet...",
+  "smartAttendanceRejectReason": "Motif du rejet",
+  "smartAttendanceSessionExit": "Sortie : {time} · {duration}",
+  "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
+  "smartAttendanceSmart": "Pointage Intelligent",
+  "smartAttendanceSurveillanceActive": "Surveillance active",
+  "smartAttendanceSurveillanceInactive": "Surveillance inactive",
+  "smartAttendanceTapToReview": "Appuyez pour valider ou rejeter",
+  "smartAttendanceTitle": "Smart Attendance",
+  "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
+  "smartAttendanceZoneSurveillance": "Surveillance de zone",
+  "attendanceToProcess": "A traiter",
+  "settingsBiometryEnableFirst": "Active d abord la preparation biometrie.",
+  "settingsBiometryEnableAction": "Activer la preparation biometrie",
+  "settingsEdgeNodeAddress": "Adresse du noeud Edge",
+  "settingsBiometryAddFaceCapture": "Ajoute une capture visage avant soumission.",
+  "notifTitle": "Alertes RH, paie et validations",
+  "settingsPushInApp": "Alertes dans l application",
+  "attendanceAnalyzingAnomalies": "Analyse des anomalies...",
+  "settingsEdgePairingRemoved": "Appairage Edge supprime.",
+  "teamQrNoneInClipboard": "Aucun code QR dans le presse-papiers.",
+  "teamNoScheduleYet": "Aucun horaire cree. Vous pourrez en definir dans le module Horaires.",
+  "attendanceNoPunchToday": "Aucun pointage aujourd hui",
+  "attendanceNoRecentAnomalies": "Aucune anomalie recente",
+  "teamNoPendingInvites": "Aucune invitation en cours",
+  "settingsLockerDocsAdmin": "CV, contrats, diplomes et documents administratifs.",
+  "settingsLockerDocsVisibility": "CV, contrats, diplomes et documents avec visibilite controlee.",
+  "settingsNotifChannelChat": "Canal conversationnel, necessite votre opt-in explicite.",
+  "settingsNotifChannelSms": "Canal court reserve aux urgences, actif apres opt-in.",
+  "settingsNotifChannelsSummary": "Canaux, heures calmes et alertes operationnelles.",
+  "settingsBiometryCaptureFace": "Capturer / choisir mon visage",
+  "attendanceEmployeeNotPunchedToday": "Cet employe n a pas encore pointe pour la journee en cours.",
+  "settingsFieldRequired": "Champ requis",
+  "attendanceLoadingRequests": "Chargement des demandes...",
+  "teamLoadingInvites": "Chargement des invitations",
+  "attendanceLoadingEmployeeDetail": "Chargement du detail employe...",
+  "settingsNotifChannelsHint": "Choisissez les canaux utiles sans perdre les alertes RH importantes.",
+  "teamEmployeeQrCode": "Code QR employe",
+  "settingsPasteCompanyQr": "Coller le QR entreprise",
+  "settingsPasteManagerQr": "Coller le QR fourni par le manager",
+  "teamPasteScannedQr": "Coller le QR scanne",
+  "settingsPasteCompanyQrHint": "Collez le QR entreprise.",
+  "teamPasteQrHint": "Collez le code QR.",
+  "settingsBiometryConfirmIdentity": "Confirmer votre identite pour soumettre votre demande biometrie",
+  "settingsEdgeConnectedCloud": "Connecte au Cloud",
+  "settingsEdgeConnectedLocal": "Connecte au noeud Edge local",
+  "settingsBiometryConsentTitle": "Consentement au futur pointage biometrie",
+  "attendanceCorrectionAppliedToast": "Correction appliquee.",
+  "attendanceCorrectionRejected": "Correction refusee.",
+  "teamCreateFromQrAndInvite": "Creer depuis QR et inviter",
+  "teamHireDate": "Date d embauche",
+  "settingsRequestSent": "Demande envoyee",
+  "settingsBiometryRequestSentHint": "Demande envoyee au manager / RH pour validation.",
+  "settingsRequestJoin": "Demander l integration",
+  "attendanceEmployeeRequestsPending": "Demandes employees en attente RH",
+  "teamDepartmentOptional": "Departement (optionnel)",
+  "settingsAvailableForNewCompany": "Disponible pour une nouvelle entreprise",
+  "settingsRecoveryEmailLabel": "Email de recuperation",
+  "settingsPersonalEmailLabel": "Email personnel",
+  "teamEmployeeAdded": "Employe ajoute.",
+  "settingsBiometryFingerprintDesired": "Empreinte digitale souhaitee",
+  "settingsBiometrySaveEnrollment": "Enregistrer la preparation",
+  "teamSendInvite": "Envoyer l invitation",
+  "settingsBiometryFpExample": "Exemple: FP-ENTREE-01 ou matricule biometrie",
+  "teamEmployeeRecordUpdated": "Fiche collaborateur mise a jour.",
+  "attendanceEmptyCorrectionQueue": "File de correction vide",
+  "settingsEdgeTokenFromAdmin": "Fourni par votre administrateur",
+  "settingsEdgeTokenOneTime": "Fourni une seule fois a l enregistrement",
+  "settingsQuietHours": "Heures calmes",
+  "settingsJourneyHint": "Historique entreprise, poste, statut et disponibilite.",
+  "teamWorkSchedule": "Horaire de travail",
+  "teamDefaultSchedule": "Horaire par defaut",
+  "commonOffline": "Hors ligne",
+  "settingsBiometrySensorId": "Identifiant capteur empreinte / borne",
+  "settingsEdgeNodeId": "Identifiant du noeud (UUID)",
+  "settingsPortableIdentity": "Identite portable",
+  "settingsBiometryFaceSelected": "Image visage selectionnee",
+  "teamImportFromQr": "Importer depuis QR",
+  "teamInviteResent": "Invitation renvoyee.",
+  "settingsEdgeToken": "Jeton Edge",
+  "settingsPasswordConfirmationMismatch": "La confirmation ne correspond pas",
+  "settingsNotifLanguage": "Langue des notifications",
+  "settingsBiometryConsentRequired": "Le consentement est requis avant toute soumission.",
+  "settingsQrManagerScanHint": "Le manager le scanne pour pre-remplir une invitation.",
+  "teamWorkLocation": "Lieu de travail",
+  "teamWorkLocationOptional": "Lieu de travail (optionnel)",
+  "settingsQuietHoursHint": "Limiter les canaux externes hors horaires.",
+  "teamReadAndPrefill": "Lire et pre-remplir",
+  "notifMarkAsRead": "Marquer comme lue",
+  "teamEmployeeIdOptional": "Matricule (optionnel)",
+  "teamMonthlyFixed": "Mensuel / fixe",
+  "settingsPasswordUpdateTitle": "Mettre a jour le mot de passe",
+  "settingsPasswordMinCharacters": "Minimum 8 caracteres",
+  "teamSalaryMode": "Mode salaire",
+  "settingsMyEmployeeQr": "Mon QR employe",
+  "teamAmountRequired": "Montant obligatoire",
+  "settingsPasswordUpdated": "Mot de passe mis a jour.",
+  "settingsEdgeNodeLocal": "Noeud Edge (reseau local)",
+  "settingsBiometryNotesConsent": "Notes et consentement",
+  "settingsPushImmediateHint": "Notifications immediates sur ce telephone.",
+  "teamNewEmployee": "Nouvel employe",
+  "teamNewEmployeeViaQr": "Nouvel employe via QR",
+  "settingsRecoveryEmailOptionalHint": "Optionnel pour recuperer l acces",
+  "settingsPersonalEmailHint": "Optionnel, conserve votre compte hors entreprise",
+  "settingsPhoneHint": "Optionnel, visible selon vos choix futurs",
+  "settingsOpenMyLocker": "Ouvrir mon placard",
+  "settingsShareProfileOrScan": "Partager votre profil ou scanner une entreprise.",
+  "settingsShareProfileOrScanQr": "Partagez votre profil ou scannez le QR d une entreprise.",
+  "settingsDigitalLocker": "Placard numerique",
+  "attendanceTodayPunchesOpenSessions": "Pointages du jour et sessions ouvertes",
+  "teamPositionOptional": "Poste (optionnel)",
+  "settingsNotifPrefsUpdated": "Preferences notifications mises a jour.",
+  "settingsBiometryEnrollment": "Preparation biometrie",
+  "settingsBiometrySavedLocally": "Preparation biometrie enregistree localement.",
+  "settingsBiometryEnrollHint": "Preparer doigt et visage pour les bornes terrain.",
+  "attendanceTeamPresence": "Presences equipe",
+  "settingsProfileUpdated": "Profil mis a jour.",
+  "settingsPushMobile": "Push mobile",
+  "commonCompanyQr": "QR entreprise",
+  "teamCompanyQrScannable": "QR entreprise scannable",
+  "settingsQrUnavailable": "QR indisponible pour le moment.",
+  "settingsQrOnboarding": "QR onboarding",
+  "settingsQrProfessional": "QR professionnel",
+  "settingsEdgeLogoutHint": "Quitter proprement cet espace sur ce telephone.",
+  "teamReloadSchedules": "Recharger les horaires",
+  "settingsBiometryFaceRecognitionDesired": "Reconnaissance faciale souhaitee",
+  "settingsNotifSummaryHint": "Resume et confirmations importantes.",
+  "attendanceLateMissedToCheck": "Retards, oublis et pointages a verifier",
+  "teamBaseSalary": "Salaire de base",
+  "teamDailySalary": "Salaire journalier",
+  "teamMonthlyGrossSalary": "Salaire mensuel brut",
+  "teamSelectType": "Selectionnez un type",
+  "attendanceTodaySessions": "Sessions du jour",
+  "settingsBiometrySubmit": "Soumettre au manager / RH",
+  "attendanceSyncingPresence": "Synchronisation des presences...",
+  "settingsNotifTasksHint": "Taches, decisions RH, pointage et rappels.",
+  "teamHourlyRate": "Taux horaire",
+  "settingsPersonalPhoneLabel": "Telephone personnel",
+  "notifMarkAllAsRead": "Tout marquer comme lu",
+  "teamManagerType": "Type de manager",
+  "teamPayType": "Type de paie",
+  "settingsBiometryLocalCheckCancelled": "Verification biometrie locale annulee.",
+  "settingsViewMyProfile": "Voir mon profil",
+  "notifUpToDate": "Vous etes a jour. Cette page se rafraichit automatiquement.",
+  "teamOperationalView": "Vue operationnelle",
+  "commonLanguageArabic": "العربية",
+  "settingsPrefSyncAccount": "Cette preference est synchronisee avec votre compte et pilote aussi le mode RTL.",
+  "settingsPasswordModernizeHint": "Changez votre mot de passe avant les prochaines etapes de modernisation.",
+  "teamPasteEmployeeQrHint": "Collez le code QR employe. Le formulaire restera modifiable avant invitation.",
+  "teamInviteSummary": "Invitation, role, date d embauche et base salariale sont envoyes a l API.",
+  "teamQrEmployeeScanHint": "L employe le scanne depuis son espace compte pour demander son integration.",
+  "settingsBiometryFaceHint": "Le visage peut etre capture depuis le mobile puis soumis a validation manager / RH. Pour l empreinte, Android/iOS permettent de verifier localement que vous utilisez bien un doigt enregistre, mais ne donnent pas acces au gabarit brut; l activation effective cote pointage restera donc approuvee puis exploitee par la borne entreprise.",
+  "attendanceAnomaliesHint": "Les alertes de pointage, sorties manquantes et heures supplementaires apparaitront ici.",
+  "attendanceRequestsHint": "Les demandes envoyees depuis les trois points du pointage seront listees ici.",
+  "teamInvitesHint": "Les invitations envoyees a vos futurs collaborateurs s afficheront ici.",
+  "attendanceTeamPunchesHint": "Les pointages equipe apparaitront ici des qu ils arrivent depuis mobile ou kiosque.",
+  "settingsEdgeOptionalHint": "Optionnel: pointer vers un serveur Edge installe sur site pour pointer sans Internet.",
+  "settingsPrefsUnavailable": "Preferences indisponibles pour le moment. Tire pour recharger plus tard.",
+  "teamQrPrefilledHint": "Profil pre-rempli depuis QR. Renseignez l email professionnel unique de cette entreprise.",
+  "settingsBiometryPendingHint": "Une fois soumises, vos donnees biometrie restent en attente. Toute premiere activation ou modification necessite une approbation manager/RH.",
+  "accountingActivation": {
+    "title": "Activer la Comptabilité",
+    "subtitle": "Paramétrez le module en quelques étapes : la check-list vérifie le paramétrage, le contact de test et la facture d'exemple.",
+    "stepsTitle": "Check-list d'activation",
+    "stepSettings": "Paramétrage comptable",
+    "stepSettingsDone": "Paramétrage comptable — fait",
+    "stepSettingsTodo": "Paramétrage comptable — à faire",
+    "stepContact": "Contact de test",
+    "stepContactDone": "Contact de test — créé",
+    "stepContactTodo": "Contact de test — à créer",
+    "stepExampleInvoice": "Facture d'exemple",
+    "stepExampleInvoiceDone": "Facture d'exemple — créée",
+    "stepExampleInvoiceTodo": "Facture d'exemple — à créer",
+    "done": "Fait",
+    "todo": "À faire",
+    "activateButton": "Terminer l'activation",
+    "activating": "Activation en cours…",
+    "completedTitle": "Comptabilité activée",
+    "completedBody": "Le module Comptabilité est prêt : paramétrage, contact et facture d'exemple en place.",
+    "goToModule": "Accéder au module Comptabilité",
+    "loadError": "Impossible de charger l'état d'activation. Réessayez.",
+    "completeError": "L'activation a échoué. Réessayez.",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "bannerTitle": "Activez le module Comptabilité",
+    "bannerBody": "Quelques étapes sont nécessaires avant de pouvoir émettre vos premières factures.",
+    "bannerCta": "Démarrer l'activation",
+    "addTvaRate": "Ajouter un taux",
+    "fieldCurrency": "Devise",
+    "fieldCurrencyHint": "Devise utilisée pour les documents et la comptabilité.",
+    "fieldDefaultDerived": "Défaut dérivé du pays",
+    "fieldDocumentLanguage": "Langue des documents",
+    "fieldLegalMentions": "Mentions légales",
+    "fieldLegalMentionsPlaceholder": "Mentions légales à afficher sur les documents…",
+    "fieldNumberSeries": "Séries de numérotation",
+    "fieldNumberSeriesHint": "Préfixe utilisé pour numéroter chaque type de document.",
+    "fieldPaymentTerms": "Conditions de paiement",
+    "fieldPaymentTermsPlaceholder": "Ex. : Paiement à 30 jours",
+    "fieldTemplateStyle": "Modèle PDF",
+    "fieldTemplateStylePlaceholder": "moderne",
+    "fieldTvaRates": "Taux de TVA",
+    "removeTvaRate": "Supprimer ce taux",
+    "seriesPlaceholder": "FAC-2026-0001",
+    "series_invoice": "Facture",
+    "series_proforma": "Proforma",
+    "series_quote": "Devis",
+    "series_credit_note": "Avoir",
+    "series_delivery_note": "Bon de livraison",
+    "series_receipt": "Reçu",
+    "tvaRateLabel": "Libellé du taux",
+    "tvaRateLabelPlaceholder": "TVA standard",
+    "tvaRateValue": "Taux (%)",
+    "tvaRateValuePlaceholder": "19",
+    "wizardBack": "Retour",
+    "wizardFinish": "Activer la Comptabilité",
+    "wizardNext": "Continuer",
+    "wizardStep1Title": "Identité & langue des documents",
+    "wizardStep1Subtitle": "Choisissez la langue des documents et la devise de l'entreprise.",
+    "wizardStep2Title": "TVA & séries de numérotation",
+    "wizardStep2Subtitle": "Configurez les taux de TVA et les préfixes de numérotation.",
+    "wizardStep3Title": "Modèle PDF & mentions légales",
+    "wizardStep3Subtitle": "Personnalisez le modèle des documents et vos mentions légales.",
+    "wizardStep4Title": "Finaliser l'activation",
+    "wizardStep4Subtitle": "Vérifiez le paramétrage puis activez le module.",
+    "wizardStep4Body": "Le module sera activé avec ce paramétrage. Vous pourrez le modifier à tout moment depuis les réglages.",
+    "wizardStepIndicator": "Étape {current} sur {total}",
+    "wizardStepsAria": "Étapes de configuration"
+  },
+  "accountingModule": {
+    "homeTitle": "Comptabilité",
+    "homeSubtitle": "Module comptable : plan comptable, grand livre, balance, états financiers, FEC, exercices et lettrage.",
+    "navChart": "Plan comptable",
+    "navLedger": "Grand livre",
+    "navBalance": "Balance",
+    "navStatements": "États financiers",
+    "navFiscalYears": "Exercices",
+    "navLettering": "Lettrage",
+    "navFec": "Export FEC",
+    "chartTitle": "Plan comptable",
+    "chartSubtitle": "Comptes des classes PCG/SCF 1 à 8. Les comptes système ne peuvent pas être supprimés (désactivation seule).",
+    "chartCode": "Code",
+    "chartLabel": "Libellé",
+    "chartType": "Type",
+    "chartClass": "Classe",
+    "chartStatus": "État",
+    "chartActive": "Actif",
+    "chartInactive": "Désactivé",
+    "chartAdd": "Ajouter un compte",
+    "chartAddTitle": "Nouveau compte",
+    "chartSave": "Enregistrer",
+    "chartCancel": "Annuler",
+    "chartDelete": "Supprimer",
+    "chartToggle": "Activer/Désactiver",
+    "chartSystemNote": "Compte système — suppression interdite",
+    "chartTypeAsset": "Actif",
+    "chartTypeLiability": "Passif",
+    "chartTypeEquity": "Capitaux",
+    "chartTypeRevenue": "Produit",
+    "chartTypeExpense": "Charge",
+    "chartEmpty": "Aucun compte.",
+    "chartError": "Impossible de charger le plan comptable.",
+    "periodLabel": "Période",
+    "yearLabel": "Exercice",
+    "allTypes": "Tous les types",
+    "ledgerTitle": "Grand livre",
+    "ledgerSubtitle": "Écritures par période, solde courant continu.",
+    "ledgerOpening": "Solde d'ouverture",
+    "ledgerDebit": "Débit",
+    "ledgerCredit": "Crédit",
+    "ledgerBalance": "Solde",
+    "ledgerDate": "Date",
+    "ledgerPiece": "Pièce",
+    "ledgerDesc": "Libellé",
+    "ledgerAccount": "Compte",
+    "ledgerEmpty": "Aucune écriture sur la période.",
+    "ledgerAccountFilter": "Filtrer par compte",
+    "ledgerExportFec": "Exporter FEC",
+    "balanceTitle": "Balance de vérification",
+    "balanceSubtitle": "Totaux débit/crédit et solde par compte sur la période.",
+    "balanceTotals": "Totaux généraux",
+    "balanceDifference": "Différence",
+    "balanceBalanced": "Balance équilibrée",
+    "balanceUnbalanced": "Balance déséquilibrée",
+    "balanceEmpty": "Aucun mouvement sur la période.",
+    "statementsTitle": "États financiers",
+    "statementsSubtitle": "Bilan et compte de résultat par période.",
+    "tabBalanceSheet": "Bilan",
+    "tabIncomeStatement": "Compte de résultat",
+    "statementActif": "Actif",
+    "statementPassif": "Passif",
+    "statementCapitaux": "Capitaux propres",
+    "statementTotalActif": "Total actif",
+    "statementTotalPassif": "Total passif",
+    "statementTotalCapitaux": "Total capitaux",
+    "statementResultat": "Résultat net",
+    "statementBalanced": "Invariant vérifié : actif = passif + capitaux",
+    "statementUnbalanced": "Invariant non vérifié !",
+    "statementEmpty": "Aucune donnée pour cette période.",
+    "fyTitle": "Exercices comptables",
+    "fySubtitle": "Ouverture et clôture des exercices (report à nouveau automatique).",
+    "fyYear": "Exercice",
+    "fyStatus": "Statut",
+    "fyOpen": "Ouvrir",
+    "fyOpenTitle": "Ouvrir un exercice",
+    "fyClose": "Clôturer",
+    "fyStatusOpen": "Ouvert",
+    "fyStatusClosed": "Clôturé",
+    "fyClosedAt": "Clôturé le",
+    "fyCloseConfirmTitle": "Clôturer l'exercice {year} ?",
+    "fyCloseConfirmBody": "La clôture fige l'exercice et reporte le résultat. Cette action est irréversible.",
+    "fyConfirm": "Confirmer la clôture",
+    "fyEmpty": "Aucun exercice ouvert.",
+    "fyError": "Impossible de charger les exercices.",
+    "fyOpenError": "Impossible d'ouvrir l'exercice.",
+    "fyCloseError": "Impossible de clôturer l'exercice.",
+    "lgTitle": "Lettrage",
+    "lgSubtitle": "Sélectionnez 2+ écritures d'un même compte et attribuez une lettre pour les rapprocher.",
+    "lgSelect": "Sélectionner",
+    "lgLetter": "Lettre",
+    "lgApply": "Lettrer",
+    "lgUnletter": "Délettrer",
+    "lgUnletterPlaceholder": "Lettre à délettrer",
+    "lgNeedSelection": "Sélectionnez au moins 2 écritures.",
+    "lgNeedLetter": "Saisissez une lettre (max 32 caractères).",
+    "lgDone": "Écritures lettrées.",
+    "lgUnlettered": "Écritures délettrées.",
+    "lgError": "Échec du lettrage : {message}",
+    "lgEmpty": "Aucune écriture sur la période.",
+    "lgBalanced": "Journal équilibré",
+    "lgUnbalanced": "Journal déséquilibré",
+    "lgClosed": "Période clôturée",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "errorGeneric": "Une erreur est survenue.",
+    "fecError": "Export FEC impossible."
+  },
+  "shareAccesses": {
+    "title": "Historique des accès",
+    "subtitle": "Consultation RGPD : qui a consulté ou téléchargé un document partagé sur le portail client, quand et depuis quelle adresse IP.",
+    "documentLabel": "Document",
+    "selectDocument": "Sélectionner un document…",
+    "noDocumentSelected": "Sélectionnez un document pour afficher son historique d'accès.",
+    "actionHeader": "Action",
+    "dateHeader": "Date",
+    "ipHeader": "Adresse IP",
+    "userAgentHeader": "Navigateur",
+    "requestIdHeader": "ID de corrélation",
+    "actionInfo": "Consultation",
+    "actionDownload": "Téléchargement",
+    "emptyTitle": "Aucun accès enregistré",
+    "emptyBody": "Ce document n'a encore jamais été consulté ni téléchargé via le portail client.",
+    "loadError": "Impossible de charger les accès. Réessayez dans un instant.",
+    "loadDocumentsError": "Impossible de charger les documents. Réessayez dans un instant.",
+    "loading": "Chargement…",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pageOf": "Page {current} sur {total}",
+    "total": "{count} accès",
+    "retry": "Réessayer"
+  },
+  "adminPalette": {
+    "appLoading": "Chargement de l'administration…",
+    "searchPlaceholder": "Rechercher pages, actions…",
+    "noResults": "Aucun résultat pour « {query} »",
+    "navNavigate": "naviguer",
+    "navSelect": "sélectionner",
+    "navClose": "fermer",
+    "itemDashboard": "Tableau de bord",
+    "itemDashboardDesc": "Vue principale",
+    "itemAnalytics": "Analytics",
+    "itemAnalyticsDesc": "Statistiques et rapports",
+    "itemUsers": "Utilisateurs",
+    "itemUsersDesc": "Gestion des utilisateurs",
+    "itemCompanies": "Entreprises",
+    "itemCompaniesDesc": "Gestion des entreprises",
+    "itemSubscriptions": "Abonnements",
+    "itemSubscriptionsDesc": "Plans et facturation",
+    "itemSettings": "Paramètres",
+    "itemSettingsDesc": "Compte et préférences",
+    "itemGrowth": "Growth",
+    "itemGrowthDesc": "Partenaires et croissance",
+    "itemEdge": "Edge Nodes",
+    "itemEdgeDesc": "Nœuds edge synchronisés",
+    "itemGlobe": "Globe",
+    "itemGlobeDesc": "Présence mondiale en temps réel",
+    "itemFleet": "Flotte",
+    "itemFleetDesc": "Alertes flotte véhicules",
+    "itemMarketing": "Marketing OAuth",
+    "itemMarketingDesc": "Configuration OAuth marketing",
+    "itemSupport": "Support",
+    "itemSupportDesc": "Tickets support clients",
+    "itemCrm": "CRM",
+    "itemCrmDesc": "Pipeline CRM",
+    "itemToggleDark": "Basculer mode sombre",
+    "itemToggleDarkDesc": "Changer le thème"
+  },
+  "bankRecon": {
+    "title": "Rapprochement bancaire",
+    "subtitle": "File de matching manuel : rapprochez les lignes du relevé avec les paiements enregistrés (score de confiance du matching auto).",
+    "statementsTitle": "Relevés",
+    "noStatements": "Aucun relevé importé.",
+    "selectStatement": "Sélectionner un relevé…",
+    "period": "Période",
+    "reference": "Référence",
+    "status": "Statut",
+    "statusImported": "Importé",
+    "statusReconciled": "Rapproché",
+    "opening": "Solde d'ouverture",
+    "closingExpected": "Clôture attendue",
+    "closingReported": "Clôture relevée",
+    "gap": "Écart",
+    "totalLines": "Lignes",
+    "matchedLines": "Rapprochées",
+    "pendingLines": "En attente",
+    "matchedAmount": "Montant rapproché",
+    "pendingAmount": "Montant en attente",
+    "lineDate": "Date",
+    "lineLabel": "Libellé",
+    "lineAmount": "Montant",
+    "lineStatus": "État",
+    "statusPending": "À rapprocher",
+    "statusMatched": "Rapprochée",
+    "confidence": "Confiance",
+    "proposed": "Proposé",
+    "match": "Matcher",
+    "matchPayment": "Paiement",
+    "noPayments": "Aucun paiement disponible pour cette période.",
+    "exportCsv": "Exporter CSV",
+    "loadError": "Impossible de charger le rapprochement.",
+    "matchError": "Le rapprochement a échoué.",
+    "matchDone": "Ligne rapprochée.",
+    "loading": "Chargement…",
+    "retry": "Réessayer"
+  },
+  "adminShortcuts": {
+    "title": "Raccourcis Clavier",
+    "descToggleDark": "Basculer mode sombre",
+    "descSearch": "Rechercher",
+    "descDashboard": "Tableau de bord",
+    "descUsers": "Utilisateurs",
+    "descCompanies": "Entreprises",
+    "descSubscriptions": "Abonnements",
+    "descCloseModals": "Fermer les modales",
+    "descHelp": "Aide raccourcis",
+    "footerPress": "Appuyez sur",
+    "footerToShow": "pour afficher ce menu"
+  },
   "edge": {
     "statTotal": "Nodes total",
     "statOnline": "En ligne",
@@ -11497,6 +13363,260 @@
     },
     "tripStatus": {
       "draft": "Brouillon",
+  "travel": {
+    "common": {
+      "retry": "Réessayer",
+      "featureDisabledTitle": "Module Agence de voyage inactif",
+      "featureDisabledBody": "Le flag travelagency n’est pas activé pour le tenant connecté. Contactez un administrateur plateforme pour l’activer.",
+      "tenantRequiredTitle": "Contexte tenant requis",
+      "tenantRequiredBody": "Les données de l’agence de voyage sont accessibles avec une session tenant (impersonation ou compte manager).",
+      "loadErrorTitle": "Chargement impossible",
+      "loadErrorBody": "Une erreur est survenue en interrogeant l’API travel.",
+      "create": "Créer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "close": "Fermer",
+      "search": "Rechercher",
+      "actions": "Actions",
+      "confirmDeleteTitle": "Supprimer cet élément ?",
+      "confirmDeleteBody": "Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?",
+      "status": "Statut",
+      "active": "Actif",
+      "disabled": "Inactif",
+      "loading": "Chargement…",
+      "noData": "Aucune donnée",
+      "createdAt": "Créé le",
+      "updatedAt": "Modifié le",
+      "reason": "Motif",
+      "reasonRequired": "Le motif est obligatoire.",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "all": "Tous",
+      "export": "Exporter",
+      "yes": "Oui",
+      "no": "Non",
+      "perPage": "par page",
+      "city": "Ville",
+      "carrier": "Compagnie",
+      "saving": "Enregistrement…",
+      "selectPlaceholder": "— Sélectionner —"
+    },
+    "home": {
+      "title": "Agence de voyage",
+      "subtitle": "Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.",
+      "flagActive": "Module actif",
+      "flowTitle": "Flux métier",
+      "flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports."
+    },
+    "referential": {
+      "title": "Référentiel",
+      "subtitle": "Pays, villes, gares, bureaux, compagnies, classes et véhicules.",
+      "tabs": "Sections du référentiel",
+      "countries": "Pays",
+      "cities": "Villes",
+      "stations": "Gares & terminaux",
+      "offices": "Bureaux de vente",
+      "carriers": "Compagnies",
+      "classes": "Classes de service",
+      "vehicles": "Véhicules"
+    },
+    "network": {
+      "title": "Routes & trajets",
+      "subtitle": "Lignes, étapes, programmation, tarifs et publication.",
+      "tabs": "Sections réseau",
+      "routes": "Routes & étapes",
+      "trips": "Trajets & tarifs",
+      "publish": "Publier",
+      "cancelTrip": "Annuler le trajet",
+      "stops": "Étapes",
+      "routeStopsTitle": "Étapes de la route",
+      "addStop": "Ajouter une étape",
+      "prices": "Tarifs",
+      "tripPricesTitle": "Tarifs du trajet",
+      "addPrice": "Ajouter un tarif",
+      "origin": "Origine",
+      "destination": "Destination",
+      "distance": "Distance (km)",
+      "duration": "Durée (min)",
+      "rank": "Rang",
+      "stopover": "Escale",
+      "minDuration": "Durée min (min)",
+      "route": "Route",
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "means": "Moyen",
+      "class": "Classe",
+      "adultPrice": "Tarif adulte",
+      "childPrice": "Tarif enfant",
+      "currency": "Devise",
+      "routeCode": "Code route",
+      "tripCode": "Code trajet",
+      "vehicle": "Véhicule",
+      "departureDate": "Date de départ",
+      "departureTime": "Heure de départ",
+      "arrivalDate": "Date d'arrivée",
+      "arrivalTime": "Heure d'arrivée"
+    },
+    "bookings": {
+      "title": "Réservations",
+      "subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+      "reference": "Référence",
+      "referencePlaceholder": "Ex. GV-2026-0001…",
+      "detail": "Détail",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "refund": "Rembourser",
+      "issueTickets": "Émettre billet",
+      "detailTitle": "Réservation",
+      "paymentStatus": "Paiement",
+      "trip": "Trajet",
+      "source": "Source",
+      "passengerCount": "Passagers",
+      "total": "Total",
+      "passengers": "Passagers",
+      "seat": "Siège",
+      "noTickets": "Aucun billet émis",
+      "confirmTitle": "Confirmer la réservation",
+      "confirmBody": "Confirmer la réservation {ref} ? Les sièges seront marqués vendus.",
+      "issueTicketsTitle": "Émettre les billets",
+      "issueTicketsBody": "Émettre un billet nominatif pour chaque passager de {ref} ?",
+      "cancelTitle": "Annuler la réservation",
+      "refundTitle": "Rembourser la réservation"
+    },
+    "checkin": {
+      "title": "Check-in & manifeste",
+      "subtitle": "Embarquement par trajet et compteur de passagers.",
+      "trip": "Trajet",
+      "selectTrip": "Sélectionner un trajet…",
+      "boarded": "embarqués",
+      "seat": "Siège",
+      "passenger": "Passager",
+      "age": "Âge",
+      "class": "Classe",
+      "ticket": "Billet",
+      "action": "Embarquement",
+      "emptyManifest": "Aucun passager pour ce trajet",
+      "noTicket": "Sans billet",
+      "checkIn": "Embarquer",
+      "done": "Embarqué"
+    },
+    "tickets": {
+      "title": "Billets",
+      "subtitle": "Consultation, téléchargement PDF et révocation.",
+      "download": "PDF",
+      "revoke": "Révoquer",
+      "revokeTitle": "Révoquer le billet",
+      "revokeBody": "Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé."
+    },
+    "reports": {
+      "title": "Rapports",
+      "subtitle": "Ventes, occupation, recettes, annulations et exports CSV.",
+      "from": "Du",
+      "to": "Au",
+      "apply": "Appliquer",
+      "export": "Exporter CSV",
+      "kpiSales": "Ventes",
+      "kpiBookings": "Réservations",
+      "kpiOccupancy": "Occupation",
+      "kpiCancellations": "Annulations",
+      "salesCount": "Ventes",
+      "salesPassengers": "Passagers",
+      "salesAmount": "Montant",
+      "tabSales": "Ventes",
+      "tabOccupancy": "Occupation",
+      "tabRevenue": "Recettes",
+      "tabCancellations": "Annulations",
+      "sold": "Vendus",
+      "reserved": "Réservés",
+      "free": "Libres",
+      "revenueConfirmed": "Confirmé",
+      "revenueRefunded": "Remboursé",
+      "revenueNet": "Net",
+      "cancellationsCount": "Annulations",
+      "cancellationsRate": "Taux",
+      "cancellationsTotal": "Réservations finales",
+      "byReason": "Par motif",
+      "bySource": "Par source",
+      "count": "Nombre"
+    },
+    "catalog": {
+      "title": "Intitulé",
+      "subtitle": "Véhicules en location, réservations et catalogue hôtelier.",
+      "tabRentals": "Véhicules en location",
+      "tabRentalBookings": "Réservations location",
+      "tabHotels": "Hôtels",
+      "images": "Images",
+      "rentalImagesTitle": "Images du véhicule",
+      "noImages": "Aucune image",
+      "rooms": "Chambres",
+      "hotelRoomsTitle": "Chambres de l’hôtel",
+      "addRoom": "Ajouter une chambre",
+      "priceDay": "Prix / jour",
+      "start": "Début",
+      "end": "Fin",
+      "hotelName": "Nom",
+      "classification": "Classification",
+      "roomType": "Type",
+      "roomNumber": "N°",
+      "capacity": "Capacité",
+      "priceNight": "Prix / nuit",
+      "code": "Code",
+      "availableFrom": "Disponible du",
+      "availableUntil": "Disponible jusqu'au",
+      "owner": "Propriétaire",
+      "description": "Description"
+    },
+    "countries": {
+      "name": "Nom",
+      "phoneCode": "Indicatif"
+    },
+    "cities": {
+      "name": "Ville",
+      "country": "Pays",
+      "region": "Région"
+    },
+    "stations": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "timezone": "Fuseau horaire",
+      "isTerminal": "Terminal",
+      "code": "Code"
+    },
+    "offices": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "address": "Adresse"
+    },
+    "carriers": {
+      "name": "Nom",
+      "type": "Type",
+      "phone": "Téléphone",
+      "code": "Code"
+    },
+    "classes": {
+      "label": "Libellé",
+      "color": "Couleur",
+      "priority": "Priorité",
+      "code": "Code"
+    },
+    "vehicles": {
+      "registration": "Immatriculation",
+      "seats": "Places",
+      "code": "Code",
+      "notes": "Notes"
+    },
+    "carrierTypes": {
+      "bus": "Bus",
+      "train": "Train",
+      "plane": "Avion",
+      "boat": "Bateau"
+    },
+    "tripStatus": {
+      "draft": "Brouillon",
+      "scheduled": "Planifié",
       "published": "Publié",
       "cancelled": "Annulé"
     },
@@ -11510,6 +13630,11 @@
     "paymentStatus": {
       "pending": "En attente",
       "paid": "Payé",
+      "completed": "Terminée"
+    },
+    "paymentStatus": {
+      "pending": "En attente",
+      "confirmed": "Confirmé",
       "failed": "Échoué",
       "refunded": "Remboursé"
     },
@@ -11737,6 +13862,18 @@
       "rejected": "Rejetée",
       "expired": "Expirée",
       "archived": "Archivée"
+      "checked_in": "Enregistré",
+      "void": "Annulé"
+    },
+    "bookingSource": {
+      "office": "Guichet",
+      "phone": "Téléphone",
+      "online": "En ligne"
+    },
+    "ageCategory": {
+      "infant": "Bébé",
+      "child": "Enfant",
+      "adult": "Adulte"
     }
   }
 }

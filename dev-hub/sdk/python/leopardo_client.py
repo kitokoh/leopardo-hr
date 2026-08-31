@@ -4036,6 +4036,562 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_travel_advert_positions(self, **kwargs):
+        """Liste des positions de publication (TRAVEL-905/#6108)"""
+        return self.request("GET", "/travel/advert-positions", **kwargs)
+
+    def post_travel_advert_positions(self, **kwargs):
+        """Création d'une position de publication (TRAVEL-905/#6108)"""
+        return self.request("POST", "/travel/advert-positions", **kwargs)
+
+    def delete_travel_advert_positions_by_traveladvertposition(self, **kwargs):
+        """Suppression d'une position de publication (TRAVEL-905/#6108)"""
+        return self.request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
+
+    def put_travel_advert_positions_by_traveladvertposition(self, **kwargs):
+        """Renommage d'une position de publication (TRAVEL-905/#6108)"""
+        return self.request("PUT", "/travel/advert-positions/{travelAdvertPosition}", **kwargs)
+
+    def get_travel_advert_prices(self, **kwargs):
+        """Liste de la grille tarifaire des annonces (TRAVEL-906/#6109)"""
+        return self.request("GET", "/travel/advert-prices", **kwargs)
+
+    def post_travel_advert_prices(self, **kwargs):
+        """Création d'un tarif (type × position, devise tenant) (TRAVEL-906/#6109)"""
+        return self.request("POST", "/travel/advert-prices", **kwargs)
+
+    def delete_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """Suppression d'un tarif (TRAVEL-906/#6109)"""
+        return self.request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
+
+    def put_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """Mise à jour des montants d'un tarif (TRAVEL-906/#6109)"""
+        return self.request("PUT", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
+
+    def get_travel_advert_types(self, **kwargs):
+        """Liste des types d'annonces payantes (TRAVEL-905/#6108)"""
+        return self.request("GET", "/travel/advert-types", **kwargs)
+
+    def post_travel_advert_types(self, **kwargs):
+        """Création d'un type d'annonce (TRAVEL-905/#6108)"""
+        return self.request("POST", "/travel/advert-types", **kwargs)
+
+    def delete_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """Suppression d'un type d'annonce (TRAVEL-905/#6108)"""
+        return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
+
+    def put_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """Renommage d'un type d'annonce (TRAVEL-905/#6108)"""
+        return self.request("PUT", "/travel/advert-types/{travelAdvertType}", **kwargs)
+
+    def get_travel_adverts(self, **kwargs):
+        """Liste des annonces payantes (filtres statut/type) (TRAVEL-907/#6110)"""
+        return self.request("GET", "/travel/adverts", **kwargs)
+
+    def post_travel_adverts(self, **kwargs):
+        """Soumission d'une annonce — prix calculé serveur (TRAVEL-907/#6110)"""
+        return self.request("POST", "/travel/adverts", **kwargs)
+
+    def delete_travel_adverts_by_traveladvert(self, **kwargs):
+        """Suppression d'une annonce (TRAVEL-907/#6110)"""
+        return self.request("DELETE", "/travel/adverts/{travelAdvert}", **kwargs)
+
+    def get_travel_adverts_by_traveladvert(self, **kwargs):
+        """Détail d'une annonce (TRAVEL-907/#6110)"""
+        return self.request("GET", "/travel/adverts/{travelAdvert}", **kwargs)
+
+    def post_travel_adverts_by_traveladvert_pay(self, **kwargs):
+        """Paiement d'une annonce (cash ou provider, idempotent) (TRAVEL-907/#6110)"""
+        return self.request("POST", "/travel/adverts/{travelAdvert}/pay", **kwargs)
+
+    def post_travel_adverts_by_traveladvert_renew(self, **kwargs):
+        """Renouvellement d'une annonce expirée (nouveau paiement) (TRAVEL-908/#6111)"""
+        return self.request("POST", "/travel/adverts/{travelAdvert}/renew", **kwargs)
+
+    def post_travel_adverts_by_traveladvert_validate(self, **kwargs):
+        """Validation/modération d'une annonce payée (travel.manage) (TRAVEL-907/#6110)"""
+        return self.request("POST", "/travel/adverts/{travelAdvert}/validate", **kwargs)
+
+    def get_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Catégories d''articles"""
+        return self.request("GET", "/travel/article-categories", **kwargs)
+
+    def post_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Création d''une catégorie"""
+        return self.request("POST", "/travel/article-categories", **kwargs)
+
+    def get_travel_articles(self, **kwargs):
+        """TRAVEL-901 — Liste des articles"""
+        return self.request("GET", "/travel/articles", **kwargs)
+
+    def post_travel_articles(self, **kwargs):
+        """TRAVEL-901 — Création d''un article"""
+        return self.request("POST", "/travel/articles", **kwargs)
+
+    def delete_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Suppression d''un article"""
+        return self.request("DELETE", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Détail d''un article"""
+        return self.request("GET", "/travel/articles/{travelArticle}", **kwargs)
+
+    def put_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Mise à jour d''un article"""
+        return self.request("PUT", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
+        """TRAVEL-903 — Agrégats d''engagement"""
+        return self.request("GET", "/travel/articles/{travelArticle}/engagement", **kwargs)
+
+    def post_travel_articles_by_travelarticle_like(self, **kwargs):
+        """TRAVEL-903 — Like (unicité acteur/article)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/like", **kwargs)
+
+    def post_travel_articles_by_travelarticle_moderate(self, **kwargs):
+        """TRAVEL-901 — Modération d''un article (draft/published/flagged)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/moderate", **kwargs)
+
+    def post_travel_articles_by_travelarticle_rate(self, **kwargs):
+        """TRAVEL-903 — Note 1..5 (unicité, agrégats)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/rate", **kwargs)
+
+    def post_travel_articles_by_travelarticle_share(self, **kwargs):
+        """TRAVEL-903 — Partage (canal)"""
+        return self.request("POST", "/travel/articles/{travelArticle}/share", **kwargs)
+
+    def post_travel_articles_by_travelarticle_unlike(self, **kwargs):
+        """TRAVEL-903 — Unlike"""
+        return self.request("POST", "/travel/articles/{travelArticle}/unlike", **kwargs)
+
+    def get_travel_bookings(self, **kwargs):
+        """Liste des réservations (TRAVEL-312/#6042)"""
+        return self.request("GET", "/travel/bookings", **kwargs)
+
+    def post_travel_bookings(self, **kwargs):
+        """Création d'une réservation guichet (TRAVEL-312/#6042)"""
+        return self.request("POST", "/travel/bookings", **kwargs)
+
+    def get_travel_bookings_by_travelbooking(self, **kwargs):
+        """Détail d'une réservation (TRAVEL-312/#6042)"""
+        return self.request("GET", "/travel/bookings/{travelBooking}", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_cancel(self, **kwargs):
+        """Annulation d'une réservation (TRAVEL-314/#6044)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/cancel", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_confirm(self, **kwargs):
+        """Confirmation d'une réservation (TRAVEL-313/#6043)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/confirm", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_issue_ticket(self, **kwargs):
+        """Émission des billets (TRAVEL-316/#6046)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/issue-ticket", **kwargs)
+
+    def post_travel_bookings_by_travelbooking_refund(self, **kwargs):
+        """Remboursement d'une réservation (TRAVEL-315/#6045)"""
+        return self.request("POST", "/travel/bookings/{travelBooking}/refund", **kwargs)
+
+    def get_travel_carriers(self, **kwargs):
+        """Liste des compagnies de transport (TRAVEL-304/#6034)"""
+        return self.request("GET", "/travel/carriers", **kwargs)
+
+    def post_travel_carriers(self, **kwargs):
+        """Création d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("POST", "/travel/carriers", **kwargs)
+
+    def delete_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Suppression d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("DELETE", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def get_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Détail d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("GET", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def put_travel_carriers_by_travelcarrier(self, **kwargs):
+        """Modification d'une compagnie de transport (TRAVEL-304/#6034)"""
+        return self.request("PUT", "/travel/carriers/{travelCarrier}", **kwargs)
+
+    def get_travel_cities(self, **kwargs):
+        """Référentiel villes en lecture (TRAVEL-301/#6031)"""
+        return self.request("GET", "/travel/cities", **kwargs)
+
+    def get_travel_classes(self, **kwargs):
+        """Liste des classes de service (TRAVEL-305/#6035)"""
+        return self.request("GET", "/travel/classes", **kwargs)
+
+    def post_travel_classes(self, **kwargs):
+        """Création d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("POST", "/travel/classes", **kwargs)
+
+    def delete_travel_classes_by_travelclass(self, **kwargs):
+        """Suppression d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("DELETE", "/travel/classes/{travelClass}", **kwargs)
+
+    def get_travel_classes_by_travelclass(self, **kwargs):
+        """Détail d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("GET", "/travel/classes/{travelClass}", **kwargs)
+
+    def put_travel_classes_by_travelclass(self, **kwargs):
+        """Modification d'une classe de service (TRAVEL-305/#6035)"""
+        return self.request("PUT", "/travel/classes/{travelClass}", **kwargs)
+
+    def get_travel_comments(self, **kwargs):
+        """TRAVEL-902 — Liste des commentaires"""
+        return self.request("GET", "/travel/comments", **kwargs)
+
+    def post_travel_comments(self, **kwargs):
+        """TRAVEL-902 — Création d''un commentaire (pending)"""
+        return self.request("POST", "/travel/comments", **kwargs)
+
+    def delete_travel_comments_by_travelcomment(self, **kwargs):
+        """TRAVEL-902 — Suppression d''un commentaire"""
+        return self.request("DELETE", "/travel/comments/{travelComment}", **kwargs)
+
+    def post_travel_comments_by_travelcomment_moderate(self, **kwargs):
+        """TRAVEL-902 — Modération (approved/rejected/flagged)"""
+        return self.request("POST", "/travel/comments/{travelComment}/moderate", **kwargs)
+
+    def post_travel_comments_by_travelcomment_report(self, **kwargs):
+        """TRAVEL-902 — Signalement d''un commentaire"""
+        return self.request("POST", "/travel/comments/{travelComment}/report", **kwargs)
+
+    def get_travel_countries(self, **kwargs):
+        """Référentiel pays en lecture (TRAVEL-301/#6031)"""
+        return self.request("GET", "/travel/countries", **kwargs)
+
+    def get_travel_hotels(self, **kwargs):
+        """Liste des hôtels (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels", **kwargs)
+
+    def post_travel_hotels(self, **kwargs):
+        """Création d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("POST", "/travel/hotels", **kwargs)
+
+    def delete_travel_hotels_by_travelhotel(self, **kwargs):
+        """Suppression d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("DELETE", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def get_travel_hotels_by_travelhotel(self, **kwargs):
+        """Détail d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def put_travel_hotels_by_travelhotel(self, **kwargs):
+        """Mise à jour d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("PUT", "/travel/hotels/{travelHotel}", **kwargs)
+
+    def get_travel_hotels_by_travelhotel_rooms(self, **kwargs):
+        """Chambres d'un hôtel (TRAVEL-321/#6051)"""
+        return self.request("GET", "/travel/hotels/{travelHotel}/rooms", **kwargs)
+
+    def post_travel_hotels_by_travelhotel_rooms(self, **kwargs):
+        """Création d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("POST", "/travel/hotels/{travelHotel}/rooms", **kwargs)
+
+    def delete_travel_hotels_by_travelhotel_rooms_by_travelhotelroom(self, **kwargs):
+        """Suppression d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("DELETE", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", **kwargs)
+
+    def put_travel_hotels_by_travelhotel_rooms_by_travelhotelroom(self, **kwargs):
+        """Mise à jour d'une chambre (TRAVEL-321/#6051)"""
+        return self.request("PUT", "/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}", **kwargs)
+
+    def get_travel_offices(self, **kwargs):
+        """Liste des bureaux de vente (TRAVEL-303/#6033)"""
+        return self.request("GET", "/travel/offices", **kwargs)
+
+    def post_travel_offices(self, **kwargs):
+        """Création d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("POST", "/travel/offices", **kwargs)
+
+    def delete_travel_offices_by_traveloffice(self, **kwargs):
+        """Suppression d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("DELETE", "/travel/offices/{travelOffice}", **kwargs)
+
+    def get_travel_offices_by_traveloffice(self, **kwargs):
+        """Détail d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("GET", "/travel/offices/{travelOffice}", **kwargs)
+
+    def put_travel_offices_by_traveloffice(self, **kwargs):
+        """Modification d'un bureau de vente (TRAVEL-303/#6033)"""
+        return self.request("PUT", "/travel/offices/{travelOffice}", **kwargs)
+
+    def get_travel_ping(self, **kwargs):
+        """Smoke test de la verticale TravelAgency (BC-24 TRAVEL, TRAVEL-101/#5977)"""
+        return self.request("GET", "/travel/ping", **kwargs)
+
+    def get_travel_quizzes(self, **kwargs):
+        """Liste des quiz (TRAVEL-904/#6107)"""
+        return self.request("GET", "/travel/quizzes", **kwargs)
+
+    def post_travel_quizzes(self, **kwargs):
+        """Création d'un quiz (TRAVEL-904/#6107)"""
+        return self.request("POST", "/travel/quizzes", **kwargs)
+
+    def delete_travel_quizzes_by_travelquiz(self, **kwargs):
+        """Suppression d'un quiz (TRAVEL-904/#6107)"""
+        return self.request("DELETE", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz(self, **kwargs):
+        """Détail d'un quiz avec ses questions (TRAVEL-904/#6107)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz(self, **kwargs):
+        """Mise à jour d'un quiz (TRAVEL-904/#6107)"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
+        """Participation à un quiz (score serveur, participation unique) (TRAVEL-904/#6107)"""
+        return self.request("POST", "/travel/quizzes/{travelQuiz}/participate", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz_participations(self, **kwargs):
+        """Résultats d'un quiz (travel.manage) (TRAVEL-904/#6107)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}/participations", **kwargs)
+
+    def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
+        """Ajout d'une question à un quiz (TRAVEL-904/#6107)"""
+        return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """Suppression d'une question (TRAVEL-904/#6107)"""
+        return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """Mise à jour d'une question (TRAVEL-904/#6107)"""
+        return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def get_travel_rental_bookings(self, **kwargs):
+        """Liste des réservations de location (TRAVEL-320/#6050)"""
+        return self.request("GET", "/travel/rental-bookings", **kwargs)
+
+    def post_travel_rental_bookings(self, **kwargs):
+        """Création d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("POST", "/travel/rental-bookings", **kwargs)
+
+    def get_travel_rental_bookings_by_travelrentalbooking(self, **kwargs):
+        """Détail d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("GET", "/travel/rental-bookings/{travelRentalBooking}", **kwargs)
+
+    def post_travel_rental_bookings_by_travelrentalbooking_cancel(self, **kwargs):
+        """Annulation d'une réservation de location (TRAVEL-320/#6050)"""
+        return self.request("POST", "/travel/rental-bookings/{travelRentalBooking}/cancel", **kwargs)
+
+    def get_travel_rental_vehicles(self, **kwargs):
+        """Liste des véhicules en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles", **kwargs)
+
+    def post_travel_rental_vehicles(self, **kwargs):
+        """Création d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("POST", "/travel/rental-vehicles", **kwargs)
+
+    def delete_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Suppression d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def get_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Détail d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def put_travel_rental_vehicles_by_travelrentalvehicle(self, **kwargs):
+        """Mise à jour d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("PUT", "/travel/rental-vehicles/{travelRentalVehicle}", **kwargs)
+
+    def get_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
+        """Images d'un véhicule en location (TRAVEL-319/#6049)"""
+        return self.request("GET", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
+
+    def post_travel_rental_vehicles_by_travelrentalvehicle_images(self, **kwargs):
+        """Ajout d'une image (TRAVEL-319/#6049)"""
+        return self.request("POST", "/travel/rental-vehicles/{travelRentalVehicle}/images", **kwargs)
+
+    def delete_travel_rental_vehicles_by_travelrentalvehicle_images_by_travelrentalvehicleimage(self, **kwargs):
+        """Suppression d'une image (TRAVEL-319/#6049)"""
+        return self.request("DELETE", "/travel/rental-vehicles/{travelRentalVehicle}/images/{travelRentalVehicleImage}", **kwargs)
+
+    def get_travel_reports_cancellations(self, **kwargs):
+        """TRAVEL-504 — Annulations sur période"""
+        return self.request("GET", "/travel/reports/cancellations", **kwargs)
+
+    def get_travel_reports_dashboard(self, **kwargs):
+        """TRAVEL-507 — Dashboard KPIs"""
+        return self.request("GET", "/travel/reports/dashboard", **kwargs)
+
+    def post_travel_reports_export(self, **kwargs):
+        """TRAVEL-505 — Export CSV idempotent"""
+        return self.request("POST", "/travel/reports/export", **kwargs)
+
+    def get_travel_reports_export_by_travelexportasset(self, **kwargs):
+        """TRAVEL-505 — Lecture d''un export (URL signée éphémère)"""
+        return self.request("GET", "/travel/reports/export/{travelExportAsset}", **kwargs)
+
+    def get_travel_reports_occupancy(self, **kwargs):
+        """TRAVEL-502 — Occupation par trajet"""
+        return self.request("GET", "/travel/reports/occupancy", **kwargs)
+
+    def get_travel_reports_revenue(self, **kwargs):
+        """TRAVEL-503 — Recettes (confirmés − remboursements)"""
+        return self.request("GET", "/travel/reports/revenue", **kwargs)
+
+    def get_travel_reports_sales(self, **kwargs):
+        """TRAVEL-501 — Ventes (réservations nettes) sur période"""
+        return self.request("GET", "/travel/reports/sales", **kwargs)
+
+    def get_travel_routes(self, **kwargs):
+        """Liste des routes (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes", **kwargs)
+
+    def post_travel_routes(self, **kwargs):
+        """Création d'une route (TRAVEL-307/#6037)"""
+        return self.request("POST", "/travel/routes", **kwargs)
+
+    def delete_travel_routes_by_travelroute(self, **kwargs):
+        """Suppression d'une route (TRAVEL-307/#6037)"""
+        return self.request("DELETE", "/travel/routes/{travelRoute}", **kwargs)
+
+    def get_travel_routes_by_travelroute(self, **kwargs):
+        """Détail d'une route (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes/{travelRoute}", **kwargs)
+
+    def put_travel_routes_by_travelroute(self, **kwargs):
+        """Mise à jour d'une route (TRAVEL-307/#6037)"""
+        return self.request("PUT", "/travel/routes/{travelRoute}", **kwargs)
+
+    def get_travel_routes_by_travelroute_stops(self, **kwargs):
+        """Étapes d'une route, triées par rang (TRAVEL-307/#6037)"""
+        return self.request("GET", "/travel/routes/{travelRoute}/stops", **kwargs)
+
+    def post_travel_routes_by_travelroute_stops(self, **kwargs):
+        """Ajout d'une étape à une route (TRAVEL-307/#6037)"""
+        return self.request("POST", "/travel/routes/{travelRoute}/stops", **kwargs)
+
+    def delete_travel_routes_by_travelroute_stops_by_travelroutestop(self, **kwargs):
+        """Suppression d'une étape (TRAVEL-307/#6037)"""
+        return self.request("DELETE", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", **kwargs)
+
+    def put_travel_routes_by_travelroute_stops_by_travelroutestop(self, **kwargs):
+        """Mise à jour d'une étape (TRAVEL-307/#6037)"""
+        return self.request("PUT", "/travel/routes/{travelRoute}/stops/{travelRouteStop}", **kwargs)
+
+    def get_travel_stations(self, **kwargs):
+        """Liste des gares/terminaux (TRAVEL-302/#6032)"""
+        return self.request("GET", "/travel/stations", **kwargs)
+
+    def post_travel_stations(self, **kwargs):
+        """Création d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("POST", "/travel/stations", **kwargs)
+
+    def delete_travel_stations_by_travelstation(self, **kwargs):
+        """Suppression d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("DELETE", "/travel/stations/{travelStation}", **kwargs)
+
+    def get_travel_stations_by_travelstation(self, **kwargs):
+        """Détail d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("GET", "/travel/stations/{travelStation}", **kwargs)
+
+    def put_travel_stations_by_travelstation(self, **kwargs):
+        """Modification d'une gare/terminal (TRAVEL-302/#6032)"""
+        return self.request("PUT", "/travel/stations/{travelStation}", **kwargs)
+
+    def post_travel_tickets_by_travelticket_check_in(self, **kwargs):
+        """Check-in / embarquement (TRAVEL-317/#6047)"""
+        return self.request("POST", "/travel/tickets/{travelTicket}/check-in", **kwargs)
+
+    def get_travel_tourist_sites(self, **kwargs):
+        """Annuaire des sites touristiques (filtres ville/recherche/statut) (TRAVEL-909/#6112)"""
+        return self.request("GET", "/travel/tourist-sites", **kwargs)
+
+    def post_travel_tourist_sites(self, **kwargs):
+        """Création d'un site touristique (TRAVEL-909/#6112)"""
+        return self.request("POST", "/travel/tourist-sites", **kwargs)
+
+    def delete_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """Suppression d'un site touristique (TRAVEL-909/#6112)"""
+        return self.request("DELETE", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def get_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """Détail d'un site touristique (TRAVEL-909/#6112)"""
+        return self.request("GET", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def put_travel_tourist_sites_by_traveltouristsite(self, **kwargs):
+        """Mise à jour d'un site touristique (TRAVEL-909/#6112)"""
+        return self.request("PUT", "/travel/tourist-sites/{travelTouristSite}", **kwargs)
+
+    def get_travel_trips(self, **kwargs):
+        """Liste des trajets (TRAVEL-308/#6038)"""
+        return self.request("GET", "/travel/trips", **kwargs)
+
+    def post_travel_trips(self, **kwargs):
+        """Création d'un trajet (TRAVEL-308/#6038, génère les sièges)"""
+        return self.request("POST", "/travel/trips", **kwargs)
+
+    def delete_travel_trips_by_traveltrip(self, **kwargs):
+        """Suppression d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("DELETE", "/travel/trips/{travelTrip}", **kwargs)
+
+    def get_travel_trips_by_traveltrip(self, **kwargs):
+        """Détail d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("GET", "/travel/trips/{travelTrip}", **kwargs)
+
+    def put_travel_trips_by_traveltrip(self, **kwargs):
+        """Mise à jour d'un trajet (TRAVEL-308/#6038)"""
+        return self.request("PUT", "/travel/trips/{travelTrip}", **kwargs)
+
+    def post_travel_trips_by_traveltrip_cancel(self, **kwargs):
+        """Annulation d'un trajet (TRAVEL-310/#6040)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/cancel", **kwargs)
+
+    def get_travel_trips_by_traveltrip_manifest(self, **kwargs):
+        """Manifeste des passagers d'un trajet (TRAVEL-318/#6048)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/manifest", **kwargs)
+
+    def get_travel_trips_by_traveltrip_prices(self, **kwargs):
+        """Tarifs d'un trajet par classe (TRAVEL-309/#6039)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/prices", **kwargs)
+
+    def post_travel_trips_by_traveltrip_prices(self, **kwargs):
+        """Création d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/prices", **kwargs)
+
+    def delete_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Suppression d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("DELETE", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def get_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Détail d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("GET", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def put_travel_trips_by_traveltrip_prices_by_traveltripprice(self, **kwargs):
+        """Mise à jour d'un tarif (TRAVEL-309/#6039)"""
+        return self.request("PUT", "/travel/trips/{travelTrip}/prices/{travelTripPrice}", **kwargs)
+
+    def post_travel_trips_by_traveltrip_publish(self, **kwargs):
+        """Publication d'un trajet (TRAVEL-310/#6040)"""
+        return self.request("POST", "/travel/trips/{travelTrip}/publish", **kwargs)
+
+    def get_travel_trips_search(self, **kwargs):
+        """Recherche interne de trajets (TRAVEL-311/#6041)"""
+        return self.request("GET", "/travel/trips/search", **kwargs)
+
+    def get_travel_vehicles(self, **kwargs):
+        """Liste des véhicules de la flotte (TRAVEL-306/#6036)"""
+        return self.request("GET", "/travel/vehicles", **kwargs)
+
+    def post_travel_vehicles(self, **kwargs):
+        """Création d'un véhicule de flotte (TRAVEL-306/#6036)"""
+        return self.request("POST", "/travel/vehicles", **kwargs)
+
+    def delete_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Suppression d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("DELETE", "/travel/vehicles/{travelVehicle}", **kwargs)
+
+    def get_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Détail d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("GET", "/travel/vehicles/{travelVehicle}", **kwargs)
+
+    def put_travel_vehicles_by_travelvehicle(self, **kwargs):
+        """Mise à jour d'un véhicule (TRAVEL-306/#6036)"""
+        return self.request("PUT", "/travel/vehicles/{travelVehicle}", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)

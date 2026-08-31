@@ -5581,4 +5581,5 @@
   "travelTableEmptynested": "Aucun élément.",
   "travelFormSelectplaceholder": "— Sélectionner —",
   "travelFormMoneyminor": "Montant en devises (1 = 100 minor)"
+  "restaurantLoading": "Chargement de la file cuisine…"
 }

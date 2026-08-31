@@ -21,6 +21,7 @@ use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
+use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -77,6 +78,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Cible les managers dont la société a été créée il y a 20h–28h et
         // dont l'onboarding comporte encore des étapes requises non complétées.
         $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
+        $schedule->command('travel:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        $schedule->command('travel:expire-adverts')->daily();
         // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
@@ -146,6 +149,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
+            // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
+            'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

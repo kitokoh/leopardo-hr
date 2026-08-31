@@ -9,6 +9,8 @@ use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
+use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
@@ -21,6 +23,7 @@ use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
+use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -67,4 +70,6 @@ return [
     FuelStationServiceProvider::class,
     // — EduManager module (solution verticale, issue #5817)
     EduManagerServiceProvider::class,
+    // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
+    TravelAgencyServiceProvider::class,
 ];

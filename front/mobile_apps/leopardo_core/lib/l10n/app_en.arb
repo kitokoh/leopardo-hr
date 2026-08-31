@@ -5581,4 +5581,5 @@
   "travelTableEmptynested": "No item.",
   "travelFormSelectplaceholder": "— Select —",
   "travelFormMoneyminor": "Amount in currency (1 = 100 minor)"
+  "restaurantLoading": "Loading kitchen queue…"
 }
