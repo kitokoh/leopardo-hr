@@ -286,7 +286,7 @@ class ProcessBulkPaymentJobTest extends TestCase
 
         // Simule le worker mort : le claim du slip existe déjà (jamais libéré),
         // le slip est toujours éligible et n'a aucun document de paiement.
-        $claimed = Redis::connection('default')->set( // @phpstan-ignore method.protected, method.parameter
+        $claimed = Redis::connection('default')->set( // @phpstan-ignore argument.type, arguments.count
             "bulk_pay:slip:{$run->id}:{$slip->id}",
             '1',
             'EX',

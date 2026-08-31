@@ -71,7 +71,9 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_invoice_numbers_are_contiguous_and_never_collide(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
         $subscriptionA = $this->activeSubscription($companyA);
         $subscriptionB = $this->activeSubscription($companyB);
