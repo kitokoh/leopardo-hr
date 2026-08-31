@@ -15,11 +15,11 @@ class NotificationDispatcher
     ) {}
 
     public function dispatch(
-        int    $userId,
+        int $userId,
         string $type,
         string $title,
         ?string $body = null,
-        array  $data = [],
+        array $data = [],
         ?string $actionUrl = null,
     ): AppNotification {
         // Issue #2498 — la dette #2398 (table `app_notifications` jamais
@@ -31,19 +31,19 @@ class NotificationDispatcher
         // trace est désormais exploitable).
         try {
             $notification = AppNotification::create([
-                'user_id'    => $userId,
-                'type'       => $type,
-                'title'      => $title,
-                'body'       => $body,
-                'data'       => $data,
+                'user_id' => $userId,
+                'type' => $type,
+                'title' => $title,
+                'body' => $body,
+                'data' => $data,
                 'action_url' => $actionUrl,
-                'read'       => false,
+                'read' => false,
             ]);
         } catch (Throwable $exception) {
             Log::channel('structured')->error('notification.inapp-create-failed', [
                 'user_id' => $userId,
-                'type'    => $type,
-                'error'   => $exception->getMessage(),
+                'type' => $type,
+                'error' => $exception->getMessage(),
             ]);
 
             throw $exception;
@@ -56,8 +56,8 @@ class NotificationDispatcher
         } catch (Throwable $exception) {
             Log::channel('structured')->warning('notification.push-skipped', [
                 'user_id' => $userId,
-                'type'    => $type,
-                'error'   => $exception->getMessage(),
+                'type' => $type,
+                'error' => $exception->getMessage(),
             ]);
         }
 

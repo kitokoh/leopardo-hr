@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Travel;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -294,7 +296,7 @@ final class TravelLedgerConsumer implements TravelOutboxConsumer
                 'updated_at' => now(),
             ]);
             $this->applied++;
-        } catch (\Illuminate\Database\QueryException) {
+        } catch (QueryException) {
             // Contrainte unique violée → rejeu : effet déjà appliqué, on ignore.
         }
     }
@@ -352,6 +354,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
 
     public function handle(array $payload): void
     {
-        $this->ranWithinTenant = app(\App\Core\Tenant\TenantManager::class)->hasTenant();
+        $this->ranWithinTenant = app(TenantManager::class)->hasTenant();
     }
 }

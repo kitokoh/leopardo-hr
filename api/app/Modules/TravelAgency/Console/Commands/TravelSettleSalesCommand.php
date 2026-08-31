@@ -96,7 +96,7 @@ class TravelSettleSalesCommand extends Command
                 'refunded_count' => 0,
             ];
 
-            if ($row->status === PaymentStatus::CONFIRMED->value) {
+            if ($row->status === PaymentStatus::CONFIRMED) {
                 $byCurrency[$currency]['confirmed_total_minor'] += (int) $row->amount_minor;
                 $byCurrency[$currency]['confirmed_count']++;
             } else {

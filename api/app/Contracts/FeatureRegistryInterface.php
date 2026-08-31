@@ -61,4 +61,3 @@ interface FeatureRegistryInterface
      */
     public function getStatistics(): array;
 }
-
