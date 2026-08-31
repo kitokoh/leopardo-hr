@@ -15,6 +15,7 @@ use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Infrastructure\Services\GatewayMoney;
 use App\Modules\Accounting\Infrastructure\Services\PaymentGatewayFactory;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -173,15 +174,31 @@ final class OnlinePaymentService
             // Rapprochement automatique : enregistrement (recorded) + match
             // immédiat (matched) — « sans intervention », DoD #5272. La règle
             // « jamais payé > total » du registre s'applique en profondeur.
-            $recorded = $this->payments->register(
-                document: $document,
-                amount: $amount,
-                method: $payment->method,
-                reference: $payment->gatewayPaymentId,
-                receivedAt: Carbon::now(),
-                gatewayPaymentId: $payment->gatewayPaymentId,
-            );
-            $this->payments->reconcile($recorded);
+            try {
+                $recorded = $this->payments->register(
+                    document: $document,
+                    amount: $amount,
+                    method: $payment->method,
+                    reference: $payment->gatewayPaymentId,
+                    receivedAt: Carbon::now(),
+                    gatewayPaymentId: $payment->gatewayPaymentId,
+                );
+                $this->payments->reconcile($recorded);
+            } catch (QueryException $e) {
+                // #6553 — deux livraisons concurrentes du même webhook violent
+                // l'index unique (company_id, gateway_payment_id) → 23505.
+                // Rejeu idempotent : réponse 200 « replayed », pas de 500.
+                if ($e->getCode() === 23505 || str_contains((string) $e->getMessage(), '23505')) {
+                    Log::info('Accounting webhook: insertion concurrente (23505) — rejeu idempotent', [
+                        'gateway_payment_id' => $payment->gatewayPaymentId,
+                        'document_id' => $document->id,
+                    ]);
+
+                    return 'replayed';
+                }
+
+                throw $e;
+            }
 
             Log::info('Accounting webhook: paiement en ligne rapproché automatiquement', [
                 'gateway_payment_id' => $payment->gatewayPaymentId,
