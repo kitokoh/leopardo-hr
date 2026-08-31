@@ -30,7 +30,10 @@ test.describe('Contenu & annonces travel (TRAVEL-911)', () => {
       ])) }),
     )
     await page.goto('/travel/content')
-    await expect(page.getByRole('heading', { name: /Contenu & annonces/ }).first()).toBeVisible()
+    // #6453 : a11y — UN SEUL h1 par page (le h1 du layout parent, via meta.title) ;
+    // le titre de la vue est désormais un h2 (plus de doublon).
+    await expect(page.locator('h1', { hasText: 'Contenu & annonces' })).toHaveCount(1)
+    await expect(page.locator('h2', { hasText: 'Contenu & annonces' })).toBeVisible()
     await expect(page.getByText('Quiz Afrique de l\'Ouest')).toBeVisible()
   })
 

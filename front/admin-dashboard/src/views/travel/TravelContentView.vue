@@ -1,9 +1,12 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 py-8">
     <div class="mb-6">
-      <h1 class="text-2xl font-semibold text-slate-900 dark:text-white">
+      <!-- #6453 : a11y — le DashboardLayout rend déjà le h1 de page via
+           route.meta.title ; ce bloc est un sous-titre de section → h2 pour
+           garantir UN SEUL h1 par page (/travel/content). -->
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
         {{ t('travel.content.title', 'Contenu & annonces') }}
-      </h1>
+      </h2>
       <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         {{ t('travel.content.subtitle', 'Quiz, annonces payantes et sites touristiques.') }}
       </p>
