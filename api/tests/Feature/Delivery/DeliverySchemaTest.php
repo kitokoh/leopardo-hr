@@ -22,6 +22,7 @@ class DeliverySchemaTest extends TestCase
 
     /**
      * @return array<int, list<string>>
+     * @return array<int, string>
      */
     public static function deliveryTables(): array
     {
@@ -31,6 +32,11 @@ class DeliverySchemaTest extends TestCase
             ['delivery_stops'],
             ['delivery_events'],
             ['delivery_cod_settlements'],
+            'delivery_deliveries',
+            'delivery_routes',
+            'delivery_stops',
+            'delivery_events',
+            'delivery_cod_settlements',
         ];
     }
 

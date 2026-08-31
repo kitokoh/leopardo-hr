@@ -15,6 +15,7 @@ use App\Modules\Delivery\Domain\Support\DeliveryStateMachine;
  * returned, cancelled — aucune réouverture).
  *
  * @see DeliveryStateMachine
+ * @see \App\Modules\Delivery\Domain\Support\DeliveryStateMachine
  */
 enum DeliveryStatus: string
 {

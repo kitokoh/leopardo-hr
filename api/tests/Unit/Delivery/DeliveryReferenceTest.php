@@ -35,6 +35,7 @@ final class DeliveryReferenceTest extends TestCase
                 self::fail(sprintf('Expected InvalidArgumentException for "%s".', $invalid));
             } catch (InvalidArgumentException) {
                 self::addToAssertionCount(1);
+                self::assertTrue(true);
             }
         }
     }
