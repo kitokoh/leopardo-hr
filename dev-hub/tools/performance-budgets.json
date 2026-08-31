@@ -62,6 +62,54 @@
    "p95_ms": 300,
    "pagination": false,
    "notes": "Read model rapports livraison (DELIVERY-207/#6291) — 5 agrégations scopées company_id (totaux, par source, par jour, par livreur, COD), fenêtre de dates bornée."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/delivery/deliveries",
+   "max_queries": 5,
+   "p95_ms": 300,
+   "pagination": true,
+   "notes": "Liste livraisons (DELIVERY-201) - scope company_id + filtres statut/source/date, pagination <= 100."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/delivery/deliveries/{delivery}",
+   "max_queries": 3,
+   "p95_ms": 200,
+   "pagination": false,
+   "notes": "Détail livraison (DELIVERY-201) - lecture par clé scopée tenant."
+  },
+  {
+   "method": "POST",
+   "route": "/api/v1/delivery/deliveries/events",
+   "max_queries": 6,
+   "p95_ms": 300,
+   "pagination": false,
+   "notes": "Événement de tracking (DELIVERY-204) - lock + idempotence + transition."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/delivery/deliveries/routes/{route}",
+   "max_queries": 3,
+   "p95_ms": 200,
+   "pagination": false,
+   "notes": "Détail tournée + stops (DELIVERY-202)."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/delivery/deliveries/routes/today",
+   "max_queries": 4,
+   "p95_ms": 200,
+   "pagination": false,
+   "notes": "Tournée du jour rider (DELIVERY-203) - scope propriété."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/delivery/deliveries/reports/summary",
+   "max_queries": 8,
+   "p95_ms": 300,
+   "pagination": false,
+   "notes": "Read model KPIs (DELIVERY-207) - 5 agrégations scopées."
   }
  ],
  "required_indexes": [
@@ -89,6 +137,21 @@
    "table": "delivery_deliveries",
    "index": "delivery_deliveries_company_status_date_idx",
    "notes": "Rapports livraison : agrégations tenant + statut + fenêtre temporelle (DELIVERY-207/#6291)."
+  },
+  {
+   "table": "delivery_events",
+   "index": "delivery_events_company_delivery_idx",
+   "notes": "Timeline d'une livraison (DELIVERY-204) + idempotence."
+  },
+  {
+   "table": "delivery_stops",
+   "index": "delivery_stops_company_route_idx",
+   "notes": "Stops d'une tournée (DELIVERY-202/203)."
+  },
+  {
+   "table": "delivery_routes",
+   "index": "delivery_routes_company_date_idx",
+   "notes": "Tournées du jour par tenant (DELIVERY-203)."
   }
  ]
 }
