@@ -46,6 +46,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('contracts:alert-expiring')->daily();
         $schedule->command('billing:check-trials')->daily();
         $schedule->command('billing:check-overdue')->daily();
+        // DEP-BC21 (#6251) : supervision recouvrement — réconciliation
+        // (dry-run) et métriques quotidiennes.
+        $schedule->command('billing:reconcile-payments')->daily()->withoutOverlapping();
+        $schedule->command('billing:report --json')->daily()->withoutOverlapping();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
