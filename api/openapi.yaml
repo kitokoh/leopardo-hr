@@ -3449,6 +3449,11 @@ paths:
           description: Non authentifié
         '403':
           description: Contexte tenant absent ou feature flag travelagency inactif
+                      $ref: '#/components/schemas/TravelRoute'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent ou feature flag travelagency inactif
     post:
       tags:
       - Travel
@@ -5569,6 +5574,51 @@ paths:
       tags:
       - Restaurant
       summary: Liste des menu (référentiel BC-25)
+      - name: travelTripPrice
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tarif supprimé
+              properties:
+                class_id:
+                  type: integer
+                adult_price_minor:
+                  type: integer
+                  minimum: 1
+                child_price_minor:
+                  type: integer
+                  nullable: true
+                currency:
+                  type: string
+                  maxLength: 3
+      responses:
+        '200':
+          description: Tarif mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTripPrice'
+        '404':
+          description: Tarif ou trajet introuvable ou hors tenant
+        '403':
+          description: Permission travel.manage requise
+        '409':
+          description: Conflit d'unicité (trip, classe)
+    delete:
+      tags:
+      - Travel
+      summary: Suppression d'un tarif (TRAVEL-309/#6039)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: integer
       - name: travelTripPrice
         in: path
         required: true
@@ -8635,6 +8685,7 @@ paths:
       tags:
       - Travel
       summary: 'TRAVEL-902 — Liste des commentaires'
+      summary: 'TRAVEL-906 — Grille tarifaire des annonces'
       security:
       - BearerAuth: []
       responses:
@@ -8648,6 +8699,7 @@ paths:
       - Travel
       summary: TRAVEL-906 — Création d'une grille tarifaire (minor units)
       summary: 'TRAVEL-902 — Création d''un commentaire (pending)'
+      summary: 'TRAVEL-906 — Création d''une grille tarifaire (minor units)'
       security:
       - BearerAuth: []
       requestBody:
@@ -8688,6 +8740,7 @@ paths:
       tags:
       - Travel
       summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
       security:
       - BearerAuth: []
       parameters:
@@ -8858,6 +8911,11 @@ paths:
       tags:
       - Travel
       summary: TRAVEL-906 — Suppression d'une grille tarifaire
+
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-906 — Suppression d''une grille tarifaire'
       security:
       - BearerAuth: []
       parameters:
@@ -8902,24 +8960,6 @@ paths:
           type: integer
       responses:
         '204':
-          description: Commentaire supprimé
-        '401':
-          description: Non authentifié
-  /travel/articles/{travelArticle}/like:
-    post:
-      tags:
-      - Travel
-      summary: 'TRAVEL-903 — Like (unicité acteur/article)'
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelArticle
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '204':
           description: Supprimée
         '404':
           description: Introuvable
@@ -8927,7 +8967,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: TRAVEL-905 — Types d'annonces
+      summary: 'TRAVEL-905 — Types d''annonces'
       security:
       - BearerAuth: []
       responses:
@@ -8938,7 +8978,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: TRAVEL-905 — Création d'un type d'annonce
+      summary: 'TRAVEL-905 — Création d''un type d''annonce'
       security:
       - BearerAuth: []
       requestBody:
@@ -8968,6 +9008,121 @@ paths:
     put:
       tags:
       - Travel
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Commentaire supprimé
+        '401':
+          description: Non authentifié
+  /travel/articles/{travelArticle}/like:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Like (unicité acteur/article)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Élément mis à jour
+        '422':
+          description: Code dupliqué (tenant)
+
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Suppression d''un type d''annonce'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertType
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimée
+        '404':
+          description: Introuvable
+  /travel/advert-types:
+    get:
+      tags:
+      - Travel
+      summary: TRAVEL-905 — Types d'annonces
+          description: Supprimé
+        '404':
+          description: Introuvable
+  /travel/advert-positions:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Positions de publication'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Types d'annonces
+          description: Positions
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: TRAVEL-905 — Création d'un type d'annonce
+      summary: 'TRAVEL-905 — Création d''une position'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '201':
+          description: Type créé
+          description: Position créée
+        '401':
+          description: Non authentifié
+        '422':
+          description: Code invalide ou déjà pris
+  /travel/advert-types/{travelAdvertType}:
+    put:
+      tags:
+      - Travel
       summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
@@ -8986,6 +9141,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelArticle
+  /travel/advert-positions/{travelAdvertPosition}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
         in: path
         required: true
         schema:
@@ -9004,6 +9168,33 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelArticle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                label:
+                  type: string
+                  maxLength: 120
+      responses:
+        '200':
+          description: Élément mis à jour
+        '422':
+          description: Code dupliqué (tenant)
+
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-905 — Suppression d''une position'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvertPosition
         in: path
         required: true
         schema:
@@ -9139,6 +9330,47 @@ paths:
       tags:
       - Schedules
       summary: Creer un horaire de travail
+        '204':
+          description: Supprimée
+        '404':
+          description: Introuvable
+  /travel/adverts/manage:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut (draft, submitted, paid, validated, rejected, expired, archived)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Annonces avec statuts (rôles manager)
+        '403':
+          description: Rôle manager requis
+  /travel/adverts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Annonces visibles (payées + validées + non expirées)'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Annonces visibles
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Soumission d''une annonce (prix calculé serveur)'
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -9165,6 +9397,46 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelAdvertType
+              required:
+              - advert_type_id
+              - advert_position_id
+              - title
+              - content
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 160
+                content:
+                  type: string
+                  maxLength: 2000
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                validity_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                  default: 30
+      responses:
+        '201':
+          description: Annonce soumise
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (grille absente, bornes)
+  /travel/adverts/{travelAdvert}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Détail d''une annonce'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
         in: path
         required: true
         schema:
@@ -9434,6 +9706,63 @@ paths:
       summary: TRAVEL-905 — Création d'une position
       security:
       - BearerAuth: []
+        '200':
+          description: Détail de l'annonce
+        '404':
+          description: Introuvable
+  /travel/adverts/{travelAdvert}/pay:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Paiement d''une annonce (idempotent)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce payée
+        '404':
+          description: Introuvable
+        '422':
+          description: État non payable
+  /travel/adverts/{travelAdvert}/validate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Validation d''une annonce (travel.manage)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Annonce validée
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Non payée
+  /travel/adverts/{travelAdvert}/reject:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-907 — Rejet d''une annonce (motif)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -9513,6 +9842,27 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelAdvertPosition
+              type: object
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Annonce rejetée
+        '403':
+          description: Rôle insuffisant
+  /travel/adverts/{travelAdvert}/renew:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelAdvert
         in: path
         required: true
         schema:
@@ -9892,6 +10242,268 @@ paths:
       - Billing
       summary: Demande d'essai guidé / auto-service (onboarding)
       security: []
+      responses:
+        '200':
+          description: Annonce renouvelée
+        '404':
+          description: Introuvable
+        '422':
+          description: État non renouvelable
+  /travel/quizzes:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Liste des quiz'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Quiz
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Création d''un quiz'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              properties:
+                title:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                max_participations_per_contact:
+                  type: integer
+                  default: 1
+                status:
+                  type: string
+                  enum: [draft, active, closed]
+      responses:
+        '201':
+          description: Quiz créé
+        '401':
+          description: Non authentifié
+  /travel/quizzes/{travelQuiz}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz + questions
+        '404':
+          description: Introuvable
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                starts_at:
+                  type: string
+                  format: date-time
+                ends_at:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [draft, active, closed]
+      responses:
+        '200':
+          description: Quiz mis à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Quiz introuvable
+  /travel/quizzes/{travelQuiz}/questions:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Ajout d''une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - question
+              - options
+              - correct_option_index
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  minItems: 2
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                  minimum: 0
+                points:
+                  type: integer
+                  default: 1
+                position:
+                  type: integer
+      responses:
+        '201':
+          description: Question ajoutée
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Index hors bornes
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Questions (avec correct_option_index — gestion)
+        '403':
+          description: Rôle gestion requis
+  /travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Mise à jour d''une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                options:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: string
+                correct_option_index:
+                  type: integer
+                points:
+                  type: integer
+                position:
+                  type: integer
+      responses:
+        '200':
+          description: Question mise à jour
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Question introuvable
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-914 — Suppression d''une question'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: travelQuizQuestion
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Question supprimée
+        '403':
+          description: Rôle insuffisant
+  /travel/quizzes/{travelQuiz}/participate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Participation (notation serveur)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -9938,6 +10550,42 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelAdvert
+              - participant_email
+              - answers
+              properties:
+                participant_email:
+                  type: string
+                  format: email
+                participant_name:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    required: [question_id, selected_option]
+                    properties:
+                      question_id:
+                        type: integer
+                      selected_option:
+                        type: integer
+      responses:
+        '201':
+          description: Participation notée
+        '404':
+          description: Quiz introuvable
+        '409':
+          description: Participation déjà enregistrée
+        '422':
+          description: Quiz non actif ou validation échouée
+  /travel/quizzes/{travelQuiz}/results:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-904 — Résultats (gestion)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelQuiz
         in: path
         required: true
         schema:
@@ -9965,6 +10613,31 @@ paths:
         required: false
         schema:
           type: string
+        '200':
+          description: Résultats triés par score
+        '403':
+          description: Rôle insuffisant
+  /travel/contacts:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        description: Recherche email / prénom / nom / téléphone (ilike)
+        schema:
+          type: string
+      - name: consent
+        in: query
+        required: false
+        description: Ne renvoyer que les contacts ayant consenti au canal (email|sms|whatsapp)
+        schema:
+          type: string
+          enum: [email, sms, whatsapp]
       - name: per_page
         in: query
         required: false
@@ -10057,6 +10730,59 @@ paths:
       - Billing
       summary: Vérifie le code OTP et provisionne l'espace d'essai
       security: []
+          default: 50
+      responses:
+        '200':
+          description: Contacts du tenant (data + meta pagination)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+  /travel/contacts/{travelCustomerContact}/consent:
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912/913 — Mise à jour des consentements par canal'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_consent:
+                  type: boolean
+                sms_consent:
+                  type: boolean
+                whatsapp_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentements mis à jour
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+    patch:
+      tags:
+      - Travel
+      summary: "TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -10191,6 +10917,33 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelAdvert
+              - channel
+              - given
+              properties:
+                channel:
+                  type: string
+                  enum: [email, sms, whatsapp]
+                given:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentement mis à jour (horodatage conservé)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Rôle principal / RH / manager requis
+        '404':
+          description: Introuvable (ou autre tenant)
+        '422':
+          description: Validation échouée (canal inconnu)
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-912 — Mise à jour des consentements par canal'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
         in: path
         required: true
         schema:
@@ -10211,6 +10964,33 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelAdvert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_consent:
+                  type: boolean
+                sms_consent:
+                  type: boolean
+                whatsapp_consent:
+                  type: boolean
+      responses:
+        '200':
+          description: Consentements mis à jour
+        '404':
+          description: Contact introuvable
+  /travel/contacts/{travelCustomerContact}/notify:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelCustomerContact
         in: path
         required: true
         schema:
@@ -10279,6 +11059,68 @@ paths:
             schema:
               type: object
               required:
+              - message
+              properties:
+                message:
+                  type: string
+                  maxLength: 2000
+                channels:
+                  type: array
+                  maxItems: 2
+                  items:
+                    type: string
+                    enum: [email, app]
+      responses:
+        '200':
+          description: Notification envoyée (canaux respectant le consentement)
+        '403':
+          description: Rôle insuffisant
+        '404':
+          description: Contact introuvable
+        '422':
+          description: Aucun canal configuré avec consentement
+  /travel/tourist-sites:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Sites touristiques (recherche par ville/nom)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: city_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [active, disabled]
+      responses:
+        '200':
+          description: Sites touristiques
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Création d''un site touristique'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
               - email
               - password
               - first_name
@@ -10305,6 +11147,68 @@ paths:
       - User
       summary: Connexion utilisateur sans entreprise (parcours legacy mobile)
       security: []
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '201':
+          description: Site créé
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Validation échouée
+  /travel/tourist-sites/{travelTouristSite}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Détail d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail du site
+        '404':
+          description: Introuvable
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Mise à jour d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -10344,6 +11248,61 @@ paths:
       summary: Met à jour le profil de l'utilisateur connecté
       security:
       - BearerAuth: []
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [active, disabled]
+      responses:
+        '200':
+          description: Site mis à jour
+        '404':
+          description: Introuvable
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-909 — Suppression d''un site touristique'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
+        '404':
+          description: Introuvable
+  /travel/public/contact:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)'
+      parameters:
+      - name: company
+        in: query
+        required: true
+        description: Identifiant du tenant (paramètre signé de l'URL — forger un lien pour un autre tenant est impossible)
+        schema:
+          type: string
       requestBody:
         required: true
         content:
@@ -10381,6 +11340,48 @@ paths:
       - BearerAuth: []
       requestBody:
         required: true
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  minLength: 1
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement obligatoire (accepted)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1)
+        '403':
+          description: Signature invalide ou expirée
+        '404':
+          description: Tenant introuvable
+        '422':
+          description: Validation échouée (consentement manquant, bornes)
+  /travel/public-contact-link:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: false
         content:
           application/json:
             schema:
@@ -10418,6 +11419,24 @@ paths:
       - User
       summary: Connexion ou création de compte via Google (compte ordinaire)
       security: []
+              properties:
+                expires_in_hours:
+                  type: integer
+                  minimum: 1
+                  maximum: 168
+                  default: 24
+      responses:
+        '201':
+          description: Lien signé généré (contact_url + expires_at)
+        '403':
+          description: Rôle insuffisant (manager requis)
+  /travel/contact:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox)'
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -10493,12 +11512,49 @@ paths:
       tags:
       - User
       summary: Liste les demandes de création d'entreprise de l'utilisateur
+              required:
+              - email
+              - message
+              - consent_email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 120
+                last_name:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                message:
+                  type: string
+                  maxLength: 2000
+                consent_email:
+                  type: boolean
+                  description: Consentement de contact explicite (obligatoire, RGPD)
+      responses:
+        '202':
+          description: Demande reçue (événement travel.contact.submitted.v1 publié)
+        '401':
+          description: Non authentifié
+        '422':
+          description: Validation échouée (bornes, consentement manquant)
+  /travel/comments:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Liste des commentaires'
       security:
       - BearerAuth: []
       responses:
         '200':
           description: Quiz
           description: Demandes paginées
+          description: Commentaires
         '401':
           description: Non authentifié
     post:
@@ -10507,6 +11563,7 @@ paths:
       summary: TRAVEL-904 — Création d'un quiz
       - User
       summary: Crée une demande de création d'entreprise
+      summary: 'TRAVEL-902 — Création d''un commentaire (pending)'
       security:
       - BearerAuth: []
       requestBody:
@@ -10803,6 +11860,104 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelQuiz
+              - article_id
+              - content
+              properties:
+                article_id:
+                  type: integer
+                content:
+                  type: string
+                  maxLength: 2000
+      responses:
+        '201':
+          description: Commentaire créé
+        '401':
+          description: Non authentifié
+        '422':
+          description: Contenu invalide
+  /travel/comments/{travelComment}/moderate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Modération (approved/rejected/flagged)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire modéré
+        '401':
+          description: Non authentifié
+        '422':
+          description: Statut invalide
+  /travel/comments/{travelComment}/report:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Signalement d''un commentaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commentaire signalé
+        '401':
+          description: Non authentifié
+  /travel/comments/{travelComment}:
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-902 — Suppression d''un commentaire'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelComment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Commentaire supprimé
+        '401':
+          description: Non authentifié
+  /travel/articles/{travelArticle}/like:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Like (unicité acteur/article)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Like enregistré
+        '401':
+          description: Non authentifié
+  /travel/articles/{travelArticle}/unlike:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Unlike'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -10846,6 +12001,20 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelQuiz
+      responses:
+        '200':
+          description: Like retiré
+        '401':
+          description: Non authentifié
+  /travel/articles/{travelArticle}/share:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Partage (canal)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -10877,6 +12046,22 @@ paths:
       - BearerAuth: []
       parameters:
       - name: id
+      responses:
+        '201':
+          description: Partage enregistré
+        '401':
+          description: Non authentifié
+        '422':
+          description: Canal inconnu
+  /travel/articles/{travelArticle}/rate:
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Note 1..5 (unicité, agrégats)'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
         in: path
         required: true
         schema:
@@ -11335,6 +12520,321 @@ paths:
       tags:
       - Payroll
       summary: Liste des campagnes de paie (tenant)
+          description: Note enregistrée
+        '401':
+          description: Non authentifié
+        '422':
+          description: Note hors bornes
+  /travel/articles/{travelArticle}/engagement:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-903 — Agrégats d''engagement'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelArticle
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Likes/partages/notes agrégés
+        '401':
+          description: Non authentifié
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Healthcheck live + ready
+      security: []
+      responses:
+        '200':
+          description: API disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Base de donnees indisponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /health/live:
+    get:
+      tags:
+      - Health
+      summary: Liveness probe — processus API vivant (sans dépendances)
+      security: []
+      responses:
+        '200':
+          description: API vivante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /health/ready:
+    get:
+      tags:
+      - Health
+      summary: Readiness probe — base de données disponible
+      security: []
+      responses:
+        '200':
+          description: API prête
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  checks:
+                    type: object
+                    additionalProperties: true
+  /edge/health:
+    get:
+      tags:
+      - Health
+      summary: Healthcheck edge (public, machine-to-cloud)
+      description: Sonde de sante de l'API pour les nœuds edge (throttle 300/min).
+      security: []
+      responses:
+        '200':
+          description: API edge disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /edge/readiness:
+    get:
+      tags:
+      - Health
+      summary: Readiness probe du nœud edge (schéma SQLite)
+      description: 'Vérifie que le schéma SQLite local est provisionné (SELECT 1 sur
+
+        sync_queue). Distinct de /edge/health (liveness sans DB) : ce endpoint
+
+        garantit qu''un nœud frais est prêt à synchroniser avant de le déclarer
+
+        opérationnel. (#4411)
+
+        '
+      security: []
+      responses:
+        '200':
+          description: Nœud prêt — schéma SQLite provisionné
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edge:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: ok
+                  schema:
+                    type: string
+                    example: provisioned
+                  time:
+                    type: string
+                    format: date-time
+        '503':
+          description: Schéma SQLite manquant — nœud non prêt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edge:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: not_ready
+                  reason:
+                    type: string
+                    example: edge_schema_missing
+                  time:
+                    type: string
+                    format: date-time
+  /edge/install.sh:
+    get:
+      tags:
+      - Health
+      summary: Script d'installation du nœud edge (public)
+      security: []
+      responses:
+        '200':
+          description: Script shell
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Script introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/docker-compose.yml:
+    get:
+      tags:
+      - Health
+      summary: docker-compose.yml de reference pour le nœud edge (public)
+      security: []
+      responses:
+        '200':
+          description: Fichier docker-compose
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Fichier introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/Caddyfile.edge:
+    get:
+      tags:
+      - Health
+      summary: Caddyfile.edge de reference pour le nœud edge (public)
+      description: 'Fichier de configuration Caddy monté par docker-compose.yml du nœud edge (issue #3741).'
+      security: []
+      responses:
+        '200':
+          description: Fichier Caddyfile.edge
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Fichier introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/sha256.txt:
+    get:
+      tags:
+      - Health
+      summary: Sommes SHA-256 des artefacts edge (public)
+      description: 'Manifeste des sommes SHA-256 (format texte) utilise par install.sh pour verifier l''integrite des telechargements (issues #3529/#3770).'
+      security: []
+      responses:
+        '200':
+          description: Manifeste SHA-256
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Manifeste introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/docker-compose.yml.sha256:
+    get:
+      tags:
+      - Health
+      summary: Somme SHA-256 de docker-compose.yml edge (public)
+      security: []
+      responses:
+        '200':
+          description: Somme SHA-256 du fichier docker-compose.yml
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Somme introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/Caddyfile.edge.sha256:
+    get:
+      tags:
+      - Health
+      summary: Somme SHA-256 de Caddyfile.edge (public)
+      security: []
+      responses:
+        '200':
+          description: Somme SHA-256 du fichier Caddyfile.edge
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Somme introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /edge/download/env-example:
+    get:
+      tags:
+      - Health
+      summary: Exemple de fichier d'environnement pour le nœud edge (public)
+      security: []
+      responses:
+        '200':
+          description: Fichier .env.example
+          content:
+            text/plain:
+              schema:
+                type: string
+  /edge/license-public-key:
+    get:
+      tags:
+      - Health
+      summary: Cle publique de verification des licences edge (public)
+      security: []
+      responses:
+        '200':
+          description: Cle publique
+          content:
+            text/plain:
+              schema:
+                type: string
+  /edge/heartbeat:
+    post:
+      tags:
+      - Health
+      summary: Heartbeat machine-to-cloud d'un nœud edge (public)
+      security: []
+      responses:
+        '200':
+          description: Heartbeat enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /edge:
+    get:
+      tags:
+      - Edge
+      summary: Lister les nœuds edge du tenant
       security:
       - BearerAuth: []
       responses:
@@ -11344,6 +12844,20 @@ paths:
       tags:
       - Payroll
       summary: Crée une campagne de paie
+          description: Liste des nœuds edge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Edge
+      summary: Enregistrer un nœud edge
       security:
       - BearerAuth: []
       responses:
@@ -11385,6 +12899,29 @@ paths:
           type: string
       - name: state
         in: query
+          description: Nœud enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /edge/{nodeId}:
+    get:
+      tags:
+      - Edge
+      summary: Detail d'un nœud edge du tenant
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
         schema:
           type: string
       responses:
@@ -11524,6 +13061,82 @@ paths:
       - name: promotion_code
         in: query
         required: false
+          description: Nœud edge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edge/{nodeId}/sync:
+    post:
+      tags:
+      - Edge
+      summary: Declencher la synchronisation d'un nœud edge
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Synchronisation declenchee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edge/{nodeId}/license:
+    post:
+      tags:
+      - Edge
+      summary: Emettre une licence pour un nœud edge
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Licence emise
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edge-node/{nodeId}/push:
+    post:
+      tags:
+      - Edge
+      summary: Pousser les donnees du nœud edge vers le cloud
+      security: []
+      parameters:
+      - name: nodeId
+        in: path
+        required: true
         schema:
           type: string
       responses:
@@ -11608,6 +13221,21 @@ paths:
       summary: Offres d'emploi publiques d'une entreprise
       parameters:
       - name: companySlug
+          description: Donnees poussees
+          content:
+            application/json:
+              schema:
+                type: object
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /edge-node/{nodeId}/pull:
+    get:
+      tags:
+      - Edge
+      summary: Recuperer le delta de synchronisation pour le nœud edge
+      security: []
+      parameters:
+      - name: nodeId
         in: path
         required: true
         schema:
@@ -11624,6 +13252,22 @@ paths:
       summary: Flux XML des offres (agrégateurs)
       parameters:
       - name: companySlug
+          description: Delta de synchronisation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+  /edge-node/{nodeId}/heartbeat:
+    post:
+      tags:
+      - Edge
+      summary: Heartbeat d'un nœud edge (machine-to-cloud)
+      security: []
+      parameters:
+      - name: nodeId
         in: path
         required: true
         schema:
@@ -11672,6 +13316,39 @@ paths:
         required: true
         schema:
           type: integer
+          description: Heartbeat enregistre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /edge-node/validate-license:
+    post:
+      tags:
+      - Edge
+      summary: Valider une licence edge (machine-to-cloud)
+      security: []
+      responses:
+        '200':
+          description: Licence validee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+        '403':
+          $ref: '#/components/responses/Error403'
+  /trial/signup:
+    post:
+      tags:
+      - Billing
+      summary: Demande d'essai guidé / auto-service (onboarding)
+      security: []
       requestBody:
         required: true
         content:
@@ -11848,6 +13525,200 @@ paths:
         required: true
         schema:
           type: string
+              - email
+              - company
+              - country
+              properties:
+                email:
+                  type: string
+                  format: email
+                company:
+                  type: string
+                  maxLength: 120
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                  description: Code ISO pays supporté (DZ, MA, TN, SN…)
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                role:
+                  type: string
+                  enum:
+                  - founder
+                  - manager
+                  - hr
+                  - operations
+                  - other
+                employees:
+                  type: string
+                  enum:
+                  - 1-10
+                  - 11-50
+                  - 51-200
+                  - 201-500
+                  - 500+
+                phone:
+                  type: string
+                plan:
+                  type: string
+                source:
+                  type: string
+                referral_code:
+                  type: string
+                requestedWorkflow:
+                  type: string
+                  enum:
+                  - guided_trial
+                  - self_service
+      responses:
+        '200':
+          description: 'Demande reçue (guided_trial : provisioning lancé)'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      status:
+                        type: string
+                        example: provisioning_sandbox
+                      provisioning_token:
+                        type: string
+        '409':
+          description: Email déjà enregistré
+        '422':
+          description: Validation échouée (pays non supporté…)
+  /trial/verify:
+    post:
+      tags:
+      - Billing
+      summary: Vérifie le code OTP et provisionne l'espace d'essai
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - code
+              properties:
+                email:
+                  type: string
+                  format: email
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 6
+      responses:
+        '201':
+          description: Espace d'essai créé (identifiants temporaires)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      company:
+                        type: object
+                      manager:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                          temp_password:
+                            type: string
+                      trial:
+                        type: object
+                        properties:
+                          days:
+                            type: integer
+                            example: 14
+                          ends_at:
+                            type: string
+                            format: date-time
+        '400':
+          description: Code invalide ou expiré
+        '422':
+          description: Pays invalide
+  /trial/status:
+    get:
+      tags:
+      - Billing
+      summary: Statut du provisioning d'un essai guidé (polling)
+      description: Route publique pollee par la vitrine (throttle dedie 60/min). Verifie le token de provisioning de 64 caracteres.
+      security: []
+      parameters:
+      - name: token
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 64
+          maxLength: 64
+      responses:
+        '200':
+          description: Statut du provisioning
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - pending
+                        - ready
+                        - failed
+                      provisioned_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+        '404':
+          description: Token invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: PROVISIONING_TOKEN_INVALID
+                  message:
+                    type: string
+  /user/register:
+    post:
+      tags:
+      - User
+      summary: Crée un compte utilisateur sans entreprise (parcours legacy mobile)
+      security: []
       requestBody:
         required: true
         content:
@@ -11886,6 +13757,57 @@ paths:
       - User
       summary: Lister les demandes d'integration de mon entreprise (manager)
       description: Liste tenant-scope des demandes d'integration recues (manager/principal).
+              - email
+              - password
+              - first_name
+              - last_name
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+      responses:
+        '201':
+          description: Compte créé
+        '422':
+          description: Validation échouée
+  /user/login:
+    post:
+      tags:
+      - User
+      summary: Connexion utilisateur sans entreprise (parcours legacy mobile)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Token d'accès
+        '401':
+          description: Identifiants invalides
+  /user/me:
+    get:
+      tags:
+      - User
+      summary: Profil de l'utilisateur connecté
       security:
       - BearerAuth: []
       responses:
@@ -11933,6 +13855,51 @@ paths:
       - BearerAuth: []
       parameters:
       - name: restaurantOrder
+          description: Profil utilisateur
+        '401':
+          description: Non authentifié
+  /user/profile:
+    patch:
+      tags:
+      - User
+      summary: Met à jour le profil de l'utilisateur connecté
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+                personal_email:
+                  type: string
+                recovery_email:
+                  type: string
+                personal_phone:
+                  type: string
+                preferred_language:
+                  type: string
+      responses:
+        '200':
+          description: Profil mis à jour
+        '401':
+          description: Non authentifié
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /user/change-password:
+    post:
+      tags:
+      - User
+      summary: Change le mot de passe de l'utilisateur connecté
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -12002,6 +13969,103 @@ paths:
       - User
       summary: Refuser une demande d'integration (manager)
       description: Refuse la demande d'integration (404 si demande hors tenant).
+              required:
+              - current_password
+              - new_password
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '200':
+          description: Mot de passe changé
+        '401':
+          description: Non authentifié
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /user/logout:
+    post:
+      tags:
+      - User
+      summary: Déconnecte l'utilisateur (révoque le token)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Déconnecté
+        '401':
+          description: Non authentifié
+  /user/google-signin:
+    post:
+      tags:
+      - User
+      summary: Connexion ou création de compte via Google (compte ordinaire)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id_token
+              properties:
+                id_token:
+                  type: string
+      responses:
+        '200':
+          description: Token de session
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /user/company-requests:
+    get:
+      tags:
+      - User
+      summary: Liste les demandes de création d'entreprise de l'utilisateur
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Demandes paginées
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - User
+      summary: Crée une demande de création d'entreprise
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_name
+              - email
+              properties:
+                company_name:
+                  type: string
+                email:
+                  type: string
+                country:
+                  type: string
+                city:
+                  type: string
+      responses:
+        '201':
+          description: Demande créée
+        '401':
+          description: Non authentifié
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /user/company-requests/{id}:
+    get:
+      tags:
+      - User
+      summary: Détail d'une demande de création d'entreprise
       security:
       - BearerAuth: []
       parameters:
@@ -12025,6 +14089,36 @@ paths:
       - HR Referentials
       summary: Lire les coordonnees bancaires de l'entreprise
       description: Retourne les coordonnees bancaires (RIB/IBAN) et parametres de la compagnie.
+          description: Demande
+        '401':
+          description: Non authentifié
+        '404':
+          description: Demande introuvable
+  /user/companies/search:
+    get:
+      tags:
+      - User
+      summary: Rechercher des entreprises (demande d'integration)
+      description: Recherche d'entreprises par nom pour le formulaire de demande d'integration (type creation/integration).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Resultats de recherche
+        '401':
+          $ref: '#/components/responses/Error401'
+  /user/company-integration-requests:
+    get:
+      tags:
+      - User
+      summary: Lister mes demandes d'integration
+      description: Liste les demandes d'integration du user courant (statut, entreprise cible).
       security:
       - BearerAuth: []
       responses:
@@ -12039,6 +14133,14 @@ paths:
       - HR Referentials
       summary: Mettre a jour les coordonnees bancaires de l'entreprise
       description: Met a jour les coordonnees bancaires de la compagnie (RBAC principal/comptable).
+          description: Demandes du user
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - User
+      summary: Creer une demande d'integration
+      description: Cree une demande d'integration vers une entreprise existante (anti-doublon 409, limite 5 demandes en attente).
       security:
       - BearerAuth: []
       requestBody:
@@ -12125,6 +14227,132 @@ paths:
       tags:
       - Billing
       summary: Soumettre une demande de création d'entreprise
+              - type
+              - target_company_id
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - creation
+                  - integration
+                target_company_id:
+                  type: string
+                sector:
+                  type: string
+      responses:
+        '200':
+          description: Demande creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '409':
+          description: Demande deja en attente
+        '422':
+          $ref: '#/components/responses/Error422'
+  /user/personal-statuses:
+    patch:
+      tags:
+      - User
+      summary: Mettre a jour les statuts personnels
+      description: Met a jour la liste des statuts cumulables du user courant (student/employee/entrepreneur/seeking_employment). Liste vide autorisee (reset).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                personal_statuses:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                    - student
+                    - employee
+                    - entrepreneur
+                    - seeking_employment
+      responses:
+        '200':
+          description: Statuts mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /user/employee-links:
+    get:
+      tags:
+      - User
+      summary: Liste les liens employé de l'utilisateur ordinaire
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liens employé
+        '401':
+          description: Non authentifié
+  /hr/me:
+    get:
+      tags:
+      - HR App
+      summary: Profil de l'utilisateur RH connecté (manager_role rh/principal)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Profil RH
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+  /hr/dashboard:
+    get:
+      tags:
+      - HR App
+      summary: Dashboard RH — indicateurs et actions en attente
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Dashboard RH
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+  /hr/team-overview:
+    get:
+      tags:
+      - HR App
+      summary: Vue d'ensemble de l'équipe (effectifs, répartition)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Vue d'ensemble
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+  /hr/employees:
+    get:
+      tags:
+      - HR App
+      summary: Liste des employés (scope RH)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Employés paginés
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+    post:
+      tags:
+      - HR App
+      summary: Ajoute un employé (scope RH — sans changement de rôle manager)
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -12176,6 +14404,46 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelCustomerContact
+              $ref: '#/components/schemas/StoreEmployeeRequest'
+      responses:
+        '201':
+          description: Employé créé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /hr/employees/{employee}:
+    get:
+      tags:
+      - HR App
+      summary: Détail d'un employé (scope RH)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Employé
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+        '404':
+          description: Employé introuvable
+    patch:
+      tags:
+      - HR App
+      summary: Modifie un employé (scope RH — sans changement de rôle manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
         in: path
         required: true
         schema:
@@ -12207,6 +14475,30 @@ paths:
       - Auth
       summary: Connexion employee
       security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreEmployeeRequest'
+      responses:
+        '200':
+          description: Employé mis à jour
+        '401':
+          description: Non authentifié
+        '403':
+          description: Manager rh/principal requis
+        '404':
+          description: Employé introuvable
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /employees/link-user:
+    post:
+      tags:
+      - User
+      summary: Manager — lie un utilisateur ordinaire à un employé du tenant
+      security:
+      - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -12353,6 +14645,92 @@ paths:
       summary: TRAVEL-909 — Création d'un site touristique
       security:
       - BearerAuth: []
+              - employee_id
+              properties:
+                email:
+                  type: string
+                employee_id:
+                  type: integer
+      responses:
+        '200':
+          description: Utilisateur lié
+        '403':
+          description: Manager requis
+        '404':
+          description: Utilisateur ou employé introuvable
+        '409':
+          description: Déjà lié
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /payrolls:
+    get:
+      tags:
+      - Payroll
+      summary: Liste des campagnes de paie (tenant)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Campagnes de paie paginées
+    post:
+      tags:
+      - Payroll
+      summary: Crée une campagne de paie
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Campagne créée
+        '422':
+          description: Validation échouée
+  /metrics:
+    get:
+      tags:
+      - Platform
+      summary: Métriques plateforme (super-admin)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Métriques
+        '401':
+          description: Non autorisé
+  /auth/google:
+    get:
+      tags:
+      - Auth
+      summary: 'Redirection vers le flux OAuth Google (state anti-CSRF en session, #2619)'
+      responses:
+        '302':
+          description: Redirection vers la page de consentement Google
+        '503':
+          description: Configuration Google OAuth absente (GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REDIRECT_URL non renseignées sur Render) — erreur GOOGLE_OAUTH_NOT_CONFIGURED (#5170)
+  /auth/google/callback:
+    get:
+      tags:
+      - Auth
+      summary: Callback OAuth Google — échange le code contre une session
+      parameters:
+      - name: code
+        in: query
+        schema:
+          type: string
+      - name: state
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authentification réussie (session ou token)
+        '400':
+          description: State invalide ou code manquant
+        '401':
+          description: 'Email inconnu (EMPLOYEE_NOT_FOUND, plus d''auto-création tenantless #2998)'
+  /webhooks/stripe:
+    post:
+      tags:
+      - Webhooks
+      summary: Webhook Stripe (événements de paiement/abonnement)
       requestBody:
         required: true
         content:
@@ -12362,6 +14740,602 @@ paths:
       responses:
         '200':
           description: Mot de passe change
+  /client-events:
+    post:
+      tags:
+      - Auth
+      summary: Persister un evenement UX client tenant-scope
+      description: Endpoint authentifie pour les mesures produit non bloquantes du portail client. Les proprietes sont minimisee cote API.
+              type: object
+              description: Payload signé Stripe (stripe-signature)
+      responses:
+        '200':
+          description: 'Événement traité (retry Stripe si erreur, #2668)'
+        '400':
+          description: Signature invalide
+        '503':
+          description: Traitement indisponible — l'erreur doit être renvoyée pour retry Stripe
+  /webhooks/chargily:
+    post:
+      tags:
+      - Webhooks
+      summary: Webhook Chargily Pay (paiements CEMAC)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientEventRequest'
+      responses:
+        '201':
+          description: Evenement stocke
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientEventResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /launch-readiness:
+    get:
+      tags:
+      - Readiness
+      summary: Lire le score de readiness lancement du tenant
+      description: Endpoint manager principal/RH pour verifier les pre-requis go-live avant campagne marketing ou onboarding client.
+      responses:
+        '200':
+          description: Readiness lancement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LaunchReadinessResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /dashboard/manager-digest:
+    get:
+      tags:
+      - Dashboard
+      summary: Lire les signaux manager du jour
+      description: Contrat mobile manager tenant-scope pour les presences, retards, sessions ouvertes et actions RH en attente.
+      responses:
+        '200':
+          description: Digest manager du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - date
+                    - team_scope
+                    - team_size
+                    - present
+                    - late
+                    - open_sessions
+                    - pending_actions
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      team_scope:
+                        type: string
+                        enum:
+                        - company
+                        - managed_team
+                      team_size:
+                        type: integer
+                        minimum: 0
+                      present:
+                        type: integer
+                        minimum: 0
+                      late:
+                        type: integer
+                        minimum: 0
+                      open_sessions:
+                        type: integer
+                        minimum: 0
+                      pending_actions:
+                        type: integer
+                        minimum: 0
+                      pending_absences:
+                        type: integer
+                        minimum: 0
+                      pending_salary_advances:
+                        type: integer
+                        minimum: 0
+                      pending_corrections:
+                        type: integer
+                        minimum: 0
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            label:
+                              type: string
+                            count:
+                              type: integer
+                            severity:
+                              type: string
+                            route:
+                              type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /payroll-runs/{payrollRun}/anomalies:
+    get:
+      tags:
+      - Payroll
+      summary: Rapport d'anomalies pre-cloture (F-20)
+      description: 'Lecture seule : doublons, bulletins incoherents, variance de brut > 30 %, ecarts pointage -> paie (heures supplementaires pointees non integrees). Action humaine requise avant clouture.'
+      parameters:
+      - name: payrollRun
+              type: object
+      responses:
+        '200':
+          description: Événement traité
+        '400':
+          description: Payload invalide
+  /webhooks/email-bounce:
+    post:
+      tags:
+      - Webhooks
+      summary: Webhook de bounce email (SES/SendGrid) — fail-closed si secret absent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Bounce enregistré
+        '503':
+          description: 'Secret non configuré (fail-closed, #2616/#2667)'
+  /public/careers/{companySlug}:
+    get:
+      tags:
+      - Careers
+      summary: Offres d'emploi publiques d'une entreprise
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste des offres publiques
+        '404':
+          description: Entreprise inconnue ou sans page carrières
+  /public/careers/{companySlug}/feed.xml:
+    get:
+      tags:
+      - Careers
+      summary: Flux XML des offres (agrégateurs)
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Flux XML
+          content:
+            application/xml:
+              schema:
+                type: string
+  /public/careers/{companySlug}/jobs/{jobPosting}:
+    get:
+      tags:
+      - Careers
+      summary: Détail d'une offre publique
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste d'anomalies (type, severite, message)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+          $ref: '#/components/responses/Validation422'
+  /auth/forgot-password:
+    post:
+      tags:
+      - Auth
+      summary: Demander un lien de reinitialisation de mot de passe
+      security: []
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 160
+                description:
+                  type: string
+                  maxLength: 2000
+                city_id:
+                  type: integer
+                  nullable: true
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - disabled
+      responses:
+        '201':
+          description: Site créé
+        '403':
+          description: Rôle insuffisant
+        '422':
+          description: Validation échouée
+  /travel/tourist-sites/{travelTouristSite}:
+    get:
+      tags:
+      - Travel
+      summary: TRAVEL-909 — Détail d'un site touristique
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelTouristSite
+          description: Détail de l'offre
+        '404':
+          description: Offre introuvable ou non publiée
+  /public/careers/{companySlug}/jobs/{jobPosting}/apply:
+    post:
+      tags:
+      - Careers
+      summary: 'Postuler à une offre publique (anti-doublon par email, #3860)'
+      parameters:
+      - name: companySlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - first_name
+              - last_name
+              - email
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                phone:
+                  type: string
+                  maxLength: 20
+                cover_letter:
+                  type: string
+                  maxLength: 5000
+                resume_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                resume:
+                  type: string
+                  format: binary
+                  description: CV (pdf/doc/docx, 5 Mo max)
+                source:
+                  type: string
+                  enum:
+                  - website
+                  - linkedin
+                  - referral
+                  - agency
+                  - other
+      responses:
+        '201':
+          description: Candidature créée
+        '409':
+          description: ALREADY_APPLIED (déjà postulé)
+        '422':
+          description: Validation
+  /onboarding/invitation/{token}:
+    get:
+      tags:
+      - Onboarding
+      summary: Consulter une invitation d'onboarding (token public)
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Invitation valide
+        '404':
+          description: INVITATION_NOT_FOUND
+  /onboarding/invitation/{token}/activate:
+    post:
+      tags:
+      - Onboarding
+      summary: Activer une invitation (définir le mot de passe)
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - password
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+      responses:
+        '200':
+          description: Compte activé
+        '404':
+          description: INVITATION_NOT_FOUND
+        '422':
+          description: Validation (mot de passe trop court / non confirmé)
+  /onboarding/checklist:
+    get:
+      tags:
+      - Onboarding
+      summary: Checklist d'onboarding de l'employé authentifié
+      responses:
+        '200':
+          description: Progression de l'onboarding
+        '401':
+          $ref: '#/components/responses/Error401'
+  /company-integration-requests:
+    get:
+      tags:
+      - User
+      summary: Lister les demandes d'integration de mon entreprise (manager)
+      description: Liste tenant-scope des demandes d'integration recues (manager/principal).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Demandes recues
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /company-integration-requests/{id}/accept:
+    post:
+      tags:
+      - User
+      summary: Accepter une demande d'integration (manager)
+      description: Accepte la demande et cree le lien user-entreprise (idempotent, 404 si demande hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Demande acceptee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Demande introuvable
+  /company-integration-requests/{id}/reject:
+    post:
+      tags:
+      - User
+      summary: Refuser une demande d'integration (manager)
+      description: Refuse la demande d'integration (404 si demande hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Demande refusee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Demande introuvable
+  /company/banking:
+    get:
+      tags:
+      - HR Referentials
+      summary: Lire les coordonnees bancaires de l'entreprise
+      description: Retourne les coordonnees bancaires (RIB/IBAN) et parametres de la compagnie.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Coordonnees bancaires
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    patch:
+      tags:
+      - HR Referentials
+      summary: Mettre a jour les coordonnees bancaires de l'entreprise
+      description: Met a jour les coordonnees bancaires de la compagnie (RBAC principal/comptable).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank_name:
+                  type: string
+                iban:
+                  type: string
+                bic:
+                  type: string
+                rib:
+                  type: string
+                account_holder:
+                  type: string
+      responses:
+        '200':
+          description: Coordonnees mises a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /company-requests:
+    get:
+      tags:
+      - Billing
+      summary: Demandes de création d'entreprise de l'utilisateur
+      responses:
+        '200':
+          description: Demandes
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Billing
+      summary: Soumettre une demande de création d'entreprise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_name
+              properties:
+                company_name:
+                  type: string
+                  maxLength: 200
+                sector:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                city:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Demande créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Connexion employee
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Connexion reussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /auth/me:
+    get:
+      tags:
+      - Auth
+      summary: Profil authentifie
+      responses:
+        '200':
+          description: Profil employee courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CurrentEmployee'
+        '401':
+          $ref: '#/components/responses/Error401'
   /client-events:
     post:
       tags:
@@ -12500,61 +15474,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                    example: ok
-          $ref: '#/components/responses/Validation422'
-  /auth/forgot-password:
-    post:
-      tags:
-      - Auth
-      summary: Demander un lien de reinitialisation de mot de passe
-      security: []
-              type: object
-              required:
-              - name
-              properties:
-                name:
-                  type: string
-                  maxLength: 160
-                description:
-                  type: string
-                  maxLength: 2000
-                city_id:
-                  type: integer
-                  nullable: true
-                latitude:
-                  type: number
-                  minimum: -90
-                  maximum: 90
-                longitude:
-                  type: number
-                  minimum: -180
-                  maximum: 180
-                image_asset_id:
-                  type: integer
-                  nullable: true
-                status:
-                  type: string
-                  enum:
-                  - active
-                  - disabled
-      responses:
-        '201':
-          description: Site créé
-        '403':
-          description: Rôle insuffisant
-        '422':
-          description: Validation échouée
-  /travel/tourist-sites/{travelTouristSite}:
-    get:
-      tags:
-      - Travel
-      summary: TRAVEL-909 — Détail d'un site touristique
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelTouristSite
                   data:
                     type: object
                     properties:
@@ -13931,6 +16850,47 @@ paths:
                 $ref: '#/components/schemas/BiometricConsentResponse'
         '401':
           $ref: '#/components/responses/Error401'
+              properties:
+                reason:
+                  type: string
+                  nullable: true
+                  maxLength: 1000
+      responses:
+        '202':
+          description: Demande recue pour revue RH/juridique
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /privacy/biometric-consent:
+    patch:
+      tags:
+      - Privacy
+      summary: Enregistrer ou retirer le consentement biometrique
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consented
+              properties:
+                consented:
+                  type: boolean
+      responses:
+        '200':
+          description: Etat biometrique courant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BiometricConsentResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
   /platform/auth/login:
@@ -15258,6 +18218,7 @@ paths:
       summary: Change le mot de passe de l'utilisateur connecté
       security:
       - BearerAuth: []
+              $ref: '#/components/schemas/PlatformCompanySubscriptionUpdateRequest'
               $ref: '#/components/schemas/PlatformCompanySubscriptionUpdateRequest'
       responses:
         '200':
@@ -17669,6 +20630,129 @@ paths:
       summary: Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)
       security:
       - SuperAdminBearerAuth: []
+              - message
+              properties:
+                message:
+                  type: string
+                  maxLength: 4000
+                conversation_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Reponse de l'assistant (indisponible au niveau plateforme)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: integer
+                    nullable: true
+                  response:
+                    type: string
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/fleet/alerts:
+    get:
+      tags:
+      - Platform
+      summary: Alertes flotte cross-tenant (super-admin)
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Liste des alertes flotte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        '401':
+          $ref: '#/components/responses/Error401'
+  /admin/impersonations:
+    get:
+      tags:
+      - Platform
+      summary: Lister les sessions d'impersonation super-admin
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Liste des sessions d'impersonation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Platform
+      summary: Creer une session d'impersonation (login en tant que)
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - reason
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                expires_minutes:
+                  type: integer
+                  default: 30
+      responses:
+        '201':
+          description: Session creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/impersonations/{session}:
+    delete:
+      tags:
+      - Platform
+      summary: Terminer une session d'impersonation
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - in: path
+        name: session
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Session terminee
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/training/courses:
+    get:
+      tags:
+      - Platform
+      summary: Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)
+      security:
+      - SuperAdminBearerAuth: []
       parameters:
       - name: per_page
         in: query
@@ -19177,6 +22261,43 @@ paths:
                 type: object
                 properties:
                   data:
+                    $ref: '#/components/schemas/EmployeeDetail'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    patch:
+      tags:
+      - Employees
+      summary: Patch employe
+  /employees/{employee}/departure:
+    post:
+      tags:
+      - Employees
+      summary: 'Enregistrer le depart d''un employe (offboarding, issue #5324)'
+      parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEmployeeRequestFull'
+      responses:
+        '200':
+          description: Employe mis a jour
+              $ref: '#/components/schemas/StoreDepartureRequest'
+      responses:
+        '201':
+          description: Depart enregistre — statut employe departed, acces revoque
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
                     $ref: '#/components/schemas/PlatformUser'
         '401':
           $ref: '#/components/responses/Error401'
@@ -19417,6 +22538,26 @@ paths:
                 type: object
                 properties:
                   data:
+                    $ref: '#/components/schemas/EmployeeDeparturePayload'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      tags:
+      - Employees
+      summary: 'Lire le depart d''un employe (manager : entreprise ; employe : le sien)'
+      parameters:
+      - $ref: '#/components/parameters/EmployeeId'
+      responses:
+        '200':
+          description: Depart (ou null si aucun)
+          content:
+            application/json:
+              schema:
+                type: object
                     $ref: '#/components/schemas/EmployeeDeparturePayload'
         '403':
           $ref: '#/components/responses/Error403'
@@ -23593,6 +26734,66 @@ paths:
       tags:
       - Invitations
       summary: Renvoyer une invitation
+                    $ref: '#/components/schemas/AttendanceLog'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /attendance:
+    get:
+      tags:
+      - Attendance
+      summary: Historique de pointage
+      parameters:
+      - name: employee_id
+        in: query
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          format: date
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Historique
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceIndexResponse'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /invitations:
+    get:
+      tags:
+      - Invitations
+      summary: Lister les invitations de l'entreprise
+      responses:
+        '200':
+          description: Invitations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invitation'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /invitations/{invitation}/resend:
+    post:
+      tags:
+      - Invitations
+      summary: Renvoyer une invitation
       parameters:
       - $ref: '#/components/parameters/InvitationId'
       responses:
@@ -27566,6 +30767,47 @@ paths:
           $ref: '#/components/responses/Error404'
   /admin/webhooks/{webhookEndpoint}/dead-letters:
           description: Evenement de test dispatche
+        '200':
+          description: Arbre hierarchique du departement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /notifications/{notification}/read:
+    patch:
+      tags:
+      - Notifications
+      summary: Marquer une notification comme lue
+      description: 'Verbe canonique PATCH (issue #2674) — ne pas utiliser PUT.'
+      parameters:
+      - $ref: '#/components/parameters/NotificationId'
+      responses:
+        '200':
+          description: Notification mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notification'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /notifications/{notification}:
+    delete:
         '200':
           description: Arbre hierarchique du departement
           content:
@@ -32336,6 +35578,19 @@ paths:
       responses:
         '200':
           description: Liste des soldes
+  /leave-balances:
+    get:
+      tags:
+      - Leave Policies
+      summary: Soldes de conges globaux (manager)
+      parameters:
+      - name: employee_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste des soldes
           content:
             application/json:
               schema:
@@ -34157,6 +37412,28 @@ paths:
         required: true
         schema:
           type: integer
+      responses:
+        '200':
+          description: Detail poste
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Position'
+        '401':
+          $ref: '#/components/responses/Error401'
+    put:
+      tags:
+      - Referentials
+      summary: Modifier un poste
+      parameters:
+      - name: position
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -34188,6 +37465,19 @@ paths:
       responses:
         '200':
           description: Detail poste
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: string
+                  nullable: true
+                department_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Poste modifie
           content:
             application/json:
               schema:
@@ -34201,6 +37491,10 @@ paths:
       tags:
       - Referentials
       summary: Modifier un poste
+    delete:
+      tags:
+      - Referentials
+      summary: Supprimer un poste
       parameters:
       - name: position
         in: path
@@ -34271,6 +37565,38 @@ paths:
         schema:
           type: string
           example: '2026-09-30'
+          description: Poste supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    patch:
+      tags:
+      - Payroll Engine
+      summary: Mettre à jour un poste (manager)
+      parameters:
+      - name: position
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Poste mis à jour
+        '401':
+          $ref: '#/components/responses/Error401'
+  /sites:
+    get:
+      tags:
+      - Referentials
+      summary: Lister les sites
+      parameters:
       - name: per_page
         in: query
         schema:
@@ -34517,6 +37843,19 @@ paths:
       tags:
       - Accounting
       summary: Creer un contact client/fournisseur
+                      $ref: '#/components/schemas/Site'
+          default: 15
+      responses:
+        '200':
+          description: Liste des sites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
                       $ref: '#/components/schemas/Site'
         '401':
           $ref: '#/components/responses/Error401'
@@ -36626,6 +39965,12 @@ paths:
       - BearerAuth: []
       parameters:
       - name: restaurantMenu
+                confirm_placeholder:
+                  type: boolean
+                  description: Confirmation explicite pour valider une paie dont les baremes pays sont 'placeholder' (indicatifs)
+      responses:
+        '200':
+          description: Session validee
                 confirm_placeholder:
                   type: boolean
                   description: Confirmation explicite pour valider une paie dont les baremes pays sont 'placeholder' (indicatifs)
@@ -40100,6 +43445,21 @@ paths:
           description: Affectation annulee
         '204':
           description: Supprimé
+          $ref: '#/components/responses/Error404'
+    delete:
+      tags:
+      - Platform Admin
+      summary: 'Supprimer une règle de cotisation nationale (platform_admin) — issue #1815'
+      operationId: destroyAdminSocialContribution
+      parameters:
+      - name: socialContribution
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Supprimé
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -42481,6 +45841,32 @@ paths:
       responses:
         '200':
           description: Offre supprimée
+              $ref: '#/components/schemas/StoreJobPostingRequest'
+      responses:
+        '200':
+          description: Offre modifiee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/JobPosting'
+        '401':
+          $ref: '#/components/responses/Error401'
+    delete:
+      tags:
+      - Recruitment
+      summary: Supprimer une offre d'emploi (manager)
+      parameters:
+      - name: jobPosting
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre supprimée
         '401':
           $ref: '#/components/responses/Error401'
   /recruitment/jobs/{jobPosting}/publish:
@@ -44428,6 +47814,35 @@ paths:
         '200':
           description: File de corrections
                     $ref: '#/components/schemas/CareerEvent'
+          description: 'Action effectuée (ancien verbe, déprécié #4930)'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Non autorisé
+        '404':
+          description: Introuvable
+  /expense-claims/{expenseClaim}/reject:
+    post:
+      tags:
+      - Expenses
+      summary: Rejeter une note de frais
+      parameters:
+      - name: expenseClaim
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejection_reason:
+                  type: string
+      responses:
+        '200':
+          description: Note rejetee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -44566,6 +47981,15 @@ paths:
       responses:
         '200':
           description: Tokens actifs
+    put:
+      tags:
+      - Deprecated
+      summary: Refuser une note de frais (déprécié — utiliser POST)
+      deprecated: true
+      parameters:
+      - name: expenseClaim
+        in: path
+        required: true
     put:
       tags:
       - Deprecated
@@ -46390,6 +49814,17 @@ paths:
       - BearerAuth: []
       parameters:
       - name: thread
+          description: Token revoque
+        '401':
+          $ref: '#/components/responses/Error401'
+  /notifications/unread:
+    get:
+      tags:
+      - Notifications
+      summary: Notifications non lues de l'employe
+      responses:
+        '200':
+          description: Notifications non lues
           description: Token revoque
         '401':
           $ref: '#/components/responses/Error401'
@@ -48690,6 +52125,8 @@ paths:
           description: Detail trajet
                   success:
                     type: boolean
+                  success:
+                    type: boolean
                   data:
                     type: object
                     properties:
@@ -50985,6 +54422,12 @@ paths:
       tags:
       - Departments
       summary: Créer un département
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                source:
               - email
               properties:
                 email:
@@ -346215,6 +349658,145 @@ components:
       responses:
         '200':
           description: Trajets publiés correspondant aux filtres
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - bank_reference
+              properties:
+                bank_reference:
+                  type: string
+                  maxLength: 128
+                executed_at:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Ordre execute
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayrollPaymentOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role comptable requis
+        '404':
+          description: Ordre introuvable (isolation tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /payment-orders/{paymentOrder}/reconcile:
+    post:
+      tags:
+      - Payroll
+      summary: Rapprocher un ordre de virement execute (comptable)
+      description: Passe l'ordre au statut reconciled. Reserve au role comptable (403 sinon).
+      parameters:
+      - name: paymentOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ordre rapproche
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayrollPaymentOrder'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role comptable requis
+        '404':
+          description: Ordre introuvable (isolation tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /payroll-runs/{payrollRun}/accounting-entries:
+    get:
+      tags:
+      - Payroll
+      summary: Ecrires comptables d'un run de paie valide (#5239)
+      description: Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines(). Reserve aux managers principal/comptable, isolation tenant (404).
+      parameters:
+      - name: payrollRun
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Liste des ecritures du run
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PayrollAccountingEntry'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Run introuvable (isolation tenant)
+  /payroll-runs/{payrollRun}/accounting-entries/regenerate:
+    post:
+      tags:
+      - Payroll
+      summary: Regenerer les ecritures comptables d'un run (comptable, idempotent)
+      description: Remplace les lignes existantes du run (contrainte unique run/bulletin/compte). Reserve au role comptable (403 sinon). Refuse un journal desequilibre (422).
+      parameters:
+      - name: payrollRun
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Regeneration effectuee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payroll_run_id:
+                    type: integer
+                  generated_lines:
+                    type: integer
+                  balance:
+                    type: number
+                    format: float
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Role comptable requis
+        '404':
+          description: Run introuvable (isolation tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /payroll-runs/{payrollRun}/payment-order:
+    post:
+      tags:
+      - Payroll
+      summary: Preparer un ordre de virement pour un run valide (comptable)
+      description: Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable (403 sinon).
+      parameters:
+      - name: payrollRun
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
                 format:
                   type: string
                   enum:
@@ -347454,6 +351036,18 @@ components:
       description: Fin de période (YYYY-MM-DD) quand period=range
       description: Fin de période (YYYY-MM-DD) — agrégation des rapports TRAVEL-501..504.
       required: false
+      name: from
+      in: query
+      required: false
+      description: 'Borne basse de la période (YYYY-MM-DD)'
+      schema:
+        type: string
+        format: date
+    TravelReportPeriodTo:
+      name: to
+      in: query
+      required: false
+      description: 'Borne haute de la période (YYYY-MM-DD)'
       schema:
         type: string
         format: date
@@ -348020,6 +351614,30 @@ components:
               link_status:
                 type: string
     TaxSlab:
+      description: Erreur de validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+    Error409:
+      description: Conflit — état déjà traité (idempotence)
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error, message]
+            properties:
+              error: { type: string }
+              message: { type: string }
+    Validation422:
+      description: Erreur de validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+  schemas:
+    TravelClass:
       type: object
       properties:
         id:
@@ -348053,6 +351671,18 @@ components:
         min_duration_min:
           type: integer
           nullable: true
+        code:
+          type: string
+        label:
+          type: string
+        color:
+          type: string
+          nullable: true
+        priority:
+          type: integer
+        status:
+          type: string
+          enum: [active, disabled]
         created_at:
           type: string
           nullable: true
@@ -348060,6 +351690,7 @@ components:
           type: string
           nullable: true
     TravelTrip:
+    TravelVehicle:
       type: object
       properties:
         id:
@@ -348165,6 +351796,29 @@ components:
         last_name:
           type: string
     CareerEventPositionMini:
+        code:
+          type: string
+        registration_number:
+          type: string
+          nullable: true
+        seat_capacity:
+          type: integer
+        carrier_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRoute:
       type: object
       properties:
         id:
@@ -348363,6 +352017,58 @@ components:
           type: string
           nullable: true
     CurrentEmployee:
+        code:
+          type: string
+        origin_city_id:
+          type: integer
+        destination_city_id:
+          type: integer
+        distance_km:
+          type: integer
+          nullable: true
+        duration_min:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelRouteStop'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        city_id:
+          type: integer
+        rank:
+          type: integer
+        is_stopover:
+          type: boolean
+        min_duration_min:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelTrip:
+      type: object
+      properties:
+        id:
+          type: integer
         code:
           type: string
         route_id:
@@ -349294,6 +353000,12 @@ components:
         status:
           type: string
           enum: [active, disabled]
+        payment_status:
+          type: string
+          enum: [pending, confirmed, failed, refunded]
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed]
         created_at:
           type: string
           nullable: true
@@ -349302,6 +353014,7 @@ components:
           nullable: true
     TravelStation:
     TravelCarrier:
+    TravelHotel:
       type: object
       properties:
         id:
@@ -349439,6 +353152,67 @@ components:
         total:
           type: number
         by_rate:
+        name:
+          type: string
+        city_id:
+          type: integer
+        classification:
+          type: integer
+          minimum: 1
+          maximum: 5
+        address:
+          type: string
+          nullable: true
+        contact_phone:
+          type: string
+          nullable: true
+        description_redacted:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [active, disabled]
+        rooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelHotelRoom'
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelHotelRoom:
+      type: object
+      properties:
+        id:
+          type: integer
+        hotel_id:
+          type: integer
+        type_code:
+          type: string
+        room_number:
+          type: string
+        capacity:
+          type: integer
+        price_per_night_minor:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [active, disabled]
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    TravelCarrier:
+      type: object
+      properties:
+        id:
+          type: integer
         code:
           type: string
         name:
@@ -353288,6 +357062,73 @@ components:
           type: string
           nullable: true
     AttendanceLog:
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+    PlatformCompanyRequestsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformCompanyRequest'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+    PlatformCompanyRequestResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformCompanyRequest'
+    PlatformCompanyRequestReviewRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          enum:
+          - approved
+          - rejected
+        admin_notes:
+          type: string
+          nullable: true
+          maxLength: 2000
+        plan_id:
+          type: integer
+          nullable: true
+    PlatformCompanyRequestReviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            status:
+              type: string
+              enum:
+              - approved
+              - rejected
+            approved_company_id:
+              type: string
+              format: uuid
+              nullable: true
+            admin_notes:
+              type: string
+              nullable: true
+            reviewed_at:
+              type: string
+              format: date-time
+              nullable: true
+    PlatformCompanyCreateRequest:
+      type: object
+      required:
+      - name
+      - country
+      - city
+      - email
+      - manager_first_name
       - manager_last_name
       - manager_email
       properties:
@@ -354534,6 +358375,37 @@ components:
           - accepted
           - expired
     BiometricEnrollmentRequest:
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        members:
+          type: array
+          nullable: true
+          items:
+            type: integer
+        status:
+          type: string
+          enum:
+          - active
+          - completed
+          - archived
+        created_by:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    ProjectIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
             $ref: '#/components/schemas/Project'
         meta:
           $ref: '#/components/schemas/PaginationMeta'
@@ -356583,6 +360455,105 @@ components:
           type: string
           nullable: true
     SalaryAdvance:
+        emergency_contact_relation:
+          type: string
+        biometric_face_enabled:
+          type: boolean
+        biometric_fingerprint_enabled:
+          type: boolean
+        biometric_face_reference_path:
+          type: string
+        biometric_fingerprint_reference_path:
+          type: string
+        photo_path:
+          type: string
+        zkteco_id:
+          type: string
+        extra_data:
+          type: object
+          additionalProperties: true
+        send_invitation:
+          type: boolean
+    UpdateEmployeeRequestFull:
+      type: object
+      properties:
+        matricule:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        contract_start:
+          type: string
+          format: date
+        schedule_id:
+          type: integer
+          nullable: true
+        salary_type:
+          type: string
+          enum:
+          - fixed
+          - hourly
+          - daily
+        salary_base:
+          type: number
+          format: float
+          minimum: 0
+        hourly_rate:
+          type: number
+          format: float
+          minimum: 0
+        role:
+          type: string
+          enum:
+          - employee
+          - manager
+        manager_role:
+          type: string
+          enum:
+          - principal
+          - rh
+          - dept
+          - comptable
+          - superviseur
+          - marketing
+        status:
+          type: string
+          enum:
+          - active
+          - suspended
+        phone:
+          type: string
+        personal_email:
+          type: string
+          format: email
+        middle_name:
+          type: string
+        preferred_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        place_of_birth:
+          type: string
+        gender:
+          type: string
+          enum:
+          - M
+          - F
+        nationality:
+          type: string
+        marital_status:
+          type: string
+        address_line:
+          type: string
+        postal_code:
+          type: string
         emergency_contact_name:
           type: string
         emergency_contact_phone:
@@ -358126,6 +362097,18 @@ components:
           type: string
           format: date
     Contract:
+              mode:
+                type: string
+                example: single
+              item:
+                $ref: '#/components/schemas/AttendanceTodayItem'
+          - type: object
+            properties:
+              mode:
+                type: string
+                example: collection
+              items:
+                type: array
                 items:
                   $ref: '#/components/schemas/AttendanceTodayItem'
               meta:
@@ -359850,6 +363833,30 @@ components:
           items:
             type: string
     BankStatement:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    StoreAbsenceRequest:
+      type: object
+      required:
+      - absence_type_id
+      - start_date
+      - end_date
+      properties:
+        absence_type_id:
+          type: integer
+        start_date:
           type: string
           format: date
         end_date:
@@ -363149,6 +367156,8 @@ components:
           format: date-time
           nullable: true
     RestaurantIngredient:
+          - disbursed
+          - repaying
           - completed
           - rejected
         reason:

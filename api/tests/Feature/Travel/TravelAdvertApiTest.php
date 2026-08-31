@@ -422,9 +422,9 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
 
-    /* ── TRAVEL-914 (#6422) — GET /adverts/manage (liste admin) ── */
+    /* ── TRAVEL-914 (#6422) — mode gestion de GET /adverts (liste admin) ── */
 
-    public function test_manage_index_lists_all_statuses_for_manager(): void
+    public function test_index_manage_mode_lists_all_statuses_for_manager(): void
     {
         $this->actingManager();
         $this->tenants->withinTenant($this->company, function (): void {
@@ -440,14 +440,14 @@ class TravelAdvertApiTest extends TestCase
             ]);
         });
 
-        $this->getJson('/api/v1/travel/adverts/manage')
+        $this->getJson('/api/v1/travel/adverts')
             ->assertOk()
             ->assertJsonCount(2, 'data')
             ->assertJsonPath('data.0.status', 'validated')
             ->assertJsonPath('data.1.status', 'draft');
     }
 
-    public function test_manage_index_filters_by_status(): void
+    public function test_index_manage_mode_filters_by_status(): void
     {
         $this->actingManager();
         $this->tenants->withinTenant($this->company, function (): void {
@@ -461,13 +461,13 @@ class TravelAdvertApiTest extends TestCase
             ]);
         });
 
-        $this->getJson('/api/v1/travel/adverts/manage?status=draft')
+        $this->getJson('/api/v1/travel/adverts?status=draft')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.title', 'Annonce draft');
     }
 
-    public function test_manage_index_requires_manager_role(): void
+    public function test_index_public_mode_hides_non_visible_for_agent(): void
     {
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
@@ -477,10 +477,26 @@ class TravelAdvertApiTest extends TestCase
         ]);
         Sanctum::actingAs($agent);
 
-        $this->getJson('/api/v1/travel/adverts/manage')->assertStatus(403);
+        $this->tenants->withinTenant($this->company, function (): void {
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce draft cachée',
+                'status' => AdvertStatus::DRAFT->value,
+            ]);
+            TravelAdvert::factory()->create([
+                'title' => 'Annonce visible',
+                'status' => AdvertStatus::VALIDATED->value,
+                'paid_at' => now(),
+                'expires_at' => now()->addDays(5),
+            ]);
+        });
+
+        $this->getJson('/api/v1/travel/adverts')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Annonce visible');
     }
 
-    public function test_manage_index_is_isolated_per_tenant(): void
+    public function test_index_manage_mode_is_isolated_per_tenant(): void
     {
         /** @var Company $companyB */
         $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
@@ -493,7 +509,7 @@ class TravelAdvertApiTest extends TestCase
 
         $this->actingManager();
 
-        $this->getJson('/api/v1/travel/adverts/manage')
+        $this->getJson('/api/v1/travel/adverts')
             ->assertOk()
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }

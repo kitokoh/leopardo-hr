@@ -5047,6 +5047,117 @@ class LeopardoClient:
     def delete_schedules_by_schedule(self, **kwargs):
         """Supprimer un horaire non defaut"""
         return self.request("DELETE", "/schedules/{schedule}", **kwargs)
+    def get_salary_advances(self, **kwargs):
+        """Lister les avances sur salaire"""
+        return self.request("GET", "/salary-advances", **kwargs)
+
+    def post_salary_advances(self, **kwargs):
+        """Demander une avance sur salaire"""
+        return self.request("POST", "/salary-advances", **kwargs)
+
+    def delete_salary_advances_by_salaryadvance(self, **kwargs):
+        """Annuler une avance (employe proprietaire)"""
+        return self.request("DELETE", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def get_salary_advances_by_salaryadvance(self, **kwargs):
+        """Voir une avance"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_approve(self, **kwargs):
+        """Approuver une avance (manager)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_approve(self, **kwargs):
+        """Approuver une avance sur salaire (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_confirm_received(self, **kwargs):
+        """Confirmer la reception de l'avance (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/confirm-received", **kwargs)
+
+    def disputesalaryadvance(self, **kwargs):
+        """Ouvrir une reclamation sur une avance dont le paiement a ete declare mais non recu (employe)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/dispute", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
+        """Valider une avance avant paiement (manager/RH)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_manager_approve(self, **kwargs):
+        """Validation manager d'une avance (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/manager-approve", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_mark_paid(self, **kwargs):
+        """Declarer l'avance comme envoyee (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/mark-paid", **kwargs)
+
+    def downloadsalaryadvanceproof(self, **kwargs):
+        """Telecharger le justificatif joint a une demande d'avance (employe proprietaire ou manager)"""
+        return self.request("GET", "/salary-advances/{salaryAdvance}/proof", **kwargs)
+
+    def post_salary_advances_by_salaryadvance_reject(self, **kwargs):
+        """Rejeter une avance (manager)"""
+        return self.request("POST", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def put_salary_advances_by_salaryadvance_reject(self, **kwargs):
+        """Refuser une avance sur salaire (déprécié — utiliser POST)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/reject", **kwargs)
+
+    def resolvesalaryadvancedispute(self, **kwargs):
+        """Resoudre une reclamation sur une avance (manager/RH)"""
+        return self.request("PUT", "/salary-advances/{salaryAdvance}/resolve-dispute", **kwargs)
+
+    def listsalarycomponents(self, **kwargs):
+        """Lister les composants de salaire (manager)"""
+        return self.request("GET", "/salary-components", **kwargs)
+
+    def createsalarycomponent(self, **kwargs):
+        """Creer un composant de salaire (manager)"""
+        return self.request("POST", "/salary-components", **kwargs)
+
+    def deletesalarycomponent(self, **kwargs):
+        """Supprimer un composant de salaire (manager)"""
+        return self.request("DELETE", "/salary-components/{salaryComponent}", **kwargs)
+
+    def showsalarycomponent(self, **kwargs):
+        """Voir un composant de salaire (manager)"""
+        return self.request("GET", "/salary-components/{salaryComponent}", **kwargs)
+
+    def updatesalarycomponent(self, **kwargs):
+        """Modifier un composant de salaire (manager)"""
+        return self.request("PUT", "/salary-components/{salaryComponent}", **kwargs)
+
+    def listsalarystructures(self, **kwargs):
+        """Lister les structures salariales (manager)"""
+        return self.request("GET", "/salary-structures", **kwargs)
+
+    def createsalarystructure(self, **kwargs):
+        """Creer une structure salariale (manager)"""
+        return self.request("POST", "/salary-structures", **kwargs)
+
+    def deletesalarystructure(self, **kwargs):
+        """Supprimer une structure salariale (manager)"""
+        return self.request("DELETE", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def showsalarystructure(self, **kwargs):
+        """Voir une structure salariale avec ses composants (manager)"""
+        return self.request("GET", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def updatesalarystructure(self, **kwargs):
+        """Modifier une structure salariale (manager)"""
+        return self.request("PUT", "/salary-structures/{salaryStructure}", **kwargs)
+
+    def get_schedules(self, **kwargs):
+        """Lister les horaires de l'entreprise"""
+        return self.request("GET", "/schedules", **kwargs)
+
+    def post_schedules(self, **kwargs):
+        """Creer un horaire de travail"""
+        return self.request("POST", "/schedules", **kwargs)
+
+    def delete_schedules_by_schedule(self, **kwargs):
+        """Supprimer un horaire non defaut"""
+        return self.request("DELETE", "/schedules/{schedule}", **kwargs)
 
     def get_schedules_by_schedule(self, **kwargs):
         """Détail d'un planning"""
@@ -5492,6 +5603,11 @@ class LeopardoClient:
 
     def delete_travel_advert_prices_by_traveladvertprice(self, **kwargs):
         """TRAVEL-906 — Suppression d'une grille tarifaire"""
+        """TRAVEL-906 — Création d''une grille tarifaire (minor units)"""
+        return self.request("POST", "/travel/advert-prices", **kwargs)
+
+    def delete_travel_advert_prices_by_traveladvertprice(self, **kwargs):
+        """TRAVEL-906 — Suppression d''une grille tarifaire"""
         return self.request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", **kwargs)
 
     def put_travel_advert_prices_by_traveladvertprice(self, **kwargs):
@@ -5508,6 +5624,15 @@ class LeopardoClient:
 
     def delete_travel_advert_types_by_traveladverttype(self, **kwargs):
         """TRAVEL-905 — Suppression d'un type d'annonce"""
+        """TRAVEL-905 — Types d''annonces"""
+        return self.request("GET", "/travel/advert-types", **kwargs)
+
+    def post_travel_advert_types(self, **kwargs):
+        """TRAVEL-905 — Création d''un type d''annonce"""
+        return self.request("POST", "/travel/advert-types", **kwargs)
+
+    def delete_travel_advert_types_by_traveladverttype(self, **kwargs):
+        """TRAVEL-905 — Suppression d''un type d''annonce"""
         return self.request("DELETE", "/travel/advert-types/{travelAdvertType}", **kwargs)
 
     def put_travel_advert_types_by_traveladverttype(self, **kwargs):
@@ -5574,6 +5699,11 @@ class LeopardoClient:
 
     def post_travel_article_categories(self, **kwargs):
         """TRAVEL-901 — Création d'une catégorie"""
+        """TRAVEL-901 — Catégories d''articles"""
+        return self.request("GET", "/travel/article-categories", **kwargs)
+
+    def post_travel_article_categories(self, **kwargs):
+        """TRAVEL-901 — Création d''une catégorie"""
         return self.request("POST", "/travel/article-categories", **kwargs)
 
     def get_travel_articles(self, **kwargs):
@@ -5615,6 +5745,23 @@ class LeopardoClient:
 
     def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
         """TRAVEL-903 — Agrégats d'engagement"""
+        """TRAVEL-901 — Création d''un article"""
+        return self.request("POST", "/travel/articles", **kwargs)
+
+    def delete_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Suppression d''un article"""
+        return self.request("DELETE", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Détail d''un article"""
+        return self.request("GET", "/travel/articles/{travelArticle}", **kwargs)
+
+    def put_travel_articles_by_travelarticle(self, **kwargs):
+        """TRAVEL-901 — Mise à jour d''un article"""
+        return self.request("PUT", "/travel/articles/{travelArticle}", **kwargs)
+
+    def get_travel_articles_by_travelarticle_engagement(self, **kwargs):
+        """TRAVEL-903 — Agrégats d''engagement"""
         return self.request("GET", "/travel/articles/{travelArticle}/engagement", **kwargs)
 
     def post_travel_articles_by_travelarticle_like(self, **kwargs):
@@ -6342,6 +6489,15 @@ class LeopardoClient:
 
     def put_travel_quizzes_by_travelquiz(self, **kwargs):
         """TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)"""
+        """TRAVEL-904 — Création d''un quiz"""
+        return self.request("POST", "/travel/quizzes", **kwargs)
+
+    def get_travel_quizzes_by_travelquiz(self, **kwargs):
+        """TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}", **kwargs)
 
     def post_travel_quizzes_by_travelquiz_participate(self, **kwargs):
@@ -6362,6 +6518,19 @@ class LeopardoClient:
 
     def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
         """TRAVEL-914 — Mise à jour d'une question"""
+        """TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)"""
+        return self.request("GET", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def post_travel_quizzes_by_travelquiz_questions(self, **kwargs):
+        """TRAVEL-904 — Ajout d''une question"""
+        return self.request("POST", "/travel/quizzes/{travelQuiz}/questions", **kwargs)
+
+    def delete_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Suppression d''une question"""
+        return self.request("DELETE", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
+
+    def put_travel_quizzes_by_travelquiz_questions_by_travelquizquestion(self, **kwargs):
+        """TRAVEL-914 — Mise à jour d''une question"""
         return self.request("PUT", "/travel/quizzes/{travelQuiz}/questions/{travelQuizQuestion}", **kwargs)
 
     def get_travel_quizzes_by_travelquiz_results(self, **kwargs):
