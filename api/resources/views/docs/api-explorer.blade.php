@@ -223,7 +223,20 @@ async function request(path, options = {}) {
 async function loadDemoUsers() {
     print('Chargement des profils demo...');
     const result = await request('/demo-users');
-    print(result);
+    // Issue #6525 : mode démo désactivé (404) → message explicite au lieu
+    // d'une liste vide silencieuse. Le gate backend est volontaire
+    // (audit sécurité — jamais exposer l'endpoint hors DEMO_MODE_ENABLED).
+    if (result.status === 404) {
+        profile.innerHTML = '';
+        print('Mode demo non active sur cet environnement (GET /demo-users → 404, DEMO_MODE_ENABLED absent/false). Activez DEMO_MODE_ENABLED=true sur le service staging/demo pour charger les profils.');
+        return;
+    }
+    if (!result.ok) {
+        profile.innerHTML = '';
+        print(result.payload);
+        return;
+    }
+    print('Profils demo charges (' + result.payload?.data?.companies?.length + ' societes).');
     profile.innerHTML = '';
     const superAdmin = result.payload?.data?.super_admin;
     if (superAdmin) {
