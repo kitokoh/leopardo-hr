@@ -233,6 +233,7 @@ jobs:
   # breakdown and the plan to shrink the baseline over time.
   phpstan-strict:
     needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: PHPStan — Strict (Core/Modules/Shared, level 8)
     runs-on: ubuntu-latest
@@ -265,6 +266,7 @@ jobs:
 
   module-structure-check:
     needs: detect-changes
+    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: Module Structure Validator
     runs-on: ubuntu-latest
@@ -391,6 +393,26 @@ jobs:
 
       - name: Report test-schema drift vs migrations (issue #1489, non blocking)
         if: needs.detect-changes.outputs.api_changed == 'true'
+      - name: Event catalogue guard self-test (MAT-006 / issue #5864)
+        run: python3 dev-hub/tools/check-event-catalogue-test.py
+
+      - name: Event catalogue guard (MAT-006 / issue #5864)
+        # Chaque classe App\Events\*.php doit avoir une entrée à jour dans
+        # dev-hub/governance/event-catalogue.json (owner, version, payload,
+        # consumers). Détecte les breaking changes de payload non versionnés
+        # et les événements supprimés du code sans dépréciation actée.
+        run: python3 dev-hub/tools/check-event-catalogue.py .
+
+      - name: Check for orphan (unrouted) controllers
+        run: dev-hub/tools/check-unrouted-controllers.sh api
+
+      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        run: bash dev-hub/tools/check-architecture-docs-parity.sh
+
+      - name: Check migration basename collisions (issue #1962)
+        run: dev-hub/tools/check-migration-basename-collisions.sh
+
+      - name: Report test-schema drift vs migrations (issue #1489, non blocking)
         continue-on-error: true
         run: dev-hub/tools/check-test-schema-drift.sh api
 
@@ -492,6 +514,7 @@ jobs:
 
   frontend-lint:
     needs: detect-changes
+    if: needs.detect-changes.outputs.web_changed == 'true'
     timeout-minutes: 15
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
