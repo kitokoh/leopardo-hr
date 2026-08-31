@@ -274,4 +274,5 @@ return [
     'MANAGER_ONLY_ACTION' => 'Cette action est réservée aux managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Vous avez déjà une demande en attente pour cette entreprise.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Demande d\'intégration introuvable.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Un run de paie existe déjà pour cette période.',
 ];

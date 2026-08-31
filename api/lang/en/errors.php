@@ -280,4 +280,5 @@ return [
     'MANAGER_ONLY_ACTION' => 'This action is reserved for managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'You already have a pending request for this company.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Integration request not found.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'A payroll run already exists for this period.',
 ];

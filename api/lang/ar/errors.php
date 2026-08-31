@@ -273,4 +273,5 @@ return [
     'MANAGER_ONLY_ACTION' => 'هذا الإجراء مخصص للمدراء فقط.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'لديك طلب معلق بالفعل لهذه الشركة.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'طلب التكامل غير موجود.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'توجد بالفعل دورة رواتب لهذه الفترة.',
 ];

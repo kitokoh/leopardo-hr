@@ -273,4 +273,5 @@ return [
     'MANAGER_ONLY_ACTION' => 'Bu işlem sadece yöneticiler için geçerlidir.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Bu şirket için zaten bekleyen bir talebiniz var.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Entegrasyon talebi bulunamadı.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Bu dönem için zaten bir maaş bordrosu çalışması mevcut.',
 ];
