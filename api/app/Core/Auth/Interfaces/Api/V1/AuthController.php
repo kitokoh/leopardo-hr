@@ -369,7 +369,7 @@ class AuthController extends Controller
                 $challenge = $this->twoFactorService->issueChallenge([
                     'employee_id' => $employee->id,
                     'company_id' => (string) $employee->company_id,
-                    'tenant_schema' => null,
+                    'tenant_schema' => $this->tenantSchemaFor($employee),
                     'email' => (string) $employee->email,
                     'device_name' => null,
                 ]);
@@ -455,7 +455,7 @@ class AuthController extends Controller
             $challenge = $this->twoFactorService->issueChallenge([
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
-                'tenant_schema' => null,
+                'tenant_schema' => $this->tenantSchemaFor($employee),
                 'email' => (string) $employee->email,
                 'device_name' => $validated['device_name'] ?? null,
             ]);
@@ -481,6 +481,18 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ])
             ->response();
+    }
+
+    /**
+     * #6540 — schéma tenant de l'employé pour le challenge 2FA SSO/Google.
+     * Un challenge émis avec `tenant_schema => null` ne peut pas changer le
+     * search_path dans verifyChallenge → 401 pour les tenants à schéma.
+     */
+    private function tenantSchemaFor(Employee $employee): ?string
+    {
+        $schema = $employee->company?->schema_name;
+
+        return is_string($schema) && $schema !== '' ? $schema : null;
     }
 
     /**

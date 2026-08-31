@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Infrastructure\Services\TotpService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
@@ -157,5 +160,54 @@ class SsoTwoFactorGuardTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => ['id', 'email'], 'token']);
+    }
+
+    // ================= #6540 (audit sécurité — 2FA SSO tenant_schema) =================
+
+    public function test_google_token_2fa_challenge_carries_tenant_schema(): void
+    {
+        $this->mockGoogleUser('schema-2fa@example.com');
+        [, $employee] = $this->seedEmployee('schema-2fa@example.com', with2fa: true);
+
+        $response = $this->postJson('/api/v1/auth/google/token', ['access_token' => 'fake-token']);
+
+        $response->assertStatus(200)->assertJsonPath('mfa_challenge', true);
+        $token = (string) $response->json('mfa_challenge_token');
+
+        /** @var array{tenant_schema: string|null}|null $context */
+        $context = Cache::get('mfa:challenge:'.$token);
+        $this->assertIsArray($context, 'le challenge doit exister en cache');
+        // #6540 : le challenge doit porter le schéma du tenant (shared_tenants
+        // ici), pas null — sinon verifyChallenge ne positionne pas le search_path
+        // et le flux 2FA des tenants à schéma échoue en 401.
+        $this->assertSame('shared_tenants', $context['tenant_schema'] ?? null);
+    }
+
+    public function test_verify_challenge_rejects_mismatched_email_context(): void
+    {
+        [$company, $employee] = $this->seedEmployee('ctx@example.com', with2fa: true);
+
+        $service = app(TwoFactorAuthService::class);
+        $challenge = $service->issueChallenge([
+            'employee_id' => $employee->id,
+            'company_id' => (string) $company->id,
+            'tenant_schema' => 'shared_tenants',
+            'email' => 'ctx@example.com',
+            'device_name' => 'test',
+        ]);
+
+        // #6540 : un contexte d'email différent (challenge volé ou recoupement
+        // cassé) doit être refusé avant l'émission du token.
+        $this->expectException(TwoFactorException::class);
+        $service->verifyChallenge(
+            $challenge['token'],
+            code: '000000',
+            recoveryCode: null,
+        );
+
+        // Le challenge doit rester consommable pour le bon email (pas brûlé).
+        $context = Cache::get('mfa:challenge:'.$challenge['token']);
+        $this->assertIsArray($context);
+        $this->assertSame('ctx@example.com', $context['email']);
     }
 }

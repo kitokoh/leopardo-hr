@@ -225,6 +225,16 @@ final class TwoFactorAuthService
                 throw TwoFactorException::challengeExpired();
             }
 
+            // #6540 — recoupement du contexte avant d'émettre le token :
+            // l'employé résolu doit correspondre au challenge (email +
+            // company_id). Empêche un challenge volé d'être rejoué sur un
+            // autre compte, et couvre le cas où le search_path du schéma
+            // tenant vient d'être positionné.
+            if ((string) $employee->email !== (string) $context['email']
+                || (int) $employee->company_id !== (int) $context['company_id']) {
+                throw TwoFactorException::challengeExpired();
+            }
+
             $verified = false;
             if (is_string($code) && $code !== '') {
                 $verified = $this->totp->verifyCode((string) $employee->two_fa_secret, $code);
