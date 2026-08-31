@@ -10,9 +10,8 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 /**
  * RESTO-501 (#6200) — Policy des niveaux de stock.
  *
- * Lecture : tout employé authentifié du tenant. Écriture des seuils / coût
- * moyen : gérant ou RH (configuration) — le stock lui-même ne se modifie que
- * par mouvements.
+ * Lecture : tout employé authentifié du tenant. Écriture (création, seuils,
+ * coût moyen) : `principal`/`rh` — le serveur ne manipule pas les seuils.
  */
 class RestaurantStockLevelPolicy
 {
@@ -26,9 +25,18 @@ class RestaurantStockLevelPolicy
         return $level->company_id === $actor->company_id;
     }
 
+    public function create(Employee $actor): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh');
+    }
+
     public function update(Employee $actor, RestaurantStockLevel $level): bool
     {
-        return $actor->hasManagerRole('principal', 'rh')
-            && $level->company_id === $actor->company_id;
+        return $this->create($actor) && $level->company_id === $actor->company_id;
+    }
+
+    public function delete(Employee $actor, RestaurantStockLevel $level): bool
+    {
+        return $this->update($actor, $level);
     }
 }

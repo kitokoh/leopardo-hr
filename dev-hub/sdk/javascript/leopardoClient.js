@@ -7277,6 +7277,266 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Supprimer un abonnement webhook transporteur */
     deleteTravelWebhookSubscriptionsBySubscription(options = {}) {
       return request("DELETE", "/travel/webhook-subscriptions/{subscription}", options);
+    getEmployeesByEmployeeDailySummary(options = {}) {
+      return request("GET", "/employees/{employee}/daily-summary", options);
+    },
+
+    /** Lire le depart d''un employe (manager : entreprise ; employe : le sien) */
+    getEmployeesByEmployeeDeparture(options = {}) {
+      return request("GET", "/employees/{employee}/departure", options);
+    },
+
+    /** Enregistrer le depart d''un employe (offboarding, issue #5324) */
+    postEmployeesByEmployeeDeparture(options = {}) {
+      return request("POST", "/employees/{employee}/departure", options);
+    },
+
+    /** Récapitulatif du préavis légal (issue #5325, G2) */
+    getEmployeesByEmployeeDepartureNotice(options = {}) {
+      return request("GET", "/employees/{employee}/departure/notice", options);
+    },
+
+    /** Solde de tout compte (fin de contrat, F-08) */
+    getEmployeesByEmployeeEndOfContract(options = {}) {
+      return request("GET", "/employees/{employee}/end-of-contract", options);
+    },
+
+    /** Journal de paie d'un employé (manager/RH) */
+    getEmployeesByEmployeeLedger(options = {}) {
+      return request("GET", "/employees/{employee}/ledger", options);
+    },
+
+    /** Estimation sur periode */
+    getEmployeesByEmployeeQuickEstimate(options = {}) {
+      return request("GET", "/employees/{employee}/quick-estimate", options);
+    },
+
+    /** Telecharger le PDF d'estimation */
+    getEmployeesByEmployeeReceipt(options = {}) {
+      return request("GET", "/employees/{employee}/receipt", options);
+    },
+
+    /** Importer des employes par CSV */
+    postEmployeesImport(options = {}) {
+      return request("POST", "/employees/import", options);
+    },
+
+    /** Template CSV import */
+    getEmployeesImportTemplate(options = {}) {
+      return request("GET", "/employees/import-template", options);
+    },
+
+    /** Manager — lie un utilisateur ordinaire à un employé du tenant */
+    postEmployeesLinkUser(options = {}) {
+      return request("POST", "/employees/link-user", options);
+    },
+
+    /** Lister les evaluations */
+    getEvaluations(options = {}) {
+      return request("GET", "/evaluations", options);
+    },
+
+    /** Creer une evaluation */
+    postEvaluations(options = {}) {
+      return request("POST", "/evaluations", options);
+    },
+
+    /** Supprimer une evaluation */
+    deleteEvaluationsByEvaluation(options = {}) {
+      return request("DELETE", "/evaluations/{evaluation}", options);
+    },
+
+    /** Voir une evaluation */
+    getEvaluationsByEvaluation(options = {}) {
+      return request("GET", "/evaluations/{evaluation}", options);
+    },
+
+    /** Mettre a jour partiellement une evaluation */
+    patchEvaluationsByEvaluation(options = {}) {
+      return request("PATCH", "/evaluations/{evaluation}", options);
+    },
+
+    /** Mettre a jour une evaluation */
+    putEvaluationsByEvaluation(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}", options);
+    },
+
+    /** Accuser reception d'une evaluation */
+    putEvaluationsByEvaluationAcknowledge(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}/acknowledge", options);
+    },
+
+    /** Soumettre une evaluation */
+    putEvaluationsByEvaluationSubmit(options = {}) {
+      return request("PUT", "/evaluations/{evaluation}/submit", options);
+    },
+
+    /** Lister les notes de frais */
+    getExpenseClaims(options = {}) {
+      return request("GET", "/expense-claims", options);
+    },
+
+    /** Creer une note de frais */
+    postExpenseClaims(options = {}) {
+      return request("POST", "/expense-claims", options);
+    },
+
+    /** Supprimer une note de frais */
+    deleteExpenseClaimsByExpenseClaim(options = {}) {
+      return request("DELETE", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Voir une note de frais */
+    getExpenseClaimsByExpenseClaim(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Modifier une note de frais */
+    putExpenseClaimsByExpenseClaim(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}", options);
+    },
+
+    /** Ecritures comptables d'une note de frais approuvee (#5235) */
+    getExpenseClaimsByExpenseClaimAccountingEntries(options = {}) {
+      return request("GET", "/expense-claims/{expenseClaim}/accounting-entries", options);
+    },
+
+    /** Regenerer les ecritures comptables d'une note (comptable, idempotent) */
+    postExpenseClaimsByExpenseClaimAccountingEntriesRegenerate(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/accounting-entries/regenerate", options);
+    },
+
+    /** Approuver une note de frais */
+    postExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/approve", options);
+    },
+
+    /** Approuver une note de frais (déprécié — utiliser POST) */
+    putExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/approve", options);
+    },
+
+    /** Rejeter une note de frais */
+    postExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Refuser une note de frais (déprécié — utiliser POST) */
+    putExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
+    },
+
+    /** Soumettre une note de frais */
+    putExpenseClaimsByExpenseClaimSubmit(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/submit", options);
+    },
+
+    /** Exporter les absences */
+    getExportAbsences(options = {}) {
+      return request("GET", "/export/absences", options);
+    },
+
+    /** Exporter l'ordre de virement (OD) */
+    getExportAccountingOd(options = {}) {
+      return request("GET", "/export/accounting-od", options);
+    },
+
+    /** Exporter le pointage */
+    getExportAttendance(options = {}) {
+      return request("GET", "/export/attendance", options);
+    },
+
+    /** Export CSV mensuel des presences par employe */
+    getExportAttendanceMonthly(options = {}) {
+      return request("GET", "/export/attendance/monthly", options);
+    },
+
+    /** Exporter les contrats */
+    getExportContracts(options = {}) {
+      return request("GET", "/export/contracts", options);
+    },
+
+    /** Exporter les employes */
+    getExportEmployees(options = {}) {
+      return request("GET", "/export/employees", options);
+    },
+
+    /** Historique des exports du portail manager (issue #2199) - manager uniquement */
+    exportHistory(options = {}) {
+      return request("GET", "/export/history", options);
+    },
+
+    /** Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement */
+    exportPaySlips(options = {}) {
+      return request("GET", "/export/pay-slips", options);
+    },
+
+    /** Exporter le journal de paie */
+    getExportPayrollJournal(options = {}) {
+      return request("GET", "/export/payroll-journal", options);
+    },
+
+    /** Exporter le grand livre de paie */
+    getExportPayrollLedger(options = {}) {
+      return request("GET", "/export/payroll-ledger", options);
+    },
+
+    /** Exporter les formations */
+    getExportTraining(options = {}) {
+      return request("GET", "/export/training", options);
+    },
+
+    /** Exporter la flotte */
+    getExportVehicles(options = {}) {
+      return request("GET", "/export/vehicles", options);
+    },
+
+    /** Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante */
+    checkFeatureFlag(options = {}) {
+      return request("GET", "/feature-flags/check/{featureKey}", options);
+    },
+
+    /** Voir la matrice complete feature x plan */
+    getFeatureFlagMatrix(options = {}) {
+      return request("GET", "/feature-flags/matrix", options);
+    },
+
+    /** Voir le detail d'une fonctionnalite du registre */
+    getFeatureByKey(options = {}) {
+      return request("GET", "/features/{key}", options);
+    },
+
+    /** Statistiques du registre de fonctionnalites (admin) */
+    getFeatureRegistryStatistics(options = {}) {
+      return request("GET", "/features/admin/statistics", options);
+    },
+
+    /** Synchroniser manuellement le registre de fonctionnalites (admin) */
+    synchronizeFeatureRegistry(options = {}) {
+      return request("POST", "/features/admin/synchronize", options);
+    },
+
+    /** Lister les fonctionnalites compatibles avec une version mobile donnee */
+    getCompatibleFeatures(options = {}) {
+      return request("GET", "/features/compatible/{version}", options);
+    },
+
+    /** Obtenir le manifeste des fonctionnalites disponibles pour l'utilisateur courant */
+    getFeatureManifest(options = {}) {
+      return request("GET", "/features/manifest", options);
+    },
+
+    /** Carte temps reel des vehicules */
+    getFleetLiveMap(options = {}) {
+      return request("GET", "/fleet/live-map", options);
+    },
+
+    /** Vue d'ensemble de la flotte */
+    getFleetOverview(options = {}) {
+      return request("GET", "/fleet/overview", options);
+    },
+
+    /** Rapport consommation carburant */
     getFleetReportsFuel(options = {}) {
       return request("GET", "/fleet/reports/fuel", options);
     },
@@ -8901,6 +9161,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/branches/{restaurantBranch}", options);
     },
 
+    /** Politique d'annulation de la branche (RESTO-603/#6208) */
+    putRestaurantBranchesByRestaurantBranchCancellationPolicy(options = {}) {
+      return request("PUT", "/restaurant/branches/{restaurantBranch}/cancellation-policy", options);
+    },
+
     /** Liste des zone (référentiel BC-25) */
     getRestaurantBranchesByRestaurantBranchZones(options = {}) {
       return request("GET", "/restaurant/branches/{restaurantBranch}/zones", options);
@@ -8979,6 +9244,34 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** RESTO-605 — Mise à jour d''un livreur */
     putRestaurantDeliveryRidersByRestaurantDeliveryRider(options = {}) {
       return request("PUT", "/restaurant/delivery-riders/{restaurantDeliveryRider}", options);
+    /** Liste des zones de livraison */
+    getRestaurantDeliveryZones(options = {}) {
+      return request("GET", "/restaurant/delivery-zones", options);
+    },
+
+    /** Création des zones de livraison */
+    postRestaurantDeliveryZones(options = {}) {
+      return request("POST", "/restaurant/delivery-zones", options);
+    },
+
+    /** Suppression des zones de livraison */
+    deleteRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
+      return request("DELETE", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
+    },
+
+    /** Détail des zones de livraison */
+    getRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
+      return request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
+    },
+
+    /** Modification des zones de livraison */
+    putRestaurantDeliveryZonesByRestaurantDeliveryZone(options = {}) {
+      return request("PUT", "/restaurant/delivery-zones/{restaurantDeliveryZone}", options);
+    },
+
+    /** Devis de livraison (frais serveur, RESTO-604/#6209) */
+    getRestaurantDeliveryZonesByRestaurantDeliveryZoneQuote(options = {}) {
+      return request("GET", "/restaurant/delivery-zones/{restaurantDeliveryZone}/quote", options);
     },
 
     /** Liste des hour (référentiel BC-25) */
@@ -9090,21 +9383,25 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     putRestaurantLoyaltyProgramsByRestaurantLoyaltyProgram(options = {}) {
       return request("PUT", "/restaurant/loyalty-programs/{restaurantLoyaltyProgram}", options);
     /** RESTO-504 — Inventaires physiques (filtres branche/statut) */
+    /** Liste des inventaires physiques */
     getRestaurantInventoryCounts(options = {}) {
       return request("GET", "/restaurant/inventory-counts", options);
     },
 
     /** RESTO-504 — Création d''un inventaire (lignes attendues pré-remplies depuis le stock) */
+    /** Création d'un inventaire (lignes attendues pré-remplies) */
     postRestaurantInventoryCounts(options = {}) {
       return request("POST", "/restaurant/inventory-counts", options);
     },
 
     /** RESTO-504 — Détail d''un inventaire (lignes) */
+    /** Détail d'un inventaire */
     getRestaurantInventoryCountsByRestaurantInventoryCount(options = {}) {
       return request("GET", "/restaurant/inventory-counts/{restaurantInventoryCount}", options);
     },
 
     /** RESTO-504 — Approbation (submitted → approved, ajustements de stock — réservé manage) */
+    /** Approbation de l'inventaire (ajustements de stock) */
     postRestaurantInventoryCountsByRestaurantInventoryCountApprove(options = {}) {
       return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/approve", options);
     },
@@ -9115,18 +9412,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** RESTO-504 — Soumission de l''inventaire (draft → submitted) */
+    /** Saisie d'une quantité comptée (écart calculé serveur) */
+    putRestaurantInventoryCountsByRestaurantInventoryCountItemsByItem(options = {}) {
+      return request("PUT", "/restaurant/inventory-counts/{restaurantInventoryCount}/items/{item}", options);
+    },
+
+    /** Soumission de l'inventaire (draft → submitted) */
     postRestaurantInventoryCountsByRestaurantInventoryCountSubmit(options = {}) {
       return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/submit", options);
     },
 
     /** RESTO-501 — Journal des mouvements de stock (filtres branche/raison) */
+    /** Liste des mouvements de stock */
     getRestaurantInventoryMovements(options = {}) {
       return request("GET", "/restaurant/inventory-movements", options);
     },
 
     /** RESTO-501 — Mouvement de stock manuel (adjustment|waste|transfer, jamais négatif) */
+    /** Création des mouvements de stock */
     postRestaurantInventoryMovements(options = {}) {
       return request("POST", "/restaurant/inventory-movements", options);
+    },
+
+    /** Détail des mouvements de stock */
+    getRestaurantInventoryMovementsByRestaurantInventoryMovement(options = {}) {
+      return request("GET", "/restaurant/inventory-movements/{restaurantInventoryMovement}", options);
     },
 
     /** RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire) */
@@ -9260,6 +9570,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent) */
+    /** Callback signé idempotent d'un paiement (RESTO-407) */
     postRestaurantPaymentsByPaymentCallback(options = {}) {
       return request("POST", "/restaurant/payments/{payment}/callback", options);
     },
@@ -9282,6 +9593,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** RESTO-401 — Clôture d''une session de caisse (totaux recalculés serveur, écart + motif, immuable) */
     postRestaurantPosSessionsByRestaurantPosSessionClose(options = {}) {
       return request("POST", "/restaurant/pos-sessions/{restaurantPosSession}/close", options);
+    },
+
+    /** COGS de la session de caisse (RESTO-506/#6205) */
+    getRestaurantPosSessionsByRestaurantPosSessionCogs(options = {}) {
+      return request("GET", "/restaurant/pos-sessions/{restaurantPosSession}/cogs", options);
     },
 
     /** RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant) */
@@ -9403,26 +9719,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** RESTO-502 — Bons de commande fournisseurs (filtres branche/statut) */
+    /** Liste des bons de commande */
     getRestaurantPurchaseOrders(options = {}) {
       return request("GET", "/restaurant/purchase-orders", options);
     },
 
     /** RESTO-502 — Création d''un bon de commande (total recalculé serveur) */
+    /** Création des bons de commande */
     postRestaurantPurchaseOrders(options = {}) {
       return request("POST", "/restaurant/purchase-orders", options);
     },
 
     /** RESTO-502 — Suppression (draft uniquement) */
+    /** Suppression des bons de commande */
     deleteRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
       return request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
     },
 
     /** RESTO-502 — Détail d''un bon de commande */
+    /** Détail des bons de commande */
     getRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
       return request("GET", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
     },
 
     /** RESTO-502 — Mise à jour (draft uniquement) */
+    /** Modification des bons de commande */
     putRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
       return request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
     },
@@ -9443,78 +9764,123 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** RESTO-502 — Réception (sent → received, entrées de stock + coût moyen pondéré) */
+    /** Réception du bon de commande (mouvements de stock) */
     postRestaurantPurchaseOrdersByRestaurantPurchaseOrderReceive(options = {}) {
       return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/receive", options);
     },
 
     /** RESTO-502 — Envoi au fournisseur (draft → sent) */
+    /** Envoi du bon de commande (draft → sent) */
     postRestaurantPurchaseOrdersByRestaurantPurchaseOrderSend(options = {}) {
       return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/send", options);
     },
 
     /** RESTO-503 — Réceptions (filtres branche/bon de commande) */
+    /** Liste des réceptions */
     getRestaurantReceivings(options = {}) {
       return request("GET", "/restaurant/receivings", options);
     },
 
     /** RESTO-503 — Réception (entrées stock + coût moyen pondéré, idempotente par référence) */
+    /** Création des réceptions */
     postRestaurantReceivings(options = {}) {
       return request("POST", "/restaurant/receivings", options);
     },
 
     /** RESTO-601 — Réservations (filtres branche/statut/date) */
+    /** Détail des réceptions */
+    getRestaurantReceivingsByRestaurantReceiving(options = {}) {
+      return request("GET", "/restaurant/receivings/{restaurantReceiving}", options);
+    },
+
+    /** Liste des réservations */
     getRestaurantReservations(options = {}) {
       return request("GET", "/restaurant/reservations", options);
     },
 
     /** RESTO-601 — Création d''une réservation (idempotente, conflit de créneau → 409) */
+    /** Création d'une réservation (conflit de créneau → 409) */
     postRestaurantReservations(options = {}) {
       return request("POST", "/restaurant/reservations", options);
     },
 
     /** RESTO-601 — Détail d''une réservation */
+    /** Détail d'une réservation */
     getRestaurantReservationsByRestaurantReservation(options = {}) {
       return request("GET", "/restaurant/reservations/{restaurantReservation}", options);
     },
 
     /** RESTO-601 — Mise à jour (pending|confirmed uniquement) */
+    /** Modification d'une réservation (en attente) */
     putRestaurantReservationsByRestaurantReservation(options = {}) {
       return request("PUT", "/restaurant/reservations/{restaurantReservation}", options);
     },
 
     /** RESTO-601 — Annulation (pending|confirmed → cancelled) */
+    /** Annulation (politique d'annulation, pénalités serveur) */
     postRestaurantReservationsByRestaurantReservationCancel(options = {}) {
       return request("POST", "/restaurant/reservations/{restaurantReservation}/cancel", options);
     },
 
     /** RESTO-601 — Arrivée client (confirmed → seated) */
+    /** Check-in (confirmée → seated) */
     postRestaurantReservationsByRestaurantReservationCheckIn(options = {}) {
       return request("POST", "/restaurant/reservations/{restaurantReservation}/check-in", options);
     },
 
     /** RESTO-601 — Confirmation (pending → confirmed, événement reservation.confirmed.v1) */
+    /** Confirmation de la réservation (événement outbox) */
     postRestaurantReservationsByRestaurantReservationConfirm(options = {}) {
       return request("POST", "/restaurant/reservations/{restaurantReservation}/confirm", options);
     },
 
     /** RESTO-601 — Non venue (pending|confirmed → no_show) */
+    /** Enregistrement d'un dépôt (arrhes, RESTO-603) */
+    postRestaurantReservationsByRestaurantReservationDeposit(options = {}) {
+      return request("POST", "/restaurant/reservations/{restaurantReservation}/deposit", options);
+    },
+
+    /** No-show (réservation non honorée) */
     postRestaurantReservationsByRestaurantReservationNoShow(options = {}) {
       return request("POST", "/restaurant/reservations/{restaurantReservation}/no-show", options);
     },
 
     /** RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h) */
+    /** Disponibilité de créneaux (RESTO-602/#6207) */
     getRestaurantReservationsAvailability(options = {}) {
       return request("GET", "/restaurant/reservations/availability", options);
     },
 
     /** RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés) */
+    /** Liste des niveaux de stock */
     getRestaurantStockLevels(options = {}) {
       return request("GET", "/restaurant/stock-levels", options);
     },
 
     /** RESTO-501 — Mise à jour des seuils/coût moyen (la quantité n''est JAMAIS écrite directement) */
+    /** Création des niveaux de stock */
+    postRestaurantStockLevels(options = {}) {
+      return request("POST", "/restaurant/stock-levels", options);
+    },
+
+    /** Suppression des niveaux de stock */
+    deleteRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
+      return request("DELETE", "/restaurant/stock-levels/{restaurantStockLevel}", options);
+    },
+
+    /** Détail des niveaux de stock */
+    getRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
+      return request("GET", "/restaurant/stock-levels/{restaurantStockLevel}", options);
+    },
+
+    /** Modification des niveaux de stock */
     putRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
       return request("PUT", "/restaurant/stock-levels/{restaurantStockLevel}", options);
+    },
+
+    /** Alertes de seuil de stock (RESTO-505/#6204) */
+    getRestaurantStockAlerts(options = {}) {
+      return request("GET", "/restaurant/stock/alerts", options);
     },
 
     /** Liste des supplier (référentiel BC-25) */

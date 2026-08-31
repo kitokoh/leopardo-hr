@@ -6,32 +6,23 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\RestaurantManager\Application\Actions\InventoryCountAction;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantInventoryCountService;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantInventoryCountRequest;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantInventoryCountItemRequest;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantInventoryCountItemResource;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantInventoryCountResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 /**
- * RESTO-504 (#6203) — Inventaires physiques.
- *
- * `POST /inventory-counts` : crée un comptage `draft` avec les lignes
- * attendues pré-remplies depuis les niveaux de stock de la branche.
- * `PUT /inventory-counts/{count}/items/{item}` : saisie du compté (+ motif
- * si écart). `POST /inventory-counts/{count}/submit` puis `/approve`
- * (réservé manage — écart non justifié → 422 ; approbation → ajustements
- * stock). 404 sûr cross-tenant.
+ * RESTO-504 (#6203) — Inventaires physiques (comptage, écarts, approbation).
  */
 class RestaurantInventoryCountController extends Controller
 {
-    public function __construct(private readonly InventoryCountAction $action)
-    {
+    public function __construct(
+        private readonly RestaurantInventoryCountService $inventoryCounts,
+    ) {
     }
 
     public function index(Request $request): JsonResponse
@@ -47,9 +38,9 @@ class RestaurantInventoryCountController extends Controller
 
         $counts = RestaurantInventoryCount::query()
             ->with('items')
-            ->when($request->has('branch_id'), fn ($query) => $query->where('branch_id', (int) $request->query('branch_id')))
-            ->when($request->has('status'), fn ($query) => $query->where('status', (string) $request->query('status')))
-            ->orderByDesc('counted_at')
+            ->when($request->query('branch_id'), fn ($q, $v) => $q->where('branch_id', (int) $v))
+            ->when($request->query('status'), fn ($q, $v) => $q->where('status', (string) $v))
+            ->orderByDesc('id')
             ->paginate($perPage);
 
         return RestaurantInventoryCountResource::collection($counts)->response();
@@ -64,38 +55,9 @@ class RestaurantInventoryCountController extends Controller
             abort(403);
         }
 
-        $data = $request->validated();
+        $count = $this->inventoryCounts->createWithExpected($actor, (int) $request->validated('branch_id'));
 
-        $count = DB::transaction(function () use ($actor, $data): RestaurantInventoryCount {
-            $count = RestaurantInventoryCount::query()->create([
-                'company_id' => $actor->company_id,
-                'branch_id' => $data['branch_id'],
-                'counted_at' => $data['counted_at'] ?? now(),
-                'status' => 'draft',
-                'counted_by_user_id' => $actor->id,
-            ]);
-
-            // Lignes attendues pré-remplies depuis les niveaux de stock.
-            $levels = RestaurantStockLevel::query()
-                ->where('company_id', $actor->company_id)
-                ->where('branch_id', $data['branch_id'])
-                ->get(['ingredient_id', 'quantity']);
-
-            foreach ($levels as $level) {
-                RestaurantInventoryCountItem::query()->create([
-                    'company_id' => $actor->company_id,
-                    'count_id' => $count->id,
-                    'ingredient_id' => $level->ingredient_id,
-                    'expected_qty' => $level->quantity,
-                    'counted_qty' => null,
-                    'variance_qty' => null,
-                ]);
-            }
-
-            return $count;
-        });
-
-        return (new RestaurantInventoryCountResource($count->load('items')))->response()->setStatusCode(201);
+        return (new RestaurantInventoryCountResource($count))->response()->setStatusCode(201);
     }
 
     public function show(Request $request, RestaurantInventoryCount $restaurantInventoryCount): JsonResponse
@@ -110,12 +72,12 @@ class RestaurantInventoryCountController extends Controller
         return (new RestaurantInventoryCountResource($restaurantInventoryCount->load('items')))->response();
     }
 
-    public function updateItem(UpdateRestaurantInventoryCountItemRequest $request, RestaurantInventoryCount $restaurantInventoryCount, RestaurantInventoryCountItem $restaurantInventoryCountItem): JsonResponse
+    public function recordItem(Request $request, RestaurantInventoryCount $restaurantInventoryCount, RestaurantInventoryCountItem $item): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->company_id !== $restaurantInventoryCount->company_id || $actor->company_id !== $restaurantInventoryCountItem->company_id) {
+        if ($actor->company_id !== $restaurantInventoryCount->company_id || $item->count_id !== $restaurantInventoryCount->id) {
             abort(404);
         }
 
@@ -124,24 +86,21 @@ class RestaurantInventoryCountController extends Controller
         }
 
         if ($restaurantInventoryCount->status->value !== 'draft') {
-            abort(409, 'Only a draft inventory count can be edited.');
+            return response()->json(['message' => 'Un inventaire soumis ou approuvé est immutable.'], 422);
         }
 
-        if ($restaurantInventoryCountItem->count_id !== $restaurantInventoryCount->id) {
-            abort(422, 'Item does not belong to this inventory count.');
-        }
+        $request->validate([
+            'counted_qty' => ['required', 'numeric', 'min:0'],
+            'reason_code' => ['nullable', 'string', 'max:30'],
+        ]);
 
-        $countedQty = (float) $request->input('counted_qty');
-        $expectedQty = (float) $restaurantInventoryCountItem->expected_qty;
-        $variance = round($countedQty - $expectedQty, 3);
+        $item = $this->inventoryCounts->recordCounted(
+            $item,
+            (string) $request->input('counted_qty'),
+            $request->input('reason_code'),
+        );
 
-        $restaurantInventoryCountItem->forceFill([
-            'counted_qty' => $countedQty,
-            'variance_qty' => $variance,
-            'reason_code' => $request->input('reason_code'),
-        ])->save();
-
-        return (new RestaurantInventoryCountItemResource($restaurantInventoryCountItem))->response();
+        return (new RestaurantInventoryCountResource($restaurantInventoryCount->load('items')))->response();
     }
 
     public function submit(Request $request, RestaurantInventoryCount $restaurantInventoryCount): JsonResponse
@@ -157,9 +116,13 @@ class RestaurantInventoryCountController extends Controller
             abort(403);
         }
 
-        $count = $this->action->submit($actor, $restaurantInventoryCount);
+        try {
+            $count = $this->inventoryCounts->submit($restaurantInventoryCount, $actor);
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
 
-        return (new RestaurantInventoryCountResource($count->load('items')))->response();
+        return (new RestaurantInventoryCountResource($count))->response();
     }
 
     public function approve(Request $request, RestaurantInventoryCount $restaurantInventoryCount): JsonResponse
@@ -175,8 +138,12 @@ class RestaurantInventoryCountController extends Controller
             abort(403);
         }
 
-        $count = $this->action->approve($actor, $restaurantInventoryCount);
+        try {
+            $count = $this->inventoryCounts->approve($restaurantInventoryCount, $actor);
+        } catch (RuntimeException $exception) {
+            return response()->json(['message' => $exception->getMessage()], 422);
+        }
 
-        return (new RestaurantInventoryCountResource($count->load('items')))->response();
+        return (new RestaurantInventoryCountResource($count))->response();
     }
 }

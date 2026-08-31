@@ -356,4 +356,20 @@ Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantPublicOr
         // restaurant.manage). Le jeton en clair n'est renvoyé qu'à la rotation.
         Route::get('/public-shop-token', [RestaurantPublicShopController::class, 'token']);
         Route::post('/public-shop-token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
+        Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
+        Route::get('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'show']);
+        Route::delete('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'destroy']);
+        Route::get('/inventory-movements/{restaurantInventoryMovement}', [RestaurantInventoryMovementController::class, 'show']);
+        Route::get('/stock/alerts', [RestaurantStockAlertController::class, 'index']);
+        Route::get('/receivings/{restaurantReceiving}', [RestaurantReceivingController::class, 'show']);
+        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{item}', [RestaurantInventoryCountController::class, 'recordItem']);
+        Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
+        Route::post('/reservations/{restaurantReservation}/deposit', [RestaurantReservationController::class, 'deposit']);
+        Route::put('/branches/{restaurantBranch}/cancellation-policy', [RestaurantCancellationPolicyController::class, 'update']);
+        Route::get('/delivery-zones', [RestaurantDeliveryZoneController::class, 'index']);
+        Route::post('/delivery-zones', [RestaurantDeliveryZoneController::class, 'store']);
+        Route::get('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'show']);
+        Route::put('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'update']);
+        Route::delete('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'destroy']);
+        Route::get('/delivery-zones/{restaurantDeliveryZone}/quote', [RestaurantDeliveryZoneController::class, 'quote']);
     });

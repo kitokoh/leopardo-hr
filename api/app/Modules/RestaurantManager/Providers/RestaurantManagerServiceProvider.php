@@ -146,6 +146,9 @@ use App\Modules\RestaurantManager\Policies\RestaurantDeliveryPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantDeliveryRiderPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantLoyaltyPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantPromotionPolicy;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantStockAlertCommand;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryZonePolicy;
 
 /**
  * Provider du module RestaurantManager (BC-25 RESTAURANT).
@@ -227,6 +230,9 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // RESTO-806 (#6227) — dispatch outbox (consommateurs marketplace…).
         // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
         // RESTO-808 (#6229) — dispatcher outbox (consommation des événements).
+        // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
+        // RESTO-107 (#6164) — seed de démonstration idempotent ;
+        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet).
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
@@ -248,6 +254,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 
             return $registry;
         });
+                    RestaurantStockAlertCommand::class,]);
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -376,5 +383,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         Gate::policy(RestaurantLoyaltyProgram::class, RestaurantLoyaltyProgramPolicy::class);
         Gate::policy(RestaurantLoyaltyCustomer::class, RestaurantLoyaltyCustomerPolicy::class);
         Gate::policy(RestaurantPromotion::class, RestaurantPromotionPolicy::class);
+        Gate::policy(RestaurantInventoryMovement::class, RestaurantInventoryMovementPolicy::class);
+
+        Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
+
+        Gate::policy(RestaurantDeliveryZone::class, RestaurantDeliveryZonePolicy::class);
     }
 }
