@@ -251,6 +251,10 @@ const navigation = computed(() => [
     title: t('navigation.fuelStation', 'Stations-service'),
     path: '/fuel-station',
     icon: FireIcon
+    name: 'travel',
+    title: t('navigation.travelAgency', 'Agence de voyage'),
+    path: '/travel',
+    icon: GlobeAltIcon
   },
   {
     name: 'chat',
