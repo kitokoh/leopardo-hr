@@ -2601,4 +2601,13 @@
   "fuelPumpOfflinehint": "إدخال آمن التكرار: انقطاع الاتصال لا يكرر القراءة عند إعادة المحاولة.",
   "fuelPumpRetry": "إعادة المحاولة",
   "fuelPumpBack": "رجوع"
+  "fuelPumpistTitle": "عامل المضخة",
+  "fuelPumpistBackTooltip": "رجوع",
+  "fuelPumpistActiveShift": "الوردية النشطة",
+  "fuelPumpistNoShiftTitle": "لا توجد وردية نشطة",
+  "fuelPumpistNoShiftDescription": "ستظهر مهامك اليوم هنا.",
+  "fuelPumpistErrorTitle": "تعذر تحميل الورديات",
+  "fuelPumpistReadingLabel": "قيمة القراءة (وحدات صغرى)",
+  "fuelPumpistReadingHint": "مثال 12500",
+  "fuelPumpistSubmit": "حفظ القراءة"
 }

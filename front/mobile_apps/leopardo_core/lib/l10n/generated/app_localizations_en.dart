@@ -8101,6 +8101,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsYes => 'Yes';
+  @override
+  String get fuelPumpistTitle => 'Pump attendant';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Back';
+
+  @override
+  String get fuelPumpistActiveShift => 'Active shift';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'No active shift';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Your assignments for today will appear here.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Unable to load shifts';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Reading value (minor units)';
+
+  @override
+  String get fuelPumpistReadingHint => 'e.g. 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'Submit reading';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {

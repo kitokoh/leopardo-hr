@@ -15,6 +15,12 @@ use Illuminate\Support\Carbon;
  *
  * Même contrat que `CrmOutboxEvent` (#5741) : persistance après commit,
  * consommation asynchrone idempotente par `fuel:outbox-dispatch`.
+ * Événement d'outbox FuelStation (FUEL-015, issue #5809).
+ *
+ * Contrat Accounting : agrégats validés publiés après commit (jamais dans
+ * la transaction métier), consommés de façon asynchrone et idempotente par
+ * `fuel:outbox-dispatch`. Statuts pending/processing/sent/failed ;
+ * `available_at` porte le backoff ; attempts borne le dead-letter.
  *
  * @property int $id
  * @property string $company_id
@@ -30,6 +36,12 @@ use Illuminate\Support\Carbon;
  * @property string $idempotency_key
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property string $status
+ * @property int $attempts
+ * @property Carbon|null $available_at
+ * @property string|null $last_error
+ * @property Carbon|null $processed_at
+ * @property string $idempotency_key
  *
  * @mixin Builder<static>
  */
@@ -67,6 +79,10 @@ class FuelOutboxEvent extends Model
     public const EVENT_SYNC_READINGS_RECEIVED = 'fuel.sync.readings.received.v1';
 
     public const EVENT_SYNC_SALES_RECEIVED = 'fuel.sync.sales.received.v1';
+    /** Nombre maximal de tentatives avant dead-letter. */
+    public const MAX_ATTEMPTS = 5;
+
+    protected $table = 'fuel_outbox_events';
 
     protected $fillable = [
         'company_id',
@@ -92,4 +108,10 @@ class FuelOutboxEvent extends Model
             'processed_at' => 'datetime',
         ];
     }
+    protected $casts = [
+        'payload' => 'array',
+        'attempts' => 'integer',
+        'available_at' => 'datetime',
+        'processed_at' => 'datetime',
+    ];
 }

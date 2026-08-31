@@ -1800,6 +1800,50 @@ class LeopardoClient:
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
 
+    def get_fuel_station_by_resource(self, **kwargs):
+        """Lister une ressource du référentiel (manager, paginé, FUEL-011 #5805)"""
+        return self.request("GET", "/fuel-station/{resource}", **kwargs)
+
+    def post_fuel_station_by_resource(self, **kwargs):
+        """Créer une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("POST", "/fuel-station/{resource}", **kwargs)
+
+    def delete_fuel_station_by_resource_by_id(self, **kwargs):
+        """Supprimer une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("DELETE", "/fuel-station/{resource}/{id}", **kwargs)
+
+    def get_fuel_station_by_resource_by_id(self, **kwargs):
+        """Détail d'une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("GET", "/fuel-station/{resource}/{id}", **kwargs)
+
+    def put_fuel_station_by_resource_by_id(self, **kwargs):
+        """Mettre à jour une ressource du référentiel (manager, FUEL-011 #5805)"""
+        return self.request("PUT", "/fuel-station/{resource}/{id}", **kwargs)
+
+    def get_fuel_station_accounts(self, **kwargs):
+        """Lister les comptes professionnels B2B (manager, paginé, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts", **kwargs)
+
+    def post_fuel_station_accounts(self, **kwargs):
+        """Créer ou mettre à jour un compte professionnel (manager, upsert idempotent, FUEL-016 #5810)"""
+        return self.request("POST", "/fuel-station/accounts", **kwargs)
+
+    def get_fuel_station_accounts_by_account(self, **kwargs):
+        """Détail d'un compte professionnel (manager, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts/{account}", **kwargs)
+
+    def put_fuel_station_accounts_by_account_consents(self, **kwargs):
+        """Mettre à jour les consentements marketing d'un compte (manager, FUEL-016 #5810)"""
+        return self.request("PUT", "/fuel-station/accounts/{account}/consents", **kwargs)
+
+    def get_fuel_station_accounts_by_account_visits(self, **kwargs):
+        """Lister les visites d'un compte (manager, paginé, FUEL-016 #5810)"""
+        return self.request("GET", "/fuel-station/accounts/{account}/visits", **kwargs)
+
+    def post_fuel_station_accounts_by_account_visits(self, **kwargs):
+        """Enregistrer une visite sur un compte (manager, idempotent, FUEL-016 #5810)"""
+        return self.request("POST", "/fuel-station/accounts/{account}/visits", **kwargs)
+
     def get_fuel_station_cash_sessions(self, **kwargs):
         """Lister les sessions de caisse (manager)"""
         return self.request("GET", "/fuel-station/cash-sessions", **kwargs)
@@ -1907,6 +1951,57 @@ class LeopardoClient:
     def put_fuel_station_maintenance_tasks_by_task(self, **kwargs):
         """Mettre a jour une tache de maintenance (manager)"""
         return self.request("PUT", "/fuel-station/maintenance-tasks/{task}", **kwargs)
+    def get_fuel_station_imports(self, **kwargs):
+        """Historique des imports CSV (manager, paginé, FUEL-018 #5812)"""
+        return self.request("GET", "/fuel-station/imports", **kwargs)
+
+    def post_fuel_station_imports_by_import_cancel(self, **kwargs):
+        """Annuler un import (manager, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/{import}/cancel", **kwargs)
+
+    def post_fuel_station_imports_by_import_commit(self, **kwargs):
+        """Commiter un import previewed (manager, idempotent, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/{import}/commit", **kwargs)
+
+    def post_fuel_station_imports_preview(self, **kwargs):
+        """Preview d'un import CSV (manager, FUEL-018 #5812)"""
+        return self.request("POST", "/fuel-station/imports/preview", **kwargs)
+
+    def get_fuel_station_incidents(self, **kwargs):
+        """Lister les incidents (manager, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/incidents", **kwargs)
+
+    def post_fuel_station_incidents(self, **kwargs):
+        """Signalement d'un incident équipement (tout employé du tenant, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents", **kwargs)
+
+    def get_fuel_station_incidents_by_incident(self, **kwargs):
+        """Détail d'un incident (manager ou auteur, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/incidents/{incident}", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_assign(self, **kwargs):
+        """Affecter un incident (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/assign", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_close(self, **kwargs):
+        """Clôturer un incident résolu (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/close", **kwargs)
+
+    def post_fuel_station_incidents_by_incident_resolve(self, **kwargs):
+        """Résoudre un incident (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/incidents/{incident}/resolve", **kwargs)
+
+    def get_fuel_station_maintenance_tasks(self, **kwargs):
+        """Lister les tâches de maintenance (manager, FUEL-010 #5804)"""
+        return self.request("GET", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def post_fuel_station_maintenance_tasks(self, **kwargs):
+        """Créer une tâche de maintenance (manager, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks", **kwargs)
+
+    def post_fuel_station_maintenance_tasks_by_task_transition(self, **kwargs):
+        """Transitionner une tâche (manager ou assigné, FUEL-010 #5804)"""
+        return self.request("POST", "/fuel-station/maintenance-tasks/{task}/transition", **kwargs)
 
     def get_fuel_station_me_cash_sessions(self, **kwargs):
         """Sessions de caisse du pompiste connecte (self-service)"""
@@ -1955,6 +2050,25 @@ class LeopardoClient:
     def get_fuel_station_reports_shift_summary(self, **kwargs):
         """Synthese d'un shift (manager)"""
         return self.request("GET", "/fuel-station/reports/shift-summary", **kwargs)
+    def post_fuel_station_readings_sync(self, **kwargs):
+        """Synchroniser un lot de relevés offline (pompiste, idempotent, FUEL-014 #5808)"""
+        return self.request("POST", "/fuel-station/readings/sync", **kwargs)
+
+    def get_fuel_station_reconciliations(self, **kwargs):
+        """Lister les passes de rapprochement (manager, paginé, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/reconciliations", **kwargs)
+
+    def get_fuel_station_reconciliations_by_run(self, **kwargs):
+        """Détail d'une passe de rapprochement (manager, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/reconciliations/{run}", **kwargs)
+
+    def get_fuel_station_reports_by_type(self, **kwargs):
+        """Snapshot de reporting opérationnel (manager, FUEL-017 #5811)"""
+        return self.request("GET", "/fuel-station/reports/{type}", **kwargs)
+
+    def get_fuel_station_reports_by_type_export(self, **kwargs):
+        """Exporter un rapport en CSV contrôlé (manager, FUEL-018 #5812)"""
+        return self.request("GET", "/fuel-station/reports/{type}/export", **kwargs)
 
     def get_fuel_station_sales(self, **kwargs):
         """Lister les ventes (manager, pagine)"""
@@ -2079,6 +2193,17 @@ class LeopardoClient:
     def post_fuel_station_sync_sales(self, **kwargs):
         """Synchroniser des ventes (idempotent par external_id)"""
         return self.request("POST", "/fuel-station/sync/sales", **kwargs)
+    def post_fuel_station_stations_by_station_reconciliations(self, **kwargs):
+        """Déclencher (ou rejouer) le rapprochement stock d'une station (manager, FUEL-009 #5803)"""
+        return self.request("POST", "/fuel-station/stations/{station}/reconciliations", **kwargs)
+
+    def get_fuel_station_stocks(self, **kwargs):
+        """Lister les niveaux de stock par cuve (manager, FUEL-009 #5803)"""
+        return self.request("GET", "/fuel-station/stocks", **kwargs)
+
+    def post_fuel_station_tanks_by_tank_deliveries(self, **kwargs):
+        """Enregistrer une livraison de carburant (manager, idempotent, FUEL-009 #5803)"""
+        return self.request("POST", "/fuel-station/tanks/{tank}/deliveries", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""

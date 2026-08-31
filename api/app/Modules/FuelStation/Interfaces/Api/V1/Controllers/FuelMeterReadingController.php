@@ -17,6 +17,7 @@ use App\Modules\FuelStation\Infrastructure\Services\MeterReadingService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\CorrectReadingRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\ReviewIntervalRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreMeterReadingRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SyncFuelReadingsRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,93 @@ class FuelMeterReadingController extends Controller
         $status = ($result['replayed'] ?? false) === true ? 200 : 201;
 
         return response()->json(['data' => $result], $status);
+    }
+
+    public function sync(SyncFuelReadingsRequest $request): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        /** @var list<array<string, mixed>> $items */
+        $items = $request->validated()['readings'];
+
+        $results = [];
+
+        foreach ($items as $item) {
+            $stationId = (int) $item['station_id'];
+            $pumpId = (int) $item['pump_id'];
+            $meterId = (int) $item['meter_id'];
+
+            $station = FuelStation::query()
+                ->where('company_id', $actor->company_id)
+                ->find($stationId);
+
+            $pump = $station !== null
+                ? FuelPump::query()
+                    ->where('company_id', $actor->company_id)
+                    ->where('station_id', $stationId)
+                    ->find($pumpId)
+                : null;
+
+            $meter = $pump !== null
+                ? FuelMeterRegister::query()
+                    ->where('company_id', $actor->company_id)
+                    ->where('station_id', $stationId)
+                    ->where('pump_id', $pumpId)
+                    ->find($meterId)
+                : null;
+
+            if (! $station instanceof FuelStation || ! $pump instanceof FuelPump || ! $meter instanceof FuelMeterRegister) {
+                $results[] = [
+                    'item' => $item['idempotency_key'],
+                    'status' => 'skipped',
+                    'error' => 'REFERENCE_OUTSIDE_TENANT',
+                ];
+
+                continue;
+            }
+
+            try {
+                /** @var array{reading_value_minor: int, reading_unit?: string, captured_at?: string|null, timezone?: string, shift_id?: int|null, device_reference?: string|null, idempotency_key: string} $validatedItem */
+                $validatedItem = $item;
+                $result = $this->service->record($station, $pump, $meter, $validatedItem, $actor);
+                $results[] = [
+                    'item' => $item['idempotency_key'],
+                    'status' => ($result['replayed'] ?? false) === true ? 'replayed' : 'created',
+                    'reading_id' => $result['reading']['id'] ?? null,
+                    'interval' => $result['interval'] !== null
+                        ? [
+                            'delta_minor' => $result['interval']['delta_minor'] ?? null,
+                            'calculation_status' => $result['interval']['calculation_status'] ?? null,
+                        ]
+                        : null,
+                    // Horodatage réception serveur (distinct de captured_at).
+                    'received_at' => $result['reading']['received_at'] ?? null,
+                ];
+            } catch (\Throwable $e) {
+                $results[] = [
+                    'item' => $item['idempotency_key'],
+                    'status' => 'failed',
+                    'error' => class_basename($e),
+                ];
+            }
+        }
+
+        $created = count(array_filter($results, static fn (array $r): bool => $r['status'] === 'created'));
+        $replayed = count(array_filter($results, static fn (array $r): bool => $r['status'] === 'replayed'));
+        $skipped = count(array_filter($results, static fn (array $r): bool => $r['status'] === 'skipped'));
+
+        return response()->json([
+            'data' => $results,
+            'meta' => [
+                'total' => count($results),
+                'created' => $created,
+                'replayed' => $replayed,
+                'skipped' => $skipped,
+            ],
+        ]);
     }
 
     public function index(

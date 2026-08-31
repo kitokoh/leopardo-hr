@@ -11,6 +11,13 @@ use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer;
  *
  * Chaque événement est routé vers UN consommateur (le premier dont
  * `supports()` répond true) — même pattern que le registre CRM (#5741).
+ * FUEL-015 (#5809) — Registre des consommateurs d'événements d'outbox
+ * FuelStation.
+ *
+ * Chaque événement est routé vers UN consommateur (le premier dont
+ * `supports()` répond true). Les consommateurs concrets du contrat
+ * Accounting (écritures de synthèse, rapprochement) et des notifications
+ * (FUEL-019) s'enregistrent ici via le FuelStationServiceProvider.
  */
 final class FuelOutboxConsumerRegistry
 {

@@ -11,6 +11,9 @@ use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -25,6 +28,18 @@ use Throwable;
  *
  * Usage : php artisan fuel:outbox-dispatch --limit=100
  * Scheduler : toutes les minutes (routes/console.php).
+ * (contrat Accounting, FUEL-015 #5809).
+ *
+ * Pour chaque événement pending et dû (available_at ≤ now), dans la limite
+ * du lot :
+ *   1. claim atomique pending → processing (un seul worker traite) ;
+ *   2. résolution du consommateur ; aucun → dead-letter (permanent) ;
+ *   3. exécution idempotente (TenantManager::withinTenant) ;
+ *   4. succès → sent ; erreur transitoire → retry avec backoff exponentiel
+ *      (+jitter) ; erreur permanente ou attempts ≥ max → dead-letter (failed).
+ *
+ * Usage : php artisan fuel:outbox-dispatch --limit=100
+ * Scheduler : toutes les minutes (ou worker dédié).
  */
 class FuelOutboxDispatchCommand extends Command
 {
@@ -34,6 +49,7 @@ class FuelOutboxDispatchCommand extends Command
     protected $description = 'Consomme les événements d\'outbox FuelStation dus (idempotent, retry avec backoff, dead-letter).';
 
     /** Durée de lease d'un événement en cours de traitement (BC-14). */
+    /** Durée de lease d'un événement en cours de traitement (crash worker). */
     private const PROCESSING_LEASE_MINUTES = 15;
 
     public function __construct(
@@ -63,12 +79,20 @@ class FuelOutboxDispatchCommand extends Command
 
         $this->info("[fuel:outbox-dispatch] {$processed} événement(s) traité(s).");
 
+        // Observabilité FUEL-020 : corrélation sans PII (jamais de payload
+        // dans les logs — uniquement type/statut/tenant).
+        Log::info('fuel.outbox.dispatch', [
+            'processed' => $processed,
+            'company_id' => request()->header('X-Tenant-Id'),
+        ]);
+
         return self::SUCCESS;
     }
 
     /**
      * Claim atomique d'un lot : pending+due → processing, ET reprise des
      * `processing` orphelins (lease expirée — worker crash, BC-14).
+     * `processing` orphelins (lease expirée — worker crash).
      *
      * @return list<int>
      */
@@ -79,6 +103,10 @@ class FuelOutboxDispatchCommand extends Command
                 $query->where('status', FuelOutboxEvent::STATUS_PENDING)
                     ->where('available_at', '<=', now())
                     ->orWhere(function ($query): void {
+            ->where(function (Builder $query): void {
+                $query->where('status', FuelOutboxEvent::STATUS_PENDING)
+                    ->where('available_at', '<=', now())
+                    ->orWhere(function (Builder $query): void {
                         $query->where('status', FuelOutboxEvent::STATUS_PROCESSING)
                             ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
                     });
@@ -101,6 +129,13 @@ class FuelOutboxDispatchCommand extends Command
         }
 
         return array_map('intval', $claimed);
+        return array_map(static function (mixed $id): int {
+            if (is_numeric($id)) {
+                return (int) $id;
+            }
+
+            return 0;
+        }, $claimed);
     }
 
     private function processEvent(int $eventId): void
@@ -172,5 +207,7 @@ class FuelOutboxDispatchCommand extends Command
         ])->save();
 
         $this->error("[fuel:outbox-dispatch] #{$event->id} dead-letter : {$error}");
+            'processed_at' => now(),
+        ])->save();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 /**
  * Routes FuelStation (solution verticale) — FUEL-002..020 (batch A :
  * FUEL-009/010/011/014/015/016/017/018/019/020).
+ * Routes FuelStation (solution verticale) — FUEL-002..008.
  *
  * Toutes les routes sont tenant-scoped et soumises au feature flag
  * `fuel_station` (activation #5795) : solution inactive → 403
@@ -36,11 +37,27 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'throttle:fuel'])->group(function (): void {
     // FUEL-004 — relevés de compteur par pompe (spec §13.4).
     Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings', [FuelMeterReadingController::class, 'record'])
         ->whereNumber('station')
         ->whereNumber('pump')
         ->whereNumber('meter');
+
+    // FUEL-014 (#5808) — synchronisation offline de relevés (lot, rejeu idempotent).
+    Route::post('/fuel-station/readings/sync', [FuelMeterReadingController::class, 'sync']);
     Route::get('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings', [FuelMeterReadingController::class, 'index'])
         ->whereNumber('station')
         ->whereNumber('pump')
@@ -69,6 +86,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/fuel-station/sales', [FuelSaleController::class, 'store']);
 
     // FUEL-007 (#5801) — cycle de vie des sessions de caisse (policy par
+    // FUEL-010 (#5804) — signalement d'incident (tout employé du tenant).
+    Route::post('/fuel-station/incidents', [FuelIncidentController::class, 'store']);    // FUEL-007 (#5801) — cycle de vie des sessions de caisse (policy par
     // opened_by : pompiste = ses sessions ; approbation manager).
     Route::post('/fuel-station/cash-sessions', [FuelCashSessionController::class, 'store']);
     Route::post('/fuel-station/cash-sessions/{session}/movements', [FuelCashSessionController::class, 'addMovement'])
@@ -163,5 +182,74 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/exports/sales', [FuelImportExportController::class, 'exportSales']);
         Route::get('/fuel-station/exports/readings', [FuelImportExportController::class, 'exportReadings']);
         Route::get('/fuel-station/imports', [FuelImportExportController::class, 'imports']);
+
+        // FUEL-009 (#5803) : stocks, cuves et rapprochement (manager).
+        Route::get('/fuel-station/stocks', [FuelStockController::class, 'stocks']);
+        Route::post('/fuel-station/tanks/{tank}/deliveries', [FuelStockController::class, 'storeDelivery'])
+            ->whereNumber('tank');
+        Route::post('/fuel-station/stations/{station}/reconciliations', [FuelStockController::class, 'runReconciliation'])
+            ->whereNumber('station');
+        Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
+        Route::get('/fuel-station/reconciliations/{run}', [FuelStockController::class, 'showReconciliation'])
+            ->whereNumber('run');
+
+        // FUEL-010 (#5804) : incidents & maintenance (manager).
+        Route::get('/fuel-station/incidents', [FuelIncidentController::class, 'index']);
+        Route::get('/fuel-station/incidents/{incident}', [FuelIncidentController::class, 'show'])
+            ->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/assign', [FuelIncidentController::class, 'assign'])
+            ->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/resolve', [FuelIncidentController::class, 'resolve'])
+            ->whereNumber('incident');
+        Route::post('/fuel-station/incidents/{incident}/close', [FuelIncidentController::class, 'close'])
+            ->whereNumber('incident');
+        Route::get('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'tasks']);
+        Route::post('/fuel-station/maintenance-tasks', [FuelIncidentController::class, 'storeTask']);
+        Route::post('/fuel-station/maintenance-tasks/{task}/transition', [FuelIncidentController::class, 'transitionTask'])
+            ->whereNumber('task');
+
+        // FUEL-017 (#5811) : reporting opérationnel (manager).
+        Route::get('/fuel-station/reports/{type}', [FuelReportController::class, 'show'])
+            ->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
+        // FUEL-018 (#5812) : export CSV contrôlé depuis les snapshots.
+        Route::get('/fuel-station/reports/{type}/export', [FuelImportController::class, 'export'])
+            ->whereIn('type', ['pump_volumes', 'sales', 'shifts', 'variances', 'stock', 'station_performance']);
+
+        // FUEL-018 (#5812) : imports CSV (preview → commit/cancel).
+        Route::get('/fuel-station/imports', [FuelImportController::class, 'index']);
+        Route::post('/fuel-station/imports/preview', [FuelImportController::class, 'preview']);
+        Route::post('/fuel-station/imports/{import}/commit', [FuelImportController::class, 'commit'])
+            ->whereNumber('import');
+        Route::post('/fuel-station/imports/{import}/cancel', [FuelImportController::class, 'cancel'])
+            ->whereNumber('import');
+
+        // FUEL-016 (#5810) : comptes professionnels & visites (manager).
+        Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);
+        Route::post('/fuel-station/accounts', [FuelCrmController::class, 'store']);
+        Route::get('/fuel-station/accounts/{account}', [FuelCrmController::class, 'show'])
+            ->whereNumber('account');
+        Route::get('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'visits'])
+            ->whereNumber('account');
+        Route::post('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'recordVisit'])
+            ->whereNumber('account');
+        Route::put('/fuel-station/accounts/{account}/consents', [FuelCrmController::class, 'updateConsents'])
+            ->whereNumber('account');
+
+        // FUEL-011 (#5805) : référentiel CRUD manager (stations, sites,
+        // pompes, cuves, compteurs, produits) — deny-by-default, filtres
+        // allowlist, pagination bornée.
+        Route::get('/fuel-station/{resource}', [FuelReferenceController::class, 'index'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products']);
+        Route::post('/fuel-station/{resource}', [FuelReferenceController::class, 'store'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products']);
+        Route::get('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'show'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
+        Route::put('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'update'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
+        Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
+            ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+            ->whereNumber('id');
     });
 });

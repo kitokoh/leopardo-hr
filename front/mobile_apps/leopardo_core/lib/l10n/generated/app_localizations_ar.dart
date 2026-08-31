@@ -8023,6 +8023,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsYes => 'نعم';
+  @override
+  String get fuelPumpistTitle => 'عامل المضخة';
+
+  @override
+  String get fuelPumpistBackTooltip => 'رجوع';
+
+  @override
+  String get fuelPumpistActiveShift => 'الوردية النشطة';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'لا توجد وردية نشطة';
+
+  @override
+  String get fuelPumpistNoShiftDescription => 'ستظهر مهامك اليوم هنا.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'تعذر تحميل الورديات';
+
+  @override
+  String get fuelPumpistReadingLabel => 'قيمة القراءة (وحدات صغرى)';
+
+  @override
+  String get fuelPumpistReadingHint => 'مثال 12500';
+
+  @override
+  String get fuelPumpistSubmit => 'حفظ القراءة';
 
   @override
   String settingsJourneyAttachedTo(Object companyName) {

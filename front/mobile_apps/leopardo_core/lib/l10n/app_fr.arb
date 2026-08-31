@@ -2601,4 +2601,13 @@
   "fuelPumpOfflinehint": "Saisie idempotente : en cas de coupure, la reprise ne duplique pas le relevé.",
   "fuelPumpRetry": "Réessayer",
   "fuelPumpBack": "Retour"
+  "fuelPumpistTitle": "Pompiste",
+  "fuelPumpistBackTooltip": "Retour",
+  "fuelPumpistActiveShift": "Shift actif",
+  "fuelPumpistNoShiftTitle": "Aucun shift actif",
+  "fuelPumpistNoShiftDescription": "Vos affectations du jour apparaîtront ici.",
+  "fuelPumpistErrorTitle": "Impossible de charger les shifts",
+  "fuelPumpistReadingLabel": "Valeur relevé (unités mineures)",
+  "fuelPumpistReadingHint": "ex. 12500",
+  "fuelPumpistSubmit": "Enregistrer le relevé"
 }

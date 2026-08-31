@@ -2601,4 +2601,13 @@
   "fuelPumpOfflinehint": "Idempotent entry: after a drop, retrying never duplicates the reading.",
   "fuelPumpRetry": "Retry",
   "fuelPumpBack": "Back"
+  "fuelPumpistTitle": "Pump attendant",
+  "fuelPumpistBackTooltip": "Back",
+  "fuelPumpistActiveShift": "Active shift",
+  "fuelPumpistNoShiftTitle": "No active shift",
+  "fuelPumpistNoShiftDescription": "Your assignments for today will appear here.",
+  "fuelPumpistErrorTitle": "Unable to load shifts",
+  "fuelPumpistReadingLabel": "Reading value (minor units)",
+  "fuelPumpistReadingHint": "e.g. 12500",
+  "fuelPumpistSubmit": "Submit reading"
 }

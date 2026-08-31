@@ -2601,4 +2601,13 @@
   "fuelPumpOfflinehint": "Tekrarlanabilir giriş: bağlantı kopsa bile tekrar gönderim okumayı çoğaltmaz.",
   "fuelPumpRetry": "Yeniden dene",
   "fuelPumpBack": "Geri"
+  "fuelPumpistTitle": "Pompacı",
+  "fuelPumpistBackTooltip": "Geri",
+  "fuelPumpistActiveShift": "Aktif vardiya",
+  "fuelPumpistNoShiftTitle": "Aktif vardiya yok",
+  "fuelPumpistNoShiftDescription": "Bugünkü atamalarınız burada görünecek.",
+  "fuelPumpistErrorTitle": "Vardiyalar yüklenemedi",
+  "fuelPumpistReadingLabel": "Okuma değeri (alt birim)",
+  "fuelPumpistReadingHint": "örn. 12500",
+  "fuelPumpistSubmit": "Okumayı kaydet"
 }
