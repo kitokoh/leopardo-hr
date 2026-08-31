@@ -162,7 +162,8 @@ class TravelRepository {
   // ── PDV (TRAVEL-810/#6100) ────────────────────────────────────────────
 
   /// Ouverture d'une session de caisse (POST /travel/pdv/session/open).
-  Future<TravelCashSession> openCashSession({int openingBalanceMinor = 0}) async {
+  Future<TravelCashSession> openCashSession(
+      {int openingBalanceMinor = 0}) async {
     final response = await _apiClient.requestWithRetry(
       '/travel/pdv/session/open',
       method: 'POST',
@@ -243,17 +244,22 @@ class BookingPassengerDraft {
 
   final String fullName;
   final String ageCategory;
-  final int classId;
+  final int? classId;
   final int? seatNumber;
   final String? birthDate;
 
   Map<String, dynamic> toPayload() {
+    // Copie locale pour la promotion de type (champ public final non
+    // promu dans les collection-if).
+    final String? birth = birthDate;
+    final int? seat = seatNumber;
+    final int? cls = classId;
     return {
       'full_name': fullName,
       'age_category': ageCategory,
-      'class_id': classId,
-      if (seatNumber != null) 'seat_number': seatNumber,
-      if (birthDate != null && birthDate.isNotEmpty) 'birth_date': birthDate,
+      if (cls != null) 'class_id': cls,
+      if (seat != null) 'seat_number': seat,
+      if (birth != null && birth.isNotEmpty) 'birth_date': birth,
     };
   }
 }

@@ -51,12 +51,12 @@ class TripSearchResultsNotifier extends StateNotifier<TripSearchResults> {
 
 final tripSearchResultsProvider =
     StateNotifierProvider<TripSearchResultsNotifier, TripSearchResults>(
-      (ref) => TripSearchResultsNotifier(),
-    );
+  (ref) => TripSearchResultsNotifier(),
+);
 
 /// Détail d'un trajet.
-final tripProvider = FutureProvider.autoDispose
-    .family<TravelTrip, int>((ref, tripId) {
+final tripProvider =
+    FutureProvider.autoDispose.family<TravelTrip, int>((ref, tripId) {
   return ref.watch(travelRepositoryProvider).getTrip(tripId);
 });
 

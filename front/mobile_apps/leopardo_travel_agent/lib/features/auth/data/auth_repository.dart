@@ -95,8 +95,7 @@ class AuthRepository {
     } catch (e) {
       // Ne supprimer le token que sur un 401 explicite (une erreur réseau ne
       // doit pas détruire la session).
-      final isAuthError =
-          e is ApiException &&
+      final isAuthError = e is ApiException &&
           (e.statusCode == 401 || e.code == 'UNAUTHENTICATED');
       if (isAuthError) {
         await storage.deleteToken();

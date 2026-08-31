@@ -10,12 +10,13 @@ import 'package:leopardo_travel_agent/features/travel/data/travel_repository.dar
 import 'package:leopardo_travel_agent/features/travel/models/travel_booking.dart';
 import 'package:leopardo_travel_agent/features/travel/models/travel_trip.dart';
 import 'package:leopardo_travel_agent/features/travel/providers/travel_providers.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 /// Flux de vente guichet (TRAVEL-701/#6088) :
 /// passagers → réservation (idempotente) → confirmation + encaissement cash
 /// → émission des billets → check-in QR.
 class BookingFlowScreen extends ConsumerStatefulWidget {
-  const BookingFlowScreen({required this.tripId});
+  const BookingFlowScreen({super.key, required this.tripId});
 
   final int tripId;
 
@@ -203,7 +204,6 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     );
     final tripState = ref.watch(tripProvider(widget.tripId));
     final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.t('newBookingTitle'))),
@@ -402,10 +402,19 @@ class _PassengerCard extends ConsumerWidget {
                       border: const OutlineInputBorder(),
                       isDense: true,
                     ),
-                    items: const [
-                      DropdownMenuItem(value: 'adult', child: Text('Adulte')),
-                      DropdownMenuItem(value: 'child', child: Text('Enfant')),
-                      DropdownMenuItem(value: 'infant', child: Text('Bébé')),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'adult',
+                        child: Text(l10n.t('adult')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'child',
+                        child: Text(l10n.t('child')),
+                      ),
+                      DropdownMenuItem(
+                        value: 'infant',
+                        child: Text(l10n.t('infant')),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -429,7 +438,8 @@ class _PassengerCard extends ConsumerWidget {
                         DropdownMenuItem<int?>(
                           value: price.classId,
                           child: Text(
-                            price.classId?.toString() ?? '',
+                            '${l10n.t('priceAdult')} '
+                            '${(price.adultPriceMinor ?? 0) / 100}',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -618,8 +628,7 @@ class _TicketsSection extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      if (ticket.id != null &&
-                          ticket.status == 'issued')
+                      if (ticket.id != null && ticket.status == 'issued')
                         TextButton(
                           onPressed: busy ? null : () => onCheckIn(ticket),
                           child: Text(l10n.t('checkIn')),
@@ -655,7 +664,7 @@ class _TicketsSection extends ConsumerWidget {
 }
 
 class QrTicketView extends ConsumerWidget {
-  const QrTicketView({required this.ticketNumber});
+  const QrTicketView({super.key, required this.ticketNumber});
 
   final String ticketNumber;
 

@@ -18,7 +18,6 @@ class BookingsScreen extends ConsumerWidget {
       ref.watch(appPreferencesProvider).preferredLanguage,
     );
     final bookings = ref.watch(bookingsProvider);
-    final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
 
     return Scaffold(
@@ -53,7 +52,7 @@ class BookingsScreen extends ConsumerWidget {
             return ListView.separated(
               padding: const EdgeInsets.all(12),
               itemCount: items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) =>
                   _BookingCard(booking: items[index]),
             );

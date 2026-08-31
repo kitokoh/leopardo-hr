@@ -58,8 +58,10 @@ class TravelTrip {
   }
 
   /// Libellé d'origine/destination depuis la route embarquée (si présente).
-  String? get originLabel => route?.originCityName ?? route?.originCityId?.toString();
-  String? get destinationLabel => route?.destinationCityName ?? route?.destinationCityId?.toString();
+  String? get originLabel =>
+      route?.originCityName ?? route?.originCityId?.toString();
+  String? get destinationLabel =>
+      route?.destinationCityName ?? route?.destinationCityId?.toString();
 
   /// Tarif adulte du premier tarif disponible (affichage rapide).
   int? get firstAdultPriceMinor {

@@ -5,13 +5,12 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_travel_agent/core/i18n/app_strings.dart';
 import 'package:leopardo_travel_agent/core/providers/core_providers.dart';
-import 'package:leopardo_travel_agent/features/travel/models/travel_trip.dart';
 import 'package:leopardo_travel_agent/features/travel/providers/travel_providers.dart';
 
 /// Détail d'un trajet (GET /travel/trips/{id}) — infos, tarifs et accès à
 /// la vente guichet (TRAVEL-701).
 class TripDetailScreen extends ConsumerWidget {
-  const TripDetailScreen({required this.tripId});
+  const TripDetailScreen({super.key, required this.tripId});
 
   final int tripId;
 

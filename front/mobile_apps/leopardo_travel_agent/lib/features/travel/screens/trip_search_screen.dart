@@ -27,13 +27,12 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
   Future<void> _search() async {
     final repository = ref.read(travelRepositoryProvider);
     ref.read(tripSearchResultsProvider.notifier).search(
-      repository: repository,
-      originCityId: _origin?.id,
-      destinationCityId: _destination?.id,
-      departureDate: _date == null
-          ? null
-          : DateFormat('yyyy-MM-dd').format(_date!),
-    );
+          repository: repository,
+          originCityId: _origin?.id,
+          destinationCityId: _destination?.id,
+          departureDate:
+              _date == null ? null : DateFormat('yyyy-MM-dd').format(_date!),
+        );
   }
 
   Future<void> _pickDate() async {
@@ -67,8 +66,6 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
     );
     final cities = ref.watch(citiesProvider);
     final results = ref.watch(tripSearchResultsProvider);
-    final text = AppColors.textPrimaryFor(context);
-    final muted = AppColors.textSecondaryFor(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.t('tripSearchTitle'))),
@@ -186,29 +183,27 @@ class _TripSearchScreenState extends ConsumerState<TripSearchScreen> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: results.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => _Message(
-                  icon: Icons.error_outline,
-                  label: l10n.t('loadError'),
-                  onRetry: _search,
-                ),
-                data: (trips) {
-                  if (trips.isEmpty) {
-                    return _Message(
-                      icon: Icons.search_off,
-                      label: l10n.t('noTrips'),
-                    );
-                  }
-                  return ListView.separated(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: trips.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) =>
-                        _TripCard(trip: trips[index]),
-                  );
-                },
-              ),
+              child: results.loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : results.error
+                      ? _Message(
+                          icon: Icons.error_outline,
+                          label: l10n.t('loadError'),
+                          onRetry: _search,
+                        )
+                      : results.trips.isEmpty
+                          ? _Message(
+                              icon: Icons.search_off,
+                              label: l10n.t('noTrips'),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(12),
+                              itemCount: results.trips.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 8),
+                              itemBuilder: (context, index) =>
+                                  _TripCard(trip: results.trips[index]),
+                            ),
             ),
           ],
         ),

@@ -148,7 +148,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         if (authState.error != null) ...[
                           const SizedBox(height: 12),
                           Text(
-                            authState.error == 'E-mail ou mot de passe incorrect.'
+                            authState.error ==
+                                    'E-mail ou mot de passe incorrect.'
                                 ? l10n.t('authError')
                                 : l10n.t('authGenericError'),
                             textAlign: TextAlign.center,
