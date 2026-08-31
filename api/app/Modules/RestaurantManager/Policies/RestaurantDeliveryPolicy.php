@@ -12,6 +12,13 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
  *
  * Lecture : tout employé du tenant. Écriture (cycle) : `principal`/`rh`/
  * `manager` ; le livreur (`rider`) lit ses tournées.
+ * RESTO-605 (#6210) — Policy des livraisons RestaurantManager.
+ *
+ * Le cycle de livraison (création, transitions) est du pilotage opérationnel
+ * de la salle : réservé au manager/principal/rh (restaurant.manager) ; la
+ * lecture reste ouverte à tout employé authentifié du tenant. Le livreur
+ * (`restaurant.rider`) est un rôle de lecture/consultation dans cette
+ * version — l'affectation reste validée par la salle.
  */
 class RestaurantDeliveryPolicy
 {
@@ -31,6 +38,7 @@ class RestaurantDeliveryPolicy
     }
 
     public function update(Employee $actor, RestaurantDelivery $delivery): bool
+    public function transition(Employee $actor, RestaurantDelivery $delivery): bool
     {
         return $this->create($actor) && $delivery->company_id === $actor->company_id;
     }

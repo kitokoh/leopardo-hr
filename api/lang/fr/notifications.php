@@ -56,3 +56,8 @@ return [
     'edu_absence_recorded_body' => ':student_name est :status le :date.',
     'edu_report_card_published_title' => 'Bulletin publié',
     'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+    'restaurant_delivery_status_changed_title' => 'Livraison : :status',
+    'restaurant_delivery_status_changed_body' => 'La livraison #:delivery (commande #:order) est maintenant « :status ».',
+    'restaurant_reservation_reminder_title' => 'Réservation à venir (J-1)',
+    'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
+];

@@ -28,6 +28,18 @@ class RestaurantPromotionController extends Controller
     ) {
     }
 
+
+/**
+ * RESTO-607 (#6212) — CRUD des promotions RestaurantManager.
+ *
+ * La validation serveur (bornes percent/amount, fenêtre, minimum, plafond
+ * d'utilisations) est portée par les Requests ; l'APPLICATION d'un code dans
+ * l'addition est déjà assurée par BillCalculator::calculateWithPromotion()
+ * (RESTO-405, #6192) qui résout la promotion, vérifie sa validité et borne la
+ * remise au sous-total — ce CRUD alimente ce moteur (usage max, fenêtres).
+ */
+class RestaurantPromotionController extends Controller
+{
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -46,6 +58,11 @@ class RestaurantPromotionController extends Controller
                 ->orderBy('code')
                 ->paginate($perPage)
         )->response();
+        $promotions = RestaurantPromotion::query()
+            ->orderByDesc('id')
+            ->paginate($perPage);
+
+        return RestaurantPromotionResource::collection($promotions)->response();
     }
 
     public function store(StoreRestaurantPromotionRequest $request): JsonResponse
@@ -60,6 +77,9 @@ class RestaurantPromotionController extends Controller
         $promo = RestaurantPromotion::query()->create($request->validated());
 
         return (new RestaurantPromotionResource($promo))->response()->setStatusCode(201);
+        $promotion = RestaurantPromotion::query()->create($request->validated());
+
+        return (new RestaurantPromotionResource($promotion))->response()->setStatusCode(201);
     }
 
     public function show(Request $request, RestaurantPromotion $restaurantPromotion): JsonResponse

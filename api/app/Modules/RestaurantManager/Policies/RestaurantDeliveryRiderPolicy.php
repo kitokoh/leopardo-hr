@@ -11,6 +11,11 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
  * RESTO-605 (#6210) — Policy des livreurs.
  *
  * Lecture : tout employé du tenant. Écriture : `principal`/`rh`/`manager`.
+ * RESTO-605 (#6210) — Policy des livreurs RestaurantManager.
+ *
+ * Création/modification/suppression : principal, rh ou manager (le référentiel
+ * livreurs est du pilotage opérationnel) ; lecture : tout employé authentifié
+ * du tenant. Mismatch cross-tenant → 404 (jamais 403) côté contrôleur.
  */
 class RestaurantDeliveryRiderPolicy
 {

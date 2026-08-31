@@ -56,3 +56,8 @@ return [
     'edu_absence_recorded_body' => ':student_name :date tarihinde :status.',
     'edu_report_card_published_title' => 'Karne yayınlandı',
     'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.', ];
+    'restaurant_delivery_status_changed_title' => 'Teslimat: :status',
+    'restaurant_delivery_status_changed_body' => 'Teslimat #:delivery (sipariş #:order) artık “:status” durumunda.',
+    'restaurant_reservation_reminder_title' => 'Yaklaşan rezervasyon (1 gün önce)',
+    'restaurant_reservation_reminder_body' => 'Rezervasyon :reference — :date tarihinde :covers kişi. Masayı hazırlayın.',
+];

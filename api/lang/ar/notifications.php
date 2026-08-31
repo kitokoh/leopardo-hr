@@ -56,3 +56,8 @@ return [
     'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
     'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
     'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];
+    'restaurant_delivery_status_changed_title' => 'التوصيل: :status',
+    'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
+    'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
+    'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
+];

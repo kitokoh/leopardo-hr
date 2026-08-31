@@ -15,6 +15,11 @@ use Illuminate\Http\Request;
 
 /**
  * RESTO-605 (#6210) — CRUD des livreurs (référence HR par valeur).
+ * RESTO-605 (#6210) — CRUD des livreurs RestaurantManager.
+ *
+ * Mêmes garde-fous que le référentiel : résolution cross-tenant → 404
+ * (jamais 403), Policy avant écriture, périmètre borné par le scope
+ * `BelongsToCompany` du modèle.
  */
 class RestaurantDeliveryRiderController extends Controller
 {
