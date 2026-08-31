@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white">
         {{ t('travel.reports.title', 'Rapports') }}
-      </h1>
+      </h2>
       <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
         {{ t('travel.reports.subtitle', 'Ventes, occupation, recettes, annulations et exports CSV.') }}
       </p>
