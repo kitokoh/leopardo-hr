@@ -8,6 +8,9 @@ import { ModulePageShell } from '@/components/module-page-shell';
 import { Button } from '@/components/ui/Button';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
+// Constante technique (fenêtre popup) — hors catalogue i18n.
+const POPUP_FEATURES = 'noopener,noreferrer';
+
 /**
  * Portail client voyageur — TRAVEL-702 (#6089).
  *
@@ -92,7 +95,7 @@ export default function TravelPortalPage() {
       const payload = (await response.json()) as { data?: { pdf_url?: string } };
       const url = payload.data?.pdf_url;
       if (url) {
-        window.open(url, '_blank', 'noopener,noreferrer');
+        window.open(url, '_blank', POPUP_FEATURES);
       }
     } catch {
       setError(fallbackCopy.error);
