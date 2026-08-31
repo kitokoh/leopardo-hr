@@ -187,11 +187,26 @@ class AppServiceProvider extends ServiceProvider
         // public and unauthenticated by nature (verified by signature inside the
         // controller, not by Sanctum), so they need their own throttle bucket
         // instead of relying on the generic 'api' limiter which only applies to
-        // authenticated routes further down the group. Keyed by IP since the
-        // caller is a third-party payment provider, not a tenant.
+        // authenticated routes further down the group. Keyed by IP + passerelle
+        // (audit #6555) : N tenants derrière une passerelle partagée (même IP)
+        // ne se volent plus le quota — chaque chemin de webhook a son bucket.
         RateLimiter::for('webhooks-inbound', function (Request $request) {
+            $uri = (string) $request->route()?->uri();
+            $gateway = $uri !== '' ? str_replace('/', '.', $uri) : 'unknown';
+
             return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
-                ->by('webhooks-inbound:'.$request->ip());
+                ->by('webhooks-inbound:'.$gateway.'|'.$request->ip());
+        });
+
+        // Audit fiabilité #6555 — ZKTeco : bucket dédié par serial_number + IP.
+        // Plusieurs devices derrière un NAT (même IP) partageaient le quota du
+        // site (`throttle:api`) → pointages perdus. Un device compromis ne peut
+        // pas non plus épuiser le quota des autres devices.
+        RateLimiter::for('zkteco-device', function (Request $request) {
+            $serial = strtolower((string) $request->route('serialNumber', 'unknown'));
+
+            return Limit::perMinute((int) config('security.rate_limits.zkteco_device_per_minute', 120))
+                ->by('zkteco-device:'.$serial.'|'.$request->ip());
         });
 
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
