@@ -195,5 +195,86 @@ class WebAuthPagesTest extends TestCase
         $response->assertSee('aria-invalid="true"', false);
         $response->assertSee('aria-describedby="email-error"', false);
     }
-}
 
+    public function test_two_fa_account_requires_challenge_on_web_login(): void
+    {
+        // #6541 — un compte 2FA ne doit plus ouvrir de session web sans code :
+        // redirection vers le challenge au lieu de la connexion directe.
+        $company = $this->company();
+        $employee = $this->manager($company, [
+            'two_fa_enabled_at' => now(),
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+        ]);
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login/2fa');
+        $this->assertGuest('web');
+        $this->assertNotNull(session('pending_2fa_challenge'));
+    }
+
+    public function test_two_fa_challenge_verification_completes_web_login(): void
+    {
+        $company = $this->company();
+        $employee = $this->manager($company, [
+            'two_fa_enabled_at' => now(),
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+        ]);
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login/2fa');
+
+        $challengeToken = (string) session('pending_2fa_challenge');
+        $this->assertNotSame('', $challengeToken);
+
+        $challenge = $this->get('/login/2fa');
+        $challenge->assertOk();
+        $challenge->assertSee('Double authentification');
+
+        $this->from('/login/2fa')->withSession(['_token' => $token])->post('/login/2fa', [
+            '_token' => $token,
+            'code' => $this->totpCode('JBSWY3DPEHPK3PXP'),
+        ])->assertRedirect('/dashboard');
+
+        $this->assertAuthenticated('web');
+        $this->assertNull(session('pending_2fa_challenge'));
+    }
+
+    public function test_account_is_locked_after_five_failed_web_logins(): void
+    {
+        // #6541 — le verrouillage API (5 échecs → 15 min) s'applique aussi à
+        // la surface web : au 6e essai, même le bon mot de passe est refusé.
+        $company = $this->company();
+        $employee = $this->manager($company);
+
+        $token = $this->csrfToken();
+        for ($i = 0; $i < 5; $i++) {
+            $this->webLogin($employee->email, 'mauvais', $token)->assertRedirect('/login');
+        }
+
+        $fresh = $employee->fresh();
+        $this->assertNotNull($fresh->getAttributes()['locked_until'] ?? null);
+        $this->assertSame(5, (int) $fresh->failed_login_attempts);
+
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login');
+        $this->assertGuest('web');
+    }
+
+    public function test_successful_web_login_resets_failed_attempts(): void
+    {
+        $company = $this->company();
+        $employee = $this->manager($company);
+        $employee->forceFill(['failed_login_attempts' => 2, 'locked_until' => null])->save();
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/dashboard');
+
+        $this->assertAuthenticated('web');
+        $fresh = $employee->fresh();
+        $this->assertSame(0, (int) $fresh->failed_login_attempts);
+    }
+
+}
