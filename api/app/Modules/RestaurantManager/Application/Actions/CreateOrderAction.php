@@ -44,6 +44,7 @@ final class CreateOrderAction
             }
         }
 
+        /** @var RestaurantBranch $branch */
         $branch = RestaurantBranch::query()
             ->where('company_id', $companyId)
             ->findOrFail($data['branch_id']);

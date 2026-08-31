@@ -114,7 +114,7 @@ final class RefundOrderAction
         // Appel passerelle hors transaction (peut être distant).
         $gatewayRefund = $gateway->refund(new RefundRequest(
             companyId: $order->company_id,
-            providerReference: (string) ($payment?->provider_reference ?? ''),
+            providerReference: (string) ($payment->provider_reference ?? ''),
             amountMinor: $refund->amount_minor,
             currency: $order->currency,
             reasonCode: $refund->reason_code,

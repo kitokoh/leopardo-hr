@@ -81,7 +81,7 @@ final class ReservationAction
                     'reference' => $reservation->reference,
                     'branch_id' => $reservation->branch_id,
                     'table_id' => $reservation->table_id,
-                    'reserved_at' => $reservation->reserved_at?->toIso8601String(),
+                    'reserved_at' => $reservation->reserved_at->toIso8601String(),
                     'covers' => $reservation->covers,
                     'status' => $reservation->status->value,
                 ],

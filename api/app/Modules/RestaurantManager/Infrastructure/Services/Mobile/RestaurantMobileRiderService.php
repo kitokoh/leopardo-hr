@@ -60,7 +60,7 @@ final class RestaurantMobileRiderService
             ->all();
     }
 
-    public function delivery(Employee $actor, RestaurantDelivery $delivery): ?array
+    public function delivery(Employee $actor, RestaurantDelivery $delivery): array
     {
         $rider = $this->riderFor($actor);
 

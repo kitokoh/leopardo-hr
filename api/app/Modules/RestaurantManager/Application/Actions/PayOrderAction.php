@@ -145,7 +145,7 @@ final class PayOrderAction
             /** @var RestaurantOrder $order */
             $order = $payment->order()->first();
 
-            if ($order !== null && $this->remainingDue($order) <= 0) {
+            if ($this->remainingDue($order) <= 0) {
                 $this->markOrderPaid($order);
             }
 

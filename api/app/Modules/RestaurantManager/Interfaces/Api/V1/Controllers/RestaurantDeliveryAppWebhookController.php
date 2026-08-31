@@ -73,7 +73,7 @@ class RestaurantDeliveryAppWebhookController extends Controller
             return new JsonResponse(['error' => 'company_not_found'], 404);
         }
 
-        $externalId = is_array($data) && isset($data['order']['external_id']) && is_string($data['order']['external_id'])
+        $externalId = isset($data['order']['external_id']) && is_string($data['order']['external_id'])
             ? $data['order']['external_id']
             : null;
 
