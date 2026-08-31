@@ -27,8 +27,9 @@ class UpdateTravelArticleRequest extends FormRequest
     {
         $companyId = $this->user() instanceof Employee ? $this->user()->company_id : null;
 
-        /** @var int|null $articleId */
-        $articleId = $this->route('travelArticle')?->id;
+        /** @var TravelArticle|null $travelArticle */
+        $travelArticle = $this->route('travelArticle');
+        $articleId = $travelArticle instanceof TravelArticle ? $travelArticle->id : null;
 
         return [
             'category_id' => ['nullable', 'integer'],

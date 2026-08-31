@@ -10,6 +10,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelWebhookSubscriptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * TRAVEL-806 (#6097) — Abonnement webhook d'un transporteur.
@@ -57,8 +58,10 @@ class TravelWebhookSubscription extends Model
     protected static function booted(): void
     {
         static::creating(function (self $subscription): void {
-            if ($subscription->id === null) {
-                $subscription->id = (string) \Illuminate\Support\Str::uuid();
+            /** @var string|null $id */
+            $id = $subscription->id;
+            if ($id === null) {
+                $subscription->id = (string) Str::uuid();
             }
         });
     }

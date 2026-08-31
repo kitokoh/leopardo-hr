@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $sms_consent_at
  * @property bool $whatsapp_consent_given
  * @property Carbon|null $whatsapp_consent_at
- * @property string|null $metadata_json
+ * @property array<string, mixed>|null $metadata_json
  *
  * @mixin Builder<static>
  */

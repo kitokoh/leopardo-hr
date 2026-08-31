@@ -117,7 +117,7 @@ class TravelWebhookSubscriptionController extends Controller
             'carrier_id' => $subscription->carrier_id,
             'events' => $subscription->events ?? [],
             'active' => $subscription->active,
-            'has_secret' => $subscription->secret_encrypted !== null && $subscription->secret_encrypted !== '',
+            'has_secret' => $subscription->secret_encrypted !== '',
             'created_at' => $subscription->created_at?->toIso8601String(),
             'updated_at' => $subscription->updated_at?->toIso8601String(),
         ];
