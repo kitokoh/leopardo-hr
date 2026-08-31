@@ -237,11 +237,16 @@ class TwoFactorAuthTest extends TestCase
         }
 
         // Nouveau challenge : le compte est verrouillé (429) jusqu'à la fin
-        // de la fenêtre de 15 min.
-        $this->postJson('/api/v1/auth/2fa/verify', [
+        // de la fenêtre de 15 min. Le 429 peut provenir du compteur par compte
+        // (TWO_FACTOR_TOO_MANY_ATTEMPTS) ou du throttle IP générique
+        // (TOO_MANY_REQUESTS) quand la limite de la route est atteinte avant —
+        // les deux protègent le même objectif : plus aucun essai possible.
+        $response = $this->postJson('/api/v1/auth/2fa/verify', [
             'challenge_token' => (string) $this->login('2fa-employeelock@example.com')->json('mfa_challenge_token'),
             'code' => $this->totpCode($secret),
-        ])->assertStatus(429)->assertJsonPath('error', 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+        ]);
+        $response->assertStatus(429);
+        $this->assertContains($response->json('error'), ['TWO_FACTOR_TOO_MANY_ATTEMPTS', 'TOO_MANY_REQUESTS']);
     }
 
     public function test_challenge_token_is_single_use(): void
