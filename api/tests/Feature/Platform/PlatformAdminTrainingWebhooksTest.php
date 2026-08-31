@@ -100,6 +100,12 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
 
     public function test_admin_webhook_test_dispatches_event(): void
     {
+        // #6550 (PR #6628) : DispatchWebhook rethrow sur non-2xx — le job de
+        // test ne doit JAMAIS taper le vrai réseau (example.com renvoie 405).
+        Http::fake([
+            'example.com/*' => Http::response('ok', 200),
+        ]);
+
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 

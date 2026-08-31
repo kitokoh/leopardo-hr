@@ -35,10 +35,18 @@ return new class extends Migration
             });
         }
 
-        DB::statement('
-            CREATE UNIQUE INDEX IF NOT EXISTS invoices_company_subscription_period_unique
-            ON invoices (company_id, subscription_id, period)
-        ');
+        // Garde #1962 / audit : la fixture MVP et les schémas historiques
+        // n'ont pas forcément subscription_id — l'index unique ne doit être
+        // posé que si TOUTES les colonnes existent (jamais de 500 en
+        // migration sur un schéma partiel).
+        if (schemaHasColumn('invoices', 'company_id')
+            && schemaHasColumn('invoices', 'subscription_id')
+            && schemaHasColumn('invoices', 'period')) {
+            DB::statement('
+                CREATE UNIQUE INDEX IF NOT EXISTS invoices_company_subscription_period_unique
+                ON invoices (company_id, subscription_id, period)
+            ');
+        }
     }
 
     public function down(): void
