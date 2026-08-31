@@ -48,18 +48,34 @@ class CheckStalledTrialProvisionings extends Command
             ->orderBy('created_at')
             ->get();
 
-        if ($stalled->isEmpty()) {
-            $this->info('No stalled trial provisioning.');
-
-            return self::SUCCESS;
-        }
-
         foreach ($stalled as $row) {
             /** @var object{company_name: mixed, country: mixed, attempts: mixed, provisioning_token: mixed, email: mixed} $row */
             $this->recover($row);
         }
 
-        $this->info("Processed {$stalled->count()} stalled trial provisioning(s).");
+        // Issue #6547 (audit) : une company_request claimée en `processing`
+        // par VerifyTrialSignup et jamais terminée (crash worker, exception
+        // non couverte) reste bloquée `processing` pour toujours → 409 à vie
+        // sur /trial/verify. Self-healing : reset en `pending` après
+        // STALLED_AFTER_MINUTES — le parcours peut repartir proprement.
+        $stalledRequests = DB::table('company_requests')
+            ->where('status', 'processing')
+            ->where('updated_at', '<', now()->subMinutes(self::STALLED_AFTER_MINUTES))
+            ->orderBy('updated_at')
+            ->get();
+
+        foreach ($stalledRequests as $row) {
+            DB::table('company_requests')
+                ->where('id', $row->id)
+                ->update(['status' => 'pending', 'updated_at' => now()]);
+            Log::warning('trial.verify_stalled_claim_reset', [
+                'company_request_id' => $row->id,
+                'email' => $row->email ?? null,
+            ]);
+            $this->warn('Stalled company_request #'.(string) $row->id.' reset to pending (issue #6547).');
+        }
+
+        $this->info('Processed '.$stalled->count().' stalled trial provisioning(s), '.$stalledRequests->count().' stalled company_request(s).');
 
         return self::SUCCESS;
     }

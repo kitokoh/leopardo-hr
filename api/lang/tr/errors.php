@@ -273,4 +273,6 @@ return [
     'MANAGER_ONLY_ACTION' => 'Bu işlem sadece yöneticiler için geçerlidir.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Bu şirket için zaten bekleyen bir talebiniz var.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Entegrasyon talebi bulunamadı.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Çok fazla deneme. E-postanızı kontrol edip 15 dakika sonra tekrar deneyin.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Çok fazla deneme. Kod geçersiz kılındı, lütfen tekrar giriş yapın.',
 ];
