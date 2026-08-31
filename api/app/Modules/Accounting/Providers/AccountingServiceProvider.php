@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
+use App\Modules\Accounting\Console\Commands\SendPaymentRemindersCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +38,9 @@ class AccountingServiceProvider extends ServiceProvider
         // Issue #5274 — démo exploitable en 1 clic (données vitrine, jamais réelles).
         $this->commands([
             SeedAccountingDemoCommand::class,
+            // #6574 — relances de paiement (J+7/J+15/J+30) : enregistrement
+            // explicite (Laravel ne découvre que app/Console/Commands).
+            SendPaymentRemindersCommand::class,
         ]);
     }
 

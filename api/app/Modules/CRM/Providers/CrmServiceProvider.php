@@ -12,11 +12,7 @@ use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmImportRowPersister;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxConsumerRegistry;
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
-use App\Modules\CRM\Policies\CrmImportPolicy;
-use App\Modules\CRM\Policies\CrmLeadPolicy;
-use App\Modules\CRM\Policies\CrmMergePolicy;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -41,8 +37,7 @@ class CrmServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmImport::class, CrmImportPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmLead::class, CrmLeadPolicy::class);
-        Gate::policy(\App\Modules\CRM\Domain\Models\CrmAccount::class, CrmMergePolicy::class);
+        // PA2-ARCH-008 (#6575) : les Gate::policy vivent dans
+        // AuthServiceProvider::boot() (point d'enregistrement unique).
     }
 }

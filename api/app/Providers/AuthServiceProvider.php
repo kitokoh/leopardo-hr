@@ -74,6 +74,13 @@ use App\Policies\TaxSlabPolicy;
 use App\Policies\TrainingPolicy;
 use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
+use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmImport;
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Policies\CrmImportPolicy;
+use App\Modules\CRM\Policies\CrmLeadPolicy;
+use App\Modules\CRM\Policies\CrmMergePolicy;
+
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -139,6 +146,11 @@ class AuthServiceProvider extends ServiceProvider
 
         // Platform
         Gate::policy(WebhookEndpoint::class, WebhookEndpointPolicy::class);
+
+        // CRM (PA2-ARCH-008 #6575) — point d'enregistrement unique.
+        Gate::policy(CrmImport::class, CrmImportPolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmAccount::class, CrmMergePolicy::class);
 
         // Marketing (Phase 2)
         Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
