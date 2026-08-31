@@ -4714,7 +4714,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-501 — Ventes (réservations nettes) sur période'
+      summary: TRAVEL-501 — Ventes (réservations nettes) sur période
       security:
       - BearerAuth: []
       parameters:
@@ -4731,7 +4731,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-502 — Occupation par trajet'
+      summary: TRAVEL-502 — Occupation par trajet
       security:
       - BearerAuth: []
       parameters:
@@ -4748,7 +4748,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-503 — Recettes (confirmés − remboursements)'
+      summary: TRAVEL-503 — Recettes (confirmés − remboursements)
       security:
       - BearerAuth: []
       parameters:
@@ -4765,7 +4765,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-504 — Annulations sur période'
+      summary: TRAVEL-504 — Annulations sur période
       security:
       - BearerAuth: []
       parameters:
@@ -4782,7 +4782,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-507 — Dashboard KPIs'
+      summary: TRAVEL-507 — Dashboard KPIs
       security:
       - BearerAuth: []
       responses:
@@ -4796,7 +4796,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-505 — Export CSV idempotent'
+      summary: TRAVEL-505 — Export CSV idempotent
       security:
       - BearerAuth: []
       requestBody:
@@ -4835,7 +4835,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-505 — Lecture d''un export (URL signée éphémère)'
+      summary: TRAVEL-505 — Lecture d'un export (URL signée éphémère)
       security:
       - BearerAuth: []
       parameters:
@@ -4855,7 +4855,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Liste des articles'
+      summary: TRAVEL-901 — Liste des articles
       security:
       - BearerAuth: []
       responses:
@@ -4866,7 +4866,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Création d''un article'
+      summary: TRAVEL-901 — Création d'un article
       security:
       - BearerAuth: []
       requestBody:
@@ -4903,7 +4903,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Détail d''un article'
+      summary: TRAVEL-901 — Détail d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -4922,7 +4922,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Mise à jour d''un article'
+      summary: TRAVEL-901 — Mise à jour d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -4947,7 +4947,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Suppression d''un article'
+      summary: TRAVEL-901 — Suppression d'un article
       security:
       - BearerAuth: []
       parameters:
@@ -4965,7 +4965,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Modération d''un article (draft/published/flagged)'
+      summary: TRAVEL-901 — Modération d'un article (draft/published/flagged)
       security:
       - BearerAuth: []
       parameters:
@@ -4985,7 +4985,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Catégories d''articles'
+      summary: TRAVEL-901 — Catégories d'articles
       security:
       - BearerAuth: []
       responses:
@@ -4996,7 +4996,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-901 — Création d''une catégorie'
+      summary: TRAVEL-901 — Création d'une catégorie
       security:
       - BearerAuth: []
       responses:
@@ -5008,7 +5008,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Grille tarifaire des annonces'
+      summary: TRAVEL-906 — Grille tarifaire des annonces
       security:
       - BearerAuth: []
       responses:
@@ -5019,7 +5019,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Création d''une grille tarifaire (minor units)'
+      summary: TRAVEL-906 — Création d'une grille tarifaire (minor units)
       security:
       - BearerAuth: []
       requestBody:
@@ -5059,7 +5059,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -5086,11 +5086,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-906 — Suppression d''une grille tarifaire'
+      summary: TRAVEL-906 — Suppression d'une grille tarifaire
       security:
       - BearerAuth: []
       parameters:
@@ -5108,7 +5107,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Types d''annonces'
+      summary: TRAVEL-905 — Types d'annonces
       security:
       - BearerAuth: []
       responses:
@@ -5119,7 +5118,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Création d''un type d''annonce'
+      summary: TRAVEL-905 — Création d'un type d'annonce
       security:
       - BearerAuth: []
       requestBody:
@@ -5149,7 +5148,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -5176,11 +5175,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Suppression d''un type d''annonce'
+      summary: TRAVEL-905 — Suppression d'un type d'annonce
       security:
       - BearerAuth: []
       parameters:
@@ -5198,7 +5196,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Positions de publication'
+      summary: TRAVEL-905 — Positions de publication
       security:
       - BearerAuth: []
       responses:
@@ -5209,7 +5207,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Création d''une position'
+      summary: TRAVEL-905 — Création d'une position
       security:
       - BearerAuth: []
       requestBody:
@@ -5239,7 +5237,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)'
+      summary: TRAVEL-914 — Mise à jour (code/libellé tenant-scoped)
       security:
       - BearerAuth: []
       parameters:
@@ -5266,11 +5264,10 @@ paths:
           description: Élément mis à jour
         '422':
           description: Code dupliqué (tenant)
-
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-905 — Suppression d''une position'
+      summary: TRAVEL-905 — Suppression d'une position
       security:
       - BearerAuth: []
       parameters:
@@ -5288,7 +5285,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)'
+      summary: TRAVEL-914 — Annonces en gestion (tous statuts, filtrables)
       security:
       - BearerAuth: []
       parameters:
@@ -5307,7 +5304,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Annonces visibles (payées + validées + non expirées)'
+      summary: TRAVEL-907 — Annonces visibles (payées + validées + non expirées)
       security:
       - BearerAuth: []
       responses:
@@ -5318,7 +5315,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Soumission d''une annonce (prix calculé serveur)'
+      summary: TRAVEL-907 — Soumission d'une annonce (prix calculé serveur)
       security:
       - BearerAuth: []
       requestBody:
@@ -5362,7 +5359,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Détail d''une annonce'
+      summary: TRAVEL-907 — Détail d'une annonce
       security:
       - BearerAuth: []
       parameters:
@@ -5380,7 +5377,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Paiement d''une annonce (idempotent)'
+      summary: TRAVEL-907 — Paiement d'une annonce (idempotent)
       security:
       - BearerAuth: []
       parameters:
@@ -5400,7 +5397,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Validation d''une annonce (travel.manage)'
+      summary: TRAVEL-907 — Validation d'une annonce (travel.manage)
       security:
       - BearerAuth: []
       parameters:
@@ -5420,7 +5417,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-907 — Rejet d''une annonce (motif)'
+      summary: TRAVEL-907 — Rejet d'une annonce (motif)
       security:
       - BearerAuth: []
       parameters:
@@ -5450,7 +5447,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)'
+      summary: TRAVEL-908 — Renouvellement (nouveau paiement, prolongation)
       security:
       - BearerAuth: []
       parameters:
@@ -5470,7 +5467,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Liste des quiz'
+      summary: TRAVEL-904 — Liste des quiz
       security:
       - BearerAuth: []
       responses:
@@ -5481,7 +5478,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Création d''un quiz'
+      summary: TRAVEL-904 — Création d'un quiz
       security:
       - BearerAuth: []
       requestBody:
@@ -5510,7 +5507,10 @@ paths:
                   default: 1
                 status:
                   type: string
-                  enum: [draft, active, closed]
+                  enum:
+                  - draft
+                  - active
+                  - closed
       responses:
         '201':
           description: Quiz créé
@@ -5520,11 +5520,11 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes)'
+      summary: TRAVEL-904 — Détail d'un quiz (questions SANS réponses correctes)
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d''un quiz (titre, période, statut)'
+      summary: TRAVEL-914 — Mise à jour d'un quiz (titre, période, statut)
       security:
       - BearerAuth: []
       parameters:
@@ -5554,22 +5554,10 @@ paths:
                   format: date-time
                 status:
                   type: string
-                  enum: [draft, active, closed]
-      responses:
-        '200':
-          description: Quiz mis à jour
-        '403':
-          description: Rôle insuffisant
-        '404':
-          description: Quiz introuvable
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelQuiz
-        in: path
-        required: true
-        schema:
-          type: integer
+                  enum:
+                  - draft
+                  - active
+                  - closed
       responses:
         '200':
           description: Quiz + questions
@@ -5579,7 +5567,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Ajout d''une question'
+      summary: TRAVEL-904 — Ajout d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -5626,7 +5614,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Questions d''un quiz (admin, bonne réponse exposée)'
+      summary: TRAVEL-914 — Questions d'un quiz (admin, bonne réponse exposée)
       security:
       - BearerAuth: []
       parameters:
@@ -5644,7 +5632,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Mise à jour d''une question'
+      summary: TRAVEL-914 — Mise à jour d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -5689,7 +5677,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-914 — Suppression d''une question'
+      summary: TRAVEL-914 — Suppression d'une question
       security:
       - BearerAuth: []
       parameters:
@@ -5712,7 +5700,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Participation (notation serveur)'
+      summary: TRAVEL-904 — Participation (notation serveur)
       security:
       - BearerAuth: []
       parameters:
@@ -5740,7 +5728,9 @@ paths:
                   type: array
                   items:
                     type: object
-                    required: [question_id, selected_option]
+                    required:
+                    - question_id
+                    - selected_option
                     properties:
                       question_id:
                         type: integer
@@ -5759,7 +5749,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-904 — Résultats (gestion)'
+      summary: TRAVEL-904 — Résultats (gestion)
       security:
       - BearerAuth: []
       parameters:
@@ -5777,7 +5767,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)'
+      summary: TRAVEL-913 — Registre admin des contacts voyageurs (liste paginée, recherche, filtre consentement)
       security:
       - BearerAuth: []
       parameters:
@@ -5793,7 +5783,10 @@ paths:
         description: Ne renvoyer que les contacts ayant consenti au canal (email|sms|whatsapp)
         schema:
           type: string
-          enum: [email, sms, whatsapp]
+          enum:
+          - email
+          - sms
+          - whatsapp
       - name: per_page
         in: query
         required: false
@@ -5813,7 +5806,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-912/913 — Mise à jour des consentements par canal'
+      summary: TRAVEL-912/913 — Mise à jour des consentements par canal
       security:
       - BearerAuth: []
       parameters:
@@ -5845,7 +5838,7 @@ paths:
     patch:
       tags:
       - Travel
-      summary: "TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)"
+      summary: TRAVEL-913 — Opt-in / opt-out d'un canal de consentement (horodaté)
       security:
       - BearerAuth: []
       parameters:
@@ -5866,7 +5859,10 @@ paths:
               properties:
                 channel:
                   type: string
-                  enum: [email, sms, whatsapp]
+                  enum:
+                  - email
+                  - sms
+                  - whatsapp
                 given:
                   type: boolean
       responses:
@@ -5883,7 +5879,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-912 — Mise à jour des consentements par canal'
+      summary: TRAVEL-912 — Mise à jour des consentements par canal
       security:
       - BearerAuth: []
       parameters:
@@ -5914,7 +5910,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)'
+      summary: TRAVEL-910 — Notification manuelle (canaux plateforme + consentement)
       security:
       - BearerAuth: []
       parameters:
@@ -5940,7 +5936,9 @@ paths:
                   maxItems: 2
                   items:
                     type: string
-                    enum: [email, app]
+                    enum:
+                    - email
+                    - app
       responses:
         '200':
           description: Notification envoyée (canaux respectant le consentement)
@@ -5954,7 +5952,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Sites touristiques (recherche par ville/nom)'
+      summary: TRAVEL-909 — Sites touristiques (recherche par ville/nom)
       security:
       - BearerAuth: []
       parameters:
@@ -5973,7 +5971,9 @@ paths:
         required: false
         schema:
           type: string
-          enum: [active, disabled]
+          enum:
+          - active
+          - disabled
       responses:
         '200':
           description: Sites touristiques
@@ -5982,7 +5982,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Création d''un site touristique'
+      summary: TRAVEL-909 — Création d'un site touristique
       security:
       - BearerAuth: []
       requestBody:
@@ -6016,7 +6016,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Site créé
@@ -6028,7 +6030,7 @@ paths:
     get:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Détail d''un site touristique'
+      summary: TRAVEL-909 — Détail d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -6045,7 +6047,7 @@ paths:
     put:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Mise à jour d''un site touristique'
+      summary: TRAVEL-909 — Mise à jour d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -6081,7 +6083,9 @@ paths:
                   nullable: true
                 status:
                   type: string
-                  enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Site mis à jour
@@ -6090,7 +6094,7 @@ paths:
     delete:
       tags:
       - Travel
-      summary: 'TRAVEL-909 — Suppression d''un site touristique'
+      summary: TRAVEL-909 — Suppression d'un site touristique
       security:
       - BearerAuth: []
       parameters:
@@ -6108,7 +6112,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)'
+      summary: TRAVEL-913 — Formulaire de contact public (URL signée + throttle, consentement obligatoire)
       parameters:
       - name: company
         in: query
@@ -6159,7 +6163,7 @@ paths:
     post:
       tags:
       - Travel
-      summary: 'TRAVEL-913 — Génération du lien public signé du formulaire de contact'
+      summary: TRAVEL-913 — Génération du lien public signé du formulaire de contact
       security:
       - BearerAuth: []
       requestBody:
@@ -6179,7 +6183,137 @@ paths:
           description: Lien signé généré (contact_url + expires_at)
         '403':
           description: Rôle insuffisant (manager requis)
->>>>>>> 09fed9438 (fix(travel): échappement apostrophes openapi.yaml (TRAVEL-914) — YAML valide pour le lint OpenAPI (débloque PR #6127))
+  /travel/webhook-subscriptions:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-806 — Liste des abonnements webhook transporteurs'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Abonnements (secret jamais exposé)
+        '401':
+          description: Non authentifié
+    post:
+      tags:
+      - Travel
+      summary: 'TRAVEL-806 — Créer un abonnement webhook (secret renvoyé une fois)'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - url
+              - events
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                carrier_id:
+                  type: integer
+                  nullable: true
+                events:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [travel.booking.pending.v1, travel.booking.confirmed.v1, travel.booking.cancelled.v1, travel.payment.refunded.v1, travel.ticket.issued.v1, travel.trip.published.v1, travel.trip.cancelled.v1]
+                secret:
+                  type: string
+                  minLength: 16
+                  maxLength: 200
+                active:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Abonnement créé (data.secret = secret HMAC, unique exposition)
+        '403':
+          description: Rôle manager requis
+        '422':
+          description: Validation échouée
+  /travel/webhook-subscriptions/{travelWebhookSubscription}:
+    get:
+      tags:
+      - Travel
+      summary: 'TRAVEL-806 — Détail d'un abonnement webhook'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelWebhookSubscription
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Abonnement (has_secret, jamais le secret)
+        '404':
+          description: Introuvable (ou autre tenant)
+    put:
+      tags:
+      - Travel
+      summary: 'TRAVEL-806 — Mettre à jour un abonnement webhook'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelWebhookSubscription
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Abonnement mis à jour
+        '404':
+          description: Introuvable (ou autre tenant)
+    delete:
+      tags:
+      - Travel
+      summary: 'TRAVEL-806 — Supprimer un abonnement webhook'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: travelWebhookSubscription
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Abonnement supprimé
+        '404':
+          description: Introuvable (ou autre tenant)
+>>>>>>> 08dcc0873 (feat(travel): webhooks sortants transporteurs — abonnements, signature HMAC, retry/backoff, dead-letter + fix require dupliqué api.php (TRAVEL-806, Closes #6097) (#6521))
   /travel/contact:
     post:
       tags:
