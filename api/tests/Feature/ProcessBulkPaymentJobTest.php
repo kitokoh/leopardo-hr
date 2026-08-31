@@ -299,7 +299,10 @@ class ProcessBulkPaymentJobTest extends TestCase
         $run->refresh();
         $this->assertNotSame('paid', $run->status, 'Un slip jamais payé ne doit pas faire passer le run `paid`.');
 
-        Queue::assertNothingPushed();
+        // Aucun document de paiement / bulletin PDF ne doit être généré pour
+        // le slip orphelin (seule la notification du manager peut partir).
+        Queue::assertNotPushed(GeneratePaySlipPdfJob::class);
+        Queue::assertNotPushed(GeneratePaymentDocumentJob::class);
 
         $audit = AuditLog::query()
             ->where('auditable_type', PayrollRun::class)
