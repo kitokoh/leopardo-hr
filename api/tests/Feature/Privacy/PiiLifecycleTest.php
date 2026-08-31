@@ -154,8 +154,8 @@ class PiiLifecycleTest extends TestCase
         $employee->refresh();
         self::assertSame('Anonymisé', $employee->first_name);
         self::assertStringContainsString('anonyme-', (string) $employee->email);
-        self::assertNull($employee->national_id);
-        self::assertNull($employee->iban);
+        self::assertNull($employee->getAttribute('national_id'));
+        self::assertNull($employee->getAttribute('iban'));
         self::assertNull($employee->photo_path);
         self::assertSame('archived', $employee->status);
         self::assertFalse(Storage::disk('local')->exists('photos/lifecycle-1.jpg'));
@@ -228,8 +228,8 @@ class PiiLifecycleTest extends TestCase
         self::assertInstanceOf(PrivacyRequest::class, $request);
         self::assertSame('deletion', $request->type);
         self::assertSame('received', $request->status);
-        self::assertSame('Départ volontaire', $request->requested_payload['reason']);
-        self::assertFalse($request->requested_payload['destructive_action']);
+        self::assertSame('Départ volontaire', ($request->requested_payload ?? [])['reason']);
+        self::assertFalse(($request->requested_payload ?? [])['destructive_action']);
     }
 
     public function test_retention_schedule_is_derived_from_catalog(): void

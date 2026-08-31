@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use Database\Seeders\FuelStationPilotSeeder;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
@@ -82,8 +83,7 @@ class PilotSeedsTest extends TestCase
         $company = Company::query()->where('slug', 'fuel-pilot-001')->firstOrFail();
         $companyId = (string) $company->id;
 
-        $this->artisan('pilot:seed', ['--solution' => 'fuel', '--clean' => true])
-            ->assertSuccessful();
+        self::assertSame(0, Artisan::call('pilot:seed', ['--solution' => 'fuel', '--clean' => true]));
 
         self::assertSame(0, Company::query()->where('slug', 'fuel-pilot-001')->count());
         self::assertSame(0, DB::table('fuel_sales')->where('company_id', $companyId)->count());

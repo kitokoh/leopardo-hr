@@ -70,7 +70,9 @@ class FeatureFlagKillSwitchTest extends TestCase
 
     public function test_solution_scope_flag_resolves_per_tenant(): void
     {
+        /** @var Company $without */
         $without = Company::factory()->create(['features' => []]);
+        /** @var Company $with */
         $with = Company::factory()->create(['features' => ['fuel_station' => true]]);
 
         self::assertFalse($this->registry()->enabled('fuel_station', $without));
@@ -107,6 +109,7 @@ class FeatureFlagKillSwitchTest extends TestCase
 
     public function test_audit_recorder_writes_before_after_per_flag(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create(['features' => ['finance' => false]]);
 
         (new FeatureFlagAuditRecorder)->record(

@@ -168,7 +168,7 @@ final class PiiRegistry
             'context' => (string) ($policy['context'] ?? ''),
             'sensitivity' => (string) ($policy['sensitivity'] ?? ''),
             'encrypted' => (bool) ($policy['encrypted'] ?? false),
-            'retention_months' => isset($policy['retention_months']) && $policy['retention_months'] !== null
+            'retention_months' => isset($policy['retention_months'])
                 ? (int) $policy['retention_months']
                 : null,
             'exportable' => (bool) ($policy['exportable'] ?? false),

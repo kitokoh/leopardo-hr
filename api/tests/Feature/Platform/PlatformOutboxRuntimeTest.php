@@ -195,7 +195,7 @@ class PlatformOutboxRuntimeTest extends TestCase
         $event = PlatformOutboxEvent::query()->firstOrFail();
         $this->assertSame(PlatformOutboxEvent::STATUS_PENDING, $event->status);
         $this->assertSame(1, $event->attempts);
-        $this->assertTrue($event->available_at->isFuture(), 'le backoff doit repousser available_at dans le futur');
+        $this->assertTrue($event->available_at?->isFuture() ?? false, 'le backoff doit repousser available_at dans le futur');
 
         // Retry après échéance : le consommateur échoue encore → tentatives 2.
         $event->forceFill(['available_at' => now()->subMinute()])->save();

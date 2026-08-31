@@ -324,12 +324,14 @@ class GoldenAccountingInvariantsTest extends TestCase
         $this->assertSame(12, $count);
         $this->assertSame(0.0, $service->balanceForRun($run));
 
+        /** @var array<string, array{debit: float, credit: float}> $totals */
         $totals = $service->entriesForRun($run)
             ->groupBy('account_code')
             ->map(fn ($lines) => [
-                'debit' => $lines->sum('debit'),
-                'credit' => $lines->sum('credit'),
-            ]);
+                'debit' => (float) $lines->sum('debit'),
+                'credit' => (float) $lines->sum('credit'),
+            ])
+            ->all();
 
         $this->assertSame(120000.0, $totals['641']['debit']);
         $this->assertSame(18000.0, $totals['645']['debit']);
@@ -358,7 +360,7 @@ class GoldenAccountingInvariantsTest extends TestCase
         ]);
 
         $this->assertTrue($audit->exists);
-        $this->assertNull($audit->updated_at);
+        $this->assertNull($audit->getAttribute('updated_at'));
 
         // Re-calcul = nouveau run = nouveau correlation_id : nouvelle ligne
         // d'audit (append-only, jamais de mutation) — cf. unique constraint
