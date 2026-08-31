@@ -165,16 +165,10 @@
     {
       "code": "BC-23",
       "name": "AI",
-      "runbooks": [],
-      "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1."
-    },
-    {
-      "code": "BC-25",
-      "name": "RESTAURANT",
       "runbooks": [
-        "docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"
+        "docs/ops/RUNBOOK_AI.md"
       ],
-      "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)."
+      "notes": "Services IA assistifs : runbook dédié (supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch) + couverture backup/restore plateforme."
     },
     {
       "code": "BC-24",
@@ -185,12 +179,19 @@
       "notes": "Pilote TravelAgency : runbook dédié (tenant pilote, kill switch, backup/restore, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_TRAVELAGENCY.md (TRAVEL-050/#5998)."
     },
     {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "runbooks": [
+        "docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md"
+      ],
+      "notes": "Pilote RestaurantManager : runbook dédié (activation, smoke, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md (RESTO-903/#6232)."
+    },
+    {
       "code": "BC-26",
       "name": "DELIVERY",
-      "runbooks": [
-        "docs/ops/RUNBOOK_DELIVERY.md"
-      ],
-      "notes": "Module de livraison dernier-kilomètre : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay, runbook rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme)."
+      "runbooks": [],
+      "notes": "Module de livraison dernier-kilometre (planned): runbook dedie RUNBOOK_DELIVERY.md arrive avec la consolidation du socle DELIVERY (PR #6338). Couverture rollback/backup tenant assuree par RUNBOOK_BACKUP_RESTORE / RUNBOOK_ROLLBACK plateforme a l'activation.",
+      "status": "planned"
     }
   ]
 }
