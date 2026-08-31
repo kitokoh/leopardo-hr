@@ -13,6 +13,10 @@ use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
  * participation : tout employé authentifié du tenant.
  */
 final class TravelQuizPolicy
+ * Lecture/participation : tenant ; gestion (CRUD, résultats) :
+ * principal/rh/manager.
+ */
+class TravelQuizPolicy
 {
     public function viewAny(Employee $actor): bool
     {
@@ -27,6 +31,7 @@ final class TravelQuizPolicy
     public function create(Employee $actor): bool
     {
         return $actor->hasManagerRole('principal', 'rh', 'manager', 'agent');
+        return $actor->hasManagerRole('principal', 'rh', 'manager');
     }
 
     public function update(Employee $actor, TravelQuiz $quiz): bool
@@ -39,6 +44,7 @@ final class TravelQuizPolicy
         return $this->update($actor, $quiz);
     }
 
+    /** Participation : tout employé authentifié du tenant. */
     public function participate(Employee $actor, TravelQuiz $quiz): bool
     {
         return $quiz->company_id === $actor->company_id;
@@ -50,5 +56,9 @@ final class TravelQuizPolicy
     public function manage(Employee $actor, TravelQuiz $quiz): bool
     {
         return $actor->hasManagerRole('principal', 'rh') && $quiz->company_id === $actor->company_id;
+    /** Résultats (gestion) : mêmes rôles que l'écriture. */
+    public function viewResults(Employee $actor, TravelQuiz $quiz): bool
+    {
+        return $this->update($actor, $quiz);
     }
 }

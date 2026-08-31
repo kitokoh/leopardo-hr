@@ -12,6 +12,10 @@ use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
  * Lecture : tenant ; écriture : rôles opérationnels de l'agence.
  */
 final class TravelTouristSitePolicy
+ * TRAVEL-909 (#6112) — Policy des sites touristiques.
+ * Lecture : tenant ; écriture : rôles opérationnels (gestion de l'annuaire).
+ */
+class TravelTouristSitePolicy
 {
     public function viewAny(Employee $actor): bool
     {

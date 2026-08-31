@@ -5034,16 +5034,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Liste des positions de publication (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Positions de publication */
     getTravelAdvertPositions(options = {}) {
       return request("GET", "/travel/advert-positions", options);
     },
 
     /** Création d'une position de publication (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Création d''une position */
     postTravelAdvertPositions(options = {}) {
       return request("POST", "/travel/advert-positions", options);
     },
 
     /** Suppression d'une position de publication (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Suppression d''une position */
     deleteTravelAdvertPositionsByTravelAdvertPosition(options = {}) {
       return request("DELETE", "/travel/advert-positions/{travelAdvertPosition}", options);
     },
@@ -5054,16 +5057,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Liste de la grille tarifaire des annonces (TRAVEL-906/#6109) */
+    /** TRAVEL-906 — Grille tarifaire des annonces */
     getTravelAdvertPrices(options = {}) {
       return request("GET", "/travel/advert-prices", options);
     },
 
     /** Création d'un tarif (type × position, devise tenant) (TRAVEL-906/#6109) */
+    /** TRAVEL-906 — Création d''une grille tarifaire (minor units) */
     postTravelAdvertPrices(options = {}) {
       return request("POST", "/travel/advert-prices", options);
     },
 
     /** Suppression d'un tarif (TRAVEL-906/#6109) */
+    /** TRAVEL-906 — Suppression d''une grille tarifaire */
     deleteTravelAdvertPricesByTravelAdvertPrice(options = {}) {
       return request("DELETE", "/travel/advert-prices/{travelAdvertPrice}", options);
     },
@@ -5074,16 +5080,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Liste des types d'annonces payantes (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Types d''annonces */
     getTravelAdvertTypes(options = {}) {
       return request("GET", "/travel/advert-types", options);
     },
 
     /** Création d'un type d'annonce (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Création d''un type d''annonce */
     postTravelAdvertTypes(options = {}) {
       return request("POST", "/travel/advert-types", options);
     },
 
     /** Suppression d'un type d'annonce (TRAVEL-905/#6108) */
+    /** TRAVEL-905 — Suppression d''un type d''annonce */
     deleteTravelAdvertTypesByTravelAdvertType(options = {}) {
       return request("DELETE", "/travel/advert-types/{travelAdvertType}", options);
     },
@@ -5094,11 +5103,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Liste des annonces payantes (filtres statut/type) (TRAVEL-907/#6110) */
+    /** TRAVEL-907 — Annonces visibles (payées + validées + non expirées) */
     getTravelAdverts(options = {}) {
       return request("GET", "/travel/adverts", options);
     },
 
     /** Soumission d'une annonce — prix calculé serveur (TRAVEL-907/#6110) */
+    /** TRAVEL-907 — Soumission d''une annonce (prix calculé serveur) */
     postTravelAdverts(options = {}) {
       return request("POST", "/travel/adverts", options);
     },
@@ -5109,21 +5120,30 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Détail d'une annonce (TRAVEL-907/#6110) */
+    /** TRAVEL-907 — Détail d''une annonce */
     getTravelAdvertsByTravelAdvert(options = {}) {
       return request("GET", "/travel/adverts/{travelAdvert}", options);
     },
 
     /** Paiement d'une annonce (cash ou provider, idempotent) (TRAVEL-907/#6110) */
+    /** TRAVEL-907 — Paiement d''une annonce (idempotent) */
     postTravelAdvertsByTravelAdvertPay(options = {}) {
       return request("POST", "/travel/adverts/{travelAdvert}/pay", options);
     },
 
     /** Renouvellement d'une annonce expirée (nouveau paiement) (TRAVEL-908/#6111) */
+    /** TRAVEL-907 — Rejet d''une annonce (motif) */
+    postTravelAdvertsByTravelAdvertReject(options = {}) {
+      return request("POST", "/travel/adverts/{travelAdvert}/reject", options);
+    },
+
+    /** TRAVEL-908 — Renouvellement (nouveau paiement, prolongation) */
     postTravelAdvertsByTravelAdvertRenew(options = {}) {
       return request("POST", "/travel/adverts/{travelAdvert}/renew", options);
     },
 
     /** Validation/modération d'une annonce payée (travel.manage) (TRAVEL-907/#6110) */
+    /** TRAVEL-907 — Validation d''une annonce (travel.manage) */
     postTravelAdvertsByTravelAdvertValidate(options = {}) {
       return request("POST", "/travel/adverts/{travelAdvert}/validate", options);
     },
@@ -5306,6 +5326,51 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** TRAVEL-902 — Signalement d''un commentaire */
     postTravelCommentsByTravelCommentReport(options = {}) {
       return request("POST", "/travel/comments/{travelComment}/report", options);
+    /** TRAVEL-901 — Suppression d''un article */
+    deleteTravelArticlesByTravelArticle(options = {}) {
+      return request("DELETE", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Détail d''un article */
+    getTravelArticlesByTravelArticle(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-901 — Mise à jour d''un article */
+    putTravelArticlesByTravelArticle(options = {}) {
+      return request("PUT", "/travel/articles/{travelArticle}", options);
+    },
+
+    /** TRAVEL-903 — Agrégats d''engagement */
+    getTravelArticlesByTravelArticleEngagement(options = {}) {
+      return request("GET", "/travel/articles/{travelArticle}/engagement", options);
+    },
+
+    /** TRAVEL-903 — Like (unicité acteur/article) */
+    postTravelArticlesByTravelArticleLike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/like", options);
+    },
+
+    /** TRAVEL-901 — Modération d''un article (draft/published/flagged) */
+    postTravelArticlesByTravelArticleModerate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/moderate", options);
+    },
+
+    /** TRAVEL-903 — Note 1..5 (unicité, agrégats) */
+    postTravelArticlesByTravelArticleRate(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/rate", options);
+    },
+
+    /** TRAVEL-903 — Partage (canal) */
+    postTravelArticlesByTravelArticleShare(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/share", options);
+    },
+
+    /** TRAVEL-903 — Unlike */
+    postTravelArticlesByTravelArticleUnlike(options = {}) {
+      return request("POST", "/travel/articles/{travelArticle}/unlike", options);
+    },
+
     /** Liste des réservations (TRAVEL-312/#6042) */
     getTravelBookings(options = {}) {
       return request("GET", "/travel/bookings", options);
@@ -5337,6 +5402,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Remboursement d'une réservation, total ou partiel (TRAVEL-315/#6045, TRAVEL-808/#6098) */
+    /** Remboursement d'une réservation (TRAVEL-315/#6045) */
     postTravelBookingsByTravelBookingRefund(options = {}) {
       return request("POST", "/travel/bookings/{travelBooking}/refund", options);
     },
@@ -5662,6 +5728,32 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Formulaire de contact → lead CRM (TRAVEL-416/#6068) */
+    /** TRAVEL-902 — Liste des commentaires */
+    getTravelComments(options = {}) {
+      return request("GET", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Création d''un commentaire (pending) */
+    postTravelComments(options = {}) {
+      return request("POST", "/travel/comments", options);
+    },
+
+    /** TRAVEL-902 — Suppression d''un commentaire */
+    deleteTravelCommentsByTravelComment(options = {}) {
+      return request("DELETE", "/travel/comments/{travelComment}", options);
+    },
+
+    /** TRAVEL-902 — Modération (approved/rejected/flagged) */
+    postTravelCommentsByTravelCommentModerate(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/moderate", options);
+    },
+
+    /** TRAVEL-902 — Signalement d''un commentaire */
+    postTravelCommentsByTravelCommentReport(options = {}) {
+      return request("POST", "/travel/comments/{travelComment}/report", options);
+    },
+
+    /** TRAVEL-416 — Formulaire de contact → lead CRM (événement outbox) */
     postTravelContact(options = {}) {
       return request("POST", "/travel/contact", options);
     },
@@ -5699,6 +5791,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Annulation d'un devis (TRAVEL-803/#6094, travel.manage) */
     postTravelCorporateQuotesByQuoteCancel(options = {}) {
       return request("POST", "/travel/corporate-quotes/{quote}/cancel", options);
+    /** Liste des contacts voyageurs (recherche, consentement) (TRAVEL-912/#6417) */
+    getTravelContacts(options = {}) {
+      return request("GET", "/travel/contacts", options);
+    },
+
+    /** TRAVEL-910 — Notification manuelle (canaux plateforme + consentement) */
+    postTravelContactsByTravelCustomerContactNotify(options = {}) {
+      return request("POST", "/travel/contacts/{travelCustomerContact}/notify", options);
     },
 
     /** Référentiel pays en lecture (TRAVEL-301/#6031) */
@@ -5837,11 +5937,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Liste des quiz (TRAVEL-904/#6107) */
+    /** TRAVEL-904 — Liste des quiz */
     getTravelQuizzes(options = {}) {
       return request("GET", "/travel/quizzes", options);
     },
 
     /** Création d'un quiz (TRAVEL-904/#6107) */
+    /** TRAVEL-904 — Création d''un quiz */
     postTravelQuizzes(options = {}) {
       return request("POST", "/travel/quizzes", options);
     },
@@ -5852,6 +5954,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Détail d'un quiz avec ses questions (TRAVEL-904/#6107) */
+    /** TRAVEL-904 — Détail d''un quiz (questions SANS réponses correctes) */
     getTravelQuizzesByTravelQuiz(options = {}) {
       return request("GET", "/travel/quizzes/{travelQuiz}", options);
     },
@@ -5862,6 +5965,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Participation à un quiz (score serveur, participation unique) (TRAVEL-904/#6107) */
+    /** TRAVEL-904 — Participation (notation serveur) */
     postTravelQuizzesByTravelQuizParticipate(options = {}) {
       return request("POST", "/travel/quizzes/{travelQuiz}/participate", options);
     },
@@ -5872,6 +5976,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Ajout d'une question à un quiz (TRAVEL-904/#6107) */
+    /** TRAVEL-904 — Ajout d''une question */
     postTravelQuizzesByTravelQuizQuestions(options = {}) {
       return request("POST", "/travel/quizzes/{travelQuiz}/questions", options);
     },
@@ -5942,6 +6047,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rotation du jeton (TRAVEL-1001/#6114, travel.manage) */
     postTravelPublicShopTokenRotate(options = {}) {
       return request("POST", "/travel/public-shop-token/rotate", options);
+    /** TRAVEL-904 — Résultats (gestion) */
+    getTravelQuizzesByTravelQuizResults(options = {}) {
+      return request("GET", "/travel/quizzes/{travelQuiz}/results", options);
     },
 
     /** Liste des réservations de location (TRAVEL-320/#6050) */
@@ -6155,21 +6263,25 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Annuaire des sites touristiques (filtres ville/recherche/statut) (TRAVEL-909/#6112) */
+    /** TRAVEL-909 — Sites touristiques (recherche par ville/nom) */
     getTravelTouristSites(options = {}) {
       return request("GET", "/travel/tourist-sites", options);
     },
 
     /** Création d'un site touristique (TRAVEL-909/#6112) */
+    /** TRAVEL-909 — Création d''un site touristique */
     postTravelTouristSites(options = {}) {
       return request("POST", "/travel/tourist-sites", options);
     },
 
     /** Suppression d'un site touristique (TRAVEL-909/#6112) */
+    /** TRAVEL-909 — Suppression d''un site touristique */
     deleteTravelTouristSitesByTravelTouristSite(options = {}) {
       return request("DELETE", "/travel/tourist-sites/{travelTouristSite}", options);
     },
 
     /** Détail d'un site touristique (TRAVEL-909/#6112) */
+    /** TRAVEL-909 — Détail d''un site touristique */
     getTravelTouristSitesByTravelTouristSite(options = {}) {
       return request("GET", "/travel/tourist-sites/{travelTouristSite}", options);
     },
@@ -6185,6 +6297,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Révocation d'un billet (TRAVEL-413/#6065) */
     postTravelTicketsByTravelTicketRevoke(options = {}) {
       return request("POST", "/travel/tickets/{travelTicket}/revoke", options);
+    /** TRAVEL-909 — Mise à jour d''un site touristique */
+    putTravelTouristSitesByTravelTouristSite(options = {}) {
+      return request("PUT", "/travel/tourist-sites/{travelTouristSite}", options);
     },
 
     /** Liste des trajets (TRAVEL-308/#6038) */

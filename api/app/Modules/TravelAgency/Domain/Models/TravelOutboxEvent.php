@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int $attempts
  * @property Carbon|null $available_at
  * @property string|null $last_error
+ * @property Carbon|null $processed_at
  * @property string $idempotency_key
  *
  * @mixin Builder<static>
@@ -43,6 +44,13 @@ class TravelOutboxEvent extends Model
 
     public const STATUS_PUBLISHED = 'published';
 
+    /** Réservé pendant le traitement (lease de worker, cf. #5741). */
+    public const STATUS_PROCESSING = 'processing';
+
+    /** Consommé avec succès (équivalent `sent` du pattern CRM). */
+    public const STATUS_PUBLISHED = 'published';
+
+    /** Dead-letter après MAX_ATTEMPTS ou erreur permanente. */
     public const STATUS_FAILED = 'failed';
 
     /** Nombre maximal de tentatives avant dead-letter. */
@@ -60,6 +68,8 @@ class TravelOutboxEvent extends Model
         'last_error',
         'idempotency_key',
         'processed_at',
+        'processed_at',
+        'idempotency_key',
     ];
 
     protected $casts = [

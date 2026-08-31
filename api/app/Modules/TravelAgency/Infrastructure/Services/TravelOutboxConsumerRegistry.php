@@ -21,6 +21,10 @@ use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
  * répond true (multi-consommation : webhooks TRAVEL-806, notifications
  * TRAVEL-415, Accounting TRAVEL-417…). Chaque consommateur applique son
  * effet de façon idempotente (rejeu sûr).
+ * Miroir du pattern `CrmOutboxConsumerRegistry` (#5741) : chaque événement
+ * est routé vers UN consommateur (le premier dont `supports()` répond true).
+ * Les consommateurs concrets (notifications BC-13, synthèse Accounting,
+ * lead CRM…) sont enregistrés par leur propre issue (#6067/#6069/#6068).
  */
 final class TravelOutboxConsumerRegistry
 {

@@ -10,6 +10,16 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * TRAVEL-909 (#6112) — Site touristique (tenant-scoped, annuaire).
+use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
+use App\Shared\Traits\BelongsToCompany;
+use Database\Factories\TravelTouristSiteFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * Site touristique de l'annuaire (TRAVEL-909, issue #6112).
  *
  * @property int $id
  * @property string $company_id
@@ -28,6 +38,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Site touristique (TRAVEL-909, issue #6112). Annuaire géolocalisé, recherche par ville.
+ * @property int|null $image_asset_id
+ * @property TravelRecordStatus $status
+ *
+ * @mixin Builder<static>
  */
 class TravelTouristSite extends Model
 {
@@ -38,6 +52,8 @@ class TravelTouristSite extends Model
     public const STATUS_PUBLISHED = 'published';
 
     public const STATUS_ARCHIVED = 'archived';
+    /** @use HasFactory<TravelTouristSiteFactory> */
+    use HasFactory;
 
     protected $table = 'travel_tourist_sites';
 
@@ -49,6 +65,7 @@ class TravelTouristSite extends Model
         'latitude',
         'longitude',
         'images',
+        'image_asset_id',
         'status',
     ];
 
@@ -65,4 +82,14 @@ class TravelTouristSite extends Model
         'longitude' => 'float',
         'images' => 'array',
     ];
+        'status' => TravelRecordStatus::class,
+    ];
+
+    /**
+     * @return BelongsTo<TravelCity, $this>
+     */
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(TravelCity::class, 'city_id');
+    }
 }

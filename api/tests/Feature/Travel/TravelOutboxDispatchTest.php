@@ -9,6 +9,9 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
+use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
+use App\Modules\TravelAgency\Domain\Exceptions\TransientOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
@@ -26,6 +29,9 @@ use Tests\TestCase;
  * replay sans perte ni doublon, retry/backoff transitoire, dead-letter
  * permanente, événement inconnu, pic 200 événements, refus structurel
  * cross-tenant (contexte du tenant de l'événement imposé au consommateur).
+ * Miroir du pattern `crm:outbox-dispatch` (#5741) : claim atomique avec
+ * lease, rejeu idempotent, retry avec backoff, dead-letter, pic de charge,
+ * isolation cross-tenant.
  */
 class TravelOutboxDispatchTest extends TestCase
 {
@@ -34,6 +40,7 @@ class TravelOutboxDispatchTest extends TestCase
     private Company $companyA;
 
     private Company $companyB;
+    private Company $company;
 
     private TravelOutboxPublisher $publisher;
 
@@ -58,6 +65,12 @@ class TravelOutboxDispatchTest extends TestCase
         $this->publisher = app(TravelOutboxPublisher::class);
         $this->registry = app(TravelOutboxConsumerRegistry::class);
         $this->tenants = app(TenantManager::class);
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->company = $company;
+
+        $this->publisher = app(TravelOutboxPublisher::class);
+        $this->registry = app(TravelOutboxConsumerRegistry::class);
     }
 
     protected function tearDown(): void
@@ -67,12 +80,14 @@ class TravelOutboxDispatchTest extends TestCase
     }
 
     public function test_publish_then_dispatch_applies_effect_once(): void
+    public function test_event_is_dispatched_to_registered_consumer(): void
     {
         $consumer = new TravelLedgerConsumer('travel.test.event');
         $this->registry->register($consumer);
 
         $this->publisher->publish(
             (string) $this->companyA->id,
+            (string) $this->company->id,
             'travel.test.event',
             ['account_id' => 42],
         );
@@ -104,6 +119,11 @@ class TravelOutboxDispatchTest extends TestCase
         );
 
         self::assertSame(1, TravelOutboxEvent::query()->count(), 'clé d\'idempotence unique par tenant');
+        );
+        self::assertNotNull(
+            TravelOutboxEvent::query()->firstOrFail()->processed_at,
+            'processed_at est horodaté',
+        );
     }
 
     public function test_crash_between_publish_and_dispatch_loses_nothing(): void
@@ -113,6 +133,11 @@ class TravelOutboxDispatchTest extends TestCase
 
         // « Crash » : l'événement est publié mais le dispatch ne tourne pas.
         $this->publisher->publish((string) $this->companyA->id, 'travel.test.event', ['account_id' => 99]);
+        $this->publisher->publish(
+            (string) $this->company->id,
+            'travel.test.event',
+            ['account_id' => 99],
+        );
 
         // « Redémarrage » : le dispatch reprend l'événement pending.
         Artisan::call('travel:outbox-dispatch');
@@ -122,12 +147,14 @@ class TravelOutboxDispatchTest extends TestCase
     }
 
     public function test_crash_after_effect_does_not_duplicate_on_replay(): void
+    public function test_replay_after_crash_does_not_duplicate_effect(): void
     {
         $consumer = new TravelLedgerConsumer('travel.test.event');
         $this->registry->register($consumer);
 
         $event = $this->publisher->publish(
             (string) $this->companyA->id,
+            (string) $this->company->id,
             'travel.test.event',
             ['account_id' => 55],
         );
@@ -140,8 +167,50 @@ class TravelOutboxDispatchTest extends TestCase
         $event->forceFill(['status' => TravelOutboxEvent::STATUS_PENDING, 'available_at' => now()])->save();
 
         // Rejeu : le consommateur idempotent ne ré-applique PAS l'effet.
+        // « Crash après effet » : rejeu manuel de l'événement.
+        $event->forceFill(['status' => TravelOutboxEvent::STATUS_PENDING, 'available_at' => now()])->save();
+
         Artisan::call('travel:outbox-dispatch');
         self::assertSame(1, $this->effectCount(55), 'zéro doublon après rejeu');
+    }
+
+    public function test_stale_processing_is_reclaimed_after_lease_expiry(): void
+    {
+        $consumer = new TravelLedgerConsumer('travel.test.event');
+        $this->registry->register($consumer);
+
+        // Worker « mort » : événement en processing avec lease expirée.
+        $event = TravelOutboxEvent::factory()->create([
+            'event_type' => 'travel.test.event',
+            'status' => TravelOutboxEvent::STATUS_PROCESSING,
+            'updated_at' => now()->subMinutes(30),
+        ]);
+
+        Artisan::call('travel:outbox-dispatch');
+
+        self::assertSame(TravelOutboxEvent::STATUS_PUBLISHED, $event->refresh()->status, 'reprise du processing orphelin');
+        self::assertSame(1, $this->effectCount((int) ($event->payload_redacted['account_id'] ?? 0)));
+    }
+
+    public function test_event_within_lease_is_not_stolen_by_another_worker(): void
+    {
+        $consumer = new TravelLedgerConsumer('travel.test.event');
+        $this->registry->register($consumer);
+
+        TravelOutboxEvent::factory()->create([
+            'event_type' => 'travel.test.event',
+            'status' => TravelOutboxEvent::STATUS_PROCESSING,
+            'updated_at' => now()->subMinutes(5), // lease encore active (15 min)
+        ]);
+
+        Artisan::call('travel:outbox-dispatch');
+
+        self::assertSame(
+            TravelOutboxEvent::STATUS_PROCESSING,
+            TravelOutboxEvent::query()->firstOrFail()->status,
+            'un événement dans sa lease ne doit jamais être volé',
+        );
+        self::assertSame(0, $this->effectCount(0), 'aucun effet appliqué pendant la lease');
     }
 
     public function test_transient_errors_retry_with_backoff_and_succeed(): void
@@ -150,6 +219,7 @@ class TravelOutboxDispatchTest extends TestCase
         $this->registry->register($consumer);
 
         $this->publisher->publish((string) $this->companyA->id, 'travel.test.flaky', ['account_id' => 1]);
+        $this->publisher->publish((string) $this->company->id, 'travel.test.flaky', ['account_id' => 1]);
 
         Artisan::call('travel:outbox-dispatch'); // 1re tentative : transitoire → retry
         $event = TravelOutboxEvent::query()->firstOrFail();
@@ -171,6 +241,7 @@ class TravelOutboxDispatchTest extends TestCase
         $this->registry->register($consumer);
 
         $this->publisher->publish((string) $this->companyA->id, 'travel.test.permanent', ['account_id' => 1]);
+        $this->publisher->publish((string) $this->company->id, 'travel.test.permanent', ['account_id' => 1]);
 
         Artisan::call('travel:outbox-dispatch');
 
@@ -203,6 +274,7 @@ class TravelOutboxDispatchTest extends TestCase
         // Événement du tenant B : consommé DANS le contexte B (le
         // consommateur le refuse → dead-letter, jamais d'effet cross-tenant).
         $this->publisher->publish((string) $this->companyB->id, 'travel.test.tenant', ['account_id' => 2]);
+        $this->publisher->publish((string) $this->company->id, 'travel.unknown.event', ['account_id' => 1]);
 
         Artisan::call('travel:outbox-dispatch');
 
@@ -220,6 +292,13 @@ class TravelOutboxDispatchTest extends TestCase
     }
 
     public function test_load_pic_zero_loss_zero_duplicate_with_bounded_lag(): void
+            TravelOutboxEvent::STATUS_FAILED,
+            TravelOutboxEvent::query()->firstOrFail()->status,
+            'consommateur absent → dead-letter (permanent)',
+        );
+    }
+
+    public function test_load_pic_zero_loss_zero_duplicate(): void
     {
         $consumer = new TravelLedgerConsumer('travel.test.event');
         $this->registry->register($consumer);
@@ -230,6 +309,10 @@ class TravelOutboxDispatchTest extends TestCase
         }
 
         // Deux passes de 150 pour absorber le lot.
+            $this->publisher->publish((string) $this->company->id, 'travel.test.event', ['account_id' => $i]);
+        }
+
+        // Deux passes de 150 pour absorber le lot (limite par passe).
         Artisan::call('travel:outbox-dispatch', ['--limit' => 150]);
         Artisan::call('travel:outbox-dispatch', ['--limit' => 150]);
 
@@ -242,6 +325,26 @@ class TravelOutboxDispatchTest extends TestCase
 
         // Lag p95 borné : 200 événements traités en moins de 10 s (CI).
         self::assertLessThan(10.0, $elapsed, 'pic traité dans la fenêtre bornée');
+    }
+
+        self::assertSame(200, $consumer->appliedCount(), 'zéro doublon');
+        self::assertLessThan(10.0, $elapsed, 'pic traité dans la fenêtre bornée');
+    }
+
+    public function test_events_are_consumed_within_the_tenant_context(): void
+    {
+        $consumer = new TenantAwareTravelConsumer('travel.test.tenant');
+        $this->registry->register($consumer);
+
+        $this->publisher->publish(
+            (string) $this->company->id,
+            'travel.test.tenant',
+            ['account_id' => 7],
+        );
+
+        Artisan::call('travel:outbox-dispatch');
+
+        self::assertTrue($consumer->ranWithinTenant, 'le consommateur s\'exécute dans le contexte tenant de l\'événement');
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -269,6 +372,7 @@ class TravelOutboxDispatchTest extends TestCase
  * Consommateur de test : applique un effet enregistré dans un ledger avec
  * contrainte unique (account_id, event_key) — idempotent par construction :
  * un rejeu viole la contrainte → effet NON dupliqué.
+ * contrainte unique (account_id, event_key) — idempotent par construction.
  */
 final class TravelLedgerConsumer implements TravelOutboxConsumer
 {
@@ -285,6 +389,10 @@ final class TravelLedgerConsumer implements TravelOutboxConsumer
     {
         $accountId = (int) ($payload['account_id'] ?? 0);
         $key = hash('sha256', $eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
+    public function handle(array $payload): void
+    {
+        $accountId = (int) ($payload['account_id'] ?? 0);
+        $key = hash('sha256', $this->eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
 
         try {
             DB::table('travel_test_effects')->insert([
@@ -312,6 +420,17 @@ final class TravelFlakyConsumer implements TravelOutboxConsumer
 {
     private bool $failed = false;
 
+        } catch (\Illuminate\Database\QueryException) {
+            // Contrainte unique violée → rejeu : effet déjà appliqué, on ignore.
+        }
+    }
+}
+
+/**
+ * Consommateur de test : échoue de façon transitoire (retry).
+ */
+final class TravelFlakyConsumer implements TravelOutboxConsumer
+{
     public function __construct(private readonly string $eventType) {}
 
     public function supports(string $eventType): bool
@@ -338,6 +457,14 @@ final class TravelFlakyConsumer implements TravelOutboxConsumer
 
 /**
  * Consommateur de test en échec permanent : dead-letter immédiate.
+    public function handle(array $payload): void
+    {
+        throw new TransientOutboxException('provider indisponible (test)');
+    }
+}
+
+/**
+ * Consommateur de test : échec permanent (dead-letter immédiate).
  */
 final class TravelPermanentFailConsumer implements TravelOutboxConsumer
 {
@@ -382,5 +509,28 @@ final class TravelTenantAwareConsumer implements TravelOutboxConsumer
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    public function handle(array $payload): void
+    {
+        throw new PermanentOutboxException('permanent failure (test)');
+    }
+}
+
+/**
+ * Consommateur de test : vérifie que le contexte tenant est actif.
+ */
+final class TenantAwareTravelConsumer implements TravelOutboxConsumer
+{
+    public bool $ranWithinTenant = false;
+
+    public function __construct(private readonly string $eventType) {}
+
+    public function supports(string $eventType): bool
+    {
+        return $eventType === $this->eventType;
+    }
+
+    public function handle(array $payload): void
+    {
+        $this->ranWithinTenant = app(\App\Core\Tenant\TenantManager::class)->hasTenant();
     }
 }

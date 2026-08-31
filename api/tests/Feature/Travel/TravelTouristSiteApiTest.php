@@ -18,6 +18,9 @@ use Tests\TestCase;
  *
  * Couvre : CRUD, la recherche PAR VILLE (critère d'acceptation) et
  * l'isolation cross-tenant.
+ * TRAVEL-909 (#6112) — Annuaire des sites touristiques.
+ *
+ * CRUD, recherche par ville/nom, isolation tenant.
  */
 class TravelTouristSiteApiTest extends TestCase
 {
@@ -28,6 +31,27 @@ class TravelTouristSiteApiTest extends TestCase
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
+    private Company $company;
+
+    private TenantManager $tenants;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $company->setFeature('travelagency', true);
+        $company->save();
+        $this->company = $company;
+        $this->tenants = app(TenantManager::class);
+    }
+
+    private function actingManager(): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
@@ -84,5 +108,75 @@ class TravelTouristSiteApiTest extends TestCase
         });
 
         $this->deleteJson("/api/v1/travel/community/tourist-sites/{$siteId}")->assertStatus(404);
+    public function test_crud_and_search_by_city(): void
+    {
+        $this->actingManager();
+
+        $city = $this->tenants->withinTenant($this->company, fn (): TravelCity => TravelCity::factory()->create());
+
+        $this->postJson('/api/v1/travel/tourist-sites', [
+            'name' => 'Chutes de la Lobé',
+            'description' => 'Cascades au sud du Cameroun',
+            'city_id' => $city->id,
+            'status' => 'active',
+        ])->assertStatus(201);
+
+        $this->getJson('/api/v1/travel/tourist-sites?city_id='.$city->id)
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Chutes de la Lobé']);
+
+        $this->getJson('/api/v1/travel/tourist-sites?search=Lob')
+            ->assertOk()
+            ->assertJsonFragment(['name' => 'Chutes de la Lobé']);
+
+        $site = TravelTouristSite::query()->firstOrFail();
+
+        $this->getJson('/api/v1/travel/tourist-sites/'.$site->id)->assertOk();
+        $this->putJson('/api/v1/travel/tourist-sites/'.$site->id, [
+            'name' => 'Chutes de la Lobé (rénové)',
+        ])->assertOk();
+
+        $this->deleteJson('/api/v1/travel/tourist-sites/'.$site->id)->assertStatus(204);
+        self::assertNull(TravelTouristSite::query()->find($site->id));
+    }
+
+    public function test_foreign_city_is_rejected(): void
+    {
+        $this->actingManager();
+
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $foreignCity = $this->tenants->withinTenant($companyB, fn (): TravelCity => TravelCity::factory()->create());
+
+        $this->postJson('/api/v1/travel/tourist-sites', [
+            'name' => 'Site avec ville étrangère',
+            'city_id' => $foreignCity->id,
+        ])->assertStatus(422);
+    }
+
+    public function test_sites_are_isolated_per_tenant(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->tenants->withinTenant($companyB, function (): void {
+            TravelTouristSite::factory()->create(['name' => 'Site tenant B']);
+        });
+
+        $this->actingManager();
+
+        $this->getJson('/api/v1/travel/tourist-sites')
+            ->assertOk()
+            ->assertJsonMissing(['name' => 'Site tenant B']);
+    }
+
+    public function test_cross_tenant_access_is_404(): void
+    {
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $siteB = $this->tenants->withinTenant($companyB, fn (): TravelTouristSite => TravelTouristSite::factory()->create());
+
+        $this->actingManager();
+
+        $this->getJson('/api/v1/travel/tourist-sites/'.$siteB->id)->assertStatus(404);
     }
 }

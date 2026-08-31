@@ -11,6 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * TRAVEL-905 (#6108) — Position de publication d'une annonce payante
  * (tenant-scoped).
+use Database\Factories\TravelAdvertPositionFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Position de publication d'annonce (TRAVEL-905, issue #6108).
  *
  * @property int $id
  * @property string $company_id
@@ -23,6 +30,9 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Emplacement publicitaire (TRAVEL-905, issue #6108).
+ * @property string $label
+ *
+ * @mixin Builder<static>
  */
 class TravelAdvertPosition extends Model
 {
@@ -38,4 +48,16 @@ class TravelAdvertPosition extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+    /** @use HasFactory<TravelAdvertPositionFactory> */
+    use HasFactory;
+
+    protected $table = 'travel_advert_positions';
+
+    protected $fillable = [
+        'company_id',
+        'code',
+        'label',
+    ];
+
+    protected $casts = [];
 }

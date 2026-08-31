@@ -18,6 +18,15 @@ use Illuminate\Database\Eloquent\Model;
  *    annonce n'est visible qu'une fois payée ET validée (#6110).
  */
 final class TravelAdvertPolicy
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
+
+/**
+ * TRAVEL-907/908 (#6110/#6111) — Policy des annonces payantes.
+ * Lecture publique tenant (annonces visibles uniquement) ; soumission :
+ * rôles opérationnels ; paiement/renouvellement : créateur ou gestion ;
+ * modération (validation/rejet) : principal/rh/manager.
+ */
+class TravelAdvertPolicy
 {
     public function viewAny(Employee $actor): bool
     {
@@ -27,6 +36,9 @@ final class TravelAdvertPolicy
     public function view(Employee $actor, Model $resource): bool
     {
         return $this->belongsToTenant($resource, $actor);
+    public function view(Employee $actor, TravelAdvert $advert): bool
+    {
+        return $advert->company_id === $actor->company_id;
     }
 
     public function create(Employee $actor): bool
@@ -56,5 +68,20 @@ final class TravelAdvertPolicy
     private function belongsToTenant(Model $resource, Employee $actor): bool
     {
         return (string) $resource->getAttribute('company_id') === (string) $actor->company_id;
+    public function pay(Employee $actor, TravelAdvert $advert): bool
+    {
+        return $advert->company_id === $actor->company_id
+            && $actor->hasManagerRole('principal', 'rh', 'manager', 'agent');
+    }
+
+    public function moderate(Employee $actor, TravelAdvert $advert): bool
+    {
+        return $advert->company_id === $actor->company_id
+            && $actor->hasManagerRole('principal', 'rh', 'manager');
+    }
+
+    public function renew(Employee $actor, TravelAdvert $advert): bool
+    {
+        return $this->pay($actor, $advert);
     }
 }

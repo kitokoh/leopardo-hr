@@ -13,6 +13,17 @@ use Illuminate\Database\Eloquent\Model;
  *
  * La bonne réponse (`correct_option_index`) n'est JAMAIS exposée dans les
  * réponses API publiques : le score est calculé serveur.
+use Database\Factories\TravelQuizQuestionFactory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+/**
+ * Question de quiz (TRAVEL-904, issue #6107).
+ *
+ * `correct_option_index` n'est JAMAIS exposé au participant (Resources
+ * distinctes participant / gestion).
  *
  * @property int $id
  * @property string $company_id
@@ -28,10 +39,16 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Question de quiz (TRAVEL-904, issue #6107). Bonne réponse stockée HACHÉE, jamais en clair.
+ * @property int $position
+ *
+ * @mixin Builder<static>
  */
 class TravelQuizQuestion extends Model
 {
     use BelongsToCompany;
+
+    /** @use HasFactory<TravelQuizQuestionFactory> */
+    use HasFactory;
 
     protected $table = 'travel_quiz_questions';
 
@@ -43,6 +60,7 @@ class TravelQuizQuestion extends Model
         'correct_option_index',
         'points',
         'sort_order',
+        'position',
     ];
 
     protected $casts = [
@@ -59,4 +77,14 @@ class TravelQuizQuestion extends Model
         'rank' => 'integer',
         'points' => 'integer',
     ];
+        'position' => 'integer',
+    ];
+
+    /**
+     * @return BelongsTo<TravelQuiz, $this>
+     */
+    public function quiz(): BelongsTo
+    {
+        return $this->belongsTo(TravelQuiz::class, 'quiz_id');
+    }
 }
