@@ -84,6 +84,10 @@ class TravelOutboxDispatchCommand extends Command
                 $query->where('status', TravelOutboxEvent::STATUS_PENDING)
                     ->where('available_at', '<=', now())
                     ->orWhere(function (Builder $query): void {
+            ->where(function ($query): void {
+                $query->where('status', TravelOutboxEvent::STATUS_PENDING)
+                    ->where('available_at', '<=', now())
+                    ->orWhere(function ($query): void {
                         $query->where('status', TravelOutboxEvent::STATUS_PROCESSING)
                             ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
                     });

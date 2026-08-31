@@ -54,6 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         // FuelStation (BC-15) — FUEL-015/019 : dispatch outbox idempotent.
         $schedule->command('fuel:outbox-dispatch')->everyMinute();
+        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
         // exécuté) → fail-loud au lieu d'un pending silencieux.
