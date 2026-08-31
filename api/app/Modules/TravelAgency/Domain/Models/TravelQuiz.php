@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $published_at
  *
  * @mixin Builder<static>
+ * Quiz du tenant (TRAVEL-904, issue #6107). Statut draft|published|closed, bornes de participation.
  */
 class TravelQuiz extends Model
 {
@@ -46,6 +47,13 @@ class TravelQuiz extends Model
     protected $casts = [
         'max_attempts' => 'integer',
         'published_at' => 'datetime',
+    protected $fillable = [
+        'company_id', 'title', 'description_redacted', 'status', 'max_participations_per_contact', 'bonus_points', 'created_by_user_id',
+    ];
+
+    protected $casts = [
+        'max_participations_per_contact' => 'integer',
+        'bonus_points' => 'integer',
     ];
 
     /**
@@ -54,5 +62,6 @@ class TravelQuiz extends Model
     public function questions(): HasMany
     {
         return $this->hasMany(TravelQuizQuestion::class, 'quiz_id')->orderBy('sort_order');
+        return $this->hasMany(TravelQuizQuestion::class, 'quiz_id');
     }
 }

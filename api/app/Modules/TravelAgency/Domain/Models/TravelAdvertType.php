@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $description
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Type d'annonce (TRAVEL-905, issue #6108).
  */
 class TravelAdvertType extends Model
 {
@@ -26,4 +30,11 @@ class TravelAdvertType extends Model
     protected $table = 'travel_advert_types';
 
     protected $fillable = ['company_id', 'code', 'name', 'description'];
+    protected $fillable = [
+        'company_id', 'code', 'name', 'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

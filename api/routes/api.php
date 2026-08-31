@@ -62,6 +62,9 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -142,7 +145,26 @@ Route::prefix('v1')->group(function (): void {
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
     // these routes sit outside the authenticated 'api' middleware group below.
+    // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé, sans
+    // auth utilisateur) — throttling renforcé `shop-public`.
+    Route::middleware(['throttle:shop-public', 'travel.public.shop'])->group(function (): void {
+        Route::get('/public/travel/shop/trips', [TravelPublicShopController::class, 'search']);
+        Route::get('/public/travel/shop/trips/{travelTrip}', [TravelPublicShopController::class, 'show']);
+        Route::post('/public/travel/shop/bookings', [TravelPublicShopController::class, 'storeBooking']);
+        Route::get('/public/travel/shop/bookings/{reference}', [TravelPublicShopController::class, 'track']);
+        // TRAVEL-1002 (#6115) — tunnel complet : paiement en ligne + e-billet.
+        Route::post('/public/travel/payments/initiate', [TravelPublicShopController::class, 'initiatePayment']);
+        Route::get('/public/travel/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
+    });
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
+        // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
+        // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
+        Route::post('/travel/payments/callback', [TravelPaymentController::class, 'callback']);
+        // TRAVEL-807 (#6086) — API entrante de synchronisation des trajets
+        // transporteurs (jeton X-Carrier-Token, upsert idempotent par clé
+        // externe — public, authentifié dans le contrôleur).
+        Route::post('/travel/carrier-sync/trips', [TravelCarrierSyncController::class, 'upsertTrip']);
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
         // #5272 — webhook des paiements en ligne des documents comptables.
@@ -263,6 +285,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
+    require __DIR__.'/modules/travelagency.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/travelagency.php';

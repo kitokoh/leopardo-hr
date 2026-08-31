@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\TravelArticleCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — ArticleCategory (contenu éditorial).
  *
  * @mixin Builder<static>
+ * Catégorie d'article éditorial (TRAVEL-901, issue #6104). Unicité du code par tenant.
  */
 class TravelArticleCategory extends Model
 {
@@ -22,4 +24,14 @@ class TravelArticleCategory extends Model
 
     protected $table = 'travel_article_categories';
     protected $fillable = ["company_id", "slug", "name"];
+    /** @use HasFactory<TravelArticleCategoryFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'company_id', 'code', 'name', 'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }

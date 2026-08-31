@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CancelTripAction;
+use App\Modules\TravelAgency\Application\Actions\CancelTripWithRefundsAction;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Application\Actions\PublishTripAction;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
@@ -47,6 +48,11 @@ class TravelTripController extends Controller
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('route_id'), fn ($q, $routeId) => $q->where('route_id', $routeId))
             ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
+            ->when($request->query('departure_date'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', $date);
+                }
+            })
             ->orderByDesc('departure_date')
             ->orderBy('departure_time')
             ->paginate($perPage);
@@ -172,6 +178,7 @@ class TravelTripController extends Controller
         }
 
         app(CancelTripAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
+        app(CancelTripWithRefundsAction::class)->execute($travelTrip, $actor, $request->validated('reason'));
 
         return (new TravelTripResource($travelTrip->refresh()->load('prices')))->response();
     }
@@ -205,6 +212,21 @@ class TravelTripController extends Controller
             ->when($request->query('departure_date'), fn ($q, $date) => $q->whereDate('departure_date', (string) $date))
             ->when($request->query('date_from'), fn ($q, $date) => $q->whereDate('departure_date', '>=', (string) $date))
             ->when($request->query('date_to'), fn ($q, $date) => $q->whereDate('departure_date', '<=', (string) $date))
+            ->when($request->query('departure_date'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', $date);
+                }
+            })
+            ->when($request->query('date_from'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', '>=', $date);
+                }
+            })
+            ->when($request->query('date_to'), function ($q, $date): void {
+                if (is_string($date)) {
+                    $q->whereDate('departure_date', '<=', $date);
+                }
+            })
             ->when($request->query('means_of_transport'), fn ($q, $means) => $q->where('means_of_transport', $means))
             ->when($request->query('status'), fn ($q, $status) => $q->where('status', $status))
             ->when($request->query('price_min'), function ($q, $min) {

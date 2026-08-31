@@ -40,6 +40,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $moderation_note
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Annonce publicitaire (TRAVEL-907/908, issues #6110/#6111). Cycle submit → paid → validated → published → expired|archived ; visible seulement payée ET validée.
  */
 class TravelAdvert extends Model
 {
@@ -87,6 +91,8 @@ class TravelAdvert extends Model
         'published_at',
         'expires_at',
         'moderation_note',
+    protected $fillable = [
+        'company_id', 'type_id', 'position_id', 'title', 'body_redacted', 'image_path', 'character_count', 'price_minor', 'currency', 'status', 'paid_at', 'payment_id', 'validated_at', 'validated_by_user_id', 'published_at', 'valid_until', 'moderation_note',
     ];
 
     protected $casts = [
@@ -123,4 +129,10 @@ class TravelAdvert extends Model
     {
         return $this->belongsTo(TravelPayment::class, 'payment_id');
     }
+        'price_minor' => 'integer',
+        'paid_at' => 'datetime',
+        'validated_at' => 'datetime',
+        'published_at' => 'datetime',
+        'valid_until' => 'datetime',
+    ];
 }

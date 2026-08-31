@@ -37,6 +37,11 @@ final class CancelBookingAction
         DB::transaction(function () use ($booking): void {
             $booking->forceFill([
                 'status' => BookingStatus::CANCELLED,
+        DB::transaction(function () use ($booking, $reason): void {
+            $booking->forceFill([
+                'status' => BookingStatus::CANCELLED,
+                'cancelled_at' => now(),
+                'cancel_reason' => $reason,
                 'expires_at' => null,
                 'version' => $booking->version + 1,
             ])->save();

@@ -24,6 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $sort_order
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Question de quiz (TRAVEL-904, issue #6107). Bonne réponse stockée HACHÉE, jamais en clair.
  */
 class TravelQuizQuestion extends Model
 {
@@ -46,5 +50,13 @@ class TravelQuizQuestion extends Model
         'correct_option_index' => 'integer',
         'points' => 'integer',
         'sort_order' => 'integer',
+    protected $fillable = [
+        'company_id', 'quiz_id', 'rank', 'label', 'choices', 'correct_answer_hash', 'points',
+    ];
+
+    protected $casts = [
+        'choices' => 'array',
+        'rank' => 'integer',
+        'points' => 'integer',
     ];
 }

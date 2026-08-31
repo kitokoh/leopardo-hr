@@ -13,6 +13,14 @@ use Illuminate\Database\Eloquent\Model;
  * Recalculé par job idempotent (upsert par clé unique tenant+date+trajet).
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Read model de ventes journalières (TRAVEL-506, issue #6076).
+ *
+ * Agrégat recalculable par job idempotent : l'upsert par clé naturelle
+ * `(company_id, sale_date, source, status, currency)` garantit qu'une
+ * reprise du job donne un état identique (jamais d'accumulation).
  */
 class TravelDailySale extends Model
 {
@@ -27,6 +35,15 @@ class TravelDailySale extends Model
         'bookings_count',
         'passengers_count',
         'revenue_minor',
+    protected $fillable = [
+        'company_id',
+        'sale_date',
+        'source',
+        'status',
+        'booking_count',
+        'passenger_count',
+        'amount_minor',
+        'currency',
     ];
 
     protected $casts = [
@@ -34,5 +51,8 @@ class TravelDailySale extends Model
         'bookings_count' => 'integer',
         'passengers_count' => 'integer',
         'revenue_minor' => 'integer',
+        'booking_count' => 'integer',
+        'passenger_count' => 'integer',
+        'amount_minor' => 'integer',
     ];
 }

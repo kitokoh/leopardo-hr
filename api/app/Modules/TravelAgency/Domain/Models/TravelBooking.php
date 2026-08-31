@@ -43,6 +43,22 @@ class TravelBooking extends Model
         'expires_at',
         'idempotency_key',
         'version',
+        'cancelled_at',
+        'cancel_reason',
+        'expires_at',
+        'idempotency_key',
+        'version',
+        'contact_email',
+        'contact_phone',
+        'notify_consent',
+        'consent_recorded_at',
+        'round_trip_group_id',
+        'return_booking_id',
+        'leg',
+        'corporate_account_id',
+        'quote_id',
+        'billing_deferred',
+        'connection_group_id',
     ];
 
     protected $casts = [
@@ -53,6 +69,14 @@ class TravelBooking extends Model
         'payment_status' => PaymentStatus::class,
         'expires_at' => 'datetime',
         'version' => 'integer',
+        'cancelled_at' => 'datetime',
+        'version' => 'integer',
+        'notify_consent' => 'boolean',
+        'consent_recorded_at' => 'datetime',
+        'return_booking_id' => 'integer',
+        'corporate_account_id' => 'integer',
+        'quote_id' => 'integer',
+        'billing_deferred' => 'boolean',
     ];
 
     protected static function booted(): void

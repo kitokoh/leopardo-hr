@@ -1582,6 +1582,7 @@
     "fuelStation": "Stations-service",
     "travelAgency": "Agence de voyage"
     "travel": "Agence de voyage"
+    "accountingSettings": "Comptabilité — Paramétrage"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -2048,6 +2049,51 @@
     "approve": "Approuver",
     "cancel": "Annuler",
     "reject": "Refuser"
+  "shell": {
+    "connected": "Connecte",
+    "fallbackPolling": "Mode secours (polling)",
+    "pushUnconfigured": "Push non configure",
+    "disconnected": "Deconnecte",
+    "search": "Rechercher",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune notification",
+    "criticalAlerts": "Alertes critiques",
+    "level": "Niveau :",
+    "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "settings": "Réglages",
+    "team": "Équipe",
+    "home": "Accueil",
+    "attendance": "Pointage",
+    "absences": "Absences",
+    "approvals": "Validations"
+  },
+  "exports": {
+    "reportEmployees": "Employes",
+    "reportEmployeesDesc": "Liste complete avec postes, contrats, departements.",
+    "reportAttendance": "Pointage",
+    "reportAttendanceDesc": "Registre de presence avec heures et anomalies.",
+    "reportPayslips": "Bulletins de paie",
+    "reportPayslipsDesc": "Export mensuel bulletins avec details salaire.",
+    "reportAbsences": "Absences & conges",
+    "reportAbsencesDesc": "Historique demandes et soldes par employe.",
+    "reportTraining": "Formations",
+    "reportTrainingDesc": "Catalogue, sessions, inscriptions et progression.",
+    "reportVehicles": "Vehicules",
+    "reportVehiclesDesc": "Flotte, kilometrage, maintenances.",
+    "hrReportsTitle": "Rapports RH personnalises",
+    "hrReportsSub": "Générez des rapports avancés avec filtres de période et département.",
+    "reportType": "Type de rapport",
+    "typeHeadcount": "Effectifs",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteisme",
+    "typePayrollSummary": "Resume paie",
+    "typeTrainingProgress": "Formations",
+    "startDate": "Date debut",
+    "endDate": "Date fin",
+    "generate": "Generer",
+    "generating": "Generation...",
+    "statusDone": "Termine",
   "shell": {
     "connected": "Connecte",
     "fallbackPolling": "Mode secours (polling)",
@@ -11152,6 +11198,580 @@
   "attendanceMenuMonthly": "Mon mois complet",
   "settingsRecoveryEmailHint": "Email de récupération (optionnel)",
   "settingsCompanyQrLabel": "QR de l’entreprise"
+    "colStatus": "Statut",
+    "colType": "Type",
+    "downloadError": "Erreur lors du téléchargement du rapport",
+    "historyEmpty": "Aucun export recent.",
+    "historySearchPlaceholder": "Rechercher dans l'historique...",
+    "hrReportUnavailable": "Impossible de générer le rapport HR (endpoint indisponible).",
+    "clientSpaceNote": "Les exports sont disponibles dans l'espace client.",
+    "historyClientOnly": "Historique visible uniquement pour les clients.",
+    "historyError": "Impossible de charger l'historique."
+  },
+  "companyDetail": {
+    "analyzing": "Analyse des données client...",
+    "retry": "Réessayer",
+    "fieldAdoption": "Adoption Terrain",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30j",
+    "payrollReady": "Paie Prete",
+    "activeEmployees30d": "Employes Actifs (30j)",
+    "noPriorityBlockers": "Aucun blocage prioritaire detecte.",
+    "modulesConfig": "Configuration des Modules",
+    "servicePlan": "Plan de services",
+    "commercialStatus": "Statut Commercial",
+    "statusTrial": "Essai (Trial)",
+    "statusActive": "Actif",
+    "statusSuspended": "Suspendu",
+    "statusExpired": "Expire",
+    "startDate": "Debut",
+    "internalNotes": "Notes Internes",
+    "noSupportTickets": "Aucun ticket de support pour ce client.",
+    "technicalIdentity": "Identite Technique",
+    "platformId": "ID Plateforme",
+    "slug": "Slug",
+    "countryCurrency": "Pays / Devise",
+    "registeredOn": "Inscrit le",
+    "lastActivity": "Derniere Activite",
+    "activateClient": "Activer client",
+    "backToPortfolio": "Retour au portefeuille",
+    "endDate": "Fin",
+    "featuresSaved": "Configuration des modules enregistrée.",
+    "loadFailed": "Impossible de charger le detail entreprise. Verifiez que l'UUID est valide.",
+    "loading": "Chargement...",
+    "messagePlural": "messages",
+    "messageSingular": "message",
+    "moduleActive": "Module Actif",
+    "moduleDisabled": "Module Désactivé",
+    "modulesConfigHint": "Activez ou désactivez les fonctionnalités spécifiques pour ce client.",
+    "noPunch": "Aucun pointage",
+    "notesPlaceholder": "Détails sur la négociation, remises, etc.",
+    "openPlural": "ouverts",
+    "openSingular": "ouvert",
+    "planMissing": "Plan client manquant.",
+    "priorityActions": "Actions Prioritaires",
+    "refresh": "Actualiser",
+    "revenueMrr": "Revenu (MRR)",
+    "riskLevel": "Niveau de risque :",
+    "saveConfig": "Sauvegarder la configuration",
+    "saving": "Enregistrement...",
+    "scoreHealth": "Score Santé",
+    "subscription": "Abonnement",
+    "subscriptionUpdated": "Abonnement mis à jour avec succès.",
+    "subtitle": "Santé opérationnelle, abonnement et configuration des modules.",
+    "support": "Support",
+    "teamActive": "Équipe Active",
+    "updateSubscription": "Mettre à jour l'abonnement",
+    "updating": "Mise à jour...",
+    "viewAllTickets": "Voir tous les tickets"
+  },
+  "reports": {
+    "attendance_title": "Résumé Présences",
+    "attendance_desc": "Rapport mensuel des présences, retards et absences par employé.",
+    "month_label": "Mois",
+    "payroll_title": "Résumé Paie",
+    "payroll_desc": "Total brut/net, cotisations et charges par période de paie.",
+    "period_label": "Période",
+    "leave_title": "Soldes Congés",
+    "leave_desc": "État des soldes de congés pour tous les employés.",
+    "year_label": "Année",
+    "headcount_title": "Effectifs",
+    "headcount_desc": "Répartition des effectifs actifs par département, type de contrat et genre.",
+    "training_title": "Suivi Formations",
+    "training_desc": "Taux de participation et complétion des formations.",
+    "contract_title": "Échéances Contrats",
+    "contract_desc": "Contrats arrivant à échéance dans les 30, 60, 90 prochains jours.",
+    "days_label": "Jours",
+    "generate": "Générer",
+    "success": "Rapport téléchargé avec succès.",
+    "error": "Erreur lors de la génération du rapport.",
+    "subtitle": "Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats."
+  },
+  "notifications": {
+    "channel_inapp": "Dans l'app",
+    "channel_email_desc": "Messages importants et confirmations.",
+    "channel_push_desc": "Alertes rapides sur les appareils enregistrés.",
+    "channel_sms_desc": "Canal court pour urgences, activé après opt-in.",
+    "channel_whatsapp_desc": "Canal conversationnel futur, avec opt-in explicite.",
+    "category_payroll": "Paie",
+    "category_security": "Sécurité",
+    "category_system": "Système",
+    "category_product_tips": "Conseils produit",
+    "categories_title": "Catégories",
+    "save_error": "Impossible d'enregistrer les préférences pour le moment.",
+    "channel_inapp_desc": "Centre de notifications web et mobile.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Impossible de marquer les notifications comme lues."
+        }
+      },
+      "read": {
+        "error": "Impossible de marquer la notification comme lue."
+      }
+    },
+    "delete": {
+      "error": "Impossible de supprimer la notification."
+    },
+    "deleted": "Notification supprimée."
+  },
+  "employees": {
+    "load_error": "Impossible de charger les employés.",
+    "title": "Équipe",
+    "subtitle": "Vue manager branchée à l'API RH : liste des collaborateurs, statut et points d'entrée essentiels.",
+    "total_team": "Total équipe",
+    "source": "Source",
+    "state": "État",
+    "loading_short": "Chargement",
+    "connected_api": "Connecté à l'API",
+    "recent_collaborators": "Collaborateurs récents",
+    "list_loading": "Chargement de la liste équipe...",
+    "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
+  },
+  "partnerPage": {
+    "loading": "Chargement de votre espace...",
+    "applyErrorPrefix": "Erreur lors de la candidature : ",
+    "notApplied": {
+      "title": "Devenir Partenaire",
+      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "individual": "Postuler en tant qu'Individuel",
+      "agency": "Postuler en tant qu'Agence"
+    },
+    "pending": {
+      "title": "Candidature en cours",
+      "body": "Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé."
+    },
+    "dashboard": {
+      "title": "Dashboard Partenaire",
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Gains totaux",
+      "pending": "En attente",
+      "withdrawable": "Solde retirable"
+    },
+    "commissions": {
+      "title": "Dernières commissions",
+      "empty": "Aucune commission enregistrée."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Statut",
+      "amount": "Montant",
+      "statusPaid": "Payée",
+      "statusPending": "En attente"
+    },
+    "payout": {
+      "title": "Paiement",
+      "body": "Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.",
+      "request": "Demander un virement",
+      "sending": "Envoi...",
+      "insufficient": "Solde insuffisant pour demander un virement (minimum 100,00 €).",
+      "success": "Demande de virement envoyée avec succès.",
+      "errorPrefix": "Erreur lors de la demande de virement : "
+    },
+    "referral": {
+      "title": "Lien de parrainage",
+      "unavailable": "Lien indisponible",
+      "copy": "Copier mon lien",
+      "copied": "Copié !",
+      "copyError": "Impossible de copier le lien. Copiez-le manuellement."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expirée. Reconnexion en cours...",
+    "accessDenied": "Accès refusé sur :endpoint. Permissions insuffisantes.",
+    "notFound": "Ressource introuvable : :endpoint",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter quelques secondes.",
+    "serverError": "Erreur serveur sur :endpoint. :detail",
+    "serverErrorRetry": "Réessayez plus tard.",
+    "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
+    "genericError": "Erreur :status sur :endpoint.",
+    "invalidData": "Données invalides.",
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "login_invalid_json": "Corps de requête invalide.",
+    "login_timeout": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+    "login_network_error": "Impossible de contacter le serveur.",
+    "login_backend_error": "Réponse serveur inattendue."
+  },
+  "settingsPage": {
+    "cancel": "Annuler",
+    "confirmPassword": "Confirmer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "disable2fa": "Désactiver le 2FA",
+    "disabled": "Désactivé",
+    "email": "Adresse email",
+    "enable2fa": "Activer le 2FA",
+    "enabled": "Activé",
+    "enterCodeStep": "2. Entrez le code à 6 chiffres généré",
+    "fullName": "Nom complet",
+    "generateSecret": "Générer un secret 2FA",
+    "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Secret manuel :",
+    "minLengthHint": "Minimum 8 caractères.",
+    "newPassword": "Nouveau mot de passe",
+    "password": "Mot de passe",
+    "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
+    "passwordTitle": "Mot de passe",
+    "passwordUpdated": "Mot de passe mis à jour avec succès.",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+    "profileSubtitle": "Nom et adresse email utilisés pour vous connecter.",
+    "profileTitle": "Informations du profil",
+    "profileUpdated": "Profil mis à jour avec succès.",
+    "saveChanges": "Enregistrer les modifications",
+    "scanStep": "1. Scannez ce lien / secret dans votre application 2FA :",
+    "subtitle": "Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.",
+    "title": "Mon compte",
+    "twoFactorActiveHint": "Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.",
+    "twoFactorDisabled": "2FA désactivé.",
+    "twoFactorEnabled": "2FA activé avec succès.",
+    "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
+    "twoFactorTitle": "Authentification à deux facteurs (2FA)",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "bankingError": "Erreur lors de l'enregistrement des coordonnées bancaires.",
+    "bankingSubtitle": "IBAN et BIC de votre entreprise requis pour l'export SEPA des virements.",
+    "bankingTitle": "Coordonnées Bancaires SEPA",
+    "bankingUpdated": "Coordonnées bancaires enregistrées.",
+    "bankingWarning": "L'export SEPA retournera une erreur 422 tant que l'IBAN de l'entreprise n'est pas configuré.",
+    "companyBic": "BIC / SWIFT (optionnel)",
+    "companyIban": "IBAN de l'entreprise",
+    "ibanHint": "Format IBAN ISO 13616 (majuscules, sans espaces). Les espaces sont ignorés automatiquement.",
+    "ibanPlaceholderDZ": "IBAN ou RIB algérien (20 chiffres)",
+    "saveBanking": "Enregistrer les coordonnées",
+    "sepaNotReady": "SEPA non configuré",
+    "sepaReady": "SEPA prêt"
+  },
+  "systemPage": {
+    "apiError": "Erreur : :error",
+    "apiOperational": "API opérationnelle",
+    "apiOperationalDb": "API opérationnelle — DB :ms ms",
+    "apiServices": "Services API",
+    "apiUnavailable": "Non disponible — GET /health/live",
+    "database": "Base de Données",
+    "dbError": "Erreur : :error",
+    "dbLatency": "Latence : :ms ms",
+    "dbUnavailable": "Non disponible — lancez un Health Check.",
+    "dbUnreachable": "base injoignable",
+    "globalError": "Sonde agrégée : base de données injoignable.",
+    "globalHealthy": "Sonde agrégée DB + Redis opérationnelle.",
+    "globalStatus": "Statut Global",
+    "globalUnavailable": "Non disponible — GET /admin/dashboard/stats",
+    "globalWarning": "Sonde agrégée : dégradation détectée.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Analyse...",
+    "healthError": "Health check terminé — base de données en erreur",
+    "healthLiveUnreachable": "Sonde /health/live injoignable.",
+    "healthOk": "Health check terminé — base de données opérationnelle",
+    "healthUnreachable": "Health check terminé — base de données injoignable",
+    "infraDetails": ":active compagnies actives · PHP :php · queue :queue",
+    "infraUnavailable": "Non disponible — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Erreur lors du chargement des métriques plateforme",
+    "notifObsLoadError": "Erreur lors du chargement de l'observabilité des notifications",
+    "queueObsLoadError": "Erreur lors du chargement de l'observabilité des jobs",
+    "retry": "Réessayer",
+    "serviceUnreachable": "service injoignable",
+    "statsLoadError": "Erreur lors du chargement des stats système",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "title": "Administration Système"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement.",
+    "redirect_url_invalid": "Les URLs de redirection doivent appartenir au site autorisé."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts",
+    "mobile_title": "Mon Contrat",
+    "back_tooltip": "Retour",
+    "empty_title": "Aucun contrat",
+    "empty_description": "Votre contrat apparaîtra ici une fois configuré.",
+    "label_type": "Type",
+    "label_start_date": "Début",
+    "label_end_date": "Fin",
+    "label_base_salary": "Salaire de base",
+    "loading": "Chargement des contrats...",
+    "status_active": "Actif",
+    "status_expired": "Expiré",
+    "status_draft": "Brouillon",
+    "status_cdi": "CDI"
+  },
+  "training": {
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne",
+    "tabCatalog": "Catalogue",
+    "tabEnrollments": "Inscriptions",
+    "activeCourses": "Cours actifs",
+    "category": "Catégorie",
+    "completionRate": "Taux de complétion",
+    "costPerParticipant": "Coût / participant",
+    "course": "Cours",
+    "description": "Description",
+    "duration": "Durée",
+    "employee": "Employé",
+    "endDate": "Date de fin",
+    "enrollments": "Inscriptions",
+    "hoursUnit": "h",
+    "instructor": "Formateur",
+    "loadError": "Impossible de charger les formations.",
+    "loading": "Chargement des formations...",
+    "location": "Lieu",
+    "maxPlaces": "Places max",
+    "noCourses": "Aucun cours trouvé.",
+    "noDescription": "Aucune description.",
+    "perParticipant": "/ participant",
+    "progress": "Progression",
+    "provider": "Organisme",
+    "searchEnrollmentPlaceholder": "Rechercher une inscription...",
+    "searchSessionPlaceholder": "Rechercher une session...",
+    "session": "Session",
+    "sessions": "Sessions",
+    "sessionsUnit": "sessions",
+    "startDate": "Date de début",
+    "status": "Statut",
+    "statusCancelled": "Annulé",
+    "statusCompleted": "Terminé",
+    "statusDropped": "Abandonné",
+    "statusEnrolled": "Inscrit",
+    "statusInProgress": "En cours",
+    "statusPlanned": "Planifié",
+    "type": "Type",
+    "uncategorized": "Non catégorisé",
+    "upcomingSessions": "Sessions à venir"
+  },
+  "access": {
+    "denied": {
+      "body": "Votre compte n'a pas le rôle Manager requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.",
+      "logout": "Se déconnecter",
+      "title": "Accès refusé",
+      "body_hr": "Votre compte n'a pas le rôle RH requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Votre présence est détectée automatiquement dès que vous entrez dans la zone de l'entreprise. Aucune action requise de votre part."
+      }
+    },
+    "manual": {
+      "desc": "Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l'écran de présence."
+    },
+    "mode": {
+      "title": "Mode de pointage"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ."
+      }
+    },
+    "recommended": "Recommandé",
+    "save": {
+      "error": "Impossible de sauvegarder votre préférence. Vérifiez votre connexion."
+    },
+    "title": "Choisissez comment vous souhaitez pointer votre présence chaque jour."
+  },
+  "approval": {
+    "approved": "Demande approuvée",
+    "rejected": "Demande refusée"
+  },
+  "approvals": {
+    "empty": "Aucune approbation en attente.",
+    "up": {
+      "to": {
+        "date": "Tout est à jour"
+      }
+    },
+    "loading": "Chargement des approbations...",
+    "reject": {
+      "reason": {
+        "hint": "Expliquez la raison...",
+        "label": "Motif du refus"
+      }
+    },
+    "title": "Approbations"
+  },
+  "back": "Retour",
+  "employee": {
+    "number": "Employé #{id}"
+  },
+  "error": {
+    "prefix": "Erreur : {message}",
+    "unexpected": "Une erreur est survenue"
+  },
+  "evaluation": {
+    "period": "Période : {period}"
+  },
+  "evaluations": {
+    "empty": "Aucune évaluation",
+    "title": "Mes Évaluations",
+    "empty_hint": "Vous n'avez pas encore d'évaluation enregistrée."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Fonction bientôt disponible"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Compléter mon onboarding"
+    },
+    "onboarding": {
+      "hint": "Configurez votre espace en quelques étapes."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Chargement du résumé mensuel..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Réduire",
+      "empty": "L'organigramme sera disponible une fois les employés configurés.",
+      "expand": "Développer"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "La page demandée est introuvable ou la navigation a échoué."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "Aucune session GPS en attente de validation.",
+      "to": {
+        "validate": "À valider"
+      },
+      "up": {
+        "to": {
+          "date": "Tout est à jour"
+        }
+      }
+    }
+  },
+  "refresh": "Actualiser",
+  "register": {
+    "create": {
+      "account": "Créer votre compte"
+    },
+    "creating": "Création de compte en cours...",
+    "first": {
+      "name": "Prénom"
+    },
+    "min": {
+      "chars": "8 caractères minimum"
+    },
+    "password": "Mot de passe",
+    "required": "Obligatoire",
+    "submit": "Créer mon compte"
+  },
+  "retry": "Réessayer",
+  "sa": {
+    "approved": "Approuvées",
+    "config": {
+      "load": {
+        "error": "Impossible de charger la configuration.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "Pointage GPS — tableau de bord équipe"
+    },
+    "detected": "Détectées",
+    "disable": {
+      "auto": {
+        "gps": "Désactiver le GPS automatique"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Activer le GPS automatique"
+      }
+    },
+    "forced": "Imposé",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
+    },
+    "presence": {
+      "in": {
+        "progress": "Présence en cours depuis {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Sessions récentes"
+    },
+    "rejected": "Rejetées",
+    "sessions": {
+      "load": {
+        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
+      }
+    },
+    "status": {
+      "approved": "Approuvée",
+      "cancelled": "Annulée",
+      "detected": "Détectée",
+      "pending": "En validation",
+      "rejected": "Rejetée"
+    }
+  },
+  "session": {
+    "approved": "Session approuvée ✓",
+    "entry": {
+      "at": "Entrée : {time}"
+    },
+    "rejected": "Session rejetée"
+  },
   "sessions": {
     "to": {
       "validate": "Sessions à valider"
@@ -13875,5 +14495,246 @@
       "child": "Enfant",
       "adult": "Adulte"
     }
+  "travel": {
+    "travel.bookings.title": "Réservations",
+    "travel.bookings.subtitle": "Ventes au guichet, confirmation, annulation, remboursement et billets.",
+    "travel.common.status": "Statut",
+    "travel.common.all": "Tous",
+    "travel.network.route": "Trajet",
+    "travel.bookings.reference": "Référence",
+    "travel.bookings.referencePlaceholder": "Ex. GV-2026-0001…",
+    "travel.common.search": "Rechercher",
+    "travel.common.noData": "Aucune donnée",
+    "travel.bookings.detail": "Détail",
+    "travel.bookings.confirm": "Confirmer",
+    "travel.bookings.cancel": "Annuler",
+    "travel.bookings.refund": "Rembourser",
+    "travel.bookings.issueTickets": "Émettre billet",
+    "travel.bookings.detailTitle": "Réservation",
+    "travel.bookings.paymentStatus": "Paiement",
+    "travel.bookings.trip": "Trajet",
+    "travel.bookings.source": "Source",
+    "travel.bookings.passengerCount": "Passagers",
+    "travel.bookings.total": "Total",
+    "travel.bookings.passengers": "Passagers",
+    "travel.bookings.seat": "Siège",
+    "travel.tickets.title": "Billets",
+    "travel.bookings.noTickets": "Aucun billet émis",
+    "travel.common.close": "Fermer",
+    "travel.bookingStatus.pending": "En attente",
+    "travel.bookingStatus.confirmed": "Confirmée",
+    "travel.bookingStatus.cancelled": "Annulée",
+    "travel.bookingStatus.refunded": "Remboursée",
+    "travel.bookingStatus.completed": "Terminée",
+    "travel.paymentStatus.pending": "En attente",
+    "travel.paymentStatus.confirmed": "Confirmé",
+    "travel.paymentStatus.failed": "Échoué",
+    "travel.paymentStatus.refunded": "Remboursé",
+    "travel.ticketStatus.issued": "Émis",
+    "travel.ticketStatus.checked_in": "Enregistré",
+    "travel.ticketStatus.void": "Annulé",
+    "travel.common.createdAt": "Créé le",
+    "travel.bookings.refundTitle": "Rembourser la réservation",
+    "travel.bookings.cancelTitle": "Annuler la réservation",
+    "travel.bookingSource.office": "Guichet",
+    "travel.bookingSource.phone": "Téléphone",
+    "travel.bookingSource.online": "En ligne",
+    "travel.ageCategory.infant": "Bébé",
+    "travel.ageCategory.child": "Enfant",
+    "travel.ageCategory.adult": "Adulte",
+    "travel.common.loadErrorBody": "Une erreur est survenue.",
+    "travel.bookings.confirmTitle": "Confirmer la réservation",
+    "travel.bookings.confirmBody": "Confirmer la réservation {ref} ? Les sièges seront marqués vendus.",
+    "travel.bookings.issueTicketsTitle": "Émettre les billets",
+    "travel.bookings.issueTicketsBody": "Émettre un billet nominatif pour chaque passager de {ref} ?",
+    "travel.catalog.title": "Locations & hôtels",
+    "travel.catalog.subtitle": "Véhicules en location, réservations et catalogue hôtelier.",
+    "travel.common.create": "Créer",
+    "travel.catalog.images": "Images",
+    "travel.common.edit": "Modifier",
+    "travel.common.delete": "Supprimer",
+    "travel.catalog.rentalImagesTitle": "Images du véhicule",
+    "travel.catalog.noImages": "Aucune image",
+    "travel.catalog.rooms": "Chambres",
+    "travel.catalog.hotelRoomsTitle": "Chambres de l’hôtel",
+    "travel.catalog.addRoom": "Ajouter une chambre",
+    "travel.common.confirmDeleteTitle": "Supprimer cet élément ?",
+    "travel.catalog.tabRentals": "Véhicules en location",
+    "travel.catalog.tabRentalBookings": "Réservations location",
+    "travel.catalog.tabHotels": "Hôtels",
+    "travel.common.active": "Actif",
+    "travel.common.disabled": "Inactif",
+    "travel.common.city": "Ville",
+    "travel.catalog.priceDay": "Prix / jour",
+    "travel.catalog.start": "Début",
+    "travel.catalog.end": "Fin",
+    "travel.catalog.hotelName": "Nom",
+    "travel.catalog.classification": "Classification",
+    "travel.offices.phone": "Téléphone",
+    "travel.catalog.roomType": "Type",
+    "travel.catalog.roomNumber": "N°",
+    "travel.catalog.capacity": "Capacité",
+    "travel.catalog.priceNight": "Prix / nuit",
+    "travel.common.confirmDeleteBody": "Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?",
+    "travel.checkin.title": "Check-in & manifeste",
+    "travel.checkin.subtitle": "Embarquement par trajet et compteur de passagers.",
+    "travel.checkin.trip": "Trajet",
+    "travel.checkin.selectTrip": "Sélectionner un trajet…",
+    "travel.checkin.boarded": "embarqués",
+    "travel.checkin.emptyManifest": "Aucun passager pour ce trajet",
+    "travel.checkin.noTicket": "Sans billet",
+    "travel.checkin.checkIn": "Embarquer",
+    "travel.checkin.done": "Embarqué",
+    "travel.tripStatus.draft": "Brouillon",
+    "travel.tripStatus.scheduled": "Planifié",
+    "travel.tripStatus.published": "Publié",
+    "travel.tripStatus.cancelled": "Annulé",
+    "travel.checkin.seat": "Siège",
+    "travel.checkin.passenger": "Passager",
+    "travel.checkin.age": "Age",
+    "travel.checkin.class": "Classe",
+    "travel.checkin.ticket": "Billet",
+    "travel.checkin.action": "Embarquement",
+    "travel.home.title": "Agence de voyage",
+    "travel.home.subtitle": "Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.",
+    "travel.home.flagActive": "Module actif",
+    "travel.home.flowTitle": "Flux métier",
+    "travel.home.flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports.",
+    "travel.referential.title": "Référentiel",
+    "travel.referential.subtitle": "Pays, villes, gares, bureaux, compagnies, classes et véhicules.",
+    "travel.network.title": "Routes & trajets",
+    "travel.network.subtitle": "Lignes, étapes, programmation, tarifs et publication.",
+    "travel.tickets.subtitle": "Consultation, téléchargement PDF et révocation.",
+    "travel.reports.title": "Rapports",
+    "travel.reports.subtitle": "Ventes, occupation, recettes, annulations et exports CSV.",
+    "travel.network.stops": "Étapes",
+    "travel.network.routeStopsTitle": "Étapes de la route",
+    "travel.network.addStop": "Ajouter une étape",
+    "travel.common.yes": "Oui",
+    "travel.common.no": "Non",
+    "travel.network.prices": "Tarifs",
+    "travel.network.publish": "Publier",
+    "travel.network.cancelTrip": "Annuler le trajet",
+    "travel.network.tripPricesTitle": "Tarifs du trajet",
+    "travel.network.addPrice": "Ajouter un tarif",
+    "travel.network.routes": "Routes & étapes",
+    "travel.network.trips": "Trajets & tarifs",
+    "travel.carrierTypes.bus": "Bus",
+    "travel.carrierTypes.train": "Train",
+    "travel.carrierTypes.plane": "Avion",
+    "travel.carrierTypes.boat": "Bateau",
+    "travel.network.origin": "Origine",
+    "travel.network.destination": "Destination",
+    "travel.network.distance": "Distance (km)",
+    "travel.network.duration": "Durée (min)",
+    "travel.network.rank": "Rang",
+    "travel.network.stopover": "Escale",
+    "travel.network.minDuration": "Durée min (min)",
+    "travel.network.departure": "Départ",
+    "travel.network.arrival": "Arrivée",
+    "travel.network.means": "Moyen",
+    "travel.vehicles.seats": "Places",
+    "travel.network.class": "Classe",
+    "travel.network.adultPrice": "Tarif adulte",
+    "travel.network.childPrice": "Tarif enfant",
+    "travel.network.currency": "Devise",
+    "travel.referential.countries": "Pays",
+    "travel.referential.cities": "Villes",
+    "travel.referential.stations": "Gares & terminaux",
+    "travel.referential.offices": "Bureaux de vente",
+    "travel.referential.carriers": "Compagnies",
+    "travel.referential.classes": "Classes de service",
+    "travel.referential.vehicles": "Véhicules",
+    "travel.countries.name": "Nom",
+    "travel.countries.phoneCode": "Indicatif",
+    "travel.cities.name": "Ville",
+    "travel.cities.country": "Pays",
+    "travel.cities.region": "Région",
+    "travel.stations.name": "Nom",
+    "travel.stations.phone": "Téléphone",
+    "travel.stations.isTerminal": "Terminal",
+    "travel.offices.name": "Nom",
+    "travel.offices.address": "Adresse",
+    "travel.carriers.name": "Nom",
+    "travel.carriers.type": "Type",
+    "travel.carriers.phone": "Téléphone",
+    "travel.classes.label": "Libellé",
+    "travel.classes.color": "Couleur",
+    "travel.classes.priority": "Priorité",
+    "travel.vehicles.registration": "Immatriculation",
+    "travel.common.carrier": "Compagnie",
+    "travel.reports.from": "Du",
+    "travel.reports.to": "Au",
+    "travel.reports.apply": "Appliquer",
+    "travel.reports.export": "Exporter CSV",
+    "travel.reports.kpiSales": "Ventes",
+    "travel.reports.kpiBookings": "Réservations",
+    "travel.reports.kpiOccupancy": "Occupation",
+    "travel.reports.kpiCancellations": "Annulations",
+    "travel.reports.salesCount": "Ventes",
+    "travel.reports.salesPassengers": "Passagers",
+    "travel.reports.salesAmount": "Montant",
+    "travel.reports.revenueConfirmed": "Confirmé",
+    "travel.reports.revenueRefunded": "Remboursé",
+    "travel.reports.revenueNet": "Net",
+    "travel.reports.cancellationsCount": "Annulations",
+    "travel.reports.cancellationsRate": "Taux",
+    "travel.reports.cancellationsTotal": "Réservations finales",
+    "travel.reports.byReason": "Par motif",
+    "travel.reports.bySource": "Par source",
+    "travel.reports.tabSales": "Ventes",
+    "travel.reports.tabOccupancy": "Occupation",
+    "travel.reports.tabRevenue": "Recettes",
+    "travel.reports.tabCancellations": "Annulations",
+    "travel.reports.sold": "Vendus",
+    "travel.reports.reserved": "Réservés",
+    "travel.reports.free": "Libres",
+    "travel.common.reason": "Motif",
+    "travel.reports.count": "Nombre",
+    "travel.tickets.download": "PDF",
+    "travel.tickets.revoke": "Révoquer",
+    "travel.tickets.revokeTitle": "Révoquer le billet",
+    "travel.tickets.revokeBody": "Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé.",
+    "travel.common.selectPlaceholder": "— Sélectionner —",
+    "travel.common.cancel": "Annuler",
+    "travel.common.saving": "Enregistrement…",
+    "travel.common.save": "Enregistrer",
+    "travel.common.featureDisabledTitle": "Module Agence de voyage inactif",
+    "travel.common.featureDisabledBody": "Le flag travelagency n’est pas activé pour le tenant connecté. Contactez un administrateur plateforme pour l’activer.",
+    "travel.common.tenantRequiredTitle": "Contexte tenant requis",
+    "travel.common.tenantRequiredBody": "Les données de l’agence de voyage sont accessibles avec une session tenant (impersonation ou compte manager).",
+    "travel.common.loadErrorTitle": "Chargement impossible",
+    "travel.common.retry": "Réessayer"
+  },
+  "travelPortal": {
+    "title": "Portail voyageur",
+    "subtitle": "Suivez votre réservation, téléchargez vos e-billets et annulez en ligne.",
+    "referenceLabel": "Référence de réservation",
+    "referencePlaceholder": "Ex. GV-2026-0001",
+    "codeLabel": "Code de validation",
+    "codePlaceholder": "Code figurant sur votre e-billet",
+    "track": "Suivre ma réservation",
+    "tracking": "Suivi en cours…",
+    "status": "Statut",
+    "trip": "Trajet",
+    "passengers": "Passagers",
+    "total": "Total",
+    "tickets": "E-billets",
+    "downloadTicket": "Télécharger l'e-billet",
+    "cancel": "Annuler en ligne",
+    "cancelReason": "Motif d'annulation",
+    "cancelReasonPlaceholder": "Expliquez brièvement pourquoi vous annulez…",
+    "cancelConfirm": "Confirmer l'annulation",
+    "cancelling": "Annulation en cours…",
+    "cancelled": "Réservation annulée",
+    "notFound": "Réservation introuvable pour cette référence.",
+    "invalidCode": "Code de validation invalide.",
+    "error": "Une erreur est survenue. Réessayez.",
+    "departurePast": "Le départ est déjà passé : l'annulation en ligne n'est plus possible.",
+    "empty": "Aucune réservation pour le moment.",
+    "statusPending": "En attente",
+    "statusConfirmed": "Confirmée",
+    "statusRefunded": "Remboursée",
+    "statusCompleted": "Terminée"
   }
 }

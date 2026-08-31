@@ -1582,6 +1582,7 @@
     "fuelStation": "Fuel stations",
     "travelAgency": "Travel agency"
     "travel": "Travel Agency"
+    "accountingSettings": "Accounting — Settings"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?",
@@ -10234,6 +10235,524 @@
   "settingsBiometricConfirmIdentity": "Confirm your identity",
   "attendanceEmployeeNotPunchedToday": "This employee has not clocked in yet today.",
   "settingsOverview": "Overview",
+  "shell": {
+    "connected": "Connected",
+    "fallbackPolling": "Fallback mode (polling)",
+    "pushUnconfigured": "Push not configured",
+    "disconnected": "Disconnected",
+    "search": "Search",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "criticalAlerts": "Critical alerts",
+    "level": "Level:",
+    "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
+    "tenantOnly": "Enterprise feature — reserved for client workspaces",
+    "settings": "Settings",
+    "team": "Team",
+    "home": "Home",
+    "attendance": "Attendance",
+    "absences": "Absences",
+    "approvals": "Approvals"
+  },
+  "exports": {
+    "reportEmployees": "Employees",
+    "reportEmployeesDesc": "Full list with positions, contracts, departments.",
+    "reportAttendance": "Attendance",
+    "reportAttendanceDesc": "Attendance register with hours and anomalies.",
+    "reportPayslips": "Payslips",
+    "reportPayslipsDesc": "Monthly payslip export with salary details.",
+    "reportAbsences": "Absences & leave",
+    "reportAbsencesDesc": "Requests and balances history per employee.",
+    "reportTraining": "Training",
+    "reportTrainingDesc": "Catalog, sessions, enrollments and progress.",
+    "reportVehicles": "Vehicles",
+    "reportVehiclesDesc": "Fleet, mileage, maintenance.",
+    "hrReportsTitle": "Custom HR reports",
+    "hrReportsSub": "Generate advanced reports with period and department filters.",
+    "reportType": "Report type",
+    "typeHeadcount": "Headcount",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteeism",
+    "typePayrollSummary": "Payroll summary",
+    "typeTrainingProgress": "Training progress",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "statusDone": "Completed",
+    "statusInProgress": "In progress",
+    "statusFailed": "Failed",
+    "download": "Download",
+    "downloading": "Downloading...",
+    "colDate": "Date",
+    "colFormat": "Format",
+    "colRequestedBy": "Requested by",
+    "colStatus": "Status",
+    "colType": "Type",
+    "downloadError": "Error downloading the report",
+    "historyEmpty": "No recent exports.",
+    "historySearchPlaceholder": "Search history...",
+    "hrReportUnavailable": "Unable to generate the HR report (endpoint unavailable).",
+    "clientSpaceNote": "Exports are available in the client space.",
+    "historyClientOnly": "History visible to clients only.",
+    "historyError": "Unable to load history."
+  },
+  "companyDetail": {
+    "analyzing": "Analyzing client data...",
+    "retry": "Retry",
+    "fieldAdoption": "Field Adoption",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30d",
+    "payrollReady": "Payroll Ready",
+    "activeEmployees30d": "Active Employees (30d)",
+    "noPriorityBlockers": "No priority blockers detected.",
+    "modulesConfig": "Modules Configuration",
+    "servicePlan": "Service plan",
+    "commercialStatus": "Commercial status",
+    "statusTrial": "Trial",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "startDate": "Start",
+    "internalNotes": "Internal notes",
+    "noSupportTickets": "No support tickets for this client.",
+    "technicalIdentity": "Technical identity",
+    "platformId": "Platform ID",
+    "slug": "Slug",
+    "countryCurrency": "Country / Currency",
+    "registeredOn": "Registered on",
+    "lastActivity": "Last activity",
+    "activateClient": "Activate client",
+    "backToPortfolio": "Back to portfolio",
+    "endDate": "End",
+    "featuresSaved": "Module configuration saved.",
+    "loadFailed": "Unable to load company details. Check that the UUID is valid.",
+    "loading": "Loading...",
+    "messagePlural": "messages",
+    "messageSingular": "message",
+    "moduleActive": "Active Module",
+    "moduleDisabled": "Disabled Module",
+    "modulesConfigHint": "Enable or disable specific features for this client.",
+    "noPunch": "No punches",
+    "notesPlaceholder": "Details on negotiation, discounts, etc.",
+    "openPlural": "open",
+    "openSingular": "open",
+    "planMissing": "Client plan missing.",
+    "priorityActions": "Priority Actions",
+    "refresh": "Refresh",
+    "revenueMrr": "Revenue (MRR)",
+    "riskLevel": "Risk level:",
+    "saveConfig": "Save configuration",
+    "saving": "Saving...",
+    "scoreHealth": "Health Score",
+    "subscription": "Subscription",
+    "subscriptionUpdated": "Subscription updated successfully.",
+    "subtitle": "Operational health, subscription and module configuration.",
+    "support": "Support",
+    "teamActive": "Active Team",
+    "updateSubscription": "Update subscription",
+    "updating": "Updating...",
+    "viewAllTickets": "View all tickets"
+  },
+  "reports": {
+    "attendance_title": "Attendance Summary",
+    "attendance_desc": "Monthly report of attendance, late arrivals and absences per employee.",
+    "month_label": "Month",
+    "payroll_title": "Payroll Summary",
+    "payroll_desc": "Gross/net totals, contributions and charges per payroll period.",
+    "period_label": "Period",
+    "leave_title": "Leave Balances",
+    "leave_desc": "Leave balances status for all employees.",
+    "year_label": "Year",
+    "headcount_title": "Headcount",
+    "headcount_desc": "Active headcount breakdown by department, contract type and gender.",
+    "training_title": "Training Progress",
+    "training_desc": "Training participation and completion rates.",
+    "contract_title": "Contract Expiry",
+    "contract_desc": "Contracts expiring within the next 30, 60, 90 days.",
+    "days_label": "Days",
+    "generate": "Generate",
+    "success": "Report downloaded successfully.",
+    "error": "Error while generating the report.",
+    "subtitle": "Generate and download your HR reports: attendance, payroll, leave, headcount, training and contracts."
+  },
+  "notifications": {
+    "channel_inapp": "In-app",
+    "channel_email_desc": "Important messages and confirmations.",
+    "channel_push_desc": "Quick alerts on registered devices.",
+    "channel_sms_desc": "Short channel for emergencies, enabled after opt-in.",
+    "channel_whatsapp_desc": "Future conversational channel, with explicit opt-in.",
+    "category_payroll": "Payroll",
+    "category_security": "Security",
+    "category_system": "System",
+    "category_product_tips": "Product tips",
+    "categories_title": "Categories",
+    "save_error": "Unable to save preferences right now.",
+    "channel_inapp_desc": "Web and mobile notification center.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Unable to mark notifications as read."
+        }
+      },
+      "read": {
+        "error": "Unable to mark notification as read."
+      }
+    },
+    "delete": {
+      "error": "Unable to delete the notification."
+    },
+    "deleted": "Notification deleted."
+  },
+  "employees": {
+    "load_error": "Unable to load employees.",
+    "title": "Team",
+    "subtitle": "Manager view connected to the HR API: employee list, status and key entry points.",
+    "total_team": "Team total",
+    "source": "Source",
+    "state": "Status",
+    "loading_short": "Loading",
+    "connected_api": "Connected to the API",
+    "recent_collaborators": "Recent collaborators",
+    "list_loading": "Loading team list...",
+    "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
+  },
+  "partnerPage": {
+    "loading": "Loading your workspace...",
+    "applyErrorPrefix": "Error while applying: ",
+    "notApplied": {
+      "title": "Become a Partner",
+      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "individual": "Apply as an Individual",
+      "agency": "Apply as an Agency"
+    },
+    "pending": {
+      "title": "Application in progress",
+      "body": "Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated."
+    },
+    "dashboard": {
+      "title": "Partner Dashboard",
+      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Total earned",
+      "pending": "Pending",
+      "withdrawable": "Withdrawable balance"
+    },
+    "commissions": {
+      "title": "Latest commissions",
+      "empty": "No commission recorded."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Status",
+      "amount": "Amount",
+      "statusPaid": "Paid",
+      "statusPending": "Pending"
+    },
+    "payout": {
+      "title": "Payout",
+      "body": "Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.",
+      "request": "Request a transfer",
+      "sending": "Sending...",
+      "insufficient": "Insufficient balance to request a transfer (minimum €100.00).",
+      "success": "Transfer request sent successfully.",
+      "errorPrefix": "Error while requesting the transfer: "
+    },
+    "referral": {
+      "title": "Referral link",
+      "unavailable": "Link unavailable",
+      "copy": "Copy my link",
+      "copied": "Copied!",
+      "copyError": "Unable to copy the link. Copy it manually."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "login_invalid_json": "Invalid request body.",
+    "login_timeout": "The server is taking too long to respond. Please try again shortly.",
+    "login_network_error": "Unable to reach the server.",
+    "login_backend_error": "Unexpected server response."
+  },
+  "settingsPage": {
+    "cancel": "Cancel",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "disable2fa": "Disable 2FA",
+    "disabled": "Disabled",
+    "email": "Email address",
+    "enable2fa": "Enable 2FA",
+    "enabled": "Enabled",
+    "enterCodeStep": "2. Enter the generated 6-digit code",
+    "fullName": "Full name",
+    "generateSecret": "Generate 2FA secret",
+    "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Manual secret:",
+    "minLengthHint": "Minimum 8 characters.",
+    "newPassword": "New password",
+    "password": "Password",
+    "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
+    "passwordTitle": "Password",
+    "passwordUpdated": "Password updated successfully.",
+    "passwordsMismatch": "Passwords do not match.",
+    "profileSubtitle": "Name and email address used to sign in.",
+    "profileTitle": "Profile information",
+    "profileUpdated": "Profile updated successfully.",
+    "saveChanges": "Save changes",
+    "scanStep": "1. Scan this link / secret in your 2FA app:",
+    "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "title": "My account",
+    "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
+    "twoFactorDisabled": "2FA disabled.",
+    "twoFactorEnabled": "2FA enabled successfully.",
+    "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
+    "twoFactorTitle": "Two-factor authentication (2FA)",
+    "updatePassword": "Update password",
+    "bankingError": "Error saving bank details.",
+    "bankingSubtitle": "Your company IBAN and BIC are required for SEPA transfer export.",
+    "bankingTitle": "SEPA Bank Details",
+    "bankingUpdated": "Bank details saved.",
+    "bankingWarning": "SEPA export will return a 422 error until the company IBAN is configured.",
+    "companyBic": "BIC / SWIFT (optional)",
+    "companyIban": "Company IBAN",
+    "ibanHint": "ISO 13616 IBAN format (uppercase, no spaces). Spaces are ignored automatically.",
+    "ibanPlaceholderDZ": "Algerian IBAN or RIB (20 digits)",
+    "saveBanking": "Save bank details",
+    "sepaNotReady": "SEPA not configured",
+    "sepaReady": "SEPA ready"
+  },
+  "systemPage": {
+    "apiError": "Error: :error",
+    "apiOperational": "API operational",
+    "apiOperationalDb": "API operational — DB :ms ms",
+    "apiServices": "API Services",
+    "apiUnavailable": "Unavailable — GET /health/live",
+    "database": "Database",
+    "dbError": "Error: :error",
+    "dbLatency": "Latency: :ms ms",
+    "dbUnavailable": "Unavailable — run a Health Check.",
+    "dbUnreachable": "database unreachable",
+    "globalError": "Aggregated probe: database unreachable.",
+    "globalHealthy": "Aggregated DB + Redis probe operational.",
+    "globalStatus": "Global Status",
+    "globalUnavailable": "Unavailable — GET /admin/dashboard/stats",
+    "globalWarning": "Aggregated probe: degradation detected.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Checking...",
+    "healthError": "Health check completed — database in error",
+    "healthLiveUnreachable": "/health/live probe unreachable.",
+    "healthOk": "Health check completed — database operational",
+    "healthUnreachable": "Health check completed — database unreachable",
+    "infraDetails": ":active active companies · PHP :php · queue :queue",
+    "infraUnavailable": "Unavailable — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Error loading platform metrics",
+    "notifObsLoadError": "Error loading notifications observability",
+    "queueObsLoadError": "Error loading jobs observability",
+    "retry": "Retry",
+    "serviceUnreachable": "service unreachable",
+    "statsLoadError": "Error loading system stats",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "title": "System Administration"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session.",
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses",
+    "mobile_title": "My Contract",
+    "back_tooltip": "Back",
+    "empty_title": "No contract",
+    "empty_description": "Your contract will appear here once configured.",
+    "label_type": "Type",
+    "label_start_date": "Start",
+    "label_end_date": "End",
+    "label_base_salary": "Base salary",
+    "loading": "Loading contracts...",
+    "status_active": "Active",
+    "status_expired": "Expired",
+    "status_draft": "Draft",
+    "status_cdi": "Permanent (CDI)"
+  },
+  "training": {
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online",
+    "tabCatalog": "Catalog",
+    "tabEnrollments": "Enrollments",
+    "activeCourses": "Active courses",
+    "category": "Category",
+    "completionRate": "Completion rate",
+    "costPerParticipant": "Cost per participant",
+    "course": "Course",
+    "description": "Description",
+    "duration": "Duration",
+    "employee": "Employee",
+    "endDate": "End date",
+    "enrollments": "Enrollments",
+    "hoursUnit": "h",
+    "instructor": "Instructor",
+    "loadError": "Unable to load trainings.",
+    "loading": "Loading trainings...",
+    "location": "Location",
+    "maxPlaces": "Max seats",
+    "noCourses": "No courses found.",
+    "noDescription": "No description.",
+    "perParticipant": "per participant",
+    "progress": "Progress",
+    "provider": "Provider",
+    "searchEnrollmentPlaceholder": "Search enrollments...",
+    "searchSessionPlaceholder": "Search sessions...",
+    "session": "Session",
+    "sessions": "Sessions",
+    "sessionsUnit": "sessions",
+    "startDate": "Start date",
+    "status": "Status",
+    "statusCancelled": "Cancelled",
+    "statusCompleted": "Completed",
+    "statusDropped": "Dropped",
+    "statusEnrolled": "Enrolled",
+    "statusInProgress": "In progress",
+    "statusPlanned": "Planned",
+    "type": "Type",
+    "uncategorized": "Uncategorized",
+    "upcomingSessions": "Upcoming sessions"
+  },
+  "access": {
+    "denied": {
+      "body": "Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.",
+      "logout": "Log out",
+      "title": "Access denied",
+      "body_hr": "Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Your presence is detected automatically as soon as you enter the company zone. No action required from you."
+      }
+    },
+    "manual": {
+      "desc": "Clock in manually using the Arrival and Departure buttons in the attendance screen."
+    },
+    "mode": {
+      "title": "Attendance mode"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scan the QR Code displayed at the company entrance to clock in and out."
+      }
+    },
+    "recommended": "Recommended",
+    "save": {
+      "error": "Unable to save your preference. Check your connection."
+    },
+    "title": "Choose how you want to clock your presence every day."
+  },
+  "approval": {
+    "approved": "Request approved",
+    "rejected": "Request rejected"
+  },
+  "approvals": {
+    "empty": "No pending approvals.",
+    "up": {
+      "to": {
+        "date": "All up to date"
+      }
+    },
+    "loading": "Loading approvals...",
+    "reject": {
+      "reason": {
+        "hint": "Explain the reason...",
+        "label": "Rejection reason"
+      }
+    },
+    "title": "Approvals"
+  },
+  "back": "Back",
+  "employee": {
+    "number": "Employee #{id}"
+  },
+  "error": {
+    "prefix": "Error: {message}",
+    "unexpected": "An error occurred"
+  },
+  "evaluation": {
+    "period": "Period: {period}"
+  },
+  "evaluations": {
+    "empty": "No evaluations",
+    "title": "My Evaluations",
+    "empty_hint": "You don't have any recorded evaluation yet."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Feature coming soon"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Complete my onboarding"
+    },
+    "onboarding": {
+      "hint": "Set up your workspace in a few steps."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Loading monthly summary..."
+    }
+  },
   "org": {
     "chart": {
       "collapse": "Collapse",
@@ -10781,6 +11300,343 @@
   "attendanceMenuMonthly": "My full month",
   "settingsRecoveryEmailHint": "Recovery email (optional)",
   "settingsCompanyQrLabel": "Company QR"
+  "page": {
+    "not": {
+      "found": "The requested page was not found or the navigation failed."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "No GPS session waiting for validation.",
+      "to": {
+        "validate": "To validate"
+      },
+      "up": {
+        "to": {
+          "date": "All up to date"
+        }
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "register": {
+    "create": {
+      "account": "Create your account"
+    },
+    "creating": "Creating your account...",
+    "first": {
+      "name": "First name"
+    },
+    "min": {
+      "chars": "8 characters minimum"
+    },
+    "password": "Password",
+    "required": "Required",
+    "submit": "Create my account"
+  },
+  "retry": "Retry",
+  "sa": {
+    "approved": "Approved",
+    "config": {
+      "load": {
+        "error": "Unable to load the configuration.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "GPS attendance — team dashboard"
+    },
+    "detected": "Detected",
+    "disable": {
+      "auto": {
+        "gps": "Disable automatic GPS"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Enable automatic GPS"
+      }
+    },
+    "forced": "Enforced",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Your company's GPS zone is not configured yet."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Location permission denied. Enable GPS in settings to start monitoring."
+    },
+    "presence": {
+      "in": {
+        "progress": "Presence in progress since {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Recent sessions"
+    },
+    "rejected": "Rejected",
+    "sessions": {
+      "load": {
+        "error": "Unable to load GPS sessions. Check your connection."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Unable to start GPS monitoring. Check location permissions and try again."
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "cancelled": "Cancelled",
+      "detected": "Detected",
+      "pending": "Pending validation",
+      "rejected": "Rejected"
+    }
+  },
+  "session": {
+    "approved": "Session approved ✓",
+    "entry": {
+      "at": "Entry: {time}"
+    },
+    "rejected": "Session rejected"
+  },
+  "sessions": {
+    "to": {
+      "validate": "Sessions to validate"
+    }
+  },
+  "back_to": {
+    "home": "Back to home"
+  },
+  "absences": {
+    "title": "My absences",
+    "subtitle": "Requests, balances and HR decisions",
+    "request": "Request",
+    "empty_title": "No absences",
+    "empty_hint": "Request an absence from the main button, then follow the HR decision here.",
+    "employee_label": "Employee",
+    "type_fallback": "Absence",
+    "loading": "Loading absences",
+    "approve": "Approve",
+    "reject": "Reject",
+    "cancel_request": "Cancel request",
+    "view_proof": "View supporting document",
+    "proof_downloaded": "Supporting document downloaded: ",
+    "failure": "Error: ",
+    "reason_missing": "No reason provided",
+    "date_missing": "No request date",
+    "current_company": "Current company",
+    "requester_label": "Requester: ",
+    "company_label": "Company: ",
+    "request_label": "Request: ",
+    "reason_label": "Reason: ",
+    "approve_title": "Approve this absence?",
+    "reason_not_provided": "not provided",
+    "approve_body": "The request will move to approved status and the employee will be notified.",
+    "approved_snack": "Absence approved.",
+    "reject_title": "Reject absence",
+    "reject_helper": "The reason will be visible to the employee.",
+    "rejected_snack": "Absence rejected.",
+    "cancel_title": "Cancel this request?",
+    "cancel_body": "The pending request will be removed and HR will see the cancelled status.",
+    "keep": "Keep",
+    "cancel": "Cancel",
+    "cancelled_snack": "Absence request cancelled.",
+    "status_approved": "approved",
+    "status_pending": "pending",
+    "status_rejected": "rejected",
+    "status_cancelled": "cancelled",
+    "new_absence": "New absence",
+    "new_absence_hint": "Choose the balance type and the period to send to HR.",
+    "no_type_available": "No absence type available for this account. Contact HR to configure balances.",
+    "type": "Type",
+    "type_required": "Absence type is required",
+    "balances_loading": "Loading balances",
+    "start": "Start",
+    "end": "End",
+    "reason": "Reason",
+    "reasonHint": "e.g. medical appointment, family leave...",
+    "reasonRequired": "Reason is required",
+    "attach_proof": "Attach a supporting document (optional)",
+    "proof_attached": "Supporting document attached",
+    "submit_to_hr": "Submit to HR",
+    "submitted_snack": "Absence request sent to HR.",
+    "days_available": " day(s) available",
+    "days_short": " d",
+    "empty": "No absences",
+    "list": {
+      "subtitle": "Requests, balances and HR decisions",
+      "title": "My absences"
+    }
+  },
+  "settings": {
+    "journey": {
+      "load": {
+        "error": "Unable to load your journey."
+      },
+      "in": {
+        "progress": "In progress"
+      },
+      "title": "Professional journey",
+      "unknown": {
+        "company": "Company",
+        "date": "Unknown date",
+        "position": "Position not specified"
+      }
+    },
+    "stats": {
+      "load": {
+        "error": "Unable to load statistics."
+      }
+    },
+    "account": {
+      "portable": {
+        "hint": "Your account stays useful even when you change company."
+      },
+      "subtitle": "Profile, language and security",
+      "title": "Account"
+    },
+    "biometric": {
+      "approved": "Approved",
+      "consent": "I consent to the processing of my biometric data.",
+      "device": "Reference device (optional)",
+      "face": "Face",
+      "fingerprint": "Fingerprint",
+      "manager": {
+        "hint": "Reserved for employee profiles in this manager app."
+      },
+      "none": "No enrollment",
+      "note": "Note (optional)",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "saved": "Biometric enrollment saved.",
+      "terminal": {
+        "hint": "Finger and face preparation for field terminals."
+      }
+    },
+    "confirm": {
+      "password": "Confirm password"
+    },
+    "current": {
+      "password": "Current password"
+    },
+    "edge": {
+      "saved": "Edge settings saved."
+    },
+    "email": {
+      "invalid": "Invalid email",
+      "label": "Email",
+      "required": "Email is required"
+    },
+    "employee": {
+      "profile": {
+        "hint": "Employee profile: access to clock-in, personal history and biometric setup settings."
+      }
+    },
+    "first": {
+      "name": "First name",
+      "name_required": "First name is required"
+    },
+    "kiosk": {
+      "biometric": {
+        "title": "Kiosk biometrics"
+      }
+    },
+    "language": {
+      "saved": "Language saved.",
+      "subtitle": "The chosen language also drives future notifications and texts.",
+      "title": "Language"
+    },
+    "last": {
+      "name": {
+        "label": "Last name",
+        "required": "Last name is required"
+      }
+    },
+    "logout": "Log out",
+    "manager": {
+      "account": {
+        "hint": "A manager account must remain clear, secure and ready for field decisions."
+      }
+    },
+    "mobile": {
+      "access": "Mobile access"
+    },
+    "my": {
+      "profile": "My profile",
+      "qr": {
+        "employee": "My QR code",
+        "manager": "My manager QR"
+      }
+    },
+    "new": {
+      "password": "New password"
+    },
+    "no": {
+      "company": {
+        "qr": "No company QR in the clipboard."
+      },
+      "journey": "No journey recorded yet."
+    },
+    "notifications": {
+      "subtitle": "Channels, quiet hours and manager operational alerts.",
+      "title": "Notifications"
+    },
+    "password": {
+      "changed": "Password changed.",
+      "min": {
+        "length": "Minimum 8 characters"
+      },
+      "mismatch": "Passwords do not match"
+    },
+    "paste": {
+      "qr": "Paste the QR provided by the manager or HR"
+    },
+    "personal": {
+      "contacts": "Personal contacts",
+      "email": "Personal email (optional)",
+      "phone": "Personal phone (optional)"
+    },
+    "portable": {
+      "account": {
+        "hint": "Your personal information remains linked to your account."
+      }
+    },
+    "preferred": {
+      "language": "Preferred language",
+      "language_label": "Preferred language"
+    },
+    "profile": {
+      "saved": "Profile saved."
+    },
+    "qr": {
+      "copy": {
+        "token": "Also copy the token"
+      },
+      "manager": {
+        "hint": "A colleague or HR can scan it to pre-fill an invitation."
+      }
+    },
+    "recovery": {
+      "email": "Recovery email (optional)"
+    },
+    "save": "Save",
+    "save_enrollment": "Save enrollment",
+    "save_profile": "Save profile",
+    "saving": "Saving...",
+    "security": {
+      "title": "Security"
+    },
+    "session": {
+      "subtitle": "Logout is intentionally at the bottom of the page.",
+      "title": "Session"
+    },
+    "team": {
+      "drive": "Team drive",
+      "drive_hint": "Profile, role and permissions remain readable for HR actions."
+    }
+  },
   "cabinet": {
     "screen": {
       "title_root": "My cabinet",
@@ -13268,5 +14124,246 @@
       "child": "Child",
       "adult": "Adult"
     }
+  "travel": {
+    "travel.ageCategory.adult": "Adult",
+    "travel.ageCategory.child": "Child",
+    "travel.ageCategory.infant": "Infant",
+    "travel.bookingSource.office": "Ticket office",
+    "travel.bookingSource.online": "Online",
+    "travel.bookingSource.phone": "Phone",
+    "travel.bookingStatus.cancelled": "Cancelled",
+    "travel.bookingStatus.completed": "Completed",
+    "travel.bookingStatus.confirmed": "Confirmed",
+    "travel.bookingStatus.pending": "Pending",
+    "travel.bookingStatus.refunded": "Refunded",
+    "travel.bookings.cancel": "Cancel",
+    "travel.bookings.cancelTitle": "Cancel booking",
+    "travel.bookings.confirm": "Confirm",
+    "travel.bookings.confirmBody": "Confirm booking {ref}? Seats will be marked as sold.",
+    "travel.bookings.confirmTitle": "Confirm booking",
+    "travel.bookings.detail": "Detail",
+    "travel.bookings.detailTitle": "Booking",
+    "travel.bookings.issueTickets": "Issue ticket",
+    "travel.bookings.issueTicketsBody": "Issue one named ticket for each passenger of {ref}?",
+    "travel.bookings.issueTicketsTitle": "Issue tickets",
+    "travel.bookings.noTickets": "No ticket issued",
+    "travel.bookings.passengerCount": "Passengers",
+    "travel.bookings.passengers": "Passengers",
+    "travel.bookings.paymentStatus": "Payment",
+    "travel.bookings.reference": "Reference",
+    "travel.bookings.referencePlaceholder": "E.g. GV-2026-0001…",
+    "travel.bookings.refund": "Refund",
+    "travel.bookings.refundTitle": "Refund booking",
+    "travel.bookings.seat": "Seat",
+    "travel.bookings.source": "Source",
+    "travel.bookings.subtitle": "Ticket office sales, confirmation, cancellation, refunds and tickets.",
+    "travel.bookings.title": "Bookings",
+    "travel.bookings.total": "Total",
+    "travel.bookings.trip": "Trip",
+    "travel.carrierTypes.boat": "Boat",
+    "travel.carrierTypes.bus": "Bus",
+    "travel.carrierTypes.plane": "Plane",
+    "travel.carrierTypes.train": "Train",
+    "travel.carriers.name": "Name",
+    "travel.carriers.phone": "Phone",
+    "travel.carriers.type": "Type",
+    "travel.catalog.addRoom": "Add room",
+    "travel.catalog.capacity": "Capacity",
+    "travel.catalog.classification": "Classification",
+    "travel.catalog.end": "End",
+    "travel.catalog.hotelName": "Name",
+    "travel.catalog.hotelRoomsTitle": "Hotel rooms",
+    "travel.catalog.images": "Images",
+    "travel.catalog.noImages": "No image",
+    "travel.catalog.priceDay": "Price / day",
+    "travel.catalog.priceNight": "Price / night",
+    "travel.catalog.rentalImagesTitle": "Vehicle images",
+    "travel.catalog.roomNumber": "No.",
+    "travel.catalog.roomType": "Type",
+    "travel.catalog.rooms": "Rooms",
+    "travel.catalog.start": "Start",
+    "travel.catalog.subtitle": "Rental vehicles, bookings and hotel catalogue.",
+    "travel.catalog.tabHotels": "Hotels",
+    "travel.catalog.tabRentalBookings": "Rental bookings",
+    "travel.catalog.tabRentals": "Rental vehicles",
+    "travel.catalog.title": "Rentals & hotels",
+    "travel.checkin.action": "Boarding",
+    "travel.checkin.age": "Age",
+    "travel.checkin.boarded": "boarded",
+    "travel.checkin.checkIn": "Board",
+    "travel.checkin.class": "Class",
+    "travel.checkin.done": "Boarded",
+    "travel.checkin.emptyManifest": "No passenger for this trip",
+    "travel.checkin.noTicket": "Without ticket",
+    "travel.checkin.passenger": "Passenger",
+    "travel.checkin.seat": "Seat",
+    "travel.checkin.selectTrip": "Select a trip…",
+    "travel.checkin.subtitle": "Per-trip boarding and passenger counter.",
+    "travel.checkin.ticket": "Ticket",
+    "travel.checkin.title": "Check-in & manifest",
+    "travel.checkin.trip": "Trip",
+    "travel.cities.country": "Country",
+    "travel.cities.name": "City",
+    "travel.cities.region": "Region",
+    "travel.classes.color": "Color",
+    "travel.classes.label": "Label",
+    "travel.classes.priority": "Priority",
+    "travel.common.active": "Active",
+    "travel.common.all": "All",
+    "travel.common.cancel": "Cancel",
+    "travel.common.carrier": "Carrier",
+    "travel.common.city": "City",
+    "travel.common.close": "Close",
+    "travel.common.confirmDeleteBody": "This action is irreversible. Really delete “{name}”?",
+    "travel.common.confirmDeleteTitle": "Delete this item?",
+    "travel.common.create": "Create",
+    "travel.common.createdAt": "Created at",
+    "travel.common.delete": "Delete",
+    "travel.common.disabled": "Inactive",
+    "travel.common.edit": "Edit",
+    "travel.common.featureDisabledBody": "The travelagency flag is not enabled for the connected tenant. Contact a platform administrator to enable it.",
+    "travel.common.featureDisabledTitle": "Travel agency module inactive",
+    "travel.common.loadErrorBody": "An error occurred.",
+    "travel.common.loadErrorTitle": "Could not load",
+    "travel.common.no": "No",
+    "travel.common.noData": "No data",
+    "travel.common.reason": "Reason",
+    "travel.common.retry": "Retry",
+    "travel.common.save": "Save",
+    "travel.common.saving": "Saving…",
+    "travel.common.search": "Search",
+    "travel.common.selectPlaceholder": "— Select —",
+    "travel.common.status": "Status",
+    "travel.common.tenantRequiredBody": "Travel agency data is accessible with a tenant session (impersonation or manager account).",
+    "travel.common.tenantRequiredTitle": "Tenant context required",
+    "travel.common.yes": "Yes",
+    "travel.countries.name": "Name",
+    "travel.countries.phoneCode": "Dial code",
+    "travel.home.flagActive": "Active module",
+    "travel.home.flowBody": "Reference & network → trip scheduling → publication → ticket office sales → ticketing & check-in → reports.",
+    "travel.home.flowTitle": "Business flow",
+    "travel.home.subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and oversight.",
+    "travel.home.title": "Travel agency",
+    "travel.network.addPrice": "Add price",
+    "travel.network.addStop": "Add a step",
+    "travel.network.adultPrice": "Adult fare",
+    "travel.network.arrival": "Arrival",
+    "travel.network.cancelTrip": "Cancel trip",
+    "travel.network.childPrice": "Child fare",
+    "travel.network.class": "Class",
+    "travel.network.currency": "Currency",
+    "travel.network.departure": "Departure",
+    "travel.network.destination": "Destination",
+    "travel.network.distance": "Distance (km)",
+    "travel.network.duration": "Duration (min)",
+    "travel.network.means": "Means",
+    "travel.network.minDuration": "Min duration (min)",
+    "travel.network.origin": "Origin",
+    "travel.network.prices": "Prices",
+    "travel.network.publish": "Publish",
+    "travel.network.rank": "Rank",
+    "travel.network.route": "Trip",
+    "travel.network.routeStopsTitle": "Route stops",
+    "travel.network.routes": "Routes & stops",
+    "travel.network.stopover": "Stopover",
+    "travel.network.stops": "Stops",
+    "travel.network.subtitle": "Routes, stops, scheduling, prices and publication.",
+    "travel.network.title": "Routes & trips",
+    "travel.network.tripPricesTitle": "Trip prices",
+    "travel.network.trips": "Trips & prices",
+    "travel.offices.address": "Address",
+    "travel.offices.name": "Name",
+    "travel.offices.phone": "Phone",
+    "travel.paymentStatus.confirmed": "Confirmed",
+    "travel.paymentStatus.failed": "Failed",
+    "travel.paymentStatus.pending": "Pending",
+    "travel.paymentStatus.refunded": "Refunded",
+    "travel.referential.carriers": "Carriers",
+    "travel.referential.cities": "Cities",
+    "travel.referential.classes": "Service classes",
+    "travel.referential.countries": "Country",
+    "travel.referential.offices": "Sales offices",
+    "travel.referential.stations": "Stations & terminals",
+    "travel.referential.subtitle": "Countries, cities, stations, offices, carriers, classes and vehicles.",
+    "travel.referential.title": "Reference",
+    "travel.referential.vehicles": "Vehicles",
+    "travel.reports.apply": "Apply",
+    "travel.reports.byReason": "By reason",
+    "travel.reports.bySource": "By source",
+    "travel.reports.cancellationsCount": "Cancellations",
+    "travel.reports.cancellationsRate": "Rate",
+    "travel.reports.cancellationsTotal": "Final bookings",
+    "travel.reports.count": "Count",
+    "travel.reports.export": "Export CSV",
+    "travel.reports.free": "Free",
+    "travel.reports.from": "From",
+    "travel.reports.kpiBookings": "Bookings",
+    "travel.reports.kpiCancellations": "Cancellations",
+    "travel.reports.kpiOccupancy": "Occupancy",
+    "travel.reports.kpiSales": "Sales",
+    "travel.reports.reserved": "Reserved",
+    "travel.reports.revenueConfirmed": "Confirmed",
+    "travel.reports.revenueNet": "Net",
+    "travel.reports.revenueRefunded": "Refunded",
+    "travel.reports.salesAmount": "Amount",
+    "travel.reports.salesCount": "Sales",
+    "travel.reports.salesPassengers": "Passengers",
+    "travel.reports.sold": "Sold",
+    "travel.reports.subtitle": "Sales, occupancy, revenue, cancellations and CSV exports.",
+    "travel.reports.tabCancellations": "Cancellations",
+    "travel.reports.tabOccupancy": "Occupancy",
+    "travel.reports.tabRevenue": "Revenue",
+    "travel.reports.tabSales": "Sales",
+    "travel.reports.title": "Reports",
+    "travel.reports.to": "To",
+    "travel.stations.isTerminal": "Terminal",
+    "travel.stations.name": "Name",
+    "travel.stations.phone": "Phone",
+    "travel.ticketStatus.checked_in": "Recorded",
+    "travel.ticketStatus.issued": "Issued",
+    "travel.ticketStatus.void": "Void",
+    "travel.tickets.download": "PDF",
+    "travel.tickets.revoke": "Revoke",
+    "travel.tickets.revokeBody": "Revoke ticket {number}? The PDF will become invalid and the ticket will move to cancelled status.",
+    "travel.tickets.revokeTitle": "Revoke ticket",
+    "travel.tickets.subtitle": "View, PDF download and revocation.",
+    "travel.tickets.title": "Tickets",
+    "travel.tripStatus.cancelled": "Void",
+    "travel.tripStatus.draft": "Draft",
+    "travel.tripStatus.published": "Published",
+    "travel.tripStatus.scheduled": "Scheduled",
+    "travel.vehicles.registration": "Registration",
+    "travel.vehicles.seats": "Seats"
+  },
+  "travelPortal": {
+    "title": "Traveler portal",
+    "subtitle": "Track your booking, download your e-tickets and cancel online.",
+    "referenceLabel": "Booking reference",
+    "referencePlaceholder": "E.g. GV-2026-0001",
+    "codeLabel": "Validation code",
+    "codePlaceholder": "Code shown on your e-ticket",
+    "track": "Track my booking",
+    "tracking": "Tracking…",
+    "status": "Status",
+    "trip": "Trip",
+    "passengers": "Passengers",
+    "total": "Total",
+    "tickets": "E-tickets",
+    "downloadTicket": "Download e-ticket",
+    "cancel": "Cancel online",
+    "cancelReason": "Cancellation reason",
+    "cancelReasonPlaceholder": "Briefly explain why you are cancelling…",
+    "cancelConfirm": "Confirm cancellation",
+    "cancelling": "Cancelling…",
+    "cancelled": "Booking cancelled",
+    "notFound": "No booking found for this reference.",
+    "invalidCode": "Invalid validation code.",
+    "error": "An error occurred. Please retry.",
+    "departurePast": "Departure has already passed: online cancellation is no longer possible.",
+    "empty": "No booking yet.",
+    "statusPending": "Pending",
+    "statusConfirmed": "Confirmed",
+    "statusRefunded": "Refunded",
+    "statusCompleted": "Completed"
   }
 }

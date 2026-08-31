@@ -13,6 +13,13 @@ use Illuminate\Database\Eloquent\Model;
  * Recalculé par job idempotent (upsert par clé unique tenant+trajet).
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Read model d'occupation par trajet (TRAVEL-506, issue #6076).
+ *
+ * Recalculé par job idempotent (upsert par `(company_id, trip_id)`) —
+ * la reprise donne un état identique.
  */
 class TravelTripOccupancy extends Model
 {
@@ -26,6 +33,10 @@ class TravelTripOccupancy extends Model
         'departure_date',
         'seats_sold',
         'total_seats',
+        'total_seats',
+        'sold_seats',
+        'reserved_seats',
+        'free_seats',
         'occupancy_rate',
     ];
 
@@ -33,6 +44,10 @@ class TravelTripOccupancy extends Model
         'departure_date' => 'date',
         'seats_sold' => 'integer',
         'total_seats' => 'integer',
+        'total_seats' => 'integer',
+        'sold_seats' => 'integer',
+        'reserved_seats' => 'integer',
+        'free_seats' => 'integer',
         'occupancy_rate' => 'float',
     ];
 }

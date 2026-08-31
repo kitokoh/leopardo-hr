@@ -898,6 +898,19 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 8xx — Extensions métier (nouveau, « et même plus »)
 
+> **Statut (lot 3a, 2026-08-30) :** ✅ TRAVEL-803 (réservations corporate),
+> ✅ TRAVEL-805 (multi-devise), ✅ TRAVEL-809 (correspondances), ✅ TRAVEL-810
+> (PDV tablette) — l'épic 8xx est désormais COMPLET (avec 801/802/804/806/807/808/811/812/813).
+
+> **Statut (lot 2026-08-30, PR `feat/travel-batch1-integrations`) :** ✅ TRAVEL-801
+> (assignation auto des sièges), ✅ TRAVEL-802 (aller-retour), ✅ TRAVEL-804
+> (recherche flexible), ✅ TRAVEL-806 (webhooks sortants — lot shop), ✅ TRAVEL-807
+> (synchronisation entrante transporteurs), ✅ TRAVEL-808 (remboursements
+> partiels), ✅ TRAVEL-811 (fidélité voyageur), ✅ TRAVEL-812 (annulation de
+> trajet par l'agence), ✅ TRAVEL-813 (politiques d'annulation configurables).
+> Restants : TRAVEL-803, 805, 809, 810. — Épic 4xx : ✅ TRAVEL-415 (notifications)
+> et ✅ TRAVEL-417 (synthèse Accounting) livrés dans le même lot.
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-801 | Assignation automatique des sièges (algorithme simple, surclassable manuellement) | TRAVEL-022 |
@@ -916,6 +929,13 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 9xx — Contenu & monétisation (parents TRAVEL-060..062, désormais détaillés)
 
+> **Statut (lot 2026-08-30, PR `feat/travel-batch2-community`) :** ✅ TRAVEL-901
+> (articles + catégories), ✅ TRAVEL-902 (commentaires + modération), ✅ TRAVEL-903
+> (likes/partages/notes), ✅ TRAVEL-904 (quiz), ✅ TRAVEL-905 (référentiels
+> annonces), ✅ TRAVEL-906 (tarifs), ✅ TRAVEL-907 (cycle de paiement +
+> validation), ✅ TRAVEL-908 (expiration + renouvellement), ✅ TRAVEL-909 (sites
+> touristiques), ✅ TRAVEL-910 (notifications legacy → canaux plateforme).
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-901 | `travel_articles` + catégories (CRUD, statuts, modération) | TRAVEL-060 |
@@ -930,6 +950,17 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 | TRAVEL-910 | Notifications legacy gv-back (file mail/SMS) → canaux plateforme BC-13 | TRAVEL-033 |
 
 ### Épic 10xx — Boutique publique, import legacy, qualité, pilote
+
+> **Statut (lots 3a/3b, 2026-08-30) :** ✅ TRAVEL-1001 (boutique publique, jeton
+> tenant), ✅ TRAVEL-1002 (tunnel d'achat public — recette E2E backend),
+> ✅ TRAVEL-1003 (import legacy CLI), ✅ TRAVEL-1004 (import géo legacy),
+> ✅ TRAVEL-1005 (OpenAPI complet + coverage CI 0 drift), ✅ TRAVEL-1006
+> (collection Postman + guide partenaires), ✅ TRAVEL-1007 (golden journey
+> GJ-TRAVEL-01 automatisé), ✅ TRAVEL-1008 (specs Playwright admin — à activer
+> avec l'UI 601..609), ✅ TRAVEL-1009 (templates notifications fr/en + doc RTL),
+> ✅ TRAVEL-1010 (runbook pilote + recette UAT), ✅ TRAVEL-1011 (pilot gates
+> MAT-018 enregistrés), ✅ TRAVEL-1012 (tenant pilote + `pilot-check`),
+> ✅ TRAVEL-1013 (audit sécurité & RGPD).
 
 | ID | Tâche fine | Parent |
 |---|---|---|

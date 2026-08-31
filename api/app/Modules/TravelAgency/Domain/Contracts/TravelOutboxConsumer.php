@@ -20,6 +20,12 @@ namespace App\Modules\TravelAgency\Domain\Contracts;
  * du tenant de l'événement (`TenantManager::withinTenant`) : le consommateur
  * n'a jamais à résoudre lui-même sa compagnie — un événement cross-tenant
  * est structurellement refusé.
+ * TRAVEL-414 (#6066) — Contrat de consommation d'un événement d'outbox
+ * TravelAgency.
+ *
+ * Le consommateur applique l'effet métier de façon IDEMPOTENTE (le rejeu
+ * ne produit jamais de doublon) et distingue erreur transitoire
+ * (retry/backoff) d'erreur permanente (dead-letter).
  */
 interface TravelOutboxConsumer
 {
@@ -29,4 +35,5 @@ interface TravelOutboxConsumer
      * @param  array<string, mixed>  $payload
      */
     public function handle(string $eventType, array $payload): void;
+    public function handle(array $payload): void;
 }

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $currency
  *
  * @mixin Builder<static>
+ * Grille tarifaire des annonces (TRAVEL-906, issue #6109). Unités mineures, devise cohérente tenant.
  */
 class TravelAdvertPrice extends Model
 {
@@ -43,6 +44,13 @@ class TravelAdvertPrice extends Model
     protected $casts = [
         'price_image_minor' => 'integer',
         'price_character_minor' => 'integer',
+    protected $fillable = [
+        'company_id', 'type_id', 'position_id', 'price_per_image_minor', 'price_per_character_minor', 'currency',
+    ];
+
+    protected $casts = [
+        'price_per_image_minor' => 'integer',
+        'price_per_character_minor' => 'integer',
     ];
 
     /**
@@ -51,6 +59,7 @@ class TravelAdvertPrice extends Model
     public function type(): BelongsTo
     {
         return $this->belongsTo(TravelAdvertType::class, 'advert_type_id');
+        return $this->belongsTo(TravelAdvertType::class, 'type_id');
     }
 
     /**
@@ -59,5 +68,6 @@ class TravelAdvertPrice extends Model
     public function position(): BelongsTo
     {
         return $this->belongsTo(TravelAdvertPosition::class, 'advert_position_id');
+        return $this->belongsTo(TravelAdvertPosition::class, 'position_id');
     }
 }

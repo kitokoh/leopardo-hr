@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $description
  *
  * @mixin Builder<static>
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Emplacement publicitaire (TRAVEL-905, issue #6108).
  */
 class TravelAdvertPosition extends Model
 {
@@ -27,4 +31,11 @@ class TravelAdvertPosition extends Model
     protected $table = 'travel_advert_positions';
 
     protected $fillable = ['company_id', 'code', 'name', 'description'];
+    protected $fillable = [
+        'company_id', 'code', 'name', 'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 }
