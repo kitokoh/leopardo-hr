@@ -42,6 +42,10 @@
     "travelagency": {
       "label": "TravelAgency (verticale)",
       "status": "active"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale BC-25)",
+      "status": "planned"
     }
   },
   "journeys": [
@@ -403,6 +407,15 @@
           "action": "Rechercher un trajet",
           "method": "GET",
           "route": "/api/v1/travel/trips/search",
+      "name": "Restaurant — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande sur table → ajout d'articles → addition → paiement (cash) → clôture de session : totaux cohérents, caisse immuable, idempotent. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Activer la solution",
+          "method": "POST",
+          "route": "/api/v1/solutions/restaurantmanager/activate",
           "role": "manager:principal"
         },
         {
@@ -678,6 +691,45 @@
           "method": "POST",
           "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
           "role": "manager:principal"
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 3,
+          "action": "Créer une commande (table)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter des articles",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/items",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 5,
+          "action": "Éditer l'addition",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/bill",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 6,
+          "action": "Encaisser (paiement cash)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/payments",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 7,
+          "action": "Clôturer la session de caisse (idempotente)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{session}/close",
+          "role": "restaurant.manager"
         }
       ]
     }
