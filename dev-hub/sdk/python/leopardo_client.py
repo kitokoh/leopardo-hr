@@ -3602,6 +3602,25 @@ class LeopardoClient:
     def post_public_restaurant_shop_orders_by_reference_pay(self, **kwargs):
         """Initiation de paiement commande en ligne (RESTO-805/#6226)"""
         return self.request("POST", "/public/restaurant/shop/orders/{reference}/pay", **kwargs)
+    def get_public_restaurant_branches(self, **kwargs):
+        """Branches actives du tenant (RESTO-807/#6228 — sélecteur kiosque)"""
+        return self.request("GET", "/public/restaurant/branches", **kwargs)
+
+    def get_public_restaurant_menu(self, **kwargs):
+        """Menu public du tenant (RESTO-805/#6226) — catégories + produits actifs/disponibles"""
+        return self.request("GET", "/public/restaurant/menu", **kwargs)
+
+    def post_public_restaurant_orders(self, **kwargs):
+        """Commande en ligne publique (RESTO-805/#6226) — source online, totaux serveur, idempotente"""
+        return self.request("POST", "/public/restaurant/orders", **kwargs)
+
+    def get_public_restaurant_orders_by_reference(self, **kwargs):
+        """Suivi public d''une commande par référence (RESTO-805/#6226) — statut + totaux"""
+        return self.request("GET", "/public/restaurant/orders/{reference}", **kwargs)
+
+    def post_public_restaurant_orders_by_reference_pay(self, **kwargs):
+        """Paiement en ligne d''une commande (RESTO-805/#6226) — cash confirmé immédiat, mobile money via callback signé"""
+        return self.request("POST", "/public/restaurant/orders/{reference}/pay", **kwargs)
 
     def post_push_notifications_send(self, **kwargs):
         """Envoyer une notification push de test a un employe"""
@@ -3993,6 +4012,9 @@ class LeopardoClient:
     def put_restaurant_loyalty_programs_by_restaurantloyaltyprogram(self, **kwargs):
         """RESTO-606 — Mise à jour du programme (taux, activation)"""
         return self.request("PUT", "/restaurant/loyalty-programs/{restaurantLoyaltyProgram}", **kwargs)
+    def post_restaurant_marketplace_by_provider_webhooks(self, **kwargs):
+        """Webhook entrant d''une app de livraison (RESTO-806/#6227) — signature HMAC fail-closed, idempotent par event_id"""
+        return self.request("POST", "/restaurant/marketplace/{provider}/webhooks", **kwargs)
 
     def get_restaurant_menus(self, **kwargs):
         """Liste des menu (référentiel BC-25)"""
@@ -4214,6 +4236,13 @@ class LeopardoClient:
     def post_restaurant_promotions_validate(self, **kwargs):
         """Validation serveur d'un code promo (bornes, cumul)"""
         return self.request("POST", "/restaurant/promotions/validate", **kwargs)
+    def get_restaurant_public_shop_token(self, **kwargs):
+        """État du jeton de boutique publique (RESTO-805/#6226) — jamais le jeton en clair"""
+        return self.request("GET", "/restaurant/public-shop-token", **kwargs)
+
+    def post_restaurant_public_shop_token_rotate(self, **kwargs):
+        """(Re)génère le jeton de boutique publique (RESTO-805/#6226) — l''ancien est invalidé, le jeton en clair n''est renvoyé qu''ici"""
+        return self.request("POST", "/restaurant/public-shop-token/rotate", **kwargs)
 
     def get_restaurant_purchase_orders(self, **kwargs):
         """RESTO-502 — Bons de commande fournisseurs (filtres branche/statut)"""

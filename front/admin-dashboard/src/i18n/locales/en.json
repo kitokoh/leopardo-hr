@@ -1,6 +1,7 @@
 {
   "_version": "1.0.0",
   "_updated_at": "2026-08-30T16:35:58Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -11300,6 +11301,531 @@
   "attendanceMenuMonthly": "My full month",
   "settingsRecoveryEmailHint": "Recovery email (optional)",
   "settingsCompanyQrLabel": "Company QR"
+  "shell": {
+    "connected": "Connected",
+    "fallbackPolling": "Fallback mode (polling)",
+    "pushUnconfigured": "Push not configured",
+    "disconnected": "Disconnected",
+    "search": "Search",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "criticalAlerts": "Critical alerts",
+    "level": "Level:",
+    "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
+    "tenantOnly": "Enterprise feature — reserved for client workspaces",
+    "settings": "Settings",
+    "team": "Team",
+    "home": "Home",
+    "attendance": "Attendance",
+    "absences": "Absences",
+    "approvals": "Approvals"
+  },
+  "exports": {
+    "reportEmployees": "Employees",
+    "reportEmployeesDesc": "Full list with positions, contracts, departments.",
+    "reportAttendance": "Attendance",
+    "reportAttendanceDesc": "Attendance register with hours and anomalies.",
+    "reportPayslips": "Payslips",
+    "reportPayslipsDesc": "Monthly payslip export with salary details.",
+    "reportAbsences": "Absences & leave",
+    "reportAbsencesDesc": "Requests and balances history per employee.",
+    "reportTraining": "Training",
+    "reportTrainingDesc": "Catalog, sessions, enrollments and progress.",
+    "reportVehicles": "Vehicles",
+    "reportVehiclesDesc": "Fleet, mileage, maintenance.",
+    "hrReportsTitle": "Custom HR reports",
+    "hrReportsSub": "Generate advanced reports with period and department filters.",
+    "reportType": "Report type",
+    "typeHeadcount": "Headcount",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteeism",
+    "typePayrollSummary": "Payroll summary",
+    "typeTrainingProgress": "Training progress",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "statusDone": "Completed",
+    "statusInProgress": "In progress",
+    "statusFailed": "Failed",
+    "download": "Download",
+    "downloading": "Downloading...",
+    "colDate": "Date",
+    "colFormat": "Format",
+    "colRequestedBy": "Requested by",
+    "colStatus": "Status",
+    "colType": "Type",
+    "downloadError": "Error downloading the report",
+    "historyEmpty": "No recent exports.",
+    "historySearchPlaceholder": "Search history...",
+    "hrReportUnavailable": "Unable to generate the HR report (endpoint unavailable).",
+    "clientSpaceNote": "Exports are available in the client space.",
+    "historyClientOnly": "History visible to clients only.",
+    "historyError": "Unable to load history."
+  },
+  "companyDetail": {
+    "analyzing": "Analyzing client data...",
+    "retry": "Retry",
+    "fieldAdoption": "Field Adoption",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30d",
+    "payrollReady": "Payroll Ready",
+    "activeEmployees30d": "Active Employees (30d)",
+    "noPriorityBlockers": "No priority blockers detected.",
+    "modulesConfig": "Modules Configuration",
+    "servicePlan": "Service plan",
+    "commercialStatus": "Commercial status",
+    "statusTrial": "Trial",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "startDate": "Start",
+    "internalNotes": "Internal notes",
+    "noSupportTickets": "No support tickets for this client.",
+    "technicalIdentity": "Technical identity",
+    "platformId": "Platform ID",
+    "slug": "Slug",
+    "countryCurrency": "Country / Currency",
+    "registeredOn": "Registered on",
+    "lastActivity": "Last activity",
+    "activateClient": "Activate client",
+    "backToPortfolio": "Back to portfolio",
+    "endDate": "End",
+    "featuresSaved": "Module configuration saved.",
+    "loadFailed": "Unable to load company details. Check that the UUID is valid.",
+    "loading": "Loading...",
+    "messagePlural": "messages",
+    "messageSingular": "message",
+    "moduleActive": "Active Module",
+    "moduleDisabled": "Disabled Module",
+    "modulesConfigHint": "Enable or disable specific features for this client.",
+    "noPunch": "No punches",
+    "notesPlaceholder": "Details on negotiation, discounts, etc.",
+    "openPlural": "open",
+    "openSingular": "open",
+    "planMissing": "Client plan missing.",
+    "priorityActions": "Priority Actions",
+    "refresh": "Refresh",
+    "revenueMrr": "Revenue (MRR)",
+    "riskLevel": "Risk level:",
+    "saveConfig": "Save configuration",
+    "saving": "Saving...",
+    "scoreHealth": "Health Score",
+    "subscription": "Subscription",
+    "subscriptionUpdated": "Subscription updated successfully.",
+    "subtitle": "Operational health, subscription and module configuration.",
+    "support": "Support",
+    "teamActive": "Active Team",
+    "updateSubscription": "Update subscription",
+    "updating": "Updating...",
+    "viewAllTickets": "View all tickets"
+  },
+  "reports": {
+    "attendance_title": "Attendance Summary",
+    "attendance_desc": "Monthly report of attendance, late arrivals and absences per employee.",
+    "month_label": "Month",
+    "payroll_title": "Payroll Summary",
+    "payroll_desc": "Gross/net totals, contributions and charges per payroll period.",
+    "period_label": "Period",
+    "leave_title": "Leave Balances",
+    "leave_desc": "Leave balances status for all employees.",
+    "year_label": "Year",
+    "headcount_title": "Headcount",
+    "headcount_desc": "Active headcount breakdown by department, contract type and gender.",
+    "training_title": "Training Progress",
+    "training_desc": "Training participation and completion rates.",
+    "contract_title": "Contract Expiry",
+    "contract_desc": "Contracts expiring within the next 30, 60, 90 days.",
+    "days_label": "Days",
+    "generate": "Generate",
+    "success": "Report downloaded successfully.",
+    "error": "Error while generating the report.",
+    "subtitle": "Generate and download your HR reports: attendance, payroll, leave, headcount, training and contracts."
+  },
+  "notifications": {
+    "channel_inapp": "In-app",
+    "channel_email_desc": "Important messages and confirmations.",
+    "channel_push_desc": "Quick alerts on registered devices.",
+    "channel_sms_desc": "Short channel for emergencies, enabled after opt-in.",
+    "channel_whatsapp_desc": "Future conversational channel, with explicit opt-in.",
+    "category_payroll": "Payroll",
+    "category_security": "Security",
+    "category_system": "System",
+    "category_product_tips": "Product tips",
+    "categories_title": "Categories",
+    "save_error": "Unable to save preferences right now.",
+    "channel_inapp_desc": "Web and mobile notification center.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Unable to mark notifications as read."
+        }
+      },
+      "read": {
+        "error": "Unable to mark notification as read."
+      }
+    },
+    "delete": {
+      "error": "Unable to delete the notification."
+    },
+    "deleted": "Notification deleted."
+  },
+  "employees": {
+    "load_error": "Unable to load employees.",
+    "title": "Team",
+    "subtitle": "Manager view connected to the HR API: employee list, status and key entry points.",
+    "total_team": "Team total",
+    "source": "Source",
+    "state": "Status",
+    "loading_short": "Loading",
+    "connected_api": "Connected to the API",
+    "recent_collaborators": "Recent collaborators",
+    "list_loading": "Loading team list...",
+    "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
+  },
+  "partnerPage": {
+    "loading": "Loading your workspace...",
+    "applyErrorPrefix": "Error while applying: ",
+    "notApplied": {
+      "title": "Become a Partner",
+      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "individual": "Apply as an Individual",
+      "agency": "Apply as an Agency"
+    },
+    "pending": {
+      "title": "Application in progress",
+      "body": "Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated."
+    },
+    "dashboard": {
+      "title": "Partner Dashboard",
+      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Total earned",
+      "pending": "Pending",
+      "withdrawable": "Withdrawable balance"
+    },
+    "commissions": {
+      "title": "Latest commissions",
+      "empty": "No commission recorded."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Status",
+      "amount": "Amount",
+      "statusPaid": "Paid",
+      "statusPending": "Pending"
+    },
+    "payout": {
+      "title": "Payout",
+      "body": "Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.",
+      "request": "Request a transfer",
+      "sending": "Sending...",
+      "insufficient": "Insufficient balance to request a transfer (minimum €100.00).",
+      "success": "Transfer request sent successfully.",
+      "errorPrefix": "Error while requesting the transfer: "
+    },
+    "referral": {
+      "title": "Referral link",
+      "unavailable": "Link unavailable",
+      "copy": "Copy my link",
+      "copied": "Copied!",
+      "copyError": "Unable to copy the link. Copy it manually."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "login_invalid_json": "Invalid request body.",
+    "login_timeout": "The server is taking too long to respond. Please try again shortly.",
+    "login_network_error": "Unable to reach the server.",
+    "login_backend_error": "Unexpected server response."
+  },
+  "settingsPage": {
+    "cancel": "Cancel",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "disable2fa": "Disable 2FA",
+    "disabled": "Disabled",
+    "email": "Email address",
+    "enable2fa": "Enable 2FA",
+    "enabled": "Enabled",
+    "enterCodeStep": "2. Enter the generated 6-digit code",
+    "fullName": "Full name",
+    "generateSecret": "Generate 2FA secret",
+    "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Manual secret:",
+    "minLengthHint": "Minimum 8 characters.",
+    "newPassword": "New password",
+    "password": "Password",
+    "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
+    "passwordTitle": "Password",
+    "passwordUpdated": "Password updated successfully.",
+    "passwordsMismatch": "Passwords do not match.",
+    "profileSubtitle": "Name and email address used to sign in.",
+    "profileTitle": "Profile information",
+    "profileUpdated": "Profile updated successfully.",
+    "saveChanges": "Save changes",
+    "scanStep": "1. Scan this link / secret in your 2FA app:",
+    "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "title": "My account",
+    "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
+    "twoFactorDisabled": "2FA disabled.",
+    "twoFactorEnabled": "2FA enabled successfully.",
+    "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
+    "twoFactorTitle": "Two-factor authentication (2FA)",
+    "updatePassword": "Update password",
+    "bankingError": "Error saving bank details.",
+    "bankingSubtitle": "Your company IBAN and BIC are required for SEPA transfer export.",
+    "bankingTitle": "SEPA Bank Details",
+    "bankingUpdated": "Bank details saved.",
+    "bankingWarning": "SEPA export will return a 422 error until the company IBAN is configured.",
+    "companyBic": "BIC / SWIFT (optional)",
+    "companyIban": "Company IBAN",
+    "ibanHint": "ISO 13616 IBAN format (uppercase, no spaces). Spaces are ignored automatically.",
+    "ibanPlaceholderDZ": "Algerian IBAN or RIB (20 digits)",
+    "saveBanking": "Save bank details",
+    "sepaNotReady": "SEPA not configured",
+    "sepaReady": "SEPA ready"
+  },
+  "systemPage": {
+    "apiError": "Error: :error",
+    "apiOperational": "API operational",
+    "apiOperationalDb": "API operational — DB :ms ms",
+    "apiServices": "API Services",
+    "apiUnavailable": "Unavailable — GET /health/live",
+    "database": "Database",
+    "dbError": "Error: :error",
+    "dbLatency": "Latency: :ms ms",
+    "dbUnavailable": "Unavailable — run a Health Check.",
+    "dbUnreachable": "database unreachable",
+    "globalError": "Aggregated probe: database unreachable.",
+    "globalHealthy": "Aggregated DB + Redis probe operational.",
+    "globalStatus": "Global Status",
+    "globalUnavailable": "Unavailable — GET /admin/dashboard/stats",
+    "globalWarning": "Aggregated probe: degradation detected.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Checking...",
+    "healthError": "Health check completed — database in error",
+    "healthLiveUnreachable": "/health/live probe unreachable.",
+    "healthOk": "Health check completed — database operational",
+    "healthUnreachable": "Health check completed — database unreachable",
+    "infraDetails": ":active active companies · PHP :php · queue :queue",
+    "infraUnavailable": "Unavailable — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Error loading platform metrics",
+    "notifObsLoadError": "Error loading notifications observability",
+    "queueObsLoadError": "Error loading jobs observability",
+    "retry": "Retry",
+    "serviceUnreachable": "service unreachable",
+    "statsLoadError": "Error loading system stats",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "title": "System Administration"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session.",
+    "redirect_url_invalid": "Redirect URLs must belong to the authorized site."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses",
+    "mobile_title": "My Contract",
+    "back_tooltip": "Back",
+    "empty_title": "No contract",
+    "empty_description": "Your contract will appear here once configured.",
+    "label_type": "Type",
+    "label_start_date": "Start",
+    "label_end_date": "End",
+    "label_base_salary": "Base salary",
+    "loading": "Loading contracts...",
+    "status_active": "Active",
+    "status_expired": "Expired",
+    "status_draft": "Draft",
+    "status_cdi": "Permanent (CDI)"
+  },
+  "training": {
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online",
+    "tabCatalog": "Catalog",
+    "tabEnrollments": "Enrollments",
+    "activeCourses": "Active courses",
+    "category": "Category",
+    "completionRate": "Completion rate",
+    "costPerParticipant": "Cost per participant",
+    "course": "Course",
+    "description": "Description",
+    "duration": "Duration",
+    "employee": "Employee",
+    "endDate": "End date",
+    "enrollments": "Enrollments",
+    "hoursUnit": "h",
+    "instructor": "Instructor",
+    "loadError": "Unable to load trainings.",
+    "loading": "Loading trainings...",
+    "location": "Location",
+    "maxPlaces": "Max seats",
+    "noCourses": "No courses found.",
+    "noDescription": "No description.",
+    "perParticipant": "per participant",
+    "progress": "Progress",
+    "provider": "Provider",
+    "searchEnrollmentPlaceholder": "Search enrollments...",
+    "searchSessionPlaceholder": "Search sessions...",
+    "session": "Session",
+    "sessions": "Sessions",
+    "sessionsUnit": "sessions",
+    "startDate": "Start date",
+    "status": "Status",
+    "statusCancelled": "Cancelled",
+    "statusCompleted": "Completed",
+    "statusDropped": "Dropped",
+    "statusEnrolled": "Enrolled",
+    "statusInProgress": "In progress",
+    "statusPlanned": "Planned",
+    "type": "Type",
+    "uncategorized": "Uncategorized",
+    "upcomingSessions": "Upcoming sessions"
+  },
+  "access": {
+    "denied": {
+      "body": "Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.",
+      "logout": "Log out",
+      "title": "Access denied",
+      "body_hr": "Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Your presence is detected automatically as soon as you enter the company zone. No action required from you."
+      }
+    },
+    "manual": {
+      "desc": "Clock in manually using the Arrival and Departure buttons in the attendance screen."
+    },
+    "mode": {
+      "title": "Attendance mode"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scan the QR Code displayed at the company entrance to clock in and out."
+      }
+    },
+    "recommended": "Recommended",
+    "save": {
+      "error": "Unable to save your preference. Check your connection."
+    },
+    "title": "Choose how you want to clock your presence every day."
+  },
+  "approval": {
+    "approved": "Request approved",
+    "rejected": "Request rejected"
+  },
+  "approvals": {
+    "empty": "No pending approvals.",
+    "up": {
+      "to": {
+        "date": "All up to date"
+      }
+    },
+    "loading": "Loading approvals...",
+    "reject": {
+      "reason": {
+        "hint": "Explain the reason...",
+        "label": "Rejection reason"
+      }
+    },
+    "title": "Approvals"
+  },
+  "back": "Back",
+  "employee": {
+    "number": "Employee #{id}"
+  },
+  "error": {
+    "prefix": "Error: {message}",
+    "unexpected": "An error occurred"
+  },
+  "evaluation": {
+    "period": "Period: {period}"
+  },
+  "evaluations": {
+    "empty": "No evaluations",
+    "title": "My Evaluations",
+    "empty_hint": "You don't have any recorded evaluation yet."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Feature coming soon"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Complete my onboarding"
+    },
+    "onboarding": {
+      "hint": "Set up your workspace in a few steps."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Loading monthly summary..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Collapse",
+      "empty": "The org chart will be available once employees are configured.",
+      "expand": "Expand"
+    }
+  },
   "page": {
     "not": {
       "found": "The requested page was not found or the navigation failed."
@@ -13596,6 +14122,10 @@
       "loadError": "Unable to load the menu.",
       "items": "items",
       "cart": "Cart",
+      "branch": "Branch",
+      "cart": "Cart",
+      "takeaway": "Takeaway",
+      "delivery": "Delivery",
       "empty": "Your cart is empty.",
       "total": "Total",
       "checkout": "Place order",
@@ -13637,6 +14167,12 @@
       "backToMenu": "Back to menu",
       "orderError": "Unable to place the order.",
       "trackError": "Unable to track the order.",
+      "payCash": "Pay with cash",
+      "payMobileMoney": "Pay with mobile money",
+      "paid": "Payment confirmed. Enjoy!",
+      "pendingPayment": "Payment pending confirmation…",
+      "startNewOrder": "New order",
+      "orderError": "Unable to place the order.",
       "paymentError": "Unable to process the payment."
     },
     "public_shop": {

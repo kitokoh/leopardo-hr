@@ -126,12 +126,16 @@
           "id": "manifest",
           "label": "Manifest + activation tenant (RESTO-105/106)",
           "status": "validated"
+          "status": "validated",
+          "evidence": "Manifest RestaurantManagerManifest + activation tenant (RESTO-105/106)"
         },
         {
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
           "status": "pending"
           "status": "validated"
+          "status": "validated",
+          "evidence": "RestaurantGoldenJourneyTest (caisse → commande → article → soumission → encaissement → clôture) en CI (RESTO-901/#6230)"
         },
         {
           "id": "api_security",
@@ -247,6 +251,8 @@
           "label": "Golden journey GJ-TRAVEL-01 (TRAVEL-1007)",
           "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)",
           "status": "pending"
+          "status": "validated",
+          "evidence": "GJ-RESTO-01 enregistré (dev-hub/tools/golden-journeys.json) + RestaurantGoldenJourneyTest en CI (RESTO-901/#6230)"
         },
         {
           "id": "recette",

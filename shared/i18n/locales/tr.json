@@ -4711,6 +4711,7 @@
     "tax": "KDV",
     "discount": "İndirim",
     "total": "Toplam",
+    "loading": "Mutfak kuyruğu yükleniyor…",
     "kiosk": {
       "title": "Self-servis sipariş terminali",
       "tokenInvalid": "Geçersiz veya eksik mağaza jetonu.",
@@ -4719,6 +4720,10 @@
       "loadError": "Menü yüklenemedi.",
       "items": "ürün",
       "cart": "Sepet",
+      "branch": "Şube",
+      "cart": "Sepet",
+      "takeaway": "Paket servis",
+      "delivery": "Teslimat",
       "empty": "Sepetiniz boş.",
       "total": "Toplam",
       "checkout": "Siparişi onayla",
@@ -4760,6 +4765,12 @@
       "backToMenu": "Menüye dön",
       "orderError": "Sipariş verilemedi.",
       "trackError": "Sipariş takip edilemedi.",
+      "payCash": "Nakit öde",
+      "payMobileMoney": "Mobil para ile öde",
+      "paid": "Ödeme onaylandı. Afiyet olsun!",
+      "pendingPayment": "Ödeme onay bekliyor…",
+      "startNewOrder": "Yeni sipariş",
+      "orderError": "Sipariş verilemedi.",
       "paymentError": "Ödeme işlenemedi."
     },
     "public_shop": {

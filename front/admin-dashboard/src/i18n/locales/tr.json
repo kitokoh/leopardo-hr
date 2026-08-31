@@ -1,6 +1,7 @@
 {
   "_version": "1.0.0",
   "_updated_at": "2026-08-30T16:35:58Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -1673,6 +1674,410 @@
   "settingsEdgeNodeId": "Düğüm kimliği (UUID)",
   "settingsBiometryFaceHint": "Yüz, mobil cihazdan çekilip yönetici/İK doğrulamasına gönderilebilir. Parmak izi için Android/iOS, kayıtlı bir parmak kullandığınızı yerel olarak doğrulamanıza izin verir ancak ham şablona erişim vermez; yoklama tarafındaki gerçek aktivasyon, onaylandıktan sonra şirket terminali tarafından kullanılır.",
   "companydetailSubscription": "Abonelik",
+  "training": {
+    "titlePlaceholder": "Başlık *",
+    "durationPlaceholder": "Süre (saat)",
+    "maxParticipantsPlaceholder": "Maks. katılımcı",
+    "online": "Çevrimiçi",
+    "tabCatalog": "Katalog",
+    "tabEnrollments": "Kayıtlar",
+    "activeCourses": "Aktif kurslar",
+    "category": "Kategori",
+    "completionRate": "Tamamlanma oranı",
+    "costPerParticipant": "Katılımcı başı maliyet",
+    "course": "Kurs",
+    "description": "Açıklama",
+    "duration": "Süre",
+    "employee": "Çalışan",
+    "endDate": "Bitiş tarihi",
+  "shell": {
+    "connected": "Bagli",
+    "fallbackPolling": "Yedek mod (polling)",
+    "pushUnconfigured": "Push yapilandirilmadi",
+    "disconnected": "Baglanti kesildi",
+    "search": "Ara",
+    "notifications": "Bildirimler",
+    "noNotifications": "Bildirim yok",
+    "criticalAlerts": "Kritik uyarilar",
+    "level": "Seviye:",
+    "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
+    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
+    "settings": "Ayarlar",
+    "team": "Ekip",
+    "home": "Ana Sayfa",
+    "attendance": "Devam",
+    "absences": "İzinler",
+    "approvals": "Onaylar"
+  },
+  "exports": {
+    "reportEmployees": "Calisanlar",
+    "reportEmployeesDesc": "Pozisyonlar, sozlesmeler ve departmanlarla tam liste.",
+    "reportAttendance": "Yoklama",
+    "reportAttendanceDesc": "Saatler ve anormalliklerle yoklama kaydi.",
+    "reportPayslips": "Bordrolar",
+    "reportPayslipsDesc": "Maas detaylariyla aylik bordro ihracati.",
+    "reportAbsences": "Izinler ve devamsizliklar",
+    "reportAbsencesDesc": "Calisan basina talep ve bakiye gecmisi.",
+    "reportTraining": "Egitim",
+    "reportTrainingDesc": "Katalog, oturumlar, kayitlar ve ilerleme.",
+    "reportVehicles": "Araclar",
+    "reportVehiclesDesc": "Filo, kilometre, bakim.",
+    "hrReportsTitle": "Ozel IK raporlari",
+    "hrReportsSub": "Donem ve departman filtreleriyle gelismis raporlar olusturun.",
+    "reportType": "Rapor turu",
+    "typeHeadcount": "Personel sayisi",
+    "typeTurnover": "Calisan devri",
+    "typeAbsenteeism": "Devamsizlik",
+    "typePayrollSummary": "Bordro ozeti",
+    "typeTrainingProgress": "Egitim ilerlemesi",
+    "startDate": "Baslangic tarihi",
+    "endDate": "Bitis tarihi",
+    "generate": "Olustur",
+    "generating": "Olusturuluyor...",
+    "statusDone": "Tamamlandi",
+    "statusInProgress": "Devam ediyor",
+    "statusFailed": "Basarisiz",
+    "download": "Indir",
+    "downloading": "Indiriliyor...",
+    "colDate": "Tarih",
+    "colFormat": "Biçim",
+    "colRequestedBy": "Talep eden",
+    "colStatus": "Durum",
+    "colType": "Tür",
+    "downloadError": "Rapor indirilirken hata oluştu",
+    "historyEmpty": "Yakın zamanda dışa aktarım yok.",
+    "historySearchPlaceholder": "Geçmişte ara...",
+    "hrReportUnavailable": "HR raporu oluşturulamadı (uç nokta kullanılamıyor).",
+    "clientSpaceNote": "Dışa aktarımlar müşteri alanında mevcuttur.",
+    "historyClientOnly": "Geçmiş yalnızca müşteriler tarafından görülebilir.",
+    "historyError": "Geçmiş yüklenemedi."
+  },
+  "companyDetail": {
+    "analyzing": "Musteri verileri analiz ediliyor...",
+    "retry": "Tekrar dene",
+    "fieldAdoption": "Saha Benimsemesi",
+    "onboarding": "Onboarding",
+    "anomalies30d": "30 gunluk anormallikler",
+    "payrollReady": "Bordro Hazir",
+    "activeEmployees30d": "Aktif Calisanlar (30 gun)",
+    "noPriorityBlockers": "Oncelikli engel tespit edilmedi.",
+    "modulesConfig": "Modul Yapilandirmasi",
+    "servicePlan": "Hizmet plani",
+    "commercialStatus": "Ticari durum",
+    "statusTrial": "Deneme",
+    "statusActive": "Aktif",
+    "statusSuspended": "Askida",
+    "statusExpired": "Suresi dolmus",
+    "startDate": "Baslangic",
+    "internalNotes": "Dahili notlar",
+    "noSupportTickets": "Bu musteri icin destek talebi yok.",
+    "technicalIdentity": "Teknik kimlik",
+    "platformId": "Platform kimligi",
+    "slug": "Slug",
+    "countryCurrency": "Ulke / Para birimi",
+    "registeredOn": "Kayit tarihi",
+    "lastActivity": "Son aktivite",
+    "activateClient": "Müşteriyi etkinleştir",
+    "backToPortfolio": "Portföye dön",
+    "endDate": "Bitiş",
+    "featuresSaved": "Modül yapılandırması kaydedildi.",
+    "loadFailed": "Şirket detayları yüklenemedi. UUID'nin geçerli olduğunu kontrol edin.",
+    "loading": "Yükleniyor...",
+    "messagePlural": "mesaj",
+    "messageSingular": "mesaj",
+    "moduleActive": "Aktif Modül",
+    "moduleDisabled": "Devre Dışı Modül",
+    "modulesConfigHint": "Bu müşteri için belirli özellikleri etkinleştirin veya devre dışı bırakın.",
+    "noPunch": "Puantaj yok",
+    "notesPlaceholder": "Müzakere, indirimler vb. hakkında ayrıntılar.",
+    "openPlural": "açık",
+    "openSingular": "açık",
+    "planMissing": "Müşteri planı eksik.",
+    "priorityActions": "Öncelikli İşlemler",
+    "refresh": "Yenile",
+    "revenueMrr": "Gelir (MRR)",
+    "riskLevel": "Risk seviyesi:",
+    "saveConfig": "Yapılandırmayı kaydet",
+    "saving": "Kaydediliyor...",
+    "scoreHealth": "Sağlık Puanı",
+    "subscription": "Abonelik",
+    "subscriptionUpdated": "Abonelik başarıyla güncellendi.",
+    "subtitle": "Operasyonel sağlık, abonelik ve modül yapılandırması.",
+    "support": "Destek",
+    "teamActive": "Aktif Ekip",
+    "updateSubscription": "Aboneliği güncelle",
+    "updating": "Güncelleniyor...",
+    "viewAllTickets": "Tüm talepleri gör"
+  },
+  "reports": {
+    "attendance_title": "Yoklama Özeti",
+    "attendance_desc": "Çalışan başına aylık devam, geç kalma ve devamsızlık raporu.",
+    "month_label": "Ay",
+    "payroll_title": "Maaş Özeti",
+    "payroll_desc": "Maaş dönemi başına brüt/net toplamlar, katkılar ve giderler.",
+    "period_label": "Dönem",
+    "leave_title": "İzin Bakiyeleri",
+    "leave_desc": "Tüm çalışanlar için izin bakiyeleri durumu.",
+    "year_label": "Yıl",
+    "headcount_title": "Personel Sayısı",
+    "headcount_desc": "Aktif personel dağılımı: departman, sözleşme türü ve cinsiyet.",
+    "training_title": "Eğitim Takibi",
+    "training_desc": "Eğitim katılım ve tamamlama oranları.",
+    "contract_title": "Sözleşme Bitişleri",
+    "contract_desc": "Önümüzdeki 30, 60, 90 gün içinde süresi dolan sözleşmeler.",
+    "days_label": "Gün",
+    "generate": "Oluştur",
+    "success": "Rapor başarıyla indirildi.",
+    "error": "Rapor oluşturulurken hata oluştu.",
+    "subtitle": "İK raporlarınızı oluşturun ve indirin: devam, maaş, izin, personel, eğitim ve sözleşmeler."
+  },
+  "notifications": {
+    "channel_inapp": "Uygulama içi",
+    "channel_email_desc": "Önemli mesajlar ve onaylar.",
+    "channel_push_desc": "Kayıtlı cihazlarda hızlı uyarılar.",
+    "channel_sms_desc": "Acil durumlar için kısa kanal, onay sonrası etkin.",
+    "channel_whatsapp_desc": "Gelecekteki sohbet kanalı, açık onayla.",
+    "category_payroll": "Maaş",
+    "category_security": "Güvenlik",
+    "category_system": "Sistem",
+    "category_product_tips": "Ürün ipuçları",
+    "categories_title": "Kategoriler",
+    "save_error": "Tercihler şu anda kaydedilemiyor.",
+    "channel_inapp_desc": "Web ve mobil bildirim merkezi.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Bildirimler okundu olarak işaretlenemedi."
+        }
+      },
+      "read": {
+        "error": "Bildirim okundu olarak işaretlenemedi."
+      }
+    },
+    "delete": {
+      "error": "Bildirim silinemedi."
+    },
+    "deleted": "Bildirim silindi."
+  },
+  "employees": {
+    "load_error": "Çalışanlar yüklenemedi.",
+    "title": "Ekip",
+    "subtitle": "HR API'sine bağlı yönetici görünümü: çalışan listesi, durum ve temel giriş noktaları.",
+    "total_team": "Ekip toplamı",
+    "source": "Kaynak",
+    "state": "Durum",
+    "loading_short": "Yükleniyor",
+    "connected_api": "API'ye bağlı",
+    "recent_collaborators": "Son iş arkadaşları",
+    "list_loading": "Ekip listesi yükleniyor...",
+    "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Talep gönderildi!",
+      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
+    },
+    "back_to_home": "Ana sayfaya dön",
+    "create_company": "Şirket oluştur",
+    "company_name": "Şirket adı",
+    "company_email": "Şirket e-postası",
+    "sector": "İş sektörü",
+    "country": "Ülke",
+    "city": "Şehir",
+    "phone": "Telefon",
+    "description": "Açıklama",
+    "submit_request": "Talep gönder",
+    "submit_error": "Talep gönderme hatası",
+    "already_account": "Zaten hesabiniz var mi? Giris yapin",
+    "first_name": "Ad",
+    "google_error": "Google hatasi: {error}",
+    "last_name": "Soyad",
+    "login_subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
+    "no_account": "Henuz hesabınız yok mu? Kayit olun",
+    "personal_login": "Kisisel giris",
+    "phone_optional": "Telefon (opsiyonel)",
+    "register_button": "Hesabimi olustur",
+    "register_subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
+    "register_title": "Hesabimi olustur"
+  },
+  "partnerPage": {
+    "loading": "Alanınız yükleniyor...",
+    "applyErrorPrefix": "Başvuru sırasında hata: ",
+    "notApplied": {
+      "title": "Partner Olun",
+      "subtitle": "Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
+      "individual": "Bireysel olarak başvurun",
+      "agency": "Ajans olarak başvurun"
+    },
+    "pending": {
+      "title": "Başvuru inceleniyor",
+      "body": "Başvurunuz satış ekibimiz tarafından doğrulanıyor. Erişiminiz etkinleştirilir etkinleştirilmez bir e-posta alacaksınız."
+    },
+    "dashboard": {
+      "title": "Partner Paneli",
+      "subtitle": "Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu."
+    },
+    "metrics": {
+      "conversions": "Dönüşümler",
+      "totalEarned": "Toplam kazanç",
+      "pending": "Beklemede",
+      "withdrawable": "Çekilebilir bakiye"
+    },
+    "commissions": {
+      "title": "Son komisyonlar",
+      "empty": "Kayıtlı komisyon yok."
+    },
+    "table": {
+      "tenantId": "Tenant Kimliği",
+      "date": "Tarih",
+      "status": "Durum",
+      "amount": "Tutar",
+      "statusPaid": "Ödendi",
+      "statusPending": "Beklemede"
+    },
+    "payout": {
+      "title": "Ödeme",
+      "body": "Komisyonlarınız eşiğe ulaşıldığında ödenir. Banka bilgilerinizin güncel olduğundan emin olun.",
+      "request": "Havale talep et",
+      "sending": "Gönderiliyor...",
+      "insufficient": "Havale talep etmek için bakiye yetersiz (minimum 100,00 €).",
+      "success": "Havale talebi başarıyla gönderildi.",
+      "errorPrefix": "Havale talebi sırasında hata: "
+    },
+    "referral": {
+      "title": "Referans bağlantısı",
+      "unavailable": "Bağlantı kullanılamıyor",
+      "copy": "Bağlantımı kopyala",
+      "copied": "Kopyalandı!",
+      "copyError": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın."
+    }
+  },
+  "api": {
+    "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
+    "accessDenied": ":endpoint üzerinde erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı: :endpoint",
+    "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
+    "serverError": ":endpoint üzerinde sunucu hatası. :detail",
+    "serverErrorRetry": "Daha sonra tekrar deneyin.",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.",
+    "genericError": ":endpoint üzerinde :status hatası.",
+    "invalidData": "Geçersiz veri.",
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+    "login_invalid_json": "Geçersiz istek gövdesi.",
+    "login_timeout": "Sunucu yanıt vermekte çok yavaş. Lütfen kısa süre sonra tekrar deneyin.",
+    "login_network_error": "Sunucuya ulaşılamıyor.",
+    "login_backend_error": "Beklenmeyen sunucu yanıtı."
+  },
+  "settingsPage": {
+    "cancel": "İptal",
+    "confirmPassword": "Parolayı doğrula",
+    "currentPassword": "Mevcut parola",
+    "disable2fa": "2FA'yı devre dışı bırak",
+    "disabled": "Devre dışı",
+    "email": "E-posta adresi",
+    "enable2fa": "2FA'yı etkinleştir",
+    "enabled": "Etkin",
+    "enterCodeStep": "2. Üretilen 6 haneli kodu girin",
+    "fullName": "Ad soyad",
+    "generateSecret": "2FA sırrı oluştur",
+    "generateSecretHint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
+    "manualSecret": "Manuel sır:",
+    "minLengthHint": "En az 8 karakter.",
+    "newPassword": "Yeni parola",
+    "password": "Parola",
+    "passwordSubtitle": "Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.",
+    "passwordTitle": "Parola",
+    "passwordUpdated": "Parola başarıyla güncellendi.",
+    "passwordsMismatch": "Parolalar eşleşmiyor.",
+    "profileSubtitle": "Oturum açmak için kullanılan ad ve e-posta adresi.",
+    "profileTitle": "Profil bilgileri",
+    "profileUpdated": "Profil başarıyla güncellendi.",
+    "saveChanges": "Değişiklikleri kaydet",
+    "scanStep": "1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:",
+    "subtitle": "Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.",
+    "title": "Hesabım",
+    "twoFactorActiveHint": "2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.",
+    "twoFactorDisabled": "2FA devre dışı bırakıldı.",
+    "twoFactorEnabled": "2FA başarıyla etkinleştirildi.",
+    "twoFactorSubtitle": "Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.",
+    "twoFactorTitle": "İki faktörlü kimlik doğrulama (2FA)",
+    "updatePassword": "Parolayı güncelle",
+    "bankingError": "Banka bilgileri kaydedilirken hata oluştu.",
+    "bankingSubtitle": "SEPA transfer dışa aktarımı için şirket IBAN ve BIC'niz gereklidir.",
+    "bankingTitle": "SEPA Banka Bilgileri",
+    "bankingUpdated": "Banka bilgileri kaydedildi.",
+    "bankingWarning": "Şirket IBAN'ı yapılandırılana kadar SEPA dışa aktarımı 422 hatası döndürür.",
+    "companyBic": "BIC / SWIFT (isteğe bağlı)",
+    "companyIban": "Şirket IBAN",
+    "ibanHint": "ISO 13616 IBAN biçimi (büyük harf, boşluksuz). Boşluklar otomatik olarak yok sayılır.",
+    "ibanPlaceholderDZ": "Cezayir IBAN veya RIB (20 hane)",
+    "saveBanking": "Banka bilgilerini kaydet",
+    "sepaNotReady": "SEPA yapılandırılmadı",
+    "sepaReady": "SEPA hazır"
+  },
+  "systemPage": {
+    "apiError": "Hata: :error",
+    "apiOperational": "API çalışıyor",
+    "apiOperationalDb": "API çalışıyor — DB :ms ms",
+    "apiServices": "API Hizmetleri",
+    "apiUnavailable": "Kullanılamıyor — GET /health/live",
+    "database": "Veritabanı",
+    "dbError": "Hata: :error",
+    "dbLatency": "Gecikme: :ms ms",
+    "dbUnavailable": "Kullanılamıyor — bir Sağlık Kontrolü çalıştırın.",
+    "dbUnreachable": "veritabanına ulaşılamıyor",
+    "globalError": "Birleşik sonda: veritabanına ulaşılamıyor.",
+    "globalHealthy": "Birleşik DB + Redis sondası çalışıyor.",
+    "globalStatus": "Genel Durum",
+    "globalUnavailable": "Kullanılamıyor — GET /admin/dashboard/stats",
+    "globalWarning": "Birleşik sonda: bozulma algılandı.",
+    "healthCheck": "Sağlık Kontrolü",
+    "healthCheckRunning": "Kontrol ediliyor...",
+    "healthError": "Sağlık kontrolü tamamlandı — veritabanında hata",
+    "healthLiveUnreachable": "/health/live sondasına ulaşılamıyor.",
+    "healthOk": "Sağlık kontrolü tamamlandı — veritabanı çalışıyor",
+    "healthUnreachable": "Sağlık kontrolü tamamlandı — veritabanına ulaşılamıyor",
+    "infraDetails": ":active aktif şirket · PHP :php · kuyruk :queue",
+    "infraUnavailable": "Kullanılamıyor — GET /platform/metrics/overview",
+    "infrastructure": "Altyapı",
+    "metricsLoadError": "Platform metrikleri yüklenirken hata oluştu",
+    "notifObsLoadError": "Bildirim gözlemlenebilirliği yüklenirken hata oluştu",
+    "queueObsLoadError": "İş gözlemlenebilirliği yüklenirken hata oluştu",
+    "retry": "Yeniden dene",
+    "serviceUnreachable": "hizmete ulaşılamıyor",
+    "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
+    "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
+    "title": "Sistem Yönetimi"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
+    "no_active_period": "Aktif dönem yok",
+    "no_active_subscription": "Aktif abonelik yok",
+    "period_label": "Dönem",
+    "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
+    "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
+    "checkout_failed": "Ödeme oturumu oluşturulamadı.",
+    "redirect_url_invalid": "Yönlendirme URL'leri yetkili siteye ait olmalıdır."
+  },
+  "contracts": {
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar",
+    "mobile_title": "Sözleşmem",
+    "back_tooltip": "Geri",
+    "empty_title": "Sözleşme yok",
+    "empty_description": "Sözleşmeniz yapılandırıldıktan sonra burada görünecek.",
+    "label_type": "Tür",
+    "label_start_date": "Başlangıç",
+    "label_end_date": "Bitiş",
+    "label_base_salary": "Temel maaş",
+    "loading": "Sözleşmeler yükleniyor...",
+    "status_active": "Aktif",
+    "status_expired": "Süresi dolmuş",
+    "status_draft": "Taslak",
+    "status_cdi": "Belirsiz süreli (CDI)"
+  },
   "training": {
     "titlePlaceholder": "Başlık *",
     "durationPlaceholder": "Süre (saat)",
@@ -10942,6 +11347,91 @@
   "attendanceMenuMonthly": "Tam ayım",
   "settingsRecoveryEmailHint": "Kurtarma e-postası (isteğe bağlı)",
   "settingsCompanyQrLabel": "Şirket QR"
+  "access": {
+    "denied": {
+      "body": "Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.",
+      "logout": "Çıkış yap",
+      "title": "Erişim reddedildi",
+      "body_hr": "Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez."
+      }
+    },
+    "manual": {
+      "desc": "Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın."
+    },
+    "mode": {
+      "title": "Kayıt modu"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın."
+      }
+    },
+    "recommended": "Önerilen",
+    "save": {
+      "error": "Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin."
+    },
+    "title": "Her gün katılımınızı nasıl kaydetmek istediğinizi seçin."
+  },
+  "approval": {
+    "approved": "Talep onaylandı",
+    "rejected": "Talep reddedildi"
+  },
+  "approvals": {
+    "empty": "Bekleyen onay yok.",
+    "up": {
+      "to": {
+        "date": "Her şey güncel"
+      }
+    },
+    "loading": "Onaylar yükleniyor...",
+    "reject": {
+      "reason": {
+        "hint": "Gerekçeyi açıklayın...",
+        "label": "Ret gerekçesi"
+      }
+    },
+    "title": "Onaylar"
+  },
+  "back": "Geri",
+  "employee": {
+    "number": "Çalışan #{id}"
+  },
+  "error": {
+    "prefix": "Hata: {message}",
+    "unexpected": "Bir hata oluştu"
+  },
+  "evaluation": {
+    "period": "Dönem: {period}"
+  },
+  "evaluations": {
+    "empty": "Değerlendirme yok",
+    "title": "Değerlendirmelerim",
+    "empty_hint": "Henüz kayıtlı bir değerlendirmeniz yok."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Özellik yakında"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "İşe alıştırmamı tamamla"
+    },
+    "onboarding": {
+      "hint": "Çalışma alanınızı birkaç adımda kurun."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Aylık özet yükleniyor..."
+    }
+  },
   "org": {
     "chart": {
       "collapse": "Daralt",
@@ -13245,6 +13735,10 @@
       "loadError": "Menü yüklenemedi.",
       "items": "ürün",
       "cart": "Sepet",
+      "branch": "Şube",
+      "cart": "Sepet",
+      "takeaway": "Paket servis",
+      "delivery": "Teslimat",
       "empty": "Sepetiniz boş.",
       "total": "Toplam",
       "checkout": "Siparişi onayla",
@@ -13286,6 +13780,12 @@
       "backToMenu": "Menüye dön",
       "orderError": "Sipariş verilemedi.",
       "trackError": "Sipariş takip edilemedi.",
+      "payCash": "Nakit öde",
+      "payMobileMoney": "Mobil para ile öde",
+      "paid": "Ödeme onaylandı. Afiyet olsun!",
+      "pendingPayment": "Ödeme onay bekliyor…",
+      "startNewOrder": "Yeni sipariş",
+      "orderError": "Sipariş verilemedi.",
       "paymentError": "Ödeme işlenemedi."
     },
     "public_shop": {

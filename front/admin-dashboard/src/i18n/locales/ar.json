@@ -1,6 +1,7 @@
 {
   "_version": "1.0.0",
   "_updated_at": "2026-08-30T16:35:58Z",
+  "_updated_at": "2026-08-30T12:00:00Z",
   "_locale": "ar",
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -1673,6 +1674,410 @@
   "settingsEdgeNodeId": "معرف العقدة (UUID)",
   "settingsBiometryFaceHint": "يمكن التقاط الوجه من الجوال ثم إرساله للتحقق من قبل المدير/الموارد البشرية. بالنسبة لبصمة الإصبع، يتيح نظاما Android/iOS التحقق محلياً من أنك تستخدم إصبعاً مسجلاً، لكنهما لا يوفران الوصول إلى القالب الخام؛ لذا سيتم اعتماد التفعيل الفعلي في الحضور ثم استخدامه عبر جهاز الشركة.",
   "companydetailSubscription": "الاشتراك",
+  "training": {
+    "titlePlaceholder": "العنوان *",
+    "durationPlaceholder": "المدة (ساعة)",
+    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
+    "online": "عبر الإنترنت",
+    "tabCatalog": "الدليل",
+    "tabEnrollments": "التسجيلات",
+    "activeCourses": "الدورات النشطة",
+    "category": "الفئة",
+    "completionRate": "معدل الإكمال",
+    "costPerParticipant": "التكلفة لكل مشارك",
+    "course": "الدورة",
+    "description": "الوصف",
+    "duration": "المدة",
+    "employee": "الموظف",
+    "endDate": "تاريخ الانتهاء",
+  "shell": {
+    "connected": "متصل",
+    "fallbackPolling": "وضع احتياطي (استطلاع)",
+    "pushUnconfigured": "الدفع غير مهيأ",
+    "disconnected": "غير متصل",
+    "search": "بحث",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات",
+    "criticalAlerts": "تنبيهات حرجة",
+    "level": "المستوى:",
+    "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
+    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
+    "settings": "الإعدادات",
+    "team": "الفريق",
+    "home": "الرئيسية",
+    "attendance": "الحضور",
+    "absences": "الغيابات",
+    "approvals": "الموافقات"
+  },
+  "exports": {
+    "reportEmployees": "الموظفون",
+    "reportEmployeesDesc": "قائمة كاملة بالمناصب والعقود والأقسام.",
+    "reportAttendance": "تسجيل الحضور",
+    "reportAttendanceDesc": "سجل الحضور بالساعات والانحرافات.",
+    "reportPayslips": "كشوف الرواتب",
+    "reportPayslipsDesc": "تصدير شهري لكشوف الرواتب مع تفاصيل الراتب.",
+    "reportAbsences": "الغيابات والإجازات",
+    "reportAbsencesDesc": "سجل الطلبات والأرصدة لكل موظف.",
+    "reportTraining": "التدريب",
+    "reportTrainingDesc": "الكتالوج والجلسات والتسجيلات والتقدم.",
+    "reportVehicles": "المركبات",
+    "reportVehiclesDesc": "الأسطول والمسافة المقطوعة والصيانة.",
+    "hrReportsTitle": "تقارير موارد بشرية مخصصة",
+    "hrReportsSub": "أنشئ تقارير متقدمة مع فلاتر الفترة والقسم.",
+    "reportType": "نوع التقرير",
+    "typeHeadcount": "عدد الموظفين",
+    "typeTurnover": "معدل الدوران",
+    "typeAbsenteeism": "التغيب",
+    "typePayrollSummary": "ملخص الرواتب",
+    "typeTrainingProgress": "تقدم التدريب",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية",
+    "generate": "إنشاء",
+    "generating": "جاري الإنشاء...",
+    "statusDone": "مكتمل",
+    "statusInProgress": "قيد التنفيذ",
+    "statusFailed": "فشل",
+    "download": "تنزيل",
+    "downloading": "جاري التنزيل...",
+    "colDate": "التاريخ",
+    "colFormat": "الصيغة",
+    "colRequestedBy": "طلب بواسطة",
+    "colStatus": "الحالة",
+    "colType": "النوع",
+    "downloadError": "خطأ أثناء تنزيل التقرير",
+    "historyEmpty": "لا توجد تصديرات حديثة.",
+    "historySearchPlaceholder": "البحث في السجل...",
+    "hrReportUnavailable": "تعذر إنشاء تقرير الموارد البشرية (نقطة النهاية غير متاحة).",
+    "clientSpaceNote": "التصديرات متاحة في مساحة العميل.",
+    "historyClientOnly": "السجل مرئي للعملاء فقط.",
+    "historyError": "تعذر تحميل السجل."
+  },
+  "companyDetail": {
+    "analyzing": "جاري تحليل بيانات العميل...",
+    "retry": "إعادة المحاولة",
+    "fieldAdoption": "اعتماد الميدان",
+    "onboarding": "الإعداد",
+    "anomalies30d": "انحرافات 30 يوم",
+    "payrollReady": "الرواتب جاهزة",
+    "activeEmployees30d": "الموظفون النشطون (30 يوم)",
+    "noPriorityBlockers": "لم يتم اكتشاف عوائق ذات أولوية.",
+    "modulesConfig": "تكوين الوحدات",
+    "servicePlan": "خطة الخدمات",
+    "commercialStatus": "الحالة التجارية",
+    "statusTrial": "تجريبي",
+    "statusActive": "نشط",
+    "statusSuspended": "موقوف",
+    "statusExpired": "منتهي",
+    "startDate": "البداية",
+    "internalNotes": "ملاحظات داخلية",
+    "noSupportTickets": "لا توجد تذاكر دعم لهذا العميل.",
+    "technicalIdentity": "الهوية التقنية",
+    "platformId": "معرف المنصة",
+    "slug": "المعرف",
+    "countryCurrency": "البلد / العملة",
+    "registeredOn": "مسجل في",
+    "lastActivity": "آخر نشاط",
+    "activateClient": "تفعيل العميل",
+    "backToPortfolio": "العودة إلى المحفظة",
+    "endDate": "النهاية",
+    "featuresSaved": "تم حفظ إعدادات الوحدات.",
+    "loadFailed": "تعذر تحميل تفاصيل الشركة. تحقق من صحة UUID.",
+    "loading": "جارٍ التحميل...",
+    "messagePlural": "رسائل",
+    "messageSingular": "رسالة",
+    "moduleActive": "وحدة نشطة",
+    "moduleDisabled": "وحدة معطلة",
+    "modulesConfigHint": "فعّل أو عطّل الميزات المحددة لهذا العميل.",
+    "noPunch": "لا توجد تسجيلات حضور",
+    "notesPlaceholder": "تفاصيل حول التفاوض والخصومات وما إلى ذلك.",
+    "openPlural": "مفتوحة",
+    "openSingular": "مفتوح",
+    "planMissing": "خطة العميل مفقودة.",
+    "priorityActions": "الإجراءات ذات الأولوية",
+    "refresh": "تحديث",
+    "revenueMrr": "الإيراد (MRR)",
+    "riskLevel": "مستوى المخاطر:",
+    "saveConfig": "حفظ الإعدادات",
+    "saving": "جارٍ الحفظ...",
+    "scoreHealth": "درجة الصحة",
+    "subscription": "الاشتراك",
+    "subscriptionUpdated": "تم تحديث الاشتراك بنجاح.",
+    "subtitle": "الصحة التشغيلية والاشتراك وتكوين الوحدات.",
+    "support": "الدعم",
+    "teamActive": "فريق نشط",
+    "updateSubscription": "تحديث الاشتراك",
+    "updating": "جارٍ التحديث...",
+    "viewAllTickets": "عرض كل التذاكر"
+  },
+  "reports": {
+    "attendance_title": "ملخص الحضور",
+    "attendance_desc": "تقرير شهري عن الحضور والتأخير والغيابات لكل موظف.",
+    "month_label": "الشهر",
+    "payroll_title": "ملخص الرواتب",
+    "payroll_desc": "إجمالي إجمالي/صافي والاشتراكات والرسوم لكل فترة رواتب.",
+    "period_label": "الفترة",
+    "leave_title": "أرصدة الإجازات",
+    "leave_desc": "حالة أرصدة الإجازات لجميع الموظفين.",
+    "year_label": "السنة",
+    "headcount_title": "عدد الموظفين",
+    "headcount_desc": "توزيع الموظفين النشطين حسب القسم ونوع العقد والجنس.",
+    "training_title": "متابعة التدريب",
+    "training_desc": "معدلات المشاركة وإتمام التدريب.",
+    "contract_title": "انتهاء العقود",
+    "contract_desc": "العقود المنتهية خلال 30، 60، 90 يومًا القادمة.",
+    "days_label": "أيام",
+    "generate": "إنشاء",
+    "success": "تم تنزيل التقرير بنجاح.",
+    "error": "حدث خطأ أثناء إنشاء التقرير.",
+    "subtitle": "أنشئ ونزّل تقارير الموارد البشرية: الحضور، الرواتب، الإجازات، الموظفين، التدريب والعقود."
+  },
+  "notifications": {
+    "channel_inapp": "داخل التطبيق",
+    "channel_email_desc": "رسائل مهمة وتأكيدات.",
+    "channel_push_desc": "تنبيهات سريعة على الأجهزة المسجلة.",
+    "channel_sms_desc": "قناة قصيرة للطوارئ، تُفعَّل بعد الاشتراك.",
+    "channel_whatsapp_desc": "قناة محادثة مستقبلية، بموافقة صريحة.",
+    "category_payroll": "الرواتب",
+    "category_security": "الأمان",
+    "category_system": "النظام",
+    "category_product_tips": "نصائح المنتج",
+    "categories_title": "الفئات",
+    "save_error": "تعذر حفظ التفضيلات الآن.",
+    "channel_inapp_desc": "مركز الإشعارات للويب والجوال.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "تعذر وضع علامة مقروء على جميع الإشعارات."
+        }
+      },
+      "read": {
+        "error": "تعذر وضع علامة مقروء على الإشعار."
+      }
+    },
+    "delete": {
+      "error": "تعذر حذف الإشعار."
+    },
+    "deleted": "تم حذف الإشعار."
+  },
+  "employees": {
+    "load_error": "تعذر تحميل الموظفين.",
+    "title": "الفريق",
+    "subtitle": "عرض المدير المتصل بواجهة الموارد البشرية: قائمة الموظفين والحالة ونقاط الدخول الأساسية.",
+    "total_team": "إجمالي الفريق",
+    "source": "المصدر",
+    "state": "الحالة",
+    "loading_short": "جارٍ التحميل",
+    "connected_api": "متصل بواجهة البرمجة",
+    "recent_collaborators": "المتعاونون الأخيرون",
+    "list_loading": "جارٍ تحميل قائمة الفريق...",
+    "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "تم إرسال الطلب!",
+      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
+    },
+    "back_to_home": "العودة إلى الرئيسية",
+    "create_company": "إنشاء شركة",
+    "company_name": "اسم الشركة",
+    "company_email": "بريد الشركة الإلكتروني",
+    "sector": "قطاع الأعمال",
+    "country": "البلد",
+    "city": "المدينة",
+    "phone": "الهاتف",
+    "description": "الوصف",
+    "submit_request": "إرسال الطلب",
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
+  },
+  "partnerPage": {
+    "loading": "جارٍ تحميل مساحتك...",
+    "applyErrorPrefix": "خطأ أثناء التقديم: ",
+    "notApplied": {
+      "title": "كن شريكاً",
+      "subtitle": "انضم إلى منظومة Leopardo RH واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.",
+      "individual": "التقديم كفرد",
+      "agency": "التقديم كوكالة"
+    },
+    "pending": {
+      "title": "الطلب قيد المراجعة",
+      "body": "يتم حالياً مراجعة طلبك من قبل فريق المبيعات. ستتلقى بريداً إلكترونياً فور تفعيل وصولك."
+    },
+    "dashboard": {
+      "title": "لوحة تحكم الشريك",
+      "subtitle": "تابع تحويلاتك وعمولاتك في Leopardo RH — حالة شريك نشط."
+    },
+    "metrics": {
+      "conversions": "التحويلات",
+      "totalEarned": "إجمالي الأرباح",
+      "pending": "قيد الانتظار",
+      "withdrawable": "الرصيد القابل للسحب"
+    },
+    "commissions": {
+      "title": "أحدث العمولات",
+      "empty": "لا توجد عمولات مسجلة."
+    },
+    "table": {
+      "tenantId": "معرّف المستأجر",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "amount": "المبلغ",
+      "statusPaid": "مدفوعة",
+      "statusPending": "قيد الانتظار"
+    },
+    "payout": {
+      "title": "الدفع",
+      "body": "تُدفع عمولاتك بمجرد بلوغ الحد الأدنى. تأكد من أن بياناتك البنكية محدّثة.",
+      "request": "طلب تحويل",
+      "sending": "جارٍ الإرسال...",
+      "insufficient": "الرصيد غير كافٍ لطلب تحويل (الحد الأدنى 100,00 €).",
+      "success": "تم إرسال طلب التحويل بنجاح.",
+      "errorPrefix": "خطأ أثناء طلب التحويل: "
+    },
+    "referral": {
+      "title": "رابط الإحالة",
+      "unavailable": "الرابط غير متاح",
+      "copy": "نسخ رابطه",
+      "copied": "تم النسخ!",
+      "copyError": "تعذر نسخ الرابط. انسخه يدوياً."
+    }
+  },
+  "api": {
+    "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "الموارد غير موجودة: :endpoint",
+    "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا.",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
+    "invalidData": "بيانات غير صالحة.",
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
+    "login_invalid_json": "نص الطلب غير صالح.",
+    "login_timeout": "يستغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى بعد قليل.",
+    "login_network_error": "تعذر الوصول إلى الخادم.",
+    "login_backend_error": "استجابة خادم غير متوقعة."
+  },
+  "settingsPage": {
+    "cancel": "إلغاء",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "disable2fa": "إيقاف المصادقة الثنائية",
+    "disabled": "معطّل",
+    "email": "عنوان البريد الإلكتروني",
+    "enable2fa": "تفعيل المصادقة الثنائية",
+    "enabled": "مفعّل",
+    "enterCodeStep": "2. أدخل الرمز المكوّن من 6 أرقام",
+    "fullName": "الاسم الكامل",
+    "generateSecret": "إنشاء رمز 2FA السري",
+    "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
+    "manualSecret": "الرمز اليدوي:",
+    "minLengthHint": "8 أحرف على الأقل.",
+    "newPassword": "كلمة المرور الجديدة",
+    "password": "كلمة المرور",
+    "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
+    "passwordTitle": "كلمة المرور",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+    "passwordsMismatch": "كلمتا المرور غير متطابقتين.",
+    "profileSubtitle": "الاسم وعنوان البريد الإلكتروني المستخدمان لتسجيل الدخول.",
+    "profileTitle": "معلومات الملف الشخصي",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+    "saveChanges": "حفظ التغييرات",
+    "scanStep": "1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:",
+    "subtitle": "إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.",
+    "title": "حسابي",
+    "twoFactorActiveHint": "المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.",
+    "twoFactorDisabled": "تم إيقاف المصادقة الثنائية.",
+    "twoFactorEnabled": "تم تفعيل المصادقة الثنائية بنجاح.",
+    "twoFactorSubtitle": "أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.",
+    "twoFactorTitle": "المصادقة الثنائية (2FA)",
+    "updatePassword": "تحديث كلمة المرور",
+    "bankingError": "خطأ أثناء حفظ البيانات البنكية.",
+    "bankingSubtitle": "مطلوب IBAN وBIC لشركتك لتصدير تحويلات SEPA.",
+    "bankingTitle": "البيانات البنكية SEPA",
+    "bankingUpdated": "تم حفظ البيانات البنكية.",
+    "bankingWarning": "سيعيد تصدير SEPA خطأ 422 حتى يتم تكوين IBAN الخاص بالشركة.",
+    "companyBic": "BIC / SWIFT (اختياري)",
+    "companyIban": "IBAN الشركة",
+    "ibanHint": "تنسيق IBAN وفق ISO 13616 (أحرف كبيرة بدون مسافات). يتم تجاهل المسافات تلقائيًا.",
+    "ibanPlaceholderDZ": "IBAN أو RIB جزائري (20 رقمًا)",
+    "saveBanking": "حفظ البيانات البنكية",
+    "sepaNotReady": "SEPA غير مهيأ",
+    "sepaReady": "SEPA جاهز"
+  },
+  "systemPage": {
+    "apiError": "خطأ: :error",
+    "apiOperational": "API يعمل",
+    "apiOperationalDb": "API يعمل — قاعدة البيانات :ms مللي ثانية",
+    "apiServices": "خدمات API",
+    "apiUnavailable": "غير متاح — GET /health/live",
+    "database": "قاعدة البيانات",
+    "dbError": "خطأ: :error",
+    "dbLatency": "زمن الاستجابة: :ms مللي ثانية",
+    "dbUnavailable": "غير متاح — قم بتشغيل فحص الصحة.",
+    "dbUnreachable": "تعذر الوصول إلى قاعدة البيانات",
+    "globalError": "الفحص المجمّع: تعذر الوصول إلى قاعدة البيانات.",
+    "globalHealthy": "فحص قاعدة البيانات وRedis المجمّع يعمل.",
+    "globalStatus": "الحالة العامة",
+    "globalUnavailable": "غير متاح — GET /admin/dashboard/stats",
+    "globalWarning": "الفحص المجمّع: تم اكتشاف تدهور في الأداء.",
+    "healthCheck": "فحص الصحة",
+    "healthCheckRunning": "جارٍ الفحص...",
+    "healthError": "اكتمل فحص الصحة — قاعدة البيانات في حالة خطأ",
+    "healthLiveUnreachable": "تعذر الوصول إلى فحص /health/live.",
+    "healthOk": "اكتمل فحص الصحة — قاعدة البيانات تعمل",
+    "healthUnreachable": "اكتمل فحص الصحة — تعذر الوصول إلى قاعدة البيانات",
+    "infraDetails": ":active شركة نشطة · PHP :php · قائمة الانتظار :queue",
+    "infraUnavailable": "غير متاح — GET /platform/metrics/overview",
+    "infrastructure": "البنية التحتية",
+    "metricsLoadError": "خطأ أثناء تحميل مقاييس المنصة",
+    "notifObsLoadError": "خطأ أثناء تحميل مراقبة الإشعارات",
+    "queueObsLoadError": "خطأ أثناء تحميل مراقبة الوظائف",
+    "retry": "إعادة المحاولة",
+    "serviceUnreachable": "تعذر الوصول إلى الخدمة",
+    "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
+    "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
+    "title": "إدارة النظام"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
+    "no_active_period": "لا توجد فترة نشطة",
+    "no_active_subscription": "لا يوجد اشتراك نشط",
+    "period_label": "الفترة",
+    "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
+    "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
+    "checkout_failed": "تعذر إنشاء جلسة الدفع.",
+    "redirect_url_invalid": "يجب أن تنتمي عناوين إعادة التوجيه إلى الموقع المسموح به."
+  },
+  "contracts": {
+    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
+    "allStatuses": "كل الحالات",
+    "mobile_title": "عقدي",
+    "back_tooltip": "رجوع",
+    "empty_title": "لا يوجد عقد",
+    "empty_description": "سيظهر عقدك هنا بمجرد تكوينه.",
+    "label_type": "النوع",
+    "label_start_date": "البداية",
+    "label_end_date": "النهاية",
+    "label_base_salary": "الراتب الأساسي",
+    "loading": "جارٍ تحميل العقود...",
+    "status_active": "نشط",
+    "status_expired": "منتهي الصلاحية",
+    "status_draft": "مسودة",
+    "status_cdi": "دائم (CDI)"
+  },
   "training": {
     "titlePlaceholder": "العنوان *",
     "durationPlaceholder": "المدة (ساعة)",
@@ -11052,6 +11457,199 @@
   "attendanceMenuMonthly": "شهري الكامل",
   "settingsRecoveryEmailHint": "بريد الاسترداد (اختياري)",
   "settingsCompanyQrLabel": "رمز QR للشركة"
+  "access": {
+    "denied": {
+      "body": "لا يملك حسابك دور المدير المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، موارد بشرية…) أو تواصل مع المسؤول.",
+      "logout": "تسجيل الخروج",
+      "title": "تم رفض الوصول",
+      "body_hr": "لا يملك حسابك دور الموارد البشرية المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، مدير…) أو تواصل مع المسؤول."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "يتم اكتشاف حضورك تلقائيًا عند دخولك منطقة الشركة. لا حاجة لأي إجراء منك."
+      }
+    },
+    "manual": {
+      "desc": "سجل يدويًا بالضغط على زرّي الوصول والمغادرة في شاشة الحضور."
+    },
+    "mode": {
+      "title": "وضع التسجيل"
+    },
+    "qr": {
+      "scan": {
+        "desc": "امسح رمز QR المعروض عند مدخل الشركة لتسجيل دخولك وخروجك."
+      }
+    },
+    "recommended": "موصى به",
+    "save": {
+      "error": "تعذر حفظ تفضيلاتك. تحقق من اتصالك."
+    },
+    "title": "اختر كيف تريد تسجيل حضورك كل يوم."
+  },
+  "approval": {
+    "approved": "تمت الموافقة على الطلب",
+    "rejected": "تم رفض الطلب"
+  },
+  "approvals": {
+    "empty": "لا توجد موافقات معلقة.",
+    "up": {
+      "to": {
+        "date": "كل شيء محدث"
+      }
+    },
+    "loading": "جارٍ تحميل الموافقات...",
+    "reject": {
+      "reason": {
+        "hint": "اشرح السبب...",
+        "label": "سبب الرفض"
+      }
+    },
+    "title": "الموافقات"
+  },
+  "back": "رجوع",
+  "employee": {
+    "number": "الموظف #{id}"
+  },
+  "error": {
+    "prefix": "خطأ: {message}",
+    "unexpected": "حدث خطأ"
+  },
+  "evaluation": {
+    "period": "الفترة: {period}"
+  },
+  "evaluations": {
+    "empty": "لا توجد تقييمات",
+    "title": "تقييماتي",
+    "empty_hint": "ليس لديك أي تقييم مسجل بعد."
+  },
+  "feature": {
+    "coming": {
+      "soon": "الميزة قريبًا"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "إكمال تأهيلي"
+    },
+    "onboarding": {
+      "hint": "هيئ مساحة عملك في بضع خطوات."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "جارٍ تحميل الملخص الشهري..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "طي",
+      "empty": "سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.",
+      "expand": "توسيع"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "الصفحة المطلوبة غير موجودة أو فشل التنقل."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "لا توجد جلسة GPS بانتظار الموافقة.",
+      "to": {
+        "validate": "للموافقة"
+      },
+      "up": {
+        "to": {
+          "date": "كل شيء محدث"
+        }
+      }
+    }
+  },
+  "refresh": "تحديث",
+  "register": {
+    "create": {
+      "account": "أنشئ حسابك"
+    },
+    "creating": "جارٍ إنشاء الحساب...",
+    "first": {
+      "name": "الاسم الأول"
+    },
+    "min": {
+      "chars": "8 أحرف على الأقل"
+    },
+    "password": "كلمة المرور",
+    "required": "مطلوب",
+    "submit": "أنشئ حسابي"
+  },
+  "retry": "إعادة المحاولة",
+  "sa": {
+    "approved": "تمت الموافقة",
+    "config": {
+      "load": {
+        "error": "تعذر تحميل الإعدادات.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "حضور GPS — لوحة تحكم الفريق"
+    },
+    "detected": "تم الكشف",
+    "disable": {
+      "auto": {
+        "gps": "تعطيل GPS التلقائي"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "تفعيل GPS التلقائي"
+      }
+    },
+    "forced": "مفروض",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "لم يتم إعداد منطقة GPS لشركتك بعد."
+        }
+      }
+    },
+    "permission": {
+      "denied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
+    },
+    "presence": {
+      "in": {
+        "progress": "حضور قيد التقدم منذ {time}"
+      }
+    },
+    "recent": {
+      "sessions": "الجلسات الأخيرة"
+    },
+    "rejected": "مرفوضة",
+    "sessions": {
+      "load": {
+        "error": "تعذر تحميل جلسات GPS. تحقق من اتصالك."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة."
+      }
+    },
+    "status": {
+      "approved": "تمت الموافقة",
+      "cancelled": "ملغاة",
+      "detected": "تم الكشف",
+      "pending": "قيد التحقق",
+      "rejected": "مرفوضة"
+    }
+  },
+  "session": {
+    "approved": "تمت الموافقة على الجلسة ✓",
+    "entry": {
+      "at": "الدخول: {time}"
+    },
+    "rejected": "تم رفض الجلسة"
+  },
   "sessions": {
     "to": {
       "validate": "جلسات للموافقة"
@@ -13247,6 +13845,10 @@
       "loadError": "تعذر تحميل القائمة.",
       "items": "عناصر",
       "cart": "السلة",
+      "branch": "الفرع",
+      "cart": "السلة",
+      "takeaway": "للطلب الخارجي",
+      "delivery": "توصيل",
       "empty": "سلة التسوق فارغة.",
       "total": "الإجمالي",
       "checkout": "تأكيد الطلب",
@@ -13288,6 +13890,12 @@
       "backToMenu": "العودة إلى القائمة",
       "orderError": "تعذر تقديم الطلب.",
       "trackError": "تعذر تتبع الطلب.",
+      "payCash": "الدفع نقدًا",
+      "payMobileMoney": "الدفع عبر المحفظة الإلكترونية",
+      "paid": "تم تأكيد الدفع. بالهناء والشفاء!",
+      "pendingPayment": "الدفع قيد التأكيد…",
+      "startNewOrder": "طلب جديد",
+      "orderError": "تعذر تقديم الطلب.",
       "paymentError": "تعذر معالجة الدفع."
     },
     "public_shop": {

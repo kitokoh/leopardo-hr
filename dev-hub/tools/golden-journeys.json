@@ -445,6 +445,13 @@
     }
   ]
 }
+      "id": "GJ-RESTO-01",
+      "name": "Service en salle complet (flux roi)",
+      "solution": "restaurantmanager",
+      "acceptance": "La caisse est ouverte, la commande passe de la création au paiement puis la session est clôturée — sans fuite cross-tenant (RESTO-901, issue #6230).",
+      "steps": [
+        {
+          "order": 1,
           "action": "Ouvrir une session de caisse",
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions",
@@ -513,6 +520,11 @@
           "method": "POST",
           "route": "/api/v1/restaurant/orders",
           "role": "server"
+          "order": 2,
+          "action": "Créer la commande",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "manager:server"
         },
         {
           "order": 3,
@@ -520,6 +532,7 @@
           "method": "POST",
           "route": "/api/v1/restaurant/orders/{restaurantOrder}/items",
           "role": "server"
+          "role": "manager:server"
         },
         {
           "order": 4,
@@ -555,6 +568,21 @@
           "method": "POST",
           "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
           "role": "manager"
+          "role": "manager:server"
+        },
+        {
+          "order": 5,
+          "action": "Encaisser (espèces)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
+          "role": "manager:server"
+        },
+        {
+          "order": 6,
+          "action": "Clôturer la session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{restaurantPosSession}/close",
+          "role": "manager:server"
         }
       ]
     }

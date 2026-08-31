@@ -51,6 +51,9 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProduc
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicMenuLinkController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicOrderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
@@ -349,3 +352,8 @@ Route::post('/restaurant/public/orders/{order}/pay', [RestaurantPublicOrderContr
     ->name('restaurant.public.orders.pay');
 Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantPublicOrderController::class, 'deliveryWebhook'])
     ->middleware('throttle:60,1');
+        // Boutique en ligne publique — gestion du jeton (RESTO-805/#6226,
+        // restaurant.manage). Le jeton en clair n'est renvoyé qu'à la rotation.
+        Route::get('/public-shop-token', [RestaurantPublicShopController::class, 'token']);
+        Route::post('/public-shop-token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
+    });

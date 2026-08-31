@@ -14,6 +14,11 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
  * `supports()` répond true). Le registre est alimenté par le service provider
  * du module ; un événement sans consommateur est mis en dead-letter par le
  * dispatcher (`restaurant:outbox-dispatch`).
+ * RESTO-806 (#6227) — Registre des consommateurs d'événements d'outbox
+ * RestaurantManager (miroir CrmOutboxConsumerRegistry #5741).
+ *
+ * Chaque événement est routé vers UN consommateur (le premier dont
+ * `supports()` répond true).
  */
 final class RestaurantOutboxConsumerRegistry
 {

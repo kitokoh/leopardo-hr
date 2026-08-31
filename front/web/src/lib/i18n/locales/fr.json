@@ -4707,6 +4707,7 @@
     "tax": "TVA",
     "discount": "Remise",
     "total": "Total",
+    "loading": "Chargement de la file cuisine…",
     "kiosk": {
       "title": "Borne de commande",
       "tokenInvalid": "Jeton de boutique invalide ou absent.",
@@ -4715,6 +4716,10 @@
       "loadError": "Impossible de charger le menu.",
       "items": "articles",
       "cart": "Panier",
+      "branch": "Branche",
+      "cart": "Panier",
+      "takeaway": "À emporter",
+      "delivery": "Livraison",
       "empty": "Votre panier est vide.",
       "total": "Total",
       "checkout": "Valider la commande",
@@ -4756,6 +4761,12 @@
       "backToMenu": "Retour au menu",
       "orderError": "Impossible de passer la commande.",
       "trackError": "Impossible de suivre la commande.",
+      "payCash": "Payer en espèces",
+      "payMobileMoney": "Payer par mobile money",
+      "paid": "Paiement confirmé. Bon appétit !",
+      "pendingPayment": "Paiement en attente de confirmation…",
+      "startNewOrder": "Nouvelle commande",
+      "orderError": "Impossible de passer la commande.",
       "paymentError": "Impossible de traiter le paiement."
     },
     "public_shop": {

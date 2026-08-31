@@ -25,12 +25,46 @@ const menu = {
 };
 
 describe('RestaurantKioskPage (RESTO-807-front #6405)', () => {
+  data: [
+    {
+      id: 1,
+      name: 'Plats',
+      sort_order: 1,
+      products: [
+        {
+          id: 101,
+          code: 'BURGER-XL',
+          name: 'Burger XL',
+          description: 'Double steak',
+          price_minor: 3500,
+          currency: 'XAF',
+          image_asset_id: null,
+        },
+        {
+          id: 102,
+          code: 'SALADE',
+          name: 'Salade César',
+          description: null,
+          price_minor: 2500,
+          currency: 'XAF',
+          image_asset_id: null,
+        },
+      ],
+    },
+  ],
+};
+
+const branches = { data: [{ id: 1, code: 'MAIN', name: 'Branche Centrale' }] };
+
+describe('RestaurantKioskPage (RESTO-807)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     window.localStorage.setItem('preferred_locale', 'fr');
     window.history.pushState({}, '', '/kiosk?token=rshop_test');
     mockedApiFetch.mockImplementation(async (endpoint: string) => {
       if (endpoint === '/public/restaurant/kiosk/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
       throw new Error(`Unexpected endpoint: ${endpoint}`);
     });
   });
@@ -41,6 +75,7 @@ describe('RestaurantKioskPage (RESTO-807-front #6405)', () => {
     await waitFor(() => {
       expect(screen.getByText('Burger XL')).toBeInTheDocument();
     });
+
     expect(screen.getByText('Salade César')).toBeInTheDocument();
     expect(screen.getByText('Borne de commande')).toBeInTheDocument();
   });
@@ -51,6 +86,8 @@ describe('RestaurantKioskPage (RESTO-807-front #6405)', () => {
     await screen.findByText('Burger XL');
 
     await userEvent.click(screen.getAllByLabelText('Ajouter')[0]);
+    const addButtons = screen.getAllByLabelText('Ajouter');
+    await userEvent.click(addButtons[0]);
 
     expect(screen.getByText('1 articles')).toBeInTheDocument();
     expect(screen.getAllByText('35.00 XAF').length).toBeGreaterThanOrEqual(2);
@@ -73,6 +110,24 @@ describe('RestaurantKioskPage (RESTO-807-front #6405)', () => {
       if (endpoint === '/public/restaurant/kiosk/orders' && options?.method === 'POST') {
         return jsonResponse(order);
       }
+  it('passe une commande complète et paie en espèces', async () => {
+    const order = {
+      data: {
+        reference: 'RST-KIOSK1',
+        status: 'draft',
+        total_minor: 3500,
+        currency: 'XAF',
+        subtotal_minor: 3500,
+        tax_minor: 0,
+      },
+    };
+    const payment = { data: { id: 1, status: 'confirmed' } };
+
+    mockedApiFetch.mockImplementation(async (endpoint: string, options?: RequestInit) => {
+      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
+      if (endpoint === '/public/restaurant/orders' && options?.method === 'POST') return jsonResponse(order);
+      if (endpoint.endsWith('/pay') && options?.method === 'POST') return jsonResponse(payment);
       throw new Error(`Unexpected endpoint: ${endpoint}`);
     });
 
@@ -88,6 +143,14 @@ describe('RestaurantKioskPage (RESTO-807-front #6405)', () => {
     expect(screen.getByText('42')).toBeInTheDocument();
     expect(screen.getByText('RST-KIOSK1')).toBeInTheDocument();
     expect(screen.getByText(/Réglez à l'encaissement/)).toBeInTheDocument();
+      expect(screen.getByText('RST-KIOSK1')).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByText('Payer en espèces'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Paiement confirmé. Bon appétit !')).toBeInTheDocument();
+    });
   });
 
   it('affiche une erreur explicite si le jeton est absent', async () => {
