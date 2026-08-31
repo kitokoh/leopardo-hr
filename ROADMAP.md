@@ -47,6 +47,9 @@ Activation of specialized modules based on customer demand:
 - **Security & Vision:** RTSP camera streaming and AI-assisted site monitoring.
 - **Advanced Absence:** Multi-step approval workflows and leave balance policies.
 - **Leo AI (Beta):** Conversation-driven HR assistant for managers.
+- **CRM client (opt-in, #5742):** module CRM tenant-scoped sous `/api/v1/crm/*`,
+  activable par entreprise via le PATCH features plateforme (flag `crm`,
+  désactivé par défaut — ADR-CRM-004, `docs/specifications/PLAN-V0-V1-CRM-CLIENT-SQL-INTEGRATIONS.md`).
 
 ## 🏢 Phase 3: Enterprise & Scale (2027)
 - Physical database isolation (Schema Mode) for large corporations — *déjà activé en partie : multitenancy `schema` en production (voir PILOTAGE.md)*.

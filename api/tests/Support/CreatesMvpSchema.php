@@ -1224,6 +1224,19 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('crm_task_reminders'))) {
+            // Issue #5720 — relances internes des tâches CRM (idempotence).
+            Schema::create($this->moduleTable('crm_task_reminders'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('task_id')->index();
+                $table->date('remind_date');
+                $table->timestampTz('created_at')->useCurrent();
+
+                $table->unique(['task_id', 'remind_date'], 'crm_task_reminders_task_date_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('employee_documents'))) {
             Schema::create($this->moduleTable('employee_documents'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
@@ -2400,6 +2413,10 @@ trait CreatesMvpSchema
                 $table->string('contact_phone', 40)->nullable();
             });
         }
+
+        $this->createCrmChannelTables();
+        $this->createCrmAutomationTables();
+        $this->createCrmExportTables();
 
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
@@ -5869,6 +5886,197 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
             });
         }
+    }
+
+    /**
+     * #5728 — Automatisations CRM tenant. Miroir des migrations tenant
+     * 2026_08_28_000003_5728_create_crm_automation_tables.php.
+     */
+    private function createCrmAutomationTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_automations'))) {
+            Schema::create($this->moduleTable('crm_automations'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('trigger_event', 80);
+                $table->json('conditions')->nullable();
+                $table->json('actions');
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('version')->default(1);
+                $table->uuid('created_by')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_automations_company_status_index');
+                $table->index(['company_id', 'trigger_event'], 'crm_automations_company_trigger_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_runs'))) {
+            Schema::create($this->moduleTable('crm_automation_runs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('automation_id')->index();
+                $table->string('trigger_event', 80);
+                $table->string('entity_type', 40)->nullable();
+                $table->string('entity_id', 64)->nullable();
+                $table->string('run_key', 160);
+                $table->json('conditions_snapshot')->nullable();
+                $table->json('actions_snapshot')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->unsignedTinyInteger('attempts')->default(0);
+                $table->unsignedTinyInteger('max_attempts')->default(1);
+                $table->boolean('dry_run')->default(false);
+                $table->text('error')->nullable();
+                $table->timestamp('ran_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'run_key'], 'crm_automation_runs_company_run_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_states'))) {
+            Schema::create($this->moduleTable('crm_automation_states'), function (Blueprint $table): void {
+                $table->uuid('company_id')->primary();
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('updated_at')->nullable();
+            });
+        }
+    }
+
+    /**
+     * #5729 — Jobs d'export CRM tenant. Miroir de la migration tenant
+     * 2026_08_28_000002_5729_create_crm_export_jobs_table.php.
+     */
+    private function createCrmExportTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_export_jobs'))) {
+            Schema::create($this->moduleTable('crm_export_jobs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('user_id')->nullable()->index();
+                $table->string('entity', 30);
+                $table->string('format', 10)->default('csv');
+                $table->json('filters')->nullable();
+                $table->json('columns')->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('progress')->default(0);
+                $table->string('file_path', 500)->nullable();
+                $table->string('file_name', 255)->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('error', 500)->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_exports_company_status_index');
+                $table->index(['company_id', 'created_at'], 'crm_exports_company_created_index');
+            });
+        }
+    }
+
+    /**
+     * #5725/#5727 — Canaux de communication CRM tenant. Miroir des
+     * migrations tenant (garde mvp-parity #5443) : toute table CRM ajoutée
+     * ici DOIT correspondre aux migrations de
+     * api/database/migrations/tenant/2026_08_28_000001_5725_*.php.
+     */
+    private function createCrmChannelTables(): void
+    {
+        if (! Schema::hasTable($this->moduleTable('crm_channels'))) {
+            Schema::create($this->moduleTable('crm_channels'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('type', 20);
+                $table->string('provider', 60);
+                $table->string('status', 20)->default('inactive');
+                $table->boolean('is_configured')->default(false);
+                $table->unsignedInteger('monthly_quota')->nullable();
+                $table->unsignedInteger('used_this_month')->default(0);
+                $table->string('quota_period', 7)->nullable();
+                $table->json('settings')->nullable();
+                $table->string('last_error_message', 255)->nullable();
+                $table->timestamp('last_error_at')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'type', 'provider'], 'crm_channels_company_type_provider_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_channel_conversations'))) {
+            Schema::create($this->moduleTable('crm_channel_conversations'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('channel_id')->index();
+                $table->string('provider_conversation_id', 160)->nullable();
+                $table->string('contact_ref_type', 20)->nullable();
+                $table->uuid('contact_ref_id')->nullable();
+                $table->timestamp('last_message_at')->nullable();
+                $table->unsignedInteger('unread_count')->default(0);
+                $table->string('status', 20)->default('open');
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'provider_conversation_id'], 'crm_convs_company_provider_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_channel_messages'))) {
+            Schema::create($this->moduleTable('crm_channel_messages'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('channel_id')->index();
+                $table->uuid('conversation_id')->nullable()->index();
+                $table->string('provider', 60);
+                $table->string('provider_message_id', 160)->nullable();
+                $table->string('direction', 10)->default('outbound');
+                $table->string('to_address', 255)->nullable();
+                $table->string('from_address', 255)->nullable();
+                $table->text('body')->nullable();
+                $table->string('template_name', 100)->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('attempts')->default(0);
+                $table->unsignedTinyInteger('max_attempts')->default(3);
+                $table->string('error_code', 60)->nullable();
+                $table->text('error_message')->nullable();
+                $table->decimal('cost', 12, 4)->nullable();
+                $table->timestamp('sent_at')->nullable();
+                $table->timestamp('delivered_at')->nullable();
+                $table->timestamp('read_at')->nullable();
+                $table->timestamp('failed_at')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_messages_company_status_index');
+                $table->index(['company_id', 'direction'], 'crm_messages_company_direction_index');
+                $table->unique(['company_id', 'provider_message_id'], 'crm_messages_company_provider_msg_unique');
+            });
+        }
+
+        // #5729 — Jobs d'export CRM (miroir de la migration tenant).
+        if (! Schema::hasTable($this->moduleTable('crm_export_jobs'))) {
+            Schema::create($this->moduleTable('crm_export_jobs'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('user_id')->nullable()->index();
+                $table->string('entity', 30);
+                $table->string('format', 10)->default('csv');
+                $table->json('filters')->nullable();
+                $table->json('columns')->nullable();
+                $table->string('status', 20)->default('queued');
+                $table->unsignedTinyInteger('progress')->default(0);
+                $table->string('file_path', 500)->nullable();
+                $table->string('file_name', 255)->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('error', 500)->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_exports_company_status_index');
+                $table->index(['company_id', 'created_at'], 'crm_exports_company_created_index');
+            });
+        }
 
     }
 
@@ -6251,6 +6459,48 @@ trait CreatesMvpSchema
                     ['company_id', 'report', 'period_from', 'period_to'],
                     'acc_reporting_snapshots_company_report_period_unique',
                 );
+        // CRM client (#5714/#5741) — tables tenant récentes couvertes par la
+        // fixture (garde de parité CreatesMvpSchema ↔ migrations tenant #5443).
+        if (! Schema::hasTable($this->tenantTable('crm_imports'))) {
+            Schema::create($this->tenantTable('crm_imports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('entity_type', 20);
+                $table->string('filename', 255);
+                $table->string('status', 20)->default('previewed');
+                $table->unsignedInteger('total_rows')->default(0);
+                $table->unsignedInteger('valid_rows')->default(0);
+                $table->unsignedInteger('error_rows')->default(0);
+                $table->jsonb('columns')->nullable();
+                $table->jsonb('preview_data')->nullable();
+                $table->jsonb('errors')->nullable();
+                $table->jsonb('raw_rows')->nullable();
+                $table->jsonb('result')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->unsignedInteger('committed_by')->nullable();
+                $table->unsignedInteger('cancelled_by')->nullable();
+                $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->tenantTable('crm_outbox_events'))) {
+            Schema::create($this->tenantTable('crm_outbox_events'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('event_type', 80);
+                $table->string('aggregate_type', 120)->nullable();
+                $table->string('aggregate_id', 120)->nullable();
+                $table->jsonb('payload');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->timestampTz('processed_at')->nullable();
+                $table->string('idempotency_key', 255);
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+                $table->unique(['company_id', 'idempotency_key'], 'crm_outbox_company_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'crm_outbox_company_status_due_idx');
             });
         }
 

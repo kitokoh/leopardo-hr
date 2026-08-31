@@ -10,6 +10,8 @@ use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
+use App\Http\Middleware\CompressResponse;
+use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\EnsureKioskSearchPathReset;
@@ -76,6 +78,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
+        // CRM #5729 — purge des exports expirés et de leurs fichiers (disque privé)
+        $schedule->command('crm:exports:cleanup')->daily();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
@@ -188,6 +192,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
+            // #5742 (CRM PRE) : gate serveur du CRM client (kill switch global
+            // + flag tenant `crm`, ADR-CRM-004) — à appliquer sur le groupe
+            // /api/v1/crm/* (api/routes/modules/crm.php).
+            'crm.enabled' => EnsureCrmEnabledMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

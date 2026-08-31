@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Infrastructure\Services\EmployeeEmailLookupService;
 use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
+use App\Shared\Services\InboundWebhookVerifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -52,9 +53,36 @@ class EmailBounceWebhookController extends Controller
             return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
+        // #5740 — frontière hostile : bornes d'entrée AVANT tout traitement
+        // (l'idempotence est persistée ensuite, l'ordre begin → traitement
+        // reste inchangé). Le secret partagé seul authentifie ; la taille et
+        // la forme du payload sont bornées ; la fenêtre de rejeu est
+        // optionnelle (providers legacy sans horodatage) mais vérifiée si
+        // l'en-tête est présent.
+        $rawPayload = $request->getContent();
+
+        if (! InboundWebhookVerifier::payloadWithinLimit($rawPayload)) {
+            Log::warning('Email bounce webhook: payload too large', ['bytes' => strlen($rawPayload)]);
+
+            return new JsonResponse(['error' => 'Payload too large'], 413);
+        }
+
+        if ($request->isJson() && ! InboundWebhookVerifier::isJsonPayload($rawPayload)) {
+            Log::warning('Email bounce webhook: invalid JSON payload');
+
+            return new JsonResponse(['error' => 'Invalid JSON'], 400);
+        }
+
+        $timestamp = InboundWebhookVerifier::timestampFromHeader($request->header('X-Webhook-Timestamp'));
+
+        if ($timestamp !== null && ! InboundWebhookVerifier::timestampIsFresh($timestamp)) {
+            Log::warning('Email bounce webhook: expired or skewed timestamp', ['timestamp' => $timestamp]);
+
+            return new JsonResponse(['error' => 'Expired timestamp'], 400);
+        }
+
         // #5444 — idempotence persistée : le registre clé (payload brut) sert de
         // verrou anti-rejeu AVANT tout traitement (begin → complete/release).
-        $rawPayload = $request->getContent();
         $eventId = $this->registry->eventId($rawPayload);
         $replay = $this->registry->begin('email-bounce', $eventId, hash('sha256', $rawPayload));
 

@@ -19,6 +19,15 @@ Note 2026-08-30 (BC-26 DELIVERY, DELIVERY-101/#6282) : nouvelle surface API du m
 livraison generique — smoke `GET /api/v1/delivery/ping` (feature flag `companies.features.delivery`,
 403 FEATURE_NOT_ENABLED sans flag) ; les API livraisons/tournees/tracking/COD/rapports
 (`/api/v1/deliveries/*`) arrivent dans les lots suivants (DELIVERY-201..208).
+Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouvelle surface API CRM tenant —
+
+- `POST /api/v1/crm/consents` (accord/refus) + `POST /api/v1/crm/consents/{id}/revoke` : consentements par (contact, canal, finalité), historique immuable `audit_logs` (RGPD art. 7), aucun envoi sans consentement (fail-closed) ;
+- `GET/POST/PUT/DELETE /api/v1/crm/segments*` + `POST /api/v1/crm/segments/{id}/rebuild` + `GET /{id}/members` : définitions JSONB strictement allowlistées (aucun SQL utilisateur), versionnées (snapshot reproductible), membership tenant-scopée ;
+- `GET/POST/PUT/DELETE /api/v1/crm/campaigns*` + `start|pause|resume|cancel|finish` + `report` : cycle de vie strict (transitions invalides 422), audience segment OU explicite filtrée au consentement au start, envoi stoppable et observable ;
+- `POST /api/v1/crm/email/transactional|marketing` : marketing soumis au consentement + suppression (adresse hashée SHA-256, aucune PII) + quotas par tenant/heure (429 `EMAIL_RATE_LIMITED`) ;
+- `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
+- RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
+- Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
 
 ## Perimetre
 
@@ -1606,6 +1615,11 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
   employé simple → 403 ; événement outbox → livraison signée (en-têtes HMAC + timestamp) ; rejeu → pas de doublon ;
   échec HTTP → retry/backoff puis dead-letter après 5 tentatives.
 - Couverture : `api/tests/Feature/Travel/TravelWebhookTest.php` (215 tests Travel au total).
+Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client tenant (`App\Modules\CRM`) — surface API ajoutee :
+- Canaux de communication : `GET/POST /crm/channels`, `PATCH /crm/channels/{channel}`, `POST /crm/channels/{channel}/send`, `GET /crm/channels/{channel}/messages|conversations|observability` (api.manager:principal,rh) ; webhooks publics `GET/POST /crm/webhooks/whatsapp` (signature HMAC fail-closed, anti-rejeu).
+- Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
+- Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
+Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.

@@ -109,6 +109,7 @@ Les webhooks diffusent les evenements metier vers un endpoint partenaire HTTPS.
 
 - `employee.created`
 - `employee.archived`
+- `employee.departed`
 - `attendance.checked_in`
 - `attendance.checked_out`
 - `absence.requested`
@@ -116,28 +117,51 @@ Les webhooks diffusent les evenements metier vers un endpoint partenaire HTTPS.
 - `absence.rejected`
 - `payroll.validated`
 
+> Le catalogue complet annonce (y compris les evenements planifies non encore
+> emis) vit dans `WebhookController::AVAILABLE_EVENTS` ; la CI garde
+> l'alignement catalogue ↔ emissions reelles (`check-webhook-event-catalog.sh`,
+> issue #5744).
+
 ### Contrat de livraison
+
+Enveloppe canonique versionnee (issue #5744 — additive, retro-compatible) :
 
 ```json
 {
   "event": "employee.created",
-  "company_id": "uuid",
-  "occurred_at": "2026-05-14T09:00:00Z",
+  "event_version": 1,
+  "company_id": "8f14e45f-ceea-4b0a-9d0e-3c9b3a0f5c12",
+  "correlation_id": "0f7c3a2e-4d1b-4a5c-9e8f-6a7b8c9d0e1f",
+  "occurred_at": "2026-08-28T09:00:00+00:00",
+  "timestamp": "2026-08-28T09:00:01+00:00",
   "data": {
     "id": 123
   }
 }
 ```
 
+- `event` : nom stable de l'evenement (ne change pas ; la version vit dans `event_version`).
+- `event_version` : version du contrat d'evenement — incrementee uniquement pour un changement incompatible (procedure `docs/api/VERSIONING.md` § 5bis).
+- `company_id` : identifiant du tenant proprietaire de l'occurrence.
+- `correlation_id` : identifiant de correlation de l'occurrence metier — identique pour tous les endpoints d'un meme tenant lors d'un meme dispatch.
+- `occurred_at` : moment metier de l'occurrence (ISO 8601).
+- `timestamp` : horodatage de livraison (champ herite, conserve pour retro-compatibilite).
+- `data` : donnees metier de l'evenement.
+
 ### Signature et idempotence
 
-Chaque webhook production devra inclure :
+Chaque livraison inclut :
 
-- `X-Leopardo-Event-Id` : identifiant unique et idempotent.
-- `X-Leopardo-Timestamp` : horodatage Unix.
-- `X-Leopardo-Signature` : HMAC SHA-256 du payload brut avec le secret partage.
+- `Webhook-Id` : identifiant unique et idempotent de la livraison.
+- `Webhook-Timestamp` : horodatage Unix.
+- `Webhook-Signature` : `v1=<hmac-sha256>,t=<timestamp>` — HMAC SHA-256 de
+  `<timestamp>.<payload JSON brut>` avec le secret partage de l'endpoint.
+- `X-Leopardo-Event` : nom de l'evenement (legacy).
+- `X-Leopardo-Signature` : HMAC SHA-256 (legacy).
+- `X-Leopardo-Event-Version` : version de l'evenement (issue #5744).
 
-Le partenaire doit refuser un timestamp trop ancien et ignorer proprement un `event_id` deja traite. Les retries doivent etre consideres normaux.
+Le partenaire doit refuser un timestamp trop ancien et ignorer proprement un
+`Webhook-Id` deja traite. Les retries doivent etre consideres normaux.
 
 ### Retry et dead-letter
 

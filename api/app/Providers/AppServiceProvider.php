@@ -15,6 +15,9 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use App\Policies\CrmDashboardPolicy;
+use App\Policies\CrmSearchPolicy;
+use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -85,6 +88,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('export', [ExportPolicy::class, 'export']);
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
+
+        // Issue #5719 — recherche CRM client tenant-scoped (Policy CRM).
+        Gate::define('crm.search', [CrmSearchPolicy::class, 'search']);
+        // Issue #5720 — timeline d'activités d'un account CRM.
+        Gate::define('crm.timeline', [CrmTaskPolicy::class, 'viewTimeline']);
+        // Issue #5721 — dashboard CRM pipeline & qualité des données.
+        Gate::define('crm.dashboard', [CrmDashboardPolicy::class, 'viewDashboard']);
 
         Gate::define('viewApiDocs', function (?Employee $user = null) {
             // Pour l'instant, on autorise l'accès à la doc en dev, ou on peut exiger un accès Super Admin

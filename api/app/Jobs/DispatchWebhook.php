@@ -8,6 +8,7 @@ use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
+use App\Modules\Billing\Infrastructure\Services\WebhookEnvelopeBuilder;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,6 +35,9 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         private readonly WebhookEndpoint $endpoint,
         private readonly string $event,
         private readonly array $payload,
+        private readonly int $eventVersion = WebhookEnvelopeBuilder::CURRENT_VERSION,
+        private readonly ?string $correlationId = null,
+        private readonly ?string $occurredAt = null,
     ) {
         $this->queue = 'webhooks';
     }
@@ -49,14 +53,19 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
      */
     public function failed(Throwable $exception): void
     {
+        $body = WebhookEnvelopeBuilder::build(
+            $this->event,
+            $this->eventVersion,
+            $this->endpoint->company_id,
+            $this->correlationId ?? (string) Str::uuid(),
+            $this->occurredAt ?? now()->toIso8601String(),
+            $this->payload,
+        );
+
         WebhookDelivery::create([
             'webhook_endpoint_id' => $this->endpoint->id,
             'event' => $this->event,
-            'payload' => [
-                'event' => $this->event,
-                'timestamp' => now()->toIso8601String(),
-                'data' => $this->payload,
-            ],
+            'payload' => $body,
             'response_code' => 0,
             'response_body' => mb_substr('All retries exhausted: '.$exception->getMessage(), 0, 2000),
             'duration_ms' => 0,
@@ -110,30 +119,30 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             return;
         }
 
-        $body = [
-            'event' => $this->event,
-            'timestamp' => now()->toIso8601String(),
-            'data' => $this->payload,
-        ];
+        // Issue #5744 : enveloppe canonique versionnée (additive) — voir
+        // WebhookEnvelopeBuilder et docs/api/VERSIONING.md § 5.
+        $body = WebhookEnvelopeBuilder::build(
+            $this->event,
+            $this->eventVersion,
+            $this->endpoint->company_id,
+            $this->correlationId ?? (string) Str::uuid(),
+            $this->occurredAt ?? now()->toIso8601String(),
+            $this->payload,
+        );
 
-        $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
         $timestamp = time();
-        $signedPayload = "{$timestamp}.{$jsonBody}";
-        $signature = hash_hmac('sha256', $signedPayload, $this->endpoint->secret);
-        $svixSignature = "v1={$signature},t={$timestamp}";
 
         $start = microtime(true);
 
         try {
             $response = Http::timeout(10)
-                ->withHeaders([
-                    'Webhook-Id' => Str::uuid()->toString(),
-                    'Webhook-Timestamp' => (string) $timestamp,
-                    'Webhook-Signature' => $svixSignature,
-                    'X-Leopardo-Event' => $this->event, // Keep for legacy
-                    'X-Leopardo-Signature' => $signature, // Keep for legacy
-                    'Content-Type' => 'application/json',
-                ])
+                ->withHeaders(WebhookEnvelopeBuilder::headers(
+                    $this->event,
+                    (string) $this->eventVersion,
+                    (string) $this->endpoint->secret,
+                    $body,
+                    $timestamp,
+                ))
                 ->post($this->endpoint->url, $body);
 
             $durationMs = (int) ((microtime(true) - $start) * 1000);

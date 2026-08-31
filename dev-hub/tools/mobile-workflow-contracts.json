@@ -213,7 +213,11 @@
         "/me/monthly",
         "/history",
         "/modules",
-        "/settings"
+        "/settings",
+        "/crm",
+        "/crm/accounts",
+        "/crm/leads",
+        "/crm/opportunities"
       ],
       "workflows": [
         {
@@ -413,6 +417,42 @@
             "Identite entreprise",
             ".update(",
             "/company/branding"
+          ]
+        },
+        {
+          "name": "crm_terrain",
+          "routes": [
+            "/crm",
+            "/crm/accounts",
+            "/crm/accounts/:id",
+            "/crm/leads",
+            "/crm/opportunities"
+          ],
+          "endpoints": [
+            "/crm/accounts",
+            "/crm/accounts/{id}",
+            "/crm/accounts/{id}/contacts",
+            "/crm/leads",
+            "/crm/opportunities",
+            "/crm/opportunities/{id}",
+            "/crm/activities",
+            "/crm/tasks",
+            "/crm/tasks/{id}"
+          ],
+          "screenFiles": [
+            "lib/features/crm/screens/crm_hub_screen.dart",
+            "lib/features/crm/screens/crm_accounts_screen.dart",
+            "lib/features/crm/screens/crm_account_detail_screen.dart",
+            "lib/features/crm/screens/crm_leads_screen.dart",
+            "lib/features/crm/screens/crm_opportunities_screen.dart"
+          ],
+          "sourceTokens": [
+            "CrmRepository",
+            "crmAccountsProvider",
+            "crmLeadsProvider",
+            "crmOpportunitiesProvider",
+            "transitionOpportunity",
+            "completeTask"
           ]
         }
       ]

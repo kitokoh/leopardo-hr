@@ -13,6 +13,10 @@
         "approver": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AbsenceRejected",
@@ -24,6 +28,10 @@
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AbsenceRequested",
@@ -35,6 +43,10 @@
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AttendanceCheckedIn",
@@ -46,6 +58,10 @@
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "AttendanceCheckedOut",
@@ -57,6 +73,10 @@
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "CandidateHired",
@@ -87,6 +107,23 @@
       ]
     },
     {
+      "name": "CrmTaskOverdue",
+      "class": "App\\Events\\CrmTaskOverdue",
+      "owner": "BC-17 CRM",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "companyId": "int",
+        "taskId": "int",
+        "assigneeId": "?int",
+        "title": "string",
+        "dueAtIso": "?string"
+      },
+      "consumers": [
+        "App\\Listeners\\NotifyCrmTaskOverdue"
+      ]
+    },
+    {
       "name": "EmployeeArchived",
       "class": "App\\Events\\EmployeeArchived",
       "owner": "BC-04 HR",
@@ -96,6 +133,10 @@
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "EmployeeCreated",
@@ -107,6 +148,10 @@
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "EmployeeDeparted",
@@ -119,6 +164,10 @@
         "departure": "App\\Modules\\HR\\Domain\\Models\\EmployeeDeparture"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"],
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ],
       "notes": "Consommé via un mapping explicite (getEventDescriptions()) dans AuditLogger/WebhookListener, pas via le $listen de EventServiceProvider — vérifié par constant/array literal, pas par Event::listen()."
     },
     {
@@ -147,6 +196,9 @@
         "newRole": "?string"
       },
       "consumers": ["App\\Listeners\\AuditLogger"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger"
+      ]
     },
     {
       "name": "MarketingLeadQualified",
@@ -159,6 +211,9 @@
         "companyId": "string"
       },
       "consumers": ["App\\Listeners\\ConvertMarketingLeadToContact"]
+      "consumers": [
+        "App\\Listeners\\ConvertMarketingLeadToContact"
+      ]
     },
     {
       "name": "PayrollValidated",
@@ -170,6 +225,10 @@
         "payroll": "App\\Modules\\Payroll\\Domain\\Models\\Payroll"
       },
       "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
+      "consumers": [
+        "App\\Listeners\\AuditLogger",
+        "App\\Listeners\\WebhookListener"
+      ]
     },
     {
       "name": "SubscriptionPaid",
@@ -181,6 +240,9 @@
         "payment": "App\\Modules\\Payroll\\Domain\\Models\\Payment"
       },
       "consumers": ["App\\Listeners\\ProcessCommissionOnPayment"],
+      "consumers": [
+        "App\\Listeners\\ProcessCommissionOnPayment"
+      ],
       "notes": "Le type du payload (App\\Modules\\Payroll\\Domain\\Models\\Payment) est historique — l'événement concerne la facturation (BC-21 BILLING), pas la paie. Ne pas dupliquer ce chemin dans un nouveau code ; migration du modèle vers Billing hors périmètre de cette issue."
     },
     {
@@ -194,6 +256,9 @@
         "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin"
       },
       "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"
+      ]
     },
     {
       "name": "TaxRateRejected",
@@ -207,6 +272,9 @@
         "reason": "string"
       },
       "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"
+      ]
     },
     {
       "name": "TaxRateSubmitted",
@@ -219,6 +287,9 @@
         "actor": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
       "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"]
+      "consumers": [
+        "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"
+      ]
     }
   ],
   "compatibility_rules": [

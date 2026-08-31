@@ -1651,9 +1651,134 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/cotisation-simulation", options);
     },
 
+    /** Timeline d'activites d'un account CRM (issue #5720) */
+    getCrmAccountsByAccountTimeline(options = {}) {
+      return request("GET", "/crm/accounts/{account}/timeline", options);
+    },
+
+    /** Lister les automatisations CRM du tenant */
+    getCrmAutomations(options = {}) {
+      return request("GET", "/crm/automations", options);
+    },
+
+    /** Creer une automatisation (event/conditions/actions) */
+    postCrmAutomations(options = {}) {
+      return request("POST", "/crm/automations", options);
+    },
+
+    /** Archiver une automatisation (soft delete) */
+    deleteCrmAutomationsByAutomation(options = {}) {
+      return request("DELETE", "/crm/automations/{automation}", options);
+    },
+
+    /** Detail d'une automatisation */
+    getCrmAutomationsByAutomation(options = {}) {
+      return request("GET", "/crm/automations/{automation}", options);
+    },
+
+    /** Mettre a jour une automatisation (version incrementee) */
+    putCrmAutomationsByAutomation(options = {}) {
+      return request("PUT", "/crm/automations/{automation}", options);
+    },
+
+    /** Activer une automatisation */
+    postCrmAutomationsByAutomationActivate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/activate", options);
+    },
+
+    /** Mettre en pause une automatisation */
+    postCrmAutomationsByAutomationPause(options = {}) {
+      return request("POST", "/crm/automations/{automation}/pause", options);
+    },
+
+    /** Historique d'execution d'une automatisation */
+    getCrmAutomationsByAutomationRuns(options = {}) {
+      return request("GET", "/crm/automations/{automation}/runs", options);
+    },
+
+    /** Simuler une automatisation sans effet de bord */
+    postCrmAutomationsByAutomationSimulate(options = {}) {
+      return request("POST", "/crm/automations/{automation}/simulate", options);
+    },
+
+    /** Arret d'urgence des automatisations du tenant */
+    postCrmAutomationsEmergencyStop(options = {}) {
+      return request("POST", "/crm/automations/emergency-stop", options);
+    },
+
+    /** Emettre un evenement metier CRM (declenche les automatisations) */
+    postCrmAutomationsEventsByEvent(options = {}) {
+      return request("POST", "/crm/automations/events/{event}", options);
+    },
+
+    /** Lister les canaux de communication du tenant */
+    getCrmChannels(options = {}) {
+      return request("GET", "/crm/channels", options);
+    },
+
+    /** Configurer un canal de communication (whatsapp/sms/email) */
+    postCrmChannels(options = {}) {
+      return request("POST", "/crm/channels", options);
+    },
+
+    /** Mettre a jour un canal (quota, statut, configuration) */
+    patchCrmChannelsByChannel(options = {}) {
+      return request("PATCH", "/crm/channels/{channel}", options);
+    },
+
+    /** Lister les conversations d'un canal (inbox unique) */
+    getCrmChannelsByChannelConversations(options = {}) {
+      return request("GET", "/crm/channels/{channel}/conversations", options);
+    },
+
+    /** Lister les messages d'un canal (metadonnees, PII masquee) */
+    getCrmChannelsByChannelMessages(options = {}) {
+      return request("GET", "/crm/channels/{channel}/messages", options);
+    },
+
+    /** Observabilite d'un canal (cout et erreurs agreges) */
+    getCrmChannelsByChannelObservability(options = {}) {
+      return request("GET", "/crm/channels/{channel}/observability", options);
+    },
+
+    /** Envoyer un message via un canal CRM (WhatsApp, SMS, email) */
+    postCrmChannelsByChannelSend(options = {}) {
+      return request("POST", "/crm/channels/{channel}/send", options);
+    },
+
+    /** Dashboard pipeline CRM (issue #5721) */
+    getCrmDashboardPipeline(options = {}) {
+      return request("GET", "/crm/dashboard/pipeline", options);
+    },
+
+    /** Qualite des donnees CRM (issue #5721) */
+    getCrmDashboardQuality(options = {}) {
+      return request("GET", "/crm/dashboard/quality", options);
+    },
+
     /** Suggestions de doublons (explicables, tenant-scoped) */
     getCrmDedupSuggestions(options = {}) {
       return request("GET", "/crm/dedup/suggestions", options);
+    },
+
+    /** Lister les jobs d'export CRM du tenant */
+    getCrmExports(options = {}) {
+      return request("GET", "/crm/exports", options);
+    },
+
+    /** Creer un job d'export CRM asynchrone (CSV) */
+    postCrmExports(options = {}) {
+      return request("POST", "/crm/exports", options);
+    },
+
+    /** Statut et progression d'un job d'export */
+    getCrmExportsByExport(options = {}) {
+      return request("GET", "/crm/exports/{export}", options);
+    },
+
+    /** Telecharger un export termine (acces expirant) */
+    getCrmExportsByExportDownload(options = {}) {
+      return request("GET", "/crm/exports/{export}/download", options);
     },
 
     /** Uploader et prévisualiser un import CSV CRM (preview sans écriture) */
@@ -1689,6 +1814,61 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Preview d'une fusion (aucune écriture) */
     getCrmMergePreview(options = {}) {
       return request("GET", "/crm/merge/preview", options);
+    },
+
+    /** Read models CRM recalculables (agregats analytiques tenant) */
+    getCrmReadModels(options = {}) {
+      return request("GET", "/crm/read-models", options);
+    },
+
+    /** Rechercher accounts et contacts du tenant courant (issue #5719) */
+    getCrmSearch(options = {}) {
+      return request("GET", "/crm/search", options);
+    },
+
+    /** Lister les tâches CRM du tenant (issue #5720) */
+    getCrmTasks(options = {}) {
+      return request("GET", "/crm/tasks", options);
+    },
+
+    /** Creer une tache CRM (issue #5720) */
+    postCrmTasks(options = {}) {
+      return request("POST", "/crm/tasks", options);
+    },
+
+    /** Supprimer une tache CRM */
+    deleteCrmTasksByTask(options = {}) {
+      return request("DELETE", "/crm/tasks/{task}", options);
+    },
+
+    /** Detail d'une tache CRM */
+    getCrmTasksByTask(options = {}) {
+      return request("GET", "/crm/tasks/{task}", options);
+    },
+
+    /** Mettre a jour une tache CRM (transitions de statut controlees) */
+    patchCrmTasksByTask(options = {}) {
+      return request("PATCH", "/crm/tasks/{task}", options);
+    },
+
+    /** Cloturer une tache CRM (status -> done) */
+    postCrmTasksByTaskComplete(options = {}) {
+      return request("POST", "/crm/tasks/{task}/complete", options);
+    },
+
+    /** Rouvrir une tache CRM (status -> todo) */
+    postCrmTasksByTaskReopen(options = {}) {
+      return request("POST", "/crm/tasks/{task}/reopen", options);
+    },
+
+    /** Verification d'abonnement du webhook WhatsApp Business (Meta) */
+    getCrmWebhooksWhatsapp(options = {}) {
+      return request("GET", "/crm/webhooks/whatsapp", options);
+    },
+
+    /** Webhook entrant WhatsApp Business Cloud API (messages + statuts) */
+    postCrmWebhooksWhatsapp(options = {}) {
+      return request("POST", "/crm/webhooks/whatsapp", options);
     },
 
     /** Synthese dashboard admin (principal) */

@@ -12,6 +12,8 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\CRM\Domain\Models\CrmConsent;
+use App\Modules\CRM\Domain\Models\CrmSegment;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelCustomer;
@@ -171,6 +173,8 @@ use App\Policies\AttendancePolicy;
 use App\Policies\BillingPolicy;
 use App\Policies\Cameras\CameraPolicy;
 use App\Policies\ContractPolicy;
+use App\Policies\CrmConsentPolicy;
+use App\Policies\CrmSegmentPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeePolicy;
 use App\Policies\EvaluationPolicy;
@@ -206,6 +210,8 @@ class AuthServiceProvider extends ServiceProvider
         // Core models
         Gate::policy(Employee::class, EmployeePolicy::class);
         Gate::policy(AttendanceLog::class, AttendancePolicy::class);
+        Gate::policy(CrmConsent::class, CrmConsentPolicy::class);
+        Gate::policy(CrmSegment::class, CrmSegmentPolicy::class);
         Gate::policy(Evaluation::class, EvaluationPolicy::class);
         Gate::policy(Camera::class, CameraPolicy::class);
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);
