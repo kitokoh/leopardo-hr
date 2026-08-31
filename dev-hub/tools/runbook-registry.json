@@ -190,7 +190,6 @@
       "runbooks": [],
       "notes": "Module de livraison dernier-kilomètre (conception #6281) : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay) à livrer avec le module ; rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme.",
       "status": "planned"
-      "status": "planned"
     }
   ]
 }
