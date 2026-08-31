@@ -25,6 +25,19 @@ final class OidcIdTokenValidator
 {
     private const ALLOWED_ALGS = ['RS256', 'RS384', 'RS512'];
 
+    /**
+     * Issue #6542 — l'algorithme annonce dans le header doit piloter la
+     * verification openssl : RS384/RS512 etaient autorises mais toujours
+     * verifies avec SHA256 (algorithme fige).
+     *
+     * @var array<string, int>
+     */
+    private const ALG_TO_OPENSSL = [
+        'RS256' => OPENSSL_ALGO_SHA256,
+        'RS384' => OPENSSL_ALGO_SHA384,
+        'RS512' => OPENSSL_ALGO_SHA512,
+    ];
+
     private const CLOCK_SKEW_SECONDS = 60;
 
     private const JWKS_CACHE_TTL_SECONDS = 3600;
@@ -61,7 +74,7 @@ final class OidcIdTokenValidator
             throw new \RuntimeException("OIDC id_token : algorithme [{$alg}] non autorisé.");
         }
 
-        if (! $this->verifySignature($headerB64.'.'.$payloadB64, $signature, (string) ($header['kid'] ?? ''), (string) $expected['jwks_uri'])) {
+        if (! $this->verifySignature($headerB64.'.'.$payloadB64, $signature, $alg, (string) ($header['kid'] ?? ''), (string) $expected['jwks_uri'])) {
             throw new \RuntimeException('OIDC id_token : signature invalide.');
         }
 
@@ -99,7 +112,7 @@ final class OidcIdTokenValidator
         return $claims;
     }
 
-    private function verifySignature(string $signingInput, string $signature, string $kid, string $jwksUri): bool
+    private function verifySignature(string $signingInput, string $signature, string $alg, string $kid, string $jwksUri): bool
     {
         $pem = $this->resolveKeyPem($kid, $jwksUri);
 
@@ -107,23 +120,44 @@ final class OidcIdTokenValidator
             return false;
         }
 
-        return openssl_verify($signingInput, $signature, $pem, OPENSSL_ALGO_SHA256) === 1;
+        $opensslAlgo = self::ALG_TO_OPENSSL[$alg] ?? null;
+
+        if ($opensslAlgo === null) {
+            Log::warning('OIDC id_token : algorithme sans verification openssl.', ['alg' => $alg]);
+
+            return false;
+        }
+
+        return openssl_verify($signingInput, $signature, $pem, $opensslAlgo) === 1;
     }
 
     private function resolveKeyPem(string $kid, string $jwksUri): ?string
     {
         $keys = $this->jwksKeys($jwksUri);
 
-        // Priorité : clé dont le kid correspond ; sinon première clé RSA.
-        foreach ($keys as $key) {
-            if (($key['kid'] ?? '') === $kid) {
-                return $this->keyToPem($key);
+        if ($kid !== '') {
+            // Issue #6542 : plus de fallback « premiere cle » sur kid inconnu
+            // (fail-closed) — une cle rotée doit etre publiee au JWKS avant
+            // son usage, sinon le token est rejete.
+            foreach ($keys as $key) {
+                if (($key['kid'] ?? '') === $kid) {
+                    return $this->keyToPem($key);
+                }
             }
+
+            Log::warning('OIDC id_token : kid inconnu du JWKS.', ['kid' => $kid, 'jwks_uri' => $jwksUri]);
+
+            return null;
         }
 
-        foreach ($keys as $key) {
-            return $this->keyToPem($key);
+        // Aucun kid dans le header : acceptable uniquement quand le JWKS ne
+        // contient qu'une seule cle (IdP sans rotation) — le fallback
+        // « premiere cle » d'un jeu multi-cles est ambigue et rejete.
+        if (count($keys) === 1) {
+            return $this->keyToPem($keys[0]);
         }
+
+        Log::warning('OIDC id_token : header sans kid et JWKS multi-cles.', ['jwks_uri' => $jwksUri]);
 
         return null;
     }

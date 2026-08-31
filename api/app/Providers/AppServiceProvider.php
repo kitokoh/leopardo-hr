@@ -187,11 +187,33 @@ class AppServiceProvider extends ServiceProvider
         // public and unauthenticated by nature (verified by signature inside the
         // controller, not by Sanctum), so they need their own throttle bucket
         // instead of relying on the generic 'api' limiter which only applies to
-        // authenticated routes further down the group. Keyed by IP since the
-        // caller is a third-party payment provider, not a tenant.
+        // authenticated routes further down the group.
+        // Issue #6555 : la cle est scope par identifiant stable du payload
+        // (tenant/customer) quand il est derivable, IP en repli — N tenants
+        // derriere une meme IP de passerelle ne partagent plus un quota global
+        // (paiements legitimes 429).
         RateLimiter::for('webhooks-inbound', function (Request $request) {
+            $key = 'webhooks-inbound:'.$request->ip();
+
+            $tenantKey = self::webhookTenantKey($request);
+
+            if ($tenantKey !== null) {
+                $key .= '|'.$tenantKey;
+            }
+
             return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
-                ->by('webhooks-inbound:'.$request->ip());
+                ->by($key);
+        });
+
+        // Issue #6555 — plusieurs devices ZKTeco derriere un NAT partagent le
+        // quota 'api' anonyme par IP : bucket dedie par serial_number (param de
+        // route) pour qu'un pointage d'un device ne soit jamais perdu a cause
+        // d'un autre device/tenant sur la meme IP.
+        RateLimiter::for('zkteco-device', function (Request $request) {
+            $serial = (string) $request->route('serialNumber', 'unknown');
+
+            return Limit::perMinute((int) config('security.rate_limits.zkteco_device_per_minute', 120))
+                ->by('zkteco-device:'.$serial);
         });
 
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
@@ -301,5 +323,36 @@ class AppServiceProvider extends ServiceProvider
         } catch (\InvalidArgumentException) {
             return strtolower(trim($plan));
         }
+    }
+
+    /**
+     * Cle stable par tenant derivee du payload du webhook (jamais d'IP seule
+     * quand l'identifiant est derivable). Issue #6555 — champ retenu :
+     * company_id / customer_id / metadata.company_id / data.object.customer
+     * (identifiants stables), jamais d'identifiant d'evenement (randomise).
+     */
+    private static function webhookTenantKey(Request $request): ?string
+    {
+        $payload = $request->json();
+
+        if (! is_array($payload)) {
+            return null;
+        }
+
+        $candidates = [
+            $payload['company_id'] ?? null,
+            $payload['customer_id'] ?? null,
+            $payload['metadata']['company_id'] ?? null,
+            is_array($payload['data'] ?? null) ? ($payload['data']['object']['customer'] ?? null) : null,
+            is_array($payload['data'] ?? null) ? ($payload['data']['customer'] ?? null) : null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_string($candidate) && $candidate !== '') {
+                return sha1($candidate);
+            }
+        }
+
+        return null;
     }
 }
