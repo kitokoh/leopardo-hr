@@ -49,11 +49,17 @@ admin-dashboard/
 │   ├── components/
 │   │   ├── layout/           # Layout components
 │   │   ├── dashboard/        # Dashboard widgets
-│   │   ├── charts/          # ECharts components
-│   │   ├── globe/           # Globe.gl components
-│   │   ├── notifications/   # Toast notifications
-│   │   ├── alerts/          # System alerts
-│   │   └── modals/          # Modal dialogs
+│   │   ├── analytics/        # Analytics/rapports
+│   │   ├── common/           # Composants génériques
+│   │   ├── edge/             # Composants Edge/bridge
+│   │   ├── fleet/            # Composants flotte
+│   │   ├── globe/            # Globe.gl components
+│   │   ├── marketing/        # Composants marketing
+│   │   ├── notifications/    # Toast notifications
+│   │   ├── alerts/           # System alerts
+│   │   ├── payroll/          # Composants paie
+│   │   ├── system/           # Composants système
+│   │   └── users/            # Composants utilisateurs
 │   ├── stores/              # Pinia stores
 │   ├── services/            # API services
 │   ├── views/               # Page components
@@ -68,7 +74,7 @@ admin-dashboard/
 **Frontend**
 - Vue.js 3 (Composition API)
 - Pinia (State Management)
-- Vue Router 4
+- Vue Router 5
 - Tailwind CSS
 - Headless UI
 
@@ -242,5 +248,5 @@ Propriétaire - Leopardo RH
 ---
 
 **Status**: ✅ Phase 2 Complétée - Prêt pour la Phase 3
-**Version**: 2.0.0
-**Dernière mise à jour**: Mai 2026
+**Version**: 1.0.0 (alignée sur package.json)
+**Dernière mise à jour**: août 2026

@@ -13,11 +13,13 @@ leopardo-hr/
 │   ├── web/                # Next.js 16 — landing page + dashboard SaaS (déployé sur Vercel)
 │   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
-│   ├── mobile_apps/        # Flutter — 5 applications mobiles (voir melos.yaml)
+│   ├── mobile_apps/        # Flutter — 7 applications mobiles (voir melos.yaml)
 │   │   ├── leopardo_core/       # Package partagé (design system, services)
 │   │   ├── leopardo_employee/   # App employé
 │   │   ├── leopardo_manager/    # App manager/RH
 │   │   ├── leopardo_hr/         # App RH dédiée
+│   │   ├── leopardo_marketing/  # App marketing/communication
+│   │   ├── leopardo_accounting/ # App comptabilité
 │   │   └── leopardo_platform_admin/ # App admin plateforme
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
 ├── edge/                   # Bridge on-prem ZKTeco <-> cloud (Caddy, supervisord, install.sh)
@@ -29,7 +31,8 @@ leopardo-hr/
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
-├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
+├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — config dans .gitattributes)
+├── marketing/              # (legacy — contenu à migrer vers docs/GOTO_MARKET/, voir #6603)
 └── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
