@@ -16,6 +16,9 @@ return [
         'web_login_per_minute' => (int) env('RATE_LIMIT_WEB_LOGIN_PER_MINUTE', 10),
         'web_activate_per_minute' => (int) env('RATE_LIMIT_WEB_ACTIVATE_PER_MINUTE', 10),
         'kiosk_punch_per_minute' => (int) env('RATE_LIMIT_KIOSK_PUNCH_PER_MINUTE', 30),
+        // #6555 — heartbeat/sync ZKTeco : bucket dédié par serial (les devices
+        // derrière un NAT ne doivent pas partager le quota IP du bucket api).
+        'zkteco_per_minute' => (int) env('RATE_LIMIT_ZKTECO_PER_MINUTE', 120),
         'kiosk_show_per_minute' => (int) env('RATE_LIMIT_KIOSK_SHOW_PER_MINUTE', 120),
         // Public careers portal (job listing, job detail, XML feed, and
         // candidate application submission) is unauthenticated by design,

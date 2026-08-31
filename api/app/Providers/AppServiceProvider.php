@@ -190,8 +190,34 @@ class AppServiceProvider extends ServiceProvider
         // authenticated routes further down the group. Keyed by IP since the
         // caller is a third-party payment provider, not a tenant.
         RateLimiter::for('webhooks-inbound', function (Request $request) {
-            return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
-                ->by('webhooks-inbound:'.$request->ip());
+            $perMinute = (int) config('security.rate_limits.webhooks_inbound_per_minute', 60);
+
+            // #6555 — les passerelles de paiement (Stripe/Chargily) et les
+            // fournisseurs email partagent des IP entre TOUS les tenants :
+            // un bucket par IP 429 les webhooks légitimes dès que N tenants
+            // reçoivent des événements. Clé par gateway (segment de route)
+            // quand il existe, sinon par signature (identité du webhook).
+            $gateway = $request->route('gateway');
+            if (is_string($gateway) && $gateway !== '') {
+                return Limit::perMinute($perMinute)->by('webhooks-inbound:gw:'.$gateway);
+            }
+
+            $signature = (string) $request->header('Stripe-Signature', $request->header('X-Chargily-Signature', ''));
+            if ($signature !== '') {
+                return Limit::perMinute($perMinute)->by('webhooks-inbound:sig:'.md5($signature));
+            }
+
+            return Limit::perMinute($perMinute)->by('webhooks-inbound:'.$request->ip());
+        });
+
+        // #6555 — ZKTeco : les devices derrière un NAT partagent une IP ; le
+        // bucket générique `api` (par IP) 429 les pointages légitimes de
+        // plusieurs devices. Bucket dédié clé par serial_number + IP.
+        RateLimiter::for('zkteco-device', function (Request $request) {
+            $serial = strtoupper((string) $request->route('serialNumber', 'unknown'));
+
+            return Limit::perMinute((int) config('security.rate_limits.zkteco_per_minute', 120))
+                ->by('zkteco-device:'.$serial.'|'.$request->ip());
         });
 
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
