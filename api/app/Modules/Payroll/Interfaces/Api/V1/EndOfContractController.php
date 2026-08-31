@@ -35,7 +35,14 @@ class EndOfContractController extends Controller
         if ($employee->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
+
+        // Issue #6545 (audit) : garde mutualisée — manager uniquement
+        // (le self-service passe par /me/*) + scope équipe pour les rôles
+        // team-scoped (pattern EmployeePolicy::view / visibleToManager).
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ($actor->isTeamScoped() && ! $actor->managesTeamMemberOf($employee)) {
             abort(403);
         }
 
@@ -64,7 +71,12 @@ class EndOfContractController extends Controller
         if ($employee->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false) {
+
+        // Issue #6545 : garde mutualisée — manager uniquement + scope équipe.
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if ($actor->isTeamScoped() && ! $actor->managesTeamMemberOf($employee)) {
             abort(403);
         }
 
