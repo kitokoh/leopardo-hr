@@ -67,6 +67,14 @@ class TravelAgencyServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SolutionManifest::class, TravelAgencyManifest::class);
 
+        // Port push (TRAVEL-703/#6090) — isolation inter-contextes (#5584) :
+        // le module TravelAgency ne déclare AUCUN `use App\Modules\Notification`,
+        // l'adaptateur BC-13 est branché ici (composition root) par FQCN.
+        $this->app->bind(
+            \App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier::class,
+            \App\Modules\Notification\Infrastructure\Services\PushNotificationService::class
+        );
+
         // Passerelles de paiement (TRAVEL-405..407) — registre par code.
         $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
             return new PaymentGatewayRegistry([

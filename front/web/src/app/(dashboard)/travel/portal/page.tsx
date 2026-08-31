@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Loader2, Plane, Search, Ticket, XCircle } from 'lucide-react';
+import { Download, Loader2, Search, Ticket, XCircle } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getCopy, normalizeLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
@@ -118,10 +118,9 @@ export default function TravelPortalPage() {
       setReason('');
     } catch (err) {
       if (err instanceof ApiError) {
-        const body = (err.body ?? {}) as { error?: string };
-        if (body.error === 'TRAVEL_BOOKING_CODE_INVALID') {
+        if (err.code === 'TRAVEL_BOOKING_CODE_INVALID') {
           setError(fallbackCopy.invalidCode);
-        } else if (body.error === 'TRAVEL_BOOKING_DEPARTURE_PAST') {
+        } else if (err.code === 'TRAVEL_BOOKING_DEPARTURE_PAST') {
           setError(fallbackCopy.departurePast);
         } else {
           setError(fallbackCopy.error);
@@ -140,7 +139,11 @@ export default function TravelPortalPage() {
   const isCancelled = booking?.status === 'cancelled';
 
   return (
-    <ModulePageShell title={copy.title} subtitle={copy.subtitle} icon={<Plane className="h-5 w-5" />}>
+    <ModulePageShell
+      title={copy.title}
+      subtitle={copy.subtitle}
+      accentClassName="from-emerald-500 to-teal-600"
+    >
       <div className="mx-auto max-w-2xl space-y-6">
         <form onSubmit={trackBooking} className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="grid gap-4 sm:grid-cols-2">

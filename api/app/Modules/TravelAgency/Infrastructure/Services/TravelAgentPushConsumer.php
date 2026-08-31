@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 
 /**
@@ -23,7 +23,7 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
         'travel.booking.confirmed.v1',
     ];
 
-    public function __construct(private readonly PushNotificationService $push) {}
+    public function __construct(private readonly CompanyPushNotifier $push) {}
 
     public function supports(string $eventType): bool
     {
