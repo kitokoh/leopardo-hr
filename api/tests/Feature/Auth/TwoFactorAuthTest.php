@@ -160,6 +160,90 @@ class TwoFactorAuthTest extends TestCase
         $this->withToken($token)->getJson('/api/v1/auth/me')->assertOk();
     }
 
+    /**
+     * #6538 — 5 mauvais codes TOTP → le challenge est invalidé (429), puis
+     * le bon code échoue (401 challenge expiré) : l'attaquant ne peut pas
+     * brute-forcer les 6 chiffres dans la fenêtre de 300 s du challenge.
+     */
+    public function test_challenge_is_invalidated_after_five_bad_attempts(): void
+    {
+        [$company, $employee] = $this->seedAccount('2fa-bruteforce@example.com');
+
+        $enroll = $this->actingAs($employee, 'sanctum')
+            ->postJson('/api/v1/auth/2fa/enroll');
+        $secret = (string) $enroll->json('data.secret');
+
+        $this->actingAs($employee, 'sanctum')
+            ->postJson('/api/v1/auth/2fa/confirm', ['code' => $this->totpCode($secret)])
+            ->assertStatus(201);
+
+        $challengeToken = (string) $this->login('2fa-bruteforce@example.com')->json('mfa_challenge_token');
+
+        // Essais 1 à 4 → 422 invalide (le challenge reste consommable).
+        for ($i = 1; $i <= 4; $i++) {
+            $this->postJson('/api/v1/auth/2fa/verify', [
+                'challenge_token' => $challengeToken,
+                'code' => '000000',
+            ])->assertStatus(422)->assertJsonPath('error', 'TWO_FACTOR_INVALID');
+        }
+
+        // 5e essai → verrouillage du challenge (429).
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $challengeToken,
+            'code' => '000000',
+        ])->assertStatus(429)->assertJsonPath('error', 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+
+        // Challenge invalidé : même le bon code est refusé (401).
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $challengeToken,
+            'code' => $this->totpCode($secret),
+        ])->assertStatus(401)->assertJsonPath('error', 'TWO_FACTOR_CHALLENGE_EXPIRED');
+    }
+
+    /**
+     * #6538 — rate-limit par COMPTE : après 10 échecs cumulés, un NOUVEAU
+     * challenge du même compte est refusé d'emblée (429) — le verrou est
+     * par employé, pas seulement par challenge (l'attaquant qui enchaîne
+     * les challenges ne peut pas contourner le compteur).
+     */
+    public function test_employee_wide_rate_limit_blocks_new_challenges_after_ten_failures(): void
+    {
+        [$company, $employee] = $this->seedAccount('2fa-employeelock@example.com');
+
+        $enroll = $this->actingAs($employee, 'sanctum')
+            ->postJson('/api/v1/auth/2fa/enroll');
+        $secret = (string) $enroll->json('data.secret');
+
+        $this->actingAs($employee, 'sanctum')
+            ->postJson('/api/v1/auth/2fa/confirm', ['code' => $this->totpCode($secret)])
+            ->assertStatus(201);
+
+        // 10 échecs répartis sur 3 challenges différents (5 + 4 + 1).
+        for ($round = 1; $round <= 3; $round++) {
+            $challengeToken = (string) $this->login('2fa-employeelock@example.com')->json('mfa_challenge_token');
+            $failures = $round === 1 ? 5 : ($round === 2 ? 4 : 1);
+
+            for ($i = 1; $i <= $failures; $i++) {
+                $response = $this->postJson('/api/v1/auth/2fa/verify', [
+                    'challenge_token' => $challengeToken,
+                    'code' => '000000',
+                ]);
+
+                if ($response->status() === 429) {
+                    break;
+                }
+                $response->assertStatus(422);
+            }
+        }
+
+        // Nouveau challenge : le compte est verrouillé (429) jusqu'à la fin
+        // de la fenêtre de 15 min.
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => (string) $this->login('2fa-employeelock@example.com')->json('mfa_challenge_token'),
+            'code' => $this->totpCode($secret),
+        ])->assertStatus(429)->assertJsonPath('error', 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+    }
+
     public function test_challenge_token_is_single_use(): void
     {
         $this->seedAccount('2fa-single@example.com');
