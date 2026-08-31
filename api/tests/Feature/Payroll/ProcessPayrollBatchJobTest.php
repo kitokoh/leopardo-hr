@@ -114,4 +114,58 @@ class ProcessPayrollBatchJobTest extends TestCase
 
         $this->assertSame('validated', $run->refresh()->status);
     }
+
+    public function test_handle_retries_an_error_run(): void
+    {
+        // #6529 — un retry après échec (statut `error`) doit reprendre le
+        // calcul au lieu de skip silencieusement (la paie restait bloquée
+        // pour toujours, aucun recalcul possible).
+        $company = Company::factory()->create(['status' => 'active']);
+
+        $run = PayrollRun::withoutGlobalScopes()->create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => '2026-04-01',
+            'period_end' => '2026-04-30',
+            'status' => 'error',
+        ]);
+
+        $calculator = Mockery::mock(PayrollCalculator::class);
+        $calculator->shouldReceive('calculateRun')
+            ->once()
+            ->andReturnUsing(fn (PayrollRun $arg) => $arg);
+        $this->app->instance(PayrollCalculator::class, $calculator);
+
+        $job = new ProcessPayrollBatchJob($run->id, (string) $company->id);
+        $job->handle();
+
+        $this->assertSame('calculated', $run->refresh()->status);
+    }
+
+    public function test_handle_resumes_a_processing_run_left_by_a_dead_worker(): void
+    {
+        // #6529 — un worker mort entre la transition `processing` et la fin
+        // du calcul laisse le run en `processing` ; le retry (re-délivré
+        // après retry_after) doit reprendre le run, pas le laisser bloqué.
+        $company = Company::factory()->create(['status' => 'active']);
+
+        $run = PayrollRun::withoutGlobalScopes()->create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => '2026-05-01',
+            'period_end' => '2026-05-31',
+            'status' => 'processing',
+        ]);
+
+        $calculator = Mockery::mock(PayrollCalculator::class);
+        $calculator->shouldReceive('calculateRun')
+            ->once()
+            ->andReturnUsing(fn (PayrollRun $arg) => $arg);
+        $this->app->instance(PayrollCalculator::class, $calculator);
+
+        $job = new ProcessPayrollBatchJob($run->id, (string) $company->id);
+        $job->handle();
+
+        $this->assertSame('calculated', $run->refresh()->status);
+    }
 }
