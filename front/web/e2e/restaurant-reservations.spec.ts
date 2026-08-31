@@ -42,9 +42,21 @@ const baseUser = {
   },
 };
 
+type MockReservation = {
+  id: number;
+  reference: string;
+  contact_name: string;
+  contact_phone: string;
+  reserved_at: string | null;
+  covers: number;
+  table_id: number | null;
+  status: string;
+  deposit_minor: number | null;
+};
+
 /** Mock d'état : la liste évolue avec les transitions, comme le backend réel. */
 function reservationStateFactory() {
-  const rows = [
+  const rows: MockReservation[] = [
     {
       id: 1,
       reference: 'RES-0001',

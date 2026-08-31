@@ -16,7 +16,8 @@ export type ClientModuleKey =
   | 'marketing'
   | 'accounting'
   | 'crm'
-  | 'restaurant';
+  | 'restaurant'
+  | 'restaurant_kitchen';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -204,7 +205,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     upgradeLabel: 'CRM Client',
   },
   {
-    key: 'restaurant',
+    key: 'restaurant_kitchen',
     href: '/restaurant/kitchen',
     label: 'Restaurant',
     group: 'general',
@@ -236,7 +237,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
-  '/restaurant/kitchen': 'restaurant',
+  '/restaurant/kitchen': 'restaurant_kitchen',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
