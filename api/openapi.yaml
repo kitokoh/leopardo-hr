@@ -4520,6 +4520,75 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
   /auth/me:
+          $ref: '#/components/responses/Error422'
+  /company-requests:
+    get:
+      tags:
+      - Billing
+      summary: Demandes de création d'entreprise de l'utilisateur
+      responses:
+        '200':
+          description: Demandes
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      tags:
+      - Billing
+      summary: Soumettre une demande de création d'entreprise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_name
+              properties:
+                company_name:
+                  type: string
+                  maxLength: 200
+                sector:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                city:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Demande créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /auth/login:
+    post:
+      tags:
+      - Auth
+      summary: Connexion employee
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Connexion reussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /auth/me:
     get:
       tags:
       - Auth
@@ -6319,6 +6388,41 @@ paths:
         required: true
         schema:
           type: integer
+              properties:
+                reason:
+                  type: string
+                  nullable: true
+                  maxLength: 1000
+      responses:
+        '202':
+          description: Demande recue pour revue RH/juridique
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyRequestResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /privacy/biometric-consent:
+    patch:
+      tags:
+      - Privacy
+      summary: Enregistrer ou retirer le consentement biometrique
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - consented
+              properties:
+                consented:
+                  type: boolean
+      responses:
+        '200':
+          description: Etat biometrique courant
               properties:
                 reason:
                   type: string
@@ -8820,6 +8924,32 @@ paths:
           description: Liste paginée
           description: Liste paginée des mouvements
           description: Liste paginée
+              - country_code
+              properties:
+                country_code:
+                  type: string
+      responses:
+        '200':
+          description: Barème réinitialisé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      country_code:
+                        type: string
+                      created:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/payroll/simulate:
               - country_code
               properties:
                 country_code:
@@ -11446,6 +11576,20 @@ paths:
       responses:
         '200':
           description: Config par provider (client_secret jamais renvoyé)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/platform/marketing/oauth-config:
+    get:
+      tags:
+      - Platform
+      summary: Config OAuth marketing (super-admin)
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Config par provider (client_secret jamais renvoyé)
           content:
             application/json:
               schema:
@@ -13591,6 +13735,9 @@ paths:
         in: path
         required: true
         schema: {type: integer}
+      responses:
+        '204':
+          description: Contact supprime
       responses:
         '204':
           description: Contact supprime
@@ -16265,6 +16412,30 @@ paths:
       responses:
         '200':
           description: Token revoque
+              $ref: '#/components/schemas/StoreCameraAccessTokenRequest'
+      responses:
+        '201':
+          description: Token cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CameraAccessTokenWithSecret'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /cameras/{camera}/access-tokens/{token}:
+    delete:
+      tags:
+      - Cameras
+      summary: Revoquer un token de partage
+      parameters:
+      - $ref: '#/components/parameters/CameraId'
+      - $ref: '#/components/parameters/TokenId'
+      responses:
+        '200':
+          description: Token revoque
           content:
             application/json:
               schema:
@@ -18487,6 +18658,62 @@ paths:
       responses:
         '200':
           description: File de corrections
+                    $ref: '#/components/schemas/CareerEvent'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Rien a appliquer (aucune cible poste/departement/salaire)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /notifications:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les notifications de l'utilisateur courant
+      parameters:
+      - name: unread
+        in: query
+        schema:
+          type: boolean
+      - name: type
+        in: query
+        schema:
+          type: string
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Liste paginee des notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationIndexResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /device-tokens:
+    get:
+      tags:
+      - Notifications
+      summary: Lister les tokens push actifs de l'utilisateur courant
+      responses:
+        '200':
+          description: Tokens actifs
+          content:
+            application/json:
                     $ref: '#/components/schemas/CareerEvent'
         '401':
           $ref: '#/components/responses/Error401'
@@ -20932,6 +21159,7 @@ paths:
       - $ref: '#/components/parameters/DeviceCode'
       - $ref: '#/components/parameters/KioskTokenHeader'
   /vehicle-alerts:
+  /vehicle-alerts:
     get:
       tags:
       - Vehicle Tracking
@@ -22695,6 +22923,107 @@ paths:
       tags:
       - Projects
       summary: Creer un projet
+          - asc
+          - desc
+          default: desc
+      responses:
+        '200':
+          description: Liste paginee des absences
+      responses:
+        '200':
+          description: Conversation supprimee
+  /ai/tools:
+    get:
+      tags:
+      - AI
+      summary: Liste des outils IA disponibles
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des tools enregistres dans le ToolRegistry
+  /ai/analytics/usage:
+    get:
+      tags:
+      - AI Analytics
+      summary: Metriques d'usage IA
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Stats usage (nb conversations, messages, tokens)
+  /ai/analytics/costs:
+    get:
+      tags:
+      - AI Analytics
+      summary: Couts IA par periode
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Ventilation couts par provider/modele
+  /ai/analytics/tools:
+    get:
+      tags:
+      - AI Analytics
+      summary: Usage des outils IA
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Stats par outil (appels, succes, erreurs)
+  /ai/analytics/errors:
+    get:
+      tags:
+      - AI Analytics
+      summary: Erreurs IA recentes
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des erreurs IA avec details
+  /absences:
+    get:
+      tags:
+      - Absences
+      summary: Lister les absences
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - pending
+          - approved
+          - rejected
+          - cancelled
+      - name: employee_id
+        in: query
+        schema:
+          type: integer
+      - name: month
+        in: query
+        schema:
+          type: integer
+      - name: year
+        in: query
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          default: 15
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+          default: created_at
+      - name: sort_dir
+        in: query
+        schema:
+          type: string
+          enum:
           - asc
           - desc
           default: desc
@@ -27058,6 +27387,27 @@ paths:
       responses:
         '200':
           description: Solde employe
+      responses:
+        '200':
+          description: Fichier PDF du bulletin (archive Cabinet ou standard)
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /me/balance:
+    get:
+      tags:
+      - Me
+      summary: Mon solde de paie courant
+      description: Retourne le montant du, les avances deduites, le deja paye et le reste a recevoir pour le cycle de paie courant.
+      responses:
+        '200':
+          description: Solde employe
           content:
             application/json:
               schema:
@@ -29212,6 +29562,12 @@ paths:
       - BearerAuth: []
       parameters:
       - name: supportTicket
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Le run ne concerne pas le Cameroun (CNPS CM)
+          $ref: '#/components/responses/Validation422'
+  /payroll-runs/{payrollRun}/declarations/cnss-ga:
         '404':
           $ref: '#/components/responses/Error404'
         '422':
@@ -31688,6 +32044,69 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '200':
+          description: Composant supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /payroll/simulate:
+    post:
+      tags:
+      - Payroll Engine
+      summary: 'Simuler l''impact d''un barème (manager, dry-run) — issue #1814'
+      operationId: simulatePayroll
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayrollSimulationInput'
+      responses:
+        '200':
+          description: Résultat de la simulation (non persistant)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PayrollSimulationResult'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /tax-slabs:
+    get:
+      tags:
+      - Payroll Engine
+      summary: Lister le bareme fiscal (tranches d'impot) (manager)
+      operationId: listTaxSlabs
+      parameters:
+      - name: country_code
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste des tranches, triees par pays puis montant min
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaxSlab'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
     post:
       tags:
       - Payroll Engine
@@ -33646,6 +34065,7 @@ paths:
       tags:
       - Salary Advances
       summary: Demander une avance sur salaire
+          description: Document envoye
           description: Document envoye
         '401':
           $ref: '#/components/responses/Error401'
@@ -35690,6 +36110,18 @@ paths:
         required: true
         schema:
           type: integer
+                stage:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Candidat modifie
                 stage:
                   type: string
                 rating:
@@ -37886,6 +38318,7 @@ paths:
         in: path
         required: true
                         id:
+                        id:
                           type: integer
                         approval_request_id:
                           type: integer
@@ -39934,6 +40367,7 @@ paths:
           description: Fichier PDF
           content:
             application/pdf:
+  /audit-logs/export-csv:
   /audit-logs/export-csv:
     get:
       tags:
@@ -42506,6 +42940,32 @@ paths:
       summary: Lister les demandes de versement
       security:
       - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - rate
+              properties:
+                rate:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+      responses:
+        '200':
+          description: Taux mis à jour
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/growth/payouts:
+    get:
+      tags:
+      - Growth
+      - Platform Admin
+      summary: Lister les demandes de versement
+      security:
+      - BearerAuth: []
       responses:
         '200':
           description: Liste des paiements partenaires
@@ -44119,6 +44579,45 @@ paths:
             text/csv:
               schema:
                 type: string
+        '409':
+          description: Session déjà committed/cancelled
+  /marketing/leads:
+    post:
+      tags:
+      - Marketing
+      summary: Persister un lead marketing (vitrine)
+      description: Appele par captureMarketingLead() (vitrine) avec le secret partage MARKETING_LEAD_WEBHOOK_TOKEN. Fire-and-forget cote vitrine.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                source:
+                  type: string
+                company_name:
+                  type: string
+                role:
+                  type: string
+                company_size:
+                  type: string
+                phone:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Lead persiste
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /marketing/social-account:
         '409':
           description: Session déjà committed/cancelled
   /marketing/leads:
@@ -49296,6 +49795,79 @@ paths:
       - BearerAuth: []
       parameters:
       - name: route
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/settlement:
+    post:
+      tags:
+      - Delivery
+      summary: Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)
+      description: |
+        Idempotent (unique company+route). Exige une tournée close (409
+        ROUTE_NOT_CLOSED). expected_minor = COD collecté de la tournée.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Règlement créé (ou existant)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '409':
+          description: Tournée non close
+  /delivery/deliveries/cod-settlements:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des règlements COD (DELIVERY-205/#6289)
+      description: |
+        Paginée, filtres statut/driver_id. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: driver_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/collect:
+    post:
+      tags:
+      - Delivery
+      summary: Remise caisse (DELIVERY-205/#6289)
+      description: |
+        Idempotente, plafonnée à l'attendu (422 OVER_COLLECTION). Exige
+        pending. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
         in: path
         required: true
         schema:
@@ -49303,6 +49875,24 @@ paths:
       responses:
         '200':
           description: Tournée clôturée
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - collected_minor
+              properties:
+                collected_minor:
+                  type: integer
+                  minimum: 0
+                commission_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Règlement collecté
           content:
             application/json:
               schema:
@@ -49381,6 +49971,116 @@ paths:
       parameters:
       - in: path
         name: webhookEndpoint
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '422':
+          description: OVER_COLLECTION
+  /delivery/deliveries/cod-settlements/{settlement}/settle:
+    post:
+      tags:
+      - Delivery
+      summary: Posting BC-08 + settled (DELIVERY-205/#6289)
+      description: |
+        Idempotent, exige collected (409 SETTLEMENT_NOT_COLLECTED). Écriture
+        comptable source-référencée via contrat BC-08. RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement settled (accounting_ref)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/reconcile:
+    post:
+      tags:
+      - Delivery
+      summary: Réconciliation (DELIVERY-205/#6289)
+      description: |
+        Idempotente, exige settled (409 SETTLEMENT_NOT_SETTLED). RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement reconciled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/report:
+    get:
+      tags:
+      - Delivery
+      summary: Réconciliation attendu vs collecté (DELIVERY-205/#6289)
+      description: |
+        Totaux expected/collected/gap + ventilation par statut. RBAC
+        admin|manager.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport de réconciliation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          expected_minor:
+                            type: integer
+                          collected_minor:
+                            type: integer
+                          gap_minor:
+                            type: integer
+
+  /delivery/deliveries/routes/{route}/close:
+    post:
+      tags:
+      - Delivery
+      summary: Clôture une tournée (DELIVERY-202/#6286)
+      description: |
+        Idempotente. Refus 409 ROUTE_INCOMPLETE si des stops sont non terminés.
+        Calcule totaux colis/livrés/échecs/COD collecté (verrou SELECT FOR UPDATE).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée clôturée
+          content:
+            application/json:
+              schema:
+                type: object
                 properties:
                   data:
                     $ref: '#/components/schemas/DeliveryRoute'
@@ -287924,6 +288624,24 @@ components:
           nullable: true
     EvaluationEvaluatorMini:
           description: Fichier audio
+
+  /voice/tts/{filename}:
+    get:
+      tags:
+      - AI
+      summary: Servir un fichier TTS genere (edge-tts / elevenlabs)
+      description: Retourne le fichier audio TTS genere (accel du stockage). Fail-closed si le binaire edge-tts est indisponible.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Fichier audio
         '401':
           $ref: '#/components/responses/Error401'
         '404':
@@ -288198,6 +288916,37 @@ components:
           type: string
         payload:
           type: object
+          nullable: true
+
+    DeliveryCodSettlement:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        driver_id:
+          type: integer
+          nullable: true
+        expected_minor:
+          type: integer
+        collected_minor:
+          type: integer
+        commission_minor:
+          type: integer
+        status:
+          type: string
+          enum: [pending, collected, settled, reconciled]
+        accounting_ref:
+          type: string
+          nullable: true
+        collected_at:
+          type: string
+          format: date-time
+          nullable: true
+        settled_at:
+          type: string
+          format: date-time
           nullable: true
 
     DeliveryRoute:
@@ -289165,6 +289914,73 @@ components:
           format: date-time
           nullable: true
     CareerEventEmployeeMini:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        forced_mode:
+          type: string
+          enum:
+          - manual
+          - gps
+          - qr
+          nullable: true
+        punch_photo_mode:
+          type: string
+          enum:
+          - kiosk
+          - photo_required
+          nullable: true
+          description: 'Mode de pointage mobile : kiosque (clic simple) ou photo obligatoire a chaque pointage.'
+        gps_enabled:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        radius_meters:
+          type: integer
+          default: 100
+        allow_employee_override:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+    AttendanceModeSettingsRequest:
+      type: object
+      properties:
+        gps_enabled:
+          type: boolean
+        forced_mode:
+          type: string
+          enum:
+          - manual
+          - gps
+          - qr
+          nullable: true
+        punch_photo_mode:
+          type: string
+          enum:
+          - kiosk
+          - photo_required
+          nullable: true
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        radius_meters:
+          type: integer
+          minimum: 50
+          maximum: 5000
+        allow_employee_override:
+          type: boolean
+    EmployeeAttendancePreference:
       type: object
       properties:
         id:
@@ -289181,6 +289997,45 @@ components:
         name:
           type: string
     CareerEventDepartmentMini:
+        employee_id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        preferred_mode:
+          type: string
+          enum:
+          - gps_auto
+          - qr
+          - manual
+        gps_consent_given:
+          type: boolean
+        gps_consent_at:
+          type: string
+          format: date-time
+          nullable: true
+    GeoEventRequest:
+      type: object
+      required:
+      - event_type
+      - latitude
+      - longitude
+      properties:
+        event_type:
+          type: string
+          enum:
+          - zone_enter
+          - zone_exit
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        accuracy:
+          type: integer
+          description: Précision GPS en mètres
+    GeoAttendanceSession:
       type: object
       properties:
         id:
@@ -289337,6 +290192,159 @@ components:
           nullable: true
           maxLength: 2000
     Notification:
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+        company_id:
+          type: string
+          format: uuid
+        site_id:
+          type: integer
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        duration_seconds:
+          type: integer
+          nullable: true
+        check_in_lat:
+          type: number
+          format: double
+        check_in_lng:
+          type: number
+          format: double
+        check_in_accuracy_meters:
+          type: integer
+          nullable: true
+        check_out_lat:
+          type: number
+          format: double
+          nullable: true
+        check_out_lng:
+          type: number
+          format: double
+          nullable: true
+        status:
+          type: string
+          enum:
+          - detected
+          - pending_validation
+          - approved
+          - rejected
+          - cancelled
+        attendance_log_id:
+          type: integer
+          nullable: true
+        validated_by:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        validation_note:
+          type: string
+          nullable: true
+    AttendanceDashboard:
+      type: object
+      properties:
+        today:
+          type: object
+          properties:
+            detected:
+              type: integer
+            pending_validation:
+              type: integer
+            approved:
+              type: integer
+            rejected:
+              type: integer
+            cancelled:
+              type: integer
+            total_employees_present:
+              type: integer
+        week:
+          type: object
+          properties:
+            total_sessions:
+              type: integer
+            auto_approved_rate:
+              type: number
+              format: float
+    CompanyBranding:
+      type: object
+      properties:
+        display_name:
+          type: string
+          example: TechCorp Algerie
+        logo_url:
+          type: string
+          nullable: true
+          example: https://api.example.com/storage/company-branding/logo.png
+        logo_path:
+          type: string
+          nullable: true
+        logo_disk:
+          type: string
+          nullable: true
+          example: public
+        primary_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          example: '#10B981'
+        accent_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          example: '#2563EB'
+        brand_mode:
+          type: string
+          enum:
+          - default
+          - light
+          - dark
+          - auto
+    CompanyBrandingResponse:
+      type: object
+      properties:
+        company_id:
+          type: string
+          format: uuid
+        branding:
+          $ref: '#/components/schemas/CompanyBranding'
+    CompanyBrandingUpdateRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
+        primary_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+        accent_color:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+        brand_mode:
+          type: string
+          enum:
+          - default
+          - light
+          - dark
+          - auto
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
         company_id:
           type: string
           format: uuid
@@ -291336,6 +292344,11 @@ components:
           nullable: true
           maxLength: 2000
     Notification:
+          example: redis
+        db_driver:
+          type: string
+          example: pgsql
+    PlatformPlan:
       type: object
       properties:
         id:
@@ -291362,6 +292375,8 @@ components:
           format: date-time
           nullable: true
     NotificationIndexResponse:
+        name:
+          type: string
         price_monthly:
           type: number
           format: float
@@ -296196,6 +297211,7 @@ components:
         pdf_path:
           type: string
           nullable: true
+          additionalProperties: true
         created_at:
           type: string
           format: date-time
@@ -297803,6 +298819,23 @@ components:
           - custom
     IslamicCalendarHoliday:
           nullable: true
+        job_title:
+          type: string
+          maxLength: 150
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        base_salary:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+          nullable: true
         salary_frequency:
           type: string
           enum:
@@ -297812,6 +298845,8 @@ components:
           nullable: true
         work_hours_per_week:
           type: number
+          minimum: 0
+          maximum: 168
           nullable: true
         probation_end_date:
           type: string
@@ -298059,6 +299094,81 @@ components:
           items:
             type: string
     BankStatement:
+        apply_legal_template:
+          type: boolean
+          nullable: true
+          description: 'Issue #5260 — semer les clauses legales du pays de l''entreprise quand clauses est absent (defaut : true si clauses vide)'
+    UpdateContractRequest:
+      type: object
+      properties:
+        contract_type:
+          type: string
+          enum:
+          - cdi
+          - cdd
+          - stage
+          - freelance
+          - interim
+        reference:
+          type: string
+          maxLength: 50
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        job_title:
+          type: string
+          maxLength: 150
+          nullable: true
+        department_id:
+          type: integer
+          nullable: true
+        position_id:
+          type: integer
+          nullable: true
+        base_salary:
+          type: number
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+          nullable: true
+        salary_frequency:
+          type: string
+          enum:
+          - monthly
+          - hourly
+          - daily
+          nullable: true
+        work_hours_per_week:
+          type: number
+          nullable: true
+        probation_end_date:
+          type: string
+          format: date
+          nullable: true
+        benefits:
+          type: object
+          nullable: true
+        clauses:
+          type: object
+          nullable: true
+        status:
+          type: string
+          enum:
+          - draft
+          - active
+          - suspended
+          - terminated
+        termination_reason:
+          type: string
+          nullable: true
+    ContractAmendment:
+      type: object
+      properties:
+        id:
+          type: integer
         contract_id:
           type: integer
         company_id:
@@ -299527,6 +300637,69 @@ components:
         notes_redacted:
           type: string
           nullable: true
+        employee_id:
+          type: integer
+        employee_name:
+          type: string
+          nullable: true
+        pay_slip_id:
+          type: integer
+          nullable: true
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum:
+          - pending
+          - paid
+          - confirmed
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+    PayrollRun:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        country_code:
+          type: string
+          description: ISO-3166 country context used by the payroll rules.
+        correlation_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: 'Issue #1874 — identifiant de corrélation du run (logs ↔ réponse ↔ audit).'
+        rules_version:
+          type: string
+          nullable: true
+          description: Stable fingerprint of the effective country rules used for calculation.
+        rules_period:
+          type: string
+          format: date
+          nullable: true
+          description: Effective date used to resolve the country rules.
+        rules_identifier:
+          type: string
+          nullable: true
+          description: Country rules implementation identifier.
+        period_month:
+          type: integer
+        period_year:
+          type: integer
+        label:
+          type: string
+          nullable: true
+        status:
+          type: string
           enum:
           - draft
           - calculating
