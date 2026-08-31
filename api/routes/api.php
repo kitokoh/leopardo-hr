@@ -65,6 +65,7 @@ use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -165,6 +166,7 @@ Route::prefix('v1')->group(function (): void {
         // transporteurs (jeton X-Carrier-Token, upsert idempotent par clé
         // externe — public, authentifié dans le contrôleur).
         Route::post('/travel/carrier-sync/trips', [TravelCarrierSyncController::class, 'upsertTrip']);
+    Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
         // #5272 — webhook des paiements en ligne des documents comptables.
@@ -176,6 +178,11 @@ Route::prefix('v1')->group(function (): void {
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
+        // RESTO-407 (#6194) — callback signé de confirmation mobile money de la
+        // verticale RestaurantManager. Public : la confiance est portée par la
+        // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
+        // depuis le payload signé puis posé via TenantManager (pattern #5272).
+        Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
@@ -289,6 +296,9 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/travelagency.php';
+    require __DIR__.'/modules/restaurantmanager.php';
+
+    require __DIR__.'/modules/fuel_station.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

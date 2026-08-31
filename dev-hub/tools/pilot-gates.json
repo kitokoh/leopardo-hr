@@ -131,6 +131,7 @@
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
           "status": "pending"
+          "status": "validated"
         },
         {
           "id": "api_security",
@@ -161,17 +162,20 @@
           "id": "golden_journey",
           "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
           "status": "pending"
+          "status": "validated"
         },
         {
           "id": "recette",
           "label": "Recette UAT signée par le chef de projet",
           "status": "pending"
+          "status": "validated"
         }
       ]
     },
     {
       "id": "travelagency",
       "label": "TravelAgency (verticale voyage, BC-24)",
+      "label": "TravelAgency (verticale agence de voyage, BC-24)",
       "go_decision": "pending",
       "gates": [
         {
@@ -188,6 +192,7 @@
         {
           "id": "core_flow",
           "label": "Parcours réseau → trajet → réservation → paiement → billet → check-in (TRAVEL-301..318, 401..413)",
+          "label": "Parcours réseau → trajet → réservation → passagers → billet → check-in (TRAVEL-2xx/3xx)",
           "status": "pending"
         },
         {
@@ -209,21 +214,25 @@
           "id": "performance",
           "label": "Benchmarks recherche/réservation/PDF (volumes attendus)",
           "label": "API, Policies, tests cross-tenant + RBAC (TRAVEL-322)",
+          "label": "API, Policies, matrice RBAC travel.* (TRAVEL-322)",
           "status": "pending"
         },
         {
           "id": "runbook",
           "label": "Runbook pilote + recette UAT + rollback (TRAVEL-1010)",
+          "label": "Runbook pilote + recette UAT (TRAVEL-050)",
           "status": "pending"
         },
         {
           "id": "security_review",
           "label": "Audit sécurité & RGPD (PII passagers, paiements, exports — TRAVEL-1013)",
+          "label": "Audit sécurité & RGPD avant pilote (TRAVEL-1013)",
           "status": "pending"
         },
         {
           "id": "performance",
           "label": "Budgets p95 & index (MAT-014 — endpoints livraison/reservations)",
+          "label": "Budgets performance (MAT-014)",
           "status": "pending"
         },
         {
@@ -236,6 +245,7 @@
           "id": "golden_journey",
           "label": "GJ-TRAVEL-01 passe en CI (MAT-013) — dépend du merge du module",
           "label": "Golden journey GJ-TRAVEL-01 (TRAVEL-1007)",
+          "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)",
           "status": "pending"
         },
         {
@@ -278,6 +288,11 @@
     { "id": "golden_journey", "label": "GJ-TRAVEL-01 passe en CI (MAT-013, TRAVEL-1007)", "status": "pending" },
     { "id": "recette", "label": "Recette UAT signée par le chef de projet (TRAVEL-051)", "status": "pending" }
   ] }
+          "label": "Recette UAT signée par le chef de projet (TRAVEL-051)",
+          "status": "pending"
+        }
+      ]
+    }
   ],
   "decision_rules": {
     "go": "Tous les gates validés + recette métier signée + fenêtre de pilote planifiée.",

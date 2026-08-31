@@ -15,6 +15,7 @@ use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
+use App\Http\Middleware\Restaurant\EnsureRestaurantManagerModuleMiddleware;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
@@ -158,6 +159,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
+            // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
+            'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
