@@ -23,9 +23,24 @@ class EdgeSyncDaemonCommand extends Command
 
     protected $description = 'Run the Edge sync daemon (pushes/pulls over HTTP to the Cloud API)';
 
+    private bool $stopping = false;
+
     public function handle(): void
     {
         $this->info('[EdgeSync Daemon] Starting...');
+
+        // Issue #6559 : handler SIGTERM/SIGINT pour un arret Docker propre —
+        // le daemon sort de sa boucle au prochain palier de sommeil (max
+        // ~1 s) au lieu de rester bloque dans sleep() jusqu'a SIGKILL.
+        if (function_exists('pcntl_async_signals')) {
+            pcntl_async_signals(true);
+            pcntl_signal(SIGTERM, function (): void {
+                $this->stopping = true;
+            });
+            pcntl_signal(SIGINT, function (): void {
+                $this->stopping = true;
+            });
+        }
 
         // Issue #3564 : env() lu UNIQUEMENT via config/edge.php — l'entrypoint
         // edge exécute `php artisan config:cache`, après quoi env() renvoie
@@ -73,12 +88,35 @@ class EdgeSyncDaemonCommand extends Command
                 $this->error('[EdgeSync Daemon] Error: ' . $e->getMessage());
             }
 
-            if ($runOnce) {
+            if ($runOnce || $this->stopping) {
                 break;
             }
 
             $this->info("[EdgeSync Daemon] Sleeping {$interval} minutes...");
-            sleep($interval * 60);
+            if ($this->interruptibleSleep($interval * 60)) {
+                break;
+            }
         } while (true);
+
+        if ($this->stopping) {
+            $this->info('[EdgeSync Daemon] Signal recu — arret propre.');
+        }
+    }
+
+    /**
+     * Sommeil par paliers de 1 s pour reagir rapidement a SIGTERM/SIGINT.
+     * Retourne true si un signal d'arret a ete recu pendant le sommeil.
+     */
+    private function interruptibleSleep(int $seconds): bool
+    {
+        for ($i = 0; $i < $seconds; $i++) {
+            if ($this->stopping) {
+                return true;
+            }
+
+            sleep(1);
+        }
+
+        return false;
     }
 }

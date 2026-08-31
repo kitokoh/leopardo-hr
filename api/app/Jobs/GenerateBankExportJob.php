@@ -122,9 +122,13 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
                 'error_message' => null,
             ])->save();
         } catch (Throwable $e) {
+            // Issue #6559 : le message brut ($e->getMessage()) contenait des
+            // details internes (SQLSTATE, chemins) persistes en base et
+            // renvoyes a l'UI — on persiste un message metier stable, le
+            // detail technique reste dans les logs (report()).
             $export->forceFill([
                 'status' => 'failed',
-                'error_message' => $e->getMessage(),
+                'error_message' => 'BANK_EXPORT_GENERATION_FAILED',
             ])->save();
 
             report($e);
