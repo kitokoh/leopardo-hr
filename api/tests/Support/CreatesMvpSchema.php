@@ -3067,6 +3067,41 @@ trait CreatesMvpSchema
             });
         }
 
+        // ── BC-24 TRAVEL — TRAVEL-806 (issue #6097) — webhooks transporteurs ──
+        if (! Schema::hasTable($this->moduleTable('travel_webhook_subscriptions'))) {
+            Schema::create($this->moduleTable('travel_webhook_subscriptions'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('carrier_id')->nullable();
+                $table->string('name', 120);
+                $table->string('url', 500);
+                $table->text('secret_encrypted');
+                $table->jsonb('events');
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'url'], 'travel_webhook_subscriptions_company_url_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_webhook_deliveries'))) {
+            Schema::create($this->moduleTable('travel_webhook_deliveries'), function (Blueprint $table): void {
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->uuid('subscription_id');
+                $table->uuid('outbox_event_id')->nullable();
+                $table->string('event_type', 80);
+                $table->jsonb('payload_redacted');
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('next_attempt_at')->nullable();
+                $table->unsignedSmallInteger('last_status_code')->nullable();
+                $table->string('last_error', 500)->nullable();
+                $table->timestampTz('delivered_at')->nullable();
+                $table->timestamps();
+                $table->unique(['subscription_id', 'outbox_event_id'], 'travel_webhook_deliveries_unique');
+            });
+        }
+
         // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
         if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
             Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
