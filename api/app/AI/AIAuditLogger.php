@@ -22,6 +22,8 @@ class AIAuditLogger
         int $outputTokens,
         int $durationMs,
         ?string $error = null,
+        // BC-23-D10 (issue #6238) : workflow d'origine (null = chat direct).
+        ?string $workflow = null,
     ): void {
         $costCents = $this->estimateCost($provider, $model, $inputTokens, $outputTokens);
 
@@ -39,6 +41,7 @@ class AIAuditLogger
             'cost_cents' => $costCents,
             'duration_ms' => $durationMs,
             'error' => $error,
+            'workflow' => $workflow,
             'created_at' => now(),
         ]);
     }
