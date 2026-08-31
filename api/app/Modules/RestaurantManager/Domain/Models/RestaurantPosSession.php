@@ -18,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Une seule session ouverte par branche (UNIQUE tenant, branche, statut) ;
  * `variance_minor` = `counted_cash_minor` − `expected_cash_minor` (minor units).
  * `version` protège la clôture contre les écritures concurrentes.
+ *
+ * @property-read \Carbon\Carbon|null $opened_at
+ * @property-read \Carbon\Carbon|null $closed_at
  */
 class RestaurantPosSession extends Model
 {

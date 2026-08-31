@@ -69,7 +69,7 @@ final class RestaurantPaymentCallbackController extends Controller
             return new JsonResponse(['error' => 'company_not_found'], 404);
         }
 
-        $result = $this->tenants->withinTenant($company, function () use ($payment, $data): ?RestaurantOrderPayment {
+        $result = $this->tenants->withinTenant($company, function () use ($payment, $data, $company): ?RestaurantOrderPayment {
             $paymentRow = RestaurantOrderPayment::query()->find($payment);
 
             if (! $paymentRow instanceof RestaurantOrderPayment || $paymentRow->company_id !== $company->id) {

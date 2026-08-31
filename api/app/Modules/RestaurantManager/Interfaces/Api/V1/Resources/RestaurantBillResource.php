@@ -46,7 +46,7 @@ class RestaurantBillResource extends JsonResource
                 'discount_minor' => $this->totals['discount_minor'],
                 'total_minor' => $this->totals['total_minor'],
                 'currency' => $this->totals['currency'],
-                'promotion_code' => isset($this->totals['promotion']) && $this->totals['promotion'] !== null
+                'promotion_code' => isset($this->totals['promotion'])
                     ? $this->totals['promotion']->code
                     : null,
             ],
