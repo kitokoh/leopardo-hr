@@ -34,8 +34,16 @@ class CompanyBankingController extends Controller
      * Retourne l'IBAN et le BIC actuellement enregistrés pour l'entreprise,
      * avec un flag `sepa_ready` indiquant si l'export SEPA est utilisable.
      */
-    public function show(): JsonResponse
+    public function show(Request $request): JsonResponse
     {
+        // Issue #6544 (audit) : show() était sans AUCUNE garde (update()
+        // exigeait déjà principal|rh) — un employé lambda récupérait l'IBAN
+        // de la société (virements SEPA, phishing). Lecture réservée aux
+        // rôles financiers, comme l'écriture (update) + comptable.
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($actor->hasManagerRole('principal', 'rh', 'comptable'), 403);
+
         $company = $this->freshCompany();
         $banking = $this->bankingFrom($company);
 
