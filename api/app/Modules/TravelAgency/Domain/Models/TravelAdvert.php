@@ -6,9 +6,11 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-907/908 (#6110/#6111) — Annonce payante (tenant-scoped).
@@ -32,12 +34,38 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $currency
  * @property string $status
  * @property int|null $payment_id
- * @property \Illuminate\Support\Carbon|null $paid_at
+ * @property Carbon|null $paid_at
  * @property int|null $validated_by_user_id
- * @property \Illuminate\Support\Carbon|null $validated_at
- * @property \Illuminate\Support\Carbon|null $published_at
- * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property Carbon|null $validated_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $expires_at
  * @property string|null $moderation_note
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $advert_type_id
+ * @property int $advert_position_id
+ * @property string $title
+ * @property string $body_redacted
+ * @property string|null $image_path
+ * @property int $character_count
+ * @property int $price_image_minor
+ * @property int $price_character_minor
+ * @property int $total_minor
+ * @property string $currency
+ * @property string $status
+ * @property int|null $payment_id
+ * @property Carbon|null $paid_at
+ * @property int|null $validated_by_user_id
+ * @property Carbon|null $validated_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $expires_at
+ * @property string|null $moderation_note
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */
@@ -45,7 +73,7 @@ class TravelAdvert extends Model
 {
     use BelongsToCompany;
 
-    /** @use HasFactory<\Database\Factories\TravelAdvertFactory> */
+    /** @use HasFactory<Factory<static>> */
     use HasFactory;
 
     public const STATUS_DRAFT = 'draft';

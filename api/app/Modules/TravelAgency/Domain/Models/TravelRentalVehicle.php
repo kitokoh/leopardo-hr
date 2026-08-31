@@ -7,16 +7,36 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelRentalVehicleFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Véhicule en location (TRAVEL-212, issue #6025).
  *
  * `owner_carrier_id` nullable : un véhicule de location peut appartenir à
  * l'agence elle-même, sans compagnie tierce propriétaire.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property string $title
+ * @property int $city_id
+ * @property int $price_per_day_minor
+ * @property string $currency
+ * @property Carbon|null $available_from
+ * @property Carbon|null $available_until
+ * @property int|null $owner_carrier_id
+ * @property TravelRecordStatus $status
+ * @property string|null $notes
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelRentalVehicle extends Model
 {

@@ -232,7 +232,7 @@ class TravelQuizController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->company_id !== $travelQuiz->company_id || $travelQuizQuestion->quiz_id !== $travelQuiz->id) {
+        if ($actor->company_id !== $travelQuiz->company_id || (int) $travelQuizQuestion->quiz_id !== $travelQuiz->id) {
             abort(404);
         }
 
@@ -289,7 +289,7 @@ class TravelQuizController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->company_id !== $travelQuiz->company_id || $travelQuizQuestion->quiz_id !== $travelQuiz->id) {
+        if ($actor->company_id !== $travelQuiz->company_id || (int) $travelQuizQuestion->quiz_id !== $travelQuiz->id) {
             abort(404);
         }
 

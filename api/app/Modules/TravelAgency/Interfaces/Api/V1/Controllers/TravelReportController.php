@@ -21,9 +21,7 @@ use Illuminate\Http\Request;
  */
 class TravelReportController extends Controller
 {
-    public function __construct(private readonly TravelReportService $reports)
-    {
-    }
+    public function __construct(private readonly TravelReportService $reports) {}
 
     public function sales(TravelReportRequest $request): JsonResponse
     {
@@ -72,7 +70,7 @@ class TravelReportController extends Controller
     }
 
     /**
-     * @param  callable(string, CarbonImmutable, CarbonImmutable, array<string, mixed>): array  $aggregate
+     * @param  callable(string, CarbonImmutable, CarbonImmutable, array<string, mixed>): array<string, mixed>  $aggregate
      */
     private function report(TravelReportRequest $request, callable $aggregate): JsonResponse
     {

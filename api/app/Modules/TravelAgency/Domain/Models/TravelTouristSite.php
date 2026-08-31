@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-909 (#6112) — Site touristique (tenant-scoped, annuaire).
@@ -20,6 +21,21 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $longitude
  * @property array<int, string>|null $images
  * @property string $status
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $name
+ * @property string|null $description_redacted
+ * @property int|null $city_id
+ * @property int|null $latitude
+ * @property int|null $longitude
+ * @property array<string, mixed>|null $images
+ * @property string $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

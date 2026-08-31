@@ -2645,6 +2645,10 @@
   "restaurantMobileManagerNoStockAlerts": "Aucune alerte de seuil",
   "restaurantMobileManagerIngredient": "Ingrédient #{id}",
   "restaurantMobileManagerStockLevel": "Stock : {quantity} / seuil : {threshold}",
+<<<<<<< HEAD
+=======
+  "navigationTravelagency": "Agence de voyage",
+>>>>>>> e1587bcd9 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelLoading": "Chargement…",
   "travelSectionTitle": "Agence de voyage",
   "travelSectionSubtitle": "Gestion de la verticale TravelAgency : référentiel, réseau, ventes, billetterie et rapports.",
@@ -2660,10 +2664,13 @@
   "travelTabTickets": "Billets",
   "travelTabReports": "Rapports",
   "travelTabRentals": "Locations & Hôtels",
+<<<<<<< HEAD
   "travelTabQuizzes": "Quiz",
   "travelTabAdverts": "Annonces",
   "travelTabSites": "Sites touristiques",
   "travelTabContacts": "Contacts",
+=======
+>>>>>>> e1587bcd9 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelReferentielTabslabel": "Sous-sections du référentiel",
   "travelReferentielTabgeo": "Pays & Villes",
   "travelReferentielTabstations": "Stations",
@@ -2694,10 +2701,13 @@
   "travelSearchRentalvehicle": "Rechercher un véhicule de location…",
   "travelSearchRentalbooking": "Rechercher une réservation de location…",
   "travelSearchHotel": "Rechercher un hôtel…",
+<<<<<<< HEAD
   "travelSearchQuiz": "Rechercher un quiz…",
   "travelSearchAdvert": "Rechercher une annonce…",
   "travelSearchSite": "Rechercher un site…",
   "travelSearchContact": "Rechercher un contact…",
+=======
+>>>>>>> e1587bcd9 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelFieldIso2": "ISO2",
   "travelFieldIso3": "ISO3",
   "travelFieldName": "Nom",
@@ -2888,6 +2898,7 @@
   "travelTableActions": "Actions",
   "travelTableEmptynested": "Aucun élément.",
   "travelFormSelectplaceholder": "— Sélectionner —",
+<<<<<<< HEAD
   "travelFormMoneyminor": "Montant en devises (1 = 100 minor)",
   "travelQuizTitle": "Quiz & jeux-concours",
   "travelQuizSubtitle": "Créez des quiz, ajoutez des questions et consultez les participations.",
@@ -2976,4 +2987,7 @@
   "travelAdvertstatusRejected": "Rejetée",
   "travelAdvertstatusExpired": "Expirée",
   "travelAdvertstatusArchived": "Archivée"
+=======
+  "travelFormMoneyminor": "Montant en devises (1 = 100 minor)"
+>>>>>>> e1587bcd9 (merge: main (PM BC-24 TRAVEL — fix CI batch))
 }

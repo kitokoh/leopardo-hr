@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-904 (#6107) — Quiz & jeu-concours (tenant-scoped).
@@ -18,7 +19,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $description_redacted
  * @property string $status
  * @property int $max_attempts
- * @property \Illuminate\Support\Carbon|null $published_at
+ * @property Carbon|null $published_at
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $title
+ * @property string|null $description_redacted
+ * @property string $status
+ * @property int $max_attempts
+ * @property Carbon|null $published_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

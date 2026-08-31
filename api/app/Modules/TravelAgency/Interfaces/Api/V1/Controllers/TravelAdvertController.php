@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Application\Actions\PayTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\RenewTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction;
 use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use Illuminate\Http\JsonResponse;
@@ -280,9 +281,16 @@ class TravelAdvertController extends Controller
             abort(422, 'Unknown advert position for this tenant.');
         }
 
-        $currency = strtoupper((string) $request->json('currency', $actor->company->currency));
+        // Devise du tenant (jamais cross-tenant).
+        $company = $actor->company;
 
-        if ($currency !== strtoupper((string) $actor->company->currency)) {
+        if (! $company instanceof Company) {
+            abort(401);
+        }
+
+        $currency = strtoupper((string) $request->json('currency', $company->currency));
+
+        if ($currency !== strtoupper((string) $company->currency)) {
             abort(422, 'Currency must match the tenant currency.');
         }
 
@@ -354,7 +362,6 @@ class TravelAdvertController extends Controller
 
         return new JsonResponse(null, 204);
     }
-
 
     // ── Annonces — cycle de vie (TRAVEL-907/#6110) ───────────────────────
 
@@ -431,12 +438,18 @@ class TravelAdvertController extends Controller
         }
 
         // Prix calculé SERVEUR (jamais accepté du client).
+        $company = $actor->company;
+
+        if (! $company instanceof Company) {
+            abort(401);
+        }
+
         $quote = app(TravelAdvertPricingService::class)->quote(
             (string) $actor->company_id,
             $typeId,
             $positionId,
             $body,
-            (string) $actor->company->currency,
+            (string) $company->currency,
         );
 
         $advert = TravelAdvert::query()->create([
@@ -533,7 +546,6 @@ class TravelAdvertController extends Controller
         return new JsonResponse(null, 204);
     }
 
-
     public function renewAdvert(Request $request, TravelAdvert $travelAdvert): JsonResponse
     {
         /** @var Employee $actor */
@@ -558,5 +570,4 @@ class TravelAdvertController extends Controller
 
         return new JsonResponse(['data' => $advert]);
     }
-
 }

@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-905 (#6108) — Position de publication d'une annonce payante
@@ -17,6 +18,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $code
  * @property string $name
  * @property string|null $description
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property string $name
+ * @property string $description
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

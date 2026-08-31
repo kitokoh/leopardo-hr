@@ -38,7 +38,7 @@ final class PayTravelAdvertAction
             abort(422, 'Fournisseur de paiement inconnu.');
         }
 
-        DB::transaction(function () use ($advert, $actor, $providerEnum, $providerReference): void {
+        DB::transaction(function () use ($advert, $providerEnum, $providerReference): void {
             $payment = TravelPayment::query()->create([
                 'company_id' => $advert->company_id,
                 'booking_id' => null,

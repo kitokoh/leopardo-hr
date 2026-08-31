@@ -28,7 +28,7 @@ final class TravelEventPublished implements TenantScopedEvent
         public readonly array $payloadRedacted,
     ) {}
 
-    public function tenantCompanyId(): ?string
+    public function tenantCompanyId(): string
     {
         return $this->companyId;
     }

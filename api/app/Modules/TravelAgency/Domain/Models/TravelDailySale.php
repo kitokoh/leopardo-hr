@@ -7,10 +7,24 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-506 (#6076) — Read model : ventes journalières par trajet.
  * Recalculé par job idempotent (upsert par clé unique tenant+date+trajet).
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property Carbon $sale_date
+ * @property int $trip_id
+ * @property int $bookings_count
+ * @property int $passengers_count
+ * @property int $revenue_minor
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

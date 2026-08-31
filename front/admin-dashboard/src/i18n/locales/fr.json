@@ -4475,7 +4475,11 @@
       "subtitle": "Consultation, téléchargement PDF et révocation.",
       "download": "PDF",
       "revoke": "Révoquer",
+<<<<<<< HEAD
       "revokeTitle": "Motif de révocation",
+=======
+      "revokeTitle": "Révoquer le billet",
+>>>>>>> e1587bcd9 (merge: main (PM BC-24 TRAVEL — fix CI batch))
       "revokeBody": "Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé.",
       "filterTrip": "Trajet",
       "manage": "Billets",

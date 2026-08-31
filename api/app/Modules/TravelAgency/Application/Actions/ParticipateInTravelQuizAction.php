@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\DB;
  */
 final class ParticipateInTravelQuizAction
 {
+    /**
+     * @param  array<int, int>  $answers  Indices des options choisies (une par question).
+     */
     public function execute(TravelQuiz $quiz, Employee $actor, array $answers): TravelQuizParticipation
     {
         if ($quiz->status !== TravelQuiz::STATUS_PUBLISHED) {
@@ -41,7 +44,7 @@ final class ParticipateInTravelQuizAction
         }
 
         foreach ($answers as $index) {
-            if (! is_int($index) || $index < 0) {
+            if ($index < 0) {
                 abort(422, 'Reponses invalides.');
             }
         }

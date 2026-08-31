@@ -9,9 +9,11 @@ use App\Modules\TravelAgency\Domain\Enums\AgeCategory;
 use App\Modules\TravelAgency\Domain\Enums\DocumentType;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelPassengerFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Passager d'une réservation (TRAVEL-209, issue #6022).
@@ -23,6 +25,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * `setDocumentNumber()`/`getDocumentNumber()` plutôt que d'assigner les
  * colonnes brutes directement ; les API Resources ne doivent jamais
  * exposer `document_number_encrypted` ni le retour de `getDocumentNumber()`.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $booking_id
+ * @property string $full_name
+ * @property string $birth_date
+ * @property DocumentType $document_type
+ * @property string $document_number_encrypted
+ * @property string $document_number_hash
+ * @property AgeCategory $age_category
+ * @property string $class_id
+ * @property int $seat_number
+ * @property int $unit_price_minor
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelPassenger extends Model
 {

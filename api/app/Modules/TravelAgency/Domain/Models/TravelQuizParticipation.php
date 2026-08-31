@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-904 (#6107) — Participation à un quiz (unique par tenant, quiz et
@@ -20,7 +21,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property array<int, int> $answers
  * @property int $score
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property Carbon|null $completed_at
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $quiz_id
+ * @property string $participant_type
+ * @property string $participant_id
+ * @property array<string, mixed> $answers
+ * @property int $score
+ * @property string $status
+ * @property Carbon|null $completed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

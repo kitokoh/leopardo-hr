@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-906 (#6109) — Tarif d'annonce (type × position, devise tenant).
@@ -22,6 +23,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $price_image_minor
  * @property int $price_character_minor
  * @property string $currency
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $advert_type_id
+ * @property int $advert_position_id
+ * @property int $price_image_minor
+ * @property int $price_character_minor
+ * @property string $currency
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

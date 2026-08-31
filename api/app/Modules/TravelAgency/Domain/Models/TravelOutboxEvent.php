@@ -30,6 +30,22 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $event_type
+ * @property array<string, mixed> $payload_redacted
+ * @property string $status
+ * @property int $attempts
+ * @property Carbon|null $available_at
+ * @property string|null $last_error
+ * @property string $idempotency_key
+ * @property Carbon|null $processed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelOutboxEvent extends Model
 {
     use BelongsToCompany;

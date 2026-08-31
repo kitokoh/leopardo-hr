@@ -43,7 +43,8 @@ class RecalculateTravelReadModelsCommand extends Command
             return self::SUCCESS;
         }
 
-        $from = $this->option('from') ? (string) $this->option('from') : now()->subDays(30)->toDateString();
+        $fromOption = $this->option('from');
+        $from = is_string($fromOption) && $fromOption !== '' ? $fromOption : now()->subDays(30)->toDateString();
 
         $total = 0;
 
@@ -118,7 +119,7 @@ class RecalculateTravelReadModelsCommand extends Command
                 TravelTripOccupancy::query()->updateOrCreate(
                     ['company_id' => $companyId, 'trip_id' => $trip->id],
                     [
-                        'departure_date' => $trip->departure_date?->toDateString(),
+                        'departure_date' => $trip->departure_date->toDateString(),
                         'seats_sold' => $sold,
                         'total_seats' => $total,
                         'occupancy_rate' => round($sold / $total, 4),
