@@ -71,8 +71,8 @@ class CompanyIntegrationRequestTest extends TestCase
             return $n;
         };
 
-        $this->assertSame(1, $count('user/company-integration-requests'));
-        $this->assertSame(1, $count('company-integration-requests'));
+        $this->assertSame(1, $count('api/v1/user/company-integration-requests'));
+        $this->assertSame(1, $count('api/v1/company-integration-requests'));
     }
 
     // ── USER-SIDE ──────────────────────────────────────────────────────────
