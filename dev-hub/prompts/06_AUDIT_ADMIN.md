@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant qu'auditeur frontend senior pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant qu'auditeur frontend senior pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt git).
 
 Commence par lire AGENTS.md (notamment les sections sur admin-dashboard et les tokens glass-*/premium-text).
 
