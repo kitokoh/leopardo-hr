@@ -55,6 +55,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
+        // #6574 — relances de paiement (J+7/J+15/J+30 paramétrables) : la commande
+        // était enregistrée nulle part → jamais exécutée (perte de recouvrement
+        // silencieuse). Idempotente (une relance par (document, stage)), sans
+        // chevauchement entre runs.
+        $schedule->command('accounting:send-payment-reminders')->dailyAt('07:30')->withoutOverlapping();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /

@@ -9,6 +9,7 @@ use App\Modules\Accounting\Application\Listeners\ProvisionAccountingSettings;
 use App\Modules\Accounting\Application\Listeners\ProvisionChartOfAccounts;
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
+use App\Modules\Accounting\Console\Commands\SendPaymentRemindersCommand;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
@@ -35,8 +36,13 @@ class AccountingServiceProvider extends ServiceProvider
 
         // #5224 — rendu PDF (fr + ar RTL) fourni par l'issue #5224.
         // Issue #5274 — démo exploitable en 1 clic (données vitrine, jamais réelles).
+        // #6574 — SendPaymentRemindersCommand était silencieusement inactive :
+        // Laravel ne découvre que `app/Console/Commands` ; une commande de module
+        // doit être enregistrée par son provider pour apparaître dans `artisan list`
+        // et pouvoir être planifiée.
         $this->commands([
             SeedAccountingDemoCommand::class,
+            SendPaymentRemindersCommand::class,
         ]);
     }
 
