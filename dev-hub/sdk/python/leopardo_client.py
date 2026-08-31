@@ -3575,6 +3575,33 @@ class LeopardoClient:
     def get_public_travel_tickets_by_ticket_pdf(self, **kwargs):
         """E-billet public (TRAVEL-1002/#6115, accès par code)"""
         return self.request("GET", "/public/travel/tickets/{ticket}/pdf", **kwargs)
+    def get_public_restaurant_kiosk_menu(self, **kwargs):
+        """Menu public du kiosque libre-service (RESTO-807/#6228)"""
+        return self.request("GET", "/public/restaurant/kiosk/menu", **kwargs)
+
+    def post_public_restaurant_kiosk_orders(self, **kwargs):
+        """Commande kiosque libre-service (RESTO-807/#6228)"""
+        return self.request("POST", "/public/restaurant/kiosk/orders", **kwargs)
+
+    def get_public_restaurant_kiosk_orders_by_reference(self, **kwargs):
+        """Suivi d'une commande kiosque (RESTO-807/#6228)"""
+        return self.request("GET", "/public/restaurant/kiosk/orders/{reference}", **kwargs)
+
+    def get_public_restaurant_shop_menu(self, **kwargs):
+        """Menu public de la boutique en ligne (RESTO-805/#6226)"""
+        return self.request("GET", "/public/restaurant/shop/menu", **kwargs)
+
+    def post_public_restaurant_shop_orders(self, **kwargs):
+        """Commande en ligne publique (RESTO-805/#6226)"""
+        return self.request("POST", "/public/restaurant/shop/orders", **kwargs)
+
+    def get_public_restaurant_shop_orders_by_reference(self, **kwargs):
+        """Suivi d'une commande en ligne (RESTO-805/#6226)"""
+        return self.request("GET", "/public/restaurant/shop/orders/{reference}", **kwargs)
+
+    def post_public_restaurant_shop_orders_by_reference_pay(self, **kwargs):
+        """Initiation de paiement commande en ligne (RESTO-805/#6226)"""
+        return self.request("POST", "/public/restaurant/shop/orders/{reference}/pay", **kwargs)
 
     def post_push_notifications_send(self, **kwargs):
         """Envoyer une notification push de test a un employe"""
@@ -3932,6 +3959,58 @@ class LeopardoClient:
         """Mise à jour d'un menuitem"""
         return self.request("PUT", "/restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}", **kwargs)
 
+    def get_restaurant_mobile_manager_kpis(self, **kwargs):
+        """KPIs du jour pour l'app mobile gérant (RESTO-803/#6224)"""
+        return self.request("GET", "/restaurant/mobile/manager/kpis", **kwargs)
+
+    def post_restaurant_mobile_manager_pos_sessions_by_restaurantpossession_close(self, **kwargs):
+        """Clôture de caisse mobile (RESTO-803/#6224)"""
+        return self.request("POST", "/restaurant/mobile/manager/pos-sessions/{restaurantPosSession}/close", **kwargs)
+
+    def get_restaurant_mobile_manager_pos_sessions_current(self, **kwargs):
+        """Session de caisse courante (app gérant, RESTO-803/#6224)"""
+        return self.request("GET", "/restaurant/mobile/manager/pos-sessions/current", **kwargs)
+
+    def get_restaurant_mobile_manager_stock_alerts(self, **kwargs):
+        """Alertes de seuil de stock (app gérant, RESTO-803/#6224)"""
+        return self.request("GET", "/restaurant/mobile/manager/stock-alerts", **kwargs)
+
+    def get_restaurant_mobile_rider_deliveries(self, **kwargs):
+        """Tournées assignées au livreur connecté (RESTO-802/#6223)"""
+        return self.request("GET", "/restaurant/mobile/rider/deliveries", **kwargs)
+
+    def get_restaurant_mobile_rider_deliveries_by_restaurantdelivery(self, **kwargs):
+        """Détail d'une livraison (app livreur, RESTO-802/#6223)"""
+        return self.request("GET", "/restaurant/mobile/rider/deliveries/{restaurantDelivery}", **kwargs)
+
+    def post_restaurant_mobile_rider_deliveries_by_restaurantdelivery_deliver(self, **kwargs):
+        """Livraison effectuée (RESTO-802/#6223)"""
+        return self.request("POST", "/restaurant/mobile/rider/deliveries/{restaurantDelivery}/deliver", **kwargs)
+
+    def post_restaurant_mobile_rider_deliveries_by_restaurantdelivery_out_for_delivery(self, **kwargs):
+        """Départ en livraison (RESTO-802/#6223)"""
+        return self.request("POST", "/restaurant/mobile/rider/deliveries/{restaurantDelivery}/out-for-delivery", **kwargs)
+
+    def get_restaurant_mobile_server_orders(self, **kwargs):
+        """File de service mobile serveur (RESTO-801/#6222)"""
+        return self.request("GET", "/restaurant/mobile/server/orders", **kwargs)
+
+    def post_restaurant_mobile_server_orders_by_restaurantorder_pay(self, **kwargs):
+        """Encaissement cash mobile serveur (RESTO-801/#6222)"""
+        return self.request("POST", "/restaurant/mobile/server/orders/{restaurantOrder}/pay", **kwargs)
+
+    def post_restaurant_mobile_server_orders_by_restaurantorder_serve(self, **kwargs):
+        """Service d'une commande (app serveur, RESTO-801/#6222)"""
+        return self.request("POST", "/restaurant/mobile/server/orders/{restaurantOrder}/serve", **kwargs)
+
+    def get_restaurant_mobile_server_tables(self, **kwargs):
+        """Plan de salle — tables occupées (app serveur, RESTO-801/#6222)"""
+        return self.request("GET", "/restaurant/mobile/server/tables", **kwargs)
+
+    def post_restaurant_mobile_sync(self, **kwargs):
+        """Synchronisation offline mobile idempotente (RESTO-804/#6225)"""
+        return self.request("POST", "/restaurant/mobile/sync", **kwargs)
+
     def get_restaurant_orders(self, **kwargs):
         """RESTO-402 — Liste des commandes (filtres branche/statut, paginée)"""
         return self.request("GET", "/restaurant/orders", **kwargs)
@@ -3982,6 +4061,7 @@ class LeopardoClient:
 
     def post_restaurant_payments_by_payment_callback(self, **kwargs):
         """Callback signé idempotent d'un paiement (RESTO-407)"""
+        """RESTO-407 — Callback signé de confirmation mobile money (public, HMAC fail-closed, idempotent)"""
         return self.request("POST", "/restaurant/payments/{payment}/callback", **kwargs)
 
     def get_restaurant_ping(self, **kwargs):
@@ -4172,6 +4252,14 @@ class LeopardoClient:
         """RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h)"""
         return self.request("GET", "/restaurant/reservations/availability", **kwargs)
 
+    def get_restaurant_shop_token(self, **kwargs):
+        """Jeton boutique courant (RESTO-805/#6226)"""
+        return self.request("GET", "/restaurant/shop/token", **kwargs)
+
+    def post_restaurant_shop_token_rotate(self, **kwargs):
+        """Rotation du jeton boutique (RESTO-805/#6226)"""
+        return self.request("POST", "/restaurant/shop/token/rotate", **kwargs)
+
     def get_restaurant_stock_levels(self, **kwargs):
         """RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés)"""
         return self.request("GET", "/restaurant/stock-levels", **kwargs)
@@ -4267,6 +4355,10 @@ class LeopardoClient:
     def put_restaurant_units_by_restaurantunit(self, **kwargs):
         """Mise à jour d'un unit"""
         return self.request("PUT", "/restaurant/units/{restaurantUnit}", **kwargs)
+
+    def post_restaurant_webhooks_delivery_apps_by_provider(self, **kwargs):
+        """Webhook entrant apps de livraison (RESTO-806/#6227)"""
+        return self.request("POST", "/restaurant/webhooks/delivery-apps/{provider}", **kwargs)
 
     def get_restaurant_zones(self, **kwargs):
         """Liste des zone (référentiel BC-25)"""

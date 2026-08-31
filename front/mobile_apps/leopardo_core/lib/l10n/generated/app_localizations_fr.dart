@@ -1150,6 +1150,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get dashboardLeaveBalanceSubtitle =>
       'Jours restants par type, année courante';
+  String get dashboardLeaveBalanceSubtitle => 'Jours restants par type, année courante';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Chargement du solde…';
@@ -1161,6 +1162,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get dashboardLeaveBalanceEmpty =>
       'Aucun solde configuré pour ce compte.';
+  String get dashboardLeaveBalanceError => 'Impossible de charger le solde de congés.';
+
+  @override
+  String get dashboardLeaveBalanceEmpty => 'Aucun solde configuré pour ce compte.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1271,6 +1276,7 @@ class AppLocalizationsFr extends AppLocalizations {
     Object range,
     Object status,
   ) {
+      Object date, Object hours, Object range, Object status) {
     return 'Journée du $date, statut $status, $range, $hours.';
   }
 
@@ -8348,6 +8354,82 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get crmContactsPrimary => 'Principal';
+  String get crmAccountsColcreated => 'Créé le';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColname => 'Nom';
+
+  @override
+  String get crmAccountsColphone => 'Téléphone';
+
+  @override
+  String get crmAccountsColstatus => 'Statut';
+
+  @override
+  String get crmAccountsDescription => 'Organisations clientes de votre entreprise';
+
+  @override
+  String get crmAccountsEmpty => 'Aucun compte pour le moment.';
+
+  @override
+  String get crmAccountsSubtitle => 'Liste des comptes (tenant-scoped).';
+
+  @override
+  String get crmAccountsTitle => 'Comptes';
+
+  @override
+  String get crmContactsDescription => 'Personnes rattachées à vos comptes';
+
+  @override
+  String get crmContactsEmpty => 'Aucun contact pour le moment.';
+
+  @override
+  String get crmContactsPrimary => 'Principal';
+
+  @override
+  String get crmContactsSubtitle => 'Liste des contacts (tenant-scoped).';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmErrorloading => 'Impossible de charger les données.';
+
+  @override
+  String get crmFeaturelocked => 'Module CRM non activé pour votre entreprise.';
+
+  @override
+  String get crmIsolationnote => 'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.';
+
+  @override
+  String get crmLeadsColcompany => 'Société';
+
+  @override
+  String get crmLeadsColcreated => 'Créé le';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColname => 'Nom';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColstatus => 'Statut';
+
+  @override
+  String get crmLeadsDescription => 'Opportunités d\'affaires à qualifier';
+
+  @override
+  String get crmLeadsEmpty => 'Aucun prospect pour le moment.';
+
+  @override
+  String get crmLeadsSubtitle => 'Liste des prospects (tenant-scoped).';
 
   @override
   String get crmLeadsTitle => 'Prospects';
@@ -8417,6 +8499,70 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get restaurantKitchensubtitle =>
       'File de commandes en temps réel — préparation et mise à disposition';
+  String get crmLoading => 'Chargement…';
+
+  @override
+  String get crmPaginationnext => 'Suivant';
+
+  @override
+  String get crmPaginationpage => 'Page';
+
+  @override
+  String get crmPaginationprev => 'Précédent';
+
+  @override
+  String get crmPipelineDescription => 'Vue d\'ensemble des opportunités par étape';
+
+  @override
+  String get crmPipelineEmpty => 'Aucune opportunité pour le moment.';
+
+  @override
+  String get crmPipelineStageLost => 'Perdu';
+
+  @override
+  String get crmPipelineStageNegotiation => 'Négociation';
+
+  @override
+  String get crmPipelineStageProposal => 'Proposition';
+
+  @override
+  String get crmPipelineStageProspecting => 'Prospection';
+
+  @override
+  String get crmPipelineStageQualification => 'Qualification';
+
+  @override
+  String get crmPipelineStageWon => 'Gagné';
+
+  @override
+  String get crmPipelineSubtitle => 'Opportunités regroupées par étape (tenant-scoped).';
+
+  @override
+  String get crmPipelineTitle => 'Pipeline';
+
+  @override
+  String get crmRefresh => 'Actualiser';
+
+  @override
+  String get crmSearchplaceholder => 'Rechercher…';
+
+  @override
+  String get crmSubtitle => 'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).';
+
+  @override
+  String get crmTitle => 'CRM Client';
+
+  @override
+  String get modulesRestaurant => 'Écran cuisine';
+
+  @override
+  String get restaurantActionerror => 'Action impossible, réessayez.';
+
+  @override
+  String get restaurantAdditem => 'Ajouter un article';
+
+  @override
+  String get restaurantBill => 'Addition';
 
   @override
   String get restaurantBranch => 'Branche';
@@ -8429,12 +8575,50 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get restaurantReady => 'Prêtes';
+  String get restaurantCheckin => 'Enregistrer';
+
+  @override
+  String get restaurantClosesession => 'Clôturer la caisse';
+
+  @override
+  String get restaurantCovers => 'couverts';
+
+  @override
+  String get restaurantCustomername => 'Nom du client';
+
+  @override
+  String get restaurantDelivery => 'Livraison';
+
+  @override
+  String get restaurantDinein => 'Sur place';
+
+  @override
+  String get restaurantDiscount => 'Remise';
 
   @override
   String get restaurantEmpty => 'Aucune commande en attente. La file est vide.';
 
   @override
   String get restaurantStart => 'Démarrer';
+  String get restaurantGuests => 'Couverts';
+
+  @override
+  String get restaurantInpreparation => 'En préparation';
+
+  @override
+  String get restaurantKiosktitle => 'Kiosque libre-service';
+
+  @override
+  String get restaurantKitchensubtitle => 'File de commandes en temps réel — préparation et mise à disposition';
+
+  @override
+  String get restaurantKitchentitle => 'Écran cuisine';
+
+  @override
+  String get restaurantLoaderror => 'Impossible de charger la file cuisine.';
+
+  @override
+  String get restaurantLoading => 'Chargement de la file cuisine…';
 
   @override
   String get restaurantMarkready => 'Prête';
@@ -8465,4 +8649,92 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'Chargement de la file cuisine…';
+  String get restaurantNeworder => 'Nouvelle commande';
+
+  @override
+  String get restaurantNoshow => 'No-show';
+
+  @override
+  String get restaurantOpensession => 'Ouvrir la caisse';
+
+  @override
+  String get restaurantOrderitems => 'Articles de la commande';
+
+  @override
+  String get restaurantOrderref => 'Commande';
+
+  @override
+  String get restaurantPaid => 'Payée';
+
+  @override
+  String get restaurantPaycash => 'Encaisser en espèces';
+
+  @override
+  String get restaurantPossubtitle => 'Prise de commande et encaissement';
+
+  @override
+  String get restaurantPostitle => 'Point de vente';
+
+  @override
+  String get restaurantReady => 'Prêtes';
+
+  @override
+  String get restaurantReservationnew => 'Nouvelle réservation';
+
+  @override
+  String get restaurantReservations => 'Réservations';
+
+  @override
+  String get restaurantSessionclosed => 'Caisse clôturée';
+
+  @override
+  String get restaurantSessionopen => 'Caisse ouverte';
+
+  @override
+  String get restaurantShoptitle => 'Commande en ligne';
+
+  @override
+  String get restaurantStart => 'Démarrer';
+
+  @override
+  String get restaurantStatuscancelled => 'Annulée';
+
+  @override
+  String get restaurantStatusclosed => 'Clôturée';
+
+  @override
+  String get restaurantStatusdraft => 'Brouillon';
+
+  @override
+  String get restaurantStatusinpreparation => 'En préparation';
+
+  @override
+  String get restaurantStatusopen => 'Ouverte';
+
+  @override
+  String get restaurantStatuspaid => 'Payée';
+
+  @override
+  String get restaurantStatusready => 'Prête';
+
+  @override
+  String get restaurantStatusrefunded => 'Remboursée';
+
+  @override
+  String get restaurantStatusserved => 'Servie';
+
+  @override
+  String get restaurantSubtotal => 'Sous-total';
+
+  @override
+  String get restaurantTable => 'Table';
+
+  @override
+  String get restaurantTakeaway => 'À emporter';
+
+  @override
+  String get restaurantTax => 'TVA';
+
+  @override
+  String get restaurantTotal => 'Total';
 }
