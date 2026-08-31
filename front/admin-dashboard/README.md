@@ -46,18 +46,14 @@ Dashboard d'administration interne pour la plateforme Leopardo RH. Interface mod
 ```
 admin-dashboard/
 ├── src/
-│   ├── components/
-│   │   ├── layout/           # Layout components
-│   │   ├── dashboard/        # Dashboard widgets
-│   │   ├── charts/          # ECharts components
-│   │   ├── globe/           # Globe.gl components
-│   │   ├── notifications/   # Toast notifications
-│   │   ├── alerts/          # System alerts
-│   │   └── modals/          # Modal dialogs
+│   ├── components/          # Composants par domaine : alerts, analytics,
+│   │   │                    # common, dashboard, edge, fleet, globe, layout,
+│   │   │                    # marketing, notifications, payroll, system,
+│   │   │                    # travel, users
+│   ├── router/              # Router (vue-router ^5) + méta (titres/icônes)
 │   ├── stores/              # Pinia stores
 │   ├── services/            # API services
-│   ├── views/               # Page components
-│   └── layouts/             # Layout templates
+│   └── views/               # Page components
 ├── package.json
 ├── tailwind.config.js
 └── vite.config.js
@@ -68,7 +64,7 @@ admin-dashboard/
 **Frontend**
 - Vue.js 3 (Composition API)
 - Pinia (State Management)
-- Vue Router 4
+- Vue Router 5 (^5.2.0)
 - Tailwind CSS
 - Headless UI
 
@@ -242,5 +238,5 @@ Propriétaire - Leopardo RH
 ---
 
 **Status**: ✅ Phase 2 Complétée - Prêt pour la Phase 3
-**Version**: 2.0.0
-**Dernière mise à jour**: Mai 2026
+**Version**: 1.0.0 (package.json)
+**Tests**: E2E Playwright (front/admin-dashboard/e2e/ + e2e-staging/) — pas encore de tests unitaires (vitest à introduire, issue #6593)
