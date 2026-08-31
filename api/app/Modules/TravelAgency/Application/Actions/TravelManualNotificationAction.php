@@ -6,8 +6,8 @@ namespace App\Modules\TravelAgency\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Mail\CommunicationMail;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
+use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -27,7 +27,7 @@ use Throwable;
  */
 final class TravelManualNotificationAction
 {
-    public function __construct(private readonly CommunicationService $communicationService) {}
+    public function __construct(private readonly EmployeeNotifier $communicationService) {}
 
     /**
      * @return array{channels: list<string>}

@@ -34,13 +34,13 @@ trait Approvable
             ->firstOrFail();
 
         return ApprovalRequest::create([
-            'company_id'      => $this->company_id,
-            'workflow_id'     => $workflow->id,
+            'company_id' => $this->company_id,
+            'workflow_id' => $workflow->id,
             'approvable_type' => static::class,
-            'approvable_id'   => $this->id,
-            'requester_id'    => auth()->id(),
-            'current_level'   => 1,
-            'status'          => 'pending',
+            'approvable_id' => $this->id,
+            'requester_id' => auth()->id(),
+            'current_level' => 1,
+            'status' => 'pending',
         ]);
     }
 
@@ -54,4 +54,3 @@ trait Approvable
         return $this->approvalRequest?->status === 'pending';
     }
 }
-

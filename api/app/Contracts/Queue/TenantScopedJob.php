@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Contracts\Queue;
 
+use App\Core\Tenant\TenantManager;
+use App\Jobs\Middleware\EnsureTenantContext;
+
 /**
  * Contract for queued jobs that must execute within a specific tenant's
  * context (PostgreSQL `search_path` + `current_company` container binding).
@@ -22,8 +25,8 @@ namespace App\Contracts\Queue;
  * "schema" (physically isolated) tenancy mode, since `search_path` is never
  * updated for that job's DB connection.
  *
- * @see \App\Core\Tenant\TenantManager::withinTenant()
- * @see \App\Jobs\Middleware\EnsureTenantContext
+ * @see TenantManager::withinTenant()
+ * @see EnsureTenantContext
  */
 interface TenantScopedJob
 {

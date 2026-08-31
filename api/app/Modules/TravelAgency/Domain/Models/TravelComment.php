@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 class TravelComment extends Model
 {
     use BelongsToCompany;
-
     use HasFactory;
 
     protected $table = 'travel_comments';
-    protected $fillable = ["company_id", "article_id", "author_type", "author_id", "content_redacted", "status", "moderated_by_user_id", "moderated_at"];
+
+    protected $fillable = ['company_id', 'article_id', 'author_type', 'author_id', 'content_redacted', 'status', 'moderated_by_user_id', 'moderated_at'];
 }

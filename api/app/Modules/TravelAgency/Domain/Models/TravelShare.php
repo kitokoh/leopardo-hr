@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 class TravelShare extends Model
 {
     use BelongsToCompany;
-
     use HasFactory;
 
     protected $table = 'travel_shares';
-    protected $fillable = ["company_id", "article_id", "channel", "actor_type", "actor_id"];
+
+    protected $fillable = ['company_id', 'article_id', 'channel', 'actor_type', 'actor_id'];
 }

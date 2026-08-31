@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Services;
 
-use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Notification\Domain\Models\DeviceToken;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -62,7 +62,7 @@ class PushNotificationService
      * Envoie une notification push à un employé identifié par son id.
      * Retourne 0 si l'employé n'existe pas ou n'a aucun token actif.
      *
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = []): int
     {
@@ -230,4 +230,3 @@ class PushNotificationService
             ->update(['is_active' => false]);
     }
 }
-

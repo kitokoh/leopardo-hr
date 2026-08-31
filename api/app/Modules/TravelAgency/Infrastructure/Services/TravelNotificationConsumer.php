@@ -6,7 +6,6 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Mail\CommunicationMail;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
@@ -14,6 +13,7 @@ use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
+use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -47,7 +47,7 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
     ];
 
     public function __construct(
-        private readonly CommunicationService $communicationService,
+        private readonly EmployeeNotifier $communicationService,
     ) {}
 
     public function supports(string $eventType): bool
