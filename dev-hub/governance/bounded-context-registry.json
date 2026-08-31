@@ -797,11 +797,13 @@
       "routes": [
         "api/routes/modules/delivery.php"
       ],
+      "routes": [],
       "migrations": [
         "api/database/migrations/tenant"
       ],
       "events": [
         "App\\Modules\\Delivery\\Domain\\Events"
+        "App\\Modules\\DeliveryAgency\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",
@@ -1602,3 +1604,4 @@
     ]
   }
 ]
+}
