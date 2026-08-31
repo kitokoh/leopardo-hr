@@ -177,6 +177,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // RESTO-805 (#6226) — boutique en ligne publique (jeton tenant signé).
             'restaurant.public.shop' => \App\Http\Middleware\Restaurant\EnsureRestaurantShopPublicAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

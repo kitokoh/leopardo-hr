@@ -6,6 +6,7 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryNotificationResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,6 +50,8 @@ final class DeliveryNotificationController
         // (manager principal — la matrice fine est BC-26-D05/#6312).
         $employee = $request->user();
         $maskPhone = ! ($employee->isManager() && $employee->hasManagerRole('principal'));
+        // RGPD : le numéro n'est visible en clair que pour les admins.
+        $maskPhone = ! (new DeliveryRoleResolver())->hasAnyRole($request->user(), ['admin']);
 
         $notifications = $query->paginate(min((int) $request->integer('per_page', 15), 100));
 

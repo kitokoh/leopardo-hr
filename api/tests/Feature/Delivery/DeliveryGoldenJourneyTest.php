@@ -123,6 +123,9 @@ class DeliveryGoldenJourneyTest extends TestCase
         $firstStopId = (int) $stops->first()['id'];
 
         Sanctum::actingAs($this->manager);
+        // ── 4. Exécution : picked_up → en_route → arrived → delivered (POD).
+        $firstStopId = (int) $stops->first()['id'];
+
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => (int) $stops->first()['delivery_id'],
             'type' => 'picked_up',

@@ -20,6 +20,7 @@
  * Référence : docs/specifications/SOLUTION_DELIVERY.md (§4 API v1).
  */
 
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryAsyncExportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
@@ -47,6 +48,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
+        // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
+        // dispatcher/manager/admin (la création vient du dispatcher/manager).
+        Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
@@ -76,6 +80,65 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
+            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
+            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+                Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
+                Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
+            });
+
+            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
+            Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
+                Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
+                Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
+                Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
+                Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            });
+
+            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
+            // ouverte au rider (mobile livreur, DELIVERY-203).
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            });
+
+            // Rapports & KPIs (DELIVERY-207/#6291).
+            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
+                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
+                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
+            });
+
+            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
+            // pending→collected→settled→reconciled, idempotent.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
+                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
+                ->middleware('delivery.permission:admin|manager');
+
+            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
+            // effectif + outbox (numéros masqués RGPD hors admin).
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
+                ->middleware('delivery.permission:admin|manager');
+
+            // Export CSV async (BC-26-D07/#6295) — job tenant-scoped,
+            // observable (pending → generating → done/failed).
+            Route::post('/deliveries/reports/async-export', [DeliveryAsyncExportController::class, 'store'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/reports/async-export/{export}', [DeliveryAsyncExportController::class, 'show'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
+            Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
         });
     });
 
