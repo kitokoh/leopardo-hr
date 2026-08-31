@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Domain\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;

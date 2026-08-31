@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

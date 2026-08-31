@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Domain\Models;
 
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
