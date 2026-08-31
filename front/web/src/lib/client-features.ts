@@ -346,12 +346,12 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
 function dedupeModulesByKey(modules: ClientModule[]): ClientModule[] {
   const seen = new Set<ClientModuleKey>();
   const unique: ClientModule[] = [];
-  for (const module of modules) {
-    if (seen.has(module.key)) {
+  for (const entry of modules) {
+    if (seen.has(entry.key)) {
       continue;
     }
-    seen.add(module.key);
-    unique.push(module);
+    seen.add(entry.key);
+    unique.push(entry);
   }
   return unique;
 }
