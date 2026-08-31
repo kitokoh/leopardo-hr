@@ -28,16 +28,18 @@ final class AccountingJournalController extends Controller
     ) {}
 
     /**
-     * GET /api/v1/accounting/journal?period=YYYY-MM
+     * GET /api/v1/accounting/journal?period=YYYY-MM&limit=500
      */
     public function index(JournalPeriodRequest $request): JsonResponse
     {
         $period = $request->validated('period');
+        $limit = $this->boundedLimit($request, 500, 1000);
 
-        $entries = $this->journal->entriesForPeriod($period);
+        $entries = $this->journal->entriesForPeriod($period, $limit);
 
         return response()->json([
             'period' => $period,
+            'limit' => $limit,
             'balanced' => $this->journal->isPeriodBalanced($period),
             'closed' => $this->journal->isPeriodClosed($period),
             'totals' => $this->journal->totalsForPeriod($period),
