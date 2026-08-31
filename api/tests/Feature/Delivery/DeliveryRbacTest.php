@@ -68,6 +68,9 @@ class DeliveryRbacTest extends TestCase
         return $employee;
     }
 
+    /**
+     * @param array<string, mixed> $overrides
+     */
     private function createDelivery(array $overrides = []): Delivery
     {
         /** @var Delivery $delivery */
@@ -168,6 +171,8 @@ class DeliveryRbacTest extends TestCase
 
         $deliveryA = DeliveryStop::query()->where('route_id', $routeA->id)->firstOrFail()->delivery;
         $deliveryB = DeliveryStop::query()->where('route_id', $routeB->id)->firstOrFail()->delivery;
+        self::assertNotNull($deliveryA, 'la livraison A doit exister');
+        self::assertNotNull($deliveryB, 'la livraison B doit exister');
 
         // Rider A : autorisé sur SA livraison.
         Sanctum::actingAs($riderA);

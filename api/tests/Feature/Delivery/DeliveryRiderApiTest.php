@@ -126,7 +126,7 @@ class DeliveryRiderApiTest extends TestCase
         // Colis déjà picked_up (la machine à états interdit assigned →
         // out_for_delivery ; le picked_up est enregistré côté dispatcher/manager).
         $route = $this->createRouteFor(11, deliveryStatus: 'picked_up');
-        $stopId = (int) $route->stops()->first()->id;
+        $stopId = (int) $route->stops()->firstOrFail()->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -152,15 +152,17 @@ class DeliveryRiderApiTest extends TestCase
             ->assertJsonPath('data.proof_id', 555);
 
         // La livraison est passée delivered via la machine à états.
-        $deliveryId = (int) $route->stops()->find($stopId)->delivery_id;
-        self::assertSame('delivered', Delivery::query()->find($deliveryId)->status);
-        self::assertNotNull(Delivery::query()->find($deliveryId)->delivered_at);
+        $deliveryId = (int) $route->stops()->findOrFail($stopId)->delivery_id;
+        $delivery = Delivery::query()->find($deliveryId);
+        self::assertNotNull($delivery, 'la livraison doit exister');
+        self::assertSame('delivered', $delivery->status);
+        self::assertNotNull($delivery->delivered_at);
     }
 
     public function test_stop_status_replay_is_idempotent(): void
     {
         $route = $this->createRouteFor(11, deliveryStatus: 'out_for_delivery');
-        $stopId = (int) $route->stops()->first()->id;
+        $stopId = (int) $route->stops()->firstOrFail()->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -178,7 +180,7 @@ class DeliveryRiderApiTest extends TestCase
     public function test_rider_cannot_update_other_drivers_stop(): void
     {
         $route = $this->createRouteFor(12);
-        $stopId = (int) $route->stops()->first()->id;
+        $stopId = (int) $route->stops()->firstOrFail()->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -190,7 +192,7 @@ class DeliveryRiderApiTest extends TestCase
     public function test_stop_status_is_tenant_scoped(): void
     {
         $route = $this->createRouteFor(11);
-        $stopId = (int) $route->stops()->first()->id;
+        $stopId = (int) $route->stops()->firstOrFail()->id;
 
         /** @var Company $other */
         $other = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);

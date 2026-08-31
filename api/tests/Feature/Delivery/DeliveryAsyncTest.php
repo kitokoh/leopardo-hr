@@ -142,8 +142,8 @@ class DeliveryAsyncTest extends TestCase
         CloseDeliveryRouteJob::dispatchSync($routeA->id, $this->company->id);
 
         // Tenant B : intouché.
-        self::assertSame('assigned', $routeB->fresh()->status);
-        self::assertSame('completed', $routeA->fresh()->status);
+        self::assertSame('assigned', $routeB->refresh()->status);
+        self::assertSame('completed', $routeA->refresh()->status);
     }
 
     // ── DLQ : échec → dead letter → rejeu ─────────────────────────────────
@@ -185,6 +185,7 @@ class DeliveryAsyncTest extends TestCase
 
         Storage::disk('local')->assertExists($filePath);
         $first = Storage::disk('local')->get($filePath);
+        self::assertIsString($first, 'le rapport exporté doit être un texte');
 
         // Rejeu avec la même runKey : même contenu (déterministe, zéro doublon).
         $job->handle(app(DeliveryReportService::class));
@@ -219,7 +220,9 @@ class DeliveryAsyncTest extends TestCase
             'status' => 'new',
         ]);
 
-        $this->artisan('delivery:replay-dlq')->assertExitCode(0);
+        $cmd = $this->artisan('delivery:replay-dlq');
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(0);
 
         Queue::assertPushed(CloseDeliveryRouteJob::class);
         Queue::assertPushed(ExportDeliveryReportJob::class);
@@ -242,7 +245,9 @@ class DeliveryAsyncTest extends TestCase
             'status' => 'new',
         ]);
 
-        $this->artisan('delivery:replay-dlq')->assertExitCode(1);
+        $cmd = $this->artisan('delivery:replay-dlq');
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(1);
 
         self::assertSame(1, DeliveryDeadLetter::query()->where('status', 'failed')->count());
     }
@@ -255,12 +260,14 @@ class DeliveryAsyncTest extends TestCase
 
         $route = $this->createClosedRoute();
 
-        $this->artisan('delivery:close-route', ['route' => $route->id, 'company' => $this->company->id])
-            ->assertExitCode(0);
+        $cmd = $this->artisan('delivery:close-route', ['route' => $route->id, 'company' => $this->company->id]);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(0);
         Queue::assertPushed(CloseDeliveryRouteJob::class);
 
-        $this->artisan('delivery:export-report', ['company' => $this->company->id])
-            ->assertExitCode(0);
+        $cmd = $this->artisan('delivery:export-report', ['company' => $this->company->id]);
+        assert($cmd instanceof \Illuminate\Testing\PendingCommand);
+        $cmd->assertExitCode(0);
         Queue::assertPushed(ExportDeliveryReportJob::class);
     }
 }

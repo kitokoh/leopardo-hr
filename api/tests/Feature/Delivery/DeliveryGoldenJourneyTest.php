@@ -110,7 +110,7 @@ class DeliveryGoldenJourneyTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.driver_id', 91);
-        $stops = collect($today->json('data.0.stops'));
+        $stops = collect($today->json('data.0.stops') ?? []);
 
         // ── 4. Exécution : picked_up (manager — gate api.manager tant que la
         //    matrice delivery.role n'est pas mergée, BC-26-D05/#6312) puis
@@ -286,9 +286,11 @@ class DeliveryGoldenJourneyTest extends TestCase
         ])->assertStatus(201)->json('data');
 
         self::assertSame($first['id'], $replay['id']);
+        $delivery = Delivery::query()->find($created[0]['id']);
+        self::assertNotNull($delivery, 'la livraison créée doit exister en base');
         self::assertSame(
             1,
-            Delivery::query()->find($created[0]['id'])->events()->where('type', 'delivered')->count(),
+            $delivery->events()->where('type', 'delivered')->count(),
         );
 
         // Le 2e colis échoue (picked_up → failed légal depuis picked_up).

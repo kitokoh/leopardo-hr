@@ -181,18 +181,18 @@ class DeliveryReportApiTest extends TestCase
         self::assertSame(100, $totals['avg_delivery_delay_minutes']); // (2h, 2h, 1h) → 100 min
 
         // Ventilation par source : manual 3 (2 livrées), restaurant 1.
-        $bySource = collect($first->json('data.by_source'))->keyBy('source');
+        $bySource = collect($first->json('data.by_source') ?? [])->keyBy('source');
         self::assertSame(3, $bySource['manual']['deliveries']);
         self::assertSame(2, $bySource['manual']['delivered']);
         self::assertSame(1, $bySource['restaurant']['deliveries']);
         self::assertEquals(100.0, $bySource['restaurant']['success_rate_pct']);
 
         // Par jour : 2026-08-01 concentre les 4 livraisons.
-        $byDay = collect($first->json('data.by_day'))->keyBy('date');
+        $byDay = collect($first->json('data.by_day') ?? [])->keyBy('date');
         self::assertSame(4, $byDay['2026-08-01']['deliveries']);
 
         // Par livreur : driver 5 → 3 livraisons.
-        $byDriver = collect($first->json('data.by_driver'))->keyBy('driver_id');
+        $byDriver = collect($first->json('data.by_driver') ?? [])->keyBy('driver_id');
         self::assertSame(3, $byDriver[5]['deliveries']);
     }
 

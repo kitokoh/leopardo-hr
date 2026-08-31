@@ -142,7 +142,7 @@ class DeliveryRouteApiTest extends TestCase
         $response->assertJsonPath('data.status', 'draft');
         $response->assertJsonCount(3, 'data.stops');
 
-        $orders = collect($response->json('data.stops'))->pluck('sort_order')->all();
+        $orders = collect($response->json('data.stops') ?? [])->pluck('sort_order')->all();
         self::assertSame([1, 2, 3], $orders);
     }
 
@@ -241,6 +241,7 @@ class DeliveryRouteApiTest extends TestCase
 
         // 2 stops livrés (COD 5000 chacun) + 1 stop en échec.
         $stops = $route->stops()->get();
+        self::assertCount(3, $stops, 'la tournée doit avoir 3 stops');
         $stops->get(0)->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:00:00')])->save();
         $stops->get(1)->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:05:00')])->save();
         $stops->get(2)->forceFill(['status' => 'failed'])->save();
