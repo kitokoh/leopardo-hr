@@ -48,6 +48,7 @@ return [
     'VALIDATION_FAILED' => 'Bazi alanlar hatali.',
     'TOO_MANY_REQUESTS' => 'Cok fazla istek. Lutfen daha sonra tekrar deneyin.',
     'AI_QUOTA_EXCEEDED' => 'Aylık yapay zeka kotası doldu. Gelecek ay tekrar deneyin.',
+    'AI_TOKEN_BUDGET_EXCEEDED' => 'Yapay zeka token bütçesi aşıldı. Mesajı kısaltın veya yeni bir görüşme başlatın.',
     'SERVICE_UNAVAILABLE' => 'Hizmet gecici olarak kullanilamiyor.',
     'HTTP_ERROR' => 'Bir hata olustu. Lutfen tekrar deneyin.',
     'UNSUPPORTED_API_VERSION' => 'Desteklenmeyen API surumu.',
