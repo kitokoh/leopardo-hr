@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Actions;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Enums\ContactSource;
 use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
-use App\Modules\Accounting\Domain\Enums\PaymentStatus;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -56,10 +56,13 @@ final class SeedAccountingDemoData
 
     private readonly SequentialDocumentNumbering $numbering;
 
+    private readonly PaymentRegistrationService $payments;
+
     public function __construct()
     {
-        $this->workflow = new DocumentWorkflowService;
         $this->numbering = new SequentialDocumentNumbering;
+        $this->workflow = new DocumentWorkflowService($this->numbering);
+        $this->payments = new PaymentRegistrationService;
     }
 
     /**
@@ -215,46 +218,48 @@ final class SeedAccountingDemoData
             ['description' => 'Prestation maintenance mensuelle — site Alger', 'quantity' => 1.0, 'unit_price' => 120000.0],
             ['description' => 'Forfait supervision distante', 'quantity' => 3.0, 'unit_price' => 15000.0],
         ]);
-        $this->workflow->transition($quote, DocumentStatus::Sent);
+        $this->workflow->send($quote);
 
         /** @var AccountingDocument $paidInvoice */
         $paidInvoice = $this->createDocument($company, $contacts['client_atlas'], DocumentType::Invoice, $base->copy()->subDays(60), [
             ['description' => 'Prestation de conseil — lot 1', 'quantity' => 1.0, 'unit_price' => 350000.0],
             ['description' => 'Mise à disposition d\'équipement', 'quantity' => 2.0, 'unit_price' => 45000.0],
         ], $base->copy()->subDays(30));
-        $this->workflow->transition($paidInvoice, DocumentStatus::Sent);
+        $this->workflow->send($paidInvoice);
 
         /** @var AccountingDocument $partialInvoice */
         $partialInvoice = $this->createDocument($company, $contacts['client_distribution'], DocumentType::Invoice, $base->copy()->subDays(20), [
             ['description' => 'Fourniture de supports print', 'quantity' => 500.0, 'unit_price' => 240.0],
             ['description' => 'Campagne d\'affichage', 'quantity' => 1.0, 'unit_price' => 185000.0],
         ], $base->copy()->subDays(5));
-        $this->workflow->transition($partialInvoice, DocumentStatus::Sent);
+        $this->workflow->send($partialInvoice);
 
         /** @var AccountingDocument $proforma */
         $proforma = $this->createDocument($company, $contacts['client_horizon'], DocumentType::Proforma, $base->copy()->subDays(15), [
             ['description' => 'Abonnement annuel support prioritaire', 'quantity' => 1.0, 'unit_price' => 240000.0],
         ]);
-        $this->workflow->transition($proforma, DocumentStatus::Sent);
+        $this->workflow->send($proforma);
 
         /** @var AccountingDocument $creditNote */
         $creditNote = $this->createDocument($company, $contacts['client_atlas'], DocumentType::CreditNote, $base->copy()->subDays(50), [
             ['description' => 'Avoir — réduction commerciale lot 1', 'quantity' => 1.0, 'unit_price' => -25000.0],
         ]);
-        $this->workflow->linkCreditNote($creditNote, $paidInvoice);
-        $this->workflow->transition($creditNote, DocumentStatus::Sent);
+        // Lien avoir → facture source (colonne FK, même convention que le
+        // workflow canonique #5223) puis émission via le service Application.
+        $creditNote->forceFill(['source_document_id' => $paidInvoice->id])->save();
+        $this->workflow->send($creditNote);
 
         /** @var AccountingDocument $deliveryNote */
         $deliveryNote = $this->createDocument($company, $contacts['client_distribution'], DocumentType::DeliveryNote, $base->copy()->subDays(10), [
             ['description' => 'Livraison supports print — bon de livraison', 'quantity' => 500.0, 'unit_price' => 240.0],
         ], null, $base->copy()->subDays(8));
-        $this->workflow->transition($deliveryNote, DocumentStatus::Sent);
+        $this->workflow->send($deliveryNote);
 
         /** @var AccountingDocument $receipt */
         $receipt = $this->createDocument($company, $contacts['client_horizon'], DocumentType::Receipt, $base->copy()->subDays(5), [
             ['description' => 'Reçu — acompte maintenance', 'quantity' => 1.0, 'unit_price' => 60000.0],
         ]);
-        $this->workflow->transition($receipt, DocumentStatus::Sent);
+        $this->workflow->send($receipt);
 
         return [
             'quote' => $quote,
@@ -279,30 +284,29 @@ final class SeedAccountingDemoData
     {
         $base = Carbon::now($company->timezone)->startOfDay();
 
-        $fullPayment = $this->createPayment(
-            $company,
+        // Encaissement complet puis rapprochement — chemin canonique #5229
+        // (PaymentRegistrationService, mêmes services que l'API) : le paiement
+        // passe à `recorded`, le document à paid (cumul = total), puis
+        // reconcile → matched + reconciled_at (vitrine « rapproché »).
+        $fullPayment = $this->payments->register(
             $documents['paid_invoice'],
             (float) $documents['paid_invoice']->total_ttc,
             PaymentMethod::BankTransfer->value,
-            $base->copy()->subDays(54),
             'VIR-DEMO-0001',
-            $base->copy()->subDays(53),
+            $base->copy()->subDays(54),
         );
+        $this->payments->reconcile($fullPayment);
+        $fullPayment->forceFill(['metadata' => self::DEMO_MARKER])->save();
 
-        $partialPayment = $this->createPayment(
-            $company,
+        // Encaissement partiel non rapproché (vitrine partially_paid).
+        $partialPayment = $this->payments->register(
             $documents['partial_invoice'],
             round(((float) $documents['partial_invoice']->total_ttc) * 0.30, 2),
             PaymentMethod::Check->value,
-            $base->copy()->subDays(17),
             'CHQ-DEMO-0042',
-            null,
+            $base->copy()->subDays(17),
         );
-
-        $this->syncPaidAmount($documents['paid_invoice']);
-        $this->workflow->transition($documents['paid_invoice'], DocumentStatus::Paid);
-        $this->syncPaidAmount($documents['partial_invoice']);
-        $this->workflow->transition($documents['partial_invoice'], DocumentStatus::PartiallyPaid);
+        $partialPayment->forceFill(['metadata' => self::DEMO_MARKER])->save();
 
         return [$fullPayment, $partialPayment];
     }
@@ -360,47 +364,6 @@ final class SeedAccountingDemoData
         }
 
         return $document;
-    }
-
-    /**
-     * Crée un paiement de démonstration.
-     */
-    private function createPayment(
-        Company $company,
-        AccountingDocument $document,
-        float $amount,
-        string $method,
-        Carbon $receivedAt,
-        string $reference,
-        ?Carbon $reconciledAt,
-    ): AccountingPayment {
-        /** @var AccountingPayment $payment */
-        $payment = AccountingPayment::query()->create([
-            'company_id' => $company->id,
-            'document_id' => $document->id,
-            'amount' => $amount,
-            'method' => $method,
-            'reference' => $reference,
-            'received_at' => $receivedAt,
-            'reconciled_at' => $reconciledAt,
-            'status' => $reconciledAt !== null ? PaymentStatus::Matched->value : PaymentStatus::Recorded->value,
-            'metadata' => self::DEMO_MARKER,
-        ]);
-
-        return $payment;
-    }
-
-    /**
-     * Synchronise le champ dénormalisé `paid_amount` (somme des paiements) —
-     * maintenu par #5229 côté API ; le seed le maintient pour rester cohérent.
-     * Comparaison avec tolérance (jamais d'égalité stricte sur des floats).
-     */
-    private function syncPaidAmount(AccountingDocument $document): void
-    {
-        $paid = round((float) $document->payments()->sum('amount'), 2);
-        if (abs($paid - (float) $document->paid_amount) > 0.0001) {
-            $document->update(['paid_amount' => $paid]);
-        }
     }
 
     /**
