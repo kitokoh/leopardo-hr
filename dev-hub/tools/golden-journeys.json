@@ -16,6 +16,14 @@
     "edumanager": {
       "label": "EduManager (verticale)",
       "status": "planned"
+    },
+    "delivery": {
+      "label": "DeliveryAgency (BC-26 DELIVERY)",
+      "status": "planned"
+    },
+    "restaurantmanager": {
+      "label": "RestaurantManager (verticale BC-25)",
+      "status": "planned"
     }
   },
   "journeys": [
@@ -282,6 +290,120 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-DELIVERY-01",
+      "name": "Livraison dernier-kilomètre — parcours agence complet",
+      "solution": "delivery",
+      "acceptance": "3 colis (dont 1 COD) → tournée affectée livreur+véhicule → events mobile picked_up→delivered (POD) / failed→returned → clôture (totaux) → rapport manager (taux de succès, COD) → lien destinataire. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Créer les colis (dont 1 COD)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 2,
+          "action": "Créer la tournée du jour",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 3,
+          "action": "Affecter livreur + véhicule",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes/{route}/assign",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 4,
+          "action": "Événements mobile (picked_up→delivered avec POD, failed→returned)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/events",
+          "role": "delivery.rider"
+        },
+        {
+          "order": 5,
+          "action": "Clôturer la tournée (totaux, idempotente)",
+          "method": "POST",
+          "route": "/api/v1/delivery/deliveries/routes/{route}/close",
+          "role": "delivery.dispatcher"
+        },
+        {
+          "order": 6,
+          "action": "Rapport manager (taux de succès, COD)",
+          "method": "GET",
+          "route": "/api/v1/delivery/deliveries/reports/summary",
+          "role": "delivery.manager"
+        },
+        {
+          "order": 7,
+          "action": "Suivi destinataire par lien borné",
+          "method": "GET",
+          "route": "/api/v1/deliveries/tracking/{token}",
+          "role": "public"
+        }
+      ]
+    },
+    {
+      "id": "GJ-RESTO-01",
+      "name": "Restaurant — caisse → commande → paiement → clôture",
+      "solution": "restaurantmanager",
+      "acceptance": "Session de caisse ouverte → commande sur table → ajout d'articles → addition → paiement (cash) → clôture de session : totaux cohérents, caisse immuable, idempotent. Deux clôtures → mêmes totaux.",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Activer la solution",
+          "method": "POST",
+          "route": "/api/v1/solutions/restaurantmanager/activate",
+          "role": "manager:principal"
+        },
+        {
+          "order": 2,
+          "action": "Ouvrir une session de caisse",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 3,
+          "action": "Créer une commande (table)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 4,
+          "action": "Ajouter des articles",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/items",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 5,
+          "action": "Éditer l'addition",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/bill",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 6,
+          "action": "Encaisser (paiement cash)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/orders/{order}/payments",
+          "role": "restaurant.cashier"
+        },
+        {
+          "order": 7,
+          "action": "Clôturer la session de caisse (idempotente)",
+          "method": "POST",
+          "route": "/api/v1/restaurant/pos-sessions/{session}/close",
+          "role": "restaurant.manager"
         }
       ]
     }

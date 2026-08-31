@@ -34,4 +34,6 @@ return [
 
     'payment_document_ready_title' => 'Document ready',
     'payment_document_ready_body' => 'Your payment document is generated and available to download.',
+    'weekly_manager_digest_title' => 'Weekly team digest',
+    'weekly_manager_digest_body' => 'Week of :week_start — Team of :team_size person(s) · :present attendance(s) recorded · :pending_absences pending absence(s) · :pending_advances pending advance(s) · :pending_corrections pending correction(s).',
 ];
