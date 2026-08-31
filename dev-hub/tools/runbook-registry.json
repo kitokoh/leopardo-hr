@@ -190,6 +190,7 @@
       "runbooks": [],
       "notes": "Module de livraison dernier-kilometre (planned): runbook dedie RUNBOOK_DELIVERY.md arrive avec la consolidation du socle DELIVERY (PR #6338). Couverture rollback/backup tenant assuree par RUNBOOK_BACKUP_RESTORE / RUNBOOK_ROLLBACK plateforme a l'activation.",
       "notes": "Module de livraison dernier-kilomètre (conception #6281) : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay) à livrer avec le module ; rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme.",
+      "notes": "Module DELIVERY planifié (cf. bounded-context-registry BC-26 planned) : couverture runbook à l'activation — docs/ops/RUNBOOK_DELIVERY.md arrive avec la consolidation #6338 (pm/merge-delivery-socle).",
       "status": "planned"
     }
   ]
