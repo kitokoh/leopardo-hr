@@ -4639,6 +4639,17 @@ paths:
       tags:
       - Travel
       summary: TRAVEL-904 — Détail d'un quiz (questions SANS réponses correctes)
+      parameters:
+      - name: travelQuiz
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Quiz + questions (sans réponses correctes)
+        '404':
+          description: Quiz introuvable
     put:
       tags:
       - Travel
