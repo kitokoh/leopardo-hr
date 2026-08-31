@@ -557,3 +557,43 @@ events:
       company_id: "11111111-1111-4111-8111-111111111111"
       data: { tax_rate_id: 3, country: "DZ" }
     deprecation: null
+
+  - name: fuelstation.cash_session.closed
+    version: 1.0.0
+    bc: fuelstation
+    class: App\Modules\FuelStation\Domain\Events\FuelCashSessionClosed
+    description: Une session de caisse FuelStation est clôturée (état figé, écart calculé, FUEL-007).
+    consumers: []
+    schema:
+      type: object
+      required: [event_name, version, occurred_at, company_id, data]
+      properties:
+        event_name: { type: string, enum: [fuelstation.cash_session.closed] }
+        version: { type: string }
+        occurred_at: { type: string, format: date-time }
+        company_id: { type: string, format: uuid }
+        data:
+          type: object
+          required: [session_id, station_id, opened_at, closed_at, expected_balance, variance, status]
+          properties:
+            session_id: { type: integer, minimum: 1 }
+            station_id: { type: integer, minimum: 1 }
+            opened_at: { type: string, format: date-time }
+            closed_at: { type: string, format: date-time }
+            expected_balance: { type: number }
+            variance: { type: number }
+            status: { type: string, enum: [closed] }
+    sample:
+      event_name: fuelstation.cash_session.closed
+      version: "1.0.0"
+      occurred_at: "2026-08-29T18:30:00+00:00"
+      company_id: "11111111-1111-4111-8111-111111111111"
+      data:
+        session_id: 42
+        station_id: 7
+        opened_at: "2026-08-29T06:00:00+00:00"
+        closed_at: "2026-08-29T18:30:00+00:00"
+        expected_balance: 1250000.0
+        variance: 0.0
+        status: closed
+    deprecation: null
