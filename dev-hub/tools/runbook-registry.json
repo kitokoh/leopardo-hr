@@ -187,10 +187,9 @@
     {
       "code": "BC-26",
       "name": "DELIVERY",
-      "runbooks": [
-        "docs/ops/RUNBOOK_DELIVERY.md"
-      ],
-      "notes": "Module de livraison dernier-kilomètre : runbook dédié (activation, endpoints, invariants, incidents, DLQ/replay, runbook rollback données tenant couvert par RUNBOOK_BACKUP_RESTORE/RUNBOOK_ROLLBACK plateforme)."
+      "runbooks": [],
+      "notes": "Module de livraison dernier-kilometre (planned): runbook dedie RUNBOOK_DELIVERY.md arrive avec la consolidation du socle DELIVERY (PR #6338). Couverture rollback/backup tenant assuree par RUNBOOK_BACKUP_RESTORE / RUNBOOK_ROLLBACK plateforme a l'activation.",
+      "status": "planned"
     }
   ]
 }
