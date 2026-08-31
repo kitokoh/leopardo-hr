@@ -6,7 +6,7 @@ namespace App\Modules\Recruitment\Domain\Models;
 
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Position;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

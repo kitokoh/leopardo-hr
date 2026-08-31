@@ -10,7 +10,7 @@ namespace App\Modules\Billing\Domain\Models;
 // The `payments()` relation uses the FQCN string so that Eloquent can resolve the
 // model at runtime without introducing a compile-time cross-module dependency.
 // See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

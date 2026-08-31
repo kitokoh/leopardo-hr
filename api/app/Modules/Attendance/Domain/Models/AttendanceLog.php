@@ -6,7 +6,7 @@ namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
