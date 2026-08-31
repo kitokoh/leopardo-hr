@@ -3177,7 +3177,6 @@ trait CreatesMvpSchema
             });
         }
 
-
     }
 
     private function dropMvpTables(): void

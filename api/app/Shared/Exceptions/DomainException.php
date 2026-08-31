@@ -10,6 +10,4 @@ use App\Exceptions\DomainException as BaseDomainException;
  * Base shared domain exception for cross-module errors.
  * Module-specific exceptions should extend their own Domain\Exceptions\*.
  */
-abstract class DomainException extends BaseDomainException
-{
-}
+abstract class DomainException extends BaseDomainException {}

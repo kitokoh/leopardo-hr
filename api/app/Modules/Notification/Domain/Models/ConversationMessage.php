@@ -6,6 +6,7 @@ namespace App\Modules\Notification\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +35,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property-read ConversationThread|null $thread
  * @property-read Employee|null $author
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class ConversationMessage extends Model
 {
