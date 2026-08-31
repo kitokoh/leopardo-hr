@@ -19,6 +19,7 @@ export type ClientModuleKey =
   | 'restaurant'
   | 'fuel';
   | 'edu_manager';
+  | 'restaurant';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -278,6 +279,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/edu-manager/assessments': 'edu_manager',
   '/edu-manager/report-cards': 'edu_manager',
   '/edu-manager/teacher': 'edu_manager',
+  '/restaurant/pos': 'restaurant',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {

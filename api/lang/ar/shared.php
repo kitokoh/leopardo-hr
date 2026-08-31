@@ -119,5 +119,6 @@ return [
         'notifications' => 'الاشعارات',
         'evaluations' => 'التقييمات',
         'restaurant' => 'المطبخ',
+        'restaurant' => 'المطعم',
     ],
 ];

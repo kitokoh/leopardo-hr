@@ -2,6 +2,7 @@
   "version": "1.0.0",
   "generated_at": "2026-08-30T12:00:00Z",
   "generated_at": "2026-08-30T16:35:58Z",
+  "generated_at": "2026-08-30T15:05:00Z",
   "default_locale": "fr",
   "rtl_locales": [
     "ar"
@@ -88,6 +89,24 @@
       "checksum": "9a9b96021fa8180e67172dd1607cdcbbb5178c4554c3c0a7f789ef897079b70f",
       "version": "1.0.0",
       "updated_at": "2026-08-30T12:00:00Z"
+      "checksum": "954021b5b474e3d973593b1f90c96e05ff62a9872e222f93097e36cb942fb27a",
+      "version": "1.0.0",
+      "updated_at": "2026-08-30T15:05:00Z"
+    },
+    "ar": {
+      "checksum": "127f22a4d5ee78ffbb5278e183e8abc78a7912a5caba0cc178449f7ccadc4333",
+      "version": "1.0.0",
+      "updated_at": "2026-08-30T15:05:00Z"
+    },
+    "tr": {
+      "checksum": "d8765100cd84f113c8bf35caecd19e0141d265bcb5bd90e88957b18dcfc95936",
+      "version": "1.0.0",
+      "updated_at": "2026-08-30T15:05:00Z"
+    },
+    "en": {
+      "checksum": "afece610bffcbf7e69986bff59e9b6880612f4ddf07fb7162fd3dfc6c803005b",
+      "version": "1.0.0",
+      "updated_at": "2026-08-30T15:05:00Z"
     }
   },
   "surfaces": {
@@ -238,6 +257,21 @@
         "tr": "3158c39a3833426c781f84b01d680112e2f2436628e7fd9e360d21be98236de3"
       },
       "updated_at": "2026-08-30T16:17:17.489Z"
+        "ar": "127f22a4d5ee78ffbb5278e183e8abc78a7912a5caba0cc178449f7ccadc4333",
+        "en": "afece610bffcbf7e69986bff59e9b6880612f4ddf07fb7162fd3dfc6c803005b",
+        "fr": "954021b5b474e3d973593b1f90c96e05ff62a9872e222f93097e36cb942fb27a",
+        "tr": "d8765100cd84f113c8bf35caecd19e0141d265bcb5bd90e88957b18dcfc95936"
+      },
+      "updated_at": "2026-08-30T15:38:05.515Z"
+    },
+    "admin": {
+      "checksums": {
+        "ar": "0b3cb025ea456294dd504fb0427044db0d7a5cab3fe53ef383cda1d91c24cf11",
+        "en": "5a3404f8816eff2b9ec093f038200f18c4a9c9f888b78569ff87f683b636dcc5",
+        "fr": "a6e01c27c72543fdc87ce6b59a277ace9b8f6fa704aea3e5512c0e042d6b13c5",
+        "tr": "7674596f03c0ed3fe28eb7ff29954ae6fc9efbf7bc365bd4a2df2c9a2b9d1c55"
+      },
+      "updated_at": "2026-08-30T15:38:07.232Z"
     }
   }
 }

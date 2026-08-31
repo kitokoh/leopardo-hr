@@ -2,6 +2,7 @@
   "_version": "1.0.0",
   "_updated_at": "2026-08-30T12:00:00Z",
   "_updated_at": "2026-08-30T16:35:58Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -149,6 +150,7 @@
     "notifications": "Notifications",
     "evaluations": "Evaluations",
     "restaurant": "Écran cuisine"
+    "restaurant": "Point de vente (POS)"
   },
   "emails": {
     "invitation": {
@@ -4795,6 +4797,32 @@
       "quantity_invalid": "Quantité invalide dans la commande marketplace.",
       "empty_order": "La commande marketplace ne contient aucun article.",
       "no_branch": "Aucune branche active pour ce tenant."
+    }
+  }
+}
+    "pos": {
+      "title": "Point de vente (POS)",
+      "subtitle": "Prise de commande et encaissement",
+      "products": "Catalogue",
+      "cart": "Commande en cours",
+      "noProducts": "Aucun produit disponible.",
+      "noSession": "Aucune caisse ouverte pour cette branche.",
+      "openSession": "Ouvrir la caisse",
+      "noOrder": "Aucune commande en cours.",
+      "newOrder": "Nouvelle commande",
+      "submit": "Soumettre",
+      "confirm": "Confirmer (cuisine)",
+      "bill": "Addition",
+      "payCash": "Encaisser espèces",
+      "paid": "Commande payée",
+      "subtotal": "Sous-total",
+      "tax": "TVA",
+      "total": "Total",
+      "removeItem": "Retirer",
+      "uncategorized": "Sans catégorie",
+      "loadError": "Impossible de charger le point de vente.",
+      "loading": "Chargement du point de vente…",
+      "actionError": "Action impossible, réessayez."
     }
   }
 }
