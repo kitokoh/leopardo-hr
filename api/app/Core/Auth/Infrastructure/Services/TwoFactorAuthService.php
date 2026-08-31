@@ -235,6 +235,19 @@ final class TwoFactorAuthService
             }
 
             if (! $verified) {
+                // Issue #6538 (audit) : compteur d'échecs PAR CHALLENGE — le
+                // bucket IP (auth-sensitive) ne protège pas contre la rotation
+                // d'IP. 5 mauvais codes → challenge invalidé (429).
+                $attemptKey = 'mfa:attempts:'.$challengeToken;
+                $attempts = ((int) Cache::get($attemptKey, 0)) + 1;
+                Cache::put($attemptKey, $attempts, now()->addMinutes(15));
+
+                if ($attempts >= 5) {
+                    Cache::forget('mfa:challenge:'.$challengeToken);
+
+                    throw TwoFactorException::tooManyAttempts();
+                }
+
                 throw TwoFactorException::invalidCode();
             }
 
@@ -242,6 +255,7 @@ final class TwoFactorAuthService
             // brûler le challenge (l'utilisateur peut retenter avec le même
             // token). Le challenge est consommé ici, après vérification.
             Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget('mfa:attempts:'.$challengeToken);
 
             /** @var Company|null $company */
             $company = Company::query()->find($context['company_id']);

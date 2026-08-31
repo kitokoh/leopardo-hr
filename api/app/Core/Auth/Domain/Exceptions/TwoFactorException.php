@@ -37,4 +37,14 @@ final class TwoFactorException extends DomainException
     {
         return new self('Two-factor challenge expired or missing', 401, 'TWO_FACTOR_CHALLENGE_EXPIRED');
     }
+
+    /**
+     * Issue #6538 — 5 mauvais codes → challenge invalidé (anti-brute-force
+     * TOTP multi-IP) : l'utilisateur doit se reconnecter pour un nouveau
+     * challenge.
+     */
+    public static function tooManyAttempts(): self
+    {
+        return new self('Too many two-factor attempts, challenge invalidated', 429, 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+    }
 }
