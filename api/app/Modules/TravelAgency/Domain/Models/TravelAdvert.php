@@ -41,6 +41,31 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $advert_type_id
+ * @property int $advert_position_id
+ * @property string $title
+ * @property string $content_redacted
+ * @property int|null $image_asset_id
+ * @property int $price_minor
+ * @property string $currency
+ * @property AdvertStatus $status
+ * @property string|null $payment_reference
+ * @property Carbon|null $paid_at
+ * @property int|null $validated_by_user_id
+ * @property Carbon|null $validated_at
+ * @property string|null $rejected_reason
+ * @property int $validity_days
+ * @property Carbon|null $starts_at
+ * @property Carbon|null $expires_at
+ * @property int|null $created_by_user_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelAdvert extends Model
 {
     use BelongsToCompany;

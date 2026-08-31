@@ -92,7 +92,7 @@ class TravelArticleController extends Controller
 
         $data = $request->validated();
 
-        if (($data['status'] ?? null) === 'published' && $travelArticle->published_at === null) {
+        if (($data['status'] ?? null) === 'published' && $travelArticle->getAttribute('published_at') === null) {
             $data['published_at'] = now();
         }
 
@@ -127,7 +127,7 @@ class TravelArticleController extends Controller
             'status' => $status,
             'moderated_by_user_id' => $actor->id,
             'moderated_at' => now(),
-            'published_at' => $status === 'published' ? ($travelArticle->published_at ?? now()) : $travelArticle->published_at,
+            'published_at' => $status === 'published' ? ($travelArticle->getAttribute('published_at') ?? now()) : $travelArticle->getAttribute('published_at'),
         ])->save();
 
         return (new TravelArticleResource($travelArticle->refresh()))->response();

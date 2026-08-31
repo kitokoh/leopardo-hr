@@ -7,11 +7,22 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-901 (#6104) — Représentation API d'un article.
  *
  * @mixin TravelArticle
+ *
+ * @property int|null $category_id
+ * @property string $slug
+ * @property string $title
+ * @property string $body_redacted
+ * @property string $status
+ * @property string|null $author_type
+ * @property int|null $author_id
+ * @property Carbon|null $published_at
+ * @property Carbon|null $moderated_at
  */
 class TravelArticleResource extends JsonResource
 {

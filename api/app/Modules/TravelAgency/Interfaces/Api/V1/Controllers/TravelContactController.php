@@ -66,6 +66,10 @@ class TravelContactController extends Controller
             ]);
         });
 
+        if ($actor->company_id === null) {
+            abort(403, 'Employé non rattaché à un tenant.');
+        }
+
         $this->outbox->publish($actor->company_id, 'travel.contact.submitted.v1', [
             'email' => $email,
             'first_name' => $request->validated('first_name'),

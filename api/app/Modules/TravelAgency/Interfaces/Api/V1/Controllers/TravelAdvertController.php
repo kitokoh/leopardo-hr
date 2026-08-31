@@ -126,8 +126,25 @@ class TravelAdvertController extends Controller
         ]]);
     }
 
-    public function validate(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    /**
+     * Validation manuelle d'une annonce (modération).
+     *
+     * Le nom `validate` est imposé par la route ; on élargit la signature
+     * héritée de `Controller::validate()` (compatibilité de type) puis on
+     * restreint au modèle lié. Retour d'un tableau : le framework le
+     * sérialise en JSON 200, comme `response()->json()`.
+     *
+     * @param  TravelAdvert|array<string, mixed>  $travelAdvert  Annonce liée à la route
+     * @param  array<string, mixed>  $messages  Messages de validation (inutilisés ici)
+     * @param  array<string, mixed>  $attributes  Attributs de validation (inutilisés ici)
+     * @return array<string, mixed>
+     */
+    public function validate(Request $request, TravelAdvert|array $travelAdvert, array $messages = [], array $attributes = []): array
     {
+        if (! $travelAdvert instanceof TravelAdvert) {
+            abort(404);
+        }
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -137,11 +154,11 @@ class TravelAdvertController extends Controller
 
         $advert = $this->moderate->validate($travelAdvert, $actor);
 
-        return response()->json(['data' => [
+        return ['data' => [
             'id' => $advert->id,
             'status' => $advert->status->value,
             'expires_at' => $advert->expires_at?->toIso8601String(),
-        ]]);
+        ]];
     }
 
     public function reject(ModerateTravelAdvertRequest $request, TravelAdvert $travelAdvert): JsonResponse

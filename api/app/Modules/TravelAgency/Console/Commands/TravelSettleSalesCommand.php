@@ -53,7 +53,8 @@ class TravelSettleSalesCommand extends Command
             return self::SUCCESS;
         }
 
-        $period = (string) ($this->option('period') ?? now()->subMonth()->format('Y-m'));
+        $periodOption = $this->option('period');
+        $period = is_string($periodOption) ? $periodOption : now()->subMonth()->format('Y-m');
         $dryRun = (bool) $this->option('dry-run');
         $published = 0;
 
@@ -96,7 +97,7 @@ class TravelSettleSalesCommand extends Command
                 'refunded_count' => 0,
             ];
 
-            if ($row->status === PaymentStatus::CONFIRMED->value) {
+            if ($row->status === PaymentStatus::CONFIRMED) {
                 $byCurrency[$currency]['confirmed_total_minor'] += (int) $row->amount_minor;
                 $byCurrency[$currency]['confirmed_count']++;
             } else {

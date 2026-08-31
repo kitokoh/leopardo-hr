@@ -102,7 +102,7 @@ class TravelCommentController extends Controller
             abort(404);
         }
 
-        if ($travelComment->status !== 'flagged') {
+        if ($travelComment->getAttribute('status') !== 'flagged') {
             $travelComment->forceFill(['status' => 'flagged', 'moderated_at' => now()])->save();
         }
 

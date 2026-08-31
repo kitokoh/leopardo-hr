@@ -4459,9 +4459,15 @@
       "class": "Class",
       "ticket": "Ticket",
       "action": "Boarding",
+<<<<<<< HEAD
       "emptyManifest": "No passenger on this trip.",
       "noTicket": "No ticket linked to this passenger.",
       "checkIn": "Check in",
+=======
+      "emptyManifest": "No passengers for this trip",
+      "noTicket": "No ticket",
+      "checkIn": "Board",
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
       "done": "Boarded",
       "chooseTrip": "— Choose a trip —",
       "refresh": "Refresh",
@@ -4475,7 +4481,11 @@
       "subtitle": "Browse, PDF download and revocation.",
       "download": "PDF",
       "revoke": "Revoke",
+<<<<<<< HEAD
       "revokeTitle": "Revocation reason",
+=======
+      "revokeTitle": "Revoke ticket",
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
       "revokeBody": "Revoke ticket {number}? The PDF will become invalid and the ticket status will change to void.",
       "filterTrip": "Trip",
       "manage": "Tickets",

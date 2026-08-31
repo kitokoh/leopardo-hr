@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\TravelAgency\Domain\Enums\AgeCategory;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
@@ -15,7 +14,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * TRAVEL-1003 (#6116) — Import des données legacy gv-back (CLI contrôlé).
@@ -90,6 +88,7 @@ final class TravelLegacyImportService
 
     /**
      * @param  list<array<string, mixed>>  $routes
+     * @param  array<string, int>  $cityByKey
      */
     private function countResolvableRoutes(array $routes, array $cityByKey): int
     {

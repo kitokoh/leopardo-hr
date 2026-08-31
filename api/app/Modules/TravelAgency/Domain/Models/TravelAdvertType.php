@@ -9,6 +9,7 @@ use Database\Factories\TravelAdvertTypeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Type d'annonce payante (TRAVEL-905, issue #6108).
@@ -17,6 +18,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $company_id
  * @property string $code
  * @property string $label
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $code
+ * @property string $label
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

@@ -2645,6 +2645,10 @@
   "restaurantMobileManagerNoStockAlerts": "لا توجد تنبيهات حد",
   "restaurantMobileManagerIngredient": "مكوّن #{id}",
   "restaurantMobileManagerStockLevel": "المخزون: {quantity} / الحد: {threshold}",
+<<<<<<< HEAD
+=======
+  "navigationTravelagency": "وكالة السفر",
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelLoading": "جارٍ التحميل…",
   "travelSectionTitle": "وكالة السفر",
   "travelSectionSubtitle": "إدارة عمودية TravelAgency: المرجع، الشبكة، المبيعات، التذاكر والتقارير.",
@@ -2660,10 +2664,13 @@
   "travelTabTickets": "التذاكر",
   "travelTabReports": "التقارير",
   "travelTabRentals": "الإيجارات والفنادق",
+<<<<<<< HEAD
   "travelTabQuizzes": "الاختبارات",
   "travelTabAdverts": "الإعلانات",
   "travelTabSites": "المواقع السياحية",
   "travelTabContacts": "جهات الاتصال",
+=======
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelReferentielTabslabel": "الأقسام الفرعية للمرجع",
   "travelReferentielTabgeo": "الدول والمدن",
   "travelReferentielTabstations": "المحطات",
@@ -2694,10 +2701,13 @@
   "travelSearchRentalvehicle": "ابحث عن مركبة إيجار…",
   "travelSearchRentalbooking": "ابحث عن حجز إيجار…",
   "travelSearchHotel": "ابحث عن فندق…",
+<<<<<<< HEAD
   "travelSearchQuiz": "ابحث عن اختبار…",
   "travelSearchAdvert": "ابحث عن إعلان…",
   "travelSearchSite": "ابحث عن موقع…",
   "travelSearchContact": "ابحث عن جهة اتصال…",
+=======
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelFieldIso2": "كود ISO2",
   "travelFieldIso3": "كود ISO3",
   "travelFieldName": "الاسم",
@@ -2888,6 +2898,7 @@
   "travelTableActions": "إجراءات",
   "travelTableEmptynested": "لا عناصر.",
   "travelFormSelectplaceholder": "— اختر —",
+<<<<<<< HEAD
   "travelFormMoneyminor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)",
   "travelQuizTitle": "الاختبارات والمسابقات",
   "travelQuizSubtitle": "أنشئ الاختبارات وأضف الأسئلة وراجع المشاركات.",
@@ -2976,4 +2987,7 @@
   "travelAdvertstatusRejected": "مرفوضة",
   "travelAdvertstatusExpired": "منتهية",
   "travelAdvertstatusArchived": "مؤرشفة"
+=======
+  "travelFormMoneyminor": "المبلغ بالعملة (1 = 100 وحدة صغيرة)"
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
 }

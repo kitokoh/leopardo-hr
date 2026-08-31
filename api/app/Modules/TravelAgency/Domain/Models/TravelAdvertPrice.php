@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Grille tarifaire des annonces (TRAVEL-906, issue #6109).
@@ -24,6 +25,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $price_per_image_minor
  * @property int $price_per_character_minor
  * @property string $currency
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $advert_type_id
+ * @property int $advert_position_id
+ * @property int $price_per_image_minor
+ * @property int $price_per_character_minor
+ * @property string $currency
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

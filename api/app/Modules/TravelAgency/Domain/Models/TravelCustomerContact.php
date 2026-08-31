@@ -34,6 +34,25 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string|null $first_name
+ * @property string|null $last_name
+ * @property string|null $email
+ * @property string|null $phone
+ * @property bool $email_consent_given
+ * @property Carbon|null $email_consent_at
+ * @property bool $sms_consent_given
+ * @property Carbon|null $sms_consent_at
+ * @property bool $whatsapp_consent_given
+ * @property Carbon|null $whatsapp_consent_at
+ * @property string|null $metadata_json
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelCustomerContact extends Model
 {
     use BelongsToCompany;

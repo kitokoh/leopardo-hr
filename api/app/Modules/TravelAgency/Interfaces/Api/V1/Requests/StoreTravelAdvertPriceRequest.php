@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -49,9 +50,9 @@ class StoreTravelAdvertPriceRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function ($validator): void {
+        $validator->after(function (Validator $validator): void {
             $user = $this->user();
 
             if (! $user instanceof Employee) {

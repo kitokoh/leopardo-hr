@@ -30,6 +30,7 @@ final class TravelManualNotificationAction
     public function __construct(private readonly CommunicationService $communicationService) {}
 
     /**
+     * @param  list<string>  $channels
      * @return array{channels: list<string>}
      */
     public function execute(
@@ -60,12 +61,19 @@ final class TravelManualNotificationAction
         // In-app BC-13 : si le contact est lié à un employé du tenant
         // (metadata_json contient employee_id), on notifie via les
         // préférences BC-13 (jamais de contournement du consentement).
-        $employeeId = is_array($contact->metadata_json)
-            ? ($contact->metadata_json['employee_id'] ?? null)
-            : null;
+        // La colonne est une chaîne JSON (pas un cast array) : on décode.
+        $employeeId = null;
+
+        if (is_string($contact->metadata_json) && $contact->metadata_json !== '') {
+            $metadata = json_decode($contact->metadata_json, true);
+
+            if (is_array($metadata) && isset($metadata['employee_id'])) {
+                $employeeId = (int) $metadata['employee_id'];
+            }
+        }
 
         if (in_array('app', $channels, true) && $employeeId !== null) {
-            $employee = Employee::query()->find((int) $employeeId);
+            $employee = Employee::query()->find($employeeId);
 
             if ($employee instanceof Employee && $employee->company_id === $actor->company_id) {
                 $this->communicationService->notifyEmployee($employee, 'travel_manual_message', [

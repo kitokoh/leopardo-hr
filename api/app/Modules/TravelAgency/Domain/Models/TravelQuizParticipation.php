@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Participation à un quiz (TRAVEL-904, issue #6107).
@@ -27,6 +28,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $score
  * @property int $bonus
  * @property string $status
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $quiz_id
+ * @property string $participant_contact_id
+ * @property string $participant_email
+ * @property string $participant_name
+ * @property array<string, mixed> $answers
+ * @property int $score
+ * @property int $bonus
+ * @property string $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */

@@ -2645,6 +2645,10 @@
   "restaurantMobileManagerNoStockAlerts": "Eşik uyarısı yok",
   "restaurantMobileManagerIngredient": "İçerik #{id}",
   "restaurantMobileManagerStockLevel": "Stok: {quantity} / eşik: {threshold}",
+<<<<<<< HEAD
+=======
+  "navigationTravelagency": "Seyahat acentesi",
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelLoading": "Yükleniyor…",
   "travelSectionTitle": "Seyahat acentesi",
   "travelSectionSubtitle": "TravelAgency dikeyini yönetin: referans, ağ, satışlar, biletleme ve raporlar.",
@@ -2660,10 +2664,13 @@
   "travelTabTickets": "Biletler",
   "travelTabReports": "Raporlar",
   "travelTabRentals": "Kiralama ve Oteller",
+<<<<<<< HEAD
   "travelTabQuizzes": "Quiz",
   "travelTabAdverts": "Reklamlar",
   "travelTabSites": "Turistik yerler",
   "travelTabContacts": "Kişiler",
+=======
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelReferentielTabslabel": "Referans alt bölümleri",
   "travelReferentielTabgeo": "Ülkeler ve Şehirler",
   "travelReferentielTabstations": "İstasyonlar",
@@ -2694,10 +2701,13 @@
   "travelSearchRentalvehicle": "Kiralık araç ara…",
   "travelSearchRentalbooking": "Kiralama rezervasyonu ara…",
   "travelSearchHotel": "Otel ara…",
+<<<<<<< HEAD
   "travelSearchQuiz": "Quiz ara…",
   "travelSearchAdvert": "Reklam ara…",
   "travelSearchSite": "Yer ara…",
   "travelSearchContact": "Kişi ara…",
+=======
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
   "travelFieldIso2": "ISO2",
   "travelFieldIso3": "ISO3",
   "travelFieldName": "Ad",
@@ -2888,6 +2898,7 @@
   "travelTableActions": "İşlemler",
   "travelTableEmptynested": "Öğe yok.",
   "travelFormSelectplaceholder": "— Seçin —",
+<<<<<<< HEAD
   "travelFormMoneyminor": "Para birimi cinsinden tutar (1 = 100 birim)",
   "travelQuizTitle": "Quiz ve yarışmalar",
   "travelQuizSubtitle": "Quiz oluşturun, soru ekleyin ve katılımları inceleyin.",
@@ -2976,4 +2987,7 @@
   "travelAdvertstatusRejected": "Reddedildi",
   "travelAdvertstatusExpired": "Süresi doldu",
   "travelAdvertstatusArchived": "Arşivlendi"
+=======
+  "travelFormMoneyminor": "Para birimi cinsinden tutar (1 = 100 birim)"
+>>>>>>> c2be34f30 (merge: main (PM BC-24 TRAVEL — fix CI batch))
 }

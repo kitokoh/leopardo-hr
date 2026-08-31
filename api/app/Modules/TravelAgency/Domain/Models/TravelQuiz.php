@@ -27,6 +27,20 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $title
+ * @property string|null $description_redacted
+ * @property Carbon|null $starts_at
+ * @property Carbon|null $ends_at
+ * @property int $max_participations_per_contact
+ * @property QuizStatus $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelQuiz extends Model
 {
     use BelongsToCompany;

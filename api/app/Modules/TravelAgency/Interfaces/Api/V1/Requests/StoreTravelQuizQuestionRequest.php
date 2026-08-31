@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -32,9 +33,9 @@ class StoreTravelQuizQuestionRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator): void
+    public function withValidator(Validator $validator): void
     {
-        $validator->after(function ($validator): void {
+        $validator->after(function (Validator $validator): void {
             $index = (int) $this->input('correct_option_index');
             $count = is_array($this->input('options')) ? count($this->input('options')) : 0;
 

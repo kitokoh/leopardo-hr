@@ -37,15 +37,18 @@ final class TravelLegacyImportCommand extends Command
         TenantManager $tenantManager,
         TravelLegacyImportService $service,
     ): int {
-        $company = $this->resolveCompany((string) $this->option('company'));
+        $companyOption = $this->option('company');
+        $companyIdentifier = is_string($companyOption) ? $companyOption : '';
+        $company = $this->resolveCompany($companyIdentifier);
 
         if ($company === null) {
-            $this->error("Company introuvable : {$this->option('company')}");
+            $this->error("Company introuvable : {$companyIdentifier}");
 
             return self::FAILURE;
         }
 
-        $path = (string) $this->argument('dump');
+        $pathArgument = $this->argument('dump');
+        $path = is_string($pathArgument) ? $pathArgument : '';
 
         if (! is_file($path) || ! is_readable($path)) {
             $this->error("Fichier dump illisible : {$path}");

@@ -7,9 +7,11 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelTripSeatFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Siège de l'inventaire d'un trajet (TRAVEL-208, issue #6021).
@@ -17,6 +19,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Généré en transaction par `GenerateTripSeatsAction` à la création du
  * trajet — `booking_id`/`passenger_id` restent nullables tant que
  * `travel_bookings`/`travel_passengers` (TRAVEL-209) n'existent pas.
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property int $trip_id
+ * @property int $seat_number
+ * @property SeatStatus $status
+ * @property int|null $booking_id
+ * @property int|null $passenger_id
+ * @property Carbon|null $reserved_until
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
  */
 class TravelTripSeat extends Model
 {

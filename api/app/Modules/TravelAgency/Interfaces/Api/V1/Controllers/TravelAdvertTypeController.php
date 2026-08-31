@@ -18,8 +18,14 @@ class TravelAdvertTypeController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        $actor = $request->user();
+
+        if (! $actor instanceof Employee) {
+            abort(401);
+        }
+
         $types = TravelAdvertType::query()
-            ->where('company_id', $request->user()->company_id)
+            ->where('company_id', $actor->company_id)
             ->orderBy('code')
             ->get()
             ->map(fn (TravelAdvertType $t) => ['id' => $t->id, 'code' => $t->code, 'label' => $t->label]);

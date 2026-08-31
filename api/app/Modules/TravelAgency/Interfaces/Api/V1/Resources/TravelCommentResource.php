@@ -7,11 +7,19 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-902 (#6105) — Représentation API d'un commentaire.
  *
  * @mixin TravelComment
+ *
+ * @property int $article_id
+ * @property string|null $author_type
+ * @property int|null $author_id
+ * @property string $content_redacted
+ * @property string $status
+ * @property Carbon|null $moderated_at
  */
 class TravelCommentResource extends JsonResource
 {

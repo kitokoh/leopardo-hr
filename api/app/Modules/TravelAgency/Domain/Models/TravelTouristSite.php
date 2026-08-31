@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Site touristique de l'annuaire (TRAVEL-909, issue #6112).
@@ -24,6 +25,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $longitude
  * @property int|null $image_asset_id
  * @property TravelRecordStatus $status
+ *
+ * @mixin Builder<static>
+ */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $name
+ * @property string|null $description_redacted
+ * @property int|null $city_id
+ * @property int|null $latitude
+ * @property int|null $longitude
+ * @property int|null $image_asset_id
+ * @property TravelRecordStatus $status
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */
