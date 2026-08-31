@@ -28,6 +28,8 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalContro
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMarketingController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduNotificationController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
@@ -42,6 +44,8 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -107,6 +111,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'update'])->whereNumber('assessment');
     Route::delete('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'destroy'])->whereNumber('assessment');
     Route::post('/edu-manager/assessments/{assessment}/grades', [EduAssessmentController::class, 'grade'])->whereNumber('assessment');
+    Route::post('/edu-manager/assessments/{assessment}/publish', [EduAssessmentController::class, 'publish'])->whereNumber('assessment');
     Route::post('/edu-manager/grades/{grade}/publish', [EduAssessmentController::class, 'publishGrade'])->whereNumber('grade');
     Route::post('/edu-manager/grades/{grade}/correct', [EduAssessmentController::class, 'correctGrade'])->whereNumber('grade');
 
@@ -197,3 +202,27 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  */
 Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'summary'])
     ->middleware('throttle:60,1');
+
+    // EDU-011 — profil rôle-aware (navigation direction/enseignant).
+    Route::get('/edu-manager/me', [EduMeController::class, 'show']);
+
+    // EDU-012 — interface enseignant (périmètre = SES classes, 404 sinon).
+    Route::get('/edu-manager/teacher/classes', [EduTeacherInterfaceController::class, 'classes']);
+    Route::get('/edu-manager/teacher/classes/{class}/students', [EduTeacherInterfaceController::class, 'students'])->whereNumber('class');
+    Route::get('/edu-manager/teacher/classes/{class}/assessments', [EduTeacherInterfaceController::class, 'assessments'])->whereNumber('class');
+    Route::post('/edu-manager/teacher/grades/{grade}/submit', [EduTeacherInterfaceController::class, 'submitGrade'])->whereNumber('grade');
+
+    // EDU-013/EDU-010 — portail guardian : émission d'un lien d'accès
+    // expirable à usage unique (direction uniquement, policy createAccessLink).
+    Route::post('/edu-manager/guardians/{guardian}/access-links', [EduGuardianPortalController::class, 'createAccessLink'])
+        ->whereNumber('guardian');
+
+});
+
+// EDU-013 (#5829) — portail guardian : consommation du lien (route PUBLIQUE,
+// sans auth:sanctum — le token EST le secret, HMAC 256 bits hashé au repos).
+// Replay/expiration → 410 ; throttle dédié anti-bruteforce (par token + IP).
+Route::middleware('throttle:guardian-portal')->post(
+    '/edu-manager/guardian-portal/access-links/{token}/consume',
+    [EduGuardianPortalController::class, 'consume']
+)->where('token', '[A-Za-z0-9_-]{40,120}');

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Modules\EduManager\Domain\Policies;
+namespace App\Modules\EduManager\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
@@ -78,5 +79,12 @@ class EduGuardianPolicy
     public function createPortalLink(Employee $actor, EduGuardian $guardian): bool
     {
         return $this->update($actor, $guardian);
+    /**
+     * Émission d'un lien d'accès portail guardian — EDU-013 (#5829).
+     * Direction uniquement, borné au tenant.
+     */
+    public function createAccessLink(Employee $actor, EduGuardian $guardian): bool
+    {
+        return $this->viewAny($actor) && $guardian->company_id === $actor->company_id;
     }
 }

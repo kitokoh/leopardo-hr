@@ -1955,6 +1955,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/edu-manager/assessments/{assessment}/grades", options);
     },
 
+    /** Publier une evaluation (idempotent, EDU-011) */
+    postEduManagerAssessmentsByAssessmentPublish(options = {}) {
+      return request("POST", "/edu-manager/assessments/{assessment}/publish", options);
+    },
+
     /** Corriger une presence (versionnee) */
     postEduManagerAttendancesByAttendanceCorrect(options = {}) {
       return request("POST", "/edu-manager/attendances/{attendance}/correct", options);
@@ -2123,6 +2128,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013) */
     getEduManagerGuardiansMeStudentsByStudentReportCards(options = {}) {
       return request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", options);
+    /** Consommer un lien d'acces portail guardian (route publique, EDU-013) */
+    postEduManagerGuardianPortalAccessLinksByTokenConsume(options = {}) {
+      return request("POST", "/edu-manager/guardian-portal/access-links/{token}/consume", options);
+    },
+
+    /** Emettre un lien d'acces portail guardian (direction, EDU-013) */
+    postEduManagerGuardiansByGuardianAccessLinks(options = {}) {
+      return request("POST", "/edu-manager/guardians/{guardian}/access-links", options);
     },
 
     /** Annuler un import avant commit */

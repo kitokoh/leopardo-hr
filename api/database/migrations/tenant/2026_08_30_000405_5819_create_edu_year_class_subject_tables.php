@@ -47,6 +47,10 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'name'], 'edu_academic_years_company_name_unique');
+                // Clé d'intégrité des FK composites (id, company_id) — requise
+                // par les FK de edu_classes/edu_assessments/edu_report_cards/
+                // edu_admissions/edu_course_slots (pattern edu_campuses).
+                $table->unique(['id', 'company_id'], 'edu_academic_years_id_company_unique');
                 $table->index(['company_id', 'status'], 'edu_academic_years_company_status_idx');
                 $table->index(['company_id', 'start_date'], 'edu_academic_years_company_start_idx');
                 $table->index(['company_id', 'created_at'], 'edu_academic_years_company_created_idx');
@@ -63,6 +67,11 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_academic_years_period_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_academic_years\" ADD CONSTRAINT edu_academic_years_period_check "
                     .'CHECK (start_date < end_date); END IF; END $$'
+                );
+                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_academic_years_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_academic_years\" ADD CONSTRAINT edu_academic_years_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
             }
         }
@@ -81,6 +90,8 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'code'], 'edu_subjects_company_code_unique');
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_subjects_id_company_unique');
                 $table->index(['company_id', 'status'], 'edu_subjects_company_status_idx');
                 $table->index(['company_id', 'name'], 'edu_subjects_company_name_idx');
 
@@ -89,6 +100,15 @@ return new class extends Migration
                     ->on('edu_campuses')
                     ->nullOnDelete();
             });
+
+            $schema = resolveTableSchema('edu_subjects');
+            if ($schema !== null) {
+                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_subjects_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_subjects\" ADD CONSTRAINT edu_subjects_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
+                );
+            }
         }
 
         if (! schemaTableExists('edu_classes')) {
@@ -108,6 +128,8 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->unique(['company_id', 'code', 'academic_year_id'], 'edu_classes_company_code_year_unique');
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_classes_id_company_unique');
                 $table->index(['company_id', 'academic_year_id'], 'edu_classes_company_year_idx');
                 $table->index(['company_id', 'status'], 'edu_classes_company_status_idx');
 
@@ -132,6 +154,11 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_classes_capacity_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_classes\" ADD CONSTRAINT edu_classes_capacity_check "
                     .'CHECK (capacity IS NULL OR capacity > 0); END IF; END $$'
+                );
+                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_classes_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_classes\" ADD CONSTRAINT edu_classes_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
             }
         }

@@ -41,7 +41,7 @@ return new class extends Migration
                 // exam | quiz | homework | project — CHECK edu_assessments_type_check
                 $table->string('type', 20);
                 $table->decimal('coefficient', 5, 2)->default(1.00);
-                $table->unsignedDecimal('max_score', 8, 2)->default(20.00);
+                $table->decimal('max_score', 8, 2)->unsigned()->default(20.00);
                 $table->date('assessment_date')->nullable();
                 $table->timestamp('published_at')->nullable();
                 $table->unsignedInteger('created_by')->nullable();
@@ -52,6 +52,8 @@ return new class extends Migration
                     'edu_assessments_company_class_date_idx'
                 );
                 $table->index(['company_id', 'subject_id'], 'edu_assessments_company_subject_idx');
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_assessments_id_company_unique');
 
                 $table->foreign(['class_id', 'company_id'], 'edu_assessments_class_company_fk')
                     ->references(['id', 'company_id'])
@@ -83,7 +85,12 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_assessments_coefficient_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_assessments\" ADD CONSTRAINT edu_assessments_coefficient_check "
                     .'CHECK (coefficient > 0); END IF; END $$'
+                );                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_assessments_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_assessments\" ADD CONSTRAINT edu_assessments_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
+
             }
         }
 
@@ -107,6 +114,8 @@ return new class extends Migration
                     'edu_grades_assessment_student_unique'
                 );
                 $table->index(['company_id', 'student_id'], 'edu_grades_company_student_idx');
+                // Clé d'intégrité des FK composites (id, company_id).
+                $table->unique(['id', 'company_id'], 'edu_grades_id_company_unique');
 
                 $table->foreign(['assessment_id', 'company_id'], 'edu_grades_assessment_company_fk')
                     ->references(['id', 'company_id'])
@@ -124,7 +133,12 @@ return new class extends Migration
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_grades_status_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_grades\" ADD CONSTRAINT edu_grades_status_check "
                     ."CHECK (status IN ('draft','published','corrected')); END IF; END $$"
+                );                DB::statement(
+                    "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_grades_id_company_unique') "
+                    ."THEN ALTER TABLE \"{$schema}\".\"edu_grades\" ADD CONSTRAINT edu_grades_id_company_unique "
+                    ."UNIQUE (id, company_id); END IF; END $$"
                 );
+
             }
         }
 

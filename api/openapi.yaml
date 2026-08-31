@@ -2132,6 +2132,30 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/assessments/{assessment}/publish:
+    post:
+      tags:
+      - EduManager
+      summary: Publier une evaluation (idempotent, EDU-011)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assessment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Evaluation publiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource introuvable ou autre tenant
+        '422':
+          description: Validation ou regle metier
   /edu-manager/grades/{grade}/publish:
     post:
       tags:
@@ -2190,6 +2214,71 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Validation ou regle metier
+  /edu-manager/guardians/{guardian}/access-links:
+    post:
+      tags:
+      - EduManager
+      summary: Emettre un lien d'acces portail guardian (direction, EDU-013)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: guardian
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+                  description: Duree de validite (defaut 7 jours)
+                purpose:
+                  type: string
+                  default: portal_access
+      responses:
+        '201':
+          description: Lien cree (token brut renvoye une seule fois)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Ressource introuvable ou autre tenant
+        '422':
+          description: Validation ou regle metier
+  /edu-manager/guardian-portal/access-links/{token}/consume:
+    post:
+      tags:
+      - EduManager
+      summary: Consommer un lien d'acces portail guardian (route publique, EDU-013)
+      description: >-
+        Route publique : le token est le secret (usage unique, expiration).
+        Consommation atomique, consentement RGPD (verified_at) et audit.
+        Replay ou expiration -> 410. Retourne uniquement les enfants lies.
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 40
+          maxLength: 120
+      responses:
+        '200':
+          description: Payload portail (guardian + enfants autorises)
+        '404':
+          description: Lien inconnu
+        '410':
+          description: Lien expire ou deja utilise
+        '429':
+          description: Trop de tentatives (throttle guardian-portal)
   /edu-manager/report-cards:
     get:
       tags:
@@ -2710,6 +2799,11 @@ paths:
       tags:
       - EduManager
       summary: Lister les types de frais scolaires (EDU-016)
+  /edu-manager/me:
+    get:
+      tags:
+      - EduManager
+      summary: Profil role-aware de l'acteur (EDU-011)
       security:
       - BearerAuth: []
       responses:
@@ -2788,6 +2882,11 @@ paths:
       tags:
       - EduManager
       summary: Lister les facturations de frais (EDU-016)
+  /edu-manager/teacher/classes:
+    get:
+      tags:
+      - EduManager
+      summary: Classes enseignees par l'acteur (EDU-012)
       security:
       - BearerAuth: []
       responses:
@@ -2808,6 +2907,15 @@ paths:
       - BearerAuth: []
       parameters:
       - name: fee
+  /edu-manager/teacher/classes/{class}/students:
+    get:
+      tags:
+      - EduManager
+      summary: Eleves d'une classe enseignee (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
         in: path
         required: true
         schema:
@@ -2878,6 +2986,19 @@ paths:
       - BearerAuth: []
       parameters:
       - name: charge
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/teacher/classes/{class}/assessments:
+    get:
+      tags:
+      - EduManager
+      summary: Evaluations d'une classe enseignee (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
         in: path
         required: true
         schema:
@@ -2945,6 +3066,19 @@ paths:
       - BearerAuth: []
       parameters:
       - name: charge
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/teacher/grades/{grade}/submit:
+    post:
+      tags:
+      - EduManager
+      summary: Soumettre une note pour validation (EDU-012)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: grade
         in: path
         required: true
         schema:
@@ -3188,6 +3322,101 @@ paths:
           description: Succes
         '404':
           description: Lien inconnu, expire ou revoque
+  /demo-users:
+    get:
+      tags:
+      - Auth
+      summary: Comptes demo publics pour la documentation QA
+      description: 'Contrat public de documentation QA (AGENTS.md v4.16.128) : personas demo employee/manager/super-admin. Throttle 10/min.'
+      responses:
+        '200':
+          description: Personas de demonstration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+  /health:
+    get:
+      tags:
+      - Health
+      summary: Healthcheck live + ready
+      security: []
+      responses:
+        '200':
+          description: API disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Base de donnees indisponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /health/live:
+    get:
+      tags:
+      - Health
+      summary: Liveness probe — processus API vivant (sans dépendances)
+      security: []
+      responses:
+        '200':
+          description: API vivante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /health/ready:
+    get:
+      tags:
+      - Health
+      summary: Readiness probe — base de données disponible
+      security: []
+      responses:
+        '200':
+          description: API prête
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  checks:
+                    type: object
+                    additionalProperties: true
+  /edge/health:
+    get:
+      tags:
+      - Health
+      summary: Healthcheck edge (public, machine-to-cloud)
+      description: Sonde de sante de l'API pour les nœuds edge (throttle 300/min).
+      security: []
+      responses:
+        '200':
+          description: API edge disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /edge/readiness:
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Validation ou regle metier
   /demo-users:
     get:
       tags:

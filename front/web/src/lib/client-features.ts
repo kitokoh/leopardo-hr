@@ -18,6 +18,7 @@ export type ClientModuleKey =
   | 'crm'
   | 'restaurant'
   | 'fuel';
+  | 'edu_manager';
 
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -216,6 +217,20 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['fuel_station'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'FuelStation',
+  // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
+  // rôle-aware : manager direction (principal/rh) → administration scolaire ;
+  // employé enseignant → espace enseignant (périmètre = ses classes, gardé
+  // par les Policies EduManager côté API). L'entrée est portée par la
+  // feature flag `edumanager` (activation tenant #5817).
+  {
+    key: 'edu_manager',
+    href: '/edu-manager',
+    label: 'EduManager',
+    group: 'hr',
+    capabilityKeys: ['edumanager', 'can_view_edumanager'],
+    featureKeys: ['edumanager'],
+    allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
+    upgradeLabel: 'EduManager',
   },
 ];
 
@@ -243,6 +258,16 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/restaurant/kitchen': 'restaurant',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
+  '/edu-manager': 'edu_manager',
+  '/edu-manager/campuses': 'edu_manager',
+  '/edu-manager/academic-years': 'edu_manager',
+  '/edu-manager/subjects': 'edu_manager',
+  '/edu-manager/classes': 'edu_manager',
+  '/edu-manager/students': 'edu_manager',
+  '/edu-manager/admissions': 'edu_manager',
+  '/edu-manager/assessments': 'edu_manager',
+  '/edu-manager/report-cards': 'edu_manager',
+  '/edu-manager/teacher': 'edu_manager',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
@@ -268,6 +293,11 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
 
     if (module.key === 'crm') {
       return ['principal', 'rh'].includes(managerRole);
+    }
+
+    if (module.key === 'edu_manager') {
+      // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
+      return managerRole === '' || managerRole === 'principal' || managerRole === 'rh';
     }
 
     return true;
@@ -347,6 +377,10 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
     !!user.features ||
     !!user.company?.features ||
     !!user.plan?.features;
+    (user.capabilities && Object.keys(user.capabilities).length > 0) ||
+    (user.features && Object.keys(user.features).length > 0) ||
+    (user.company?.features && Object.keys(user.company.features).length > 0) ||
+    (user.plan?.features && Object.keys(user.plan.features).length > 0);
 
   return hasGateData ? 'locked' : 'available';
 }

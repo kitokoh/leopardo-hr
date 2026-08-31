@@ -57,6 +57,9 @@ return new class extends Migration
 
                 $table->unique(['company_id', 'admission_number'], 'edu_admissions_company_number_unique');
                 $table->unique(['company_id', 'external_id'], 'edu_admissions_company_external_unique');
+                // Clé d'intégrité des FK composites (id, company_id) — requise
+                // par la FK de edu_fees (000412, EDU-016).
+                $table->unique(['id', 'company_id'], 'edu_admissions_id_company_unique');
                 $table->index(['company_id', 'status'], 'edu_admissions_company_status_idx');
                 $table->index(['company_id', 'applied_at'], 'edu_admissions_company_applied_idx');
 

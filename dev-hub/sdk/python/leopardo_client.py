@@ -1584,6 +1584,10 @@ class LeopardoClient:
         """Saisir une note (bareme serveur)"""
         return self.request("POST", "/edu-manager/assessments/{assessment}/grades", **kwargs)
 
+    def post_edu_manager_assessments_by_assessment_publish(self, **kwargs):
+        """Publier une evaluation (idempotent, EDU-011)"""
+        return self.request("POST", "/edu-manager/assessments/{assessment}/publish", **kwargs)
+
     def post_edu_manager_attendances_by_attendance_correct(self, **kwargs):
         """Corriger une presence (versionnee)"""
         return self.request("POST", "/edu-manager/attendances/{attendance}/correct", **kwargs)
@@ -1719,6 +1723,13 @@ class LeopardoClient:
     def get_edu_manager_guardians_me_students_by_student_report_cards(self, **kwargs):
         """Bulletins publies d'un enfant autorise (notes conditionnees, EDU-013)"""
         return self.request("GET", "/edu-manager/guardians/me/students/{student}/report-cards", **kwargs)
+    def post_edu_manager_guardian_portal_access_links_by_token_consume(self, **kwargs):
+        """Consommer un lien d'acces portail guardian (route publique, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardian-portal/access-links/{token}/consume", **kwargs)
+
+    def post_edu_manager_guardians_by_guardian_access_links(self, **kwargs):
+        """Emettre un lien d'acces portail guardian (direction, EDU-013)"""
+        return self.request("POST", "/edu-manager/guardians/{guardian}/access-links", **kwargs)
 
     def post_edu_manager_imports_by_import_cancel(self, **kwargs):
         """Annuler un import avant commit"""
