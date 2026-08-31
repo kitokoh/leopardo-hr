@@ -166,6 +166,15 @@
                 {{ isLoading ? t('auth.loading', 'Authentification…') : t('auth.login_submit', 'Se connecter') }}
               </button>
 
+              <button
+                type="button"
+                :disabled="isLoading"
+                class="flex w-full justify-center rounded-2xl border border-white/10 bg-white/5 py-3.5 px-4 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 transition-all duration-300"
+                @click="useDemoAccount"
+              >
+                <SparklesIcon class="mr-2 h-4 w-4 text-brand-400" />
+                {{ t('auth.demo_access', 'Utiliser le compte demo super-admin') }}
+              </button>
 
             </div>
           </form>
@@ -252,6 +261,18 @@ const fieldErrors = computed(() => {
   }
   return errors
 })
+
+/**
+ * Accès démo direct super-admin (contrat AGENTS.md v4.16.250, gardé par
+ * launch-workflow-contracts.json) : remplit le formulaire avec le compte
+ * démo documenté (admin@leopardo-rh.com / password123) et soumet.
+ */
+function useDemoAccount() {
+  form.email = 'admin@leopardo-rh.com'
+  form.password = 'password123'
+  form.twoFactorCode = ''
+  handleLogin()
+}
 
 async function handleLogin() {
   if (isLoading.value) return
