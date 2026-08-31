@@ -327,10 +327,10 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   // présente (ancienne session, contrat pas encore branché), on retombe
   // sur le rôle comme seul garde plutôt que de tout verrouiller.
   const hasGateData =
-    (user.capabilities && Object.keys(user.capabilities).length > 0) ||
-    (user.features && Object.keys(user.features).length > 0) ||
-    (user.company?.features && Object.keys(user.company.features).length > 0) ||
-    (user.plan?.features && Object.keys(user.plan.features).length > 0);
+    !!user.capabilities ||
+    !!user.features ||
+    !!user.company?.features ||
+    !!user.plan?.features;
 
   return hasGateData ? 'locked' : 'available';
 }
