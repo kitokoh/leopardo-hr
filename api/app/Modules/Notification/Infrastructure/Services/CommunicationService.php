@@ -7,6 +7,7 @@ namespace App\Modules\Notification\Infrastructure\Services;
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Contracts\Communication\RetryableMessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Contracts\Notification\EmployeeNotifier;
 use App\Jobs\SendPushNotificationJob;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
@@ -20,7 +21,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CommunicationService
+class CommunicationService implements EmployeeNotifier
 {
     public function __construct(
         private readonly PushNotificationService $pushNotifications,
