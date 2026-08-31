@@ -315,14 +315,14 @@ const referenceConfig = (resource, titleKey, titleFallback) => ({
   defaults: {}
 })
 
-const typeConfig = computed(() => referenceConfig('advert-types', 'travel.adverts.types', 'Types d’annonces'))
-const positionConfig = computed(() => referenceConfig('advert-positions', 'travel.adverts.positions', 'Emplacements publicitaires'))
+const typeConfig = computed(() => referenceConfig('advert-types', 'travel.adverts.types', t('travel.adverts.types', 'Advert types')))
+const positionConfig = computed(() => referenceConfig('advert-positions', 'travel.adverts.positions', t('travel.adverts.positions', 'Advert positions')))
 
 /* ── grille tarifaire ──────────────────────────────────────── */
 const priceConfig = computed(() => ({
   resource: 'advert-prices',
   titleKey: 'travel.adverts.prices',
-  titleFallback: 'Grille tarifaire',
+  titleFallback: t('travel.adverts.prices', 'Price grid'),
   searchPlaceholderKey: 'travel.search.advert',
   searchKeys: ['currency'],
   defaultSort: 'id',
