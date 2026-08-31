@@ -41,10 +41,6 @@ class LedgerController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->id !== $employee && ! $actor->isManager()) {
-            abort(403);
-        }
-
         /** @var Employee|null $target */
         $target = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -52,6 +48,15 @@ class LedgerController extends Controller
 
         if ($target === null) {
             abort(404);
+        }
+
+        // Issue #6545 (audit) : garde mutualisée — self ou manager, + scope
+        // équipe pour les rôles team-scoped.
+        if ($actor->id !== $employee && ! $actor->isManager()) {
+            abort(403);
+        }
+        if ($actor->isManager() && $actor->isTeamScoped() && ! $actor->managesTeamMemberOf($target)) {
+            abort(403);
         }
 
         return $this->historyResponse($request, $target);
