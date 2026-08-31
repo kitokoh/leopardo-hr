@@ -47,6 +47,8 @@ class CsvInjectionExportsTest extends TestCase
             'company_id' => $company->id,
             'payroll_run_id' => $run->id,
             'employee_id' => $employee->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
             'gross_salary' => 60000,
             'net_salary' => 47558,
         ]);
