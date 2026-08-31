@@ -67,14 +67,18 @@ class EmployeeExtraDataMaskingTest extends TestCase
         $viewer = $this->employee($company, 'employee');
         $this->employee($company, 'employee');
 
+        // Tri par défaut : id asc → data.0 = viewer (self), data.1 = collègue.
         $this->withToken($this->employeeToken($viewer))
             ->getJson('/api/v1/employees')
             ->assertOk()
-            ->assertJsonPath('data.0.extra_data.department', 'Ventes')
-            ->assertJsonPath('data.0.extra_data.job_title', 'Commercial terrain')
-            ->assertJsonMissingPath('data.0.extra_data.national_id')
-            ->assertJsonMissingPath('data.0.extra_data.tax_identifier')
-            ->assertJsonMissingPath('data.0.extra_data.blood_group');
+            // Le collègue : clés métier visibles, clés sensibles masquées.
+            ->assertJsonPath('data.1.extra_data.department', 'Ventes')
+            ->assertJsonPath('data.1.extra_data.job_title', 'Commercial terrain')
+            ->assertJsonMissingPath('data.1.extra_data.national_id')
+            ->assertJsonMissingPath('data.1.extra_data.tax_identifier')
+            ->assertJsonMissingPath('data.1.extra_data.blood_group')
+            // Soi-même : clés sensibles visibles (règle #5262 self).
+            ->assertJsonPath('data.0.extra_data.national_id', '123456789');
     }
 
     public function test_principal_manager_sees_full_extra_data(): void
