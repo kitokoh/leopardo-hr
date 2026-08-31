@@ -20,6 +20,7 @@ enum TravelWebhookEvent: string
     case TRIP_PUBLISHED = 'travel.trip.published.v1';
     case TRIP_CANCELLED = 'travel.trip.cancelled.v1';
 
+    /** @return list<string> */
     public static function values(): array
     {
         return array_map(static fn (self $case): string => $case->value, self::cases());

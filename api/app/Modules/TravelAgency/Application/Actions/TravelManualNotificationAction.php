@@ -32,6 +32,10 @@ final class TravelManualNotificationAction
     /**
      * @return array{channels: list<string>}
      */
+    /**
+     * @param  list<string>  $channels
+     * @return array{channels: list<string>}
+     */
     public function execute(
         TravelCustomerContact $contact,
         Employee $actor,

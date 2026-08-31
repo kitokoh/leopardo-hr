@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * TRAVEL-806 (#6097) — Livraison de webhook (journal idempotent).
@@ -71,12 +72,15 @@ class TravelWebhookDelivery extends Model
     protected static function booted(): void
     {
         static::creating(function (self $delivery): void {
-            if ($delivery->id === null) {
-                $delivery->id = (string) \Illuminate\Support\Str::uuid();
+            /** @var string|null $id */
+            $id = $delivery->id;
+            if ($id === null) {
+                $delivery->id = (string) Str::uuid();
             }
         });
     }
 
+    /** @return BelongsTo<TravelWebhookSubscription, $this> */
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(TravelWebhookSubscription::class, 'subscription_id');

@@ -19,8 +19,11 @@ class TravelAdvertPositionController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $positions = TravelAdvertPosition::query()
-            ->where('company_id', $request->user()->company_id)
+            ->where('company_id', $actor->company_id)
             ->orderBy('code')
             ->get()
             ->map(fn (TravelAdvertPosition $p) => ['id' => $p->id, 'code' => $p->code, 'label' => $p->label]);
