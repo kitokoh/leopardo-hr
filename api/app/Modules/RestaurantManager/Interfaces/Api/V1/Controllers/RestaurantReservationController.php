@@ -15,6 +15,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantRes
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantReservationResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * RESTO-601 (#6206) — Réservations CRUD + check-in/no-show + conflit 409.
@@ -29,8 +30,7 @@ class RestaurantReservationController extends Controller
     public function __construct(
         private readonly ReservationAction $action,
         private readonly RestaurantReservationRepositoryInterface $reservations,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -80,7 +80,7 @@ class RestaurantReservationController extends Controller
             $actor->company_id,
             (int) $data['branch_id'],
             isset($data['table_id']) ? (int) $data['table_id'] : null,
-            \Illuminate\Support\Carbon::parse($data['reserved_at']),
+            Carbon::parse($data['reserved_at']),
             (int) ($data['covers'] ?? 1),
         )) {
             abort(409, 'This table is already reserved on an overlapping slot.');

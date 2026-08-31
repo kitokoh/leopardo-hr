@@ -21,9 +21,7 @@ final class CloseTableSessionAction
 {
     public const EVENT_TABLE_CLOSED = 'restaurant.table.closed.v1';
 
-    public function __construct(private readonly RestaurantOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
     public function close(Employee $actor, RestaurantTableSession $session): RestaurantTableSession
     {

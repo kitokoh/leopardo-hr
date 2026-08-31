@@ -121,10 +121,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // RESTO-406 (#6193) — registre des passerelles de paiement
         // (cash / carte / mobile money sandbox, aucun secret en dur).
         $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
-            $registry = new PaymentGatewayRegistry();
-            $registry->register(new CashPaymentGateway());
-            $registry->register(new CardPaymentGateway());
-            $registry->register(new MobileMoneyPaymentGateway());
+            $registry = new PaymentGatewayRegistry;
+            $registry->register(new CashPaymentGateway);
+            $registry->register(new CardPaymentGateway);
+            $registry->register(new MobileMoneyPaymentGateway);
 
             return $registry;
         });
@@ -133,8 +133,8 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // (Uber Eats / Glovo, webhooks HMAC fail-closed).
         $this->app->singleton(DeliveryAppAdapterRegistry::class, function (): DeliveryAppAdapterRegistry {
             return new DeliveryAppAdapterRegistry([
-                new UberEatsDeliveryAppAdapter(),
-                new GlovoDeliveryAppAdapter(),
+                new UberEatsDeliveryAppAdapter,
+                new GlovoDeliveryAppAdapter,
             ]);
         });
 

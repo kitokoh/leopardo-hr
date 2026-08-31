@@ -32,8 +32,7 @@ final class TransitionOrderAction
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly StockDecrementer $stockDecrementer,
-    ) {
-    }
+    ) {}
 
     public function transition(Employee $actor, RestaurantOrder $order, OrderStatus $target): RestaurantOrder
     {

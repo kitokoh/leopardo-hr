@@ -25,9 +25,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantInventoryMovementController extends Controller
 {
-    public function __construct(private readonly StockMovementService $movements)
-    {
-    }
+    public function __construct(private readonly StockMovementService $movements) {}
 
     public function index(Request $request): JsonResponse
     {

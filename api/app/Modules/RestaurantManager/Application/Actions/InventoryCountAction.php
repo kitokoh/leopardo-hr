@@ -23,9 +23,7 @@ use RuntimeException;
  */
 final class InventoryCountAction
 {
-    public function __construct(private readonly StockMovementService $movements)
-    {
-    }
+    public function __construct(private readonly StockMovementService $movements) {}
 
     public function submit(Employee $actor, RestaurantInventoryCount $count): RestaurantInventoryCount
     {

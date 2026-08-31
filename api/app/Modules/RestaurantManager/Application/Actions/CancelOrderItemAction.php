@@ -22,9 +22,7 @@ use RuntimeException;
  */
 final class CancelOrderItemAction
 {
-    public function __construct(private readonly BillCalculator $calculator)
-    {
-    }
+    public function __construct(private readonly BillCalculator $calculator) {}
 
     public function cancel(Employee $actor, RestaurantOrder $order, RestaurantOrderItem $item): RestaurantOrderItem
     {

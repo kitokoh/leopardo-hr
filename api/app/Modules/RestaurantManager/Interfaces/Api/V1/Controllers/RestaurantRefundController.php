@@ -22,9 +22,7 @@ use Illuminate\Http\JsonResponse;
  */
 class RestaurantRefundController extends Controller
 {
-    public function __construct(private readonly RefundOrderAction $refundAction)
-    {
-    }
+    public function __construct(private readonly RefundOrderAction $refundAction) {}
 
     public function store(StoreRestaurantRefundRequest $request, RestaurantOrder $restaurantOrder): JsonResponse
     {

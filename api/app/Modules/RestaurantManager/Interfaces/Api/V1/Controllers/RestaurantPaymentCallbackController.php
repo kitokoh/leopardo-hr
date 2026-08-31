@@ -37,8 +37,7 @@ final class RestaurantPaymentCallbackController extends Controller
         private readonly PaymentCallbackSigner $signer,
         private readonly TenantManager $tenants,
         private readonly PayOrderAction $payAction,
-    ) {
-    }
+    ) {}
 
     public function handle(int $payment, Request $request): JsonResponse
     {

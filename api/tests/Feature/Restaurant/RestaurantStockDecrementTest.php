@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
@@ -110,7 +111,7 @@ class RestaurantStockDecrementTest extends TestCase
 
         $this->assertEqualsWithDelta(8.5, (float) $level->quantity, 0.001);
 
-        $movementCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement::query()
+        $movementCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantInventoryMovement::query()
             ->where('reason_code', 'sale')
             ->where('reference_id', $order->id)
             ->count());

@@ -34,8 +34,7 @@ class RestaurantDeliveryAppWebhookController extends Controller
         private readonly DeliveryAppAdapterRegistry $registry,
         private readonly RestaurantPublicOrderService $orders,
         private readonly TenantManager $tenants,
-    ) {
-    }
+    ) {}
 
     public function handle(string $provider, Request $request): JsonResponse
     {

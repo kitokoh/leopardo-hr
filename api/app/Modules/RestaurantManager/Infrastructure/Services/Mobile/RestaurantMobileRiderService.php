@@ -23,9 +23,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class RestaurantMobileRiderService
 {
-    public function __construct(private readonly RestaurantOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
     private function riderFor(Employee $actor): ?RestaurantDeliveryRider
     {

@@ -28,8 +28,7 @@ final class RestaurantMobileServerService
     public function __construct(
         private readonly PayOrderAction $payAction,
         private readonly OrderStateMachine $stateMachine,
-    ) {
-    }
+    ) {}
 
     /**
      * Commandes actives (ouvertes / en préparation / prêtes / servies) du

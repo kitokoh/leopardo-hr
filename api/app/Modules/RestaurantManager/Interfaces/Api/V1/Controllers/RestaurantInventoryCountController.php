@@ -30,9 +30,7 @@ use Illuminate\Support\Facades\DB;
  */
 class RestaurantInventoryCountController extends Controller
 {
-    public function __construct(private readonly InventoryCountAction $action)
-    {
-    }
+    public function __construct(private readonly InventoryCountAction $action) {}
 
     public function index(Request $request): JsonResponse
     {

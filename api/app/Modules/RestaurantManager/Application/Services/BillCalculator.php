@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Application\Services;
 
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
+use App\Modules\RestaurantManager\Domain\Enums\PromotionDiscountType;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 
@@ -126,7 +127,7 @@ final class BillCalculator
      */
     private function discountFor(RestaurantPromotion $promotion, int $subtotal): int
     {
-        $value = $promotion->discount_type === \App\Modules\RestaurantManager\Domain\Enums\PromotionDiscountType::PERCENT
+        $value = $promotion->discount_type === PromotionDiscountType::PERCENT
             ? (int) round($subtotal * $promotion->value_minor / 10000)
             : (int) $promotion->value_minor;
 

@@ -21,9 +21,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantOrderController extends Controller
 {
-    public function __construct(private readonly CreateOrderAction $createOrderAction)
-    {
-    }
+    public function __construct(private readonly CreateOrderAction $createOrderAction) {}
 
     public function index(Request $request): JsonResponse
     {

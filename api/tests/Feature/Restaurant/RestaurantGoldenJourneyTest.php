@@ -144,7 +144,7 @@ class RestaurantGoldenJourneyTest extends TestCase
             'counted_cash_minor' => 13000,
         ])->assertStatus(200);
 
-        $closedEvent = app(TenantManager::class)->withinTenant($company, function () use ($sessionId) {
+        $closedEvent = app(TenantManager::class)->withinTenant($company, function () {
             return RestaurantOutboxEvent::query()
                 ->where('event_type', 'restaurant.pos.closed.v1')
                 ->first();

@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -100,7 +101,7 @@ class RestaurantOrderCreateTest extends TestCase
         $this->server($company);
         ['branch' => $branch] = $this->makeBranchAndTable($company);
 
-        $key = (string) \Illuminate\Support\Str::uuid();
+        $key = (string) Str::uuid();
 
         $first = $this->postJson('/api/v1/restaurant/orders', [
             'branch_id' => $branch->id,

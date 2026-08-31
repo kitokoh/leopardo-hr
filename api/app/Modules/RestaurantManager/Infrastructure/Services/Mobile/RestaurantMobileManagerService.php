@@ -23,9 +23,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
  */
 final class RestaurantMobileManagerService
 {
-    public function __construct(private readonly ClosePosSessionAction $closePosSession)
-    {
-    }
+    public function __construct(private readonly ClosePosSessionAction $closePosSession) {}
 
     /**
      * KPIs du jour : chiffre d'affaires (commandes payées), nombre de

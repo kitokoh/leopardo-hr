@@ -39,8 +39,7 @@ final class RefundOrderAction
         private readonly PaymentGatewayRegistry $registry,
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{amount_minor: int, reason_code: string, reason_text?: string|null, payment_id?: int|null, idempotency_key?: string|null}  $data

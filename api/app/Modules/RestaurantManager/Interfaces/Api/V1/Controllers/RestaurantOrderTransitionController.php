@@ -26,9 +26,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantOrderTransitionController extends Controller
 {
-    public function __construct(private readonly TransitionOrderAction $transitionAction)
-    {
-    }
+    public function __construct(private readonly TransitionOrderAction $transitionAction) {}
 
     public function submit(Request $request, RestaurantOrder $restaurantOrder): JsonResponse
     {

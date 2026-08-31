@@ -9,8 +9,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -83,7 +87,7 @@ class RestaurantRefundTest extends TestCase
                 'total_minor' => 1500,
             ]);
 
-            \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem::query()->create([
+            RestaurantOrderItem::query()->create([
                 'company_id' => $company->id,
                 'order_id' => $order->id,
                 'product_id' => $product->id,
@@ -95,7 +99,7 @@ class RestaurantRefundTest extends TestCase
                 'line_index' => 1,
             ]);
 
-            \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment::query()->create([
+            RestaurantOrderPayment::query()->create([
                 'company_id' => $company->id,
                 'order_id' => $order->id,
                 'provider_code' => 'cash',
@@ -104,7 +108,7 @@ class RestaurantRefundTest extends TestCase
                 'status' => 'confirmed',
                 'paid_at' => now(),
                 'provider_reference' => 'CASH-TEST',
-                'idempotency_key' => (string) \Illuminate\Support\Str::uuid(),
+                'idempotency_key' => (string) Str::uuid(),
             ]);
 
             return $order;
@@ -129,7 +133,7 @@ class RestaurantRefundTest extends TestCase
         $order->refresh();
         $this->assertSame('refunded', $order->status->value);
 
-        $events = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $events = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantOutboxEvent::query()
             ->where('event_type', 'restaurant.payment.refunded.v1')
             ->count());
 
@@ -163,7 +167,7 @@ class RestaurantRefundTest extends TestCase
         $this->principal($company);
         $order = $this->makePaidOrder($company);
 
-        $key = (string) \Illuminate\Support\Str::uuid();
+        $key = (string) Str::uuid();
 
         $first = $this->postJson("/api/v1/restaurant/orders/{$order->id}/refund", [
             'amount_minor' => 1500,

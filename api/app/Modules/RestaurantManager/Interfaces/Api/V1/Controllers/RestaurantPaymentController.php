@@ -23,9 +23,7 @@ use Illuminate\Http\JsonResponse;
  */
 class RestaurantPaymentController extends Controller
 {
-    public function __construct(private readonly PayOrderAction $payAction)
-    {
-    }
+    public function __construct(private readonly PayOrderAction $payAction) {}
 
     public function pay(PayRestaurantOrderRequest $request, RestaurantOrder $restaurantOrder): JsonResponse
     {

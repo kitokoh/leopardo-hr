@@ -26,8 +26,7 @@ class RestaurantPosSessionController extends Controller
     public function __construct(
         private readonly OpenPosSessionAction $openAction,
         private readonly ClosePosSessionAction $closeAction,
-    ) {
-    }
+    ) {}
 
     public function store(StoreRestaurantPosSessionRequest $request): JsonResponse
     {

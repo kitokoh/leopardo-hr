@@ -51,7 +51,7 @@ class RestaurantMobileRiderApiTest extends TestCase
      */
     private function assignedDelivery(Company $company, Employee $employee): array
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company, $employee): array {
+        return app(TenantManager::class)->withinTenant($company, function () use ($employee): array {
             $branch = RestaurantBranch::factory()->create();
             $rider = RestaurantDeliveryRider::factory()->create([
                 'branch_id' => $branch->id,

@@ -9,7 +9,9 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 use Laravel\Sanctum\Sanctum;
@@ -111,7 +113,7 @@ class RestaurantPurchaseOrderTest extends TestCase
         // Coût moyen pondéré : (10×500 + 5×300) / 15 = 433.33 → arrondi 433.
         $this->assertSame(433, (int) $level->avg_cost_minor);
 
-        $movements = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement::query()
+        $movements = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantInventoryMovement::query()
             ->where('reason_code', 'receiving')
             ->count());
 
@@ -156,7 +158,7 @@ class RestaurantPurchaseOrderTest extends TestCase
         $this->postJson("/api/v1/restaurant/purchase-orders/{$poId}/send")->assertStatus(200);
         $this->postJson("/api/v1/restaurant/purchase-orders/{$poId}/receive")->assertStatus(200);
 
-        $receiving = app(TenantManager::class)->withinTenant($company, fn () => \App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving::query()
+        $receiving = app(TenantManager::class)->withinTenant($company, fn () => RestaurantReceiving::query()
             ->where('purchase_order_id', $poId)
             ->first());
 

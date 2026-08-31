@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Enums\PosSessionStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -58,7 +59,7 @@ final class OpenPosSessionAction
                     'version' => 1,
                 ]);
             });
-        } catch (\Illuminate\Database\UniqueConstraintViolationException) {
+        } catch (UniqueConstraintViolationException) {
             // Course entre deux requêtes : la contrainte (tenant, branche, statut)
             // a tranché — la seconde ouverture est refusée proprement.
             abort(409, 'A POS session is already open for this branch.');

@@ -27,8 +27,7 @@ class RestaurantTableSessionController extends Controller
     public function __construct(
         private readonly OpenTableSessionAction $openAction,
         private readonly CloseTableSessionAction $closeAction,
-    ) {
-    }
+    ) {}
 
     public function open(OpenRestaurantTableRequest $request, RestaurantTable $restaurantTable): JsonResponse
     {

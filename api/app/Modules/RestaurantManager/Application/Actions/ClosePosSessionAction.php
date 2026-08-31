@@ -33,8 +33,7 @@ final class ClosePosSessionAction
     public function __construct(
         private readonly RestaurantOutboxPublisher $outbox,
         private readonly CogsCalculator $cogs,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{counted_cash_minor: int, variance_reason?: string|null}  $data

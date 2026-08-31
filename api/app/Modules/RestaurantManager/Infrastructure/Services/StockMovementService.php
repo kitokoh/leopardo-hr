@@ -24,9 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class StockMovementService
 {
-    public function __construct(private readonly StockAlertService $alerts)
-    {
-    }
+    public function __construct(private readonly StockAlertService $alerts) {}
 
     /**
      * @param  StockMovementReason  $reason  motif (sale/receiving/count/adjustment/waste/transfer)

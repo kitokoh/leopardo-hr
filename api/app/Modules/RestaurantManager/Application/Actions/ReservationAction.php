@@ -22,9 +22,7 @@ final class ReservationAction
 {
     public const EVENT_RESERVATION_CONFIRMED = 'restaurant.reservation.confirmed.v1';
 
-    public function __construct(private readonly RestaurantOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly RestaurantOutboxPublisher $outbox) {}
 
     public function confirm(Employee $actor, RestaurantReservation $reservation): RestaurantReservation
     {

@@ -24,9 +24,7 @@ use Illuminate\Http\Request;
  */
 class RestaurantReceivingController extends Controller
 {
-    public function __construct(private readonly ReceivingService $receiving)
-    {
-    }
+    public function __construct(private readonly ReceivingService $receiving) {}
 
     public function index(Request $request): JsonResponse
     {

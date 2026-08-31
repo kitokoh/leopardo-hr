@@ -43,7 +43,7 @@ class RestaurantDeliveryAppWebhookTest extends TestCase
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
 
-        $ctx = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+        $ctx = app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create(['currency' => 'XAF']);
             $product = RestaurantProduct::factory()->create([
                 'branch_id' => $branch->id,
@@ -57,7 +57,7 @@ class RestaurantDeliveryAppWebhookTest extends TestCase
             return ['branch' => $branch, 'product' => $product];
         });
 
-        $adapter = new UberEatsDeliveryAppAdapter();
+        $adapter = new UberEatsDeliveryAppAdapter;
 
         return [
             'company' => $company,
@@ -155,7 +155,7 @@ class RestaurantDeliveryAppWebhookTest extends TestCase
 
     public function test_adapters_are_registered_with_stable_codes(): void
     {
-        $this->assertSame('uber_eats', (new UberEatsDeliveryAppAdapter())->providerCode());
-        $this->assertSame('glovo', (new GlovoDeliveryAppAdapter())->providerCode());
+        $this->assertSame('uber_eats', (new UberEatsDeliveryAppAdapter)->providerCode());
+        $this->assertSame('glovo', (new GlovoDeliveryAppAdapter)->providerCode());
     }
 }

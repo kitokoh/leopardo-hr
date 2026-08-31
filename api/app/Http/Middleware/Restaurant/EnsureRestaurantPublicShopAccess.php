@@ -24,9 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsureRestaurantPublicShopAccess
 {
-    public function __construct(private readonly TenantManager $tenants)
-    {
-    }
+    public function __construct(private readonly TenantManager $tenants) {}
 
     public function handle(Request $request, Closure $next): Response
     {

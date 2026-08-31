@@ -10,10 +10,13 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Enums\PaymentStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentCallbackSigner;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -73,7 +76,7 @@ class RestaurantOrderPayTest extends TestCase
             ]);
 
             // Une ligne active pour un total cohérent.
-            \App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem::query()->create([
+            RestaurantOrderItem::query()->create([
                 'company_id' => $company->id,
                 'order_id' => $order->id,
                 'product_id' => $product->id,
@@ -114,7 +117,7 @@ class RestaurantOrderPayTest extends TestCase
         $this->assertSame('paid', $order->status->value);
 
         // Événements outbox publiés.
-        $events = app(TenantManager::class)->withinTenant($company, fn (): array => \App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent::query()
+        $events = app(TenantManager::class)->withinTenant($company, fn (): array => RestaurantOutboxEvent::query()
             ->whereIn('event_type', ['restaurant.payment.confirmed.v1', 'restaurant.order.paid.v1'])
             ->pluck('event_type')->all());
 
@@ -158,7 +161,7 @@ class RestaurantOrderPayTest extends TestCase
         $this->server($company);
         ['order' => $order] = $this->makePayableOrder($company);
 
-        $key = (string) \Illuminate\Support\Str::uuid();
+        $key = (string) Str::uuid();
 
         $first = $this->postJson("/api/v1/restaurant/orders/{$order->id}/pay", [
             'provider_code' => 'cash',

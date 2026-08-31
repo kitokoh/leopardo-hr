@@ -53,7 +53,7 @@ class RestaurantMobileServerApiTest extends TestCase
      */
     private function openOrder(Company $company): array
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+        return app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create(['currency' => 'XAF']);
             $session = RestaurantPosSession::factory()->create(['branch_id' => $branch->id]);
             $product = RestaurantProduct::factory()->create([

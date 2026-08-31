@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\RestaurantManager\Application\Services\BillCalculator;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantBillResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,9 +26,7 @@ use Illuminate\Support\Facades\DB;
  */
 class RestaurantBillController extends Controller
 {
-    public function __construct(private readonly BillCalculator $calculator)
-    {
-    }
+    public function __construct(private readonly BillCalculator $calculator) {}
 
     public function show(Request $request, RestaurantOrder $restaurantOrder): JsonResponse
     {
@@ -51,7 +50,7 @@ class RestaurantBillController extends Controller
 
         if (($totals['promotion'] ?? null) !== null) {
             DB::transaction(function () use ($restaurantOrder, $totals): void {
-                /** @var \App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion $promotion */
+                /** @var RestaurantPromotion $promotion */
                 $promotion = $totals['promotion'];
                 $promotion->increment('used_count');
 

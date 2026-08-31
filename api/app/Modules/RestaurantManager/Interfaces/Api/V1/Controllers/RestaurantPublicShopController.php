@@ -33,9 +33,7 @@ use Illuminate\Support\Str;
  */
 class RestaurantPublicShopController extends Controller
 {
-    public function __construct(private readonly RestaurantPublicOrderService $orders)
-    {
-    }
+    public function __construct(private readonly RestaurantPublicOrderService $orders) {}
 
     public function menu(Request $request): JsonResponse
     {

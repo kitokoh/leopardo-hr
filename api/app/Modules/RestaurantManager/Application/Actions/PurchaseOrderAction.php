@@ -22,9 +22,7 @@ use RuntimeException;
  */
 final class PurchaseOrderAction
 {
-    public function __construct(private readonly ReceivingService $receiving)
-    {
-    }
+    public function __construct(private readonly ReceivingService $receiving) {}
 
     public function send(Employee $actor, RestaurantPurchaseOrder $po): RestaurantPurchaseOrder
     {
