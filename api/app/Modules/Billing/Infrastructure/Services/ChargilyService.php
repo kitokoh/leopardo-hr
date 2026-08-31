@@ -39,11 +39,12 @@ class ChargilyService
             return null;
         }
 
-        // Strip the "sha256=" prefix if present
-        $provided = ltrim($signatureHeader, 'sha256=');
-        if (str_starts_with($signatureHeader, 'sha256=')) {
-            $provided = substr($signatureHeader, 7);
-        }
+        // Strip the "sha256=" prefix if present (#6561 — l'ancien
+        // ltrim($header, 'sha256=') masquait des caractères du début de la
+        // signature ; seul le substr explicite est conservé).
+        $provided = str_starts_with($signatureHeader, 'sha256=')
+            ? substr($signatureHeader, 7)
+            : $signatureHeader;
 
         if (empty($provided)) {
             Log::warning('Chargily: Missing or malformed signature header.');
