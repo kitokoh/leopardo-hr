@@ -6,7 +6,7 @@ namespace App\Modules\Marketing\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Marketing\Application\Actions\CaptureMarketingLead;
-use App\Modules\Marketing\Application\DTOs\CreateMarketingLeadDTO;
+use App\Modules\Marketing\Domain\DTOs\CreateMarketingLeadDTO;
 use App\Modules\Marketing\Interfaces\Api\V1\Requests\StoreMarketingLeadRequest;
 use App\Modules\Platform\Infrastructure\Services\WebhookEventRegistry;
 use Illuminate\Http\JsonResponse;
