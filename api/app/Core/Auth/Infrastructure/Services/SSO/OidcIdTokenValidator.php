@@ -61,7 +61,7 @@ final class OidcIdTokenValidator
             throw new \RuntimeException("OIDC id_token : algorithme [{$alg}] non autorisé.");
         }
 
-        if (! $this->verifySignature($headerB64.'.'.$payloadB64, $signature, (string) ($header['kid'] ?? ''), (string) $expected['jwks_uri'])) {
+        if (! $this->verifySignature($headerB64.'.'.$payloadB64, $signature, (string) ($header['kid'] ?? ''), $alg, (string) $expected['jwks_uri'])) {
             throw new \RuntimeException('OIDC id_token : signature invalide.');
         }
 
@@ -99,7 +99,7 @@ final class OidcIdTokenValidator
         return $claims;
     }
 
-    private function verifySignature(string $signingInput, string $signature, string $kid, string $jwksUri): bool
+    private function verifySignature(string $signingInput, string $signature, string $kid, string $alg, string $jwksUri): bool
     {
         $pem = $this->resolveKeyPem($kid, $jwksUri);
 
@@ -107,22 +107,35 @@ final class OidcIdTokenValidator
             return false;
         }
 
-        return openssl_verify($signingInput, $signature, $pem, OPENSSL_ALGO_SHA256) === 1;
+        // audit(securite) #6542 : l'algorithme réellement utilisé pour vérifier
+        // la signature est celui du header JWT (allowlist RS256/RS384/RS512),
+        // jamais un algorithme figé — un token RS512 ne doit pas être vérifié
+        // comme s'il était RS256.
+        $opensslAlgo = match ($alg) {
+            'RS384' => OPENSSL_ALGO_SHA384,
+            'RS512' => OPENSSL_ALGO_SHA512,
+            default => OPENSSL_ALGO_SHA256,
+        };
+
+        return openssl_verify($signingInput, $signature, $pem, $opensslAlgo) === 1;
     }
 
     private function resolveKeyPem(string $kid, string $jwksUri): ?string
     {
         $keys = $this->jwksKeys($jwksUri);
 
-        // Priorité : clé dont le kid correspond ; sinon première clé RSA.
+        // audit(securite) #6542 : plus AUCUN fallback « première clé » — un
+        // kid inconnu (ou absent) entraîne le rejet. Un attaquant qui forgerait
+        // un id_token signé avec SA propre clé ne peut plus être accepté via la
+        // première clé du JWKS de la victime.
+        if ($kid === '') {
+            return null;
+        }
+
         foreach ($keys as $key) {
             if (($key['kid'] ?? '') === $kid) {
                 return $this->keyToPem($key);
             }
-        }
-
-        foreach ($keys as $key) {
-            return $this->keyToPem($key);
         }
 
         return null;

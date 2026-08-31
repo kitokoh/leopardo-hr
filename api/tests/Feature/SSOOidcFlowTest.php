@@ -364,11 +364,11 @@ class SSOOidcFlowTest extends TestCase
         return [$res, $jwks];
     }
 
-    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null): string
+    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null, string $alg = 'RS256', string $kid = 'test-key-1', ?int $signAlgo = null): string
     {
         $header = $this->base64UrlEncode((string) json_encode([
-            'alg' => 'RS256',
-            'kid' => 'test-key-1',
+            'alg' => $alg,
+            'kid' => $kid,
             'typ' => 'JWT',
         ]));
 
@@ -386,7 +386,7 @@ class SSOOidcFlowTest extends TestCase
         $payload = $this->base64UrlEncode((string) json_encode($claims));
         $signingInput = $header.'.'.$payload;
 
-        openssl_sign($signingInput, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        openssl_sign($signingInput, $signature, $privateKey, $signAlgo ?? OPENSSL_ALGO_SHA256);
 
         return $signingInput.'.'.$this->base64UrlEncode($signature);
     }
@@ -447,5 +447,80 @@ class SSOOidcFlowTest extends TestCase
             ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
 
         Http::assertNotSent(fn ($request) => str_contains($request->url(), '127.0.0.1'));
+    }
+
+    public function test_callback_rejects_token_with_unknown_kid(): void
+    {
+        // audit(securite) #6542 : plus aucun fallback « première clé JWKS » —
+        // un kid inconnu entraîne le rejet de la signature.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response(['id_token' => $this->signIdToken($privateKey, $nonce, kid: 'attacker-key')], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+    }
+
+    public function test_callback_rejects_alg_mismatch_token(): void
+    {
+        // audit(securite) #6542 : un id_token annonçant RS512 mais signé avec
+        // SHA256 (l'ancien algorithme figé) est rejeté — l'algorithme de
+        // vérification suit le header, il n'est plus deviné.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response([
+                'id_token' => $this->signIdToken($privateKey, $nonce, alg: 'RS512', signAlgo: OPENSSL_ALGO_SHA256),
+            ], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+    }
+
+    public function test_callback_accepts_rs512_token_signed_with_sha512(): void
+    {
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response([
+                'id_token' => $this->signIdToken($privateKey, $nonce, alg: 'RS512', signAlgo: OPENSSL_ALGO_SHA512),
+            ], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertOk()
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
     }
 }
