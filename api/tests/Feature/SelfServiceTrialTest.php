@@ -171,6 +171,33 @@ class SelfServiceTrialTest extends TestCase
             ]);
     }
 
+    public function test_verify_locks_email_after_five_failed_attempts(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'lockme@example.com',
+            'company' => 'Lock Corp',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        // 5 échecs → compteur max atteint
+        for ($i = 1; $i <= 5; $i++) {
+            $this->postJson('/api/v1/trial/verify', [
+                'email' => 'lockme@example.com',
+                'code' => '000000',
+            ])->assertStatus(400);
+        }
+
+        // 6e tentative → verrouillé (429), quel que soit le code
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'lockme@example.com',
+            'code' => '000000',
+        ])
+            ->assertStatus(429)
+            ->assertJsonPath('error', 'TOO_MANY_ATTEMPTS');
+    }
+
     public function test_signup_does_not_enumerate_existing_manager_email()
     {
         Mail::fake();

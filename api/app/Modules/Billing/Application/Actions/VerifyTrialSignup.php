@@ -14,6 +14,7 @@ use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Support\CountryDefaults;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -35,10 +36,27 @@ class VerifyTrialSignup
     /**
      * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int}
      */
+    /** Nombre maximal d'échecs OTP avant verrouillage (issue #6547). */
+    private const MAX_OTP_ATTEMPTS = 5;
+
+    /** Durée du verrouillage après échecs répétés. */
+    private const OTP_LOCK_MINUTES = 15;
+
     public function execute(string $email, string $code): array
     {
         if (DB::getDriverName() === 'pgsql') {
             DB::statement('SET search_path TO public');
+        }
+
+        // #6547 — anti brute-force multi-IP : compteur d'échecs par email
+        // (le throttle 5/15min est par IP, contournable en distribué).
+        if (Cache::get($this->lockKey($email)) !== null) {
+            return [
+                'success' => false,
+                'error' => 'TOO_MANY_ATTEMPTS',
+                'message' => __('errors.TOO_MANY_ATTEMPTS', ['minutes' => self::OTP_LOCK_MINUTES]),
+                'status' => 429,
+            ];
         }
 
         // QA #2996 — verrou atomique anti double-provisioning : deux POST
@@ -82,6 +100,8 @@ class VerifyTrialSignup
                 ];
             }
 
+            $this->registerFailedAttempt($email);
+
             return [
                 'success' => false,
                 'error' => 'INVALID_OR_EXPIRED_CODE',
@@ -91,6 +111,10 @@ class VerifyTrialSignup
         }
 
         $companyRequest = $claimed;
+        // OTP validé → on lève compteur et verrou éventuel.
+        Cache::forget($this->attemptKey($email));
+        Cache::forget($this->lockKey($email));
+
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
@@ -422,4 +446,30 @@ class VerifyTrialSignup
             default => 'Non précisé',
         };
     }
+
+    private function registerFailedAttempt(string $email): void
+    {
+        $key = $this->attemptKey($email);
+        $attempts = (int) Cache::get($key, 0) + 1;
+
+        if ($attempts >= self::MAX_OTP_ATTEMPTS) {
+            Cache::put($this->lockKey($email), true, now()->addMinutes(self::OTP_LOCK_MINUTES));
+            Cache::forget($key);
+
+            Log::warning('trial.verify_otp_locked', ['email' => $email]);
+        } else {
+            Cache::put($key, $attempts, now()->addMinutes(self::OTP_LOCK_MINUTES));
+        }
+    }
+
+    private function attemptKey(string $email): string
+    {
+        return 'trial_otp_attempts:'.strtolower(trim($email));
+    }
+
+    private function lockKey(string $email): string
+    {
+        return 'trial_otp_lock:'.strtolower(trim($email));
+    }
 }
+
