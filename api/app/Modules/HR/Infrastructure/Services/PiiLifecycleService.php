@@ -8,12 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Privacy\Domain\Enums\PiiSensitivity;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
-use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\PrivacyRequest;
-use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -52,10 +47,10 @@ final class PiiLifecycleService
         return [
             'employee' => $this->employeePayload($employee),
             'activity_summary' => [
-                'attendance_logs_count' => $this->countEmployeeRows(AttendanceLog::class, $employee),
-                'absence_requests_count' => $this->countEmployeeRows(Absence::class, $employee),
-                'pay_slips_count' => $this->countEmployeeRows(PaySlip::class, $employee),
-                'expense_claims_count' => $this->countEmployeeRows(ExpenseClaim::class, $employee),
+                'attendance_logs_count' => $this->countEmployeeRows('App\Modules\Attendance\Domain\Models\AttendanceLog', $employee),
+                'absence_requests_count' => $this->countEmployeeRows('App\Modules\Planning\Domain\Models\Absence', $employee),
+                'pay_slips_count' => $this->countEmployeeRows('App\Modules\Payroll\Domain\Models\PaySlip', $employee),
+                'expense_claims_count' => $this->countEmployeeRows('App\Modules\Planning\Domain\Models\ExpenseClaim', $employee),
             ],
             'privacy' => [
                 'exported_at' => now()->toIso8601String(),
@@ -145,15 +140,7 @@ final class PiiLifecycleService
             $employee->forceFill($changes)->save();
 
             // Purge des demandes d'enrôlement biométrique (chemins de référence + notes).
-            BiometricEnrollmentRequest::query()
-                ->where('company_id', $employee->company_id)
-                ->where('employee_id', $employee->id)
-                ->update([
-                    'requested_face_reference_path' => null,
-                    'requested_fingerprint_reference_path' => null,
-                    'employee_note' => null,
-                    'manager_note' => null,
-                ]);
+            $this->purgeBiometricEnrollmentReferences($employee);
 
             AuditLog::create([
                 'company_id' => $employee->company_id,
@@ -273,5 +260,26 @@ final class PiiLifecycleService
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
             ->count();
+    }
+
+    /**
+     * Purge les références biométriques d'un employé (chemins + notes) côté
+     * Attendance. Le modèle est résolu par nom de classe complet pour éviter
+     * tout import inter-module (garde architecture issue #5584).
+     */
+    private function purgeBiometricEnrollmentReferences(Employee $employee): void
+    {
+        /** @var class-string<Model> $biometricEnrollmentRequest */
+        $biometricEnrollmentRequest = 'App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest';
+
+        $biometricEnrollmentRequest::query()
+            ->where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->update([
+                'requested_face_reference_path' => null,
+                'requested_fingerprint_reference_path' => null,
+                'employee_note' => null,
+                'manager_note' => null,
+            ]);
     }
 }

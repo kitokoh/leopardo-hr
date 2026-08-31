@@ -33,7 +33,7 @@ final class PiiRegistry
      */
     public function categories(): array
     {
-        return array_keys($this->config['categories'] ?? []);
+        return array_map('strval', array_keys($this->config['categories'] ?? []));
     }
 
     /**
@@ -52,9 +52,11 @@ final class PiiRegistry
             if (is_array($entries) && array_key_exists($key, $entries)) {
                 $entry = $entries[$key];
 
-                return is_array($entry)
-                    ? array_merge(is_array($default) ? $default : [], $entry)
-                    : null;
+                if (! is_array($entry)) {
+                    return null;
+                }
+
+                return $this->normalizePolicy(array_merge(is_array($default) ? $default : [], $entry));
             }
         }
 
@@ -150,5 +152,28 @@ final class PiiRegistry
         }
 
         return $fields;
+    }
+
+    /**
+     * Normalise une politique fusionnée dans la forme contractuelle exacte
+     * (liste fermée de champs, types stricts) — évite tout retour
+     * array<mixed> et garantit le shape déclaré en entrée de PHPStan.
+     *
+     * @param  array<string, mixed>  $policy
+     * @return array{context: string, sensitivity: string, encrypted: bool, retention_months: int|null, exportable: bool, anonymizable: bool, deletable: bool}
+     */
+    private function normalizePolicy(array $policy): array
+    {
+        return [
+            'context' => (string) ($policy['context'] ?? ''),
+            'sensitivity' => (string) ($policy['sensitivity'] ?? ''),
+            'encrypted' => (bool) ($policy['encrypted'] ?? false),
+            'retention_months' => isset($policy['retention_months']) && $policy['retention_months'] !== null
+                ? (int) $policy['retention_months']
+                : null,
+            'exportable' => (bool) ($policy['exportable'] ?? false),
+            'anonymizable' => (bool) ($policy['anonymizable'] ?? false),
+            'deletable' => (bool) ($policy['deletable'] ?? false),
+        ];
     }
 }

@@ -56,7 +56,7 @@ class PilotSeedCommand extends Command
 
         $this->assertPilotEnvironmentAllowed($solution);
 
-        /** @var \Illuminate\Database\Seeder $seeder */
+        /** @var FuelStationPilotSeeder|EduManagerPilotSeeder $seeder */
         $seeder = app(self::SOLUTIONS[$solution]['class']);
         $seeder->setContainer($this->getLaravel());
         $seeder->setCommand($this);
@@ -80,7 +80,7 @@ class PilotSeedCommand extends Command
 
         $companyId = (string) $company->id;
 
-        DB::transaction(function () use ($companyId, $company, $slug): void {
+        DB::transaction(function () use ($companyId, $company): void {
             // Suppression des lignes tenant du pilote (toutes les tables connues),
             // puis de la société publique. Les tables absentes sont ignorées.
             foreach ([

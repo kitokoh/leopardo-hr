@@ -138,7 +138,9 @@ class GoldenAccountingInvariantsTest extends TestCase
         $creditSales = $entries->where('account_code', '70')->first();
         $creditVat = $entries->where('account_code', '4457')->first();
 
-        $this->assertNotNull($debit);
+        $this->assertInstanceOf(AccountingJournalEntry::class, $debit);
+        $this->assertInstanceOf(AccountingJournalEntry::class, $creditSales);
+        $this->assertInstanceOf(AccountingJournalEntry::class, $creditVat);
         $this->assertSame(1190.0, $debit->debit);
         $this->assertSame(0.0, $debit->credit);
         $this->assertSame(1000.0, $creditSales->credit);
@@ -157,7 +159,10 @@ class GoldenAccountingInvariantsTest extends TestCase
 
         // Calcul manuel : D 411 2 975 · C 70 2 500 · C 4457 475.
         $this->assertSame(3, $service->postDocument($document));
-        $this->assertSame(3, $service->postDocument($document->fresh()));
+
+        $fresh = $document->fresh();
+        $this->assertInstanceOf(AccountingDocument::class, $fresh);
+        $this->assertSame(3, $service->postDocument($fresh));
 
         $count = AccountingJournalEntry::query()
             ->where('company_id', $company->id)
@@ -238,11 +243,21 @@ class GoldenAccountingInvariantsTest extends TestCase
         //   70  : C 1 000 + C 2 500 = 3 500
         //   4457: C 190 + C 475 = 665
         //   53  : D 500
-        $this->assertSame(4165.0, $totals['411']['debit']);
-        $this->assertSame(500.0, $totals['411']['credit']);
-        $this->assertSame(3500.0, $totals['70']['credit']);
-        $this->assertSame(665.0, $totals['4457']['credit']);
-        $this->assertSame(500.0, $totals['53']['debit']);
+        $totals411 = $totals['411'];
+        $totals70 = $totals['70'];
+        $totals4457 = $totals['4457'];
+        $totals53 = $totals['53'];
+
+        $this->assertIsArray($totals411);
+        $this->assertIsArray($totals70);
+        $this->assertIsArray($totals4457);
+        $this->assertIsArray($totals53);
+
+        $this->assertSame(4165.0, $totals411['debit']);
+        $this->assertSame(500.0, $totals411['credit']);
+        $this->assertSame(3500.0, $totals70['credit']);
+        $this->assertSame(665.0, $totals4457['credit']);
+        $this->assertSame(500.0, $totals53['debit']);
         $this->assertTrue($service->isPeriodBalanced('2026-08'));
     }
 
@@ -345,9 +360,11 @@ class GoldenAccountingInvariantsTest extends TestCase
         $this->assertTrue($audit->exists);
         $this->assertNull($audit->updated_at);
 
-        // Re-calcul d'un même run = nouvelle ligne, jamais de mutation.
+        // Re-calcul = nouveau run = nouveau correlation_id : nouvelle ligne
+        // d'audit (append-only, jamais de mutation) — cf. unique constraint
+        // payroll_calculation_audits_correlation_id_unique (#5865).
         PayrollCalculationAudit::create([
-            'correlation_id' => '00000000-0000-4000-8000-000000000001',
+            'correlation_id' => '00000000-0000-4000-8000-000000000002',
             'company_id' => null,
             'actor_type' => PayrollCalculationAudit::ACTOR_USER,
             'country_code' => 'DZ',
@@ -360,7 +377,10 @@ class GoldenAccountingInvariantsTest extends TestCase
         ]);
 
         $this->assertSame(2, PayrollCalculationAudit::query()
-            ->where('correlation_id', 'golden-correlation-1')
+            ->whereIn('correlation_id', [
+                '00000000-0000-4000-8000-000000000001',
+                '00000000-0000-4000-8000-000000000002',
+            ])
             ->count());
     }
 

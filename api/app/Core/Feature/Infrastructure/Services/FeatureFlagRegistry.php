@@ -35,7 +35,7 @@ final class FeatureFlagRegistry
      */
     public function knownKeys(): array
     {
-        return array_keys($this->config['flags'] ?? []);
+        return array_map('strval', array_keys($this->config['flags'] ?? []));
     }
 
     /**
