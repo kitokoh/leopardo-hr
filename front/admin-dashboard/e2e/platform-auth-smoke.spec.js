@@ -97,12 +97,13 @@ test('platform administrator can sign in and reach the admin dashboard', async (
   expect(loginRequestSeen).toBe(true)
 })
 
-test('platform demo selector does not advertise tenant employee accounts', async ({ page }) => {
+test('login page does not advertise demo or tenant employee accounts', async ({ page }) => {
   await page.goto('/login')
-  await page.getByRole('button', { name: /Acces Demo/i }).click()
-
-  await expect(page.locator('body')).toContainText('Super Administrateur')
-  await expect(page.locator('body')).toContainText(/administrateurs plateforme/i)
+  // #4511/#4510 : les identifiants démo super-admin ont été retirés du bundle
+  // admin — la page de login ne doit afficher ni sélecteur de démo, ni compte
+  // tenant (Ahmed Benali / karim.aouad@techcorp-algerie.dz étaient les comptes
+  // démo historiques, cf. #2693/#2695/#2696/#2697).
+  await expect(page.locator('body')).not.toContainText(/Acces Demo/i)
   await expect(page.locator('body')).not.toContainText('Ahmed Benali')
   await expect(page.locator('body')).not.toContainText('karim.aouad@techcorp-algerie.dz')
 })
