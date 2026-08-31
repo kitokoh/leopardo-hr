@@ -47,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('contracts:alert-expiring')->daily();
         $schedule->command('billing:check-trials')->daily();
         $schedule->command('billing:check-overdue')->daily();
-        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
+        $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00')->withoutOverlapping();
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
         // exécuté) → fail-loud au lieu d'un pending silencieux.
