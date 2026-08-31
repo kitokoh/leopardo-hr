@@ -68,7 +68,7 @@
         :busy="saving"
         :error="formError"
         @save="save"
-        @close="modalOpen = false"
+        @close="closeModal"
       />
     </template>
   </div>
@@ -82,9 +82,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
-import {
-  createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites,
-} from '@/services/travel'
+import { createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -203,4 +201,5 @@ function init() {
 }
 
 onMounted(init)
+const closeModal = () => { modalOpen.value = false }
 </script>

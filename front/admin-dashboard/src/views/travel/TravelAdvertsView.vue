@@ -145,7 +145,7 @@
         :busy="saving"
         :error="formError"
         @save="saveCatalog"
-        @close="catalogModalOpen = false"
+        @close="closeCatalogModal"
       />
       <TravelFormModal
         :open="advertModalOpen"
@@ -155,7 +155,7 @@
         :busy="saving"
         :error="formError"
         @save="createAdvert"
-        @close="advertModalOpen = false"
+        @close="closeAdvertModal"
       />
       <TravelFormModal
         :open="validateModalOpen"
@@ -165,7 +165,7 @@
         :busy="saving"
         :error="formError"
         @save="submitValidate"
-        @close="validateModalOpen = false"
+        @close="closeValidateModal"
       />
     </template>
   </div>
@@ -179,11 +179,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
-import {
-  createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert,
-  listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog,
-  travelList,
-} from '@/services/travel'
+import { createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert, listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog, travelList } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -457,4 +453,7 @@ function init() {
 }
 
 onMounted(init)
+const closeCatalogModal = () => { catalogModalOpen.value = false }
+const closeAdvertModal = () => { advertModalOpen.value = false }
+const closeValidateModal = () => { validateModalOpen.value = false }
 </script>

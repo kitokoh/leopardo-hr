@@ -13,7 +13,7 @@
 
     <template v-if="!gateMode">
       <div v-if="selectedQuiz" class="mb-4">
-        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="selectedQuiz = null">
+        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="resetQuizDetail">
           ← {{ t('travel.quiz.back', 'Retour aux quiz') }}
         </button>
       </div>
@@ -135,7 +135,7 @@
         :busy="saving"
         :error="formError"
         @save="saveQuiz"
-        @close="quizModalOpen = false"
+        @close="closeQuizModal"
       />
       <TravelFormModal
         :open="questionModalOpen"
@@ -145,7 +145,7 @@
         :busy="saving"
         :error="formError"
         @save="saveQuestion"
-        @close="questionModalOpen = false"
+        @close="closeQuestionModal"
       />
     </template>
   </div>
@@ -159,10 +159,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
-import {
-  createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelItem, travelList,
-  createQuizQuestion, updateQuizQuestion, deleteQuizQuestion, quizParticipations,
-} from '@/services/travel'
+import { createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelItem, travelList, createQuizQuestion, updateQuizQuestion, deleteQuizQuestion, quizParticipations } from '@/services/travel'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
@@ -278,13 +275,13 @@ const questionValues = ref({})
 const quizFormFields = [
   { key: 'title', label: 'Titre', type: 'text', required: true, maxlength: 200 },
   { key: 'description_redacted', label: 'Description', type: 'textarea' },
-  { key: 'max_attempts', label: 'Tentatives max', type: 'number', min: 1, max: 100 },
+  { key: 'max_attempts', label: t('travel.quiz.field.maxAttempts', 'Tentatives max'), type: 'number', min: 1, max: 100 },
   {
     key: 'status', label: 'Statut', type: 'select', required: true,
     options: [
       { value: 'draft', label: 'Brouillon' },
-      { value: 'published', label: 'Publié' },
-      { value: 'archived', label: 'Archivé' },
+      { value: 'published', label: t('travel.quiz.field.published', 'Publié') },
+      { value: 'archived', label: t('travel.quiz.field.archived', 'Archivé') },
     ],
   },
 ]
@@ -412,4 +409,7 @@ function init() {
 }
 
 onMounted(init)
+const resetQuizDetail = () => { selectedQuiz.value = null }
+const closeQuizModal = () => { quizModalOpen.value = false }
+const closeQuestionModal = () => { questionModalOpen.value = false }
 </script>

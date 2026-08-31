@@ -55,7 +55,7 @@
               v-for="channel in consentChannels"
               :key="channel.key"
               class="rounded-full px-2 py-0.5 text-xs font-medium"
-              :class="row[channel.key + '_consent_given'] ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'"
+:class="channelClass(row, channel)"
             >
               {{ channel.label }}
             </span>
@@ -81,7 +81,7 @@
         :busy="saving"
         :error="formError"
         @save="sendNotify"
-        @close="notifyModalOpen = false"
+        @close="closeNotifyModal"
       />
     </template>
   </div>
@@ -181,4 +181,10 @@ function init() {
 }
 
 onMounted(init)
+const channelClass = (row, channel) =>
+  row[`${channel.key}_consent_given`]
+    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+
+const closeNotifyModal = () => { notifyModalOpen.value = false }
 </script>
