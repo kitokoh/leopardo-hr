@@ -393,7 +393,10 @@ class AuthController extends Controller
                 $challenge = $this->twoFactorService->issueChallenge([
                     'employee_id' => $employee->id,
                     'company_id' => (string) $employee->company_id,
-                    'tenant_schema' => null,
+                    // audit(securite) #6540 : tenant_schema résolu (user_lookups)
+                    // — en mode schéma-par-tenant, un challenge avec null ne peut
+                    // pas re-poser search_path à la vérification (2FA cassée).
+                    'tenant_schema' => $resolved['tenant_schema'],
                     'email' => (string) $employee->email,
                     'device_name' => null,
                 ]);
@@ -500,7 +503,8 @@ class AuthController extends Controller
             $challenge = $this->twoFactorService->issueChallenge([
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
-                'tenant_schema' => null,
+                // audit(securite) #6540 : tenant_schema résolu (parité callback).
+                'tenant_schema' => $resolved['tenant_schema'],
                 'email' => (string) $employee->email,
                 'device_name' => $validated['device_name'] ?? null,
             ]);
