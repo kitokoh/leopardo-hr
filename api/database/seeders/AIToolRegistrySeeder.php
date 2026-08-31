@@ -22,7 +22,7 @@ class AIToolRegistrySeeder extends Seeder
                     ],
                 ]),
                 'required_permissions' => '["employees.view"]',
-                'required_role' => 'employee',
+                'required_role' => 'manager',
                 'module' => 'rh',
             ],
             [
@@ -36,7 +36,7 @@ class AIToolRegistrySeeder extends Seeder
                     'required' => ['employee_id'],
                 ]),
                 'required_permissions' => '["employees.view"]',
-                'required_role' => 'employee',
+                'required_role' => 'manager',
                 'module' => 'rh',
             ],
             [
@@ -66,7 +66,7 @@ class AIToolRegistrySeeder extends Seeder
                     'required' => ['query'],
                 ]),
                 'required_permissions' => '["employees.view"]',
-                'required_role' => 'employee',
+                'required_role' => 'manager',
                 'module' => 'rh',
             ],
             [

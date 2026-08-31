@@ -19,14 +19,47 @@ class ToolRegistry
         $roleHierarchy = ['employee' => 1, 'manager' => 2, 'admin' => 3, 'super_admin' => 4];
         $userLevel = $roleHierarchy[$role] ?? 1;
 
-        return array_filter($this->tools, function (array $tool) use ($userLevel, $roleHierarchy): bool {
+        // audit(securite) #6532 : les permissions requises (ai_tool_registry)
+        // sont désormais évaluées contre les permissions accordées au rôle
+        // (config ai.role_permissions) — un outil dont les permissions
+        // dépassent le rôle n'est jamais exposé au LLM, en plus du rôle minimal.
+        $granted = $this->permissionsForRole($role);
+
+        return array_filter($this->tools, function (array $tool) use ($userLevel, $roleHierarchy, $granted): bool {
             if (! ($tool['active'] ?? true)) {
                 return false;
             }
             $requiredLevel = $roleHierarchy[$tool['required_role'] ?? 'employee'] ?? 1;
+            if ($userLevel < $requiredLevel) {
+                return false;
+            }
+            foreach ($tool['required_permissions'] ?? [] as $permission) {
+                if (! in_array($permission, $granted, true)) {
+                    return false;
+                }
+            }
 
-            return $userLevel >= $requiredLevel;
+            return true;
         });
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function permissionsForRole(string $role): array
+    {
+        /** @var mixed $configured */
+        $configured = config('ai.role_permissions', []);
+        $entries = is_array($configured) && is_array($configured[$role] ?? null) ? $configured[$role] : [];
+
+        $result = [];
+        foreach ($entries as $permission) {
+            if (is_scalar($permission)) {
+                $result[] = (string) $permission;
+            }
+        }
+
+        return $result;
     }
 
     /**
