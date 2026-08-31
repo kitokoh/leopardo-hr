@@ -14,11 +14,11 @@ class SendNotification
     ) {}
 
     public function handle(
-        int    $userId,
+        int $userId,
         string $type,
         string $title,
         ?string $body = null,
-        array  $data = [],
+        array $data = [],
         ?string $actionUrl = null,
     ): AppNotification {
         return $this->dispatcher->dispatch($userId, $type, $title, $body, $data, $actionUrl);

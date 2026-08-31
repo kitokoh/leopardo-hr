@@ -145,7 +145,7 @@ final class TravelReportService
                 'trip_id' => $trip->id,
                 'code' => $trip->code,
                 'route_id' => $trip->route_id,
-                'departure_date' => $trip->departure_date?->toDateString(),
+                'departure_date' => $trip->departure_date->toDateString(),
                 'seats_sold' => $sold,
                 'total_seats' => $total,
                 'occupancy_rate' => round($sold / $total, 4),

@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\SubmitTravelContactAction;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelContactRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * TRAVEL-913 (#6425) — Formulaire de contact PUBLIC.

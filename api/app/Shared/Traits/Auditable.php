@@ -6,6 +6,7 @@ namespace App\Shared\Traits;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 /**
  * Trait Auditable
@@ -47,7 +48,7 @@ trait Auditable
             return;
         }
 
-        /** @var \Illuminate\Http\Request|null $request */
+        /** @var Request|null $request */
         $request = request();
         if ($request === null) {
             return;
@@ -56,16 +57,15 @@ trait Auditable
         $employee = $request->user();
 
         AuditLog::create([
-            'company_id'     => $companyId,
-            'user_id'        => $employee?->id,
-            'action'         => $action,
+            'company_id' => $companyId,
+            'user_id' => $employee?->id,
+            'action' => $action,
             'auditable_type' => $model->getMorphClass(),
-            'auditable_id'   => $model->getKey(),
-            'old_values'     => $old ?: null,
-            'new_values'     => $new ?: null,
-            'ip_address'     => $request->ip(),
-            'user_agent'     => $request->userAgent() ? mb_substr($request->userAgent(), 0, 500) : null,
+            'auditable_id' => $model->getKey(),
+            'old_values' => $old ?: null,
+            'new_values' => $new ?: null,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent() ? mb_substr($request->userAgent(), 0, 500) : null,
         ]);
     }
 }
-

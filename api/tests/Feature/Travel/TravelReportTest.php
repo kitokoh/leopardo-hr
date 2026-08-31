@@ -64,7 +64,7 @@ class TravelReportTest extends TestCase
      */
     private function makeFixture(Company $company): array
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+        return app(TenantManager::class)->withinTenant($company, function (): array {
             $trip = TravelTrip::factory()->create([
                 'status' => 'published',
                 'total_seats' => 40,
