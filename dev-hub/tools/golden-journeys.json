@@ -19,11 +19,15 @@
     },
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
-      "status": "planned"
+      "status": "active"
     },
     "restaurantmanager": {
       "label": "RestaurantManager (verticale BC-25)",
       "status": "planned"
+    },
+    "bc23_ai": {
+      "label": "BC-23 AI Assistive Services",
+      "status": "active"
     }
   },
   "journeys": [
@@ -290,6 +294,42 @@
           "method": "POST",
           "route": "/api/v1/edu/attendance",
           "role": "teacher"
+        }
+      ]
+    },
+    {
+      "id": "GJ-08",
+      "name": "Assistant IA : chat → action confirmée → audit",
+      "solution": "bc23_ai",
+      "acceptance": "Une demande faite à l'assistant IA crée une action en attente de confirmation humaine ; la confirmation applique l'effet métier (jamais sans confirmation) et l'échange complet est tracé dans ai_audit_logs (traçabilité).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Envoyer un message à l'assistant IA",
+          "method": "POST",
+          "route": "/api/v1/ai/chat",
+          "role": "employee"
+        },
+        {
+          "order": 2,
+          "action": "Confirmer l'action d'écriture proposée",
+          "method": "POST",
+          "route": "/api/v1/ai/actions/{pendingActionId}/confirm",
+          "role": "employee"
+        },
+        {
+          "order": 3,
+          "action": "Consulter l'historique des conversations",
+          "method": "GET",
+          "route": "/api/v1/ai/chat/history",
+          "role": "employee"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier l'usage (tokens, p95, coûts)",
+          "method": "GET",
+          "route": "/api/v1/ai/analytics/usage",
+          "role": "manager:rh"
         }
       ]
     },
