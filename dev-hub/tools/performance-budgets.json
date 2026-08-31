@@ -1,5 +1,5 @@
 {
-  "$comment": "Budgets de performance et guards N+1 (MAT-014, issue #5872). Source de vérité pour check-performance-budgets.sh : endpoints critiques avec budgets (requêtes max, cible p95, pagination obligatoire), index obligatoires par table, règles transverses. Les scans lents (get() non paginé, requêtes dans des boucles) sont SIGNALÉS en warning par le garde.",
+  "$comment": "Budgets de performance et guards N+1 (MAT-014, issue #5872). Source de vérité pour check-performance-budgets.sh : endpoints critiques avec budgets (requêtes max, cible p95, pagination obligatoire), index obligatoires par table, règles transverses. Les scans lents (get() non paginé, requêtes dans des boucles) sont SIGNALÉS en warning par le garde. Endpoints de reporting BC-22 (issue #5898) : dashboards/export en lecture seule, agrégations scopées, budgets p95 verrouillés.",
   "rules": {
     "pagination": "Tout endpoint de liste tenant doit paginer (paginate/limit explicite) — get() non paginé signalé.",
     "n_plus_one": "Aucune requête Eloquent dans une boucle (foreach/while) — requête par itération signalée.",
@@ -12,12 +12,18 @@
     { "method": "GET", "route": "/api/v1/accounting/journal", "max_queries": 20, "p95_ms": 500, "pagination": true, "notes": "Journal comptable (volumétrie écritures)." },
     { "method": "GET", "route": "/api/v1/payroll-runs/{payrollRun}/pay-slips", "max_queries": 25, "p95_ms": 600, "pagination": true, "notes": "Bulletins d'un run de paie." },
     { "method": "GET", "route": "/api/v1/dashboard/summary", "max_queries": 30, "p95_ms": 700, "pagination": false, "notes": "Agrégats dashboard manager." },
-    { "method": "GET", "route": "/api/v1/crm/imports", "max_queries": 10, "p95_ms": 300, "pagination": true, "notes": "Historique imports CRM." }
+    { "method": "GET", "route": "/api/v1/crm/imports", "max_queries": 10, "p95_ms": 300, "pagination": true, "notes": "Historique imports CRM." },
+    { "method": "GET", "route": "/api/v1/accounting/dashboard", "max_queries": 12, "p95_ms": 300, "pagination": false, "notes": "BC-22 read model — agrégations scopées count/sum (GoldenDashboardRecomputeTest)." },
+    { "method": "GET", "route": "/api/v1/accounting/dashboard/export", "max_queries": 12, "p95_ms": 700, "pagination": false, "notes": "BC-22 export CSV impayés — liste bornée limit 100, cellules sanitizées." },
+    { "method": "GET", "route": "/api/v1/accounting/journal/export-fec", "max_queries": 40, "p95_ms": 800, "pagination": false, "notes": "BC-22/BC-08 export FEC DGFiP — volumétrie écritures, génération bornée." }
   ],
   "required_indexes": [
     { "table": "attendance_logs", "index": "attendance_logs_company_id_created_at_index", "notes": "Journal de présence tenant+date." },
     { "table": "pay_slips", "index": "pay_slips_payroll_run_id_index", "notes": "Bulletins par run." },
     { "table": "accounting_journal_entries", "index": "accounting_journal_entries_company_id_index", "notes": "Écritures tenant." },
-    { "table": "employees", "index": "employees_company_id_index", "notes": "Listes employés tenant." }
+    { "table": "employees", "index": "employees_company_id_index", "notes": "Listes employés tenant." },
+    { "table": "accounting_documents", "index": "accounting_documents_company_issue_index", "notes": "BC-22 reporting — dashboards/rapports par période (migration 000005)." },
+    { "table": "accounting_documents", "index": "accounting_documents_company_status_due_index", "notes": "BC-22 reporting — listes par statut + relances/impayés (migration 000005)." },
+    { "table": "accounting_payments", "index": "accounting_payments_company_document_status_index", "notes": "BC-22 reporting — encaissements par document/statut (migration 000005)." }
   ]
 }
