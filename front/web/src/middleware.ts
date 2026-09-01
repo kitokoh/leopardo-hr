@@ -46,8 +46,13 @@ export function middleware(request: NextRequest) {
     // the client-side app mounts. It is NOT a security boundary: a valid
     // shape here does not mean a valid session. Real authentication and
     // authorization are enforced server-side by the API on every request.
+    // Issue #6679 (P0) : le cookie porte le token Sanctum BRUT au format
+    // `id|secret` (ex. `1001|HVs0OH…`), URL-encodé en `%7C` par le navigateur.
+    // Le regex précédent (`[A-Za-z0-9._-]`) rejetait le pipe → boucle de
+    // redirection /auth/login après un login pourtant réussi. Le `|` (et sa
+    // forme encodée `%`) est donc accepté — la garde reste cosmétique (#3522).
     const isValidToken =
-      !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+      !!token && token.length >= 20 && /^[A-Za-z0-9._|%-]+$/.test(token);
 
     if (!isValidToken) {
       const loginUrl = new URL('/auth/login', request.url);
