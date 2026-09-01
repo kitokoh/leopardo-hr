@@ -22,6 +22,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`CONTEXT/`](CONTEXT/) | Contexte rapide pour une nouvelle IA / un nouvel intervenant |
+| [`architecture/AGENT-START-HERE.md`](architecture/AGENT-START-HERE.md) | Point d'entrée obligatoire pour un nouvel agent/intervenant |
 | [`dossierdeConception/`](dossierdeConception/) | Dossier de conception complet (cahier des charges source, diagrammes UML, dossierSonnet) |
 | [`specifications/`](specifications/) | Spécifications fonctionnelles/techniques obligatoires avant tout nouveau module (règle d'or `AGENTS.md`) |
 | [`vision/`](vision/) | Vision produit, architecture produit, design system, phases 2 |
