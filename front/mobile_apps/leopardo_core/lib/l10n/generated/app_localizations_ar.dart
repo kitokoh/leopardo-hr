@@ -3390,6 +3390,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get navigationNotfound => 'الصفحة غير موجودة';
 
   @override
+  String get navigationTravelagency => 'وكالة السفر';
+
+  @override
   String get webhooksConfirmDelete => 'حذف خطاف الويب هذا؟';
 
   @override
@@ -8257,7 +8260,341 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
 
   @override
-  String get navigationTravelagency => 'وكالة السفر';
+  String get restaurantShopTitle => 'الطلب عبر الإنترنت';
+
+  @override
+  String get restaurantShopSubtitle => 'قائمة عامة — اطلب بنقرات قليلة.';
+
+  @override
+  String get restaurantShopMenu => 'القائمة';
+
+  @override
+  String get restaurantShopCart => 'السلة';
+
+  @override
+  String get restaurantShopEmptycart => 'سلتك فارغة.';
+
+  @override
+  String get restaurantShopAdd => 'أضف';
+
+  @override
+  String get restaurantShopAdded => 'تمت الإضافة';
+
+  @override
+  String get restaurantShopCategoryall => 'الكل';
+
+  @override
+  String get restaurantShopPrice => 'السعر';
+
+  @override
+  String get restaurantShopSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get restaurantShopTax => 'الضريبة';
+
+  @override
+  String get restaurantShopTotal => 'المجموع';
+
+  @override
+  String get restaurantShopPhone => 'الهاتف (اختياري)';
+
+  @override
+  String get restaurantShopPhonehint => 'لإعلامك بحالة طلبك.';
+
+  @override
+  String get restaurantShopCheckout => 'اطلب';
+
+  @override
+  String get restaurantShopOrdering => 'جارٍ الطلب…';
+
+  @override
+  String get restaurantShopOrdercreated => 'تم تأكيد الطلب';
+
+  @override
+  String get restaurantShopOrderref => 'المرجع';
+
+  @override
+  String get restaurantShopOrderstatus => 'الحالة';
+
+  @override
+  String get restaurantShopTrack => 'تتبع الطلب';
+
+  @override
+  String get restaurantShopPay => 'ادفع';
+
+  @override
+  String get restaurantShopPaying => 'جارٍ الدفع…';
+
+  @override
+  String get restaurantShopPayhint =>
+      'الدفع عند الاستلام أو عبر المال المحمول.';
+
+  @override
+  String get restaurantShopMissingtoken =>
+      'رابط المتجر غير صالح أو مفقود. استخدم الرابط الذي قدمه المطعم.';
+
+  @override
+  String get restaurantShopLoaderror => 'تعذّر تحميل القائمة. حاول مجددًا.';
+
+  @override
+  String get restaurantShopRetry => 'إعادة المحاولة';
+
+  @override
+  String get restaurantShopBacktomenu => 'العودة إلى القائمة';
+
+  @override
+  String get restaurantShopInvalidtoken =>
+      'رمز المتجر غير صالح أو منتهي الصلاحية.';
+
+  @override
+  String get restaurantShopItems => 'أصناف';
+
+  @override
+  String get restaurantShopQuantity => 'الكمية';
+
+  @override
+  String get restaurantShopRemove => 'إزالة';
+
+  @override
+  String get restaurantShopCurrency => 'العملة';
+
+  @override
+  String get restaurantMobileHubTitle => 'مطعم';
+
+  @override
+  String get restaurantMobileHubSubtitle => 'أدوات الخدمة والتوصيل والإدارة';
+
+  @override
+  String get restaurantMobileBack => 'رجوع';
+
+  @override
+  String restaurantMobileOfflinePending(Object count) {
+    return '$count عملية غير متصلة بانتظار إعادة التشغيل';
+  }
+
+  @override
+  String get restaurantMobileOfflineSynced => 'اكتملت المزامنة';
+
+  @override
+  String get restaurantMobileOfflineReplay => 'إعادة';
+
+  @override
+  String get restaurantMobileHubServer => 'الخدمة';
+
+  @override
+  String get restaurantMobileHubServerDesc =>
+      'قائمة الطلبات، خريطة القاعة، التحصيل';
+
+  @override
+  String get restaurantMobileHubRider => 'التوصيل';
+
+  @override
+  String get restaurantMobileHubRiderDesc => 'الجولات المعينة والتحولات';
+
+  @override
+  String get restaurantMobileHubManager => 'الإدارة';
+
+  @override
+  String get restaurantMobileHubManagerDesc =>
+      'مؤشرات اليوم، تنبيهات المخزون، إقفال الصندوق';
+
+  @override
+  String get restaurantMobileHubFooter =>
+      'يتم التحقق من المبالغ والتحولات على الخادم. عند انقطاع الشبكة، تُدرج العمليات في قائمة وتُعاد دون تكرار.';
+
+  @override
+  String get restaurantMobileServerTitle => 'الخدمة';
+
+  @override
+  String get restaurantMobileServerSubtitle => 'قائمة الطلبات وخريطة القاعة';
+
+  @override
+  String get restaurantMobileServerTables => 'الطاولات المشغولة';
+
+  @override
+  String get restaurantMobileServerTablesLoading => 'جارٍ تحميل الطاولات…';
+
+  @override
+  String get restaurantMobileServerTablesError => 'الطاولات غير متاحة';
+
+  @override
+  String get restaurantMobileServerNoTables => 'لا توجد طاولات مفتوحة';
+
+  @override
+  String get restaurantMobileServerQueue => 'قائمة الخدمة';
+
+  @override
+  String get restaurantMobileServerOrdersLoading => 'جارٍ تحميل الطلبات…';
+
+  @override
+  String get restaurantMobileServerOrdersError => 'الطلبات غير متاحة';
+
+  @override
+  String get restaurantMobileServerNoOrders => 'لا توجد طلبات نشطة';
+
+  @override
+  String restaurantMobileServerItemsCount(Object count) {
+    return '$count صنفًا';
+  }
+
+  @override
+  String get restaurantMobileStatusOpen => 'مفتوحة';
+
+  @override
+  String get restaurantMobileStatusInPreparation => 'قيد التحضير';
+
+  @override
+  String get restaurantMobileStatusReady => 'جاهزة';
+
+  @override
+  String get restaurantMobileStatusServed => 'تم تقديمها';
+
+  @override
+  String get restaurantMobileServerServe => 'تقديم';
+
+  @override
+  String get restaurantMobileServerPay => 'تحصيل';
+
+  @override
+  String restaurantMobileServerServedOk(Object reference) {
+    return 'تم تقديم الطلب $reference';
+  }
+
+  @override
+  String get restaurantMobileServerServeError => 'تعذر تقديم الطلب';
+
+  @override
+  String restaurantMobileServerPayTitle(Object reference) {
+    return 'تحصيل $reference';
+  }
+
+  @override
+  String get restaurantMobileServerAmountLabel => 'المبلغ المستلم';
+
+  @override
+  String get restaurantMobileServerTipLabel => 'إكرامية (اختياري)';
+
+  @override
+  String get restaurantMobileCancel => 'إلغاء';
+
+  @override
+  String get restaurantMobileInvalidAmount => 'مبلغ غير صالح';
+
+  @override
+  String restaurantMobileServerPaidOk(Object reference) {
+    return 'تم تحصيل $reference';
+  }
+
+  @override
+  String get restaurantMobileServerOfflineQueued =>
+      'غير متصل: أُدرجت العملية في القائمة لإعادة تلقائية';
+
+  @override
+  String get restaurantMobileRiderSubtitle => 'الجولات المعينة';
+
+  @override
+  String get restaurantMobileRiderLoading => 'جارٍ تحميل التوصيلات…';
+
+  @override
+  String get restaurantMobileRiderError => 'التوصيلات غير متاحة';
+
+  @override
+  String get restaurantMobileRiderEmpty => 'لا توجد توصيلات معينة';
+
+  @override
+  String get restaurantMobileRiderCustomer => 'العميل';
+
+  @override
+  String get restaurantMobileStatusAssigned => 'معينة';
+
+  @override
+  String get restaurantMobileStatusOutForDelivery => 'قيد التوصيل';
+
+  @override
+  String get restaurantMobileStatusDelivered => 'تم تسليمها';
+
+  @override
+  String get restaurantMobileRiderDepart => 'انطلاق';
+
+  @override
+  String get restaurantMobileRiderDeparted => 'قيد التوصيل';
+
+  @override
+  String get restaurantMobileRiderDeliver => 'تم التسليم';
+
+  @override
+  String get restaurantMobileRiderDeliveredOk => 'اكتمل التوصيل';
+
+  @override
+  String get restaurantMobileRiderTransitionError =>
+      'لا يمكن التحول من هذه الحالة';
+
+  @override
+  String get restaurantMobileManagerSubtitle => 'المؤشرات والمخزون والصندوق';
+
+  @override
+  String get restaurantMobileManagerKpisLoading => 'جارٍ تحميل المؤشرات…';
+
+  @override
+  String get restaurantMobileManagerKpisError => 'المؤشرات غير متاحة';
+
+  @override
+  String get restaurantMobileManagerRevenueToday => 'إيراد اليوم';
+
+  @override
+  String get restaurantMobileManagerOrders => 'الطلبات';
+
+  @override
+  String get restaurantMobileManagerAvgBasket => 'متوسط السلة';
+
+  @override
+  String get restaurantMobileManagerTablesOpen => 'الطاولات المفتوحة';
+
+  @override
+  String get restaurantMobileManagerCash => 'الصندوق';
+
+  @override
+  String get restaurantMobileManagerSessionError => 'الجلسة غير متاحة';
+
+  @override
+  String get restaurantMobileManagerNoSession => 'لا توجد جلسة صندوق مفتوحة';
+
+  @override
+  String get restaurantMobileManagerSessionOpen => 'مفتوحة';
+
+  @override
+  String get restaurantMobileManagerClose => 'إقفال';
+
+  @override
+  String get restaurantMobileManagerCloseTitle => 'إقفال الصندوق';
+
+  @override
+  String get restaurantMobileManagerCountedLabel => 'المعدود في الصندوق';
+
+  @override
+  String get restaurantMobileManagerClosedOk => 'أُقفل الصندوق';
+
+  @override
+  String get restaurantMobileManagerCloseError => 'تعذر الإقفال';
+
+  @override
+  String get restaurantMobileManagerStockAlerts => 'تنبيهات المخزون';
+
+  @override
+  String get restaurantMobileManagerStockAlertsError => 'التنبيهات غير متاحة';
+
+  @override
+  String get restaurantMobileManagerNoStockAlerts => 'لا توجد تنبيهات حد';
+
+  @override
+  String restaurantMobileManagerIngredient(Object id) {
+    return 'مكوّن #$id';
+  }
+
+  @override
+  String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
+    return 'المخزون: $quantity / الحد: $threshold';
+  }
 
   @override
   String get travelLoading => 'جارٍ التحميل…';
@@ -8306,6 +8643,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelTabRentals => 'الإيجارات والفنادق';
+
+  @override
+  String get travelTabQuizzes => 'الاختبارات';
+
+  @override
+  String get travelTabAdverts => 'الإعلانات';
+
+  @override
+  String get travelTabSites => 'المواقع السياحية';
+
+  @override
+  String get travelTabContacts => 'جهات الاتصال';
 
   @override
   String get travelReferentielTabslabel => 'الأقسام الفرعية للمرجع';
@@ -8397,6 +8746,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelSearchHotel => 'ابحث عن فندق…';
+
+  @override
+  String get travelSearchQuiz => 'ابحث عن اختبار…';
+
+  @override
+  String get travelSearchAdvert => 'ابحث عن إعلان…';
+
+  @override
+  String get travelSearchSite => 'ابحث عن موقع…';
+
+  @override
+  String get travelSearchContact => 'ابحث عن جهة اتصال…';
 
   @override
   String get travelFieldIso2 => 'كود ISO2';
@@ -8973,4 +9334,275 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelFormMoneyminor => 'المبلغ بالعملة (1 = 100 وحدة صغيرة)';
+
+  @override
+  String get travelQuizTitle => 'الاختبارات والمسابقات';
+
+  @override
+  String get travelQuizSubtitle =>
+      'أنشئ الاختبارات وأضف الأسئلة وراجع المشاركات.';
+
+  @override
+  String get travelQuizQuestionstitle => 'أسئلة الاختبار';
+
+  @override
+  String get travelQuizResultstitle => 'النتائج';
+
+  @override
+  String get travelQuizFieldQuestion => 'السؤال';
+
+  @override
+  String get travelQuizFieldOptions => 'الخيارات';
+
+  @override
+  String get travelQuizFieldPoints => 'النقاط';
+
+  @override
+  String get travelQuizFieldCorrectindex => 'مؤشر الإجابة الصحيحة';
+
+  @override
+  String get travelQuizFieldMaxparticipations =>
+      'الحد الأقصى للمشاركات لكل جهة اتصال';
+
+  @override
+  String get travelQuizFieldParticipantname => 'الاسم';
+
+  @override
+  String get travelQuizFieldParticipantemail => 'البريد الإلكتروني';
+
+  @override
+  String get travelQuizFieldScore => 'النتيجة';
+
+  @override
+  String get travelQuizFieldBonus => 'المكافأة';
+
+  @override
+  String get travelQuizFieldSubmittedat => 'أُرسل في';
+
+  @override
+  String get travelQuizActionQuestions => 'الأسئلة';
+
+  @override
+  String get travelQuizActionResults => 'النتائج';
+
+  @override
+  String get travelQuizActionAddquestion => 'إضافة سؤال';
+
+  @override
+  String get travelQuizHintOptions => 'خيار واحد في كل سطر.';
+
+  @override
+  String get travelQuizHintCorrectindex => 'يبدأ من 0 (السطر الأول = 0).';
+
+  @override
+  String get travelQuizstatusDraft => 'مسودة';
+
+  @override
+  String get travelQuizstatusActive => 'نشط';
+
+  @override
+  String get travelQuizstatusClosed => 'مغلق';
+
+  @override
+  String get travelAdvertsTabslabel => 'أقسام الإعلانات الفرعية';
+
+  @override
+  String get travelAdvertsTabtypes => 'الأنواع';
+
+  @override
+  String get travelAdvertsTabpositions => 'المواضع';
+
+  @override
+  String get travelAdvertsTabprices => 'جدول الأسعار';
+
+  @override
+  String get travelAdvertsTabadverts => 'الإعلانات';
+
+  @override
+  String get travelAdvertsTitle => 'الإعلانات المدفوعة';
+
+  @override
+  String get travelAdvertsSubtitle =>
+      'أرسل، تحصّل الدفع، صدّق/ارفض وجدّد الإعلانات.';
+
+  @override
+  String get travelAdvertsCreatetitle => 'إرسال إعلان';
+
+  @override
+  String get travelAdvertsTypes => 'أنواع الإعلانات';
+
+  @override
+  String get travelAdvertsPositions => 'المواضع الإعلانية';
+
+  @override
+  String get travelAdvertsPrices => 'جدول الأسعار';
+
+  @override
+  String get travelAdvertsFieldType => 'النوع';
+
+  @override
+  String get travelAdvertsFieldPosition => 'الموضع';
+
+  @override
+  String get travelAdvertsFieldValiditydays => 'مدة الصلاحية (أيام)';
+
+  @override
+  String get travelAdvertsFieldContent => 'المحتوى';
+
+  @override
+  String get travelAdvertsFieldPrice => 'السعر';
+
+  @override
+  String get travelAdvertsFieldPriceperimage => 'السعر لكل صورة';
+
+  @override
+  String get travelAdvertsFieldPricepercharacter => 'السعر لكل حرف';
+
+  @override
+  String get travelAdvertsFieldExpiresat => 'ينتهي في';
+
+  @override
+  String get travelAdvertsFieldRejectreason => 'سبب الرفض';
+
+  @override
+  String get travelAdvertsActionRenew => 'تجديد';
+
+  @override
+  String get travelAdvertsActionSubmit => 'إرسال';
+
+  @override
+  String get travelAdvertsActionPay => 'تحصيل الدفع';
+
+  @override
+  String get travelAdvertsActionValidate => 'تصديق';
+
+  @override
+  String get travelAdvertsActionReject => 'رفض';
+
+  @override
+  String get travelAdvertsRejecttitle => 'رفض الإعلان';
+
+  @override
+  String get travelAdvertsRejecttarget => 'الإعلان';
+
+  @override
+  String get travelSitesTitle => 'المواقع السياحية';
+
+  @override
+  String get travelSitesSubtitle =>
+      'أماكن الاهتمام مع الموقع والبحث حسب المدينة.';
+
+  @override
+  String get travelSitesFiltercity => 'تصفية حسب المدينة';
+
+  @override
+  String get travelSitesAllcities => 'كل المدن';
+
+  @override
+  String get travelSitesStatusdisabled => 'معطل';
+
+  @override
+  String get travelSitesFieldLatitude => 'خط العرض';
+
+  @override
+  String get travelSitesFieldLongitude => 'خط الطول';
+
+  @override
+  String get travelContactsFormtitle => 'نموذج الاتصال';
+
+  @override
+  String get travelContactsFormsubtitle =>
+      'أرسل طلب اتصال — الموافقة على البريد الإلكتروني إلزامية.';
+
+  @override
+  String get travelContactsRegistrytitle => 'سجل جهات الاتصال';
+
+  @override
+  String get travelContactsRegistrysubtitle =>
+      'الموافقات حسب القناة (اشتراك/إلغاء مختوم بالوقت) والإشعار اليدوي.';
+
+  @override
+  String get travelContactsRegistryunavailable =>
+      'السجل غير متاح — نقطة نهاية القائمة غير منشورة بعد على هذا النشر.';
+
+  @override
+  String get travelContactsConsentlabel =>
+      'أوافق على أن يتم التواصل معي عبر البريد الإلكتروني بشأن طلبي.';
+
+  @override
+  String get travelContactsConsenton => 'موافق';
+
+  @override
+  String get travelContactsConsentoff => 'غير موافق';
+
+  @override
+  String get travelContactsNotifytitle => 'إشعار يدوي';
+
+  @override
+  String get travelContactsNotifytarget => 'المستلم';
+
+  @override
+  String get travelContactsNotifyhint =>
+      'يتم تجاهل القناة بدون موافقة؛ 422 إذا لم تكن هناك قناة موافق عليها.';
+
+  @override
+  String get travelContactsChannelapp => 'التطبيق (موظف مرتبط)';
+
+  @override
+  String get travelContactsSuccess =>
+      'تم استلام الطلب — شكرًا، سنعاود التواصل معك.';
+
+  @override
+  String get travelContactsFieldFirstname => 'الاسم الأول';
+
+  @override
+  String get travelContactsFieldLastname => 'الاسم الأخير';
+
+  @override
+  String get travelContactsFieldEmail => 'البريد الإلكتروني';
+
+  @override
+  String get travelContactsFieldPhone => 'الهاتف';
+
+  @override
+  String get travelContactsFieldMessage => 'الرسالة';
+
+  @override
+  String get travelContactsFieldConsents => 'الموافقات';
+
+  @override
+  String get travelContactsFieldChannels => 'القنوات';
+
+  @override
+  String get travelContactsActionSubmit => 'إرسال الطلب';
+
+  @override
+  String get travelContactsActionToggleconsent => 'تبديل الموافقة';
+
+  @override
+  String get travelContactsActionNotify => 'إشعار';
+
+  @override
+  String get travelContactsActionSend => 'إرسال';
+
+  @override
+  String get travelAdvertstatusDraft => 'مسودة';
+
+  @override
+  String get travelAdvertstatusSubmitted => 'مقدمة';
+
+  @override
+  String get travelAdvertstatusPaid => 'مدفوعة';
+
+  @override
+  String get travelAdvertstatusValidated => 'مُصدَّقة';
+
+  @override
+  String get travelAdvertstatusRejected => 'مرفوضة';
+
+  @override
+  String get travelAdvertstatusExpired => 'منتهية';
+
+  @override
+  String get travelAdvertstatusArchived => 'مؤرشفة';
 }
