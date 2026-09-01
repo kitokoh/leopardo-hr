@@ -93,7 +93,7 @@ class WebEmployeeAuthSecurityTest extends TestCase
         $unpacked = unpack('N', substr($hash, $offset, 4));
 
         return str_pad(
-            (string) (($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF) % 1000000,
+            (string) ((($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF) % 1000000),
             6,
             '0',
             STR_PAD_LEFT
