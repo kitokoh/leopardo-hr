@@ -6794,11 +6794,6 @@ parameters:
 
 
 
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/PlatformAuthTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'

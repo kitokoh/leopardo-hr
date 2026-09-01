@@ -108,7 +108,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(400);
         $response->assertJsonPath('error', 'INVALID_2FA_CODE');
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
         $this->assertSame($secret, Cache::get("2fa_setup:{$this->superAdmin->id}"));
     }
 
@@ -176,7 +176,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertOk();
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
     }
 
     public function test_super_admin_can_update_own_profile(): void
@@ -210,7 +210,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertStatus(422);
-        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()?->email);
 
         $badPassword = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->patchJson('/api/v1/platform/auth/profile', [
