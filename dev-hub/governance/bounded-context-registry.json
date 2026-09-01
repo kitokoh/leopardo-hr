@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [
   {
     "code": "BC-01",
@@ -32,15 +33,21 @@
     ],
     "dependencies": []
 =======
+=======
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
 {
   "_meta": {
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
     "updated": "2026-08-30"
+<<<<<<< HEAD
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
   },
 <<<<<<< HEAD
+=======
+  },
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
   "_shared_exceptions": [
     {
       "path": "api/app/Core/Http",
@@ -743,6 +750,7 @@
       "responsibility": "Agences, compagnies, routes, trajets, réservations, passagers, billets, paiements, locations, hôtels, rapports.",
       "owner": "Agent 24 — BC-TRAVEL",
       "priority": "P1",
+<<<<<<< HEAD
       "status": "active",
       "paths": [
         {
@@ -753,6 +761,16 @@
       "routes": [
         "api/routes/modules/travelagency.php"
       ],
+=======
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/TravelAgency",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -773,6 +791,9 @@
       "name": "RESTAURANT",
       "context": "RestaurantManager",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
       "responsibility": "Branches, zones, tables, catégories, produits, recettes, ingrédients, unités, taxes, menus, fournisseurs, stock, achats, POS, commandes, paiements, réservations, livraison, fidélité, promotions, rapports, kiosque.",
       "owner": "Agent 25 — BC-RESTAURANT",
       "priority": "P1",
@@ -808,6 +829,7 @@
       "paths": [
         {
           "path": "api/app/Modules/Delivery",
+<<<<<<< HEAD
 =======
       "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
       "owner": "Agent 25 — BC-RESTAURANT",
@@ -817,6 +839,8 @@
         {
           "path": "api/app/Modules/RestaurantManager",
 >>>>>>> 0d7ac8c95 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
+=======
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
           "status": "planned"
         }
       ],
@@ -826,16 +850,23 @@
       ],
       "events": [
 <<<<<<< HEAD
+<<<<<<< HEAD
         "App\\Modules\\DeliveryAgency\\Domain\\Events"
 =======
         "App\\Modules\\RestaurantManager\\Domain\\Events"
 >>>>>>> 0d7ac8c95 (docs(restaurant): conception verticale RestaurantManager (BC-25 RESTAURANT) — spec + maturité + registre)
+=======
+        "App\\Modules\\DeliveryAgency\\Domain\\Events"
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
       ],
       "dependencies": [
         "BC-02",
         "BC-03",
         "BC-04",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
         "BC-05",
         "BC-08",
         "BC-11",
@@ -845,6 +876,7 @@
         "BC-18",
         "BC-20",
         "BC-22"
+<<<<<<< HEAD
 =======
         "BC-11",
         "BC-13",
@@ -1609,3 +1641,9 @@
 =======
 }
 >>>>>>> 5c68931d1 (feat(restaurant): registre BC-25 actif + CODEOWNERS (RESTO-103, #6160))
+=======
+      ]
+    }
+  ]
+}
+>>>>>>> 39d37fd5f (fix(restaurant): registre MAT-001 format canonique + BC-25, route callback paiement invokable→handle (déblocage merge BC-25))
