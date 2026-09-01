@@ -76,4 +76,19 @@ class SolutionSurveyEndpointTest extends TestCase
     {
         $this->postJson('/api/v1/solutions/restaurant/survey', [])->assertStatus(422);
     }
+
+    public function test_pack_pdf_is_downloadable(): void
+    {
+        $response = $this->get('/api/v1/solutions/restaurant/pack?packages=mobile_employee,kiosk,edge');
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_pack_pdf_rejects_unknown_or_missing_packages(): void
+    {
+        $this->getJson('/api/v1/solutions/restaurant/pack?packages=mobile_employee,unknown')->assertStatus(422);
+        $this->getJson('/api/v1/solutions/restaurant/pack')->assertStatus(422);
+        $this->getJson('/api/v1/solutions/unknown/pack?packages=mobile_employee')->assertStatus(404);
+    }
 }

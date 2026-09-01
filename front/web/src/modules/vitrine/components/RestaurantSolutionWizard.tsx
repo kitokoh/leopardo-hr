@@ -513,7 +513,7 @@ export function RestaurantSolutionWizard() {
                         </p>
                       </div>
                       <a
-                        href="/download"
+                        href={`/api/v1/solutions/restaurant/pack?packages=${selectedPackages.map((p) => p.key).join(',')}`}
                         className="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
                       >
                         <HardDrive className="w-4 h-4" />

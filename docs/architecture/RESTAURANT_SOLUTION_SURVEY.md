@@ -44,6 +44,7 @@ Vitrine web (/restaurant)                     API Laravel
 | GET | `/api/v1/solutions` | — | `{ data: [{ code, name, description, maturity }] }` |
 | GET | `/api/v1/solutions/{code}/survey` | — | `{ data: { code, questions, packages } }` |
 | POST | `/api/v1/solutions/{code}/survey` | `{ answers: { clé_question: valeur } }` | `{ data: { code, packages: [{ key, type, label_key, reason_key, priority, app?, download? }], total } }` |
+| GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*`) |
 
 ## Ajouter une nouvelle solution (ex. FuelStation)
 
@@ -69,8 +70,8 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 
 ## À faire (prochaines étapes)
 
+- [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
 - [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
-- [ ] Rendu PDF du pack (dompdf, déjà en deps) — lien « guide » personnalisé
 - [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
 - [ ] Activation tenant post-inscription via `SolutionActivator`
 - [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
