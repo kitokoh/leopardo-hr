@@ -7,3 +7,6 @@ feature.json
 
 # Per-machine extension config overrides.
 extensions/*/local-config.yml
+
+# Artefacts composés générés (audit Vague 3 #6599) — régénérés par la CLI
+.composed/
