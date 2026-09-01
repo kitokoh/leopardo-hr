@@ -13,6 +13,7 @@ class UploadDocument
         private readonly CabinetService $cabinetService,
     ) {}
 
+    /** @param array<string, mixed> $fileData */
     public function execute(string $folderId, array $fileData, string $uploadedById): CabinetDocument
     {
         return $this->cabinetService->uploadDocument($folderId, $fileData, $uploadedById);

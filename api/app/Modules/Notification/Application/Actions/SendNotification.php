@@ -13,6 +13,7 @@ class SendNotification
         private readonly NotificationDispatcher $dispatcher,
     ) {}
 
+    /** @param array<string, mixed> $data */
     public function execute(
         int    $userId,
         string $type,

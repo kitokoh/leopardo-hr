@@ -18,6 +18,7 @@ class ScheduleInterview
     /**
      * @throws ApplicantNotFoundException
      */
+    /** @param array<string, mixed> $interviewData */
     public function execute(string $applicantId, array $interviewData): Interview
     {
         $applicant = Applicant::query()->find($applicantId);
