@@ -2568,7 +2568,7 @@
     }
   },
   "settingsBiometricNotesTitle": "Biometric note",
-  "_updated_at": "2026-08-30T12:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "settingsLastNameLabel": "Last name",
   "dashboardActiveLabel": "Active companies",
   "attendanceRetry": "Retry",
@@ -2852,7 +2852,7 @@
     "cabinet": "Document vault",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Kitchen display"
+    "restaurant": "Point of sale (POS)"
   },
   "settingsUpdatePassword": "Update password",
   "companies": {
@@ -3827,6 +3827,30 @@
       "manager_no_stock_alerts": "No threshold alert",
       "manager_ingredient": "Ingredient #{id}",
       "manager_stock_level": "Stock: {quantity} / threshold: {threshold}"
+    },
+    "pos": {
+      "title": "Point of sale (POS)",
+      "subtitle": "Order taking and payment",
+      "products": "Catalog",
+      "cart": "Current order",
+      "noProducts": "No products available.",
+      "noSession": "No open cash session for this branch.",
+      "openSession": "Open cash session",
+      "noOrder": "No current order.",
+      "newOrder": "New order",
+      "submit": "Submit",
+      "confirm": "Confirm (kitchen)",
+      "bill": "Bill",
+      "payCash": "Pay cash",
+      "paid": "Order paid",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "removeItem": "Remove",
+      "uncategorized": "Uncategorized",
+      "loadError": "Unable to load the point of sale.",
+      "loading": "Loading point of sale…",
+      "actionError": "Action failed, please retry."
     }
   },
   "commonLanguageArabic": "العربية",
