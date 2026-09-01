@@ -39,6 +39,7 @@ class PlatformWebAuthSecurityTest extends TestCase
         parent::tearDown();
     }
 
+    /** @return array{_token: string} */
     private function csrf(): array
     {
         $this->get('/platform/login');
@@ -70,9 +71,10 @@ class PlatformWebAuthSecurityTest extends TestCase
         $binary = pack('N*', 0).pack('N', $time);
         $hash = hash_hmac('sha1', $binary, $decoded, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
+        $unpacked = unpack('N', substr($hash, $offset, 4));
 
         return str_pad(
-            (string) ((unpack('N', substr($hash, $offset, 4))[1] & 0x7FFFFFFF) % 1000000),
+            (string) (($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF) % 1000000,
             6,
             '0',
             STR_PAD_LEFT

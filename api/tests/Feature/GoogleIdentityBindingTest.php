@@ -62,7 +62,7 @@ class GoogleIdentityBindingTest extends TestCase
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
 
         $response->assertOk();
-        $this->assertSame('google-sub-111', $employee->fresh()->google_id);
+        $this->assertSame('google-sub-111', $employee->fresh()?->google_id);
     }
 
     public function test_google_login_with_matching_google_id_succeeds(): void

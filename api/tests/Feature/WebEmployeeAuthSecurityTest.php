@@ -58,6 +58,7 @@ class WebEmployeeAuthSecurityTest extends TestCase
         parent::tearDown();
     }
 
+    /** @return array{_token: string} */
     private function csrf(): array
     {
         $this->get('/login');
@@ -89,9 +90,10 @@ class WebEmployeeAuthSecurityTest extends TestCase
         $binary = pack('N*', 0).pack('N', $time);
         $hash = hash_hmac('sha1', $binary, $decoded, true);
         $offset = ord(substr($hash, -1)) & 0x0F;
+        $unpacked = unpack('N', substr($hash, $offset, 4));
 
         return str_pad(
-            (string) ((unpack('N', substr($hash, $offset, 4))[1] & 0x7FFFFFFF) % 1000000),
+            (string) (($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF) % 1000000,
             6,
             '0',
             STR_PAD_LEFT
@@ -175,6 +177,7 @@ class WebEmployeeAuthSecurityTest extends TestCase
         }
 
         $fresh = $this->employee->fresh();
+        $this->assertNotNull($fresh);
         $this->assertSame(5, (int) $fresh->failed_login_attempts);
         $this->assertNotNull($fresh->locked_until);
         $this->assertTrue(Carbon::parse($fresh->locked_until)->isFuture());
@@ -215,6 +218,7 @@ class WebEmployeeAuthSecurityTest extends TestCase
             ])->assertRedirect('/dashboard');
 
         $fresh = $this->employee->fresh();
+        $this->assertNotNull($fresh);
         $this->assertSame(0, (int) $fresh->failed_login_attempts);
         $this->assertNull($fresh->locked_until);
     }
