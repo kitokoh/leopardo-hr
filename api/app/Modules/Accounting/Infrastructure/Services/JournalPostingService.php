@@ -150,6 +150,9 @@ final class JournalPostingService
      * (journal comptable entier = lenteur/DoS). L'export CSV appelle sans
      * limit (flux complet voulu).
      */
+    /**
+     * @return Collection<int, AccountingJournalEntry>
+     */
     public function entriesForPeriod(string $period, ?int $limit = null): Collection
     {
         $query = AccountingJournalEntry::query()
