@@ -27,6 +27,9 @@ interface SolutionSurvey
     /** Code de solution — DOIT correspondre au code du SolutionManifest (ex. `restaurant`). */
     public function code(): string;
 
+    /** Nom lisible de la solution (affiché dans le PDF/la vitrine). */
+    public function name(): string;
+
     /**
      * Questions du questionnaire.
      *
