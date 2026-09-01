@@ -1,3 +1,4 @@
+
 api/app/Core/Auth/Application/Actions/ChangePasswordAction.php:9:use Illuminate\Support\Facades\Hash;
 api/app/Core/Auth/Application/Actions/RefreshTokenAction.php:7:use Illuminate\Support\Facades\DB;
 api/app/Core/Auth/Application/Actions/RegisterAction.php:11:use Illuminate\Support\Facades\DB;
@@ -5,6 +6,7 @@ api/app/Core/Auth/Application/Actions/RegisterAction.php:12:use Illuminate\Suppo
 api/app/Core/Auth/Domain/Models/Employee.php:32:use Illuminate\Support\Facades\DB;
 api/app/Core/Auth/Domain/Models/Employee.php:33:use Illuminate\Support\Facades\Schema;
 api/app/Core/Tenant/Domain/Models/Company.php:16:use Illuminate\Support\Facades\DB;
+api/app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/Accounting/Application/Actions/SeedAccountingDemoData.php:22:use Illuminate\Support\Facades\DB;
 api/app/Modules/Accounting/Application/Actions/SendDocumentEmail.php:12:use Illuminate\Support\Facades\Mail;
 api/app/Modules/Accounting/Application/Jobs/GenerateDocumentPdf.php:17:use Illuminate\Support\Facades\Log;
