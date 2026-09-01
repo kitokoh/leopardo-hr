@@ -55,8 +55,8 @@ describe('solution-survey lib', () => {
     expect(solutionLabel('cle.inexistante', 'fr')).toBe('cle.inexistante');
   });
 
-  it('solutionLabel utilise l\'anglais comme langue de repli pour tr/ar', () => {
-    expect(solutionLabel('solutions.restaurant.package.kiosk', 'ar')).toBe('Attendance kiosk');
-    expect(solutionLabel('solutions.restaurant.package.edge', 'tr')).toBe('Local Edge node (offline-first)');
+  it('solutionLabel résout tr/ar dans le catalogue ×4 (#6691)', () => {
+    expect(solutionLabel('solutions.restaurant.package.kiosk', 'ar')).toBe('كشك تسجيل الحضور');
+    expect(solutionLabel('solutions.restaurant.package.edge', 'tr')).toBe('Yerel Edge düğümü (çevrimdışı)');
   });
 });
