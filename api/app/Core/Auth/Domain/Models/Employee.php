@@ -55,6 +55,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $last_name
  * @property string|null $preferred_name
  * @property string $email
+ * @property string|null $google_id
  * @property string|null $personal_email
  * @property string|null $recovery_email
  * @property string|null $personal_phone

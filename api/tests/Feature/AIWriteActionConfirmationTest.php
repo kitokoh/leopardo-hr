@@ -122,6 +122,7 @@ class AIWriteActionConfirmationTest extends TestCase
     {
         [$company, $employee] = $this->aiFixture();
         $other = Employee::factory()->create(['company_id' => $company->id]);
+        $this->assertInstanceOf(Employee::class, $other);
         Sanctum::actingAs($other);
 
         $pendingId = app(PendingActionStore::class)->store(
@@ -140,6 +141,7 @@ class AIWriteActionConfirmationTest extends TestCase
         [$company, $manager] = $this->aiFixture();
         $type = $this->seedAbsenceType($company->id);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $this->assertInstanceOf(Employee::class, $employee);
 
         $absence = Absence::create([
             'company_id' => $company->id,
@@ -217,10 +219,13 @@ class AIWriteActionConfirmationTest extends TestCase
     /**
      * @return array{0: Company, 1: Employee}
      */
+    /** @return array{Company, Employee} */
     private function aiFixture(): array
     {
         $company = Company::factory()->create();
+        $this->assertInstanceOf(Company::class, $company);
         $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $this->assertInstanceOf(Employee::class, $employee);
 
         return [$company, $employee];
     }
@@ -258,6 +263,7 @@ class AIWriteActionConfirmationTest extends TestCase
         [$company] = $this->aiFixture();
         $type = $this->seedAbsenceType($company->id);
         $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $this->assertInstanceOf(Employee::class, $employeeActor);
 
         $absence = Absence::create([
             'company_id' => $company->id,
@@ -296,7 +302,9 @@ class AIWriteActionConfirmationTest extends TestCase
         [$company] = $this->aiFixture();
         $this->seedAbsenceType($company->id);
         $employeeActor = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $this->assertInstanceOf(Employee::class, $employeeActor);
         $colleague = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $this->assertInstanceOf(Employee::class, $colleague);
 
         Sanctum::actingAs($employeeActor);
 

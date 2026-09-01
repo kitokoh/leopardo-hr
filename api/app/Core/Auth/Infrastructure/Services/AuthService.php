@@ -349,6 +349,7 @@ readonly class AuthService
         ];
     }
 
+    /** @return array<string, mixed> */
     public function loginViaEmail(string $email, ?string $deviceName = null): array
     {
         $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
