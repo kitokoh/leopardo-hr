@@ -466,3 +466,5 @@ final class SeedAccountingDemoData
         ];
     }
 }
+
+// ci: re-trigger full gate (PR #6278)
