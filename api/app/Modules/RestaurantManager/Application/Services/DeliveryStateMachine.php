@@ -31,7 +31,7 @@ final class DeliveryStateMachine
 
     public function canTransition(DeliveryStatus $from, DeliveryStatus $to): bool
     {
-        return in_array($to->value, self::TRANSITIONS[$from->value] ?? [], true);
+        return in_array($to->value, self::TRANSITIONS[$from->value], true);
     }
 
     /**

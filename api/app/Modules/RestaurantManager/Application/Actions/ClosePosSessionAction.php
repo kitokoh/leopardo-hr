@@ -105,8 +105,8 @@ final class ClosePosSessionAction
         return [
             'pos_session_id' => $session->id,
             'branch_id' => $session->branch_id,
-            'opened_at' => $session->opened_at?->toIso8601String(),
-            'closed_at' => $session->closed_at?->toIso8601String(),
+            'opened_at' => $session->opened_at->toIso8601String(),
+            'closed_at' => $session->closed_at->toIso8601String(),
             'opening_cash_minor' => $session->opening_cash_minor,
             'expected_cash_minor' => $session->expected_cash_minor,
             'counted_cash_minor' => $session->counted_cash_minor,
@@ -130,7 +130,7 @@ final class ClosePosSessionAction
 
         $totals = [];
         foreach ($rows as $row) {
-            $provider = $row->provider_code instanceof PaymentProvider ? $row->provider_code->value : (string) $row->provider_code;
+            $provider = $row->provider_code->value;
             $totals[$provider] = ($totals[$provider] ?? 0) + (int) $row->amount_minor + (int) ($row->tip_minor ?? 0);
         }
 

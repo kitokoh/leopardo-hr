@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Services;
 
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Contracts\Communication\RetryableMessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
@@ -20,7 +21,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CommunicationService
+class CommunicationService implements CommunicationServiceInterface
 {
     public function __construct(
         private readonly PushNotificationService $pushNotifications,

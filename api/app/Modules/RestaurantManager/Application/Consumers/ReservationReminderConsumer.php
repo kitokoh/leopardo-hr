@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Application\Consumers;
 
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\RestaurantManager\Console\Commands\RestaurantSendRemindersCommand;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
@@ -22,7 +22,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 final class ReservationReminderConsumer implements RestaurantOutboxConsumer
 {
     public function __construct(
-        private readonly CommunicationService $communication,
+        private readonly CommunicationServiceInterface $communication,
     ) {
     }
 
@@ -61,7 +61,7 @@ final class ReservationReminderConsumer implements RestaurantOutboxConsumer
                     'Réservation %s : %d couvert(s) le %s — préparez la table.',
                     $reservation->reference,
                     $reservation->covers,
-                    $reservation->reserved_at?->format('d/m/Y H:i'),
+                    $reservation->reserved_at->format('d/m/Y H:i'),
                 ),
                 'category' => 'restaurant',
             ], ['app', 'push']);

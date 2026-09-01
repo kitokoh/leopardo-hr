@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Providers;
 
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Modules\RestaurantManager\Application\Actions\CreateDeliveryAction;
 use App\Modules\RestaurantManager\Application\Actions\CreditLoyaltyPointsAction;
 use App\Modules\RestaurantManager\Application\Actions\ExportRestaurantReportAction;
@@ -154,11 +154,11 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             ));
 
             $registry->register(new DeliveryNotificationConsumer(
-                app(CommunicationService::class),
+                app(CommunicationServiceInterface::class),
             ));
 
             $registry->register(new ReservationReminderConsumer(
-                app(CommunicationService::class),
+                app(CommunicationServiceInterface::class),
             ));
 
             return $registry;
