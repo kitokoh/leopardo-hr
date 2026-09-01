@@ -10,6 +10,7 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
