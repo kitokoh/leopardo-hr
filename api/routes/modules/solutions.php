@@ -23,4 +23,5 @@ Route::middleware(['throttle:10,1'])
         Route::get('/', [SolutionSurveyController::class, 'index']);
         Route::get('/{code}/survey', [SolutionSurveyController::class, 'questions']);
         Route::post('/{code}/survey', [SolutionSurveyController::class, 'suggest']);
+        Route::get('/{code}/pack', [SolutionSurveyController::class, 'downloadPack']);
     });

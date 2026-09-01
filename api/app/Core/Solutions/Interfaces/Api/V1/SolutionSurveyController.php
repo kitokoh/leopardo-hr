@@ -30,6 +30,7 @@ final class SolutionSurveyController extends Controller
         private readonly SolutionCatalogue $catalogue,
         private readonly SolutionSurveyRegistry $surveyRegistry,
         private readonly SolutionSurveyEngine $engine,
+        private readonly SolutionPackPdfGenerator $pdfGenerator,
     ) {}
 
     /** GET /solutions — liste les solutions disponibles (allowlist). */
@@ -99,6 +100,42 @@ final class SolutionSurveyController extends Controller
                 'total' => $result['total'],
             ],
         ]);
+    }
+
+    /**
+     * GET /solutions/{code}/pack?packages=key1,key2 — guide PDF personnalisé.
+     *
+     * Clés validées contre le catalogue de la solution (fail-closed) ;
+     * document localisé via les fichiers lang (`solutions.*`), généré avec
+     * dompdf (déjà en deps — zéro dépendance payante).
+     */
+    public function downloadPack(Request $request, string $code): JsonResponse|Response
+    {
+        try {
+            $survey = $this->surveyRegistry->resolve($code);
+        } catch (Throwable $e) {
+            return $this->errorResponse('SOLUTION_SURVEY_NOT_FOUND', 404);
+        }
+
+        $raw = (string) $request->query('packages', '');
+        $keys = array_values(array_filter(array_map('trim', explode(',', $raw))));
+
+        if ($keys === []) {
+            return $this->errorResponse('INVALID_PACKAGES', 422);
+        }
+
+        $catalog = $survey->packages();
+        $unknown = array_diff($keys, array_keys($catalog));
+        if ($unknown !== []) {
+            return $this->errorResponse('INVALID_PACKAGES', 422);
+        }
+
+        $locale = (string) $request->query('locale', 'fr');
+        $locale = in_array($locale, ['fr', 'en', 'tr', 'ar'], true) ? $locale : 'fr';
+
+        $pdf = $this->pdfGenerator->generate($survey, $keys, $locale);
+
+        return $pdf->download('leopardo_'.$code.'_pack.pdf');
     }
 
     private function errorResponse(string $code, int $status): JsonResponse
