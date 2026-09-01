@@ -31,6 +31,11 @@ final class RestaurantSurvey implements SolutionSurvey
         return 'restaurant';
     }
 
+    public function name(): string
+    {
+        return 'Restaurant';
+    }
+
     public function questions(): array
     {
         return [
