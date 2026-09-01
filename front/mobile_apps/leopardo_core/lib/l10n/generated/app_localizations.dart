@@ -360,6 +360,141 @@ abstract class AppLocalizations {
   /// **'Créer un compte personnel'**
   String get createPersonalAccount;
 
+  /// No description provided for @crmAccountsColcreated.
+  String get crmAccountsColcreated;
+
+  /// No description provided for @crmAccountsColemail.
+  String get crmAccountsColemail;
+
+  /// No description provided for @crmAccountsColname.
+  String get crmAccountsColname;
+
+  /// No description provided for @crmAccountsColphone.
+  String get crmAccountsColphone;
+
+  /// No description provided for @crmAccountsColstatus.
+  String get crmAccountsColstatus;
+
+  /// No description provided for @crmAccountsDescription.
+  String get crmAccountsDescription;
+
+  /// No description provided for @crmAccountsEmpty.
+  String get crmAccountsEmpty;
+
+  /// No description provided for @crmAccountsSubtitle.
+  String get crmAccountsSubtitle;
+
+  /// No description provided for @crmAccountsTitle.
+  String get crmAccountsTitle;
+
+  /// No description provided for @crmContactsDescription.
+  String get crmContactsDescription;
+
+  /// No description provided for @crmContactsEmpty.
+  String get crmContactsEmpty;
+
+  /// No description provided for @crmContactsPrimary.
+  String get crmContactsPrimary;
+
+  /// No description provided for @crmContactsSubtitle.
+  String get crmContactsSubtitle;
+
+  /// No description provided for @crmContactsTitle.
+  String get crmContactsTitle;
+
+  /// No description provided for @crmErrorloading.
+  String get crmErrorloading;
+
+  /// No description provided for @crmFeaturelocked.
+  String get crmFeaturelocked;
+
+  /// No description provided for @crmIsolationnote.
+  String get crmIsolationnote;
+
+  /// No description provided for @crmLeadsColcompany.
+  String get crmLeadsColcompany;
+
+  /// No description provided for @crmLeadsColcreated.
+  String get crmLeadsColcreated;
+
+  /// No description provided for @crmLeadsColemail.
+  String get crmLeadsColemail;
+
+  /// No description provided for @crmLeadsColname.
+  String get crmLeadsColname;
+
+  /// No description provided for @crmLeadsColsource.
+  String get crmLeadsColsource;
+
+  /// No description provided for @crmLeadsColstatus.
+  String get crmLeadsColstatus;
+
+  /// No description provided for @crmLeadsDescription.
+  String get crmLeadsDescription;
+
+  /// No description provided for @crmLeadsEmpty.
+  String get crmLeadsEmpty;
+
+  /// No description provided for @crmLeadsSubtitle.
+  String get crmLeadsSubtitle;
+
+  /// No description provided for @crmLeadsTitle.
+  String get crmLeadsTitle;
+
+  /// No description provided for @crmLoading.
+  String get crmLoading;
+
+  /// No description provided for @crmPaginationnext.
+  String get crmPaginationnext;
+
+  /// No description provided for @crmPaginationpage.
+  String get crmPaginationpage;
+
+  /// No description provided for @crmPaginationprev.
+  String get crmPaginationprev;
+
+  /// No description provided for @crmPipelineDescription.
+  String get crmPipelineDescription;
+
+  /// No description provided for @crmPipelineEmpty.
+  String get crmPipelineEmpty;
+
+  /// No description provided for @crmPipelineStageLost.
+  String get crmPipelineStageLost;
+
+  /// No description provided for @crmPipelineStageNegotiation.
+  String get crmPipelineStageNegotiation;
+
+  /// No description provided for @crmPipelineStageProposal.
+  String get crmPipelineStageProposal;
+
+  /// No description provided for @crmPipelineStageProspecting.
+  String get crmPipelineStageProspecting;
+
+  /// No description provided for @crmPipelineStageQualification.
+  String get crmPipelineStageQualification;
+
+  /// No description provided for @crmPipelineStageWon.
+  String get crmPipelineStageWon;
+
+  /// No description provided for @crmPipelineSubtitle.
+  String get crmPipelineSubtitle;
+
+  /// No description provided for @crmPipelineTitle.
+  String get crmPipelineTitle;
+
+  /// No description provided for @crmRefresh.
+  String get crmRefresh;
+
+  /// No description provided for @crmSearchplaceholder.
+  String get crmSearchplaceholder;
+
+  /// No description provided for @crmSubtitle.
+  String get crmSubtitle;
+
+  /// No description provided for @crmTitle.
+  String get crmTitle;
+
   /// No description provided for @personalAccountExplanation.
   ///
   /// In fr, this message translates to:
