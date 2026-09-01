@@ -1,0 +1,28 @@
+name: Edge stack guards
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - "edge/**"
+      - "api/database/migrations/**"
+      - "front/web-offline/**"
+      - ".github/workflows/edge-ci.yml"
+
+concurrency:
+  group: edge-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  edge-guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Migration paths guard (issue #6604)
+        run: bash edge/tests/check-edge-migrations-path.sh
+      - name: Install manifest parse guard (issue #4007)
+        run: bash edge/tests/install-manifest-parse.sh
