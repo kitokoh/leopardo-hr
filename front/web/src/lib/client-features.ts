@@ -227,6 +227,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
   '/restaurant/kitchen': 'restaurant',
+  '/restaurant/pos': 'restaurant',
 };
 
 function normalizedRole(user?: StoredAuthUser | null): string {
