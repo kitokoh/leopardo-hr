@@ -53,6 +53,16 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableS
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantUnitController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantZoneController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCancellationPolicyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCogsController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryZoneController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyaltyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportExportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.restaurantmanager'])
