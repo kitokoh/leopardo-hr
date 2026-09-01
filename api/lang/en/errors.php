@@ -41,6 +41,7 @@ return [
     // General
     'NOT_FOUND' => 'Resource not found.',
     'FORBIDDEN' => 'You do not have permission for this action.',
+    'RESOURCE_NOT_FOUND' => 'Resource not found.',
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
     'BAD_REQUEST' => 'Bad request.',
