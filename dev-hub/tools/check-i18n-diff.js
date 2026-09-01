@@ -109,6 +109,9 @@ function isTechnicalToken(value) {
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) return true;
   if (trimmed === 'use client' || trimmed === 'use server' || trimmed === 'use strict') return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
+  // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
+  // chaîne utilisateur (faux positif signalé sur #6663).
+  if (trimmed.startsWith('@/')) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 

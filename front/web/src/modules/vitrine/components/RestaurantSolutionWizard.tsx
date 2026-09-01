@@ -32,6 +32,7 @@ import {
 import QRCode from 'qrcode';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
+import { EDGE_INSTALL_CMD, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
 import {
   buildDefaultAnswers,
   fetchSurvey,
@@ -46,81 +47,13 @@ import {
 
 type Step = 'intro' | 'questions' | 'suggestions' | 'download';
 
-type WizardCopy = {
-  title: string;
-  subtitle: string;
-  start: string;
-  next: string;
-  back: string;
-  loading: string;
-  questionsTitle: string;
-  suggestionsTitle: string;
-  suggestionsSubtitle: string;
-  keep: string;
-  uncheckNote: string;
-  downloadTitle: string;
-  downloadSubtitle: string;
-  qrHint: string;
-  edgeTitle: string;
-  edgeCmdHint: string;
-  guideLabel: string;
-  includedLabel: string;
-  restart: string;
-};
 
-const COPY: Record<VitrineLocale, WizardCopy> = {
-  fr: {
-    title: 'Je suis restaurateur',
-    subtitle: 'Répondez à 3 questions : on vous propose automatiquement le pack Leopardo adapté à votre restaurant. Vous cochez, vous téléchargez.',
-    start: 'Commencer',
-    next: 'Voir mon pack',
-    back: 'Retour',
-    loading: 'Calcul de votre pack…',
-    questionsTitle: 'Parlez-nous de votre restaurant',
-    suggestionsTitle: 'Voici le pack recommandé pour vous',
-    suggestionsSubtitle: 'Pré-coché selon vos réponses. Décochez ce dont vous n\'avez pas besoin.',
-    keep: 'Continuer',
-    uncheckNote: 'Ces éléments s\'activeront dans votre espace Leopardo à la création du compte.',
-    downloadTitle: 'Téléchargez votre pack',
-    downloadSubtitle: 'Scannez le QR pour installer les apps, ou suivez les liens ci-dessous.',
-    qrHint: 'Scannez pour installer',
-    edgeTitle: 'Nœud Edge local (offline)',
-    edgeCmdHint: 'Installez le nœud local sur un mini-PC du restaurant :',
-    guideLabel: 'Guide de démarrage',
-    includedLabel: 'Inclus dans votre espace',
-    restart: 'Recommencer',
-  },
-  en: {
-    title: 'I am a restaurant owner',
-    subtitle: 'Answer 3 questions: we automatically build the Leopardo pack for your restaurant. Tick, download.',
-    start: 'Start',
-    next: 'See my pack',
-    back: 'Back',
-    loading: 'Building your pack…',
-    questionsTitle: 'Tell us about your restaurant',
-    suggestionsTitle: 'Here is your recommended pack',
-    suggestionsSubtitle: 'Pre-ticked from your answers. Untick what you don\'t need.',
-    keep: 'Continue',
-    uncheckNote: 'Selected items will be enabled in your Leopardo workspace on signup.',
-    downloadTitle: 'Download your pack',
-    downloadSubtitle: 'Scan the QR code to install the apps, or use the links below.',
-    qrHint: 'Scan to install',
-    edgeTitle: 'Local Edge node (offline)',
-    edgeCmdHint: 'Install the local node on a mini-PC at the restaurant:',
-    guideLabel: 'Getting started guide',
-    includedLabel: 'Included in your workspace',
-    restart: 'Start over',
-  },
-  tr: { title: 'Ben bir restoran sahibiyim', subtitle: '3 soruya yanıt verin: restoranınıza uygun Leopardo paketini otomatik önerelim. İşaretleyin, indirin.', start: 'Başla', next: 'Paketimi gör', back: 'Geri', loading: 'Paketiniz hesaplanıyor…', questionsTitle: 'Restoranınızdan bahsedin', suggestionsTitle: 'Size önerilen paket', suggestionsSubtitle: 'Yanıtlarınıza göre önceden işaretlendi.', keep: 'Devam', uncheckNote: 'Seçilen öğeler hesap oluşturulduğunda etkinleşir.', downloadTitle: 'Paketinizi indirin', downloadSubtitle: 'Uygulamaları kurmak için QR kodu okutun.', qrHint: 'Kurulum için okutun', edgeTitle: 'Yerel Edge düğümü (çevrimdışı)', edgeCmdHint: 'Yerel düğümü restorandaki bir mini-PC\'ye kurun:', guideLabel: 'Başlangıç rehberi', includedLabel: 'Çalışma alanınıza dahil', restart: 'Baştan başla' },
-  ar: { title: 'أنا صاحب مطعم', subtitle: 'أجب عن 3 أسئلة وسنقترح عليك تلقائيًا حزمة Leopardo المناسبة لمطعمك. حدد ما تحتاجه وحمّله.', start: 'ابدأ', next: 'عرض حزمتي', back: 'رجوع', loading: 'جارٍ حساب الحزمة…', questionsTitle: 'حدثنا عن مطعمك', suggestionsTitle: 'هذه هي الحزمة المقترحة لك', suggestionsSubtitle: 'محددة مسبقًا حسب إجاباتك.', keep: 'متابعة', uncheckNote: 'سيتم تفعيل العناصر المحددة عند إنشاء الحساب.', downloadTitle: 'حمّل حزمتك', downloadSubtitle: 'امسح رمز QR لتثبيت التطبيقات.', qrHint: 'امسح للتثبيت', edgeTitle: 'عقدة Edge المحلية (بدون اتصال)', edgeCmdHint: 'ثبّت العقدة المحلية على جهاز صغير في المطعم:', guideLabel: 'دليل البدء', includedLabel: 'مضمن في مساحتك', restart: 'إعادة البدء' },
-};
 
-const EDGE_INSTALL_CMD = 'curl -fsSL https://gestionemployerbackend.onrender.com/api/v1/edge/install.sh | sudo bash -s -- --node-id <NODE_ID> --token <EDGE_TOKEN>';
 
 export function RestaurantSolutionWizard() {
   const { locale, direction } = useVitrineLocale();
   const vLocale = localeFromAppLocale(locale);
-  const c = COPY[vLocale] ?? COPY.en;
+  const c = WIZARD_COPY[vLocale] ?? WIZARD_COPY.en;
 
   const [step, setStep] = useState<Step>('intro');
   const [questions, setQuestions] = useState<SolutionSurveyQuestion[]>([]);
@@ -320,7 +253,7 @@ export function RestaurantSolutionWizard() {
 
             {error && (
               <p className="mt-4 text-sm text-rose-600 dark:text-rose-400">
-                {vLocale === 'fr' ? 'Impossible de calculer le pack. Réessayez.' : 'Could not build your pack. Try again.'}
+{c.errorRetry}
               </p>
             )}
 
