@@ -27,12 +27,12 @@
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRiderController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -110,8 +110,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         });
     });
 
-    // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
-    // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
-    Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
-        ->middleware('throttle:60,1')
-        ->where('token', '[A-Za-z0-9]{64}');
+// Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
+// token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
+Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->where('token', '[A-Za-z0-9]{64}');

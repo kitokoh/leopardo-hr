@@ -3326,7 +3326,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'hotel_id', 'room_number'], 'travel_hotel_rooms_company_hotel_room_unique');
             });
         }
-=======
 
         // ── BC-26 DELIVERY (delivery_notifications) ────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_notifications'))) {
@@ -3370,6 +3369,7 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
             });
         }
+=======
     }
 
     private function dropMvpTables(): void

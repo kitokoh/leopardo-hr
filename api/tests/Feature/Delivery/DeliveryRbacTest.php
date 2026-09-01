@@ -69,7 +69,7 @@ class DeliveryRbacTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createDelivery(array $overrides = []): Delivery
     {
