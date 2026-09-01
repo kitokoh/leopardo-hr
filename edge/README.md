@@ -91,7 +91,7 @@ This directory has three Dockerfiles with distinct roles — do not assume they 
 
 | File                  | Used by                          | Purpose                                                        |
 |-----------------------|-----------------------------------|-----------------------------------------------------------------|
-| `Dockerfile.edge`     | `edge/docker-compose.yml`         | Local/dev image (`edge-api`, `edge-ui` services), php-fpm + nginx + supervisor |
+| `Dockerfile.edge`     | *(non branché)*                     | Image PHP 8.4 Alpine + SQLite — le compose tire les images publiées (`leopardo/edge-api`, `leopardo/edge-ui`), aucune clé `build:` ; voir #6595 |
 | `Dockerfile.publish`  | `edge/publish.sh`                 | Production image published to Docker Hub as `leopardo/edge-api` |
 | `Dockerfile`          | *(not currently wired in)*        | Standalone FrankenPHP + embedded PWA reference image; build manually if needed |
 
