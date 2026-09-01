@@ -39993,7 +39993,38 @@ components:
           type: boolean
         correlation_id:
           type: string
-    RestaurantStockLevel: null
+    RestaurantStockLevel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        ingredient_name:
+          type: string
+          nullable: true
+        quantity:
+          type: number
+        avg_cost_minor:
+          type: integer
+          nullable: true
+        reorder_level:
+          type: number
+          nullable: true
+        alert_threshold:
+          type: number
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantStockLevelInput:
       type: object
       required:
@@ -40019,7 +40050,49 @@ components:
           type: number
           minimum: 0
           nullable: true
-    RestaurantInventoryMovement: null
+    RestaurantInventoryMovement:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        ingredient_name:
+          type: string
+          nullable: true
+        stock_level_id:
+          type: integer
+          nullable: true
+        quantity_delta:
+          type: number
+        reason_code:
+          type: string
+          enum:
+          - sale
+          - receiving
+          - count
+          - adjustment
+          - waste
+          - transfer
+        reference_type:
+          type: string
+          nullable: true
+        reference_id:
+          type: integer
+          nullable: true
+        note_redacted:
+          type: string
+          nullable: true
+        user_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantInventoryMovementInput:
       type: object
       required:
@@ -40052,7 +40125,52 @@ components:
         note_redacted:
           type: string
           nullable: true
-    RestaurantPurchaseOrder: null
+    RestaurantPurchaseOrder:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        supplier_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - draft
+          - sent
+          - received
+          - cancelled
+        expected_at:
+          type: string
+          format: date-time
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+          nullable: true
+        total_minor:
+          type: integer
+          nullable: true
+        currency:
+          type: string
+          maxLength: 3
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantPurchaseOrderItem'
     RestaurantPurchaseOrderInput:
       type: object
       required:
@@ -40075,7 +40193,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RestaurantPurchaseOrderItemInput'
-    RestaurantPurchaseOrderItem: null
+    RestaurantPurchaseOrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        purchase_order_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        quantity:
+          type: number
+        unit_price_minor:
+          type: integer
+          minimum: 0
+        line_total_minor:
+          type: integer
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantPurchaseOrderItemInput:
       type: object
       required:
@@ -40092,7 +40231,33 @@ components:
         unit_price_minor:
           type: integer
           minimum: 0
-    RestaurantReceiving: null
+    RestaurantReceiving:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        purchase_order_id:
+          type: integer
+          nullable: true
+        supplier_id:
+          type: integer
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+        note_redacted:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantReceivingInput:
       type: object
       required:
@@ -40117,9 +40282,129 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RestaurantPurchaseOrderItemInput'
-    RestaurantInventoryCount: null
-    RestaurantInventoryCountItem: null
-    RestaurantReservation: null
+    RestaurantInventoryCount:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+          type: integer
+        counted_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - draft
+          - submitted
+          - approved
+        counted_by_user_id:
+          type: integer
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestaurantInventoryCountItem'
+    RestaurantInventoryCountItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        count_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        expected_qty:
+          type: number
+        counted_qty:
+          type: number
+          nullable: true
+        variance_qty:
+          type: number
+          nullable: true
+        reason_code:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    RestaurantReservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        reference:
+          type: string
+          readOnly: true
+        branch_id:
+          type: integer
+        customer_contact_id:
+          type: integer
+          nullable: true
+        contact_name:
+          type: string
+        contact_phone:
+          type: string
+        reserved_at:
+          type: string
+          format: date-time
+        covers:
+          type: integer
+        table_id:
+          type: integer
+          nullable: true
+        zone_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum:
+          - pending
+          - confirmed
+          - seated
+          - completed
+          - no_show
+          - cancelled
+        deposit_minor:
+          type: integer
+          nullable: true
+        notes_redacted:
+          type: string
+          nullable: true
+        idempotency_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantReservationInput:
       type: object
       required:
@@ -40689,7 +40974,45 @@ components:
           type: string
           format: date-time
           nullable: true
-    RestaurantRefund: null
+    RestaurantRefund:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        order_id:
+          type: integer
+        payment_id:
+          type: integer
+          nullable: true
+        amount_minor:
+          type: integer
+          minimum: 0
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+          nullable: true
+        refunded_by_user_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          enum:
+          - pending
+          - processed
+          - rejected
+        idempotency_key:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
     RestaurantSupplier:
       type: object
       properties:
@@ -41072,4 +41395,46 @@ components:
           type: string
           format: date-time
           nullable: true
-    RestaurantPromotionInput: null
+    RestaurantPromotionInput:
+      type: object
+      required:
+      - code
+      - title
+      - discount_type
+      - value_minor
+      properties:
+        branch_id:
+          type: integer
+          nullable: true
+        code:
+          type: string
+          maxLength: 40
+        title:
+          type: string
+          maxLength: 150
+        discount_type:
+          type: string
+          enum:
+          - percent
+          - amount
+        value_minor:
+          type: integer
+          minimum: 0
+        min_order_minor:
+          type: integer
+          minimum: 0
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        max_uses:
+          type: integer
+          minimum: 1
+          nullable: true
+        is_active:
+          type: boolean
