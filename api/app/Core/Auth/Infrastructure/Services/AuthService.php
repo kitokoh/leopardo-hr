@@ -64,7 +64,7 @@ readonly class AuthService
                 // tenants est un oracle de timing (email valide ⇒ réponse
                 // plus lente) — désactivé en production (user_lookups
                 // obligatoire), conservé hors prod pour la résilience démo.
-                if (config('auth.schema_sweep_enabled', ! app()->environment('production'))) {
+                if (config('auth.schema_sweep_enabled', true) && ! app()->environment('production')) {
                     $found = $this->findEmployeeInTenantSchemas($email);
                     if ($found !== null) {
                         [$employee, $employeeSchema] = $found;
@@ -314,7 +314,7 @@ readonly class AuthService
                 // tenants est un oracle de timing (email valide ⇒ réponse
                 // plus lente) — désactivé en production (user_lookups
                 // obligatoire), conservé hors prod pour la résilience démo.
-                if (config('auth.schema_sweep_enabled', ! app()->environment('production'))) {
+                if (config('auth.schema_sweep_enabled', true) && ! app()->environment('production')) {
                     $found = $this->findEmployeeInTenantSchemas($email);
                     if ($found !== null) {
                         [$employee, $employeeSchema] = $found;

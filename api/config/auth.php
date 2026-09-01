@@ -151,6 +151,6 @@ return [
     |
     */
 
-    'schema_sweep_enabled' => env('AUTH_SCHEMA_SWEEP_ENABLED', ! app()->environment('production')),
+    'schema_sweep_enabled' => env('AUTH_SCHEMA_SWEEP_ENABLED', true),
 
 ];
