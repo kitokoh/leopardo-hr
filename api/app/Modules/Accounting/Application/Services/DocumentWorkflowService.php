@@ -9,7 +9,11 @@ use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
 use App\Modules\Accounting\Domain\Enums\PaymentStatus;
+use App\Modules\Accounting\Domain\Exceptions\CreditNoteRequiresSourceInvoiceException;
+use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateException;
+use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
+use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -34,9 +38,76 @@ class DocumentWorkflowService
 {
     public const MAX_NUMBERING_ATTEMPTS = 5;
 
+    /**
+     * Matrice des transitions autorisées (fusion #6572 : l'implémentation
+     * Infrastructure dédiée a été supprimée — cette classe est désormais la
+     * source unique du workflow documentaire #5223).
+     *
+     * @var array<string, list<string>>
+     */
+    private const TRANSITIONS = [
+        DocumentStatus::Draft->value => [DocumentStatus::Sent->value, DocumentStatus::Cancelled->value],
+        DocumentStatus::Sent->value => [
+            DocumentStatus::PartiallyPaid->value,
+            DocumentStatus::Paid->value,
+            DocumentStatus::Cancelled->value,
+            DocumentStatus::Overdue->value,
+        ],
+        DocumentStatus::PartiallyPaid->value => [DocumentStatus::Paid->value, DocumentStatus::Overdue->value],
+        DocumentStatus::Overdue->value => [DocumentStatus::Paid->value, DocumentStatus::PartiallyPaid->value],
+        DocumentStatus::Paid->value => [],
+        DocumentStatus::Cancelled->value => [],
+    ];
+
     public function __construct(
         private readonly DocumentNumberingInterface $numbering,
     ) {}
+
+    /**
+     * Transition générique de la machine à états (issue #5223).
+     *
+     * #6572 : méthode fusionnée depuis l'ancien
+     * `Accounting\Infrastructure\Services\DocumentWorkflowService` (utilisée
+     * par le seed démo et les tests) — la classe Infrastructure a été
+     * supprimée ; cette classe est la source unique.
+     */
+    public function transition(AccountingDocument $document, DocumentStatus $to): AccountingDocument
+    {
+        $current = DocumentStatus::tryFrom($document->status) ?? DocumentStatus::Draft;
+
+        $allowed = self::TRANSITIONS[$current->value];
+
+        if (! in_array($to->value, $allowed, true)) {
+            throw new InvalidDocumentTransitionException($current->value, $to->value, $allowed);
+        }
+
+        $this->assertTransitionBusinessRules($document, $current, $to);
+
+        $document->update(['status' => $to->value]);
+
+        return $document->refresh();
+    }
+
+    /**
+     * Lie un avoir à sa facture source (même entreprise).
+     *
+     * #6572 : méthode fusionnée depuis l'ancien
+     * `Accounting\Infrastructure\Services\DocumentWorkflowService`.
+     */
+    public function linkCreditNote(AccountingDocument $creditNote, AccountingDocument $invoice): AccountingDocument
+    {
+        if ($creditNote->company_id !== $invoice->company_id) {
+            throw new \InvalidArgumentException('CREDIT_NOTE_COMPANY_MISMATCH');
+        }
+
+        if ($creditNote->type !== DocumentType::CreditNote->value || $invoice->type !== DocumentType::Invoice->value) {
+            throw new \InvalidArgumentException('CREDIT_NOTE_LINK_TYPES_INVALID');
+        }
+
+        $creditNote->update(['source_document_id' => $invoice->id]);
+
+        return $creditNote->refresh();
+    }
 
     /**
      * Crée un document au statut draft avec ses lignes, totaux calculés et
@@ -295,6 +366,38 @@ class DocumentWorkflowService
     /**
      * @param  list<DocumentStatus>  $allowed
      */
+    /**
+     * Règles métier des transitions génériques (fusion #6572) : un statut
+     * payé/partiellement payé exige le paiement correspondant, un avoir doit
+     * être lié à sa facture source, un bordereau doit porter sa date de
+     * livraison.
+     */
+    private function assertTransitionBusinessRules(AccountingDocument $document, DocumentStatus $current, DocumentStatus $to): void
+    {
+        $paidAmount = (float) $document->payments()->sum('amount');
+        $totalTtc = (float) $document->total_ttc;
+
+        if ($to === DocumentStatus::PartiallyPaid && $paidAmount <= 0) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($to === DocumentStatus::PartiallyPaid && $paidAmount >= $totalTtc) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($to === DocumentStatus::Paid && $paidAmount < $totalTtc) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($document->type === DocumentType::CreditNote->value && $document->source_document_id === null) {
+            throw new CreditNoteRequiresSourceInvoiceException;
+        }
+
+        if ($document->type === DocumentType::DeliveryNote->value && $document->delivery_date === null) {
+            throw new DeliveryNoteRequiresDeliveryDateException;
+        }
+    }
+
     private function assertStatus(AccountingDocument $document, array $allowed, string $message): void
     {
         if (! in_array(DocumentStatus::tryFrom($document->status), $allowed, true)) {

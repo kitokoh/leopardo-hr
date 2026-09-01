@@ -14,7 +14,7 @@ use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -149,7 +149,7 @@ class DocumentWorkflowNumberingTest extends TestCase
     public function test_workflow_draft_to_sent(): void
     {
         $document = $this->makeDocument();
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
 
         $workflow->transition($document, DocumentStatus::Sent);
 
@@ -159,7 +159,7 @@ class DocumentWorkflowNumberingTest extends TestCase
     public function test_workflow_invalid_transition_throws(): void
     {
         $document = $this->makeDocument();
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
 
         $this->expectException(InvalidDocumentTransitionException::class);
         $workflow->transition($document, DocumentStatus::Paid);
@@ -167,7 +167,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_paid_requires_full_payment(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $document = $this->makeDocument();
         $workflow->transition($document, DocumentStatus::Sent);
 
@@ -179,7 +179,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_paid_accepted_when_payments_cover_total(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $document = $this->makeDocument();
         $workflow->transition($document, DocumentStatus::Sent);
 
@@ -192,7 +192,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_partially_paid_requires_partial_payment(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $document = $this->makeDocument();
         $workflow->transition($document, DocumentStatus::Sent);
 
@@ -203,7 +203,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_partially_paid_accepted_with_partial_payment(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $document = $this->makeDocument();
         $workflow->transition($document, DocumentStatus::Sent);
 
@@ -216,7 +216,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_credit_note_requires_source_invoice_before_issue(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $creditNote = $this->makeDocument(DocumentType::CreditNote);
 
         $this->expectException(CreditNoteRequiresSourceInvoiceException::class);
@@ -225,7 +225,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_credit_note_linked_to_invoice_can_be_issued(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $invoice = $this->makeDocument(DocumentType::Invoice);
         $creditNote = $this->makeDocument(DocumentType::CreditNote);
 
@@ -238,7 +238,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_link_credit_note_guards_types_and_company(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $invoice = $this->makeDocument(DocumentType::Invoice);
         $quote = $this->makeDocument(DocumentType::Quote);
 
@@ -248,7 +248,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_delivery_note_requires_delivery_date_before_issue(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $deliveryNote = $this->makeDocument(DocumentType::DeliveryNote);
 
         $this->expectException(DeliveryNoteRequiresDeliveryDateException::class);
@@ -257,7 +257,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_delivery_note_with_delivery_date_can_be_issued(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
         $deliveryNote = $this->makeDocument(DocumentType::DeliveryNote, ['delivery_date' => '2026-08-02']);
 
         $workflow->transition($deliveryNote, DocumentStatus::Sent);
@@ -267,7 +267,7 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     public function test_refresh_overdue_marks_past_due_documents(): void
     {
-        $workflow = new DocumentWorkflowService;
+        $workflow = new DocumentWorkflowService(new SequentialDocumentNumbering);
 
         $overdue = $this->makeDocument(overrides: ['due_date' => '2026-07-31']);
         $workflow->transition($overdue, DocumentStatus::Sent);

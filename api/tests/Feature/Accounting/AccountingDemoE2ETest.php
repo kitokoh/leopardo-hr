@@ -16,7 +16,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -59,7 +59,7 @@ class AccountingDemoE2ETest extends TestCase
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD', 'timezone' => 'UTC']);
         $this->companyB = $companyB;
 
-        $this->workflow = new DocumentWorkflowService;
+        $this->workflow = new DocumentWorkflowService(app(\App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface::class));
 
         // PDF : fake tant que l'implémentation #5224 n'est pas mergée.
         app()->instance(PdfRendererInterface::class, new class implements PdfRendererInterface
