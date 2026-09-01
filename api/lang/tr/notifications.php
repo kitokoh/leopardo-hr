@@ -34,12 +34,6 @@ return [
 
     'payment_document_ready_title' => 'Belge hazır',
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
- HEAD
-    'restaurant_delivery_status_changed_title' => 'Teslimat: :status',
-    'restaurant_delivery_status_changed_body' => 'Teslimat #:delivery (sipariş #:order) artık “:status” durumunda.',
-    'restaurant_reservation_reminder_title' => 'Yaklaşan rezervasyon (1 gün önce)',
-    'restaurant_reservation_reminder_body' => 'Rezervasyon :reference — :date tarihinde :covers kişi. Masayı hazırlayın.',
     'weekly_manager_digest_title' => 'Haftalık ekip özeti',
     'weekly_manager_digest_body' => ':week_start haftası — :team_size kişilik ekip · :present kayıtlı devam · :pending_absences bekleyen izin · :pending_advances bekleyen avans · :pending_corrections bekleyen düzeltme.',
- origin/main
 ];

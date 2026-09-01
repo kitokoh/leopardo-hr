@@ -44,11 +44,6 @@ class RestaurantReservation extends Model
         'idempotency_key',
     ];
 
-    protected $attributes = [
-        'status' => 'pending',
-        'covers' => 1,
-    ];
-
     protected $casts = [
         'reserved_at' => 'datetime',
         'covers' => 'integer',

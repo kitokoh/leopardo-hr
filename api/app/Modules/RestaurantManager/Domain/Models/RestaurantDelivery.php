@@ -35,11 +35,6 @@ class RestaurantDelivery extends Model
         'delivered_to_contact',
     ];
 
-    protected $attributes = [
-        'status' => 'pending',
-        'fee_minor' => 0,
-    ];
-
     protected $casts = [
         'status' => DeliveryStatus::class,
         'fee_minor' => 'integer',

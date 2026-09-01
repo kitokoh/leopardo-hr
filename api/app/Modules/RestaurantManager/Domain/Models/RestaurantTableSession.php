@@ -36,10 +36,6 @@ class RestaurantTableSession extends Model
         'status',
     ];
 
-    protected $attributes = [
-        'status' => 'open',
-    ];
-
     protected $casts = [
         'opened_at' => 'datetime',
         'closed_at' => 'datetime',

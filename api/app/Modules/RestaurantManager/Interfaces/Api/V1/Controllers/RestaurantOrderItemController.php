@@ -43,7 +43,9 @@ class RestaurantOrderItemController extends Controller
             abort(403);
         }
 
-        $item = $this->addAction->add($actor, $restaurantOrder, $request->validated());
+        /** @var array{product_id: int, quantity: float|string, menu_id?: int|null} $data */
+        $data = $request->validated();
+        $item = $this->addAction->add($actor, $restaurantOrder, $data);
 
         return (new RestaurantOrderItemResource($item))->response()->setStatusCode(201);
     }

@@ -32,12 +32,6 @@ class RestaurantTaxRate extends Model
         'status',
     ];
 
-    protected $attributes = [
-        'status' => 'active',
-        'rate_bps' => 0,
-        'is_default' => false,
-    ];
-
     protected $casts = [
         'rate_bps' => 'integer',
         'is_default' => 'boolean',

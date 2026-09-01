@@ -42,10 +42,6 @@ class RestaurantOrderPayment extends Model
         'idempotency_key',
     ];
 
-    protected $attributes = [
-        'status' => 'pending',
-    ];
-
     protected $casts = [
         'provider_code' => PaymentProvider::class,
         'amount_minor' => 'integer',

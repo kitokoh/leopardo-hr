@@ -34,12 +34,6 @@ return [
 
     'payment_document_ready_title' => 'المستند جاهز',
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
- HEAD
-    'restaurant_delivery_status_changed_title' => 'التوصيل: :status',
-    'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
-    'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
-    'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
- origin/main
 ];
