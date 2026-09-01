@@ -1,6 +1,7 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-31T12:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
+
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -147,7 +148,7 @@
     "cabinet": "Document vault",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Kitchen display"
+    "restaurant": "Point of sale (POS)"
   },
   "emails": {
     "invitation": {
@@ -3614,6 +3615,30 @@
     }
   },
   "restaurant": {
+    "pos": {
+      "title": "Point of sale (POS)",
+      "subtitle": "Order taking and payment",
+      "products": "Catalog",
+      "cart": "Current order",
+      "noProducts": "No products available.",
+      "noSession": "No open cash session for this branch.",
+      "openSession": "Open cash session",
+      "noOrder": "No current order.",
+      "newOrder": "New order",
+      "submit": "Submit",
+      "confirm": "Confirm (kitchen)",
+      "bill": "Bill",
+      "payCash": "Pay cash",
+      "paid": "Order paid",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "removeItem": "Remove",
+      "uncategorized": "Uncategorized",
+      "loadError": "Unable to load the point of sale.",
+      "loading": "Loading point of sale…",
+      "actionError": "Action failed, please retry."
+    },
     "kitchenTitle": "Kitchen display",
     "kitchenSubtitle": "Real-time order queue — preparation and pickup",
     "branch": "Branch",
@@ -3632,6 +3657,40 @@
     "loadError": "Unable to load the kitchen queue.",
     "actionError": "Action failed, please retry.",
     "loading": "Loading kitchen queue…",
+    "shop": {
+      "title": "Online ordering",
+      "subtitle": "Public menu — order in a few clicks.",
+      "menu": "Menu",
+      "cart": "Cart",
+      "emptyCart": "Your cart is empty.",
+      "add": "Add",
+      "added": "Added",
+      "categoryAll": "All",
+      "price": "Price",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "phone": "Phone (optional)",
+      "phoneHint": "To be notified about your order status.",
+      "checkout": "Order",
+      "ordering": "Placing order…",
+      "orderCreated": "Order confirmed",
+      "orderRef": "Reference",
+      "orderStatus": "Status",
+      "track": "Track order",
+      "pay": "Pay",
+      "paying": "Paying…",
+      "payHint": "Pay at pickup or mobile money.",
+      "missingToken": "Invalid or missing shop link. Use the link provided by the restaurant.",
+      "loadError": "Could not load the menu. Try again.",
+      "retry": "Retry",
+      "backToMenu": "Back to menu",
+      "invalidToken": "Invalid or expired shop token.",
+      "items": "items",
+      "quantity": "Qty",
+      "remove": "Remove",
+      "currency": "currency"
+    },
     "mobile": {
       "hub_title": "Restaurant",
       "hub_subtitle": "Service, delivery and management tools",
