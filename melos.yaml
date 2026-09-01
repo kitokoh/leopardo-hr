@@ -9,6 +9,7 @@ packages:
   - front/mobile_apps/leopardo_manager
   - front/mobile_apps/leopardo_platform_admin
   - front/mobile_apps/leopardo_marketing
+  - front/mobile_apps/leopardo_travel_agent
 
 command:
   bootstrap:
