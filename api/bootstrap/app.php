@@ -16,11 +16,8 @@ use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
-<<<<<<< HEAD
-=======
 use App\Http\Middleware\Restaurant\EnsureRestaurantManagerModuleMiddleware;
 use App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess;
->>>>>>> ec54dd086 (style(restaurant): Pint — 359 fichiers du module RestaurantManager (72 issues de style) + parité .env.example RESTAURANT_STOCK_BLOCK_ON_INSUFFICIENT)
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;

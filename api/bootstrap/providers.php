@@ -21,7 +21,6 @@ use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
->>>>>>> 22b1f1143 (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
@@ -63,21 +62,12 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
     // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
     TravelAgencyServiceProvider::class,
-
-=======
-=======
-
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
->>>>>>> b45640692 (chore(merge): résolution des conflits — version canonique BC-25 (schéma rebasé + lots API))
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
 ];
