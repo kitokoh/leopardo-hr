@@ -33,15 +33,15 @@ class VerifyTrialSignup
         private readonly RequestTrialSignup $requestTrialSignup,
     ) {}
 
-    /**
-     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int}
-     */
     /** Nombre maximal d'échecs OTP avant verrouillage (issue #6547). */
     private const MAX_OTP_ATTEMPTS = 5;
 
     /** Durée du verrouillage après échecs répétés. */
     private const OTP_LOCK_MINUTES = 15;
 
+    /**
+     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int}
+     */
     public function execute(string $email, string $code): array
     {
         if (DB::getDriverName() === 'pgsql') {
