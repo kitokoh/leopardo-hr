@@ -1,4 +1,11 @@
-# ZKTeco Kiosk Bridge
+# ZKTeco Kiosk
+
+## Statut
+
+Client-side only, distribué en copie locale (pas de service docker/render/cloud — voir #6597) :
+l'installation se fait sur le PC local du client (README + `docs/GESTION_PROJET/RUNBOOK_ZKTECO_CLIENT.md`).
+Le pont Python (`desktop-bridge/bridge.py`) est couvert par la CI kiosk (`kiosk-ci.yml`) ; `npm test` lance i18n + feedback + les 27 tests Python.
+## Bridge
 
 Ce dossier contient le code de la **borne d entree entreprise** et du **bridge desktop local**.
 
