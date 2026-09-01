@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
@@ -36,6 +38,17 @@ class CabinetShareController extends Controller
             ->with('shareable')
             ->orderByDesc('created_at')
             ->paginate($perPage);
+
+        // Issue #6674 : un partage orphelin (shareable supprimé) ou dont le
+        // shareable_type est une classe périmée (ex. module purgé) faisait
+        // planter la liste complète en 500 (morphTo → "Class not found" ou
+        // shareable null). Les partages orphelins sont filtrés ici ; la purge
+        // à la suppression de la ressource reste un chantier séparé.
+        $shares->setCollection(
+            $shares->getCollection()
+                ->filter(fn (CabinetShare $s) => class_exists((string) $s->shareable_type) && $s->shareable !== null)
+                ->values()
+        );
 
         // Pagination (#1703) : `data` reste une liste simple (contrat
         // historique des clients), les métadonnées de page sont exposées
@@ -150,8 +163,8 @@ class CabinetShareController extends Controller
 
     public function accessByToken(string $token): JsonResponse|StreamedResponse
     {
-        $tenantManager = app(\App\Core\Tenant\TenantManager::class);
-        $companies = \App\Core\Tenant\Domain\Models\Company::query()
+        $tenantManager = app(TenantManager::class);
+        $companies = Company::query()
             ->where('status', 'active')
             ->orderBy('id')
             ->get();
