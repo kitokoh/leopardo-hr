@@ -32,9 +32,7 @@ final class AccountingReportingSnapshotService
 {
     public const REPORT_ACCOUNTING_DASHBOARD = 'accounting_dashboard';
 
-    public function __construct(private readonly AccountingDashboardService $dashboard)
-    {
-    }
+    public function __construct(private readonly AccountingDashboardService $dashboard) {}
 
     /**
      * Recompute idempotent du snapshot d'un read model pour une période.
