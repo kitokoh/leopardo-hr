@@ -45,9 +45,6 @@ app.*.map.json
 /android/app/release
 
 # ── Fichiers générés (audit Vague 2, #6590) ──────────────
-# Sorties de `flutter gen-l10n` (l10n.yaml output-dir) et de build_runner.
-# Régénérés par la CI (mobile-apps-ci.yml « Regenerate shared localizations »)
-# et par `melos run generate`. Ne pas committer.
 lib/l10n/generated/
 *.g.dart
 *.freezed.dart
