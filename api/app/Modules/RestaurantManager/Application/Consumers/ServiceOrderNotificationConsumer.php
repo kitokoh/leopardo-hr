@@ -58,8 +58,8 @@ final class ServiceOrderNotificationConsumer implements RestaurantOutboxConsumer
 
         foreach ($staff as $employee) {
             $this->communication->notifyEmployee($employee, 'restaurant_order_ready', [
-                'title' => 'Commande prête',
-                'body' => sprintf('Commande %s prête à être servie (table %s).', $reference, (string) ($order->table_id ?? '—')),
+                'title' => __('restaurantmanager.order_ready_title'),
+                'body' => __('restaurantmanager.order_ready_body', ['reference' => $reference, 'table' => (string) ($order->table_id ?? '—')]),
                 'category' => 'restaurant',
             ], ['app', 'push']);
         }
