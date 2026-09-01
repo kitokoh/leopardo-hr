@@ -149,8 +149,8 @@ class EdgeSyncDedupTest extends TestCase
         $engine->method('applyToCloud')->willReturn(['conflict' => false]);
         $engine->push($node);
 
-        $this->assertSame('synced', $itemA->fresh()->status);
-        $this->assertSame('synced', $itemB->fresh()->status);
+        $this->assertSame('synced', $itemA->fresh()?->status);
+        $this->assertSame('synced', $itemB->fresh()?->status);
 
         // Seconde passe : plus rien à traiter — applyToCloud ne doit PAS être
         // rappelé (le compteur de la première passe reste à 2).
@@ -184,8 +184,8 @@ class EdgeSyncDedupTest extends TestCase
 
         $this->assertSame(1, $first);
         $this->assertSame(0, $second);
-        $this->assertSame('processing', $item->fresh()->status);
-        $this->assertSame(1, $item->fresh()->attempt_count);
+        $this->assertSame('processing', $item->fresh()?->status);
+        $this->assertSame(1, $item->fresh()?->attempt_count);
     }
 
     public function test_daemon_marks_synced_only_accepted_records_and_retries_rejected(): void

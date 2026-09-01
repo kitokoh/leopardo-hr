@@ -296,7 +296,7 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');
 
-        if (! Hash::check($validated['password'], $superAdmin->password_hash)) {
+        if (! Hash::check($validated['password'], (string) $superAdmin->password_hash)) {
             return new JsonResponse([
                 'error' => 'INVALID_PASSWORD',
                 'message' => __('auth.password_incorrect'),

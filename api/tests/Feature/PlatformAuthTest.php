@@ -220,7 +220,9 @@ class PlatformAuthTest extends TestCase
 
         $badPassword->assertStatus(422);
         $badPassword->assertJsonPath('error', 'INVALID_PASSWORD');
-        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
     }
 
     public function test_super_admin_login_locks_after_five_failures(): void
@@ -282,7 +284,9 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonPath('error', 'EMAIL_ALREADY_TAKEN');
-        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
     }
 
     public function test_super_admin_can_change_own_password(): void

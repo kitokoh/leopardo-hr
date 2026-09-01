@@ -186,11 +186,6 @@ parameters:
 			count: 2
 			path: app/Core/Auth/Interfaces/Api/V1/AuthController.php
 
-		-
-			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Core/Auth/Interfaces/Api/V1/PlatformAuthController.php
 
 		-
 			message: '#^Parameter \#1 \$companyId of method App\\Core\\Auth\\Infrastructure\\Services\\SSO\\SSOService\:\:configureSSO\(\) expects string, string\|null given\.$#'
@@ -6795,29 +6790,9 @@ parameters:
 			count: 1
 			path: tests/Feature/PlatformAnnouncementControllerTest.php
 
-		-
-			message: '#^Cannot access property \$email on App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: tests/Feature/PlatformAuthTest.php
 
-		-
-			message: '#^Cannot access property \$name on App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/PlatformAuthTest.php
 
-		-
-			message: '#^Cannot access property \$password_hash on App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: tests/Feature/PlatformAuthTest.php
 
-		-
-			message: '#^Cannot access property \$two_fa_secret on App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: tests/Feature/PlatformAuthTest.php
 
 		-
 			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
