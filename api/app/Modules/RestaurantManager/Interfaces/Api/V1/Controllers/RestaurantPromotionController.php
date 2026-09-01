@@ -113,7 +113,7 @@ class RestaurantPromotionController extends Controller
     /**
      * Validation serveur d'un code promo sur un montant de commande.
      */
-    public function validate(Request $request): JsonResponse
+    public function validateCode(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();

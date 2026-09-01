@@ -114,7 +114,10 @@ final class RestaurantReportService
             ->limit($limit)
             ->get();
 
-        return $query->map(fn ($row) => [
+        /** @var list<object{product_id: int, qty: numeric-string, revenue: int}> $rows */
+        $rows = $query->get();
+
+        return collect($rows)->map(fn ($row) => [
             'product_id' => (int) $row->product_id,
             'quantity' => (string) $row->qty,
             'revenue_minor' => (int) $row->revenue,

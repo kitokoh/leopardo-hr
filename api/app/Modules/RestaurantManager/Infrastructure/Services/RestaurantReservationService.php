@@ -10,7 +10,7 @@ use App\Modules\RestaurantManager\Domain\Exceptions\RestaurantReservationConflic
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use RuntimeException;
 
 /**

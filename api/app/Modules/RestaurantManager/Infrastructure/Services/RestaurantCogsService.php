@@ -90,7 +90,7 @@ final class RestaurantCogsService
     /**
      * COGS d'un produit vendu = Σ (quantité d'ingrédient × coût moyen).
      *
-     * @param  array<int, int|null>  $avgCosts  ingrédient_id => avg_cost_minor
+     * @param  array<int, int>  $avgCosts  ingrédient_id => avg_cost_minor
      */
     private function productCogsMinor(RestaurantProduct $product, array $avgCosts): int
     {
@@ -98,11 +98,6 @@ final class RestaurantCogsService
 
         foreach ($product->ingredients as $ingredient) {
             $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
-
-            if ($avgCost === null) {
-                continue;
-            }
-
             $cogs += (int) round((float) $ingredient->quantity * (int) $avgCost);
         }
 

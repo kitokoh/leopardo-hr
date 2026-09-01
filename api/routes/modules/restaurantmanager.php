@@ -299,7 +299,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
         Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
         Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
-        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validate']);
+        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validateCode']);
         Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
         Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
         Route::get('/reports/products', [RestaurantReportController::class, 'products']);
