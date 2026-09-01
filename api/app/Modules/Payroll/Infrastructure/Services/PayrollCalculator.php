@@ -77,8 +77,8 @@ class PayrollCalculator
      * continuent d'appeler PayrollCalculator::collectWorkInputs().
      */
     /**
-     * @param  array{overtime_hours?: float}|null                          $attendanceAgg
-     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null $leaveAgg
+     * @param  array{overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
     public function collectWorkInputs(
@@ -444,7 +444,7 @@ class PayrollCalculator
      * golden, simulateurs, services) continuent d'appeler PayrollCalculator.
      */
     /**
-     * @param  array{distinct_days?: int, overtime_hours?: float}|null $attendanceAgg
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
      * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array
