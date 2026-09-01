@@ -82,6 +82,9 @@ use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantStockAlertCommand;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryZonePolicy;
 
 /**
  * Provider du module RestaurantManager (BC-25 RESTAURANT).
@@ -145,7 +148,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
-        ]);
+                    RestaurantStockAlertCommand::class,]);
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -204,5 +207,10 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
         Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
         Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+        Gate::policy(RestaurantInventoryMovement::class, RestaurantInventoryMovementPolicy::class);
+
+        Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
+
+        Gate::policy(RestaurantDeliveryZone::class, RestaurantDeliveryZonePolicy::class);
     }
 }

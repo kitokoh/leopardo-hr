@@ -159,6 +159,37 @@ class RestaurantReservationController extends Controller
         return $this->transition($request, $restaurantReservation, 'cancel');
     }
 
+    public function deposit(Request $request, RestaurantReservation $restaurantReservation): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantReservation->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('update', $restaurantReservation)) {
+            abort(403);
+        }
+
+        $request->validate([
+            'amount_minor' => ['required', 'integer', 'min:1'],
+        ]);
+
+        if ($restaurantReservation->deposit_minor !== null && (int) $restaurantReservation->deposit_minor > 0) {
+            return response()->json(['message' => 'Un dépôt existe déjà pour cette réservation.'], 422);
+        }
+
+        if (in_array($restaurantReservation->status->value, ['completed', 'cancelled', 'no_show'], true)) {
+            return response()->json(['message' => "Impossible d'enregistrer un dépôt sur une réservation terminée."], 422);
+        }
+
+        $restaurantReservation->deposit_minor = (int) $request->input('amount_minor');
+        $restaurantReservation->save();
+
+        return (new RestaurantReservationResource($restaurantReservation))->response();
+    }
+
     private function transition(Request $request, RestaurantReservation $reservation, string $action): JsonResponse
     {
         /** @var Employee $actor */
