@@ -575,7 +575,8 @@ paths:
       tags:
       - Accounting
       summary: Declencher les relances de paiement
-      description: 'Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais de doublon. Notification in-app aux managers principal/comptable. Issue #5229.'
+      description: 'Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais
+        de doublon. Notification in-app aux managers principal/comptable. Issue #5229.'
       responses:
         '200':
           description: Nombre de relances envoyees
@@ -620,7 +621,8 @@ paths:
       tags:
       - HR
       summary: 'Récapitulatif du préavis légal (issue #5325, G2)'
-      description: 'Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers, isole par tenant.'
+      description: 'Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers,
+        isole par tenant.'
       parameters:
       - name: employee
         in: path
@@ -673,7 +675,8 @@ paths:
       tags:
       - Payroll
       summary: Solde de tout compte (fin de contrat, F-08)
-      description: 'Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d''anciennete (1 mois/an, regime DZ documente). Reserve aux managers, isole par tenant.'
+      description: 'Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d''anciennete (1 mois/an, regime DZ documente). Reserve aux managers,
+        isole par tenant.'
       parameters:
       - name: employee
         in: path
@@ -7903,7 +7906,8 @@ paths:
       tags:
       - Payroll
       summary: 'Bordereau de paie d''un run (totaux par cotisation + recap, #5243)'
-      description: 'CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404).'
+      description: 'CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations
+        patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404).'
       parameters:
       - name: payrollRun
         in: path
@@ -9947,7 +9951,8 @@ paths:
       tags:
       - Platform
       summary: Envoyer un message a l'assistant IA (super-admin)
-      description: 'Reponse honnete cote plateforme (issue #2311) : l''IA conversationnelle est configuree PAR TENANT et la console super-admin est cross-tenant en lecture seule. L''envoi retourne une reponse structuree indiquant que l''assistant n''est pas disponible au niveau plateforme. Aucune ecriture cross-tenant.'
+      description: 'Reponse honnete cote plateforme (issue #2311) : l''IA conversationnelle est configuree PAR TENANT et la console super-admin est cross-tenant en lecture seule. L''envoi retourne une reponse
+        structuree indiquant que l''assistant n''est pas disponible au niveau plateforme. Aucune ecriture cross-tenant.'
       security:
       - SuperAdminBearerAuth: []
       requestBody:
@@ -11758,7 +11763,8 @@ paths:
       tags:
       - FuelStation
       summary: Roster de presence du shift pour une date (manager)
-      description: 'FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift.'
+      description: 'FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in
+        sort de la fenetre du shift.'
       security:
       - BearerAuth: []
       parameters:
@@ -14882,7 +14888,8 @@ paths:
       tags:
       - Notifications
       summary: Lister les annonces de l'entreprise
-      description: Un employe ne voit que les annonces publiees qui lui sont adressees (audience entreprise, departement ou employe) ; les managers principal/rh moderent aussi les brouillons et annonces planifiees.
+      description: Un employe ne voit que les annonces publiees qui lui sont adressees (audience entreprise, departement ou employe) ; les managers principal/rh moderent aussi les brouillons et annonces
+        planifiees.
       security:
       - BearerAuth: []
       parameters:
@@ -16342,7 +16349,8 @@ paths:
       tags:
       - AI
       summary: Exporter une conversation IA (asynchrone, idempotent)
-      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
+      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par
+        tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
       security:
       - BearerAuth: []
       parameters:
@@ -18591,7 +18599,8 @@ paths:
       tags:
       - Payroll Engine
       summary: Registre des pays supportes
-      description: 'Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non).'
+      description: 'Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite
+        (regles resolubles ou non).'
       operationId: listSupportedCountries
       responses:
         '200':
@@ -18732,7 +18741,8 @@ paths:
       tags:
       - Me
       summary: Telecharger mon bulletin archive dans le Cabinet (PDF)
-      description: 'Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne le PDF lui-meme : document archive si present, sinon repli sur le bulletin standard.'
+      description: 'Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne le PDF lui-meme : document
+        archive si present, sinon repli sur le bulletin standard.'
       operationId: archivedMyPaySlipDocument
       parameters:
       - name: paySlip
@@ -18900,7 +18910,8 @@ paths:
       tags:
       - Payroll
       summary: Previsualiser un cycle de paie candidat
-      description: PA2-PAY-003 - Permet a un manager de previsualiser la periode resultante et un total de paie estime pour une regle de cycle candidate (journalier/hebdomadaire/mensuel, jour de paie, debut de semaine) avant de l'enregistrer via PUT /payroll/cycle-settings. Lecture seule, ne persiste rien.
+      description: PA2-PAY-003 - Permet a un manager de previsualiser la periode resultante et un total de paie estime pour une regle de cycle candidate (journalier/hebdomadaire/mensuel, jour de paie, debut
+        de semaine) avant de l'enregistrer via PUT /payroll/cycle-settings. Lecture seule, ne persiste rien.
       parameters:
       - in: query
         name: pay_cycle
@@ -19360,7 +19371,8 @@ paths:
       tags:
       - Payroll
       summary: 'Lister les enregistrements d''audit des calculs de paie (manager principal/RH) — issue #1874'
-      description: 'Audit immuable des calculs (runs de paie + simulations) du tenant courant : lecture seule, isolation tenant stricte (la liste est scopée à la société de l''acteur). RBAC : manager principal/RH (PayrollAuditPolicy).'
+      description: 'Audit immuable des calculs (runs de paie + simulations) du tenant courant : lecture seule, isolation tenant stricte (la liste est scopée à la société de l''acteur). RBAC : manager principal/RH
+        (PayrollAuditPolicy).'
       operationId: listPayrollAudits
       parameters:
       - name: status
@@ -19408,7 +19420,8 @@ paths:
       tags:
       - Payroll
       summary: 'Détail d''un enregistrement d''audit de calcul de paie (manager principal/RH) — issue #1874'
-      description: Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. 404 si l'enregistrement n'appartient pas au tenant courant.
+      description: Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. 404 si l'enregistrement n'appartient
+        pas au tenant courant.
       operationId: getPayrollAudit
       parameters:
       - name: correlationId
@@ -19625,7 +19638,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNSS mensuelle Côte d''Ivoire — CSV (CEDEAO #1830)'
-      description: 'CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75 %, AT 2 %, totaux) + TOTAUX. 422 si le run n''est pas CI. RBAC manager ; 404 cross-tenant.'
+      description: 'CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75
+        %, AT 2 %, totaux) + TOTAUX. 422 si le run n''est pas CI. RBAC manager ; 404 cross-tenant.'
       operationId: downloadCnssCiDeclaration
       parameters:
       - name: payrollRun
@@ -19653,7 +19667,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)'
-      description: 'CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 7 %) + TOTAUX. 422 si le run n''est pas SN. RBAC manager ; 404 cross-tenant.'
+      description: 'CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2
+        cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 7 %) + TOTAUX. 422 si le run n''est pas SN. RBAC manager ; 404 cross-tenant.'
       operationId: downloadIpresSnDeclaration
       parameters:
       - name: payrollRun
@@ -19681,7 +19696,9 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)'
-      description: 'Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CM.'
+      description: 'Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale
+        7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant
+        ; 422 si le run n''est pas un run CM.'
       operationId: downloadCnpsCmDeclaration
       parameters:
       - name: payrollRun
@@ -19710,7 +19727,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)'
-      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee, plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run GA.'
+      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee,
+        plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run GA.'
       operationId: downloadCnssGaDeclaration
       parameters:
       - name: payrollRun
@@ -19738,7 +19756,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)'
-      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee, plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CG.'
+      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee,
+        plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CG.'
       operationId: downloadCnssCgDeclaration
       parameters:
       - name: payrollRun
@@ -19766,7 +19785,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)'
-      description: 'CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale 7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas BF.'
+      description: 'CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale
+        7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas BF.'
       operationId: downloadCnssBfDeclaration
       parameters:
       - name: payrollRun
@@ -19794,7 +19814,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)'
-      description: 'CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale 4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas ML.'
+      description: 'CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale
+        4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas ML.'
       operationId: downloadInpsMlDeclaration
       parameters:
       - name: payrollRun
@@ -19822,7 +19843,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Créer un run de régularisation (DZ-DEPTH #1818)'
-      description: Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon).
+      description: Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created.
+        Seul un run `locked` est régularisable (422 sinon).
       operationId: regularizePayrollRun
       parameters:
       - name: payrollRun
@@ -20488,7 +20510,8 @@ paths:
       tags:
       - Platform Admin
       summary: Lister les fêtes islamiques d'une année (super-admin)
-      description: 'Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement accessible au super-admin (guard super_admin_api).'
+      description: 'Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement
+        accessible au super-admin (guard super_admin_api).'
       operationId: listIslamicCalendar
       parameters:
       - name: year
@@ -21258,7 +21281,8 @@ paths:
       tags:
       - Payroll Engine
       summary: Creer une regle de cotisation sociale (manager)
-      description: 'PA2-ARCH-004 : l''unicite de ''code'' est scopee par (company_id, effective_from), pas globale, pour permettre un nouveau taux date sans supprimer l''historique utilise par d''anciennes sessions de paie.'
+      description: 'PA2-ARCH-004 : l''unicite de ''code'' est scopee par (company_id, effective_from), pas globale, pour permettre un nouveau taux date sans supprimer l''historique utilise par d''anciennes
+        sessions de paie.'
       operationId: createSocialContribution
       requestBody:
         required: true
@@ -21628,7 +21652,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Generer la declaration annuelle des salaires DAS (Algerie, #5243)'
-      description: 'Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l''annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net + ligne TOTAUX. Reserve aux managers principal/comptable.'
+      description: 'Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l''annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net +
+        ligne TOTAUX. Reserve aux managers principal/comptable.'
       operationId: generateDasDzDeclaration
       requestBody:
         required: true
@@ -21728,7 +21753,9 @@ paths:
       tags:
       - Payroll Engine
       summary: Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)
-      description: 'Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown) — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles et politique d''arrondi (docs/payroll/CALCULATION_CONTRACT.md).'
+      description: 'Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown)
+        — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles
+        et politique d''arrondi (docs/payroll/CALCULATION_CONTRACT.md).'
       operationId: simulateCotisations
       requestBody:
         required: true
@@ -21964,7 +21991,8 @@ paths:
       tags:
       - Accounting
       summary: 'Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223)'
-      description: Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes (TVA incluse).
+      description: Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes
+        (TVA incluse).
       requestBody:
         required: true
         content:
@@ -24705,7 +24733,8 @@ paths:
       tags:
       - Exports
       summary: Export CSV mensuel des presences par employe
-      description: Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export canonique avec historique. Manager uniquement.
+      description: Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export
+        canonique avec historique. Manager uniquement.
       parameters:
       - name: month
         in: query
@@ -25161,7 +25190,8 @@ paths:
       tags:
       - Platform
       summary: Callback OpenID Connect (IdP -> SP)
-      description: 'Endpoint public recevant le code/id_token OIDC : verifie le state, echange le code contre les tokens, valide l''id_token (signature JWKS + iss/aud/exp/nonce) et emet un token Sanctum pour l''employe identifie (issue #2231).'
+      description: 'Endpoint public recevant le code/id_token OIDC : verifie le state, echange le code contre les tokens, valide l''id_token (signature JWKS + iss/aud/exp/nonce) et emet un token Sanctum
+        pour l''employe identifie (issue #2231).'
       security: []
       parameters:
       - name: companyId
@@ -26695,7 +26725,8 @@ paths:
       tags:
       - CRM
       summary: Convertir un lead en account + contact + opportunity
-      description: 'Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom.'
+      description: 'Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même
+        nom.'
       security:
       - BearerAuth: []
       parameters:
@@ -26918,7 +26949,8 @@ paths:
       tags:
       - CRM
       summary: Uploader et prévisualiser un import CSV CRM (preview sans écriture)
-      description: 'Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d''import en statut previewed avec compteurs, erreurs par ligne et aperçu PII masqué. Issue #5714.'
+      description: 'Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d''import en statut previewed avec compteurs,
+        erreurs par ligne et aperçu PII masqué. Issue #5714.'
       security:
       - BearerAuth: []
       requestBody:
@@ -27332,7 +27364,8 @@ paths:
       tags:
       - Marketing
       summary: Publier immediatement ou (re)planifier une publication
-      description: scheduled_at absent = publication immediate via l'agregateur Ayrshare (SocialPublishingService::publishNow) ; scheduled_at futur = planification (statut scheduled), publie automatiquement par le job PublishScheduledSocialPost quand echu.
+      description: scheduled_at absent = publication immediate via l'agregateur Ayrshare (SocialPublishingService::publishNow) ; scheduled_at futur = planification (statut scheduled), publie automatiquement
+        par le job PublishScheduledSocialPost quand echu.
       security:
       - BearerAuth: []
       parameters:
@@ -29045,7 +29078,8 @@ paths:
       tags:
       - Accounting
       summary: Activer le module Comptabilite (wizard 4 etapes,
-      description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture d''exemple. Idempotent (RBAC principal/comptable).'
+      description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture
+        d''exemple. Idempotent (RBAC principal/comptable).'
       security:
       - BearerAuth: []
       requestBody:
@@ -29101,7 +29135,8 @@ paths:
       tags:
       - Accounting
       summary: 'Audit trail du module Comptabilité (qui/quoi/quand, #5273)'
-      description: Evenements accounting.* (creation, envoi, paiement, annulation, avoir) journalises via DataAccessAuditLogger. Scope tenant, reserve aux managers principal/comptable (le endpoint global /audit-logs reste principal-only). Lecture seule, append-only.
+      description: Evenements accounting.* (creation, envoi, paiement, annulation, avoir) journalises via DataAccessAuditLogger. Scope tenant, reserve aux managers principal/comptable (le endpoint global
+        /audit-logs reste principal-only). Lecture seule, append-only.
       parameters:
       - name: per_page
         in: query
@@ -29440,7 +29475,9 @@ paths:
       tags:
       - Accounting
       summary: Audit des accès au portail client pour un document partagé (#5522)
-      description: 'Réponse à incident RGPD (loi 18-07) : qui a consulté / téléchargé un document partagé, quand, depuis quelle IP. Liste paginée (date décroissante) des événements accounting.share.info / accounting.share.download tracés par le portail public (#5429/#5520), pour tous les partages du document. RBAC managers principal/comptable ; isolation tenant fail-closed (document inconnu ou cross-tenant → 404). Le share_token n''est jamais exposé.'
+      description: 'Réponse à incident RGPD (loi 18-07) : qui a consulté / téléchargé un document partagé, quand, depuis quelle IP. Liste paginée (date décroissante) des événements accounting.share.info
+        / accounting.share.download tracés par le portail public (#5429/#5520), pour tous les partages du document. RBAC managers principal/comptable ; isolation tenant fail-closed (document inconnu ou
+        cross-tenant → 404). Le share_token n''est jamais exposé.'
       parameters:
       - name: document
         in: path
@@ -30053,7 +30090,8 @@ paths:
       tags:
       - Expenses
       summary: Ecritures comptables d'une note de frais approuvee (#5235)
-      description: Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable, isolation tenant (404).
+      description: Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable,
+        isolation tenant (404).
       parameters:
       - name: expenseClaim
         in: path
@@ -30252,7 +30290,8 @@ paths:
       tags:
       - Payroll
       summary: Ecrires comptables d'un run de paie valide (#5239)
-      description: Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines(). Reserve aux managers principal/comptable, isolation tenant (404).
+      description: Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines().
+        Reserve aux managers principal/comptable, isolation tenant (404).
       parameters:
       - name: payrollRun
         in: path
@@ -30317,7 +30356,8 @@ paths:
       tags:
       - Payroll
       summary: Preparer un ordre de virement pour un run valide (comptable)
-      description: Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable (403 sinon).
+      description: Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable
+        (403 sinon).
       parameters:
       - name: payrollRun
         in: path
@@ -30400,7 +30440,8 @@ paths:
       tags:
       - Attendance
       summary: Verrouiller la journée d'un employé (manager/RH/principal)
-      description: 'Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n''est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED. Issue #5265.'
+      description: 'Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n''est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED.
+        Issue #5265.'
       security:
       - BearerAuth: []
       requestBody:
@@ -30803,7 +30844,8 @@ paths:
       tags:
       - Accounting
       summary: Lancer le rapprochement automatique
-      description: 'Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal. Issue #5435.'
+      description: 'Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal.
+        Issue #5435.'
       security:
       - BearerAuth: []
       parameters:
@@ -37668,7 +37710,8 @@ components:
           format: date-time
     Compliance:
       type: object
-      description: 'Issue #1872/#2116 — niveau de confiance des règles pays appliquées à un calcul ou un bulletin. `level` : production | pilot | placeholder | unknown. `warning_key` pointe le catalogue i18n `payroll.compliance_warning_{level}` ; `source` référence la fiche compliance pays ; `verification_date` (nullable) = date de la dernière validation experte (registre docs/payroll/VALIDATION_EXPERTE.md).'
+      description: 'Issue #1872/#2116 — niveau de confiance des règles pays appliquées à un calcul ou un bulletin. `level` : production | pilot | placeholder | unknown. `warning_key` pointe le catalogue
+        i18n `payroll.compliance_warning_{level}` ; `source` référence la fiche compliance pays ; `verification_date` (nullable) = date de la dernière validation experte (registre docs/payroll/VALIDATION_EXPERTE.md).'
       properties:
         level:
           type: string
@@ -37755,7 +37798,8 @@ components:
         compliance:
           type: object
           nullable: true
-          description: 'Issue #2143/#1872 — bloc de conformité paie du pays (niveau, avertissement localisé, source légale, date de vérification experte). Null quand le pays n''est pas supporté par le moteur (rétro-compatible : aucun affichage côté client).'
+          description: 'Issue #2143/#1872 — bloc de conformité paie du pays (niveau, avertissement localisé, source légale, date de vérification experte). Null quand le pays n''est pas supporté par le moteur
+            (rétro-compatible : aucun affichage côté client).'
           properties:
             level:
               type: string
@@ -38086,7 +38130,8 @@ components:
           format: date-time
     PayrollCalculationAudit:
       type: object
-      description: 'Issue #1874 — enregistrement d''audit immuable d''un calcul de paie (run ou simulation) : contexte de règles (pays, période, version), paramètres d''entrée agrégés NON sensibles, résultats agrégés et statut de résolution — de quoi expliquer/reproduire/auditer un résultat sans exposer de données individuelles ni de secrets.'
+      description: 'Issue #1874 — enregistrement d''audit immuable d''un calcul de paie (run ou simulation) : contexte de règles (pays, période, version), paramètres d''entrée agrégés NON sensibles, résultats
+        agrégés et statut de résolution — de quoi expliquer/reproduire/auditer un résultat sans exposer de données individuelles ni de secrets.'
       properties:
         id:
           type: integer
@@ -38206,7 +38251,8 @@ components:
           format: date-time
     TaxRateChangeLog:
       type: object
-      description: 'Entrée de l''audit trail immuable (tax_rate_change_log) retournée par GET /tax-slabs/{id}/history et /social-contributions/{id}/history — aligné sur la réponse réelle des contrôleurs (issue #1926).'
+      description: 'Entrée de l''audit trail immuable (tax_rate_change_log) retournée par GET /tax-slabs/{id}/history et /social-contributions/{id}/history — aligné sur la réponse réelle des contrôleurs
+        (issue #1926).'
       properties:
         id:
           type: integer
@@ -38609,7 +38655,9 @@ components:
           format: date-time
     SocialContribution:
       type: object
-      description: 'ATTENTION (voir issue trackee dans ce depot) : SocialContributionResource expose employee_rate/employer_rate/is_active mais le modele SocialContribution n''a que rate (unique, selon type=employee|employer) et pas de colonne is_active ; ces trois champs sont donc toujours null en pratique tant que la Resource n''est pas corrigee pour refleter les vraies colonnes du modele (rate, type, cap).'
+      description: 'ATTENTION (voir issue trackee dans ce depot) : SocialContributionResource expose employee_rate/employer_rate/is_active mais le modele SocialContribution n''a que rate (unique, selon
+        type=employee|employer) et pas de colonne is_active ; ces trois champs sont donc toujours null en pratique tant que la Resource n''est pas corrigee pour refleter les vraies colonnes du modele (rate,
+        type, cap).'
       properties:
         id:
           type: integer
@@ -39732,6 +39780,120 @@ components:
         period_to:
           type: string
           format: date
+        period:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        invoices:
+          type: object
+          description: 'Factures émises (glossaire BC-22 : documents client émis sur la période).'
+          properties:
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              format: double
+        collections:
+          type: object
+          description: 'Encaissements (glossaire BC-22 : paiements reçus sur la période).'
+          properties:
+            count:
+              type: integer
+            total:
+              type: number
+              format: double
+        expenses:
+          type: object
+          description: Dépenses fournisseurs (glossaire BC-22).
+          properties:
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              format: double
+        outstanding:
+          type: object
+          description: 'Impayés (glossaire BC-22 : total_ttc > paid_amount) + aging.'
+          properties:
+            count:
+              type: integer
+            total_due:
+              type: number
+              format: double
+            aging:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: string
+                    enum:
+                    - 24
+                    - 3160
+                    - 6190
+                    - 90_plus
+                  count:
+                    type: integer
+                  total_due:
+                    type: number
+                    format: double
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  number:
+                    type: string
+                  contact:
+                    type: string
+                  issue_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  due_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  days_late:
+                    type: integer
+                  total_ttc:
+                    type: number
+                    format: double
+                  paid_amount:
+                    type: number
+                    format: double
+                  due_amount:
+                    type: number
+                    format: double
+                  status:
+                    type: string
+        snapshot:
+          type: object
+          description: Fraîcheur du read model — live tant qu aucun snapshot n est activé, sinon source snapshot + version + refreshed_at.
+          properties:
+            source:
+              type: string
+              enum:
+              - live
+              - snapshot
+            report:
+              type: string
+              nullable: true
+            version:
+              type: integer
+              nullable: true
+            refreshed_at:
+              type: string
+              format: date-time
+              nullable: true
+      description: 'Synthèse de pilotage du dashboard comptable (issue #5230, BC-22). Le bloc snapshot expose la fraîcheur du read model (BC-22-D10, issue #6243).'
     AttendanceDayClosure:
       type: object
       properties:
