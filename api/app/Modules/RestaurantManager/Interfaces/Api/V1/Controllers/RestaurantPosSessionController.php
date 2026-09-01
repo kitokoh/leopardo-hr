@@ -37,7 +37,9 @@ class RestaurantPosSessionController extends Controller
             abort(403);
         }
 
-        $session = $this->openAction->open($actor, $request->validated());
+        /** @var array{opening_cash_minor: int, branch_id: int} $data */
+        $data = $request->validated();
+        $session = $this->openAction->open($actor, $data);
 
         return (new RestaurantPosSessionResource($session))->response()->setStatusCode(201);
     }
@@ -96,7 +98,9 @@ class RestaurantPosSessionController extends Controller
             abort(403);
         }
 
-        $session = $this->closeAction->close($actor, $restaurantPosSession, $request->validated());
+        /** @var array{counted_cash_minor: int, variance_reason?: string|null} $data */
+        $data = $request->validated();
+        $session = $this->closeAction->close($actor, $restaurantPosSession, $data);
 
         return (new RestaurantPosSessionResource($session))->response();
     }
