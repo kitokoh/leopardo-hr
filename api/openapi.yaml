@@ -22041,6 +22041,162 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /solutions:
+    get:
+      tags:
+      - Solutions
+      summary: Liste des solutions sectorielles disponibles
+      description: Catalogue public des solutions (allowlist serveur) - code, nom, description, maturite.
+      security:
+      - []
+      responses:
+        '200':
+          description: Liste des solutions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        maturity:
+                          type: string
+  /solutions/{code}/survey:
+    get:
+      tags:
+      - Solutions
+      summary: Questions du questionnaire de pre-qualification d'une solution
+      description: Retourne les questions et le catalogue de packages de la solution (sans auth, vitrine).
+      security:
+      - []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Questions + catalogue de packages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      questions:
+                        type: array
+                        items:
+                          type: object
+                      packages:
+                        type: array
+                        items:
+                          type: object
+        '404':
+          description: SOLUTION_SURVEY_NOT_FOUND
+    post:
+      tags:
+      - Solutions
+      summary: Evaluer les reponses et retourner le pack suggere
+      description: Regles deterministes cote serveur (aucune IA) - packages tries par priorite, chacun avec sa raison i18n.
+      security:
+      - []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - answers
+              properties:
+                answers:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Pack suggere
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      packages:
+                        type: array
+                        items:
+                          type: object
+                      total:
+                        type: integer
+        '404':
+          description: SOLUTION_SURVEY_NOT_FOUND
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /solutions/{code}/pack:
+    get:
+      tags:
+      - Solutions
+      summary: Guide PDF personnalise du pack d'une solution
+      description: PDF A4 genere avec dompdf (deja en deps), localise via les fichiers lang serveur solutions.*.
+      security:
+      - []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: packages
+        in: query
+        required: true
+        description: Cles de packages separees par des virgules (validees contre le catalogue)
+        schema:
+          type: string
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - fr
+          - en
+          - tr
+          - ar
+      responses:
+        '200':
+          description: 'PDF (Content-Disposition: attachment)'
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: SOLUTION_SURVEY_NOT_FOUND
+        '422':
+          description: INVALID_PACKAGES
   /onboarding-setup/checklist:
     get:
       tags:

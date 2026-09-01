@@ -3464,6 +3464,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get navigationNotfound => 'Page non trouvee';
 
   @override
+  String get navigationTravelagency => 'Agence de voyage';
+
+  @override
   String get webhooksConfirmDelete => 'Supprimer ce webhook ?';
 
   @override
@@ -8440,7 +8443,348 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restaurantLoading => 'Chargement de la file cuisine…';
 
   @override
-  String get navigationTravelagency => 'Agence de voyage';
+  String get restaurantShopTitle => 'Commande en ligne';
+
+  @override
+  String get restaurantShopSubtitle =>
+      'Menu public — commandez en quelques clics.';
+
+  @override
+  String get restaurantShopMenu => 'Menu';
+
+  @override
+  String get restaurantShopCart => 'Panier';
+
+  @override
+  String get restaurantShopEmptycart => 'Votre panier est vide.';
+
+  @override
+  String get restaurantShopAdd => 'Ajouter';
+
+  @override
+  String get restaurantShopAdded => 'Ajouté';
+
+  @override
+  String get restaurantShopCategoryall => 'Tout';
+
+  @override
+  String get restaurantShopPrice => 'Prix';
+
+  @override
+  String get restaurantShopSubtotal => 'Sous-total';
+
+  @override
+  String get restaurantShopTax => 'Taxe';
+
+  @override
+  String get restaurantShopTotal => 'Total';
+
+  @override
+  String get restaurantShopPhone => 'Téléphone (optionnel)';
+
+  @override
+  String get restaurantShopPhonehint =>
+      'Pour être prévenu de l\'état de votre commande.';
+
+  @override
+  String get restaurantShopCheckout => 'Commander';
+
+  @override
+  String get restaurantShopOrdering => 'Commande en cours…';
+
+  @override
+  String get restaurantShopOrdercreated => 'Commande confirmée';
+
+  @override
+  String get restaurantShopOrderref => 'Référence';
+
+  @override
+  String get restaurantShopOrderstatus => 'Statut';
+
+  @override
+  String get restaurantShopTrack => 'Suivre la commande';
+
+  @override
+  String get restaurantShopPay => 'Payer';
+
+  @override
+  String get restaurantShopPaying => 'Paiement…';
+
+  @override
+  String get restaurantShopPayhint =>
+      'Paiement à l\'encaissement ou mobile money.';
+
+  @override
+  String get restaurantShopMissingtoken =>
+      'Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.';
+
+  @override
+  String get restaurantShopLoaderror =>
+      'Impossible de charger le menu. Réessayez.';
+
+  @override
+  String get restaurantShopRetry => 'Réessayer';
+
+  @override
+  String get restaurantShopBacktomenu => 'Retour au menu';
+
+  @override
+  String get restaurantShopInvalidtoken => 'Jeton boutique invalide ou expiré.';
+
+  @override
+  String get restaurantShopItems => 'articles';
+
+  @override
+  String get restaurantShopQuantity => 'Qté';
+
+  @override
+  String get restaurantShopRemove => 'Retirer';
+
+  @override
+  String get restaurantShopCurrency => 'devise';
+
+  @override
+  String get restaurantMobileHubTitle => 'Restaurant';
+
+  @override
+  String get restaurantMobileHubSubtitle =>
+      'Outils de service, livraison et gestion';
+
+  @override
+  String get restaurantMobileBack => 'Retour';
+
+  @override
+  String restaurantMobileOfflinePending(Object count) {
+    return '$count opération(s) hors ligne en attente de rejeu';
+  }
+
+  @override
+  String get restaurantMobileOfflineSynced => 'Synchronisation effectuée';
+
+  @override
+  String get restaurantMobileOfflineReplay => 'Rejouer';
+
+  @override
+  String get restaurantMobileHubServer => 'Service';
+
+  @override
+  String get restaurantMobileHubServerDesc =>
+      'File de commandes, plan de salle, encaissement';
+
+  @override
+  String get restaurantMobileHubRider => 'Livraison';
+
+  @override
+  String get restaurantMobileHubRiderDesc =>
+      'Tournées assignées et transitions';
+
+  @override
+  String get restaurantMobileHubManager => 'Gestion';
+
+  @override
+  String get restaurantMobileHubManagerDesc =>
+      'KPIs du jour, alertes stock, clôture de caisse';
+
+  @override
+  String get restaurantMobileHubFooter =>
+      'Les montants et transitions sont validés côté serveur. En cas de coupure réseau, les opérations sont mises en file et rejouées sans doublon.';
+
+  @override
+  String get restaurantMobileServerTitle => 'Service';
+
+  @override
+  String get restaurantMobileServerSubtitle =>
+      'File de commandes et plan de salle';
+
+  @override
+  String get restaurantMobileServerTables => 'Tables occupées';
+
+  @override
+  String get restaurantMobileServerTablesLoading => 'Chargement des tables…';
+
+  @override
+  String get restaurantMobileServerTablesError => 'Tables indisponibles';
+
+  @override
+  String get restaurantMobileServerNoTables => 'Aucune table ouverte';
+
+  @override
+  String get restaurantMobileServerQueue => 'File de service';
+
+  @override
+  String get restaurantMobileServerOrdersLoading => 'Chargement des commandes…';
+
+  @override
+  String get restaurantMobileServerOrdersError => 'Commandes indisponibles';
+
+  @override
+  String get restaurantMobileServerNoOrders => 'Aucune commande active';
+
+  @override
+  String restaurantMobileServerItemsCount(Object count) {
+    return '$count article(s)';
+  }
+
+  @override
+  String get restaurantMobileStatusOpen => 'ouverte';
+
+  @override
+  String get restaurantMobileStatusInPreparation => 'en préparation';
+
+  @override
+  String get restaurantMobileStatusReady => 'prête';
+
+  @override
+  String get restaurantMobileStatusServed => 'servie';
+
+  @override
+  String get restaurantMobileServerServe => 'Servir';
+
+  @override
+  String get restaurantMobileServerPay => 'Encaisser';
+
+  @override
+  String restaurantMobileServerServedOk(Object reference) {
+    return 'Commande $reference servie';
+  }
+
+  @override
+  String get restaurantMobileServerServeError =>
+      'Impossible de servir la commande';
+
+  @override
+  String restaurantMobileServerPayTitle(Object reference) {
+    return 'Encaissement $reference';
+  }
+
+  @override
+  String get restaurantMobileServerAmountLabel => 'Montant reçu';
+
+  @override
+  String get restaurantMobileServerTipLabel => 'Pourboire (optionnel)';
+
+  @override
+  String get restaurantMobileCancel => 'Annuler';
+
+  @override
+  String get restaurantMobileInvalidAmount => 'Montant invalide';
+
+  @override
+  String restaurantMobileServerPaidOk(Object reference) {
+    return '$reference encaissée';
+  }
+
+  @override
+  String get restaurantMobileServerOfflineQueued =>
+      'Hors ligne : opération mise en file, rejeu automatique';
+
+  @override
+  String get restaurantMobileRiderSubtitle => 'Tournées assignées';
+
+  @override
+  String get restaurantMobileRiderLoading => 'Chargement des livraisons…';
+
+  @override
+  String get restaurantMobileRiderError => 'Livraisons indisponibles';
+
+  @override
+  String get restaurantMobileRiderEmpty => 'Aucune livraison assignée';
+
+  @override
+  String get restaurantMobileRiderCustomer => 'Client';
+
+  @override
+  String get restaurantMobileStatusAssigned => 'assignée';
+
+  @override
+  String get restaurantMobileStatusOutForDelivery => 'en cours';
+
+  @override
+  String get restaurantMobileStatusDelivered => 'livrée';
+
+  @override
+  String get restaurantMobileRiderDepart => 'Départ';
+
+  @override
+  String get restaurantMobileRiderDeparted => 'Départ en livraison';
+
+  @override
+  String get restaurantMobileRiderDeliver => 'Livrée';
+
+  @override
+  String get restaurantMobileRiderDeliveredOk => 'Livraison effectuée';
+
+  @override
+  String get restaurantMobileRiderTransitionError =>
+      'Transition impossible depuis cet état';
+
+  @override
+  String get restaurantMobileManagerSubtitle => 'KPIs, stock et caisse';
+
+  @override
+  String get restaurantMobileManagerKpisLoading => 'Chargement des KPIs…';
+
+  @override
+  String get restaurantMobileManagerKpisError => 'KPIs indisponibles';
+
+  @override
+  String get restaurantMobileManagerRevenueToday => 'Chiffre du jour';
+
+  @override
+  String get restaurantMobileManagerOrders => 'Commandes';
+
+  @override
+  String get restaurantMobileManagerAvgBasket => 'Panier moyen';
+
+  @override
+  String get restaurantMobileManagerTablesOpen => 'Tables ouvertes';
+
+  @override
+  String get restaurantMobileManagerCash => 'Caisse';
+
+  @override
+  String get restaurantMobileManagerSessionError => 'Session indisponible';
+
+  @override
+  String get restaurantMobileManagerNoSession =>
+      'Aucune session de caisse ouverte';
+
+  @override
+  String get restaurantMobileManagerSessionOpen => 'ouverte';
+
+  @override
+  String get restaurantMobileManagerClose => 'Clôturer';
+
+  @override
+  String get restaurantMobileManagerCloseTitle => 'Clôturer la caisse';
+
+  @override
+  String get restaurantMobileManagerCountedLabel => 'Compté en caisse';
+
+  @override
+  String get restaurantMobileManagerClosedOk => 'Caisse clôturée';
+
+  @override
+  String get restaurantMobileManagerCloseError => 'Clôture impossible';
+
+  @override
+  String get restaurantMobileManagerStockAlerts => 'Alertes stock';
+
+  @override
+  String get restaurantMobileManagerStockAlertsError => 'Alertes indisponibles';
+
+  @override
+  String get restaurantMobileManagerNoStockAlerts => 'Aucune alerte de seuil';
+
+  @override
+  String restaurantMobileManagerIngredient(Object id) {
+    return 'Ingrédient #$id';
+  }
+
+  @override
+  String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
+    return 'Stock : $quantity / seuil : $threshold';
+  }
 
   @override
   String get travelLoading => 'Chargement…';
@@ -8489,6 +8833,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelTabRentals => 'Locations & Hôtels';
+
+  @override
+  String get travelTabQuizzes => 'Quiz';
+
+  @override
+  String get travelTabAdverts => 'Annonces';
+
+  @override
+  String get travelTabSites => 'Sites touristiques';
+
+  @override
+  String get travelTabContacts => 'Contacts';
 
   @override
   String get travelReferentielTabslabel => 'Sous-sections du référentiel';
@@ -8581,6 +8937,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelSearchHotel => 'Rechercher un hôtel…';
+
+  @override
+  String get travelSearchQuiz => 'Rechercher un quiz…';
+
+  @override
+  String get travelSearchAdvert => 'Rechercher une annonce…';
+
+  @override
+  String get travelSearchSite => 'Rechercher un site…';
+
+  @override
+  String get travelSearchContact => 'Rechercher un contact…';
 
   @override
   String get travelFieldIso2 => 'ISO2';
@@ -9160,4 +9528,275 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelFormMoneyminor => 'Montant en devises (1 = 100 minor)';
+
+  @override
+  String get travelQuizTitle => 'Quiz & jeux-concours';
+
+  @override
+  String get travelQuizSubtitle =>
+      'Créez des quiz, ajoutez des questions et consultez les participations.';
+
+  @override
+  String get travelQuizQuestionstitle => 'Questions du quiz';
+
+  @override
+  String get travelQuizResultstitle => 'Résultats';
+
+  @override
+  String get travelQuizFieldQuestion => 'Question';
+
+  @override
+  String get travelQuizFieldOptions => 'Choix';
+
+  @override
+  String get travelQuizFieldPoints => 'Points';
+
+  @override
+  String get travelQuizFieldCorrectindex => 'Index de la bonne réponse';
+
+  @override
+  String get travelQuizFieldMaxparticipations =>
+      'Participations max. par contact';
+
+  @override
+  String get travelQuizFieldParticipantname => 'Nom';
+
+  @override
+  String get travelQuizFieldParticipantemail => 'Email';
+
+  @override
+  String get travelQuizFieldScore => 'Score';
+
+  @override
+  String get travelQuizFieldBonus => 'Bonus';
+
+  @override
+  String get travelQuizFieldSubmittedat => 'Soumis le';
+
+  @override
+  String get travelQuizActionQuestions => 'Questions';
+
+  @override
+  String get travelQuizActionResults => 'Résultats';
+
+  @override
+  String get travelQuizActionAddquestion => 'Ajouter une question';
+
+  @override
+  String get travelQuizHintOptions => 'Une option par ligne.';
+
+  @override
+  String get travelQuizHintCorrectindex => 'Commence à 0 (première ligne = 0).';
+
+  @override
+  String get travelQuizstatusDraft => 'Brouillon';
+
+  @override
+  String get travelQuizstatusActive => 'Actif';
+
+  @override
+  String get travelQuizstatusClosed => 'Clôturé';
+
+  @override
+  String get travelAdvertsTabslabel => 'Sous-sections annonces';
+
+  @override
+  String get travelAdvertsTabtypes => 'Types';
+
+  @override
+  String get travelAdvertsTabpositions => 'Emplacements';
+
+  @override
+  String get travelAdvertsTabprices => 'Grille tarifaire';
+
+  @override
+  String get travelAdvertsTabadverts => 'Annonces';
+
+  @override
+  String get travelAdvertsTitle => 'Annonces payantes';
+
+  @override
+  String get travelAdvertsSubtitle =>
+      'Soumettre, encaisser, valider/rejeter et renouveler les annonces.';
+
+  @override
+  String get travelAdvertsCreatetitle => 'Soumettre une annonce';
+
+  @override
+  String get travelAdvertsTypes => 'Types d’annonces';
+
+  @override
+  String get travelAdvertsPositions => 'Emplacements publicitaires';
+
+  @override
+  String get travelAdvertsPrices => 'Grille tarifaire';
+
+  @override
+  String get travelAdvertsFieldType => 'Type';
+
+  @override
+  String get travelAdvertsFieldPosition => 'Emplacement';
+
+  @override
+  String get travelAdvertsFieldValiditydays => 'Durée de validité (jours)';
+
+  @override
+  String get travelAdvertsFieldContent => 'Contenu';
+
+  @override
+  String get travelAdvertsFieldPrice => 'Prix';
+
+  @override
+  String get travelAdvertsFieldPriceperimage => 'Prix par image';
+
+  @override
+  String get travelAdvertsFieldPricepercharacter => 'Prix par caractère';
+
+  @override
+  String get travelAdvertsFieldExpiresat => 'Expire le';
+
+  @override
+  String get travelAdvertsFieldRejectreason => 'Motif du rejet';
+
+  @override
+  String get travelAdvertsActionRenew => 'Renouveler';
+
+  @override
+  String get travelAdvertsActionSubmit => 'Soumettre';
+
+  @override
+  String get travelAdvertsActionPay => 'Encaisser';
+
+  @override
+  String get travelAdvertsActionValidate => 'Valider';
+
+  @override
+  String get travelAdvertsActionReject => 'Rejeter';
+
+  @override
+  String get travelAdvertsRejecttitle => 'Rejeter l’annonce';
+
+  @override
+  String get travelAdvertsRejecttarget => 'Annonce';
+
+  @override
+  String get travelSitesTitle => 'Sites touristiques';
+
+  @override
+  String get travelSitesSubtitle =>
+      'Lieux d’intérêt avec localisation et recherche par ville.';
+
+  @override
+  String get travelSitesFiltercity => 'Filtrer par ville';
+
+  @override
+  String get travelSitesAllcities => 'Toutes les villes';
+
+  @override
+  String get travelSitesStatusdisabled => 'Désactivé';
+
+  @override
+  String get travelSitesFieldLatitude => 'Latitude';
+
+  @override
+  String get travelSitesFieldLongitude => 'Longitude';
+
+  @override
+  String get travelContactsFormtitle => 'Formulaire de contact';
+
+  @override
+  String get travelContactsFormsubtitle =>
+      'Saisir une demande de contact — le consentement email est obligatoire.';
+
+  @override
+  String get travelContactsRegistrytitle => 'Registre des contacts';
+
+  @override
+  String get travelContactsRegistrysubtitle =>
+      'Consentements par canal (opt-in/opt-out horodaté) et notification manuelle.';
+
+  @override
+  String get travelContactsRegistryunavailable =>
+      'Registre indisponible — endpoint de liste non encore livré sur ce déploiement.';
+
+  @override
+  String get travelContactsConsentlabel =>
+      'J’accepte d’être contacté par email au sujet de ma demande.';
+
+  @override
+  String get travelContactsConsenton => 'Consenti';
+
+  @override
+  String get travelContactsConsentoff => 'Non consenti';
+
+  @override
+  String get travelContactsNotifytitle => 'Notification manuelle';
+
+  @override
+  String get travelContactsNotifytarget => 'Destinataire';
+
+  @override
+  String get travelContactsNotifyhint =>
+      'Un canal sans consentement est ignoré ; 422 si aucun canal consenti.';
+
+  @override
+  String get travelContactsChannelapp => 'Application (employé lié)';
+
+  @override
+  String get travelContactsSuccess =>
+      'Demande reçue — merci, nous reviendrons vers vous.';
+
+  @override
+  String get travelContactsFieldFirstname => 'Prénom';
+
+  @override
+  String get travelContactsFieldLastname => 'Nom';
+
+  @override
+  String get travelContactsFieldEmail => 'Email';
+
+  @override
+  String get travelContactsFieldPhone => 'Téléphone';
+
+  @override
+  String get travelContactsFieldMessage => 'Message';
+
+  @override
+  String get travelContactsFieldConsents => 'Consentements';
+
+  @override
+  String get travelContactsFieldChannels => 'Canaux';
+
+  @override
+  String get travelContactsActionSubmit => 'Envoyer la demande';
+
+  @override
+  String get travelContactsActionToggleconsent => 'Basculer le consentement';
+
+  @override
+  String get travelContactsActionNotify => 'Notifier';
+
+  @override
+  String get travelContactsActionSend => 'Envoyer';
+
+  @override
+  String get travelAdvertstatusDraft => 'Brouillon';
+
+  @override
+  String get travelAdvertstatusSubmitted => 'Soumise';
+
+  @override
+  String get travelAdvertstatusPaid => 'Payée';
+
+  @override
+  String get travelAdvertstatusValidated => 'Validée';
+
+  @override
+  String get travelAdvertstatusRejected => 'Rejetée';
+
+  @override
+  String get travelAdvertstatusExpired => 'Expirée';
+
+  @override
+  String get travelAdvertstatusArchived => 'Archivée';
 }
