@@ -53,8 +53,7 @@ services:
     container_name: leopardo-edge-ui
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: "http://edge-api/api"
-      NEXT_PUBLIC_MODE: edge
+      NEXT_PUBLIC_EDGE_API: "http://edge-api/api"   # lue par web-offline (next.config.js) — audit Vague 2 #6595
     ports:
       - "7879:3000"     # http://leopardo.local:7879
     depends_on:
