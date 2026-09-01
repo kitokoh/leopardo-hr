@@ -36,6 +36,10 @@ class RestaurantIngredient extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     protected $casts = [
         'avg_cost_minor' => 'integer',
         'status' => RestaurantRecordStatus::class,

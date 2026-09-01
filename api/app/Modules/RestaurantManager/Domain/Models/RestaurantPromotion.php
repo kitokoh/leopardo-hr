@@ -40,6 +40,13 @@ class RestaurantPromotion extends Model
         'is_active',
     ];
 
+    protected $attributes = [
+        'discount_type' => 'percent',
+        'value_minor' => 0,
+        'used_count' => 0,
+        'is_active' => true,
+    ];
+
     protected $casts = [
         'discount_type' => PromotionDiscountType::class,
         'value_minor' => 'integer',

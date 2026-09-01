@@ -6,7 +6,7 @@ namespace App\Modules\RestaurantManager\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Application\Services\OrderStateMachine;
-use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
+use App\Modules\RestaurantManager\Application\Services\RestaurantStockService;
 use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
@@ -15,14 +15,17 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
- * RESTO-404 (#6191) / RESTO-411 (#6198) — Transitions d'état d'une commande.
+ * RESTO-404 (#6191) — Transitions d'état d'une commande.
  *
  * Toute transition est validée par la machine à états (spec §4.5) : hors
  * workflow → 409. `version` protège la commande contre les écritures
- * concurrentes. À la CONFIRMATION (open → in_preparation), le stock des
- * ingrédients des lignes actives est décrémenté dans la MÊME transaction
- * (verrous SELECT FOR UPDATE, jamais négatif — RESTO-411). Événement
- * `restaurant.order.created.v1` publié à la soumission (payload redigé).
+ * concurrentes (mise à jour optimiste). Événement `restaurant.order.created.v1`
+ * publié dans l'outbox à la soumission (draft → open) — payload redigé.
+ *
+ * RESTO-411 (#6198) — la CONFIRMATION (open → in_preparation) décrémente le
+ * stock des ingrédients en transaction (SELECT FOR UPDATE) AVANT le passage
+ * de statut : si le stock est insuffisant (politique 'block'), la transition
+ * entière est annulée (422) et la commande reste `open`.
  */
 final class TransitionOrderAction
 {
@@ -31,7 +34,7 @@ final class TransitionOrderAction
     public function __construct(
         private readonly OrderStateMachine $stateMachine,
         private readonly RestaurantOutboxPublisher $outbox,
-        private readonly StockDecrementer $stockDecrementer,
+        private readonly RestaurantStockService $stockService,
     ) {
     }
 
@@ -58,13 +61,13 @@ final class TransitionOrderAction
             }
         }
 
+        // RESTO-411 : décrément de stock + passage de statut dans la même
+        // transaction. La confirmation consomme le stock (verrou FOR UPDATE) ;
+        // en cas de stock insuffisant (politique 'block'), abort 422 → rollback
+        // → la commande reste `open`.
         DB::transaction(function () use ($order, $target): void {
-            // RESTO-411 : le décrément de stock à la confirmation se fait dans
-            // la transaction (les lignes de stock sont verrouillées AVANT la
-            // mise à jour d'état — deux confirmations simultanées sur le
-            // dernier stock : une seule passe).
             if ($target === OrderStatus::IN_PREPARATION) {
-                $this->stockDecrementer->decrementForOrder($order);
+                $this->stockService->decrementForConfirmedOrder($order);
             }
 
             $affected = DB::table('restaurant_orders')

@@ -35,6 +35,10 @@ class RestaurantInventoryCount extends Model
         'approved_at',
     ];
 
+    protected $attributes = [
+        'status' => 'draft',
+    ];
+
     protected $casts = [
         'counted_at' => 'datetime',
         'status' => InventoryCountStatus::class,

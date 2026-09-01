@@ -33,6 +33,11 @@ class RestaurantCategory extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'sort_order' => 0,
+    ];
+
     protected $casts = [
         'sort_order' => 'integer',
         'status' => RestaurantRecordStatus::class,
@@ -44,15 +49,5 @@ class RestaurantCategory extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(RestaurantBranch::class, 'branch_id');
-    }
-
-    /**
-     * Produits de la catégorie (RESTO-805/#6226 — menu public).
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<RestaurantProduct, $this>
-     */
-    public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(RestaurantProduct::class, 'category_id');
     }
 }

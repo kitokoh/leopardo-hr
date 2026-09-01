@@ -77,6 +77,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
         $schedule->command('tts:purge')->hourly();
+        // BC-25 RESTAURANT (RESTO-606/608, #6211/#6213) — outbox de la
+        // verticale (fidélité, notifications) et automatisations réservations.
+        $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        $schedule->command('restaurant:no-show-expire')->everyFifteenMinutes()->withoutOverlapping();
+        $schedule->command('restaurant:send-reminders')->hourly()->withoutOverlapping();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
@@ -144,8 +149,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
-            // RESTO-805 (#6226) — boutique en ligne publique (jeton tenant signé).
-            'restaurant.public.shop' => \App\Http\Middleware\Restaurant\EnsureRestaurantShopPublicAccess::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

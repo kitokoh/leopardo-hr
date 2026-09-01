@@ -3655,31 +3655,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/public/careers/{companySlug}/jobs/{jobPosting}/apply", options);
     },
 
-    /** Branches actives du tenant (RESTO-807/#6228 — sélecteur kiosque) */
-    getPublicRestaurantBranches(options = {}) {
-      return request("GET", "/public/restaurant/branches", options);
-    },
-
-    /** Menu public du tenant (RESTO-805/#6226) — catégories + produits actifs/disponibles */
-    getPublicRestaurantMenu(options = {}) {
-      return request("GET", "/public/restaurant/menu", options);
-    },
-
-    /** Commande en ligne publique (RESTO-805/#6226) — source online, totaux serveur, idempotente */
-    postPublicRestaurantOrders(options = {}) {
-      return request("POST", "/public/restaurant/orders", options);
-    },
-
-    /** Suivi public d''une commande par référence (RESTO-805/#6226) — statut + totaux */
-    getPublicRestaurantOrdersByReference(options = {}) {
-      return request("GET", "/public/restaurant/orders/{reference}", options);
-    },
-
-    /** Paiement en ligne d''une commande (RESTO-805/#6226) — cash confirmé immédiat, mobile money via callback signé */
-    postPublicRestaurantOrdersByReferencePay(options = {}) {
-      return request("POST", "/public/restaurant/orders/{reference}/pay", options);
-    },
-
     /** Envoyer une notification push de test a un employe */
     postPushNotificationsSend(options = {}) {
       return request("POST", "/push-notifications/send", options);
@@ -3875,6 +3850,56 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/categories/{restaurantCategory}", options);
     },
 
+    /** RESTO-605 — Détail d''une livraison (404 si autre tenant) */
+    getRestaurantDeliveriesByRestaurantDelivery(options = {}) {
+      return request("GET", "/restaurant/deliveries/{restaurantDelivery}", options);
+    },
+
+    /** RESTO-605 — Affecte un livreur actif à la livraison */
+    postRestaurantDeliveriesByRestaurantDeliveryAssign(options = {}) {
+      return request("POST", "/restaurant/deliveries/{restaurantDelivery}/assign", options);
+    },
+
+    /** RESTO-605 — Annulation (la commande retourne à ready) */
+    postRestaurantDeliveriesByRestaurantDeliveryCancel(options = {}) {
+      return request("POST", "/restaurant/deliveries/{restaurantDelivery}/cancel", options);
+    },
+
+    /** RESTO-605 — Livraison terminée (commande → served) */
+    postRestaurantDeliveriesByRestaurantDeliveryDeliver(options = {}) {
+      return request("POST", "/restaurant/deliveries/{restaurantDelivery}/deliver", options);
+    },
+
+    /** RESTO-605 — Départ en tournée (livreur affecté requis) */
+    postRestaurantDeliveriesByRestaurantDeliveryOutForDelivery(options = {}) {
+      return request("POST", "/restaurant/deliveries/{restaurantDelivery}/out-for-delivery", options);
+    },
+
+    /** RESTO-605 — Liste des livreurs (par branche, paginée) */
+    getRestaurantDeliveryRiders(options = {}) {
+      return request("GET", "/restaurant/delivery-riders", options);
+    },
+
+    /** RESTO-605 — Création d''un livreur (principal, rh, manager) */
+    postRestaurantDeliveryRiders(options = {}) {
+      return request("POST", "/restaurant/delivery-riders", options);
+    },
+
+    /** RESTO-605 — Suppression d''un livreur */
+    deleteRestaurantDeliveryRidersByRestaurantDeliveryRider(options = {}) {
+      return request("DELETE", "/restaurant/delivery-riders/{restaurantDeliveryRider}", options);
+    },
+
+    /** RESTO-605 — Détail d''un livreur (404 si autre tenant) */
+    getRestaurantDeliveryRidersByRestaurantDeliveryRider(options = {}) {
+      return request("GET", "/restaurant/delivery-riders/{restaurantDeliveryRider}", options);
+    },
+
+    /** RESTO-605 — Mise à jour d''un livreur */
+    putRestaurantDeliveryRidersByRestaurantDeliveryRider(options = {}) {
+      return request("PUT", "/restaurant/delivery-riders/{restaurantDeliveryRider}", options);
+    },
+
     /** Liste des hour (référentiel BC-25) */
     getRestaurantHours(options = {}) {
       return request("GET", "/restaurant/hours", options);
@@ -3925,46 +3950,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/restaurant/ingredients/{restaurantIngredient}", options);
     },
 
-    /** RESTO-504 — Inventaires physiques (filtres branche/statut) */
-    getRestaurantInventoryCounts(options = {}) {
-      return request("GET", "/restaurant/inventory-counts", options);
-    },
-
-    /** RESTO-504 — Création d''un inventaire (lignes attendues pré-remplies depuis le stock) */
-    postRestaurantInventoryCounts(options = {}) {
-      return request("POST", "/restaurant/inventory-counts", options);
-    },
-
-    /** RESTO-504 — Détail d''un inventaire (lignes) */
-    getRestaurantInventoryCountsByRestaurantInventoryCount(options = {}) {
-      return request("GET", "/restaurant/inventory-counts/{restaurantInventoryCount}", options);
-    },
-
-    /** RESTO-504 — Approbation (submitted → approved, ajustements de stock — réservé manage) */
-    postRestaurantInventoryCountsByRestaurantInventoryCountApprove(options = {}) {
-      return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/approve", options);
-    },
-
-    /** RESTO-504 — Saisie du compté (variance calculée serveur, motif si écart) */
-    putRestaurantInventoryCountsByRestaurantInventoryCountItemsByRestaurantInventoryCountItem(options = {}) {
-      return request("PUT", "/restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}", options);
-    },
-
-    /** RESTO-504 — Soumission de l''inventaire (draft → submitted) */
-    postRestaurantInventoryCountsByRestaurantInventoryCountSubmit(options = {}) {
-      return request("POST", "/restaurant/inventory-counts/{restaurantInventoryCount}/submit", options);
-    },
-
-    /** RESTO-501 — Journal des mouvements de stock (filtres branche/raison) */
-    getRestaurantInventoryMovements(options = {}) {
-      return request("GET", "/restaurant/inventory-movements", options);
-    },
-
-    /** RESTO-501 — Mouvement de stock manuel (adjustment|waste|transfer, jamais négatif) */
-    postRestaurantInventoryMovements(options = {}) {
-      return request("POST", "/restaurant/inventory-movements", options);
-    },
-
     /** RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire) */
     getRestaurantKitchenOrders(options = {}) {
       return request("GET", "/restaurant/kitchen/orders", options);
@@ -3980,9 +3965,49 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/restaurant/kitchen/orders/{restaurantOrder}/start", options);
     },
 
-    /** Webhook entrant d''une app de livraison (RESTO-806/#6227) — signature HMAC fail-closed, idempotent par event_id */
-    postRestaurantMarketplaceByProviderWebhooks(options = {}) {
-      return request("POST", "/restaurant/marketplace/{provider}/webhooks", options);
+    /** RESTO-606 — Comptes fidélité clients (solde, paginé) */
+    getRestaurantLoyaltyCustomers(options = {}) {
+      return request("GET", "/restaurant/loyalty-customers", options);
+    },
+
+    /** RESTO-606 — Opt-in RGPD : crée le compte fidélité d''un contact CRM */
+    postRestaurantLoyaltyCustomers(options = {}) {
+      return request("POST", "/restaurant/loyalty-customers", options);
+    },
+
+    /** RESTO-606 — Solde d''un compte fidélité (404 si autre tenant) */
+    getRestaurantLoyaltyCustomersByRestaurantLoyaltyCustomer(options = {}) {
+      return request("GET", "/restaurant/loyalty-customers/{restaurantLoyaltyCustomer}", options);
+    },
+
+    /** RESTO-606 — Journal des mouvements de points (delta signé, paginé) */
+    getRestaurantLoyaltyCustomersByRestaurantLoyaltyCustomerMovements(options = {}) {
+      return request("GET", "/restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/movements", options);
+    },
+
+    /** RESTO-606 — Échange de points (jamais négatif) */
+    postRestaurantLoyaltyCustomersByRestaurantLoyaltyCustomerRedeem(options = {}) {
+      return request("POST", "/restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/redeem", options);
+    },
+
+    /** RESTO-606 — Programme(s) de fidélité du tenant */
+    getRestaurantLoyaltyPrograms(options = {}) {
+      return request("GET", "/restaurant/loyalty-programs", options);
+    },
+
+    /** RESTO-606 — Création du programme (un seul actif par tenant) */
+    postRestaurantLoyaltyPrograms(options = {}) {
+      return request("POST", "/restaurant/loyalty-programs", options);
+    },
+
+    /** RESTO-606 — Détail d''un programme (404 si autre tenant) */
+    getRestaurantLoyaltyProgramsByRestaurantLoyaltyProgram(options = {}) {
+      return request("GET", "/restaurant/loyalty-programs/{restaurantLoyaltyProgram}", options);
+    },
+
+    /** RESTO-606 — Mise à jour du programme (taux, activation) */
+    putRestaurantLoyaltyProgramsByRestaurantLoyaltyProgram(options = {}) {
+      return request("PUT", "/restaurant/loyalty-programs/{restaurantLoyaltyProgram}", options);
     },
 
     /** Liste des menu (référentiel BC-25) */
@@ -4058,6 +4083,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** RESTO-404 — Confirmation de commande (open → in_preparation) */
     postRestaurantOrdersByRestaurantOrderConfirm(options = {}) {
       return request("POST", "/restaurant/orders/{restaurantOrder}/confirm", options);
+    },
+
+    /** RESTO-605 — Création de la livraison d''une commande à livrer (frais serveur depuis la zone, idempotente) */
+    postRestaurantOrdersByRestaurantOrderDelivery(options = {}) {
+      return request("POST", "/restaurant/orders/{restaurantOrder}/delivery", options);
     },
 
     /** RESTO-403 — Ajout d''un article (prix/TVA serveur, totaux recalculés) */
@@ -4160,129 +4190,69 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}", options);
     },
 
-    /** État du jeton de boutique publique (RESTO-805/#6226) — jamais le jeton en clair */
-    getRestaurantPublicShopToken(options = {}) {
-      return request("GET", "/restaurant/public-shop-token", options);
+    /** RESTO-607 — Liste des promotions (paginée) */
+    getRestaurantPromotions(options = {}) {
+      return request("GET", "/restaurant/promotions", options);
     },
 
-    /** (Re)génère le jeton de boutique publique (RESTO-805/#6226) — l''ancien est invalidé, le jeton en clair n''est renvoyé qu''ici */
-    postRestaurantPublicShopTokenRotate(options = {}) {
-      return request("POST", "/restaurant/public-shop-token/rotate", options);
+    /** RESTO-607 — Création d''une promotion (code unique par tenant) */
+    postRestaurantPromotions(options = {}) {
+      return request("POST", "/restaurant/promotions", options);
     },
 
-    /** RESTO-502 — Bons de commande fournisseurs (filtres branche/statut) */
-    getRestaurantPurchaseOrders(options = {}) {
-      return request("GET", "/restaurant/purchase-orders", options);
+    /** RESTO-607 — Suppression d''une promotion */
+    deleteRestaurantPromotionsByRestaurantPromotion(options = {}) {
+      return request("DELETE", "/restaurant/promotions/{restaurantPromotion}", options);
     },
 
-    /** RESTO-502 — Création d''un bon de commande (total recalculé serveur) */
-    postRestaurantPurchaseOrders(options = {}) {
-      return request("POST", "/restaurant/purchase-orders", options);
+    /** RESTO-607 — Détail d''une promotion (404 si autre tenant) */
+    getRestaurantPromotionsByRestaurantPromotion(options = {}) {
+      return request("GET", "/restaurant/promotions/{restaurantPromotion}", options);
     },
 
-    /** RESTO-502 — Suppression (draft uniquement) */
-    deleteRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
+    /** RESTO-607 — Mise à jour d''une promotion */
+    putRestaurantPromotionsByRestaurantPromotion(options = {}) {
+      return request("PUT", "/restaurant/promotions/{restaurantPromotion}", options);
     },
 
-    /** RESTO-502 — Détail d''un bon de commande */
-    getRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("GET", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
+    /** RESTO-701 — COGS & marge (coût matière théorique consommé) */
+    getRestaurantReportsCogs(options = {}) {
+      return request("GET", "/restaurant/reports/cogs", options);
     },
 
-    /** RESTO-502 — Mise à jour (draft uniquement) */
-    putRestaurantPurchaseOrdersByRestaurantPurchaseOrder(options = {}) {
-      return request("PUT", "/restaurant/purchase-orders/{restaurantPurchaseOrder}", options);
+    /** RESTO-702 — Export CSV idempotent (URL signée éphémère) */
+    postRestaurantReportsExport(options = {}) {
+      return request("POST", "/restaurant/reports/export", options);
     },
 
-    /** RESTO-502 — Annulation (draft|sent → cancelled) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderCancel(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel", options);
+    /** RESTO-702 — Téléchargement d''un export (URL signée, 15 min) */
+    getRestaurantReportsExportsByExportDownload(options = {}) {
+      return request("GET", "/restaurant/reports/exports/{export}/download", options);
     },
 
-    /** RESTO-502 — Ajout d''une ligne (total du PO recalculé serveur) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderItems(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items", options);
+    /** RESTO-703 — KPIs du jour (CA, panier moyen, rotation, top produits) */
+    getRestaurantReportsKpis(options = {}) {
+      return request("GET", "/restaurant/reports/kpis", options);
     },
 
-    /** RESTO-502 — Suppression d''une ligne (draft uniquement) */
-    deleteRestaurantPurchaseOrdersByRestaurantPurchaseOrderItemsByRestaurantPurchaseOrderItem(options = {}) {
-      return request("DELETE", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}", options);
+    /** RESTO-701 — Occupation des tables (sessions clôturées, rotation) */
+    getRestaurantReportsOccupancy(options = {}) {
+      return request("GET", "/restaurant/reports/occupancy", options);
     },
 
-    /** RESTO-502 — Réception (sent → received, entrées de stock + coût moyen pondéré) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderReceive(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/receive", options);
+    /** RESTO-701 — Clôtures de caisse agrégées (fonds, écart) */
+    getRestaurantReportsPos(options = {}) {
+      return request("GET", "/restaurant/reports/pos", options);
     },
 
-    /** RESTO-502 — Envoi au fournisseur (draft → sent) */
-    postRestaurantPurchaseOrdersByRestaurantPurchaseOrderSend(options = {}) {
-      return request("POST", "/restaurant/purchase-orders/{restaurantPurchaseOrder}/send", options);
+    /** RESTO-701 — Top produits (quantités, chiffre) */
+    getRestaurantReportsProducts(options = {}) {
+      return request("GET", "/restaurant/reports/products", options);
     },
 
-    /** RESTO-503 — Réceptions (filtres branche/bon de commande) */
-    getRestaurantReceivings(options = {}) {
-      return request("GET", "/restaurant/receivings", options);
-    },
-
-    /** RESTO-503 — Réception (entrées stock + coût moyen pondéré, idempotente par référence) */
-    postRestaurantReceivings(options = {}) {
-      return request("POST", "/restaurant/receivings", options);
-    },
-
-    /** RESTO-601 — Réservations (filtres branche/statut/date) */
-    getRestaurantReservations(options = {}) {
-      return request("GET", "/restaurant/reservations", options);
-    },
-
-    /** RESTO-601 — Création d''une réservation (idempotente, conflit de créneau → 409) */
-    postRestaurantReservations(options = {}) {
-      return request("POST", "/restaurant/reservations", options);
-    },
-
-    /** RESTO-601 — Détail d''une réservation */
-    getRestaurantReservationsByRestaurantReservation(options = {}) {
-      return request("GET", "/restaurant/reservations/{restaurantReservation}", options);
-    },
-
-    /** RESTO-601 — Mise à jour (pending|confirmed uniquement) */
-    putRestaurantReservationsByRestaurantReservation(options = {}) {
-      return request("PUT", "/restaurant/reservations/{restaurantReservation}", options);
-    },
-
-    /** RESTO-601 — Annulation (pending|confirmed → cancelled) */
-    postRestaurantReservationsByRestaurantReservationCancel(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/cancel", options);
-    },
-
-    /** RESTO-601 — Arrivée client (confirmed → seated) */
-    postRestaurantReservationsByRestaurantReservationCheckIn(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/check-in", options);
-    },
-
-    /** RESTO-601 — Confirmation (pending → confirmed, événement reservation.confirmed.v1) */
-    postRestaurantReservationsByRestaurantReservationConfirm(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/confirm", options);
-    },
-
-    /** RESTO-601 — Non venue (pending|confirmed → no_show) */
-    postRestaurantReservationsByRestaurantReservationNoShow(options = {}) {
-      return request("POST", "/restaurant/reservations/{restaurantReservation}/no-show", options);
-    },
-
-    /** RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h) */
-    getRestaurantReservationsAvailability(options = {}) {
-      return request("GET", "/restaurant/reservations/availability", options);
-    },
-
-    /** RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés) */
-    getRestaurantStockLevels(options = {}) {
-      return request("GET", "/restaurant/stock-levels", options);
-    },
-
-    /** RESTO-501 — Mise à jour des seuils/coût moyen (la quantité n''est JAMAIS écrite directement) */
-    putRestaurantStockLevelsByRestaurantStockLevel(options = {}) {
-      return request("PUT", "/restaurant/stock-levels/{restaurantStockLevel}", options);
+    /** RESTO-701 — Ventes agrégées par jour (période, branche) */
+    getRestaurantReportsSales(options = {}) {
+      return request("GET", "/restaurant/reports/sales", options);
     },
 
     /** Liste des supplier (référentiel BC-25) */

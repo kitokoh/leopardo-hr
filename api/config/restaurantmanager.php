@@ -28,51 +28,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Stock (spec §4.4, RESTO-411/#6198)
+    | Stock (RESTO-411, issue #6198 — décrément à la confirmation)
     |--------------------------------------------------------------------------
     |
-    | `block_on_insufficient` : true → la confirmation d'une commande est
-    | refusée (422) si un ingrédient est en rupture ; false → le stock peut
-    | passer en négatif (avertissement, à surveiller via les alertes RESTO-505).
+    | Politique appliquée quand une confirmation de commande consomme plus
+    | d'un ingrédient que le niveau de stock disponible :
+    |   - 'block' : la confirmation est refusée (422), stock jamais négatif ;
+    |   - 'warn'  : la confirmation passe, le stock est plafonné à 0 et la
+    |     différence est tracée dans le mouvement (quantity_delta = -qty)
+    |     — mode permissif, à réserver aux phases de démo/pilote.
     |
     */
     'stock' => [
-        'block_on_insufficient' => (bool) env('RESTAURANT_STOCK_BLOCK_ON_INSUFFICIENT', true),
+        'insufficient_policy' => env('RESTAURANT_STOCK_INSUFFICIENT_POLICY', 'block'), // block | warn
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Boutique en ligne publique (RESTO-805/#6226)
+    | Réservations (RESTO-608, issue #6213 — jobs no-show & rappels)
     |--------------------------------------------------------------------------
     |
-    | Endpoints publics `/public/restaurant/*` résolus par jeton tenant signé
-    | (X-Restaurant-Shop-Token, hash SHA-256 en base). Hook anti-bot optionnel :
-    | si `captcha_secret` est renseigné, un jeton CAPTCHA (X-Captcha-Token)
-    | non vide est exigé sur les endpoints publics.
+    | no_show_grace_minutes : délai après l'heure de réservation au-delà duquel
+    | une réservation confirmée non honorée passe automatiquement en `no_show`.
+    | reminder_horizon_hours : fenêtre de rappel J-1 (réservations dont l'heure
+    | prévue tombe dans les prochaines 24 h).
     |
     */
-    'public_shop' => [
-        'captcha_secret' => env('RESTAURANT_SHOP_CAPTCHA_SECRET'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Apps de livraison (RESTO-806/#6227)
-    |--------------------------------------------------------------------------
-    |
-    | Secrets de signature des webhooks entrants (HMAC-SHA256, fail-closed :
-    | pas de secret configuré = webhook refusé) et URL de notification des
-    | statuts sortants. Aucun secret en dur — variables d'environnement.
-    |
-    */
-    'marketplace' => [
-        'uber_eats' => [
-            'webhook_secret' => env('RESTAURANT_UBER_EATS_WEBHOOK_SECRET'),
-            'outbound_url' => env('RESTAURANT_UBER_EATS_OUTBOUND_URL'),
-        ],
-        'glovo' => [
-            'webhook_secret' => env('RESTAURANT_GLOVO_WEBHOOK_SECRET'),
-            'outbound_url' => env('RESTAURANT_GLOVO_OUTBOUND_URL'),
-        ],
+    'reservations' => [
+        'no_show_grace_minutes' => 90,
+        'reminder_horizon_hours' => 24,
     ],
 ];

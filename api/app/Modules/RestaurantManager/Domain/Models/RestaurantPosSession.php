@@ -42,6 +42,12 @@ class RestaurantPosSession extends Model
         'version',
     ];
 
+    protected $attributes = [
+        'status' => 'open',
+        'opening_cash_minor' => 0,
+        'version' => 1,
+    ];
+
     protected $casts = [
         'opened_at' => 'datetime',
         'closed_at' => 'datetime',

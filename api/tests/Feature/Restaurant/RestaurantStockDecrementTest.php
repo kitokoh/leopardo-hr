@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
@@ -20,10 +21,11 @@ use Tests\TestCase;
 /**
  * RESTO-411 (#6198) — Décrément de stock à la confirmation de commande.
  *
- * Couvre : le stock des ingrédients est décrémenté à la confirmation
- * (quantité × composition), le stock n'est JAMAIS négatif, une commande en
- * rupture est refusée (422) et la course sur le dernier stock ne laisse
- * passer qu'une seule confirmation.
+ * Invariant stock (spec §4.4 / D4) : la confirmation consomme les ingrédients
+ * de la recette en transaction (SELECT FOR UPDATE) ; deux commandes
+ * simultanées sur le dernier stock → une seule passe, l'autre est refusée
+ * (422) ; le stock n'est JAMAIS négatif ; chaque consommation est tracée dans
+ * `restaurant_inventory_movements` (reason_code sale, référence commande).
  */
 class RestaurantStockDecrementTest extends TestCase
 {
@@ -50,36 +52,37 @@ class RestaurantStockDecrementTest extends TestCase
     }
 
     /**
+     * Crée une commande draft + produit dont la recette consomme
+     * `requiredQuantity` du stock de l'ingrédient.
+     *
      * @return array{branch: RestaurantBranch, product: RestaurantProduct, ingredient: RestaurantIngredient, order: RestaurantOrder}
      */
-    private function makeOrderWithComposedProduct(Company $company, float $stockQty = 10.0): array
-    {
-        return app(TenantManager::class)->withinTenant($company, function () use ($company, $stockQty): array {
+    private function makeOrderWithRecipe(
+        Company $company,
+        float $ingredientStock,
+        float $requiredQuantity,
+    ): array {
+        return app(TenantManager::class)->withinTenant($company, function () use ($ingredientStock, $requiredQuantity): array {
             $branch = RestaurantBranch::factory()->create();
-            $ingredient = RestaurantIngredient::factory()->create();
             $product = RestaurantProduct::factory()->create([
                 'branch_id' => $branch->id,
-                'price_minor' => 1500,
+                'price_minor' => 1000,
                 'currency' => $branch->currency,
                 'is_available' => true,
             ]);
-
-            // 1 unité de produit = 0.5 kg d'ingrédient.
-            RestaurantProductIngredient::query()->create([
-                'company_id' => $company->id,
+            $ingredient = RestaurantIngredient::factory()->create([
+                'branch_id' => $branch->id,
+            ]);
+            RestaurantProductIngredient::factory()->create([
                 'product_id' => $product->id,
                 'ingredient_id' => $ingredient->id,
-                'quantity' => 0.5,
-                'unit_code' => 'kg',
+                'quantity' => $requiredQuantity,
             ]);
-
-            RestaurantStockLevel::query()->create([
-                'company_id' => $company->id,
+            RestaurantStockLevel::factory()->create([
                 'branch_id' => $branch->id,
                 'ingredient_id' => $ingredient->id,
-                'quantity' => $stockQty,
+                'quantity' => $ingredientStock,
             ]);
-
             $order = RestaurantOrder::factory()->create([
                 'branch_id' => $branch->id,
                 'status' => 'draft',
@@ -90,77 +93,165 @@ class RestaurantStockDecrementTest extends TestCase
         });
     }
 
-    public function test_confirm_decrements_stock_by_composition(): void
+    private function addItemAndSubmit(RestaurantOrder $order, int $productId): void
+    {
+        $this->postJson("/api/v1/restaurant/orders/{$order->id}/items", ['product_id' => $productId, 'quantity' => 1])->assertStatus(201);
+        $this->postJson("/api/v1/restaurant/orders/{$order->id}/submit")->assertStatus(200);
+    }
+
+    public function test_confirm_decrements_stock_and_traces_movement(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
         $this->server($company);
-        ['order' => $order, 'product' => $product, 'ingredient' => $ingredient] = $this->makeOrderWithComposedProduct($company);
+        ['order' => $order, 'product' => $product, 'ingredient' => $ingredient, 'branch' => $branch] = $this->makeOrderWithRecipe($company, 5.0, 2.0);
 
-        // 3 × 0.5 kg = 1.5 kg consommés.
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/items", ['product_id' => $product->id, 'quantity' => 3])->assertStatus(201);
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/submit")->assertStatus(200);
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/confirm")->assertStatus(200)->assertJsonPath('data.status', 'in_preparation');
+        $this->addItemAndSubmit($order, (int) $product->id);
 
-        $level = app(TenantManager::class)->withinTenant($company, fn (): RestaurantStockLevel => RestaurantStockLevel::query()
-            ->where('branch_id', $order->branch_id)
+        $this->postJson("/api/v1/restaurant/orders/{$order->id}/confirm")
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'in_preparation');
+
+        $stock = app(TenantManager::class)->withinTenant($company, fn (): float => (float) RestaurantStockLevel::query()
+            ->where('company_id', $company->id)
+            ->where('branch_id', $branch->id)
             ->where('ingredient_id', $ingredient->id)
-            ->firstOrFail());
+            ->value('quantity'));
 
-        $this->assertEqualsWithDelta(8.5, (float) $level->quantity, 0.001);
+        $this->assertSame(3.0, $stock);
 
-        $movementCount = app(TenantManager::class)->withinTenant($company, fn (): int => \App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement::query()
-            ->where('reason_code', 'sale')
+        $movement = app(TenantManager::class)->withinTenant($company, fn () => RestaurantInventoryMovement::query()
+            ->where('company_id', $company->id)
+            ->where('reference_type', 'order')
             ->where('reference_id', $order->id)
+            ->first());
+
+        $this->assertNotNull($movement);
+        $this->assertSame('sale', $movement->reason_code->value);
+        $this->assertSame(-2.0, (float) $movement->quantity_delta);
+    }
+
+    public function test_two_orders_on_last_stock_only_first_passes_and_stock_never_negative(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+        $this->server($company);
+
+        // Une seule branche, un seul ingrédient, stock unique de 1.0 : les deux
+        // commandes consomment LE MÊME stock (dernier exemplaire).
+        $fixture = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+            $branch = RestaurantBranch::factory()->create();
+            $product = RestaurantProduct::factory()->create([
+                'branch_id' => $branch->id,
+                'price_minor' => 1000,
+                'currency' => $branch->currency,
+                'is_available' => true,
+            ]);
+            $ingredient = RestaurantIngredient::factory()->create(['branch_id' => $branch->id]);
+            RestaurantProductIngredient::factory()->create([
+                'product_id' => $product->id,
+                'ingredient_id' => $ingredient->id,
+                'quantity' => 1.0,
+            ]);
+            $stock = RestaurantStockLevel::factory()->create([
+                'branch_id' => $branch->id,
+                'ingredient_id' => $ingredient->id,
+                'quantity' => 1.0,
+            ]);
+            $orderA = RestaurantOrder::factory()->create([
+                'branch_id' => $branch->id,
+                'status' => 'draft',
+                'currency' => $branch->currency,
+            ]);
+            $orderB = RestaurantOrder::factory()->create([
+                'branch_id' => $branch->id,
+                'status' => 'draft',
+                'currency' => $branch->currency,
+            ]);
+
+            return [
+                'branch' => $branch,
+                'product' => $product,
+                'ingredient' => $ingredient,
+                'stock' => $stock,
+                'orderA' => $orderA,
+                'orderB' => $orderB,
+            ];
+        });
+
+        $productId = (int) $fixture['product']->id;
+        $this->addItemAndSubmit($fixture['orderA'], $productId);
+        $this->addItemAndSubmit($fixture['orderB'], $productId);
+
+        // Première confirmation : consomme le dernier stock.
+        $this->postJson("/api/v1/restaurant/orders/{$fixture['orderA']->id}/confirm")->assertStatus(200);
+
+        // Seconde confirmation sur le même ingrédient : stock insuffisant → 422.
+        $this->postJson("/api/v1/restaurant/orders/{$fixture['orderB']->id}/confirm")->assertStatus(422);
+
+        // La commande B reste `open` (transition annulée par le rollback).
+        $this->assertSame('open', $fixture['orderB']->refresh()->status->value);
+
+        $stock = app(TenantManager::class)->withinTenant($company, fn (): float => (float) RestaurantStockLevel::query()
+            ->where('company_id', $company->id)
+            ->where('branch_id', $fixture['branch']->id)
+            ->where('ingredient_id', $fixture['ingredient']->id)
+            ->value('quantity'));
+
+        // Stock jamais négatif : plancher à zéro après la première consommation.
+        $this->assertSame(0.0, $stock);
+
+        // Une seule trace de mouvement de vente pour l'ingrédient (commande A).
+        $movementCount = app(TenantManager::class)->withinTenant($company, fn (): int => RestaurantInventoryMovement::query()
+            ->where('company_id', $company->id)
+            ->where('reason_code', 'sale')
+            ->where('ingredient_id', $fixture['ingredient']->id)
             ->count());
 
         $this->assertSame(1, $movementCount);
     }
 
-    public function test_insufficient_stock_blocks_confirmation_422(): void
+    public function test_confirm_without_stock_level_blocked_when_policy_block(): void
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateRestaurant($company);
         $this->server($company);
-        ['order' => $order, 'product' => $product] = $this->makeOrderWithComposedProduct($company, stockQty: 1.0);
 
-        // 3 unités → 1.5 kg requis, seulement 1.0 kg en stock.
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/items", ['product_id' => $product->id, 'quantity' => 3])->assertStatus(201);
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/submit")->assertStatus(200);
+        $fixture = app(TenantManager::class)->withinTenant($company, function () use ($company): array {
+            $branch = RestaurantBranch::factory()->create();
+            $product = RestaurantProduct::factory()->create([
+                'branch_id' => $branch->id,
+                'price_minor' => 1000,
+                'currency' => $branch->currency,
+                'is_available' => true,
+            ]);
+            $ingredient = RestaurantIngredient::factory()->create(['branch_id' => $branch->id]);
+            RestaurantProductIngredient::factory()->create([
+                'product_id' => $product->id,
+                'ingredient_id' => $ingredient->id,
+                'quantity' => 1.0,
+            ]);
+            // Aucun niveau de stock configuré pour l'ingrédient.
 
-        $this->postJson("/api/v1/restaurant/orders/{$order->id}/confirm")->assertStatus(422);
+            $order = RestaurantOrder::factory()->create([
+                'branch_id' => $branch->id,
+                'status' => 'draft',
+                'currency' => $branch->currency,
+            ]);
 
-        // Le stock n'est jamais passé en négatif.
-        $order->refresh();
-        $this->assertSame('open', $order->status->value);
-    }
+            return ['order' => $order, 'product' => $product];
+        });
 
-    public function test_second_confirm_on_last_stock_fails(): void
-    {
-        /** @var Company $company */
-        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $this->activateRestaurant($company);
-        $this->server($company);
-        ['branch' => $branch, 'product' => $product, 'order' => $order1] = $this->makeOrderWithComposedProduct($company, stockQty: 1.0);
+        $this->postJson("/api/v1/restaurant/orders/{$fixture['order']->id}/items", ['product_id' => $fixture['product']->id, 'quantity' => 1])->assertStatus(201);
+        $this->postJson("/api/v1/restaurant/orders/{$fixture['order']->id}/submit")->assertStatus(200);
 
-        // Seconde commande sur la MÊME branche / MÊME produit / MÊME stock.
-        /** @var RestaurantOrder $order2 */
-        $order2 = app(TenantManager::class)->withinTenant($company, fn (): RestaurantOrder => RestaurantOrder::factory()->create([
-            'branch_id' => $branch->id,
-            'status' => 'draft',
-            'currency' => $branch->currency,
-        ]));
+        // Confirmation : aucun niveau de stock → politique 'block' → 422.
+        $this->postJson("/api/v1/restaurant/orders/{$fixture['order']->id}/confirm")->assertStatus(422);
 
-        // Première commande : 2 × 0.5 kg = 1.0 kg → consomme tout le stock.
-        $this->postJson("/api/v1/restaurant/orders/{$order1->id}/items", ['product_id' => $product->id, 'quantity' => 2])->assertStatus(201);
-        $this->postJson("/api/v1/restaurant/orders/{$order1->id}/submit")->assertStatus(200);
-        $this->postJson("/api/v1/restaurant/orders/{$order1->id}/confirm")->assertStatus(200);
-
-        // Seconde commande sur le même stock : plus assez → 422.
-        $this->postJson("/api/v1/restaurant/orders/{$order2->id}/items", ['product_id' => $product->id, 'quantity' => 2])->assertStatus(201);
-        $this->postJson("/api/v1/restaurant/orders/{$order2->id}/submit")->assertStatus(200);
-        $this->postJson("/api/v1/restaurant/orders/{$order2->id}/confirm")->assertStatus(422);
+        // La commande reste `open` (rollback complet de la transition).
+        $this->assertSame('open', $fixture['order']->refresh()->status->value);
     }
 }

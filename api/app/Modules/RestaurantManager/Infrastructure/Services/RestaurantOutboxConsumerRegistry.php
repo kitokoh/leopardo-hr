@@ -7,11 +7,13 @@ namespace App\Modules\RestaurantManager\Infrastructure\Services;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 
 /**
- * RESTO-806 (#6227) — Registre des consommateurs d'événements d'outbox
- * RestaurantManager (miroir CrmOutboxConsumerRegistry #5741).
+ * #6211 (RESTO-606) — Registre des consommateurs d'outbox RestaurantManager
+ * (pattern CrmOutboxConsumerRegistry #5741).
  *
- * Chaque événement est routé vers UN consommateur (le premier dont
- * `supports()` répond true).
+ * Chaque type d'événement est routé vers UN consommateur (le premier dont
+ * `supports()` répond true). Le registre est alimenté par le service provider
+ * du module ; un événement sans consommateur est mis en dead-letter par le
+ * dispatcher (`restaurant:outbox-dispatch`).
  */
 final class RestaurantOutboxConsumerRegistry
 {

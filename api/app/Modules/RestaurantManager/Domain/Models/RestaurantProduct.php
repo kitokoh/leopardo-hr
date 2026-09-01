@@ -10,6 +10,7 @@ use Database\Factories\RestaurantProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Produit vendable (plat, boisson, accompagnement) — RESTO-202, issue #6167.
@@ -40,6 +41,13 @@ class RestaurantProduct extends Model
         'status',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'currency' => 'DZD',
+        'price_minor' => 0,
+        'is_available' => true,
+    ];
+
     protected $casts = [
         'price_minor' => 'integer',
         'cost_minor' => 'integer',
@@ -61,5 +69,15 @@ class RestaurantProduct extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(RestaurantCategory::class, 'category_id');
+    }
+
+    /**
+     * Recette du produit (lignes de composition ingrédient × quantité).
+     *
+     * @return HasMany<RestaurantProductIngredient, $this>
+     */
+    public function ingredients(): HasMany
+    {
+        return $this->hasMany(RestaurantProductIngredient::class, 'product_id');
     }
 }

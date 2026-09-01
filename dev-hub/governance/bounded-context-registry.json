@@ -734,7 +734,7 @@
       "code": "BC-25",
       "name": "RESTAURANT",
       "context": "RestaurantManager",
-      "responsibility": "Branches, zones, tables, catégories, produits, recettes, ingrédients, unités, taxes, menus, fournisseurs, stock, achats, POS, commandes, paiements, réservations, livraison, fidélité, promotions, rapports, kiosque.",
+      "responsibility": "Établissements, plan de salle, catalogue & recettes, POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports.",
       "owner": "Agent 25 — BC-RESTAURANT",
       "priority": "P1",
       "status": "active",
@@ -744,9 +744,7 @@
           "status": "active"
         }
       ],
-      "routes": [
-        "api/routes/modules/restaurantmanager.php"
-      ],
+      "routes": [],
       "migrations": [
         "api/database/migrations/tenant"
       ],
@@ -755,7 +753,11 @@
       ],
       "dependencies": [
         "BC-02",
-        "BC-03"
+        "BC-03",
+        "BC-04",
+        "BC-11",
+        "BC-13",
+        "BC-20"
       ]
     },
     {

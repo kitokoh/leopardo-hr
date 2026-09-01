@@ -15,6 +15,5 @@ final class RefundResult
         public readonly PaymentStatus $status,
         public readonly ?string $providerReference = null,
         public readonly ?string $message = null,
-    ) {
-    }
+    ) {}
 }
