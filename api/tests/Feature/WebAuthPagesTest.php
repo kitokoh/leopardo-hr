@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\TestResponse;
 use Tests\Support\CreatesMvpSchema;
@@ -255,6 +256,7 @@ class WebAuthPagesTest extends TestCase
         }
 
         $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
         $this->assertNotNull($fresh->getAttributes()['locked_until'] ?? null);
         $this->assertSame(5, (int) $fresh->failed_login_attempts);
 
@@ -275,6 +277,7 @@ class WebAuthPagesTest extends TestCase
 
         $this->assertAuthenticated('web');
         $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
         $this->assertSame(0, (int) $fresh->failed_login_attempts);
     }
 
@@ -286,6 +289,7 @@ class WebAuthPagesTest extends TestCase
         return $company;
     }
 
+    /** @param array<string, mixed> $overrides */
     private function manager(Company $company, array $overrides = []): Employee
     {
         /** @var Employee $employee */
@@ -305,6 +309,7 @@ class WebAuthPagesTest extends TestCase
         return (string) session()->token();
     }
 
+    /** @return TestResponse<RedirectResponse> */
     private function webLogin(string $email, string $password, string $token): TestResponse
     {
         return $this->withSession(['_token' => $token])->post('/login', [

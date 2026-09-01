@@ -53,6 +53,7 @@ class WebhookRetryAndDeactivationTest extends TestCase
 
     public function test_partner_5xx_is_rethrown_for_queue_retry_and_counts_failure(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $endpoint = $this->endpoint($company);
 
@@ -80,6 +81,7 @@ class WebhookRetryAndDeactivationTest extends TestCase
 
     public function test_consecutive_failures_deactivate_the_endpoint(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $endpoint = $this->endpoint($company);
         $endpoint->update(['failure_count' => 9]);
@@ -103,6 +105,7 @@ class WebhookRetryAndDeactivationTest extends TestCase
 
     public function test_dns_exception_path_also_counts_toward_deactivation(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $endpoint = $this->endpoint($company);
         $endpoint->update(['failure_count' => 9]);
@@ -124,6 +127,7 @@ class WebhookRetryAndDeactivationTest extends TestCase
 
     public function test_successful_2xx_resets_failure_count(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $endpoint = $this->endpoint($company);
         $endpoint->update(['failure_count' => 4]);
@@ -141,6 +145,7 @@ class WebhookRetryAndDeactivationTest extends TestCase
 
     public function test_successful_test_reactivates_a_deactivated_endpoint(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $manager = Employee::factory()->create([
             'company_id' => $company->id,

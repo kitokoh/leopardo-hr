@@ -101,7 +101,10 @@ class EdgeSyncDaemonCommand extends Command
             // Sleep par paliers de 5 s : réagit à SIGTERM/SIGINT même pendant
             // un intervalle long (arrêt Docker < 30 s au lieu de N minutes).
             $remaining = max(0, $interval * 60);
-            while ($remaining > 0 && ! $stop) {
+            while ($remaining > 0) {
+                if ($stop) {
+                    break;
+                }
                 $this->info("[EdgeSync Daemon] Sleeping {$remaining}s remaining...");
                 sleep(min(5, $remaining));
                 $remaining -= 5;

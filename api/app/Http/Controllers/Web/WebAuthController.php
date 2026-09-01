@@ -78,7 +78,7 @@ class WebAuthController extends Controller
             && $lockedUntil->isFuture()) {
             $this->logFailure($request, $validated['email'], 'locked');
 
-            return $this->backWithError($request, $validated['email'], 'Compte temporairement verrouillé. Réessayez plus tard.');
+            return $this->backWithError($request, $validated['email'], __('auth.account_locked'));
         }
 
         // Password null/absent ou hash malformé = identifiants invalides
@@ -162,7 +162,7 @@ class WebAuthController extends Controller
                 isset($validated['recovery_code']) && $validated['recovery_code'] !== '' ? $validated['recovery_code'] : null,
             );
         } catch (TwoFactorException) {
-            return back()->withErrors(['code' => 'Code invalide ou expiré.']);
+            return back()->withErrors(['code' => __('auth.twofa_code_invalid')]);
         }
 
         $employee = $result['employee'];
