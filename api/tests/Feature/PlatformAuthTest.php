@@ -90,7 +90,7 @@ class PlatformAuthTest extends TestCase
         $this->assertNotEmpty($secret);
 
         // Secret should not be saved yet
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
     }
 
     public function test_super_admin_can_enable_2fa(): void
@@ -168,7 +168,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
-        $this->assertNotNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNotNull($this->superAdmin->fresh()?->two_fa_secret);
 
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/disable', [
@@ -196,8 +196,8 @@ class PlatformAuthTest extends TestCase
         $response->assertJsonPath('data.name', 'Updated Admin Name');
         $response->assertJsonPath('data.email', 'updated-admin@leopardo.test');
 
-        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()->name);
-        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()?->name);
+        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()?->email);
     }
 
     public function test_super_admin_email_change_requires_current_password(): void
@@ -303,7 +303,7 @@ class PlatformAuthTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('status', 'ok');
 
-        $this->assertTrue(Hash::check('brandNewPassword456', $this->superAdmin->fresh()->password_hash));
+        $this->assertTrue(Hash::check('brandNewPassword456', (string) $this->superAdmin->fresh()?->password_hash));
 
         // Old sessions/tokens (except the one used for this request) are revoked.
         $loginAfterChange = $this->postJson('/api/v1/platform/auth/login', [
@@ -326,7 +326,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
-        $this->assertTrue(Hash::check('password123', $this->superAdmin->fresh()->password_hash));
+        $this->assertTrue(Hash::check('password123', (string) $this->superAdmin->fresh()?->password_hash));
     }
 
     public function test_suspended_super_admin_cannot_login(): void
