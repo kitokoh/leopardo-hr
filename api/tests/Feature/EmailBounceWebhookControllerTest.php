@@ -60,6 +60,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         $response->assertOk()->assertJsonPath('received', true);
 
         $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
         $this->assertNotNull($fresh->email_bounced_at);
         $this->assertSame('mailbox does not exist', $fresh->email_bounce_reason);
 
@@ -83,7 +84,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         ]);
 
         $response->assertOk()->assertJsonPath('received', true);
-        $this->assertNull($employee->fresh()->email_bounced_at);
+        $this->assertNull($employee->fresh()?->email_bounced_at);
 
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
@@ -150,7 +151,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         ], ['X-Bounce-Webhook-Secret' => 'wrong-secret']);
 
         $response->assertStatus(400);
-        $this->assertNull($employee->fresh()->email_bounced_at);
+        $this->assertNull($employee->fresh()?->email_bounced_at);
     }
 
     public function test_valid_shared_secret_is_accepted(): void
@@ -165,7 +166,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         ], ['X-Bounce-Webhook-Secret' => 'super-secret']);
 
         $response->assertOk();
-        $this->assertNotNull($employee->fresh()->email_bounced_at);
+        $this->assertNotNull($employee->fresh()?->email_bounced_at);
     }
 
     public function test_invalid_payload_422_does_not_orphan_idempotency_reservation(): void
@@ -191,7 +192,7 @@ class EmailBounceWebhookControllerTest extends TestCase
         ]);
 
         $valid->assertOk()->assertJsonPath('received', true);
-        $this->assertNotNull($employee->fresh()->email_bounced_at);
+        $this->assertNotNull($employee->fresh()?->email_bounced_at);
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
             'event_name' => 'email_provider_webhook',
@@ -216,10 +217,14 @@ class EmailBounceWebhookControllerTest extends TestCase
     private function employee(): Employee
     {
         $company = Company::factory()->create();
+        $this->assertInstanceOf(Company::class, $company);
 
-        return Employee::factory()->create([
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'bounce-target-'.$company->id.'@example.test',
         ]);
+        $this->assertInstanceOf(Employee::class, $employee);
+
+        return $employee;
     }
 }

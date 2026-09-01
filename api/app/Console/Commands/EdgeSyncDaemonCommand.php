@@ -59,6 +59,7 @@ class EdgeSyncDaemonCommand extends Command
         // SIGTERM ; un sleep() bloquant de N minutes ignorait le signal et
         // retardait l'arrêt jusqu'à la fin du sommeil. sleep par paliers de
         // 5 s + drapeau d'arrêt.
+        /** @var bool $stop */
         $stop = false;
         if (function_exists('pcntl_signal')) {
             pcntl_async_signals(true);

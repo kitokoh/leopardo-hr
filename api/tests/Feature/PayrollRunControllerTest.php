@@ -179,7 +179,6 @@ class PayrollRunControllerTest extends TestCase
             'period_end' => now()->endOfMonth(),
             'status' => 'cancelled',
         ]);
-        $this->assertNotNull($cancelled->id);
 
         Sanctum::actingAs($manager);
 

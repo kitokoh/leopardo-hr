@@ -39,7 +39,7 @@ class WebAuthController extends Controller
         return view('auth.login');
     }
 
-    public function showTwoFactorChallenge(): View
+    public function showTwoFactorChallenge(): View|RedirectResponse
     {
         // #6541 — l'accès direct à la page challenge sans login en cours est
         // redirigé vers le login (pas de formulaire orphelin exploitable).
@@ -234,7 +234,7 @@ class WebAuthController extends Controller
             try {
                 $parsed = Carbon::parse($raw);
 
-                return $parsed instanceof Carbon ? $parsed : null;
+                return $parsed;
             } catch (Throwable) {
                 return null;
             }
@@ -243,7 +243,7 @@ class WebAuthController extends Controller
         if ($raw instanceof \DateTimeInterface) {
             $parsed = Carbon::instance($raw);
 
-            return $parsed instanceof Carbon ? $parsed : null;
+            return $parsed;
         }
 
         return null;

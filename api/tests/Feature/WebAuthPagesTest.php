@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\TestResponse;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -277,4 +278,67 @@ class WebAuthPagesTest extends TestCase
         $this->assertSame(0, (int) $fresh->failed_login_attempts);
     }
 
+    private function company(): Company
+    {
+        $company = Company::factory()->create();
+        $this->assertInstanceOf(Company::class, $company);
+
+        return $company;
+    }
+
+    private function manager(Company $company, array $overrides = []): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->manager()->create(array_merge([
+            'company_id' => $company->id,
+            'password_hash' => Hash::make('password123'),
+            'status' => 'active',
+        ], $overrides));
+
+        return $employee;
+    }
+
+    private function csrfToken(): string
+    {
+        $this->get('/login');
+
+        return (string) session()->token();
+    }
+
+    private function webLogin(string $email, string $password, string $token): TestResponse
+    {
+        return $this->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
+            'email' => $email,
+            'password' => $password,
+        ]);
+    }
+
+    private function totpCode(string $secret): string
+    {
+        $alphabet = array_flip(str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'));
+        $normalized = strtoupper(rtrim($secret, '='));
+        $bits = '';
+        foreach (str_split($normalized) as $char) {
+            if (! array_key_exists($char, $alphabet)) {
+                continue;
+            }
+            $bits .= str_pad(decbin($alphabet[$char]), 5, '0', STR_PAD_LEFT);
+        }
+        $decoded = '';
+        foreach (str_split($bits, 8) as $chunk) {
+            if (strlen($chunk) < 8) {
+                continue;
+            }
+            $decoded .= chr((int) bindec($chunk));
+        }
+
+        $counter = intdiv(time(), 30);
+        $hash = hash_hmac('sha1', pack('N2', 0, $counter), $decoded, true);
+        $offset = ord(substr($hash, -1)) & 0x0F;
+        $unpacked = unpack('N', substr($hash, $offset, 4));
+        $value = ($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF;
+
+        return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
+    }
 }

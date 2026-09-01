@@ -135,6 +135,7 @@ class IdempotencyMiddleware
         }
     }
 
+    /** @param array<string, mixed> $snapshot */
     private function cachePut(string $key, array $snapshot, int $ttl): void
     {
         try {
