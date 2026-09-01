@@ -106,10 +106,21 @@ class SyncEngineService
         $resolved = 0;
 
         foreach ($pending as $item) {
-            $item->update([
-                'status' => 'processing',
-                'attempt_count' => $item->attempt_count + 1,
-            ]);
+            // #6554 (audit fiabilité M9) : claim CONDITIONNEL — sous sync
+            // concurrent, un item déjà réclamé par un autre process (statut
+            // passé à processing entre la sélection et l'update) ne doit pas
+            // être traité deux fois. L'update atomique `WHERE status='pending'`
+            // garantit qu'un seul process gagne la course.
+            $claimed = SyncQueue::whereKey($item->getKey())
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'processing',
+                    'attempt_count' => $item->attempt_count + 1,
+                ]);
+
+            if ($claimed === 0) {
+                continue;
+            }
 
             try {
                 $result = $this->applyToCloud($item);

@@ -126,11 +126,49 @@ class EdgeDaemonSyncClient
             return ['sent' => 0, 'failed' => $pending->count()];
         }
 
-        foreach ($pending as $item) {
-            $item->update(['status' => 'synced', 'synced_at' => now()]);
+        // #6554 (audit fiabilité M10) : un 2xx n'implique plus que TOUT le
+        // lot est accepté — le Cloud renvoie désormais un résultat PAR
+        // enregistrement. Les items rejetés (validation, doublon non géré…)
+        // restent `pending` et sont retentés au cycle suivant (attempt_count
+        // borné à 5). Fallback de compatibilité : réponse sans `results`
+        // (ancien Cloud) ⇒ 2xx = tout accepté, comportement historique.
+        $results = $response->json('results');
+        $byKey = [];
+        if (is_array($results)) {
+            foreach ($results as $result) {
+                if (! is_array($result) || ! isset($result['entity_type'], $result['entity_id'], $result['operation'])) {
+                    continue;
+                }
+                $byKey[$result['entity_type'].'|'.$result['entity_id'].'|'.$result['operation']] = (string) ($result['status'] ?? 'rejected');
+            }
         }
 
-        return ['sent' => $pending->count(), 'failed' => 0];
+        $sent = 0;
+        foreach ($pending as $item) {
+            $key = $item->entity_type.'|'.$item->entity_id.'|'.$item->operation;
+            $itemStatus = $byKey[$key] ?? 'queued';
+
+            if ($itemStatus === 'queued' || $itemStatus === 'duplicate') {
+                $item->update(['status' => 'synced', 'synced_at' => now()]);
+                $sent++;
+            } else {
+                Log::warning('[EdgeSync Daemon] Record rejected by Cloud, will retry', [
+                    'edge_node_id' => $this->edgeNodeId,
+                    'entity_type'  => $item->entity_type,
+                    'entity_id'    => $item->entity_id,
+                    'operation'    => $item->operation,
+                    'status'       => $itemStatus,
+                ]);
+
+                $newStatus = $item->attempt_count + 1 >= 5 ? 'failed' : 'pending';
+                $item->update([
+                    'status'        => $newStatus,
+                    'attempt_count' => $item->attempt_count + 1,
+                ]);
+            }
+        }
+
+        return ['sent' => $sent, 'failed' => $pending->count() - $sent];
     }
 
     /**

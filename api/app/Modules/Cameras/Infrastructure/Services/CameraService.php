@@ -364,6 +364,15 @@ class CameraService
     /**
      * Teste la joignabilité d'une URL RTSP via ffprobe (best-effort).
      * Retourne ['ok' => bool, 'error' => ?string].
+     *
+     * Note sécurité (#6560, audit F3) : TOCTOU accepté et documenté — la
+     * validation d'hôte (NotPrivateUrl::isPublicHost + isPrivateRtspTarget)
+     * s'applique au moment de l'appel ; un DNS rebinding entre la
+     * résolution et l'exécution de ffprobe reste théoriquement possible.
+     * Accepté car : (1) ffprobe n'émet que des requêtes RTSP en lecture,
+     * (2) le secret RTSP n'est jamais transmis en clair hors du conteneur,
+     * (3) une protection par IP figée casserait les caméras à DNS dynamique.
+     * Ne pas retirer les gardes existantes.
      */
     /**
      * @return array<string, mixed>

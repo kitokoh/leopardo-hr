@@ -41,7 +41,7 @@ class SyncQueue extends Model
 
     protected $fillable = [
         'edge_node_id', 'entity_type', 'entity_id', 'operation',
-        'payload', 'status', 'attempt_count',
+        'payload', 'status', 'attempt_count', 'dedup_key',
         'conflict_resolution', 'conflict_note', 'synced_at',
     ];
 

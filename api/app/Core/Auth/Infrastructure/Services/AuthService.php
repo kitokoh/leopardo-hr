@@ -60,10 +60,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
-                $found = $this->findEmployeeInTenantSchemas($email);
-                if ($found !== null) {
-                    [$employee, $employeeSchema] = $found;
-                    $this->setTenantSearchPath($employeeSchema);
+                // #6563 (audit auth F3) : le balayage de tous les schémas
+                // tenants est un oracle de timing (email valide ⇒ réponse
+                // plus lente) — désactivé en production (user_lookups
+                // obligatoire), conservé hors prod pour la résilience démo.
+                if (config('auth.schema_sweep_enabled', ! app()->environment('production'))) {
+                    $found = $this->findEmployeeInTenantSchemas($email);
+                    if ($found !== null) {
+                        [$employee, $employeeSchema] = $found;
+                        $this->setTenantSearchPath($employeeSchema);
+                    }
                 }
             }
 
@@ -304,10 +310,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
-                $found = $this->findEmployeeInTenantSchemas($email);
-                if ($found !== null) {
-                    [$employee, $employeeSchema] = $found;
-                    $this->setTenantSearchPath($employeeSchema);
+                // #6563 (audit auth F3) : le balayage de tous les schémas
+                // tenants est un oracle de timing (email valide ⇒ réponse
+                // plus lente) — désactivé en production (user_lookups
+                // obligatoire), conservé hors prod pour la résilience démo.
+                if (config('auth.schema_sweep_enabled', ! app()->environment('production'))) {
+                    $found = $this->findEmployeeInTenantSchemas($email);
+                    if ($found !== null) {
+                        [$employee, $employeeSchema] = $found;
+                        $this->setTenantSearchPath($employeeSchema);
+                    }
                 }
             }
         } catch (QueryException $e) {

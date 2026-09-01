@@ -63,6 +63,18 @@ class TokenAutoRefreshMiddleware
             return $response;
         }
 
+        // #6563 (audit auth I4) : la rotation n'est effectuée que si le
+        // nouveau token peut réellement être transmis au client — réponse
+        // JSON (clé `_auth`). Sur une réponse non-JSON (HTML, redirect,
+        // binaire), pivoter supprimerait l'ancien token sans aucun canal
+        // pour livrer le nouveau → session orpheline (le client garde un
+        // token révoqué). On laisse alors la réponse intacte ; la rotation
+        // se fera sur la prochaine réponse JSON.
+        $contentType = (string) $response->headers->get('Content-Type', '');
+        if (! str_contains($contentType, 'application/json')) {
+            return $response;
+        }
+
         // Rotation atomique sous verrou pessimiste (SELECT FOR UPDATE).
         // Si une requête concurrente a déjà pivoté le token, lockForUpdate()
         // bloque jusqu'à la fin de l'autre transaction, puis find() retourne

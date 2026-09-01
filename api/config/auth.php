@@ -136,5 +136,21 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
-];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Schema sweep on missing user_lookup (audit #6563)
+    |--------------------------------------------------------------------------
+    |
+    | Lorsqu'une adresse email n'a pas de ligne dans public.user_lookups,
+    | AuthService peut balayer tous les schémas tenants connus pour retrouver
+    | l'employé (résilience démo, leçon AGENTS.md v4.16.128). Ce balayage est
+    | un oracle de timing (email valide vs invalide) — il est désactivé en
+    | production où user_lookups est la source de vérité obligatoire.
+    | Surcharge : AUTH_SCHEMA_SWEEP_ENABLED.
+    |
+    */
+
+    'schema_sweep_enabled' => env('AUTH_SCHEMA_SWEEP_ENABLED', ! app()->environment('production')),
+
+];

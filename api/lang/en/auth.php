@@ -22,5 +22,6 @@ return [
     'twofa_already_enabled' => '2FA is already enabled for this account.',
     'twofa_not_setup' => 'Please call setup2fa first to generate a secret.',
     'twofa_code_invalid_value' => 'The provided 2FA code is invalid.',
+    'account_locked' => 'Account temporarily locked after multiple failed login attempts. Try again in 15 minutes.',,
     'password_incorrect' => 'Incorrect password.',
 ];

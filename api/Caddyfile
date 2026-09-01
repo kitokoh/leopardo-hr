@@ -1,5 +1,11 @@
 {
     frankenphp
+
+    # #6558 (audit ops M-2) : désactiver l'API admin Caddy (localhost:2019).
+    # Sans authentification, elle permet de reconfigurer le serveur (RCE) si
+    # le port venait à être exposé/publié. La supervision passe par le
+    # healthcheck HTTP, pas par l'API admin.
+    admin off
 }
 
 {$SERVER_NAME:localhost} {

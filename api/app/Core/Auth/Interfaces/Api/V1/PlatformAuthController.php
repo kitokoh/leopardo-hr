@@ -28,16 +28,44 @@ class PlatformAuthController extends Controller
             'two_fa_code' => ['nullable', 'string'],
         ]);
 
+        // #6563 (audit auth F2) : verrouillage du login API super-admin après
+        // 5 échecs (15 min). Le throttle seul ne protège pas contre un
+        // balayage de mots de passe — un compteur d'échecs par (email + IP)
+        // bloque la source fautive sans permettre un verrouillage DoS du
+        // compte depuis des IP différentes.
+        $accountKey = 'platform_login_'.strtolower($validated['email']);
+        $attemptKey = $accountKey.':'.$request->ip();
+        $lockKey = $accountKey.':lock';
+
+        if (Cache::get($lockKey)) {
+            return new JsonResponse([
+                'error' => 'ACCOUNT_LOCKED',
+                'message' => __('auth.account_locked'),
+                'localized_message' => __('auth.account_locked'),
+            ], 423);
+        }
+
         /** @var SuperAdmin|null $superAdmin */
         $superAdmin = SuperAdmin::query()->where('email', $validated['email'])->first();
 
         if (! $superAdmin || ! Hash::check($validated['password'], $superAdmin->password_hash)) {
+            $attempts = (int) Cache::get($attemptKey, 0) + 1;
+            Cache::put($attemptKey, $attempts, now()->addMinutes(15));
+
+            if ($attempts >= 5) {
+                Cache::put($lockKey, true, now()->addMinutes(15));
+                Cache::forget($attemptKey);
+            }
+
             return new JsonResponse([
                 'error' => 'INVALID_CREDENTIALS',
                 'message' => 'INVALID_CREDENTIALS',
                 'localized_message' => __('errors.INVALID_CREDENTIALS'),
             ], 401);
         }
+
+        Cache::forget($attemptKey);
+        Cache::forget($lockKey);
 
         // Sécurité #2630 : un super-admin suspendu/désactivé ne peut pas se connecter.
         if ($superAdmin->status !== 'active') {
@@ -114,6 +142,21 @@ class PlatformAuthController extends Controller
         $superAdmin = $request->user('super_admin_api');
 
         if (isset($validated['email']) && $validated['email'] !== $superAdmin->email) {
+            // #6563 (audit auth I5) : le changement d'email du super-admin
+            // exige le mot de passe courant (parité avec les employés) —
+            // un token volé ne suffit pas pour détourner le compte.
+            $passwordCheck = $request->validate([
+                'current_password' => ['required', 'string'],
+            ]);
+
+            if (! Hash::check($passwordCheck['current_password'], $superAdmin->password_hash)) {
+                return new JsonResponse([
+                    'error' => 'INVALID_PASSWORD',
+                    'message' => __('auth.password_incorrect'),
+                    'localized_message' => __('auth.password_incorrect'),
+                ], 422);
+            }
+
             $emailTaken = SuperAdmin::query()
                 ->where('email', $validated['email'])
                 ->where('id', '!=', $superAdmin->id)
