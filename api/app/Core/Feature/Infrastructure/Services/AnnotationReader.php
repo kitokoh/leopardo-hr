@@ -125,12 +125,11 @@ class AnnotationReader
             $arguments = $attribute->getArguments();
 
             // Mapper les attributs connus
-            // NB: les attributs canoniques vivent desormais sous App\Shared\Attributes\*
-            // (App\Attributes\* n'est qu'un alias de compat via class_alias()).
+            // NB: les attributs canoniques vivent sous App\Shared\Attributes\*
+            // (les alias App\Attributes\* ont été supprimés — #6565).
             // ReflectionAttribute::getName() renvoie le nom utilise au point de
-            // declaration (le `use` du controleur), donc on doit matcher les deux.
+            // declaration (le `use` du controleur).
             switch ($name) {
-                case 'App\\Attributes\\ApiFeature':
                 case 'App\\Shared\\Attributes\\ApiFeature':
                     $annotations['title'] = $arguments['title'] ?? null;
                     $annotations['description'] = $arguments['description'] ?? null;
@@ -141,8 +140,6 @@ class AnnotationReader
                     $annotations['form_schema'] = $arguments['form_schema'] ?? [];
                     $annotations['list_schema'] = $arguments['list_schema'] ?? [];
                     break;
-
-                case 'App\\Attributes\\RequiresPermission':
                 case 'App\\Shared\\Attributes\\RequiresPermission':
                     $permissions = $arguments['permissions'] ?? $arguments[0] ?? [];
                     if (! is_array($permissions)) {
@@ -153,8 +150,6 @@ class AnnotationReader
                         $permissions
                     );
                     break;
-
-                case 'App\\Attributes\\MobileCompatible':
                 case 'App\\Shared\\Attributes\\MobileCompatible':
                     $annotations['mobile_compatible'] = $arguments['compatible'] ?? $arguments[0] ?? true;
                     $annotations['mobile_version_min'] = $arguments['minimum_version'] ?? $annotations['mobile_version_min'] ?? null;
