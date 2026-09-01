@@ -2,18 +2,13 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
-=======
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
->>>>>>> 1a8d3d2a7 (feat(delivery): fondations module Delivery — BC-26 DELIVERY (DELIVERY-101, Closes #6282))
->>>>>>> 3bc0a1f74 (style(pint): corrections de formatage — bootstrap, providers, routes delivery, tests (déblocage CI #6338))
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
-<<<<<<< HEAD
-=======
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
@@ -69,7 +64,6 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
-<<<<<<< HEAD
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
     // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
