@@ -17,6 +17,7 @@ class UpdateProfileRequest extends FormRequest
         return true;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         $employeeId = $this->user()?->id;
