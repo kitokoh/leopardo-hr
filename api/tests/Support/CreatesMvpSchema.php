@@ -2960,6 +2960,23 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'order_id'], 'restaurant_order_items_company_order_idx');
             });
         }
+        // RESTO-805 (#6226) — jetons signés de la boutique publique (hash SHA-256 seul).
+        if (! Schema::hasTable($this->moduleTable('restaurant_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('restaurant_public_shop_tokens'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+
+                $table->string('token_hash', 64)->unique();
+                $table->string('name', 100)->default('default');
+                $table->boolean('active')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+
+                $table->timestamps();
+
+                $table->index(['company_id', 'active'], 'restaurant_shop_tokens_company_active_idx');
+            });
+        }
         if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
             Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
 
