@@ -65,6 +65,7 @@ class EmployeeExtraDataRgpdTest extends TestCase
         $company = Company::factory()->create();
         /** @var \App\Core\Auth\Domain\Models\Employee $viewer */
         $viewer = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $target */
         $target = Employee::factory()->create([
             'company_id' => $company->id,
             'extra_data' => $this->sensitiveExtraData(),
@@ -86,6 +87,7 @@ class EmployeeExtraDataRgpdTest extends TestCase
         $company = Company::factory()->create();
         /** @var \App\Core\Auth\Domain\Models\Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $target */
         $target = Employee::factory()->create([
             'company_id' => $company->id,
             'extra_data' => $this->sensitiveExtraData(),
