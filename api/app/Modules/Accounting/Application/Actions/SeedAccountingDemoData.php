@@ -16,7 +16,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Infrastructure\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -58,8 +58,11 @@ final class SeedAccountingDemoData
 
     public function __construct()
     {
-        $this->workflow = new DocumentWorkflowService;
         $this->numbering = new SequentialDocumentNumbering;
+        // #6572 : source unique du workflow (Application) — l'ancien doublon
+        // Infrastructure a été supprimé ; le service exige l'implémentation
+        // de numérotation (interface DocumentNumberingInterface).
+        $this->workflow = new DocumentWorkflowService($this->numbering);
     }
 
     /**

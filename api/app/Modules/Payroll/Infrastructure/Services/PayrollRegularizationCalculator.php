@@ -17,13 +17,21 @@ use Illuminate\Support\Facades\DB;
  * #5591 (slice 3) — calcul d'un run de régularisation, extrait du god-object
  * PayrollCalculator.
  *
+ * #6572 (audit org M7) : renommé depuis `PayrollRegularizationService` —
+ * l'ancien nom court entrait en collision avec
+ * `Payroll\Application\Services\PayrollRegularizationService` (création de
+ * runs de régularisation) et PayrollCalculator l'instanciait par résolution
+ * de namespace implicite (risque de bascule silencieuse à l'ajout d'un
+ * `use`). `PayrollRegularizationCalculator` = CALCUL du différentiel ;
+ * `PayrollRegularizationService` (Application) = création/gestion des runs.
+ *
  * Un run `regularization` recalcule chaque bulletin du run ORIGINAL (verrouillé)
  * avec les règles et structures ACTUELLES, et persiste le DIFFÉRENTIEL
  * (corrigé − original) par employé et par ligne (delta nul = pas de bulletin).
  * Comportement STRICTEMENT identique à l'ancien code (copie), les tests de
  * régularisation + golden servent de filet.
  */
-class PayrollRegularizationService
+class PayrollRegularizationCalculator
 {
     public function __construct(
         /** Calcul des valeurs de bulletin (instance partagée avec PayrollCalculator). */
