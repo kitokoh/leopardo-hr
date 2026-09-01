@@ -25,7 +25,6 @@ use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
 use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
->>>>>>> b1006aba0 (style(api): Pint — bootstrap/app.php, providers.php, routes/api.php (garde Backend Quality))
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -156,12 +155,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.cameras' => EnsureCameraModuleMiddleware::class,
             // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
             'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
-<<<<<<< HEAD
             // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
             'travel.partner' => TravelPartnerAuthMiddleware::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
-=======
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
