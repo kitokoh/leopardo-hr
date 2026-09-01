@@ -17,7 +17,6 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -64,6 +63,14 @@ class PayrollSimulationController extends Controller
             'ignore_caps' => ['sometimes', 'boolean'],
             // Issue #1872 — règle « placeholder » : confirmation explicite requise.
             'acknowledge_placeholder' => ['sometimes', 'boolean'],
+            // Issue #6686 : month/employee_id ne font pas partie du contrat de
+            // simulation (champ non utilisé, jamais documenté) — les rejeter
+            // explicitement plutôt que de les ignorer silencieusement (un
+            // client qui calcule avec un mois erroné doit recevoir un 422, pas
+            // un résultat chiffré faux). Le vrai calcul mensuel passe par
+            // /payroll-runs.
+            'month' => ['prohibited'],
+            'employee_id' => ['prohibited'],
         ]);
 
         /** @var array{gross_salary: float|string, country_code: string, slabs_override?: array<int, array{min: float|string, max?: float|string|null, rate: float|string, fixed_deduction?: float|string}>, ignore_caps?: bool} $validated */
