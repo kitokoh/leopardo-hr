@@ -13,6 +13,13 @@
 > Pour le contexte opérationnel complet : `AGENTS.md`.
 
 ---
+# Leopardo HR Constitution
+
+> Ce document est la loi fondamentale du projet. Il prime sur tout autre document.
+> Tout agent IA doit le lire avant de commencer la moindre tâche.
+> Pour le contexte opérationnel complet : `AGENTS.md`.
+
+---
 
 ## I. Spec-First — NON NÉGOCIABLE
 
@@ -23,6 +30,7 @@
 - Avant de coder, lancer `/speckit-analyze` pour détecter les dépendances manquantes
 - Une spec = un PR maximum. Deux agents ne peuvent pas implémenter la même spec.
 - **Auto-assignation obligatoire** : avant de travailler sur une issue GitHub, s'assigner dessus via `gh issue edit <number> --add-assignee @me`
+- **Marker branch (protocole anti-doublon #2400)** : dès le self-assign, pousser immédiatement la branche `fix/<issue>-<slug>` (commit vide de claim) — le nom de branche EST le lock. Avant de coder, vérifier TOUTES les branches contenant le numéro d'issue (`gh api repos/.../branches | grep <issue>`) et les PRs ouvertes, pas seulement les assignees. Une seule branche par issue ; toute PR dupliquée est fermée avec renvoi vers la PR canonique.
 
 ## II. Multi-Tenant PostgreSQL — INVIOLABLE
 
@@ -114,7 +122,7 @@ api/app/Modules/{Module}/
 - CHANGELOG.md mis à jour dans chaque PR avec entrée sous `## [Unreleased]`
 - Ne jamais pusher directement sur `main`
 - Supprimer la branche après merge
-- **Anti-doublon** : vérifier `gh issue list --assignee @me` avant de démarrer. Si une spec existe déjà pour cet objectif, contribuer dessus — ne pas créer une deuxième PR
+- **Anti-doublon** : vérifier `gh issue list --assignee @me` ET toutes les branches contenant le numéro d'issue (protocole #2400) avant de démarrer. Si une spec/branche existe déjà pour cet objectif, contribuer dessus — ne pas créer une deuxième PR. Une PR dupliquée sur une même issue est fermée avec commentaire de renvoi.
 
 ### Checks requis (branch protection main)
 | Check | Seuil |

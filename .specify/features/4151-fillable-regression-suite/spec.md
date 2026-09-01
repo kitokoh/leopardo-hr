@@ -1,3 +1,5 @@
+> **Note (2026-09-01, audit #6599)** : le module `SmartAttendance` a été fusionné dans `api/app/Modules/Attendance` (ADR-0016 Phase 5, 2026-08-24). Les chemins `Modules/SmartAttendance/**` ci-dessous sont **historiques** — l'action/module vit désormais sous `Modules/Attendance/**`.
+
 # Feature Specification: Suite Feature rouge — régression fillable #3677 (issue #4151)
 
 **Feature Branch**: `fix/4151-fillable-regression-suite`

@@ -7,3 +7,6 @@ feature.json
 
 # Per-machine extension config overrides.
 extensions/*/local-config.yml
+
+# Generated artifact (Specify compose) — audit #6599, 2026-09-01.
+presets/**/.composed/

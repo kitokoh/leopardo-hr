@@ -6,8 +6,8 @@
 
 **Status**: Implemented
 
-**Module**: `attendance` — périmètre : `api/app/Modules/Attendance/**` +
-`api/app/Modules/SmartAttendance/**` (chemins d'usage géofence),
+**Module**: `attendance` — périmètre : `api/app/Modules/Attendance/**` (les chemins géofence vivaient dans le module
+`SmartAttendance`, fusionné dans `Attendance` — ADR-0016 Phase 5, 2026-08-24),
 `dev-hub/tools/check-geofence-single-usage.sh` (garde CI),
 `.github/workflows/architecture-check.yml` (étape garde).
 
