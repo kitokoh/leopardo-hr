@@ -159,7 +159,7 @@ Route::prefix('v1')->group(function (): void {
         // verticale RestaurantManager. Public : la confiance est portée par la
         // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
         // depuis le payload signé puis posé via TenantManager (pattern #5272).
-        Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
+        Route::post('/restaurant/payments/{payment}/callback', [RestaurantPaymentCallbackController::class, 'handle']);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
