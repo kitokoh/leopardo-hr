@@ -46,9 +46,6 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRep
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
@@ -82,6 +79,17 @@ use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\RestaurantManager\Console\Commands\RestaurantReservationJobsCommand;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantDeliveryRiderPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantLoyaltyPolicy;
+use App\Modules\RestaurantManager\Policies\RestaurantPromotionPolicy;
 
 /**
  * Provider du module RestaurantManager (BC-25 RESTAURANT).
@@ -129,15 +137,6 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             return $registry;
         });
 
-        // RESTO-806 (#6227) — registre des adaptateurs d'apps de livraison
-        // (Uber Eats / Glovo, webhooks HMAC fail-closed).
-        $this->app->singleton(DeliveryAppAdapterRegistry::class, function (): DeliveryAppAdapterRegistry {
-            return new DeliveryAppAdapterRegistry([
-                new UberEatsDeliveryAppAdapter(),
-                new GlovoDeliveryAppAdapter(),
-            ]);
-        });
-
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
         // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet).
@@ -145,7 +144,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
-        ]);
+                    RestaurantReservationJobsCommand::class,]);
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -204,5 +203,12 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
         Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
         Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+        Gate::policy(RestaurantDelivery::class, RestaurantDeliveryPolicy::class);
+        Gate::policy(RestaurantDeliveryRider::class, RestaurantDeliveryRiderPolicy::class);
+        Gate::policy(RestaurantLoyaltyProgram::class, RestaurantLoyaltyPolicy::class);
+        Gate::policy(RestaurantLoyaltyCustomer::class, RestaurantLoyaltyPolicy::class);
+        Gate::policy(RestaurantPromotion::class, RestaurantPromotionPolicy::class);
+        Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
+
     }
 }

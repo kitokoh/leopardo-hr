@@ -118,7 +118,7 @@
         {
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
-          "status": "validated"
+          "status": "pending"
         },
         {
           "id": "api_security",
@@ -148,12 +148,12 @@
         {
           "id": "golden_journey",
           "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
-          "status": "validated"
+          "status": "pending"
         },
         {
           "id": "recette",
           "label": "Recette UAT signée par le chef de projet",
-          "status": "validated"
+          "status": "pending"
         }
       ]
     },

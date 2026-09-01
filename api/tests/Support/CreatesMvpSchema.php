@@ -3196,17 +3196,6 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'status', 'available_at'], 'restaurant_outbox_events_company_status_available_idx');
             });
         }
-        if (! Schema::hasTable($this->moduleTable('restaurant_public_shop_tokens'))) {
-            Schema::create($this->moduleTable('restaurant_public_shop_tokens'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->unique();
-                $table->string('token_hash', 64);
-                $table->string('name', 80)->nullable();
-                $table->boolean('active')->default(true);
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamps();
-            });
-        }
         // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {

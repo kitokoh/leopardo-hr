@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -322,6 +323,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get modulesEvaluations => 'Evaluations';
+
+  @override
+  String get modulesRestaurant => 'Écran cuisine';
 
   @override
   String get emailsInvitationSubject =>
@@ -1144,16 +1148,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'Mon solde de congés';
 
   @override
-  String get dashboardLeaveBalanceSubtitle => 'Jours restants par type, année courante';
+  String get dashboardLeaveBalanceSubtitle =>
+      'Jours restants par type, année courante';
 
   @override
   String get dashboardLeaveBalanceLoading => 'Chargement du solde…';
 
   @override
-  String get dashboardLeaveBalanceError => 'Impossible de charger le solde de congés.';
+  String get dashboardLeaveBalanceError =>
+      'Impossible de charger le solde de congés.';
 
   @override
-  String get dashboardLeaveBalanceEmpty => 'Aucun solde configuré pour ce compte.';
+  String get dashboardLeaveBalanceEmpty =>
+      'Aucun solde configuré pour ce compte.';
 
   @override
   String dashboardLeaveBalanceAvailable(Object days) {
@@ -1259,7 +1266,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-      Object date, Object hours, Object range, Object status) {
+    Object date,
+    Object hours,
+    Object range,
+    Object status,
+  ) {
     return 'Journée du $date, statut $status, $range, $hours.';
   }
 
@@ -8234,88 +8245,33 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get crmAccountsColcreated => 'Créé le';
+  String get crmTitle => 'CRM Client';
 
   @override
-  String get crmAccountsColemail => 'Email';
+  String get crmSubtitle =>
+      'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).';
 
   @override
-  String get crmAccountsColname => 'Nom';
+  String get crmIsolationnote =>
+      'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.';
 
   @override
-  String get crmAccountsColphone => 'Téléphone';
-
-  @override
-  String get crmAccountsColstatus => 'Statut';
-
-  @override
-  String get crmAccountsDescription => 'Organisations clientes de votre entreprise';
-
-  @override
-  String get crmAccountsEmpty => 'Aucun compte pour le moment.';
-
-  @override
-  String get crmAccountsSubtitle => 'Liste des comptes (tenant-scoped).';
-
-  @override
-  String get crmAccountsTitle => 'Comptes';
-
-  @override
-  String get crmContactsDescription => 'Personnes rattachées à vos comptes';
-
-  @override
-  String get crmContactsEmpty => 'Aucun contact pour le moment.';
-
-  @override
-  String get crmContactsPrimary => 'Principal';
-
-  @override
-  String get crmContactsSubtitle => 'Liste des contacts (tenant-scoped).';
-
-  @override
-  String get crmContactsTitle => 'Contacts';
-
-  @override
-  String get crmErrorloading => 'Impossible de charger les données.';
+  String get crmLoading => 'Chargement…';
 
   @override
   String get crmFeaturelocked => 'Module CRM non activé pour votre entreprise.';
 
   @override
-  String get crmIsolationnote => 'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.';
+  String get crmErrorloading => 'Impossible de charger les données.';
 
   @override
-  String get crmLeadsColcompany => 'Société';
+  String get crmSearchplaceholder => 'Rechercher…';
 
   @override
-  String get crmLeadsColcreated => 'Créé le';
+  String get crmRefresh => 'Actualiser';
 
   @override
-  String get crmLeadsColemail => 'Email';
-
-  @override
-  String get crmLeadsColname => 'Nom';
-
-  @override
-  String get crmLeadsColsource => 'Source';
-
-  @override
-  String get crmLeadsColstatus => 'Statut';
-
-  @override
-  String get crmLeadsDescription => 'Opportunités d\'affaires à qualifier';
-
-  @override
-  String get crmLeadsEmpty => 'Aucun prospect pour le moment.';
-
-  @override
-  String get crmLeadsSubtitle => 'Liste des prospects (tenant-scoped).';
-
-  @override
-  String get crmLeadsTitle => 'Prospects';
-
-  @override
-  String get crmLoading => 'Chargement…';
+  String get crmPaginationprev => 'Précédent';
 
   @override
   String get crmPaginationnext => 'Suivant';
@@ -8324,22 +8280,91 @@ class AppLocalizationsFr extends AppLocalizations {
   String get crmPaginationpage => 'Page';
 
   @override
-  String get crmPaginationprev => 'Précédent';
+  String get crmAccountsTitle => 'Comptes';
 
   @override
-  String get crmPipelineDescription => 'Vue d\'ensemble des opportunités par étape';
+  String get crmAccountsDescription =>
+      'Organisations clientes de votre entreprise';
+
+  @override
+  String get crmAccountsSubtitle => 'Liste des comptes (tenant-scoped).';
+
+  @override
+  String get crmAccountsEmpty => 'Aucun compte pour le moment.';
+
+  @override
+  String get crmAccountsColname => 'Nom';
+
+  @override
+  String get crmAccountsColstatus => 'Statut';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColphone => 'Téléphone';
+
+  @override
+  String get crmAccountsColcreated => 'Créé le';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmContactsDescription => 'Personnes rattachées à vos comptes';
+
+  @override
+  String get crmContactsSubtitle => 'Liste des contacts (tenant-scoped).';
+
+  @override
+  String get crmContactsEmpty => 'Aucun contact pour le moment.';
+
+  @override
+  String get crmContactsPrimary => 'Principal';
+
+  @override
+  String get crmLeadsTitle => 'Prospects';
+
+  @override
+  String get crmLeadsDescription => 'Opportunités d\'affaires à qualifier';
+
+  @override
+  String get crmLeadsSubtitle => 'Liste des prospects (tenant-scoped).';
+
+  @override
+  String get crmLeadsEmpty => 'Aucun prospect pour le moment.';
+
+  @override
+  String get crmLeadsColname => 'Nom';
+
+  @override
+  String get crmLeadsColcompany => 'Société';
+
+  @override
+  String get crmLeadsColstatus => 'Statut';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColcreated => 'Créé le';
+
+  @override
+  String get crmPipelineTitle => 'Pipeline';
+
+  @override
+  String get crmPipelineDescription =>
+      'Vue d\'ensemble des opportunités par étape';
+
+  @override
+  String get crmPipelineSubtitle =>
+      'Opportunités regroupées par étape (tenant-scoped).';
 
   @override
   String get crmPipelineEmpty => 'Aucune opportunité pour le moment.';
-
-  @override
-  String get crmPipelineStageLost => 'Perdu';
-
-  @override
-  String get crmPipelineStageNegotiation => 'Négociation';
-
-  @override
-  String get crmPipelineStageProposal => 'Proposition';
 
   @override
   String get crmPipelineStageProspecting => 'Prospection';
@@ -8348,37 +8373,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get crmPipelineStageQualification => 'Qualification';
 
   @override
+  String get crmPipelineStageProposal => 'Proposition';
+
+  @override
+  String get crmPipelineStageNegotiation => 'Négociation';
+
+  @override
   String get crmPipelineStageWon => 'Gagné';
 
   @override
-  String get crmPipelineSubtitle => 'Opportunités regroupées par étape (tenant-scoped).';
+  String get crmPipelineStageLost => 'Perdu';
 
   @override
-  String get crmPipelineTitle => 'Pipeline';
+  String get restaurantKitchentitle => 'Écran cuisine';
 
   @override
-  String get crmRefresh => 'Actualiser';
-
-  @override
-  String get crmSearchplaceholder => 'Rechercher…';
-
-  @override
-  String get crmSubtitle => 'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).';
-
-  @override
-  String get crmTitle => 'CRM Client';
-
-  @override
-  String get modulesRestaurant => 'Écran cuisine';
-
-  @override
-  String get restaurantActionerror => 'Action impossible, réessayez.';
-
-  @override
-  String get restaurantAdditem => 'Ajouter un article';
-
-  @override
-  String get restaurantBill => 'Addition';
+  String get restaurantKitchensubtitle =>
+      'File de commandes en temps réel — préparation et mise à disposition';
 
   @override
   String get restaurantBranch => 'Branche';
@@ -8387,16 +8398,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restaurantBranchall => 'Toutes les branches';
 
   @override
-  String get restaurantCheckin => 'Enregistrer';
+  String get restaurantInpreparation => 'En préparation';
 
   @override
-  String get restaurantClosesession => 'Clôturer la caisse';
+  String get restaurantReady => 'Prêtes';
+
+  @override
+  String get restaurantEmpty => 'Aucune commande en attente. La file est vide.';
+
+  @override
+  String get restaurantStart => 'Démarrer';
+
+  @override
+  String get restaurantMarkready => 'Prête';
+
+  @override
+  String get restaurantOrderref => 'Commande';
+
+  @override
+  String get restaurantTable => 'Table';
 
   @override
   String get restaurantCovers => 'couverts';
 
   @override
-  String get restaurantCustomername => 'Nom du client';
+  String get restaurantTakeaway => 'À emporter';
 
   @override
   String get restaurantDelivery => 'Livraison';
@@ -8405,122 +8431,733 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restaurantDinein => 'Sur place';
 
   @override
-  String get restaurantDiscount => 'Remise';
-
-  @override
-  String get restaurantEmpty => 'Aucune commande en attente. La file est vide.';
-
-  @override
-  String get restaurantGuests => 'Couverts';
-
-  @override
-  String get restaurantInpreparation => 'En préparation';
-
-  @override
-  String get restaurantKiosktitle => 'Kiosque libre-service';
-
-  @override
-  String get restaurantKitchensubtitle => 'File de commandes en temps réel — préparation et mise à disposition';
-
-  @override
-  String get restaurantKitchentitle => 'Écran cuisine';
-
-  @override
   String get restaurantLoaderror => 'Impossible de charger la file cuisine.';
+
+  @override
+  String get restaurantActionerror => 'Action impossible, réessayez.';
 
   @override
   String get restaurantLoading => 'Chargement de la file cuisine…';
 
   @override
-  String get restaurantMarkready => 'Prête';
+  String get navigationTravelagency => 'Agence de voyage';
 
   @override
-  String get restaurantNeworder => 'Nouvelle commande';
+  String get travelLoading => 'Chargement…';
 
   @override
-  String get restaurantNoshow => 'No-show';
+  String get travelSectionTitle => 'Agence de voyage';
 
   @override
-  String get restaurantOpensession => 'Ouvrir la caisse';
+  String get travelSectionSubtitle =>
+      'Gestion de la verticale TravelAgency : référentiel, réseau, ventes, billetterie et rapports.';
 
   @override
-  String get restaurantOrderitems => 'Articles de la commande';
+  String get travelGateDisabledtitle => 'Module Agence de voyage non activé';
 
   @override
-  String get restaurantOrderref => 'Commande';
+  String get travelGateDisabledbody =>
+      'La verticale TravelAgency n\'est pas activée pour le tenant connecté. Activez la fonctionnalité « travelagency » pour accéder à ce module.';
 
   @override
-  String get restaurantPaid => 'Payée';
+  String get travelGateErrortitle => 'Module temporairement indisponible';
 
   @override
-  String get restaurantPaycash => 'Encaisser en espèces';
+  String get travelGateErrorbody =>
+      'Impossible de joindre le service TravelAgency. Réessayez dans un instant.';
 
   @override
-  String get restaurantPossubtitle => 'Prise de commande et encaissement';
+  String get travelGateRetry => 'Réessayer';
 
   @override
-  String get restaurantPostitle => 'Point de vente';
+  String get travelTabReferentiel => 'Référentiel';
 
   @override
-  String get restaurantReady => 'Prêtes';
+  String get travelTabRoutes => 'Routes & Trajets';
 
   @override
-  String get restaurantReservationnew => 'Nouvelle réservation';
+  String get travelTabBookings => 'Réservations';
 
   @override
-  String get restaurantReservations => 'Réservations';
+  String get travelTabCheckin => 'Check-in';
 
   @override
-  String get restaurantSessionclosed => 'Caisse clôturée';
+  String get travelTabTickets => 'Billets';
 
   @override
-  String get restaurantSessionopen => 'Caisse ouverte';
+  String get travelTabReports => 'Rapports';
 
   @override
-  String get restaurantShoptitle => 'Commande en ligne';
+  String get travelTabRentals => 'Locations & Hôtels';
 
   @override
-  String get restaurantStart => 'Démarrer';
+  String get travelReferentielTabslabel => 'Sous-sections du référentiel';
 
   @override
-  String get restaurantStatuscancelled => 'Annulée';
+  String get travelReferentielTabgeo => 'Pays & Villes';
 
   @override
-  String get restaurantStatusclosed => 'Clôturée';
+  String get travelReferentielTabstations => 'Stations';
 
   @override
-  String get restaurantStatusdraft => 'Brouillon';
+  String get travelReferentielTaboffices => 'Bureaux';
 
   @override
-  String get restaurantStatusinpreparation => 'En préparation';
+  String get travelReferentielTabcarriers => 'Compagnies';
 
   @override
-  String get restaurantStatusopen => 'Ouverte';
+  String get travelReferentielTabclasses => 'Classes';
 
   @override
-  String get restaurantStatuspaid => 'Payée';
+  String get travelReferentielTabvehicles => 'Véhicules';
 
   @override
-  String get restaurantStatusready => 'Prête';
+  String get travelReferentielCountries => 'Pays';
 
   @override
-  String get restaurantStatusrefunded => 'Remboursée';
+  String get travelReferentielCities => 'Villes';
 
   @override
-  String get restaurantStatusserved => 'Servie';
+  String get travelReferentielGeonote =>
+      'Référentiel géographique alimenté par seed (lecture seule).';
 
   @override
-  String get restaurantSubtotal => 'Sous-total';
+  String get travelReferentielStations => 'Stations / terminaux';
 
   @override
-  String get restaurantTable => 'Table';
+  String get travelReferentielOffices => 'Bureaux de vente';
 
   @override
-  String get restaurantTakeaway => 'À emporter';
+  String get travelReferentielCarriers => 'Compagnies de transport';
 
   @override
-  String get restaurantTax => 'TVA';
+  String get travelReferentielClasses => 'Classes de service';
 
   @override
-  String get restaurantTotal => 'Total';
+  String get travelReferentielVehicles => 'Flotte de véhicules';
+
+  @override
+  String get travelSearchPlaceholder => 'Rechercher…';
+
+  @override
+  String get travelSearchCountry => 'Rechercher un pays…';
+
+  @override
+  String get travelSearchCity => 'Rechercher une ville…';
+
+  @override
+  String get travelSearchStation => 'Rechercher une station…';
+
+  @override
+  String get travelSearchOffice => 'Rechercher un bureau…';
+
+  @override
+  String get travelSearchCarrier => 'Rechercher une compagnie…';
+
+  @override
+  String get travelSearchClass => 'Rechercher une classe…';
+
+  @override
+  String get travelSearchVehicle => 'Rechercher un véhicule…';
+
+  @override
+  String get travelSearchRoute => 'Rechercher une ligne…';
+
+  @override
+  String get travelSearchTrip => 'Rechercher un trajet…';
+
+  @override
+  String get travelSearchBooking => 'Rechercher une réservation…';
+
+  @override
+  String get travelSearchReport => 'Rechercher dans le rapport…';
+
+  @override
+  String get travelSearchRentalvehicle => 'Rechercher un véhicule de location…';
+
+  @override
+  String get travelSearchRentalbooking =>
+      'Rechercher une réservation de location…';
+
+  @override
+  String get travelSearchHotel => 'Rechercher un hôtel…';
+
+  @override
+  String get travelFieldIso2 => 'ISO2';
+
+  @override
+  String get travelFieldIso3 => 'ISO3';
+
+  @override
+  String get travelFieldName => 'Nom';
+
+  @override
+  String get travelFieldPhonecode => 'Indicatif';
+
+  @override
+  String get travelFieldCountryiso2 => 'Pays';
+
+  @override
+  String get travelFieldRegion => 'Région';
+
+  @override
+  String get travelFieldStatus => 'Statut';
+
+  @override
+  String get travelFieldCode => 'Code';
+
+  @override
+  String get travelFieldCity => 'Ville';
+
+  @override
+  String get travelFieldTimezone => 'Fuseau';
+
+  @override
+  String get travelFieldIsterminal => 'Terminal (grande gare)';
+
+  @override
+  String get travelFieldAddress => 'Adresse';
+
+  @override
+  String get travelFieldContactphone => 'Téléphone';
+
+  @override
+  String get travelFieldLabel => 'Libellé';
+
+  @override
+  String get travelFieldPriority => 'Priorité';
+
+  @override
+  String get travelFieldColor => 'Couleur';
+
+  @override
+  String get travelFieldRegistration => 'Immatriculation';
+
+  @override
+  String get travelFieldSeatcapacity => 'Places';
+
+  @override
+  String get travelFieldCarrier => 'Compagnie';
+
+  @override
+  String get travelFieldNotes => 'Notes';
+
+  @override
+  String get travelFieldOrigin => 'Départ';
+
+  @override
+  String get travelFieldDestination => 'Arrivée';
+
+  @override
+  String get travelFieldDistancekm => 'Distance (km)';
+
+  @override
+  String get travelFieldDurationmin => 'Durée (min)';
+
+  @override
+  String get travelFieldRank => 'Rang';
+
+  @override
+  String get travelFieldIsstopover => 'Escale';
+
+  @override
+  String get travelFieldMindurationmin => 'Min (min)';
+
+  @override
+  String get travelFieldRoute => 'Ligne';
+
+  @override
+  String get travelFieldDeparturedate => 'Départ';
+
+  @override
+  String get travelFieldDeparturetime => 'Heure';
+
+  @override
+  String get travelFieldArrivaldate => 'Arrivée';
+
+  @override
+  String get travelFieldArrivaltime => 'Heure d\'arrivée';
+
+  @override
+  String get travelFieldMeans => 'Moyen';
+
+  @override
+  String get travelFieldTotalseats => 'Places';
+
+  @override
+  String get travelFieldClass => 'Classe';
+
+  @override
+  String get travelFieldAdultprice => 'Adulte';
+
+  @override
+  String get travelFieldChildprice => 'Enfant';
+
+  @override
+  String get travelFieldCurrency => 'Devise';
+
+  @override
+  String get travelFieldReference => 'Référence';
+
+  @override
+  String get travelFieldTrip => 'Trajet';
+
+  @override
+  String get travelFieldPassengercount => 'Passagers';
+
+  @override
+  String get travelFieldTotalamount => 'Montant';
+
+  @override
+  String get travelFieldPaymentstatus => 'Paiement';
+
+  @override
+  String get travelFieldFullname => 'Nom complet';
+
+  @override
+  String get travelFieldAgecategory => 'Catégorie';
+
+  @override
+  String get travelFieldSeat => 'Siège';
+
+  @override
+  String get travelFieldUnitprice => 'Prix unitaire';
+
+  @override
+  String get travelFieldTicketnumber => 'N° billet';
+
+  @override
+  String get travelFieldPassenger => 'Passager';
+
+  @override
+  String get travelFieldIssuedat => 'Émis le';
+
+  @override
+  String get travelFieldPaymentref => 'Référence paiement';
+
+  @override
+  String get travelFieldProvider => 'Prestataire';
+
+  @override
+  String get travelFieldAmount => 'Montant';
+
+  @override
+  String get travelFieldCreatedat => 'Créé le';
+
+  @override
+  String get travelFieldValidationcode => 'Code de validation';
+
+  @override
+  String get travelFieldClassification => 'Classement';
+
+  @override
+  String get travelFieldDescription => 'Description';
+
+  @override
+  String get travelFieldRoomnumber => 'N° chambre';
+
+  @override
+  String get travelFieldRoomtype => 'Type';
+
+  @override
+  String get travelFieldCapacity => 'Capacité';
+
+  @override
+  String get travelFieldPricepernight => 'Prix / nuit';
+
+  @override
+  String get travelFieldStartdate => 'Début';
+
+  @override
+  String get travelFieldEnddate => 'Fin';
+
+  @override
+  String get travelFieldDeposit => 'Caution';
+
+  @override
+  String get travelFieldPriceperday => 'Prix / jour';
+
+  @override
+  String get travelFieldAvailablefrom => 'Disponible du';
+
+  @override
+  String get travelFieldAvailableuntil => 'Disponible au';
+
+  @override
+  String get travelFieldOwnercarrier => 'Compagnie propriétaire';
+
+  @override
+  String get travelFieldTitle => 'Intitulé';
+
+  @override
+  String get travelFieldVehicle => 'Véhicule';
+
+  @override
+  String get travelActionCreate => 'Créer';
+
+  @override
+  String get travelActionCreatetitle => 'Créer un élément';
+
+  @override
+  String get travelActionEdit => 'Modifier';
+
+  @override
+  String get travelActionEdittitle => 'Modifier';
+
+  @override
+  String get travelActionSave => 'Enregistrer';
+
+  @override
+  String get travelActionDelete => 'Supprimer';
+
+  @override
+  String get travelActionDeletetitle => 'Confirmer la suppression';
+
+  @override
+  String get travelActionView => 'Voir';
+
+  @override
+  String get travelActionConfirm => 'Confirmer';
+
+  @override
+  String get travelActionCancel => 'Annuler';
+
+  @override
+  String get travelActionRefund => 'Rembourser';
+
+  @override
+  String get travelActionIssueticket => 'Billet';
+
+  @override
+  String get travelActionPublish => 'Publier';
+
+  @override
+  String get travelActionCanceltrip => 'Annuler le trajet';
+
+  @override
+  String get travelActionAddnested => 'Ajouter';
+
+  @override
+  String get travelActionAdd => 'Ajouter';
+
+  @override
+  String get travelStatusActive => 'Actif';
+
+  @override
+  String get travelStatusInactive => 'Inactif';
+
+  @override
+  String get travelStatusArchived => 'Archivé';
+
+  @override
+  String get travelCarriertypeBus => 'Bus / autocar';
+
+  @override
+  String get travelCarriertypeTrain => 'Train';
+
+  @override
+  String get travelCarriertypeBoat => 'Bateau';
+
+  @override
+  String get travelCarriertypePlane => 'Avion';
+
+  @override
+  String get travelMeansBus => 'Bus / autocar';
+
+  @override
+  String get travelMeansTrain => 'Train';
+
+  @override
+  String get travelMeansBoat => 'Bateau';
+
+  @override
+  String get travelMeansPlane => 'Avion';
+
+  @override
+  String get travelTripstatusDraft => 'Brouillon';
+
+  @override
+  String get travelTripstatusPublished => 'Publié';
+
+  @override
+  String get travelTripstatusCancelled => 'Annulé';
+
+  @override
+  String get travelBookingstatusPending => 'En attente';
+
+  @override
+  String get travelBookingstatusConfirmed => 'Confirmée';
+
+  @override
+  String get travelBookingstatusCancelled => 'Annulée';
+
+  @override
+  String get travelBookingstatusRefunded => 'Remboursée';
+
+  @override
+  String get travelBookingstatusExpired => 'Expirée';
+
+  @override
+  String get travelPaymentstatusPending => 'En attente';
+
+  @override
+  String get travelPaymentstatusPaid => 'Payé';
+
+  @override
+  String get travelPaymentstatusFailed => 'Échoué';
+
+  @override
+  String get travelPaymentstatusRefunded => 'Remboursé';
+
+  @override
+  String get travelTicketstatusIssued => 'Émis';
+
+  @override
+  String get travelTicketstatusCheckedin => 'Embarqué';
+
+  @override
+  String get travelTicketstatusRevoked => 'Révoqué';
+
+  @override
+  String get travelTicketstatusUnknown => 'Inconnu';
+
+  @override
+  String get travelRoutesTitle => 'Lignes & itinéraires';
+
+  @override
+  String get travelRoutesSubtitle =>
+      'Lignes ville-à-ville, étapes ordonnées et escales.';
+
+  @override
+  String get travelRoutesStopstitle => 'Étapes de la ligne';
+
+  @override
+  String get travelTripsTitle => 'Trajets datés';
+
+  @override
+  String get travelTripsSubtitle =>
+      'Départs planifiés, tarifs par classe, publication.';
+
+  @override
+  String get travelTripsPricestitle => 'Tarifs par classe';
+
+  @override
+  String get travelBookingsTitle => 'Réservations';
+
+  @override
+  String get travelBookingsFilterstatus => 'Statut';
+
+  @override
+  String get travelBookingsAllstatuses => 'Tous';
+
+  @override
+  String get travelBookingsFiltertrip => 'Trajet';
+
+  @override
+  String get travelBookingsAlltrips => 'Tous';
+
+  @override
+  String get travelBookingsFrom => 'Du';
+
+  @override
+  String get travelBookingsTo => 'Au';
+
+  @override
+  String get travelBookingsReset => 'Réinitialiser';
+
+  @override
+  String get travelBookingsPassengers => 'Passagers';
+
+  @override
+  String get travelBookingsTickets => 'Billets';
+
+  @override
+  String get travelBookingsPayments => 'Paiements';
+
+  @override
+  String get travelBookingsDetailtitle => 'Réservation';
+
+  @override
+  String get travelBookingsCancelreasontitle => 'Motif d\'annulation';
+
+  @override
+  String get travelBookingsRefundreasontitle => 'Motif de remboursement';
+
+  @override
+  String get travelBookingsReason => 'Motif';
+
+  @override
+  String get travelBookingsReasonrequired => 'Le motif est obligatoire.';
+
+  @override
+  String get travelCheckinSelecttrip => 'Sélectionner un trajet';
+
+  @override
+  String get travelCheckinChoosetrip => '— Choisir un trajet —';
+
+  @override
+  String get travelCheckinRefresh => 'Actualiser';
+
+  @override
+  String get travelCheckinBoarded => 'Embarqués';
+
+  @override
+  String get travelCheckinPending => 'En attente';
+
+  @override
+  String get travelCheckinSearchmanifest => 'Rechercher passager / billet';
+
+  @override
+  String get travelCheckinSearchmanifestplaceholder => 'Nom ou n° de billet…';
+
+  @override
+  String get travelCheckinCheckin => 'Embarquer';
+
+  @override
+  String get travelCheckinCheckedin => 'Embarqué ✓';
+
+  @override
+  String get travelCheckinEmptymanifest => 'Aucun passager sur ce trajet.';
+
+  @override
+  String get travelCheckinNoticket => 'Aucun billet associé à ce passager.';
+
+  @override
+  String get travelTicketsTitle => 'Billetterie';
+
+  @override
+  String get travelTicketsFiltertrip => 'Trajet';
+
+  @override
+  String get travelTicketsManage => 'Billets';
+
+  @override
+  String get travelTicketsEmpty =>
+      'Aucun billet émis pour cette réservation. Utilisez l\'action « Billet » depuis l\'onglet Réservations.';
+
+  @override
+  String get travelTicketsDownloadpdf => 'PDF';
+
+  @override
+  String get travelTicketsRevoke => 'Révoquer';
+
+  @override
+  String get travelTicketsRevoketitle => 'Motif de révocation';
+
+  @override
+  String get travelTicketsPdferror => 'Téléchargement impossible.';
+
+  @override
+  String get travelReportsTabslabel => 'Rapports';
+
+  @override
+  String get travelReportsSales => 'Ventes';
+
+  @override
+  String get travelReportsOccupancy => 'Occupation';
+
+  @override
+  String get travelReportsRevenue => 'Recettes';
+
+  @override
+  String get travelReportsCancellations => 'Annulations';
+
+  @override
+  String get travelReportsExportcsv => 'Exporter CSV';
+
+  @override
+  String get travelReportsEmpty => 'Aucune donnée sur la période.';
+
+  @override
+  String get travelReportsExporterror => 'Export impossible.';
+
+  @override
+  String get travelRentalsVehicles => 'Véhicules de location';
+
+  @override
+  String get travelRentalsBookings => 'Réservations de location';
+
+  @override
+  String get travelRentalsHotels => 'Hôtels';
+
+  @override
+  String get travelRentalsRoomstitle => 'Chambres';
+
+  @override
+  String get travelRentalsImages => 'Images';
+
+  @override
+  String get travelRentalsNoimages => 'Aucune image.';
+
+  @override
+  String get travelRentalsAddimage => 'Ajouter une image';
+
+  @override
+  String get travelRentalsRentalstatusCompleted => 'Terminée';
+
+  @override
+  String get travelToastSaved => 'Enregistré.';
+
+  @override
+  String get travelToastDeleted => 'Supprimé.';
+
+  @override
+  String get travelToastPublished => 'Trajet publié.';
+
+  @override
+  String get travelToastCancelled => 'Réservation annulée.';
+
+  @override
+  String get travelToastConfirmed => 'Réservation confirmée.';
+
+  @override
+  String get travelToastRefunded => 'Réservation remboursée.';
+
+  @override
+  String get travelToastTicketsissued => 'Billets émis.';
+
+  @override
+  String get travelToastCheckedin => 'Passager embarqué.';
+
+  @override
+  String get travelToastTicketrevoked => 'Billet révoqué.';
+
+  @override
+  String get travelToastExported => 'Export CSV téléchargé.';
+
+  @override
+  String get travelErrorLoadfailed => 'Impossible de charger les données.';
+
+  @override
+  String get travelErrorSavefailed => 'Échec de l\'enregistrement.';
+
+  @override
+  String get travelErrorDeletefailed => 'Échec de la suppression.';
+
+  @override
+  String get travelErrorActionfailed => 'L\'action a échoué.';
+
+  @override
+  String get travelConfirmDeletemessage =>
+      'Supprimer définitivement cet élément ?';
+
+  @override
+  String get travelConfirmCanceltrip =>
+      'Annuler ce trajet ? Les réservations seront traitées selon les règles métier.';
+
+  @override
+  String get travelConfirmCancelrental =>
+      'Annuler cette réservation de location ?';
+
+  @override
+  String get travelTableActions => 'Actions';
+
+  @override
+  String get travelTableEmptynested => 'Aucun élément.';
+
+  @override
+  String get travelFormSelectplaceholder => '— Sélectionner —';
+
+  @override
+  String get travelFormMoneyminor => 'Montant en devises (1 = 100 minor)';
 }
