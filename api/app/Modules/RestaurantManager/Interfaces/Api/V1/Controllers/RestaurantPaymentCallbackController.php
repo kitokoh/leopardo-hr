@@ -119,6 +119,18 @@ final class RestaurantPaymentCallbackController extends Controller
         return (new RestaurantOrderPaymentResource($result))->response();
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function redactAndFail(RestaurantOrderPayment $payment, array $data, string $reason): RestaurantOrderPayment
     {
         Log::warning('Restaurant payment callback: mismatch', [
