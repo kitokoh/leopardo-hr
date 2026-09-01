@@ -33,12 +33,12 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
 | `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
-| `mobile-apps-ci.yml` | PR → front/mobile | Build + tests Flutter |
+| `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (7 apps, matrix) |
 | `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
 | `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
 | `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
 | `secret-scan.yml` | Push | Détection de secrets commités |
-| `dependabot.yml` | Automatique | Mises à jour dépendances |
+| *(Dependabot)* | Automatique | Config `.github/dependabot.yml` — pas un workflow |
 
 ---
 
@@ -48,7 +48,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 |---|---|---|
 | `deploy-main.yml` | Push → main | Déploiement production (Render) |
 | `deploy-staging.yml` | Push → main + dispatch (`push` est l'unique déclencheur direct depuis #3545/#4359 ; `workflow_run` reste géré en défense en profondeur dans le script) | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
-| `e2e-staging.yml` | Après deploy-staging | Tests E2E post-déploiement |
+| `e2e-staging.yml` | `workflow_run` de « Deploy - Leopardo RH » (`deploy-main.yml`) | Tests E2E post-déploiement **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`) |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
 | `release.yml` | Tags v*.*.* | Création de release GitHub |
 
@@ -60,7 +60,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 |---|---|---|
 | `phpstan-baseline.yml` | Manuel | Régénère phpstan-baseline.neon |
 | `lighthouse.yml` | PR/push → front/web + hebdomadaire | Audit Lighthouse (perf, a11y, SEO) + budget d'assets (`front/web/budget.json`), non bloquant (PA2-QA-008) |
-| `owasp-zap.yml` | Manuel | Scan OWASP ZAP (sécurité API) |
+| `owasp-zap.yml` | Manuel + `workflow_run` de « Deploy - Leopardo RH » | Scan OWASP ZAP (sécurité API) |
 | `k6-load-smoke.yml` | Manuel | Load test k6 |
 | `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |
 | `database-backup.yml` | Schedule | Backup PostgreSQL |
@@ -103,10 +103,41 @@ ci-dessous.
 
 ---
 
+---
+
+### 📋 Autres workflows (liste exhaustive — audit Vague 3 #6606)
+
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `accounting-ci.yml` | PR → api (Accounting) | Tests + qualité du BC Accounting |
+| `actionlint.yml` | PR/push | Valide les workflows (actionlint + shellcheck) — check requis |
+| `admin-pages-deploy-guard.yml` | PR/push → admin | Garde déploiement Cloudflare Pages admin |
+| `bc-batch-branch-protocol.yml` | PR bc/* | Vérifie le protocole de branche par lot BC |
+| `branch-hygiene.yml` | PR/push | Hygiène des branches (noms, markers) |
+| `branch-protection-guard.yml` | PR → main | Vérifie la cohérence de la protection de branche |
+| `ci-observability.yml` | Schedule + manuel | Observabilité des runs CI |
+| `cleanup-orphan-runs.yml` | Schedule + PR close | Annule les runs orphelins (cf. `dev-hub/tools/cancel-orphan-runs.sh`) |
+| `country-catalog-check.yml` | PR → api | Garde catalogue pays (double du check dans `architecture-check.yml`) |
+| `crm-branch-protocol.yml` | PR bc/crm* | Protocole de branche du BC CRM |
+| `deploy-admin-dashboard.yml` | Push → main | Déploie l'admin dashboard sur Cloudflare Pages |
+| `e2e-isolated.yml` | PR → web/admin | E2E isolés (sandbox) |
+| `fix-feat-ratio-guard.yml` | PR → main | Ratio fix/feat (signal fort, non requis) |
+| `issue-governance-guard.yml` | Issues | Garde de gouvernance des issues |
+| `kiosk-ci.yml` | PR → front/zkteco-kiosk | Lint + tests kiosk (JS + Python) |
+| `merge-health-ci.yml` | PR → main | Santé des merges |
+| `merge-quota-guard.yml` | PR → main | Quota de merges quotidiens |
+| `mobile-distribute-main.yml` | Push → main | Distribution Android/iOS sur push main |
+| `onboarding-smoke.yml` | PR/push | Smoke d'onboarding (bootstrap) |
+| `payroll-ci.yml` | PR → api (Payroll) | Tests + qualité du BC Payroll |
+| `queue-supervision.yml` | Schedule | Supervision des files (DB env prod) |
+| `queue-worker-fallback.yml` | Schedule | Fallback worker de files |
+| `secret-history-scan.yml` | Schedule | Scan d'historique git pour secrets |
+| `web-offline-ci.yml` | PR → front/web-offline | Lint + test + build PWA offline + manifest |
+
 ## Règles de contribution CI
 
 1. **Ne pas dupliquer la config PHP/Flutter** — utiliser les composite actions `.github/actions/setup-backend-db` et `.github/actions/setup-flutter-android`
-2. **Nommer clairement** : `<scope>-<action>.yml` (ex: `api-lint.yml`, `mobile-test.yml`)
+2. **Nommer clairement** : `<scope>-<action>.yml` (exemples : `api-lint.yml`, `mobile-test.yml` — ces fichiers n'existent pas, ce sont des modèles)
 3. **path filters** obligatoires sur les PRs pour éviter de déclencher tout sur chaque push
 4. **`concurrency`** obligatoire avec `cancel-in-progress: ${{ github.event_name == 'pull_request' }}` — sur `main`, un push ne doit jamais annuler le run du commit précédent (sinon CodeQL/scans n'uploadent jamais leurs résultats pendant les vagues de merges — issues #2131, #3532)
 5. **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`** requis sur tous les workflows actifs

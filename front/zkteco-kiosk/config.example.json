@@ -1,6 +1,6 @@
 {
   "_comment": "Leopardo ZKTeco Kiosk — config.example.json. Copier vers config.json et adapter.",
-  "apiBaseUrl": "https://gestionemployerbackend.onrender.com/api/v1",
+  "apiBaseUrl": "http://127.0.0.1:8000/api/v1",
   "deviceCode": "KIOSK001",
   "kioskToken": "REPLACE_WITH_KIOSK_SYNC_TOKEN",
   "companyName": "Leopardo RH Client",
@@ -14,5 +14,6 @@
   "punch_methods": null,
   "_demo_mode_comment": "#5619 — demoMode active le bouton d'accès démo (données fictives pour test/démo). Ne jamais activer en production : le bridge injecte window.__KIOSK_DEMO_MODE dans les pages HTML quand ce champ est true.",
   "demoMode": false,
-  "_edge": "Bloc 'edge' retiré (issue #2750) : aucun code ne le lisait (ni app.js ni bridge.py). Le bridge sert la config cloud via les globals window.__KIOSK_* injectés dans les pages HTML."
+  "_edge": "Bloc 'edge' retiré (issue #2750) : aucun code ne le lisait (ni app.js ni bridge.py). Le bridge sert la config cloud via les globals window.__KIOSK_* injectés dans les pages HTML.",
+  "_apiBaseUrl_comment": "URL de l'API cloud cible — remplacer par l'environnement (staging/prod). Ne pas copier l'exemple tel quel vers la prod."
 }
