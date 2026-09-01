@@ -21,7 +21,7 @@
   - AUCUN changement de formule (vérifier diff)
 
 ## T3 [P] [US1] Refactor `ApproveGeoSession` — convergence géo
-- `api/app/Modules/SmartAttendance/Application/Actions/ApproveGeoSession.php` :
+- `api/app/Modules/Attendance/Application/Actions/ApproveGeoSession.php` :
   - injecter `AttendanceHoursCalculator` + `AttendanceDayClosureService`
   - calcul retard/heures/HS via le calculateur (pauses du planning déduites ; timezone `company.timezone ?: config('app.timezone')`)
   - garde 409 si le jour de la session est clos (`assertDayOpen`)
@@ -67,7 +67,7 @@
   - liste filtrée date/employé + statut
 
 ## T9 [P] [US1] Vérification parité + convergence géo
-- Exécuter les suites existantes : `CheckInTest`, `CheckOutTest`, `MultiPunchTest`, `ManualUpdateTest`, `AttendanceI18nTest`, `TodayAndHistoryTest`, `SmartAttendance/*` — **aucune assertion modifiée** (sauf `ManagerValidationTest` si une assertion d'heures géo existe, documenté)
+- Exécuter les suites existantes : `CheckInTest`, `CheckOutTest`, `MultiPunchTest`, `ManualUpdateTest`, `AttendanceI18nTest`, `TodayAndHistoryTest`, `Attendance/*` — **aucune assertion modifiée** (sauf `ManagerValidationTest` si une assertion d'heures géo existe, documenté)
 - Ajuster `ManagerValidationTest` : ajouter une assertion `hours_worked` prouvant la déduction des pauses à l'approbation géo
 
 ## T10 [P] [US1-US3] Docs + CHANGELOG + tracker
