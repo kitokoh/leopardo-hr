@@ -118,6 +118,6 @@ return [
         'cabinet' => 'Coffre documentaire',
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
-        'restaurant' => 'Écran cuisine',
+        'restaurant' => 'Point de vente (POS)',
     ],
 ];
