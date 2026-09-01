@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Application\Actions;
 
 use App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -122,7 +123,7 @@ final class AccountingReportingSnapshotService
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder<\App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot>
+     * @return Builder<AccountingReportingSnapshot>
      */
     private function query(string $companyId, string $report, string $from, string $to)
     {
