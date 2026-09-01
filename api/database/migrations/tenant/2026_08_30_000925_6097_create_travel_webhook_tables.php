@@ -43,7 +43,7 @@ return new class extends Migration
                 $table->uuid('id')->primary();
                 $table->uuid('company_id');
                 $table->uuid('subscription_id');
-                $table->uuid('outbox_event_id')->nullable();
+                $table->unsignedBigInteger('outbox_event_id')->nullable();
                 $table->string('event_type', 80);
                 $table->jsonb('payload_redacted');
                 $table->string('status', 20)->default('pending');
