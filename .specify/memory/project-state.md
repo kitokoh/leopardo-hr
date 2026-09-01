@@ -18,7 +18,6 @@
 
 > \* `pilot`* = pilot dans le code, validation experte non signée (registre `docs/payroll/VALIDATION_EXPERTE.md`).
 
-> \* `pilot`\* = pilot dans le code, validation experte non signée (registre `docs/payroll/VALIDATION_EXPERTE.md`).
 
 ### Zone CEMAC (XAF)
 
