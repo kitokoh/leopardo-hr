@@ -1,26 +1,20 @@
 'use client';
 
-import type { ComponentType, ReactNode } from 'react';
-
-import { motion } from 'framer-motion';
+import type { ReactNode } from 'react';
 
 type ModulePageShellProps = {
   title: string;
-  subtitle?: string;
-  accentClassName?: string;
-  /** Icône Lucide optionnelle (API étendue — pages restaurant). */
-  icon?: ComponentType<{ className?: string }>;
-  /** Description optionnelle (alias API étendue de `subtitle`). */
-  description?: string;
+  subtitle: string;
+  accentClassName: string;
   children: ReactNode;
 };
+
+import { motion } from 'framer-motion';
 
 export function ModulePageShell({
   title,
   subtitle,
-  accentClassName = 'bg-white',
-  icon: Icon,
-  description,
+  accentClassName,
   children,
 }: ModulePageShellProps) {
   return (
@@ -40,22 +34,13 @@ export function ModulePageShell({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {Icon ? (
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white shadow-lg">
-                <Icon className="h-6 w-6" />
-              </span>
-            ) : null}
-            <h1 className="text-4xl font-black tracking-tight text-slate-950">
-              {title}
-            </h1>
-          </div>
+          <h1 className="text-4xl font-black tracking-tight text-slate-950">
+            {title}
+          </h1>
 
-          {description ?? subtitle ? (
-            <p className="max-w-2xl text-base leading-relaxed text-slate-600">
-              {description ?? subtitle}
-            </p>
-          ) : null}
+          <p className="max-w-2xl text-base leading-relaxed text-slate-600">
+            {subtitle}
+          </p>
         </div>
 
         {/* Decorative corner element */}

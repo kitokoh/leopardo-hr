@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -318,9 +317,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get modulesEvaluations => 'التقييمات';
-
-  @override
-  String get modulesRestaurant => 'المطبخ';
 
   @override
   String get emailsInvitationSubject =>
@@ -1119,8 +1115,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashboardLeaveBalanceTitle => 'رصيد إجازاتي';
 
   @override
-  String get dashboardLeaveBalanceSubtitle =>
-      'الأيام المتبقية حسب النوع، السنة الحالية';
+  String get dashboardLeaveBalanceSubtitle => 'الأيام المتبقية حسب النوع، السنة الحالية';
 
   @override
   String get dashboardLeaveBalanceLoading => 'جارٍ تحميل الرصيد…';
@@ -1235,11 +1230,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
@@ -8065,75 +8056,34 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get crmTitle => 'CRM العميل';
-
-  @override
-  String get crmSubtitle =>
-      'إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).';
-
-  @override
-  String get crmIsolationnote =>
-      'بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.';
-
-  @override
-  String get crmLoading => 'جارٍ التحميل…';
-
-  @override
-  String get crmFeaturelocked => 'وحدة CRM غير مفعّلة لشركتك.';
-
-  @override
-  String get crmErrorloading => 'تعذر تحميل البيانات.';
-
-  @override
-  String get crmSearchplaceholder => 'بحث…';
-
-  @override
-  String get crmRefresh => 'تحديث';
-
-  @override
-  String get crmPaginationprev => 'السابق';
-
-  @override
-  String get crmPaginationnext => 'التالي';
-
-  @override
-  String get crmPaginationpage => 'صفحة';
-
-  @override
-  String get crmAccountsTitle => 'الحسابات';
-
-  @override
-  String get crmAccountsDescription => 'مؤسسات العملاء لشركتك';
-
-  @override
-  String get crmAccountsSubtitle => 'قائمة الحسابات (نطاق المستأجر).';
-
-  @override
-  String get crmAccountsEmpty => 'لا توجد حسابات بعد.';
-
-  @override
-  String get crmAccountsColname => 'الاسم';
-
-  @override
-  String get crmAccountsColstatus => 'الحالة';
+  String get crmAccountsColcreated => 'أنشئ في';
 
   @override
   String get crmAccountsColemail => 'البريد';
 
   @override
+  String get crmAccountsColname => 'الاسم';
+
+  @override
   String get crmAccountsColphone => 'الهاتف';
 
   @override
-  String get crmAccountsColcreated => 'أنشئ في';
+  String get crmAccountsColstatus => 'الحالة';
 
   @override
-  String get crmContactsTitle => 'جهات الاتصال';
+  String get crmAccountsDescription => 'مؤسسات العملاء لشركتك';
+
+  @override
+  String get crmAccountsEmpty => 'لا توجد حسابات بعد.';
+
+  @override
+  String get crmAccountsSubtitle => 'قائمة الحسابات (نطاق المستأجر).';
+
+  @override
+  String get crmAccountsTitle => 'الحسابات';
 
   @override
   String get crmContactsDescription => 'الأشخاص المرتبطون بحساباتك';
-
-  @override
-  String get crmContactsSubtitle => 'قائمة جهات الاتصال (نطاق المستأجر).';
 
   @override
   String get crmContactsEmpty => 'لا توجد جهات اتصال بعد.';
@@ -8142,46 +8092,76 @@ class AppLocalizationsAr extends AppLocalizations {
   String get crmContactsPrimary => 'أساسي';
 
   @override
-  String get crmLeadsTitle => 'العملاء المحتملون';
+  String get crmContactsSubtitle => 'قائمة جهات الاتصال (نطاق المستأجر).';
 
   @override
-  String get crmLeadsDescription => 'فرص أعمال للتأهيل';
+  String get crmContactsTitle => 'جهات الاتصال';
 
   @override
-  String get crmLeadsSubtitle => 'قائمة العملاء المحتملين (نطاق المستأجر).';
+  String get crmErrorloading => 'تعذر تحميل البيانات.';
 
   @override
-  String get crmLeadsEmpty => 'لا يوجد عملاء محتملون بعد.';
+  String get crmFeaturelocked => 'وحدة CRM غير مفعّلة لشركتك.';
 
   @override
-  String get crmLeadsColname => 'الاسم';
+  String get crmIsolationnote => 'بيانات نطاق المستأجر: لا وصول إلى CRM ليوباردو التجاري من هذه المساحة.';
 
   @override
   String get crmLeadsColcompany => 'الشركة';
 
   @override
-  String get crmLeadsColstatus => 'الحالة';
-
-  @override
-  String get crmLeadsColsource => 'المصدر';
+  String get crmLeadsColcreated => 'أنشئ في';
 
   @override
   String get crmLeadsColemail => 'البريد';
 
   @override
-  String get crmLeadsColcreated => 'أنشئ في';
+  String get crmLeadsColname => 'الاسم';
 
   @override
-  String get crmPipelineTitle => 'خط الأنابيب';
+  String get crmLeadsColsource => 'المصدر';
+
+  @override
+  String get crmLeadsColstatus => 'الحالة';
+
+  @override
+  String get crmLeadsDescription => 'فرص أعمال للتأهيل';
+
+  @override
+  String get crmLeadsEmpty => 'لا يوجد عملاء محتملون بعد.';
+
+  @override
+  String get crmLeadsSubtitle => 'قائمة العملاء المحتملين (نطاق المستأجر).';
+
+  @override
+  String get crmLeadsTitle => 'العملاء المحتملون';
+
+  @override
+  String get crmLoading => 'جارٍ التحميل…';
+
+  @override
+  String get crmPaginationnext => 'التالي';
+
+  @override
+  String get crmPaginationpage => 'صفحة';
+
+  @override
+  String get crmPaginationprev => 'السابق';
 
   @override
   String get crmPipelineDescription => 'نظرة عامة على الفرص حسب المرحلة';
 
   @override
-  String get crmPipelineSubtitle => 'الفرص مجمعة حسب المرحلة (نطاق المستأجر).';
+  String get crmPipelineEmpty => 'لا توجد فرص بعد.';
 
   @override
-  String get crmPipelineEmpty => 'لا توجد فرص بعد.';
+  String get crmPipelineStageLost => 'خاسرة';
+
+  @override
+  String get crmPipelineStageNegotiation => 'تفاوض';
+
+  @override
+  String get crmPipelineStageProposal => 'اقتراح';
 
   @override
   String get crmPipelineStageProspecting => 'استكشاف';
@@ -8190,23 +8170,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String get crmPipelineStageQualification => 'تأهيل';
 
   @override
-  String get crmPipelineStageProposal => 'اقتراح';
-
-  @override
-  String get crmPipelineStageNegotiation => 'تفاوض';
-
-  @override
   String get crmPipelineStageWon => 'مربوحة';
 
   @override
-  String get crmPipelineStageLost => 'خاسرة';
+  String get crmPipelineSubtitle => 'الفرص مجمعة حسب المرحلة (نطاق المستأجر).';
 
   @override
-  String get restaurantKitchentitle => 'شاشة المطبخ';
+  String get crmPipelineTitle => 'خط الأنابيب';
 
   @override
-  String get restaurantKitchensubtitle =>
-      'قائمة الطلبات لحظيًا — التحضير والتجهيز';
+  String get crmRefresh => 'تحديث';
+
+  @override
+  String get crmSearchplaceholder => 'بحث…';
+
+  @override
+  String get crmSubtitle => 'إدارة العملاء المحتملين والحسابات وجهات الاتصال والفرص — البيانات معزولة لكل شركة (مستأجر).';
+
+  @override
+  String get crmTitle => 'CRM العميل';
+
+  @override
+  String get modulesRestaurant => 'المطبخ';
+
+  @override
+  String get restaurantActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
+
+  @override
+  String get restaurantAdditem => 'إضافة عنصر';
+
+  @override
+  String get restaurantBill => 'الفاتورة';
 
   @override
   String get restaurantBranch => 'الفرع';
@@ -8215,31 +8209,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantBranchall => 'جميع الفروع';
 
   @override
-  String get restaurantInpreparation => 'قيد التحضير';
+  String get restaurantCheckin => 'تسجيل الوصول';
 
   @override
-  String get restaurantReady => 'جاهز';
-
-  @override
-  String get restaurantEmpty => 'لا توجد طلبات معلقة. القائمة فارغة.';
-
-  @override
-  String get restaurantStart => 'ابدأ';
-
-  @override
-  String get restaurantMarkready => 'جاهز';
-
-  @override
-  String get restaurantOrderref => 'طلب';
-
-  @override
-  String get restaurantTable => 'طاولة';
+  String get restaurantClosesession => 'إغلاق الصندوق';
 
   @override
   String get restaurantCovers => 'أشخاص';
 
   @override
-  String get restaurantTakeaway => 'للطلب الخارجي';
+  String get restaurantCustomername => 'اسم العميل';
 
   @override
   String get restaurantDelivery => 'توصيل';
@@ -8248,729 +8227,122 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantDinein => 'في المكان';
 
   @override
-  String get restaurantLoaderror => 'تعذر تحميل قائمة المطبخ.';
+  String get restaurantDiscount => 'الخصم';
 
   @override
-  String get restaurantActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
+  String get restaurantEmpty => 'لا توجد طلبات معلقة. القائمة فارغة.';
+
+  @override
+  String get restaurantGuests => 'عدد الأشخاص';
+
+  @override
+  String get restaurantInpreparation => 'قيد التحضير';
+
+  @override
+  String get restaurantKiosktitle => 'كشك الخدمة الذاتية';
+
+  @override
+  String get restaurantKitchensubtitle => 'قائمة الطلبات لحظيًا — التحضير والتجهيز';
+
+  @override
+  String get restaurantKitchentitle => 'شاشة المطبخ';
+
+  @override
+  String get restaurantLoaderror => 'تعذر تحميل قائمة المطبخ.';
 
   @override
   String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
 
   @override
-  String get navigationTravelagency => 'وكالة السفر';
+  String get restaurantMarkready => 'جاهز';
 
   @override
-  String get travelLoading => 'جارٍ التحميل…';
+  String get restaurantNeworder => 'طلب جديد';
 
   @override
-  String get travelSectionTitle => 'وكالة السفر';
+  String get restaurantNoshow => 'عدم الحضور';
 
   @override
-  String get travelSectionSubtitle =>
-      'إدارة عمودية TravelAgency: المرجع، الشبكة، المبيعات، التذاكر والتقارير.';
+  String get restaurantOpensession => 'فتح الصندوق';
 
   @override
-  String get travelGateDisabledtitle => 'وحدة وكالة السفر غير مفعّلة';
+  String get restaurantOrderitems => 'عناصر الطلب';
 
   @override
-  String get travelGateDisabledbody =>
-      'عمودية TravelAgency غير مفعّلة للمستأجر المتصل. فعّل خاصية «travelagency» للوصول إلى هذه الوحدة.';
+  String get restaurantOrderref => 'طلب';
 
   @override
-  String get travelGateErrortitle => 'الوحدة غير متاحة مؤقتًا';
+  String get restaurantPaid => 'مدفوع';
 
   @override
-  String get travelGateErrorbody =>
-      'تعذّر الوصول إلى خدمة TravelAgency. أعد المحاولة بعد قليل.';
+  String get restaurantPaycash => 'الدفع نقداً';
 
   @override
-  String get travelGateRetry => 'إعادة المحاولة';
+  String get restaurantPossubtitle => 'تسجيل الطلبات والتحصيل';
 
   @override
-  String get travelTabReferentiel => 'المرجع';
+  String get restaurantPostitle => 'نقطة البيع';
 
   @override
-  String get travelTabRoutes => 'الخطوط والرحلات';
+  String get restaurantReady => 'جاهز';
 
   @override
-  String get travelTabBookings => 'الحجوزات';
+  String get restaurantReservationnew => 'حجز جديد';
 
   @override
-  String get travelTabCheckin => 'تسجيل الدخول';
+  String get restaurantReservations => 'الحجوزات';
 
   @override
-  String get travelTabTickets => 'التذاكر';
+  String get restaurantSessionclosed => 'الصندوق مغلق';
 
   @override
-  String get travelTabReports => 'التقارير';
+  String get restaurantSessionopen => 'الصندوق مفتوح';
 
   @override
-  String get travelTabRentals => 'الإيجارات والفنادق';
+  String get restaurantShoptitle => 'الطلب عبر الإنترنت';
 
   @override
-  String get travelReferentielTabslabel => 'الأقسام الفرعية للمرجع';
+  String get restaurantStart => 'ابدأ';
 
   @override
-  String get travelReferentielTabgeo => 'الدول والمدن';
+  String get restaurantStatuscancelled => 'ملغي';
 
   @override
-  String get travelReferentielTabstations => 'المحطات';
+  String get restaurantStatusclosed => 'مغلق';
 
   @override
-  String get travelReferentielTaboffices => 'المكاتب';
+  String get restaurantStatusdraft => 'مسودة';
 
   @override
-  String get travelReferentielTabcarriers => 'الشركات';
+  String get restaurantStatusinpreparation => 'قيد التحضير';
 
   @override
-  String get travelReferentielTabclasses => 'الدرجات';
+  String get restaurantStatusopen => 'مفتوح';
 
   @override
-  String get travelReferentielTabvehicles => 'المركبات';
+  String get restaurantStatuspaid => 'مدفوع';
 
   @override
-  String get travelReferentielCountries => 'الدول';
+  String get restaurantStatusready => 'جاهز';
 
   @override
-  String get travelReferentielCities => 'المدن';
+  String get restaurantStatusrefunded => 'مسترجع';
 
   @override
-  String get travelReferentielGeonote =>
-      'مرجع جغرافي يتم تغذيته عبر البذرة (للقراءة فقط).';
+  String get restaurantStatusserved => 'تم التقديم';
 
   @override
-  String get travelReferentielStations => 'المحطات/المواقف';
+  String get restaurantSubtotal => 'المجموع الفرعي';
 
   @override
-  String get travelReferentielOffices => 'مكاتب البيع';
+  String get restaurantTable => 'طاولة';
 
   @override
-  String get travelReferentielCarriers => 'شركات النقل';
+  String get restaurantTakeaway => 'للطلب الخارجي';
 
   @override
-  String get travelReferentielClasses => 'درجات الخدمة';
+  String get restaurantTax => 'الضريبة';
 
   @override
-  String get travelReferentielVehicles => 'أسطول المركبات';
-
-  @override
-  String get travelSearchPlaceholder => 'بحث…';
-
-  @override
-  String get travelSearchCountry => 'ابحث عن دولة…';
-
-  @override
-  String get travelSearchCity => 'ابحث عن مدينة…';
-
-  @override
-  String get travelSearchStation => 'ابحث عن محطة…';
-
-  @override
-  String get travelSearchOffice => 'ابحث عن مكتب…';
-
-  @override
-  String get travelSearchCarrier => 'ابحث عن شركة…';
-
-  @override
-  String get travelSearchClass => 'ابحث عن درجة…';
-
-  @override
-  String get travelSearchVehicle => 'ابحث عن مركبة…';
-
-  @override
-  String get travelSearchRoute => 'ابحث عن خط…';
-
-  @override
-  String get travelSearchTrip => 'ابحث عن رحلة…';
-
-  @override
-  String get travelSearchBooking => 'ابحث عن حجز…';
-
-  @override
-  String get travelSearchReport => 'ابحث في التقرير…';
-
-  @override
-  String get travelSearchRentalvehicle => 'ابحث عن مركبة إيجار…';
-
-  @override
-  String get travelSearchRentalbooking => 'ابحث عن حجز إيجار…';
-
-  @override
-  String get travelSearchHotel => 'ابحث عن فندق…';
-
-  @override
-  String get travelFieldIso2 => 'كود ISO2';
-
-  @override
-  String get travelFieldIso3 => 'كود ISO3';
-
-  @override
-  String get travelFieldName => 'الاسم';
-
-  @override
-  String get travelFieldPhonecode => 'رمز الهاتف';
-
-  @override
-  String get travelFieldCountryiso2 => 'الدولة';
-
-  @override
-  String get travelFieldRegion => 'المنطقة';
-
-  @override
-  String get travelFieldStatus => 'الحالة';
-
-  @override
-  String get travelFieldCode => 'الرمز';
-
-  @override
-  String get travelFieldCity => 'المدينة';
-
-  @override
-  String get travelFieldTimezone => 'المنطقة الزمنية';
-
-  @override
-  String get travelFieldIsterminal => 'محطة رئيسية';
-
-  @override
-  String get travelFieldAddress => 'العنوان';
-
-  @override
-  String get travelFieldContactphone => 'الهاتف';
-
-  @override
-  String get travelFieldLabel => 'التسمية';
-
-  @override
-  String get travelFieldPriority => 'الأولوية';
-
-  @override
-  String get travelFieldColor => 'اللون';
-
-  @override
-  String get travelFieldRegistration => 'رقم التسجيل';
-
-  @override
-  String get travelFieldSeatcapacity => 'المقاعد';
-
-  @override
-  String get travelFieldCarrier => 'الشركة';
-
-  @override
-  String get travelFieldNotes => 'ملاحظات';
-
-  @override
-  String get travelFieldOrigin => 'المغادرة';
-
-  @override
-  String get travelFieldDestination => 'الوصول';
-
-  @override
-  String get travelFieldDistancekm => 'المسافة (كم)';
-
-  @override
-  String get travelFieldDurationmin => 'المدة (دقيقة)';
-
-  @override
-  String get travelFieldRank => 'الترتيب';
-
-  @override
-  String get travelFieldIsstopover => 'توقف';
-
-  @override
-  String get travelFieldMindurationmin => 'الحد الأدنى (دقيقة)';
-
-  @override
-  String get travelFieldRoute => 'الخط';
-
-  @override
-  String get travelFieldDeparturedate => 'المغادرة';
-
-  @override
-  String get travelFieldDeparturetime => 'الوقت';
-
-  @override
-  String get travelFieldArrivaldate => 'الوصول';
-
-  @override
-  String get travelFieldArrivaltime => 'وقت الوصول';
-
-  @override
-  String get travelFieldMeans => 'الوسيلة';
-
-  @override
-  String get travelFieldTotalseats => 'المقاعد';
-
-  @override
-  String get travelFieldClass => 'الدرجة';
-
-  @override
-  String get travelFieldAdultprice => 'بالغ';
-
-  @override
-  String get travelFieldChildprice => 'طفل';
-
-  @override
-  String get travelFieldCurrency => 'العملة';
-
-  @override
-  String get travelFieldReference => 'المرجع';
-
-  @override
-  String get travelFieldTrip => 'الرحلة';
-
-  @override
-  String get travelFieldPassengercount => 'الركاب';
-
-  @override
-  String get travelFieldTotalamount => 'المبلغ';
-
-  @override
-  String get travelFieldPaymentstatus => 'الدفع';
-
-  @override
-  String get travelFieldFullname => 'الاسم الكامل';
-
-  @override
-  String get travelFieldAgecategory => 'الفئة';
-
-  @override
-  String get travelFieldSeat => 'المقعد';
-
-  @override
-  String get travelFieldUnitprice => 'سعر الوحدة';
-
-  @override
-  String get travelFieldTicketnumber => 'رقم التذكرة';
-
-  @override
-  String get travelFieldPassenger => 'الراكب';
-
-  @override
-  String get travelFieldIssuedat => 'أُصدرت في';
-
-  @override
-  String get travelFieldPaymentref => 'مرجع الدفع';
-
-  @override
-  String get travelFieldProvider => 'المزود';
-
-  @override
-  String get travelFieldAmount => 'المبلغ';
-
-  @override
-  String get travelFieldCreatedat => 'أُنشئت في';
-
-  @override
-  String get travelFieldValidationcode => 'رمز التحقق';
-
-  @override
-  String get travelFieldClassification => 'التصنيف';
-
-  @override
-  String get travelFieldDescription => 'الوصف';
-
-  @override
-  String get travelFieldRoomnumber => 'رقم الغرفة';
-
-  @override
-  String get travelFieldRoomtype => 'النوع';
-
-  @override
-  String get travelFieldCapacity => 'السعة';
-
-  @override
-  String get travelFieldPricepernight => 'السعر/الليلة';
-
-  @override
-  String get travelFieldStartdate => 'البداية';
-
-  @override
-  String get travelFieldEnddate => 'النهاية';
-
-  @override
-  String get travelFieldDeposit => 'الضمانة';
-
-  @override
-  String get travelFieldPriceperday => 'السعر/اليوم';
-
-  @override
-  String get travelFieldAvailablefrom => 'متاح من';
-
-  @override
-  String get travelFieldAvailableuntil => 'متاح حتى';
-
-  @override
-  String get travelFieldOwnercarrier => 'الشركة المالكة';
-
-  @override
-  String get travelFieldTitle => 'العنوان';
-
-  @override
-  String get travelFieldVehicle => 'المركبة';
-
-  @override
-  String get travelActionCreate => 'إنشاء';
-
-  @override
-  String get travelActionCreatetitle => 'إنشاء عنصر';
-
-  @override
-  String get travelActionEdit => 'تعديل';
-
-  @override
-  String get travelActionEdittitle => 'تعديل';
-
-  @override
-  String get travelActionSave => 'حفظ';
-
-  @override
-  String get travelActionDelete => 'حذف';
-
-  @override
-  String get travelActionDeletetitle => 'تأكيد الحذف';
-
-  @override
-  String get travelActionView => 'عرض';
-
-  @override
-  String get travelActionConfirm => 'تأكيد';
-
-  @override
-  String get travelActionCancel => 'إلغاء';
-
-  @override
-  String get travelActionRefund => 'استرداد';
-
-  @override
-  String get travelActionIssueticket => 'تذكرة';
-
-  @override
-  String get travelActionPublish => 'نشر';
-
-  @override
-  String get travelActionCanceltrip => 'إلغاء الرحلة';
-
-  @override
-  String get travelActionAddnested => 'إضافة';
-
-  @override
-  String get travelActionAdd => 'إضافة';
-
-  @override
-  String get travelStatusActive => 'نشط';
-
-  @override
-  String get travelStatusInactive => 'غير نشط';
-
-  @override
-  String get travelStatusArchived => 'مؤرشف';
-
-  @override
-  String get travelCarriertypeBus => 'حافلة';
-
-  @override
-  String get travelCarriertypeTrain => 'قطار';
-
-  @override
-  String get travelCarriertypeBoat => 'سفينة';
-
-  @override
-  String get travelCarriertypePlane => 'طائرة';
-
-  @override
-  String get travelMeansBus => 'حافلة';
-
-  @override
-  String get travelMeansTrain => 'قطار';
-
-  @override
-  String get travelMeansBoat => 'سفينة';
-
-  @override
-  String get travelMeansPlane => 'طائرة';
-
-  @override
-  String get travelTripstatusDraft => 'مسودة';
-
-  @override
-  String get travelTripstatusPublished => 'منشور';
-
-  @override
-  String get travelTripstatusCancelled => 'ملغى';
-
-  @override
-  String get travelBookingstatusPending => 'قيد الانتظار';
-
-  @override
-  String get travelBookingstatusConfirmed => 'مؤكد';
-
-  @override
-  String get travelBookingstatusCancelled => 'ملغى';
-
-  @override
-  String get travelBookingstatusRefunded => 'مسترجع';
-
-  @override
-  String get travelBookingstatusExpired => 'منتهي الصلاحية';
-
-  @override
-  String get travelPaymentstatusPending => 'قيد الانتظار';
-
-  @override
-  String get travelPaymentstatusPaid => 'مدفوع';
-
-  @override
-  String get travelPaymentstatusFailed => 'فشل';
-
-  @override
-  String get travelPaymentstatusRefunded => 'مسترجع';
-
-  @override
-  String get travelTicketstatusIssued => 'صادر';
-
-  @override
-  String get travelTicketstatusCheckedin => 'تم الصعود';
-
-  @override
-  String get travelTicketstatusRevoked => 'ملغى';
-
-  @override
-  String get travelTicketstatusUnknown => 'غير معروف';
-
-  @override
-  String get travelRoutesTitle => 'الخطوط والمسارات';
-
-  @override
-  String get travelRoutesSubtitle => 'خطوط بين المدن مع محطات مرتبة.';
-
-  @override
-  String get travelRoutesStopstitle => 'محطات الخط';
-
-  @override
-  String get travelTripsTitle => 'الرحلات المجدولة';
-
-  @override
-  String get travelTripsSubtitle =>
-      'مواعيد الانطلاق والأسعار حسب الدرجة والنشر.';
-
-  @override
-  String get travelTripsPricestitle => 'الأسعار حسب الدرجة';
-
-  @override
-  String get travelBookingsTitle => 'الحجوزات';
-
-  @override
-  String get travelBookingsFilterstatus => 'الحالة';
-
-  @override
-  String get travelBookingsAllstatuses => 'الكل';
-
-  @override
-  String get travelBookingsFiltertrip => 'الرحلة';
-
-  @override
-  String get travelBookingsAlltrips => 'الكل';
-
-  @override
-  String get travelBookingsFrom => 'من';
-
-  @override
-  String get travelBookingsTo => 'إلى';
-
-  @override
-  String get travelBookingsReset => 'إعادة تعيين';
-
-  @override
-  String get travelBookingsPassengers => 'الركاب';
-
-  @override
-  String get travelBookingsTickets => 'التذاكر';
-
-  @override
-  String get travelBookingsPayments => 'المدفوعات';
-
-  @override
-  String get travelBookingsDetailtitle => 'حجز';
-
-  @override
-  String get travelBookingsCancelreasontitle => 'سبب الإلغاء';
-
-  @override
-  String get travelBookingsRefundreasontitle => 'سبب الاسترداد';
-
-  @override
-  String get travelBookingsReason => 'السبب';
-
-  @override
-  String get travelBookingsReasonrequired => 'السبب إلزامي.';
-
-  @override
-  String get travelCheckinSelecttrip => 'اختر رحلة';
-
-  @override
-  String get travelCheckinChoosetrip => '— اختر رحلة —';
-
-  @override
-  String get travelCheckinRefresh => 'تحديث';
-
-  @override
-  String get travelCheckinBoarded => 'تم الصعود';
-
-  @override
-  String get travelCheckinPending => 'قيد الانتظار';
-
-  @override
-  String get travelCheckinSearchmanifest => 'بحث عن راكب/تذكرة';
-
-  @override
-  String get travelCheckinSearchmanifestplaceholder => 'الاسم أو رقم التذكرة…';
-
-  @override
-  String get travelCheckinCheckin => 'صعود';
-
-  @override
-  String get travelCheckinCheckedin => 'تم الصعود ✓';
-
-  @override
-  String get travelCheckinEmptymanifest => 'لا ركاب في هذه الرحلة.';
-
-  @override
-  String get travelCheckinNoticket => 'لا تذكرة مرتبطة بهذا الراكب.';
-
-  @override
-  String get travelTicketsTitle => 'إصدار التذاكر';
-
-  @override
-  String get travelTicketsFiltertrip => 'الرحلة';
-
-  @override
-  String get travelTicketsManage => 'التذاكر';
-
-  @override
-  String get travelTicketsEmpty =>
-      'لا تذاكر صادرة لهذا الحجز. استخدم إجراء «تذكرة» في تبويب الحجوزات.';
-
-  @override
-  String get travelTicketsDownloadpdf => 'تحميل PDF';
-
-  @override
-  String get travelTicketsRevoke => 'إلغاء';
-
-  @override
-  String get travelTicketsRevoketitle => 'سبب الإلغاء';
-
-  @override
-  String get travelTicketsPdferror => 'فشل التنزيل.';
-
-  @override
-  String get travelReportsTabslabel => 'التقارير';
-
-  @override
-  String get travelReportsSales => 'المبيعات';
-
-  @override
-  String get travelReportsOccupancy => 'الإشغال';
-
-  @override
-  String get travelReportsRevenue => 'الإيرادات';
-
-  @override
-  String get travelReportsCancellations => 'الإلغاءات';
-
-  @override
-  String get travelReportsExportcsv => 'تصدير CSV';
-
-  @override
-  String get travelReportsEmpty => 'لا بيانات للفترة.';
-
-  @override
-  String get travelReportsExporterror => 'فشل التصدير.';
-
-  @override
-  String get travelRentalsVehicles => 'مركبات الإيجار';
-
-  @override
-  String get travelRentalsBookings => 'حجوزات الإيجار';
-
-  @override
-  String get travelRentalsHotels => 'الفنادق';
-
-  @override
-  String get travelRentalsRoomstitle => 'الغرف';
-
-  @override
-  String get travelRentalsImages => 'الصور';
-
-  @override
-  String get travelRentalsNoimages => 'لا صور.';
-
-  @override
-  String get travelRentalsAddimage => 'إضافة صورة';
-
-  @override
-  String get travelRentalsRentalstatusCompleted => 'مكتمل';
-
-  @override
-  String get travelToastSaved => 'تم الحفظ.';
-
-  @override
-  String get travelToastDeleted => 'تم الحذف.';
-
-  @override
-  String get travelToastPublished => 'تم نشر الرحلة.';
-
-  @override
-  String get travelToastCancelled => 'تم إلغاء الحجز.';
-
-  @override
-  String get travelToastConfirmed => 'تم تأكيد الحجز.';
-
-  @override
-  String get travelToastRefunded => 'تم استرداد الحجز.';
-
-  @override
-  String get travelToastTicketsissued => 'تم إصدار التذاكر.';
-
-  @override
-  String get travelToastCheckedin => 'تم صعود الراكب.';
-
-  @override
-  String get travelToastTicketrevoked => 'تم إلغاء التذكرة.';
-
-  @override
-  String get travelToastExported => 'تم تنزيل تصدير CSV.';
-
-  @override
-  String get travelErrorLoadfailed => 'تعذّر تحميل البيانات.';
-
-  @override
-  String get travelErrorSavefailed => 'فشل الحفظ.';
-
-  @override
-  String get travelErrorDeletefailed => 'فشل الحذف.';
-
-  @override
-  String get travelErrorActionfailed => 'فشل الإجراء.';
-
-  @override
-  String get travelConfirmDeletemessage => 'حذف هذا العنصر نهائيًا؟';
-
-  @override
-  String get travelConfirmCanceltrip =>
-      'إلغاء هذه الرحلة؟ ستُعالج الحجوزات وفق القواعد.';
-
-  @override
-  String get travelConfirmCancelrental => 'إلغاء حجز الإيجار هذا؟';
-
-  @override
-  String get travelTableActions => 'إجراءات';
-
-  @override
-  String get travelTableEmptynested => 'لا عناصر.';
-
-  @override
-  String get travelFormSelectplaceholder => '— اختر —';
-
-  @override
-  String get travelFormMoneyminor => 'المبلغ بالعملة (1 = 100 وحدة صغيرة)';
+  String get restaurantTotal => 'المجموع';
 }

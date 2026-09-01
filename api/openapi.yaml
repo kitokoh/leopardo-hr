@@ -734,6 +734,203 @@ paths:
                 properties:
                   data:
                     type: array
+  /public/restaurant/kiosk/menu:
+    get:
+      tags:
+      - Restaurant
+      summary: Menu public du kiosque libre-service (RESTO-807/#6228)
+      description: |
+        Produits disponibles du tenant résolu par le jeton boutique
+        (X-Restaurant-Shop-Token). Sans auth utilisateur, tenant-scope,
+        rate limit shop-public.
+      security: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Menu du kiosque
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/kiosk/orders:
+    post:
+      tags:
+      - Restaurant
+      summary: Commande kiosque libre-service (RESTO-807/#6228)
+      description: |
+        Crée une commande (source web) avec ticket court (`ticket_number`).
+        Montants calculés serveur ; idempotente (X-Idempotency-Key).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                branch_id:
+                  type: integer
+                idempotency_key:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - product_code
+                    - quantity
+                    properties:
+                      product_code:
+                        type: string
+                      quantity:
+                        type: number
+      responses:
+        '201':
+          description: Commande créée (référence + ticket_number)
+        '200':
+          description: Rejeu idempotent (même commande)
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/kiosk/orders/{reference}:
+    get:
+      tags:
+      - Restaurant
+      summary: Suivi d'une commande kiosque (RESTO-807/#6228)
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statut de la commande
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '404':
+          description: Commande introuvable (ou hors tenant)
+  /public/restaurant/shop/menu:
+    get:
+      tags:
+      - Restaurant
+      summary: Menu public de la boutique en ligne (RESTO-805/#6226)
+      description: |
+        Menu public par tenant (jeton signé, X-Restaurant-Shop-Token) :
+        catégories + produits disponibles. Aucune fuite cross-tenant.
+      security: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Menu public
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/shop/orders:
+    post:
+      tags:
+      - Restaurant
+      summary: Commande en ligne publique (RESTO-805/#6226)
+      description: |
+        Crée une commande (source web) avec prix du référentiel, idempotente
+        (X-Idempotency-Key), événement restaurant.order.created.v1.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - items
+              properties:
+                branch_id:
+                  type: integer
+                customer_phone:
+                  type: string
+                idempotency_key:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - product_code
+                    - quantity
+                    properties:
+                      product_code:
+                        type: string
+                      quantity:
+                        type: number
+      responses:
+        '201':
+          description: Commande créée
+        '200':
+          description: Rejeu idempotent
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/shop/orders/{reference}:
+    get:
+      tags:
+      - Restaurant
+      summary: Suivi d'une commande en ligne (RESTO-805/#6226)
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Statut + totaux de la commande
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '404':
+          description: Commande introuvable (ou hors tenant)
+  /public/restaurant/shop/orders/{reference}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: Initiation de paiement commande en ligne (RESTO-805/#6226)
+      description: |
+        cash → paiement à l'encaissement ; mobile_money → paiement pending
+        (callback signé existant confirme). Montant vérifié serveur.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - provider_code
+              properties:
+                provider_code:
+                  type: string
+                  enum:
+                  - cash
+                  - mobile_money
+      responses:
+        '201':
+          description: Paiement initié
+        '401':
+          description: Jeton boutique manquant ou invalide
+        '409':
+          description: Commande non payable
   /restaurant/ping:
     get:
       tags:
@@ -4935,6 +5132,348 @@ paths:
           description: Ressource introuvable ou hors tenant
         '409':
           description: Transition non autorisée depuis le statut courant
+  /restaurant/mobile/manager/kpis:
+    get:
+      tags:
+      - Restaurant
+      summary: KPIs du jour pour l'app mobile gérant (RESTO-803/#6224)
+      description: |
+        CA, nombre de commandes, panier moyen, rotation des tables —
+        calculés côté serveur (jamais agrégés côté client).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: KPIs du jour
+        '401':
+          description: Non authentifié
+        '403':
+          description: Feature flag restaurantmanager inactif
+  /restaurant/mobile/manager/pos-sessions/current:
+    get:
+      tags:
+      - Restaurant
+      summary: Session de caisse courante (app gérant, RESTO-803/#6224)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Session ouverte courante (ou null)
+  /restaurant/mobile/manager/pos-sessions/{restaurantPosSession}/close:
+    post:
+      tags:
+      - Restaurant
+      summary: Clôture de caisse mobile (RESTO-803/#6224)
+      description: |
+        Délègue à ClosePosSessionAction (écart calculé serveur, événement
+        restaurant.pos.closed.v1). Rôle principal/rh/manager requis.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - counted_cash_minor
+              properties:
+                counted_cash_minor:
+                  type: integer
+                variance_reason:
+                  type: string
+      responses:
+        '200':
+          description: Session clôturée
+        '403':
+          description: Permission close requise
+        '404':
+          description: Session introuvable ou hors tenant
+  /restaurant/mobile/manager/stock-alerts:
+    get:
+      tags:
+      - Restaurant
+      summary: Alertes de seuil de stock (app gérant, RESTO-803/#6224)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Niveaux sous le seuil d'alerte (100 max)
+  /restaurant/mobile/rider/deliveries:
+    get:
+      tags:
+      - Restaurant
+      summary: Tournées assignées au livreur connecté (RESTO-802/#6223)
+      description: |
+        Résolution du livreur par employee_id ; jamais de livraison d'un
+        autre tenant ou d'un autre livreur.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Livraisons assignées
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'une livraison (app livreur, RESTO-802/#6223)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail livraison (contact, adresse, totaux)
+        '404':
+          description: Livraison introuvable ou hors périmètre livreur
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/deliver:
+    post:
+      tags:
+      - Restaurant
+      summary: Livraison effectuée (RESTO-802/#6223)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison livrée (delivered_at)
+        '409':
+          description: Transition non autorisée depuis le statut courant
+        '404':
+          description: Livraison introuvable ou hors périmètre livreur
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/out-for-delivery:
+    post:
+      tags:
+      - Restaurant
+      summary: Départ en livraison (RESTO-802/#6223)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison en cours
+        '409':
+          description: Transition non autorisée depuis le statut courant
+        '404':
+          description: Livraison introuvable ou hors périmètre livreur
+  /restaurant/mobile/server/orders:
+    get:
+      tags:
+      - Restaurant
+      summary: File de service mobile serveur (RESTO-801/#6222)
+      description: |
+        Commandes actives (open/in_preparation/ready/served) du tenant,
+        triées par antériorité.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: File de service
+  /restaurant/mobile/server/orders/{restaurantOrder}/pay:
+    post:
+      tags:
+      - Restaurant
+      summary: Encaissement cash mobile serveur (RESTO-801/#6222)
+      description: |
+        Montant vérifié serveur (PayOrderAction), idempotent, double
+        paiement impossible (409), pourboire optionnel.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount_minor
+              properties:
+                amount_minor:
+                  type: integer
+                tip_minor:
+                  type: integer
+                idempotency_key:
+                  type: string
+      responses:
+        '201':
+          description: Paiement confirmé
+        '409':
+          description: Montant ou transition invalide
+        '404':
+          description: Commande introuvable ou hors tenant
+  /restaurant/mobile/server/orders/{restaurantOrder}/serve:
+    post:
+      tags:
+      - Restaurant
+      summary: Service d'une commande (app serveur, RESTO-801/#6222)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande servie (idempotent)
+        '409':
+          description: Transition non autorisée
+        '404':
+          description: Commande introuvable ou hors tenant
+  /restaurant/mobile/server/tables:
+    get:
+      tags:
+      - Restaurant
+      summary: Plan de salle — tables occupées (app serveur, RESTO-801/#6222)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tables occupées
+  /restaurant/mobile/sync:
+    post:
+      tags:
+      - Restaurant
+      summary: Synchronisation offline mobile idempotente (RESTO-804/#6225)
+      description: |
+        Rejoue les opérations effectuées hors ligne (order.create,
+        order.add_item, order.pay) avec clés client — réponse par opération
+        created | duplicate | error. Borné à 50 opérations.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - operations
+              properties:
+                operations:
+                  type: array
+                  maxItems: 50
+                  items:
+                    type: object
+                    required:
+                    - type
+                    - idempotency_key
+                    - payload
+                    properties:
+                      type:
+                        type: string
+                      idempotency_key:
+                        type: string
+                      payload:
+                        type: object
+      responses:
+        '200':
+          description: Résultats par opération
+  /restaurant/shop/token:
+    get:
+      tags:
+      - Restaurant
+      summary: Jeton boutique courant (RESTO-805/#6226)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Métadonnées du jeton (jamais le jeton en clair)
+  /restaurant/shop/token/rotate:
+    post:
+      tags:
+      - Restaurant
+      summary: Rotation du jeton boutique (RESTO-805/#6226)
+      description: |
+        Régénère le jeton (l'ancien est invalidé immédiatement). Réservé
+        principal/rh/manager. Le jeton en clair n'est retourné qu'à la rotation.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Nouveau jeton (retourné une seule fois)
+        '403':
+          description: Rôle manager requis
+  /restaurant/webhooks/delivery-apps/{provider}:
+    post:
+      tags:
+      - Restaurant
+      summary: Webhook entrant apps de livraison (RESTO-806/#6227)
+      description: |
+        Public (hors auth) : signature HMAC-SHA256 fail-closed par adaptateur
+        (Uber Eats / Glovo), secret par tenant. La commande marketplace entre
+        dans le workflow interne (prix du référentiel) ; idempotent par
+        external_id (rejeu sans doublon).
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - uber_eats
+          - glovo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - company_id
+              - order
+              properties:
+                company_id:
+                  type: string
+                order:
+                  type: object
+                  required:
+                  - external_id
+                  - items
+                  properties:
+                    external_id:
+                      type: string
+                    items:
+                      type: array
+                    customer:
+                      type: object
+      responses:
+        '201':
+          description: Commande créée
+        '200':
+          description: Rejeu idempotent (même commande)
+        '401':
+          description: Signature invalide
+        '422':
+          description: Fournisseur inconnu ou payload invalide
   /health:
     get:
       tags:

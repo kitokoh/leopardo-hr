@@ -36,4 +36,8 @@ return [
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
     'weekly_manager_digest_title' => 'Haftalık ekip özeti',
     'weekly_manager_digest_body' => ':week_start haftası — :team_size kişilik ekip · :present kayıtlı devam · :pending_absences bekleyen izin · :pending_advances bekleyen avans · :pending_corrections bekleyen düzeltme.',
+    'restaurant_new_order_title' => 'Yeni sipariş',
+    'restaurant_new_order_body' => 'Sipariş :reference — :covers kişi.',
+    'restaurant_order_ready_title' => 'Sipariş hazır',
+    'restaurant_order_ready_body' => 'Sipariş :reference servise hazır (masa :table).',
 ];
