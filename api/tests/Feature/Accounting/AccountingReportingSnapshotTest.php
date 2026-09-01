@@ -7,7 +7,7 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
-use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Infrastructure\Services\SeedAccountingDemoData;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingReportingSnapshot;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
