@@ -66,6 +66,11 @@ const ignorePathFragments = [
   // même mécanique que vitrine-locale.ts : c'est le catalogue inline, pas une
   // chaîne hardcodée hors i18n. Issue #4703.
   '/vitrine/lib/case-studies.ts',
+  // Wizard « Je suis restaurateur » (issue #6691) : solution-survey.ts est le
+  // catalogue inline ×4 du survey (questions/packages/raisons, même mécanique
+  // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY
+  // localisé ×4 de l'UI du wizard (pattern des pages vitrine existantes).
+  '/vitrine/lib/solution-survey.ts', '/vitrine/components/RestaurantSolutionWizard.tsx',
 ];
 
 // Lines that already route text through a translation mechanism — never
