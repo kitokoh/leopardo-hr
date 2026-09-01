@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Providers;
 
-use App\Contracts\Communication\CommunicationServiceInterface;
-use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
-use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
-use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
 use App\Modules\RestaurantManager\Application\Services\CogsCalculator;
 use App\Modules\RestaurantManager\Application\Services\StockAlertService;
 use App\Modules\RestaurantManager\Application\Services\StockDecrementer;
@@ -51,15 +47,16 @@ use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRep
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantReservationRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantStockLevelRepository;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppAdapterRegistry;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoDeliveryAppAdapter;
-use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsDeliveryAppAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter;
+use App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CardPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\CashPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGateways\MobileMoneyPaymentGateway;
 use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
+use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantMarketplaceStatusConsumer;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
 use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
@@ -136,35 +133,36 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         });
 
         // RESTO-806 (#6227) — registre des adaptateurs d'apps de livraison
-        // (Uber Eats / Glovo, webhooks HMAC fail-closed).
-        $this->app->singleton(DeliveryAppAdapterRegistry::class, function (): DeliveryAppAdapterRegistry {
-            return new DeliveryAppAdapterRegistry([
-                new UberEatsDeliveryAppAdapter(),
-                new GlovoDeliveryAppAdapter(),
-            ]);
+        // (webhooks entrants + statuts sortants, signature HMAC fail-closed).
+        $this->app->singleton(DeliveryAppRegistry::class, function (): DeliveryAppRegistry {
+            $registry = new DeliveryAppRegistry();
+            $registry->register(new UberEatsAdapter());
+            $registry->register(new GlovoAdapter());
+
+            return $registry;
+        });
+
+        // RESTO-806 (#6227) — consommateurs d'outbox (statuts sortants
+        // marketplace) ; le dispatch est assuré par `restaurant:outbox-dispatch`.
+        $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function ($app): RestaurantOutboxConsumerRegistry {
+            $registry = new RestaurantOutboxConsumerRegistry();
+            $registry->register(new RestaurantMarketplaceStatusConsumer(
+                $app->make(DeliveryAppRegistry::class),
+            ));
+
+            return $registry;
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
         // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
-        // RESTO-808 (#6229) — dispatcher outbox (consommation des événements).
+        // RESTO-806 (#6227) — dispatch outbox (consommateurs marketplace…).
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,
             StockAlertsCommand::class,
             RestaurantOutboxDispatchCommand::class,
         ]);
-
-        // RESTO-808 (#6229) — registre des consommateurs d'outbox de la
-        // verticale : notifications cuisine (nouvelle commande) et service
-        // (commande prête) via CommunicationService (BC-13).
-        $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function (): RestaurantOutboxConsumerRegistry {
-            $registry = new RestaurantOutboxConsumerRegistry();
-            $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
-            $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
-
-            return $registry;
-        });
 
         // RESTO-501..506 (#6200..#6205) — stock : le service de mouvements
         // (verrou SELECT FOR UPDATE, jamais négatif) dépend de l'alerte de
@@ -184,10 +182,6 @@ class RestaurantManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // RESTO-808 (#6229) — observateur de commande : émet
-        // `restaurant.order.ready.v1` quand une commande passe à ready
-        // (notifications équipe de service, découplé du flux POS).
-        RestaurantOrder::observe(RestaurantOrderObserver::class);
         // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
         // enregistrement explicite des modèles métier vers leurs policies,
         // même pattern que TravelAgencyServiceProvider::boot().

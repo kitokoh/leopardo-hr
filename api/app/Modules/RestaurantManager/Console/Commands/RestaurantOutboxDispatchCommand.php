@@ -14,28 +14,26 @@ use Throwable;
 
 /**
  * restaurant:outbox-dispatch — Consomme l'outbox des événements
- * RestaurantManager (RESTO-808/#6229, pattern crm:outbox-dispatch #5741).
+ * RestaurantManager (RESTO-806/#6227, miroir crm:outbox-dispatch #5741).
  *
- * L'outbox est une table TENANT (schéma PostgreSQL par company) : la commande
- * itère toutes les companies et traite les événements de chaque tenant dans
- * son contexte (`withinTenant`), dans la limite du lot par passe.
- *
- * Pour chaque événement pending et dû (available_at ≤ now) :
- *   1. claim atomique pending → published (un seul worker traite) ;
- *   2. résolution du consommateur ; aucun → dead-letter (permanent) ;
- *   3. exécution idempotente dans le contexte tenant ;
- *   4. succès → published (attempts +1) ; erreur transitoire → retry avec
- *      backoff exponentiel (+jitter) ; attempts ≥ max → dead-letter.
+ * Pour chaque événement pending et dû (available_at ≤ now), dans la limite
+ * du lot : claim atomique pending → processing, résolution du consommateur
+ * (aucun → dead-letter), exécution idempotente, succès → published ;
+ * erreur transitoire → retry avec backoff exponentiel (+jitter) ; erreur
+ * permanente ou attempts ≥ MAX_ATTEMPTS → dead-letter (failed).
  *
  * Usage : php artisan restaurant:outbox-dispatch --limit=100
- * Scheduler : toutes les minutes.
+ * Scheduler : toutes les minutes (voir RUNBOOK_PILOT_RESTAURANTMANAGER).
  */
 class RestaurantOutboxDispatchCommand extends Command
 {
     protected $signature = 'restaurant:outbox-dispatch
-        {--limit=100 : nombre max d\'evenements par passe (defaut 100)}';
+        {--limit=100 : max events per pass (default 100)}';
 
-    protected $description = 'Consomme les evenements d\'outbox RestaurantManager dus (idempotent, retry avec backoff, dead-letter).';
+    protected $description = 'Consumes due RestaurantManager outbox events (idempotent, retry with backoff, dead-letter).';
+
+    /** Durée de lease d'un événement en cours de traitement. */
+    private const PROCESSING_LEASE_MINUTES = 15;
 
     public function __construct(
         private readonly RestaurantOutboxConsumerRegistry $registry,
@@ -47,30 +45,6 @@ class RestaurantOutboxDispatchCommand extends Command
     public function handle(): int
     {
         $limit = (int) $this->option('limit');
-        $processed = 0;
-
-        $companies = Company::query()
-            ->orderBy('id')
-            ->get();
-
-        foreach ($companies as $company) {
-            if ($processed >= $limit) {
-                break;
-            }
-
-            $processed += (int) $this->tenants->withinTenant(
-                $company,
-                fn (): int => $this->processTenant($limit - $processed),
-            );
-        }
-
-        $this->info("[restaurant:outbox-dispatch] {$processed} evenement(s) traite(s).");
-
-        return self::SUCCESS;
-    }
-
-    private function processTenant(int $limit): int
-    {
         $processed = 0;
 
         while ($processed < $limit) {
@@ -86,19 +60,28 @@ class RestaurantOutboxDispatchCommand extends Command
             }
         }
 
-        return $processed;
+        $this->info("[restaurant:outbox-dispatch] {$processed} event(s) processed.");
+
+        return self::SUCCESS;
     }
 
     /**
-     * Claim atomique d'un lot : pending+due → published.
+     * Claim atomique d'un lot : pending+due → processing, ET reprise des
+     * `processing` orphelins (lease expirée — worker crash).
      *
      * @return list<int>
      */
     private function claimBatch(int $limit): array
     {
         $ids = DB::table('restaurant_outbox_events')
-            ->where('status', RestaurantOutboxEvent::STATUS_PENDING)
-            ->where('available_at', '<=', now())
+            ->where(function ($query): void {
+                $query->where('status', RestaurantOutboxEvent::STATUS_PENDING)
+                    ->where('available_at', '<=', now())
+                    ->orWhere(function ($query): void {
+                        $query->where('status', RestaurantOutboxEvent::STATUS_PROCESSING)
+                            ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
+                    });
+            })
             ->orderBy('id')
             ->limit($limit)
             ->pluck('id')
@@ -108,8 +91,8 @@ class RestaurantOutboxDispatchCommand extends Command
         foreach ($ids as $id) {
             $updated = DB::table('restaurant_outbox_events')
                 ->where('id', $id)
-                ->where('status', RestaurantOutboxEvent::STATUS_PENDING)
-                ->update(['status' => RestaurantOutboxEvent::STATUS_PUBLISHED, 'updated_at' => now()]);
+                ->whereIn('status', [RestaurantOutboxEvent::STATUS_PENDING, RestaurantOutboxEvent::STATUS_PROCESSING])
+                ->update(['status' => RestaurantOutboxEvent::STATUS_PROCESSING, 'updated_at' => now()]);
 
             if ($updated === 1) {
                 $claimed[] = $id;
@@ -137,12 +120,15 @@ class RestaurantOutboxDispatchCommand extends Command
         }
 
         try {
-            $consumer->handle($event->payload_redacted);
+            /** @var Company $company */
+            $company = Company::query()->findOrFail($event->company_id);
+
+            $this->tenants->withinTenant($company, fn () => $consumer->handle($event->payload_redacted));
 
             $event->forceFill([
                 'status' => RestaurantOutboxEvent::STATUS_PUBLISHED,
                 'attempts' => $event->attempts + 1,
-                'available_at' => now(),
+                'available_at' => null,
                 'last_error' => null,
             ])->save();
         } catch (Throwable $e) {
