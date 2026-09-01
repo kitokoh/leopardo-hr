@@ -329,7 +329,7 @@ class AccountingDemoE2ETest extends TestCase
         $this->recomputeTotals($invoice, 19.0);
         $this->workflow->transition($invoice, DocumentStatus::Sent);
 
-        $count = $this->workflow->refreshOverdue($this->companyA);
+        $count = $this->workflow->refreshOverdue((string) $this->companyA->id);
 
         // La facture du test est échue ; la facture partielle de la vitrine demo
         // (échéance J-5) l'est aussi → au moins 2 factures overdue.

@@ -275,7 +275,7 @@ class DocumentWorkflowNumberingTest extends TestCase
         $future = $this->makeDocument(overrides: ['due_date' => '2026-09-30']);
         $workflow->transition($future, DocumentStatus::Sent);
 
-        $count = $workflow->refreshOverdue($this->company, Carbon::parse('2026-08-15'));
+        $count = $workflow->refreshOverdue((string) $this->company->id);
 
         $this->assertSame(1, $count);
         $this->assertSame(DocumentStatus::Overdue->value, $overdue->refresh()->status);
