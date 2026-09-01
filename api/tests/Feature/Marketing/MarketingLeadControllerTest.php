@@ -139,4 +139,47 @@ class MarketingLeadControllerTest extends TestCase
         $response->assertCreated();
         $this->assertDatabaseHas('marketing_leads', ['external_id' => 'demo_request_321']);
     }
+
+    public function test_it_persists_a_solution_survey_lead_with_consent(): void
+    {
+        $response = $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'solution_survey_resto_001',
+            'type' => 'solution_survey',
+            'email' => 'resto.chef@example.test',
+            'locale' => 'fr',
+            'page' => '/restaurant',
+            'source' => 'solution_survey_restaurant',
+            'payload' => [
+                'solution' => 'restaurant',
+                'answers' => ['employee_count' => '6_20', 'attendance_device' => 'kiosk'],
+                'packages' => ['mobile_employee', 'mobile_manager', 'kiosk', 'edge'],
+                'consent' => true,
+                'consented_at' => '2026-09-01T10:00:00Z',
+            ],
+        ], $this->authorizedHeaders());
+
+        $response->assertCreated()
+            ->assertJsonPath('data.external_id', 'solution_survey_resto_001')
+            ->assertJsonPath('data.status', 'new');
+
+        $this->assertDatabaseHas('marketing_leads', [
+            'external_id' => 'solution_survey_resto_001',
+            'type' => 'solution_survey',
+            'email' => 'resto.chef@example.test',
+            'source' => 'solution_survey_restaurant',
+            'status' => 'new',
+        ]);
+    }
+
+    public function test_it_rejects_an_unknown_lead_type(): void
+    {
+        $response = $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'bogus_type_001',
+            'type' => 'not_a_lead_type',
+            'email' => 'someone@example.test',
+        ], $this->authorizedHeaders());
+
+        $response->assertStatus(422);
+        $this->assertDatabaseMissing('marketing_leads', ['external_id' => 'bogus_type_001']);
+    }
 }

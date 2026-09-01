@@ -24,6 +24,7 @@ import {
   Fingerprint,
   HardDrive,
   Loader2,
+  Mail,
   QrCode,
   Smartphone,
   Store,
@@ -32,7 +33,7 @@ import {
 import QRCode from 'qrcode';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
-import { EDGE_INSTALL_CMD, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
+import { EDGE_INSTALL_CMD, LEAD_COPY, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
 import {
   buildDefaultAnswers,
   fetchSurvey,
@@ -54,6 +55,7 @@ export function RestaurantSolutionWizard() {
   const { locale, direction } = useVitrineLocale();
   const vLocale = localeFromAppLocale(locale);
   const c = WIZARD_COPY[vLocale] ?? WIZARD_COPY.en;
+  const lc = LEAD_COPY[vLocale] ?? LEAD_COPY.en;
 
   const [step, setStep] = useState<Step>('intro');
   const [questions, setQuestions] = useState<SolutionSurveyQuestion[]>([]);
@@ -63,6 +65,41 @@ export function RestaurantSolutionWizard() {
   const [qrUrls, setQrUrls] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Capture du lead (#6692) — email + consentement marketing explicite.
+  const [leadEmail, setLeadEmail] = useState('');
+  const [leadConsent, setLeadConsent] = useState(false);
+  const [leadStatus, setLeadStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const submitLead = useCallback(async () => {
+    if (leadStatus === 'sending') {
+      return;
+    }
+    setLeadStatus('sending');
+    try {
+      const res = await fetch('/api/forms/solution-survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: leadEmail.trim(),
+          consent: leadConsent,
+          locale,
+          page: '/restaurant',
+          data: {
+            solution: 'restaurant',
+            answers,
+            packages: Array.from(selected),
+          },
+        }),
+      });
+      if (!res.ok) {
+        throw new Error(`lead capture failed: ${res.status}`);
+      }
+      setLeadStatus('sent');
+    } catch {
+      setLeadStatus('error');
+    }
+  }, [leadEmail, leadConsent, leadStatus, locale, answers, selected]);
 
   // Chargement du questionnaire (source de vérité = backend).
   useEffect(() => {
@@ -473,6 +510,58 @@ export function RestaurantSolutionWizard() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Capture du lead (#6692) — email + consentement marketing, facultatif */}
+            <div className="mt-10 rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/30 p-6">
+              {leadStatus === 'sent' ? (
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  <p className="font-medium text-emerald-800 dark:text-emerald-300">{lc.sent}</p>
+                </div>
+              ) : (
+                <>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">{lc.title}</h3>
+                  <input
+                    type="email"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    placeholder={lc.emailPlaceholder}
+                    className="mt-3 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  <label className="mt-3 flex items-start gap-2 text-xs text-slate-600 dark:text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={leadConsent}
+                      onChange={(e) => setLeadConsent(e.target.checked)}
+                      className="mt-0.5 accent-emerald-600"
+                    />
+                    <span>{lc.consent}</span>
+                  </label>
+                  {leadStatus === 'error' && (
+                    <p className="mt-2 text-xs text-rose-600 dark:text-rose-400">{lc.error}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => void submitLead()}
+                    disabled={leadStatus === 'sending' || !leadEmail.trim() || !leadConsent}
+                    className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold px-6 py-2.5 text-sm transition-colors"
+                  >
+                    {leadStatus === 'sending' ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {lc.sending}
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4" />
+                        {lc.submit}
+                      </>
+                    )}
+                  </button>
+                  <p className="mt-3 text-xs text-slate-400">{lc.skip}</p>
+                </>
+              )}
             </div>
 
             <div className="mt-8 flex justify-between">
