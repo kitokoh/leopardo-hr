@@ -41,6 +41,7 @@ return [
     // Général
     'NOT_FOUND' => 'المورد غير موجود.',
     'FORBIDDEN' => 'ليس لديك صلاحية لهذا الإجراء.',
+    'RESOURCE_NOT_FOUND' => 'المورد غير موجود.',
     'SERVER_ERROR' => 'حدث خطأ. يرجى المحاولة مجدداً.',
     'VALIDATION_ERROR' => 'بعض الحقول غير صحيحة.',
     'BAD_REQUEST' => 'طلب غير صالح.',

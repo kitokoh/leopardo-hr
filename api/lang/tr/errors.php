@@ -41,6 +41,7 @@ return [
     // Général
     'NOT_FOUND' => 'Kaynak bulunamadı.',
     'FORBIDDEN' => 'Bu işlem için yetkiniz yok.',
+    'RESOURCE_NOT_FOUND' => 'Kaynak bulunamadı.',
     'SERVER_ERROR' => 'Bir hata oluştu. Lütfen tekrar deneyin.',
     'VALIDATION_ERROR' => 'Bazı alanlar hatalı.',
     'BAD_REQUEST' => 'Gecersiz istek.',
