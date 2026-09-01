@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "node --check app.js && node --check admin.js && node --check i18n.js",
-    "test": "node tests/i18n.test.mjs"
+    "test": "node tests/i18n.test.mjs && node tests/feedback.test.mjs && python3 tests/test_bridge_globals.py && python3 tests/test_bridge_security.py"
   },
   "engines": {
     "node": ">=18"
