@@ -825,7 +825,12 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
-            $table->timestamps();
+            // Issue #6684 : la migration réelle (2026_04_01_000100) crée
+            // departments SANS updated_at (table minimale volontaire) — la
+            // fixture doit refléter le vrai schéma pour que les tests
+            // exercent le chemin de provisioning réel (insertGetId sans
+            // updated_at).
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         Schema::create($this->tenantTable('positions'), function (Blueprint $table): void {
