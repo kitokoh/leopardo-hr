@@ -109,6 +109,9 @@ final class PaymentRegistrationService
     /**
      * Issue #6562 — limit optionnel pour borner les listes non paginees.
      */
+    /**
+     * @return Collection<int, AccountingPayment>
+     */
     public function list(?int $documentId = null, ?string $status = null, ?int $limit = null): Collection
     {
         $query = AccountingPayment::query()->orderByDesc('received_at')->orderByDesc('id');
