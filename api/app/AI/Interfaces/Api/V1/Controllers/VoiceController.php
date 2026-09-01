@@ -161,7 +161,7 @@ class VoiceController extends Controller
     private function resolveEffectiveTtsProvider(string $configured): string
     {
         if ($configured === 'edge_tts' && (bool) config('ai.voice.elevenlabs_key')) {
-            Log::info('TTS: edge_tts configuré mais ElevenLabs disponible — bascule automatique (#5616)');
+            Log::info('TTS: edge_tts configured but ElevenLabs available - automatic fallback (#5616)');
 
             return 'elevenlabs';
         }
