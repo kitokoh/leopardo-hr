@@ -29,7 +29,9 @@ class CompanyBankingControllerTest extends TestCase
 
     public function test_employee_cannot_read_company_banking(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $this->actingAs($employee, 'sanctum')
@@ -39,7 +41,9 @@ class CompanyBankingControllerTest extends TestCase
 
     public function test_manager_reads_company_banking(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $this->actingAs($manager, 'sanctum')
@@ -50,7 +54,9 @@ class CompanyBankingControllerTest extends TestCase
 
     public function test_comptable_reads_company_banking(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $comptable */
         $comptable = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
