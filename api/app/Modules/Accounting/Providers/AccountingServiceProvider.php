@@ -44,10 +44,9 @@ class AccountingServiceProvider extends ServiceProvider
         $this->commands([
             SeedAccountingDemoCommand::class,
             SendPaymentRemindersCommand::class,
-        // Issue #6243 — recompute des snapshots de read models (BC-22-D10).
-        $this->commands([
-            SeedAccountingDemoCommand::class,
-            RecomputeReportingSnapshotCommand::class,        ]);
+            // Issue #6243 — recompute des snapshots de read models (BC-22-D10).
+            RecomputeReportingSnapshotCommand::class,
+        ]);
     }
 
     public function boot(): void
