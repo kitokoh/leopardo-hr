@@ -49,6 +49,10 @@ final class CreateOrderAction
             ->where('company_id', $companyId)
             ->findOrFail($data['branch_id']);
 
+        if (! $branch instanceof RestaurantBranch) {
+            abort(422, 'Branch not found.');
+        }
+
         // Cohérence table ↔ branche ↔ tenant (une table d'une autre branche
         // ou d'un autre tenant est refusée en 422 à la validation, doublon
         // de sécurité ici).

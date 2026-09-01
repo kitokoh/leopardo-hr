@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Providers;
 
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Modules\RestaurantManager\Application\Consumers\KitchenOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Consumers\ServiceOrderNotificationConsumer;
 use App\Modules\RestaurantManager\Application\Observers\RestaurantOrderObserver;
@@ -160,8 +160,8 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // (commande prête) via CommunicationService (BC-13).
         $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function (): RestaurantOutboxConsumerRegistry {
             $registry = new RestaurantOutboxConsumerRegistry();
-            $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationService::class)));
-            $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationService::class)));
+            $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
+            $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
 
             return $registry;
         });

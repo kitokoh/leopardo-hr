@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Application\Consumers;
 
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\RestaurantManager\Application\Actions\TransitionOrderAction;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
@@ -23,7 +23,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 final class KitchenOrderNotificationConsumer implements RestaurantOutboxConsumer
 {
     public function __construct(
-        private readonly CommunicationService $communication,
+        private readonly CommunicationServiceInterface $communication,
     ) {
     }
 

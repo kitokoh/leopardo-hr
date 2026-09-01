@@ -141,7 +141,6 @@ final class PayOrderAction
                 'provider_reference' => $providerReference ?? $payment->provider_reference,
             ])->save();
 
-            /** @var RestaurantOrder $order */
             $order = $payment->order()->first();
 
             if ($this->remainingDue($order) <= 0) {
