@@ -11,7 +11,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookDispatcher;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-806 (#6097) — Dispatch des webhooks transporteurs.
