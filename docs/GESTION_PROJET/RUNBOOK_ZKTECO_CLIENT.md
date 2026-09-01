@@ -77,10 +77,10 @@ Avant installation chez le client, verifier que :
 
 Les elements deployes se trouvent ici :
 
-- borne / interface locale : `C:\Users\cheic\Downloads\gestionemployer\zkteco-kiosk\index.html`
-- interface manager/RH locale : `C:\Users\cheic\Downloads\gestionemployer\zkteco-kiosk\admin.html`
-- configuration exemple : `C:\Users\cheic\Downloads\gestionemployer\zkteco-kiosk\config.example.json`
-- pont local offline-first : `C:\Users\cheic\Downloads\gestionemployer\zkteco-kiosk\desktop-bridge\bridge.py`
+- borne / interface locale : `front/zkteco-kiosk/index.html`
+- interface manager/RH locale : `front/zkteco-kiosk/admin.html`
+- configuration exemple : `front/zkteco-kiosk/config.example.json`
+- pont local offline-first : `front/zkteco-kiosk/desktop-bridge/bridge.py`
 
 ## 6. Installation terrain
 
@@ -102,7 +102,7 @@ Sur le PC local :
 
 - installer Python 3.11 ou superieur
 - copier le dossier `zkteco-kiosk`
-- creer un fichier de configuration local a partir de `config.example.json`
+- copier `config.example.json` vers `config.json` (le pont lit `ROOT/config.json`, chemin en dur dans `bridge.py:23` — pas d'argument CLI)
 
 Exemple de configuration :
 
@@ -123,11 +123,13 @@ Exemple de configuration :
 
 ### 6.3 Etape 3 - lancer le pont local
 
-Depuis le dossier `front/zkteco-kiosk/desktop-bridge` :
+Depuis la racine du dossier `front/zkteco-kiosk` :
 
-```powershell
-python bridge.py ..\config.local.json
+```bash
+python desktop-bridge/bridge.py
 ```
+
+(Le pont lit `config.json` à la racine du kiosk — `bridge.py:23`, `CONFIG_PATH = ROOT / "config.json"`.)
 
 Le pont local :
 
@@ -309,7 +311,7 @@ Pour un client avec internet stable :
 - `device_code` recupere
 - `sync_token` recupere
 - PC local prepare
-- `config.local.json` renseigne
+- `config.json` renseigne
 - pont local lance
 - test de pointage realise
 - test de sync realise
