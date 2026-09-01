@@ -1,8 +1,12 @@
 # CI/CD Workflows — Leopardo HR
 
-## Cartographie des workflows
+> Cartographie vérifiée le 2026-09-01 (audit #6606) : table complète générée depuis
+> les fichiers `.github/workflows/*.yml` du repo. Garde : ce README doit rester
+> aligné sur la liste réelle des workflows (re-générer la table après tout ajout/
+> suppression de workflow).
 
-### 🔁 Composite actions partagées (`.github/actions/`)
+## 🔁 Composite actions partagées (`.github/actions/`)
+
 Ces actions composites remplacent les anciens workflows reutilisables `_setup-php.yml`
 et `_setup-flutter.yml` (supprimés, voir `CHANGELOG.md` v4.23.4). Elles sont appelées
 depuis les steps des workflows ci-dessous, pas declenchees directement.
@@ -14,7 +18,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 ---
 
-### 🛡 Gardes anti-régression du job Hygiene Guards (`architecture-check.yml`)
+## 🛡 Gardes anti-régression du job Hygiene Guards (`architecture-check.yml`)
 
 | Garde | Détecte | Issue |
 |---|---|---|
@@ -24,89 +28,90 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 ---
 
-### ✅ Workflows principaux (déclenchés sur PR/push)
+## 📋 Cartographie complète (50 workflows, 2026-09-01)
+
+Légende déclencheurs : **PR** = `pull_request` · **push** = `push` (branche cible entre crochets) ·
+**manuel** = `workflow_dispatch` · **cron** = `schedule` · **merge_group** = `merge_group` ·
+**wr→X** = `workflow_run` déclenché par le workflow X.
+
+### CI — Pull requests & branches
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `tests.yml` | PR → main/develop + push | Tests backend (PHPUnit/Pest) + mobile Flutter |
-| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (60%) |
-| `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
-| `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
-| `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
-| `mobile-apps-ci.yml` | PR → front/mobile | Build + tests Flutter |
-| `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
-| `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
-| `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
-| `secret-scan.yml` | Push | Détection de secrets commités |
-| `dependabot.yml` | Automatique | Mises à jour dépendances |
+| `tests.yml` | manuel, PR, push[main] | Tests backend (PHPUnit/Pest) + mobile Flutter |
+| `coverage-gate.yml` | manuel, PR, push[main], merge_group | Seuil de couverture PHP (back-end coverage gate) |
+| `backend-jobs-ci.yml` | manuel, PR, push[main] | Tests des Jobs/Queues Laravel |
+| `architecture-check.yml` | PR, push[main], merge_group | Règles d'architecture DDD + Hygiene Guards (voir plus haut) |
+| `openapi-ci.yml` | PR, push[main] | Validation spec OpenAPI (lint + couverture routes) |
+| `i18n-enterprise.yml` | PR, push[main] | Sync/validation i18n multi-apps (corrigé #6606 : `leopardo_hr/lib/**` était fusionné dans une autre entrée `paths:` et ne déclenchait jamais) |
+| `pr-issue-guard.yml` | PR | Chaque PR référence une issue (`Closes/Fixes/Resolves #N`) |
+| `issue-governance-guard.yml` | cron, manuel | Garde de gouvernance des issues (quotas, libellés) |
+| `fix-feat-ratio-guard.yml` | PR, manuel | Ratio fix/feat par fenêtre (vars `FIX_FEAT_RATIO_*`) |
+| `fix-feat-ratio-report.yml` | cron, manuel | Rapport hebdo du ratio fix/feat |
+| `branch-hygiene.yml` | cron, manuel | Nettoyage branches mortes/stale |
+| `branch-protection-guard.yml` | manuel, PR | Vérifie la protection de branche (token `BRANCH_PROTECTION_TOKEN`) |
+| `bc-batch-branch-protocol.yml` | cron, manuel | Protocole de branches BC (batch) |
+| `crm-branch-protocol.yml` | cron, manuel | Protocole de branches CRM |
+| `merge-health-ci.yml` | PR, push[main], manuel | Merge Health Guard (santé avant merge) |
+| `merge-quota-guard.yml` | PR, manuel | Quota quotidien de merges (var `MERGE_DAILY_QUOTA`) |
+| `post-merge-conventions-audit.yml` | push[main] | Audit des conventions post-merge |
+| `country-catalog-check.yml` | PR, push[main] | Catalogue pays cohérent |
 
----
-
-### 🚀 Workflows de déploiement
-
-| Fichier | Déclencheur | Rôle |
-|---|---|---|
-| `deploy-main.yml` | Push → main | Déploiement production (Render) |
-| `deploy-staging.yml` | Push → main + dispatch (`push` est l'unique déclencheur direct depuis #3545/#4359 ; `workflow_run` reste géré en défense en profondeur dans le script) | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
-| `e2e-staging.yml` | Après deploy-staging | Tests E2E post-déploiement |
-| `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
-| `release.yml` | Tags v*.*.* | Création de release GitHub |
-
----
-
-### 🔍 Workflows de qualité / observabilité
+### CI — Modules applicatifs
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `phpstan-baseline.yml` | Manuel | Régénère phpstan-baseline.neon |
-| `lighthouse.yml` | PR/push → front/web + hebdomadaire | Audit Lighthouse (perf, a11y, SEO) + budget d'assets (`front/web/budget.json`), non bloquant (PA2-QA-008) |
-| `owasp-zap.yml` | Manuel | Scan OWASP ZAP (sécurité API) |
-| `k6-load-smoke.yml` | Manuel | Load test k6 |
-| `i18n-enterprise.yml` | PR → shared/i18n | Validation et sync traductions |
-| `database-backup.yml` | Schedule | Backup PostgreSQL |
-| `post-merge-conventions-audit.yml` | Push → main | Audit non bloquant CHANGELOG/openapi.yaml/i18n après chaque merge (CONVENTIONS.md §4.3/§7) |
-| `fix-feat-ratio-report.yml` | Schedule (lundi 07:00 UTC) + manuel | Rapport hebdomadaire du ratio fix/feat, KPI gouvernance (issue #5634) |
+| `accounting-ci.yml` | PR, push[main], manuel | Module Gate Comptabilité |
+| `payroll-ci.yml` | PR, push[main], manuel | Payroll CI — Golden & Conformité |
+| `kiosk-ci.yml` | PR, push[main], manuel | CI ZKTeco Kiosk (i18n + feedback + 27 tests Python bridge) |
+| `web-ci.yml` | manuel, push[main], PR | Lint + test + E2E Vue.js (admin-dashboard) |
+| `web-marketing-ci.yml` | manuel, push[main], PR | Lint + test + E2E Next.js (vitrine) |
+| `web-offline-ci.yml` | PR, push[main], manuel | Web Offline CI — PWA Edge |
+| `mobile-apps-ci.yml` | manuel, PR, push[main] | Build + tests Flutter (7 apps) |
+| `e2e-isolated.yml` | manuel, PR | E2E admin/backend isolé |
+| `onboarding-smoke.yml` | manuel, PR, push[main] | Onboarding Smoke Test |
+| `lighthouse.yml` | manuel, PR, push[main], cron | Lighthouse CI (perf web) |
 
----
-
-### 🛠️ Workflows de maintenance
-
-| Fichier | Déclencheur | Rôle |
-|---|---|---|
-| `fix-composer-lock.yml` | Manuel | Régénère composer.lock |
-
----
-
-### 🔖 Gouvernance PR/issue
-
-Le processus interne multi-agents issu de `docs/PLAN_ACTION2` (issue #1731) est clos depuis le
-2026-07-26 — la gestion de projet active passe exclusivement par **GitHub Issues et GitHub
-Projects** (`docs/PLAN_ACTION2/` est un redirect vers l'archive — voir
-`docs/archive/PLAN_ACTION2/`). Les 4 workflows `plan-action2-*.yml` qui existaient encore ont
-été nettoyés (2026-08-29) : ce qui restait spécifique au backlog PA2-* (collision de claim
-multi-agent, signalement d'ID PA2-*, rapport de backlog, sync GitHub Projects) a été supprimé ;
-ce qui était déjà une règle générale (indépendante de PLAN_ACTION2) a été renommé et conservé
-ci-dessous.
+### 🚀 Déploiement
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `pr-issue-guard.yml` | PR du dépôt (opened/edited/synchronize) — sauté sur fork | Anti-doublon « une issue = une PR » (#5442) + exige que chaque PR référence une issue qu'elle ferme (PA2-OPS-008, **bloquant**, rappelé dans `PULL_REQUEST_TEMPLATE.md`) |
+| `deploy-main.yml` | push[main], manuel | Déploiement production (Render) |
+| `deploy-staging.yml` | push[main], manuel | Déploiement staging (hook Render staging ; **aucun** `workflow_run`) — fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents (#1485) |
+| `deploy-admin-dashboard.yml` | manuel, push[main] | Déploiement admin-dashboard Cloudflare Pages |
+| `mobile-distribute.yml` | push, manuel | Build + distribution Firebase APK/IPA |
+| `mobile-distribute-main.yml` | push[main], manuel | Distribution mobile depuis main |
+| `release.yml` | push, manuel | Création de release GitHub (tags v*.*.*) |
+
+### 🔍 Qualité / observabilité / post-déploiement
+
+| Fichier | Déclencheur | Rôle |
+|---|---|---|
+| `e2e-staging.yml` | manuel, wr→**Deploy - Leopardo RH** (`deploy-main.yml`) | E2E Playwright Prod Smoke — **attention** : le nom « staging » est trompeur, il tourne après le déploiement **prod** (pas staging) |
+| `owasp-zap.yml` | manuel, wr→**Deploy - Leopardo RH** (`deploy-main.yml`) | Scan de sécurité OWASP ZAP Baseline post-déploiement prod |
+| `k6-load-smoke.yml` | manuel | Smoke de charge k6 |
+| `queue-supervision.yml` | cron, manuel | Supervision queues prod (vars `QUEUE_MAX_*` + secrets DB queue) |
+| `queue-worker-fallback.yml` | cron, manuel | Fallback worker queues GH Actions |
+| `ci-observability.yml` | cron, manuel | Observabilité CI |
+| `cleanup-orphan-runs.yml` | cron, manuel, PR | Nettoyage runs orphelins |
+| `database-backup.yml` | manuel, cron | Backup & restore drill (S3 + age) |
+| `launch-api-profile-smoke.yml` | manuel | Smoke de profilage API |
+| `launch-observability-smoke.yml` | manuel, cron | Smoke observabilité |
+| `admin-pages-deploy-guard.yml` | manuel, cron | Garde de dérive déploiement admin (Cloudflare) |
+| `fix-composer-lock.yml` | manuel | Régénère `composer.lock` |
+| `phpstan-baseline.yml` | manuel | Régénère les baselines PHPStan |
+| `secret-scan.yml` | manuel, PR, push[main] | Détection de secrets commités (TruffleHog) |
+| `secret-history-scan.yml` | cron, manuel | Scan d'historique des secrets (hebdo) |
+| `codeql.yml` | PR, push[main], cron | Analyse de sécurité CodeQL |
+| `actionlint.yml` | PR, push[main], merge_group | Lint des workflows + shellcheck |
+
+### 🚫 Fantômes supprimés (existent plus dans le repo)
+
+`api-lint.yml` (remplacé par `openapi-ci.yml`), `dependabot.yml` (c'est une config Dependabot, pas un workflow — voir `.github/dependabot.yml`), `mobile-test.yml` (remplacé par `mobile-apps-ci.yml`). Aucun de ces fichiers n'existe dans `.github/workflows/`.
 
 ---
 
-### Workflows smoke (Manuel)
+## ⚠️ Points d'attention (audit #6606)
 
-| Fichier | Rôle |
-|---|---|
-| `launch-api-profile-smoke.yml` | Smoke test API profil prod |
-| `launch-observability-smoke.yml` | Health check toutes les URLs prod |
-
----
-
-## Règles de contribution CI
-
-1. **Ne pas dupliquer la config PHP/Flutter** — utiliser les composite actions `.github/actions/setup-backend-db` et `.github/actions/setup-flutter-android`
-2. **Nommer clairement** : `<scope>-<action>.yml` (ex: `api-lint.yml`, `mobile-test.yml`)
-3. **path filters** obligatoires sur les PRs pour éviter de déclencher tout sur chaque push
-4. **`concurrency`** obligatoire avec `cancel-in-progress: ${{ github.event_name == 'pull_request' }}` — sur `main`, un push ne doit jamais annuler le run du commit précédent (sinon CodeQL/scans n'uploadent jamais leurs résultats pendant les vagues de merges — issues #2131, #3532)
-5. **`FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true`** requis sur tous les workflows actifs
+1. **`e2e-staging.yml` ne valide PAS le staging** : son `workflow_run` cible **« Deploy - Leopardo RH »** (`deploy-main.yml`), donc les E2E/ZAP tournent après la **prod**. Le staging n'a aucune validation E2E post-déploiement. À corriger côté CI (renommer le workflow ou ajouter un vrai run staging).
+2. **13 repo `vars` et 8 secrets queue** documentés dans `docs/CI_CD_SECRETS.md` (voir sections dédiées) — notamment `PROD_API_BASE_URL`/`PROD_ADMIN_URL`/`PROD_WEB_URL` qui font échouer les E2E en fail-closed s'ils manquent.
