@@ -1,6 +1,7 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-31T12:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
+
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -147,7 +148,7 @@
     "cabinet": "Belge kasasi",
     "notifications": "Bildirimler",
     "evaluations": "Degerlendirmeler",
-    "restaurant": "Mutfak ekranı"
+    "restaurant": "Satış noktası (POS)"
   },
   "emails": {
     "invitation": {
@@ -3614,6 +3615,30 @@
     }
   },
   "restaurant": {
+    "pos": {
+      "title": "Satış noktası (POS)",
+      "subtitle": "Sipariş alma ve tahsilat",
+      "products": "Katalog",
+      "cart": "Güncel sipariş",
+      "noProducts": "Uygun ürün yok.",
+      "noSession": "Bu şube için açık kasa oturumu yok.",
+      "openSession": "Kasa oturumu aç",
+      "noOrder": "Güncel sipariş yok.",
+      "newOrder": "Yeni sipariş",
+      "submit": "Gönder",
+      "confirm": "Onayla (mutfak)",
+      "bill": "Hesap",
+      "payCash": "Nakit tahsil",
+      "paid": "Sipariş ödendi",
+      "subtotal": "Ara toplam",
+      "tax": "Vergi",
+      "total": "Toplam",
+      "removeItem": "Kaldır",
+      "uncategorized": "Kategorisiz",
+      "loadError": "Satış noktası yüklenemedi.",
+      "loading": "Satış noktası yükleniyor…",
+      "actionError": "İşlem başarısız, tekrar deneyin."
+    },
     "kitchenTitle": "Mutfak ekranı",
     "kitchenSubtitle": "Gerçek zamanlı sipariş kuyruğu — hazırlık ve teslim",
     "branch": "Şube",
@@ -3632,6 +3657,40 @@
     "loadError": "Mutfak kuyruğu yüklenemedi.",
     "actionError": "İşlem başarısız, tekrar deneyin.",
     "loading": "Mutfak kuyruğu yükleniyor…",
+    "shop": {
+      "title": "Online sipariş",
+      "subtitle": "Halka açık menü — birkaç tıklamayla sipariş verin.",
+      "menu": "Menü",
+      "cart": "Sepet",
+      "emptyCart": "Sepetiniz boş.",
+      "add": "Ekle",
+      "added": "Eklendi",
+      "categoryAll": "Tümü",
+      "price": "Fiyat",
+      "subtotal": "Ara toplam",
+      "tax": "Vergi",
+      "total": "Toplam",
+      "phone": "Telefon (isteğe bağlı)",
+      "phoneHint": "Siparişinizin durumu hakkında bilgilendirilmek için.",
+      "checkout": "Sipariş ver",
+      "ordering": "Sipariş veriliyor…",
+      "orderCreated": "Sipariş onaylandı",
+      "orderRef": "Referans",
+      "orderStatus": "Durum",
+      "track": "Siparişi takip et",
+      "pay": "Öde",
+      "paying": "Ödeniyor…",
+      "payHint": "Teslimatta ödeme veya mobil para.",
+      "missingToken": "Geçersiz veya eksik mağaza bağlantısı. Restoranın sağladığı bağlantıyı kullanın.",
+      "loadError": "Menü yüklenemedi. Yeniden deneyin.",
+      "retry": "Yeniden dene",
+      "backToMenu": "Menüye dön",
+      "invalidToken": "Geçersiz veya süresi dolmuş mağaza jetonu.",
+      "items": "ürün",
+      "quantity": "Adet",
+      "remove": "Kaldır",
+      "currency": "para birimi"
+    },
     "mobile": {
       "hub_title": "Restoran",
       "hub_subtitle": "Servis, teslimat ve yönetim araçları",

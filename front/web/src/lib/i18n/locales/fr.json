@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-31T12:00:00Z",
+  "_updated_at": "2026-08-30T15:05:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -147,7 +147,7 @@
     "cabinet": "Coffre documentaire",
     "notifications": "Notifications",
     "evaluations": "Evaluations",
-    "restaurant": "Écran cuisine"
+    "restaurant": "Point de vente (POS)"
   },
   "emails": {
     "invitation": {
@@ -3614,6 +3614,30 @@
     }
   },
   "restaurant": {
+    "pos": {
+      "title": "Point de vente (POS)",
+      "subtitle": "Prise de commande et encaissement",
+      "products": "Catalogue",
+      "cart": "Commande en cours",
+      "noProducts": "Aucun produit disponible.",
+      "noSession": "Aucune caisse ouverte pour cette branche.",
+      "openSession": "Ouvrir la caisse",
+      "noOrder": "Aucune commande en cours.",
+      "newOrder": "Nouvelle commande",
+      "submit": "Soumettre",
+      "confirm": "Confirmer (cuisine)",
+      "bill": "Addition",
+      "payCash": "Encaisser espèces",
+      "paid": "Commande payée",
+      "subtotal": "Sous-total",
+      "tax": "TVA",
+      "total": "Total",
+      "removeItem": "Retirer",
+      "uncategorized": "Sans catégorie",
+      "loadError": "Impossible de charger le point de vente.",
+      "loading": "Chargement du point de vente…",
+      "actionError": "Action impossible, réessayez."
+    },
     "kitchenTitle": "Écran cuisine",
     "kitchenSubtitle": "File de commandes en temps réel — préparation et mise à disposition",
     "branch": "Branche",
@@ -3632,6 +3656,40 @@
     "loadError": "Impossible de charger la file cuisine.",
     "actionError": "Action impossible, réessayez.",
     "loading": "Chargement de la file cuisine…",
+    "shop": {
+      "title": "Commande en ligne",
+      "subtitle": "Menu public — commandez en quelques clics.",
+      "menu": "Menu",
+      "cart": "Panier",
+      "emptyCart": "Votre panier est vide.",
+      "add": "Ajouter",
+      "added": "Ajouté",
+      "categoryAll": "Tout",
+      "price": "Prix",
+      "subtotal": "Sous-total",
+      "tax": "Taxe",
+      "total": "Total",
+      "phone": "Téléphone (optionnel)",
+      "phoneHint": "Pour être prévenu de l'état de votre commande.",
+      "checkout": "Commander",
+      "ordering": "Commande en cours…",
+      "orderCreated": "Commande confirmée",
+      "orderRef": "Référence",
+      "orderStatus": "Statut",
+      "track": "Suivre la commande",
+      "pay": "Payer",
+      "paying": "Paiement…",
+      "payHint": "Paiement à l'encaissement ou mobile money.",
+      "missingToken": "Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.",
+      "loadError": "Impossible de charger le menu. Réessayez.",
+      "retry": "Réessayer",
+      "backToMenu": "Retour au menu",
+      "invalidToken": "Jeton boutique invalide ou expiré.",
+      "items": "articles",
+      "quantity": "Qté",
+      "remove": "Retirer",
+      "currency": "devise"
+    },
     "mobile": {
       "hub_title": "Restaurant",
       "hub_subtitle": "Outils de service, livraison et gestion",
