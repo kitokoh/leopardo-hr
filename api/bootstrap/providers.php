@@ -20,6 +20,7 @@ use App\Modules\Payroll\Providers\PayrollServiceProvider;
 use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
+use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -40,6 +41,7 @@ return [
     AttendanceServiceProvider::class,
     PlanningServiceProvider::class,
     RecruitmentServiceProvider::class,
+    RestaurantServiceProvider::class,
     CabinetServiceProvider::class,
     FleetServiceProvider::class,
     BillingServiceProvider::class,
