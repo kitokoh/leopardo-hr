@@ -234,6 +234,8 @@ class EdgeSyncDedupTest extends TestCase
 
         $ok = SyncQueue::query()->where('entity_id', 'rec-ok')->first();
         $ko = SyncQueue::query()->where('entity_id', 'rec-ko')->first();
+        $this->assertNotNull($ok);
+        $this->assertNotNull($ko);
 
         $this->assertSame('synced', $ok->status);
         $this->assertNotNull($ok->synced_at);
