@@ -60,7 +60,7 @@ class RestaurantInventoryMovementController extends Controller
         $data = $request->validated();
 
         $level = $this->movements->apply(
-            companyId: $actor->company_id,
+            companyId: (string) $actor->company_id,
             branchId: (int) $data['branch_id'],
             ingredientId: (int) $data['ingredient_id'],
             quantityDelta: (float) $data['quantity_delta'],

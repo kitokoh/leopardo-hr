@@ -38,7 +38,9 @@ class RestaurantPaymentController extends Controller
             abort(403);
         }
 
-        $payment = $this->payAction->pay($actor, $restaurantOrder, $request->validated());
+        /** @var array{provider_code: string, amount_minor: int, tip_minor?: int|null, idempotency_key?: string|null} $data */
+        $data = $request->validated();
+        $payment = $this->payAction->pay($actor, $restaurantOrder, $data);
 
         return (new RestaurantOrderPaymentResource($payment))->response()->setStatusCode(201);
     }
