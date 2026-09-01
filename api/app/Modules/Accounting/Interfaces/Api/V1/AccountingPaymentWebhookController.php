@@ -34,7 +34,7 @@ final class AccountingPaymentWebhookController extends Controller
         } catch (PaymentAmountMismatchException $e) {
             // #6553 — montant notifié > solde restant (anti-fraude US2.4) :
             // réponse 422 explicite pour que la passerelle cesse les retries.
-            Log::warning('Accounting webhook: montant notifié supérieur au solde — 422', [
+            Log::warning('Accounting webhook: notified amount exceeds balance - 422', [
                 'gateway' => $gateway,
             ]);
 
