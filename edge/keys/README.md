@@ -45,7 +45,7 @@ LICENSE_PUBLIC_KEY_PATH=/var/leopardo/license.pub
 
 La clé publique actuelle est disponible via l'API Cloud :
 ```bash
-curl https://api.leopardo.app/edge/license-public-key
+curl https://gestionemployerbackend.onrender.com/edge/license-public-key
 ```
 
 Elle est aussi téléchargée automatiquement par `install.sh` lors de l'installation Edge.
