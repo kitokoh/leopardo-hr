@@ -85,7 +85,7 @@ class SyncEngineService
             ]);
         }
 
-        return $log->fresh();
+        return $log->fresh() ?? $log;
     }
 
     /**
@@ -168,6 +168,7 @@ class SyncEngineService
         };
     }
 
+    /** @return array{conflict: bool, conflict_note: string|null} */
     protected function applyAttendanceLog(SyncQueue $item): array
     {
         // Attendance records are additive — no conflict unless duplicate external_event_id
@@ -221,6 +222,7 @@ class SyncEngineService
         return ['conflict' => false, 'conflict_note' => null];
     }
 
+    /** @return array{conflict: bool, conflict_note: string|null} */
     protected function applyAbsence(SyncQueue $item): array
     {
         // Absences: Cloud wins for any approval status changes
@@ -245,6 +247,7 @@ class SyncEngineService
         return ['conflict' => false, 'conflict_note' => null];
     }
 
+    /** @return array{conflict: bool, conflict_note: string|null} */
     protected function applyGeneric(SyncQueue $item): array
     {
         // Last-write-wins using updated_at timestamp

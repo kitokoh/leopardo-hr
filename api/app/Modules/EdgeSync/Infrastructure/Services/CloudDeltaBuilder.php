@@ -71,7 +71,7 @@ class CloudDeltaBuilder
                     ->toArray();
 
                 if (! empty($records)) {
-                    $delta['entities'][$table] = $records;
+                    $delta['entities'][$table] = array_values($records);
                 }
             } catch (\Throwable $e) {
                 // Table might not exist in all tenant schemas — skip gracefully
@@ -88,6 +88,7 @@ class CloudDeltaBuilder
     /**
      * Count total records in the delta (for logging/metrics).
      */
+    /** @param array{entities?: array<string, array<int, mixed>>} $delta */
     public function countDelta(array $delta): int
     {
         return array_sum(array_map('count', $delta['entities'] ?? []));
