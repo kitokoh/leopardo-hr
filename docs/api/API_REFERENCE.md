@@ -71,3 +71,12 @@ Integrate Leopardo RH into your existing workflows using webhooks.
 ---
 
 For security details, see [Auth System](../security/AUTH_SYSTEM.md).
+
+## Guard des routes /user/* (issue #6677)
+
+Les routes `/user/*` (`/user/me`, `/user/profile`, `/user/change-password`,
+`/user/company-requests`, …) utilisent le guard **`auth:user_api`** — comptes
+utilisateur ordinaires SANS entreprise. Un token Sanctum **employé**
+(employé/manager/RH) reçoit `401 UNAUTHENTICATED` sur ces routes : c'est un
+choix d'architecture assumé, pas un bug. Pour le profil employé, utiliser
+`/auth/me` / `/me/*`.
