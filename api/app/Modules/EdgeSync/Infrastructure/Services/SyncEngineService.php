@@ -275,6 +275,7 @@ class SyncEngineService
         return ['conflict' => false, 'conflict_note' => null];
     }
 
+    /** @param array<string, mixed> $result */
     protected function resolveConflict(SyncQueue $item, array $result): string
     {
         // attendance_logs → local_wins (always accept offline punches when safe)
