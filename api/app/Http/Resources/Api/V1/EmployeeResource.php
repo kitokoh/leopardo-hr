@@ -147,6 +147,8 @@ class EmployeeResource extends JsonResource
     /**
      * #6546 — filtre les clés sensibles de extra_data hors du cercle autorisé
      * (principal/rh/comptable, manager d'équipe scopé, employé pour son dossier).
+     *
+     * @return array<string, mixed>
      */
     private function sanitizedExtraData(bool $includeSensitive): array
     {

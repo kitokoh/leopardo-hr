@@ -28,6 +28,7 @@ class EmployeeExtraDataRgpdTest extends TestCase
         parent::tearDown();
     }
 
+    /** @return array<string, mixed> */
     private function sensitiveExtraData(): array
     {
         return [
@@ -40,7 +41,9 @@ class EmployeeExtraDataRgpdTest extends TestCase
 
     public function test_employee_list_does_not_expose_extra_data(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create([
             'company_id' => $company->id,
@@ -58,7 +61,9 @@ class EmployeeExtraDataRgpdTest extends TestCase
 
     public function test_employee_detail_masks_sensitive_keys_for_plain_employee(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $viewer */
         $viewer = Employee::factory()->create(['company_id' => $company->id]);
         $target = Employee::factory()->create([
             'company_id' => $company->id,
@@ -77,7 +82,9 @@ class EmployeeExtraDataRgpdTest extends TestCase
 
     public function test_principal_sees_sensitive_extra_data(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $target = Employee::factory()->create([
             'company_id' => $company->id,
