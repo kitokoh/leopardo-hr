@@ -43,6 +43,13 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublic
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
+
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyaltyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportExportController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationAvailabilityController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationController;

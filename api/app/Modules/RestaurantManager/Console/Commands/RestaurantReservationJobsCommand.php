@@ -24,7 +24,7 @@ final class RestaurantReservationJobsCommand extends Command
     protected $signature = 'leopardo:restaurant:reservation-jobs
                             {company? : Company ID (uuid) or slug}';
 
-    protected $description = 'No-show + rappels de réservation RestaurantManager (idempotent).';
+    protected $description = 'No-show + rappels de reservation RestaurantManager (idempotent).';
 
     public function __construct(
         private readonly RestaurantReservationJobsService $jobs,

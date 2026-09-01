@@ -70,7 +70,7 @@ class RestaurantReceivingController extends Controller
         }
 
         $receiving = $this->receiving->receive(
-            companyId: $actor->company_id,
+            companyId: (string) $actor->company_id,
             branchId: (int) $data['branch_id'],
             lines: $data['lines'],
             purchaseOrderId: $data['purchase_order_id'] ?? null,

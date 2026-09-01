@@ -108,7 +108,7 @@ class RestaurantLoyaltyController extends Controller
 
         // Opt-in RGPD : exigé à l'activation (critère d'acceptation).
         if (! ($data['opt_in'] ?? false)) {
-            return response()->json(['message' => 'L\'opt-in RGPD est requis pour activer la fidélité.'], 422);
+            return response()->json(['message' => __('restaurantmanager.loyalty_optin_required')], 422);
         }
 
         unset($data['opt_in']);
