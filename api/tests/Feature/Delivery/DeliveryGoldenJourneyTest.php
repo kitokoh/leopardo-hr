@@ -286,6 +286,7 @@ class DeliveryGoldenJourneyTest extends TestCase
         ])->assertStatus(201)->json('data');
 
         self::assertSame($first['id'], $replay['id']);
+        /** @var Delivery $delivery */
         $delivery = Delivery::query()->findOrFail($created[0]['id']);
         self::assertSame(
             1,
