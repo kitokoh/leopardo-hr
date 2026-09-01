@@ -24,3 +24,14 @@ La PWA sonde `GET {EDGE_API}/api/v1/edge/health` (endpoint versionné, issue
 réintroduit. La synchronisation reste disponible depuis le nœud Edge
 authentifié ; la PWA affiche un état honnête (hors-ligne / erreur) sans faux
 bouton actif.
+
+## Statut de déploiement (#6595)
+
+| Canal | Statut | Mécanisme |
+|---|---|---|
+| Nœud Edge local | ✅ Actif | Image `leopardo/edge-ui` construite depuis `front/web-offline/Dockerfile` (export statique) et publiée par `edge/publish.sh` ; service `edge-ui` du compose Edge (`7879:3000`). |
+| Cloud (Vercel/Render) | ⏸️ Non déployé | Pas de `vercel.json` ni de service Render — décision actée : la PWA est une surface de secours **locale** (Edge), pas un service cloud. Le workflow `web-offline-ci.yml` couvre lint + tests + build (`npm run build`), pas de publication. |
+
+L'URL de l'API est inlinée au build (`NEXT_PUBLIC_EDGE_API`, défaut
+`http://leopardo.local:7878`) — un export statique ne relit pas les
+variables d'environnement au runtime.
