@@ -83,6 +83,11 @@ class VoiceController extends Controller
 
         $orchestrator = app(Orchestrator::class);
         $user = $request->user();
+
+        if (! $user instanceof \App\Core\Auth\Domain\Models\Employee) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         $conversationId = $validated['conversation_id'] ?? null;
         $aiResponse = $orchestrator->handle(new AIRequest(
             message: $transcribedText,
@@ -93,7 +98,7 @@ class VoiceController extends Controller
 
         $ttsProvider = $this->resolveEffectiveTtsProvider(config('ai.voice.tts_provider', 'edge_tts'));
         $audioUrl = $this->textToSpeech(
-            $aiResponse['response'] ?? $transcribedText,
+            $aiResponse['response'],
             $language,
             null,
             $ttsProvider,
@@ -102,8 +107,8 @@ class VoiceController extends Controller
         return response()->json([
             'data' => [
                 'transcribed_text' => $transcribedText,
-                'ai_response' => $aiResponse['response'] ?? '',
-                'conversation_id' => $aiResponse['conversation_id'] ?? null,
+                'ai_response' => $aiResponse['response'],
+                'conversation_id' => $aiResponse['conversation_id'],
                 'audio_url' => $audioUrl,
                 'language' => $language,
             ],
@@ -192,9 +197,11 @@ class VoiceController extends Controller
             return '';
         }
 
+        $audioContents = file_get_contents($audio->getRealPath()) ?: '';
+
         $response = Http::withToken($apiKey)
             ->timeout(30)
-            ->attach('file', file_get_contents($audio->getRealPath()), $audio->getClientOriginalName())
+            ->attach('file', $audioContents, $audio->getClientOriginalName())
             ->post('https://api.openai.com/v1/audio/transcriptions', [
                 'model' => 'whisper-1',
                 'language' => $language,
@@ -222,10 +229,12 @@ class VoiceController extends Controller
             return '';
         }
 
+        $audioContents = file_get_contents($audio->getRealPath()) ?: '';
+
         $response = Http::withToken($apiKey)
             ->withHeaders(['Content-Type' => $audio->getMimeType()])
             ->timeout(30)
-            ->withBody(file_get_contents($audio->getRealPath()), $audio->getMimeType())
+            ->withBody($audioContents, $audio->getMimeType() ?? 'application/octet-stream')
             ->post('https://api.deepgram.com/v1/listen?language='.$language.'&model=nova-2');
 
         if ($response->successful()) {

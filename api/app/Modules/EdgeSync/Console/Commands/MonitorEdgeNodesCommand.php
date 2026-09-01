@@ -39,7 +39,7 @@ class MonitorEdgeNodesCommand extends Command
                 '[EdgeMonitor] SILENT: %s (%s) — last seen %s',
                 $node->name,
                 $node->company->name ?? 'unknown',
-                $node->last_seen_at->diffForHumans()
+                $node->last_seen_at?->diffForHumans() ?? 'unknown'
             ));
 
             if ($node->company?->email) {
