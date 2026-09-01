@@ -24,7 +24,7 @@ return new class extends Migration
             Schema::create('travel_webhook_subscriptions', function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id');
-                $table->uuid('carrier_id')->nullable();
+                $table->unsignedBigInteger('carrier_id')->nullable();
                 $table->string('name', 120);
                 $table->string('url', 500);
                 $table->text('secret_encrypted');
