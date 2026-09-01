@@ -4708,13 +4708,11 @@ paths:
           description: Chambre ou hôtel introuvable ou hors tenant
         '403':
           description: Permission travel.manage requise
-<<<<<<< HEAD
   /travel/contact:
     post:
       tags:
       - Travel
       summary: Formulaire de contact → lead CRM (TRAVEL-416/#6068)
-=======
   /travel/reports/sales:
     get:
       tags:
@@ -4802,7 +4800,6 @@ paths:
       tags:
       - Travel
       summary: 'TRAVEL-505 — Export CSV idempotent'
->>>>>>> 554c623c5 (docs(openapi): rapports & contenu TravelAgency — 22 chemins + SDK/miroir régénérés (TRAVEL-501..507, 901..903))
       security:
       - BearerAuth: []
       requestBody:
@@ -4812,7 +4809,6 @@ paths:
             schema:
               type: object
               required:
-<<<<<<< HEAD
               - name
               - message
               - consent
@@ -4851,7 +4847,6 @@ paths:
                     example: Demande envoyée.
         '422':
           description: Validation échouée (consentement manquant, message hors bornes, email/téléphone absents)
-=======
               - report_type
               - from
               - to
@@ -5240,7 +5235,6 @@ paths:
           description: Likes/partages/notes agrégés
         '401':
           description: Non authentifié
->>>>>>> 554c623c5 (docs(openapi): rapports & contenu TravelAgency — 22 chemins + SDK/miroir régénérés (TRAVEL-501..507, 901..903))
   /health:
     get:
       tags:
