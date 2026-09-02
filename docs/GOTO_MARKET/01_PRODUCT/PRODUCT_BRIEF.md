@@ -7,7 +7,7 @@
 **Statut :** logiciel open source, auto-hébergeable ou exploitable en SaaS  
 **Licence :** MIT  
 **Dépôt :** https://github.com/kitokoh/leopardo-hr  
-**Accès public actuellement documenté :** https://gestionemployer-backend.vercel.app  
+**Accès public actuellement documenté :** https://gestionemployerbackend.onrender.com  
 **Documentation :** https://github.com/kitokoh/leopardo-hr/tree/main/docs  
 
 > **Promesse courte :** Leopardo RH aide les PME et entreprises de terrain à suivre les présences et préparer la paie sans Excel, sans processus dispersés et avec une meilleure visibilité opérationnelle.
