@@ -8,11 +8,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 
 /**
- * RESTO-501 (#6200) — Policy des mouvements de stock.
+ * RESTO-501 (#6200) — Policy du journal des mouvements de stock.
  *
- * Création d'un ajustement/transfert : gérant, RH ou manager de salle
- * (opérations stock quotidiennes). Lecture : tout employé authentifié du
- * tenant (404 sûr cross-tenant au niveau contrôleur).
+ * Lecture : tout employé du tenant. Écriture : `principal`/`rh` (le serveur
+ * passe par les flux de vente, pas par un mouvement manuel libre).
  */
 class RestaurantInventoryMovementPolicy
 {
@@ -28,6 +27,6 @@ class RestaurantInventoryMovementPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh', 'manager');
+        return $actor->hasManagerRole('principal', 'rh');
     }
 }

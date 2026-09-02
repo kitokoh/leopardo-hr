@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * RESTO-502 (#6201) — Ressource API d'un bon de commande fournisseur.
+ * RESTO-604 (#6209) — Ressource API d'une zone de livraison.
  */
-class RestaurantPurchaseOrderResource extends JsonResource
+class RestaurantDeliveryZoneResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
@@ -21,14 +21,10 @@ class RestaurantPurchaseOrderResource extends JsonResource
             'id' => $this->id,
             'company_id' => $this->company_id,
             'branch_id' => $this->branch_id,
-            'supplier_id' => $this->supplier_id,
-            'reference' => $this->reference,
+            'name' => $this->name,
+            'fee_minor' => $this->fee_minor,
+            'min_order_minor' => $this->min_order_minor,
             'status' => $this->status,
-            'expected_at' => $this->expected_at?->toIso8601String(),
-            'received_at' => $this->received_at?->toIso8601String(),
-            'total_minor' => $this->total_minor,
-            'currency' => $this->currency,
-            'items' => RestaurantPurchaseOrderItemResource::collection($this->whenLoaded('items')),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
