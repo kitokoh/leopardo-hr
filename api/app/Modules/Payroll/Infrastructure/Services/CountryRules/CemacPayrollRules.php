@@ -112,7 +112,6 @@ class CemacPayrollRules extends AbstractCountryRules
             ];
         }
 
-
         return [
             ['name' => 'CNPS/CNSS Salariale', 'code' => 'CNPS_CEMAC_EMP', 'type' => 'employee', 'rate' => 4.2, 'cap' => null],
             ['name' => 'CNPS/CNSS Patronale (pension/famille/AT)', 'code' => 'CNPS_CEMAC_PAT', 'type' => 'employer', 'rate' => 16.2, 'cap' => null],
@@ -160,7 +159,6 @@ class CemacPayrollRules extends AbstractCountryRules
                 ['min' => 13000001, 'max' => null, 'rate' => 45, 'fixed_deduction' => 0],
             ];
         }
-
 
         // Conservative placeholder progressive IRPP-style schedule, common
         // shape across CEMAC members. confidenceLevel() below explicitly
@@ -255,6 +253,40 @@ class CemacPayrollRules extends AbstractCountryRules
             : 833333.0;
     }
 
+    /**
+     * Issue #6727 — miroir de calculateIncomeTax() : GA réduit la base
+     * annuelle (abattement DGI 20 % / 833 333 XAF fixe) ; CM applique
+     * l'abattement frais pro 30 % du brut réel plafonné 350 000 XAF/mois
+     * avant le barème. Les autres membres CEMAC n'ont pas d'abattement.
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        if ($this->memberCountryCode === 'GA') {
+            $annualTaxable = $grossTaxable * $annualBasis;
+
+            return max(0.0, $annualTaxable - $this->gabonProfessionalExpensesAbatement($annualTaxable));
+        }
+
+        if ($this->memberCountryCode !== 'CM') {
+            return max(0.0, $grossTaxable) * $annualBasis;
+        }
+
+        $abatement = $this->professionalExpensesDeduction();
+        $base = $grossForAbatement ?? $grossTaxable;
+        $monthlyDeduction = min($base * ($abatement['rate'] / 100), (float) ($abatement['cap'] ?? PHP_FLOAT_MAX));
+
+        return max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
+    }
+
+    /**
+     * Issue #6727 — centimes additionnels camerounais : IRPP × 1,10
+     * (CGI CM 2024 art. 68). 1.0 pour les autres membres.
+     */
+    public function taxSurchargeFactor(): float
+    {
+        return $this->memberCountryCode === 'CM' ? 1.10 : 1.0;
+    }
+
     public function calculateSocialCharges(float $grossSalary): array
     {
         // CM (#1821) : CNPS avec plafond statutaire 750 000 XAF/mois sur la
@@ -300,7 +332,6 @@ class CemacPayrollRules extends AbstractCountryRules
                 ),
             ];
         }
-
 
         // Placeholder ZONE-INFRA (#1820): the other CEMAC members (CF/TD/GQ)
         // stay on the placeholder (uncapped) rates until their own

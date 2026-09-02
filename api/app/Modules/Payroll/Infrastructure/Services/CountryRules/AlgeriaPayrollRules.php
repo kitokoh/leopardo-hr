@@ -71,6 +71,17 @@ class AlgeriaPayrollRules extends AbstractCountryRules
         return round($finalAnnualTax / $annualBasis, 2);
     }
 
+    /**
+     * Issue #6727 — réduction d'impôt IRG post-barème : 40 % de l'impôt
+     * annuel, bornée [12 000 ; 18 000] DZD/an (décret exécutif n° 08-138).
+     * Le détail par tranche du simulateur l'applique pour converger vers
+     * `income_tax` (Δ 1 500 DZD/mois à 300 000 DZD de brut, repro #6727).
+     */
+    public function annualTaxReduction(float $annualProgressiveTax): float
+    {
+        return min(max($annualProgressiveTax * 0.40, 12000.0), 18000.0);
+    }
+
     public function calculateSocialCharges(float $grossSalary): array
     {
         // ZONE-INFRA (#1820): routed through computeContribution() so the
