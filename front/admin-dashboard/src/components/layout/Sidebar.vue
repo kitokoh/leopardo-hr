@@ -252,7 +252,7 @@ const navigation = computed(() => [
     icon: GlobeAltIcon
   },
   {
-    name: 'chat',
+    name: 'fuelStation',
     title: t('navigation.fuelStation', 'Stations-service'),
     path: '/fuel-station',
     icon: BoltIcon
