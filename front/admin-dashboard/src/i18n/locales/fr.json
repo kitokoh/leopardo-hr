@@ -2659,7 +2659,8 @@
     "errReconciliations": "Impossible de charger les rapprochements.",
     "stationsCaption": "Stations de la flotte",
     "incidentsCaption": "Incidents signalés",
-    "reconciliationsCaption": "Rapports de rapprochement"
+    "reconciliationsCaption": "Rapports de rapprochement",
+    "apiUnavailable": "L'API FuelStation (référentiel stations, incidents, rapprochements) n'est pas encore livrée — la page sera opérationnelle avec le batch BC-15 (#6373)."
   },
   "adminPalette": {
     "appLoading": "Chargement de l'administration…",
