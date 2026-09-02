@@ -4502,6 +4502,435 @@ if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
         }
 }
 
+        if (! Schema::hasTable($this->moduleTable('crm_automations'))) {
+            Schema::create($this->moduleTable('crm_automations'), function (Blueprint $table): void {
+
+                $table->uuid('id')->primary();
+                $table->uuid('company_id')->index();
+                $table->string('name', 160);
+                $table->string('trigger_event', 80);                 // whitelist code (ex. crm.lead.created)
+                $table->json('conditions')->nullable();              // [{field, operator, value}]
+                $table->json('actions');                             // [{type, config}]
+                $table->string('status', 20)->default('draft');      // draft|active|paused|disabled
+                $table->unsignedInteger('version')->default(1);
+                $table->uuid('created_by')->nullable();
+                $table->timestamp('archived_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'crm_automations_company_status_index');
+                $table->index(['company_id', 'trigger_event'], 'crm_automations_company_trigger_index');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_states'))) {
+            Schema::create($this->moduleTable('crm_automation_states'), function (Blueprint $table): void {
+
+                $table->uuid('company_id')->primary();
+                $table->boolean('enabled')->default(true);
+                $table->timestamp('updated_at')->nullable();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_accounting_entries'))) {
+            Schema::create($this->moduleTable('edu_accounting_entries'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                // fee_charge | fee_payment | fee_waiver
+                $table->string('source_type', 30);
+                $table->unsignedBigInteger('source_id');
+                $table->date('entry_date');
+                $table->string('account_code', 20);
+                $table->string('account_label', 191);
+                $table->decimal('debit', 12, 2)->default(0);
+                $table->decimal('credit', 12, 2)->default(0);
+                $table->string('reference', 120);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                ['company_id', 'source_type', 'source_id', 'account_code'],
+                'edu_accounting_entries_source_account_unique'
+                );
+                $table->index(['company_id', 'entry_date'], 'edu_accounting_entries_company_date_idx');
+                $table->index(['company_id', 'source_type', 'source_id'], 'edu_accounting_entries_source_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_admission_followups'))) {
+            Schema::create($this->moduleTable('edu_admission_followups'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('admission_id')->index();
+                $table->string('campaign_code', 80);
+                // email | sms | phone | mail — CHECK edu_admission_followups_channel_check
+                $table->string('channel', 20);
+                // queued | sent | failed | opted_out
+                $table->string('status', 20)->default('sent');
+                $table->jsonb('consent_snapshot')->nullable();
+                $table->timestamp('sent_at');
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                ['company_id', 'admission_id', 'campaign_code', 'channel'],
+                'edu_admission_followups_unique'
+                );
+                $table->unique(['id', 'company_id'], 'edu_admission_followups_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_admission_followups_company_status_idx');
+                $table->index(['company_id', 'sent_at'], 'edu_admission_followups_company_sent_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_class_enrollments'))) {
+            Schema::create($this->moduleTable('edu_class_enrollments'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('class_id')->index();
+                $table->unsignedBigInteger('student_id')->index();
+                $table->unsignedBigInteger('academic_year_id')->index();
+                $table->timestamp('enrolled_at');
+                // active | inactive | archived
+                $table->string('status', 20)->default('active');
+                $table->unsignedInteger('enrolled_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(
+                ['company_id', 'class_id', 'student_id'],
+                'edu_class_enrollments_unique'
+                );
+                $table->unique(['id', 'company_id'], 'edu_class_enrollments_id_company_unique');
+                $table->index(['company_id', 'class_id', 'status'], 'edu_class_enrollments_company_class_status_idx');
+                $table->index(['company_id', 'student_id'], 'edu_class_enrollments_company_student_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_charges'))) {
+            Schema::create($this->moduleTable('edu_fee_charges'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('student_id')->index();
+                $table->unsignedBigInteger('fee_type_id')->index();
+                $table->unsignedBigInteger('academic_year_id')->index();
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                // pending | partial | paid | waived | cancelled
+                $table->string('status', 20)->default('pending');
+                $table->date('due_date')->nullable();
+                $table->string('external_id', 100)->nullable();
+                $table->unsignedInteger('charged_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'external_id'], 'edu_fee_charges_company_external_unique');
+                $table->unique(['id', 'company_id'], 'edu_fee_charges_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_fee_charges_company_status_idx');
+                $table->index(['company_id', 'student_id'], 'edu_fee_charges_company_student_idx');
+                $table->index(['company_id', 'due_date'], 'edu_fee_charges_company_due_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_payments'))) {
+            Schema::create($this->moduleTable('edu_fee_payments'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('fee_charge_id')->index();
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                // cash | transfer | card | mobile_money | other
+                $table->string('method', 20);
+                $table->string('reference', 120)->nullable();
+                $table->string('external_id', 100)->nullable();
+                $table->timestamp('paid_at');
+                $table->unsignedInteger('recorded_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'external_id'], 'edu_fee_payments_company_external_unique');
+                $table->unique(['id', 'company_id'], 'edu_fee_payments_id_company_unique');
+                $table->index(['company_id', 'fee_charge_id'], 'edu_fee_payments_company_charge_idx');
+                $table->index(['company_id', 'paid_at'], 'edu_fee_payments_company_paid_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_types'))) {
+            Schema::create($this->moduleTable('edu_fee_types'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('campus_id')->nullable()->index();
+                $table->string('code', 50);
+                $table->string('label', 191);
+                $table->decimal('amount', 12, 2);
+                $table->string('currency', 3)->default('DZD');
+                // once | term | monthly — CHECK edu_fee_types_frequency_check
+                $table->string('billing_frequency', 20)->default('once');
+                $table->boolean('is_active')->default(true);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'edu_fee_types_company_code_unique');
+                $table->unique(['id', 'company_id'], 'edu_fee_types_id_company_unique');
+                $table->index(['company_id', 'is_active'], 'edu_fee_types_company_active_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardian_access_tokens'))) {
+            Schema::create($this->moduleTable('edu_guardian_access_tokens'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('guardian_id')->index();
+                $table->string('token_hash', 64);
+                $table->timestampTz('expires_at');
+                $table->timestampTz('used_at')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique('token_hash', 'edu_guardian_access_tokens_hash_unique');
+                $table->index(['company_id', 'expires_at'], 'edu_guardian_access_tokens_company_expiry_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardian_portal_links'))) {
+            Schema::create($this->moduleTable('edu_guardian_portal_links'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('guardian_id')->index();
+                $table->string('portal_token', 64);
+                $table->timestamp('expires_at');
+                $table->timestamp('revoked_at')->nullable();
+                $table->timestamp('last_accessed_at')->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestamps();
+
+                $table->unique('portal_token', 'edu_guardian_portal_links_token_unique');
+                $table->unique(['id', 'company_id'], 'edu_guardian_portal_links_id_company_unique');
+                $table->index(['company_id', 'expires_at'], 'edu_guardian_portal_links_company_expiry_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_outbox_events'))) {
+            Schema::create($this->moduleTable('edu_outbox_events'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+
+                $table->string('event_type', 80);
+                $table->string('aggregate_type', 120)->nullable();
+                $table->string('aggregate_id', 120)->nullable();
+                $table->jsonb('payload');
+
+                // pending → processing → sent | failed (dead après max attempts).
+                $table->string('status', 20)->default('pending');
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->timestampTz('available_at')->useCurrent();
+                $table->text('last_error')->nullable();
+                $table->timestampTz('processed_at')->nullable();
+
+                $table->string('idempotency_key', 255);
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                // Idempotence : une clé (événement, payload) unique par tenant.
+                $table->unique(['company_id', 'idempotency_key'], 'edu_outbox_company_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'edu_outbox_company_status_due_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_portal_access_logs'))) {
+            Schema::create($this->moduleTable('edu_portal_access_logs'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedBigInteger('guardian_id')->index();
+                $table->unsignedBigInteger('portal_link_id')->index();
+                $table->timestamp('accessed_at');
+                $table->timestamps();
+
+                $table->index(['company_id', 'guardian_id'], 'edu_portal_logs_company_guardian_idx');
+                $table->index(['guardian_id', 'accessed_at'], 'edu_portal_logs_guardian_accessed_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_account_visits'))) {
+            Schema::create($this->moduleTable('fuel_account_visits'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('account_id')->index();
+
+                $table->timestampTz('visited_at')->useCurrent();
+                $table->string('purpose', 40)->default('commercial');
+                $table->text('notes_redacted')->nullable();
+                $table->string('external_id', 120)->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique(['company_id', 'external_id'], 'fuel_account_visits_ext_unique');
+                $table->index(['company_id', 'account_id', 'visited_at'], 'fuel_visits_account_visited_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_reconciliation_runs'))) {
+            Schema::create($this->moduleTable('fuel_reconciliation_runs'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->index();
+                $table->date('run_date');
+
+                // pending | running | completed | failed
+                $table->string('status', 20)->default('pending');
+                $table->jsonb('summary')->nullable();
+                $table->timestampTz('started_at')->nullable();
+                $table->timestampTz('finished_at')->nullable();
+                $table->string('last_error', 500)->nullable();
+                $table->unsignedInteger('created_by')->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                // Rejouable : un seul run par (station, date).
+                $table->unique(['company_id', 'station_id', 'run_date'], 'fuel_reconciliation_runs_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_daily_openings'))) {
+            Schema::create($this->moduleTable('fuel_stock_daily_openings'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('tank_id')->index();
+                $table->date('open_date');
+                $table->bigInteger('opening_level_minor');
+
+                $table->timestampTz('created_at')->useCurrent();
+                $table->timestampTz('updated_at')->useCurrent();
+
+                $table->unique(['company_id', 'tank_id', 'open_date'], 'fuel_stock_openings_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_entries'))) {
+            Schema::create($this->moduleTable('fuel_stock_entries'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id')->nullable()->index();
+                $table->string('product_code', 40);
+                $table->decimal('quantity', 14, 3);
+                $table->decimal('unit_cost', 14, 2)->default(0);
+                $table->string('entry_type', 20)->default('delivery'); // delivery|adjustment|return
+                $table->string('reason', 255)->nullable(); // obligatoire si adjustment
+                $table->string('reference', 120)->nullable(); // n° facture / bon de livraison
+                $table->date('entry_date');
+                $table->string('idempotency_key', 191);
+                $table->unsignedInteger('created_by')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'idempotency_key'], 'fuel_stock_entries_key_unique');
+                $table->index(['company_id', 'station_id', 'entry_date'], 'fuel_stock_entries_station_date_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_app_configs'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_app_configs'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id');
+                // uber_eats | glovo — CHECK restaurant_delivery_app_configs_provider_check
+                $table->string('provider', 30);
+                $table->boolean('enabled')->default(false);
+                $table->string('external_restaurant_id', 120);
+                $table->text('webhook_secret_encrypted')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'provider'], 'resto_delivery_app_configs_company_provider_unique');
+                $table->unique(['provider', 'external_restaurant_id'], 'resto_delivery_app_configs_provider_external_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('restaurant_public_shop_tokens'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+
+                $table->string('token_hash', 64)->unique();
+                $table->string('name', 100)->default('default');
+                $table->boolean('active')->default(true);
+                $table->timestamp('last_used_at')->nullable();
+
+                $table->timestamps();
+
+                $table->index(['company_id', 'active'], 'restaurant_shop_tokens_company_active_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_daily_sales'))) {
+            Schema::create($this->moduleTable('travel_daily_sales'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->date('sale_date');
+                $table->string('source', 20);
+                $table->string('status', 20);
+                $table->unsignedInteger('booking_count');
+                $table->unsignedInteger('passenger_count');
+                $table->unsignedBigInteger('amount_minor');
+                $table->char('currency', 3);
+                $table->timestamps();
+
+                $table->unique(
+                ['company_id', 'sale_date', 'source', 'status', 'currency'],
+                'travel_daily_sales_natural_unique',
+                );
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_export_assets'))) {
+            Schema::create($this->moduleTable('travel_export_assets'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('report_type', 30);
+                $table->string('idempotency_key', 100);
+                $table->string('status', 20)->default('pending');
+                $table->timestamp('from_at')->nullable();
+                $table->timestamp('to_at')->nullable();
+                $table->string('file_path', 255)->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->string('error_redacted', 500)->nullable();
+                $table->unsignedBigInteger('created_by_user_id')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'idempotency_key'], 'travel_export_assets_company_key_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_report_exports'))) {
+            Schema::create($this->moduleTable('travel_report_exports'), function (Blueprint $table): void {
+
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('report_type', 40);
+                $table->string('request_hash', 64);
+                $table->json('filters');
+                $table->string('storage_path');
+                $table->string('mime_type', 80)->default('text/csv; charset=UTF-8');
+                $table->unsignedInteger('row_count')->default(0);
+                $table->unsignedBigInteger('generated_by_user_id')->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestamps();
+
+                $table->unique(['company_id', 'request_hash'], 'travel_report_exports_hash_unique');
+            });
+        }
+
     private function dropMvpTables(): void
     {
         if (DB::getDriverName() === 'pgsql') {
