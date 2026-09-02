@@ -12,6 +12,7 @@ use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Interfaces\Api\V1\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Api\V1\Requests\LoginRequest;
@@ -41,6 +42,7 @@ class AuthController extends Controller
         private readonly UpdateProfileAction $updateProfileAction,
         private readonly ChangePasswordAction $changePasswordAction,
         private readonly TwoFactorAuthService $twoFactorService,
+        private readonly AuthService $authService,
     ) {}
 
     public function login(LoginRequest $request): JsonResponse
@@ -325,8 +327,11 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // audit(securite) #6531 : résolution BORNÉE au tenant (user_lookups →
+        // schéma → employé) au lieu d'une recherche cross-tenant par email seul.
+        $resolved = $this->authService->resolveEmployeeByEmail((string) $googleUser->getEmail());
         /** @var Employee|null $employee */
-        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
+        $employee = $resolved['employee'] ?? null;
 
         if (! $employee) {
             // Issue #3724 : pas d'auto-provisionnement silencieux en production.
@@ -351,12 +356,35 @@ class AuthController extends Controller
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
                 'email' => $googleUser->getEmail(),
                 'password_hash' => Hash::make(str()->random(24)),
+                'google_id' => (string) $googleUser->getId(),
             ]);
 
             // Sensitive fields set explicitly (not mass-assignable, #3597)
             $employee->role = 'ordinary';
             $employee->status = 'active';
             $employee->save();
+        }
+
+        // audit(securite) #6531 : liaison google_id (sub) — première connexion :
+        // liaison ; connexion suivante avec un sub ≠ google_id stocké : REFUS
+        // (réattribution d'email Google Workspace / compte Google compromis).
+        $googleSub = (string) $googleUser->getId();
+        if ($employee->google_id === null || $employee->google_id === '') {
+            $employee->forceFill(['google_id' => $googleSub])->save();
+            Log::channel('audit')->info('auth.google.linked', [
+                'employee_id' => $employee->id,
+                'email' => $employee->email,
+            ]);
+        } elseif (! hash_equals($employee->google_id, $googleSub)) {
+            Log::channel('audit')->warning('auth.google.identity_mismatch', [
+                'employee_id' => $employee->id,
+                'email' => $employee->email,
+            ]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_IDENTITY_MISMATCH',
+                'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
+            ], 401);
         }
 
         // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
@@ -381,7 +409,10 @@ class AuthController extends Controller
                 $challenge = $this->twoFactorService->issueChallenge([
                     'employee_id' => $employee->id,
                     'company_id' => (string) $employee->company_id,
-                    'tenant_schema' => null,
+                    // audit(securite) #6540 : tenant_schema résolu (user_lookups)
+                    // — en mode schéma-par-tenant, un challenge avec null ne peut
+                    // pas re-poser search_path à la vérification (2FA cassée).
+                    'tenant_schema' => $resolved['tenant_schema'] ?? null,
                     'email' => (string) $employee->email,
                     'device_name' => null,
                 ]);
@@ -439,11 +470,35 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // audit(securite) #6531 : résolution BORNÉE au tenant (parité avec
+        // handleGoogleCallback) — jamais de recherche cross-tenant par email seul.
+        $resolved = $this->authService->resolveEmployeeByEmail((string) $googleUser->getEmail());
         /** @var Employee|null $employee */
-        $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
+        $employee = $resolved['employee'] ?? null;
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => __('errors.GOOGLE_ACCOUNT_NOT_FOUND')], 401);
+        }
+
+        // audit(securite) #6531 : liaison google_id + refus en cas de mismatch
+        // (parité avec handleGoogleCallback).
+        $googleSub = (string) $googleUser->getId();
+        if ($employee->google_id === null || $employee->google_id === '') {
+            $employee->forceFill(['google_id' => $googleSub])->save();
+            Log::channel('audit')->info('auth.google.linked', [
+                'employee_id' => $employee->id,
+                'email' => $employee->email,
+            ]);
+        } elseif (! hash_equals($employee->google_id, $googleSub)) {
+            Log::channel('audit')->warning('auth.google.identity_mismatch', [
+                'employee_id' => $employee->id,
+                'email' => $employee->email,
+            ]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_IDENTITY_MISMATCH',
+                'message' => __('errors.GOOGLE_IDENTITY_MISMATCH'),
+            ], 401);
         }
 
         // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
@@ -464,7 +519,8 @@ class AuthController extends Controller
             $challenge = $this->twoFactorService->issueChallenge([
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
-                'tenant_schema' => null,
+                // audit(securite) #6540 : tenant_schema résolu (parité callback).
+                'tenant_schema' => $resolved['tenant_schema'] ?? null,
                 'email' => (string) $employee->email,
                 'device_name' => $validated['device_name'] ?? null,
             ]);

@@ -364,11 +364,11 @@ class SSOOidcFlowTest extends TestCase
         return [$res, $jwks];
     }
 
-    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null): string
+    private function signIdToken(\OpenSSLAsymmetricKey $privateKey, string $nonce, ?int $exp = null, ?string $issuer = null, ?string $email = null, string $alg = 'RS256', string $kid = 'test-key-1', ?int $signAlgo = null): string
     {
         $header = $this->base64UrlEncode((string) json_encode([
-            'alg' => 'RS256',
-            'kid' => 'test-key-1',
+            'alg' => $alg,
+            'kid' => $kid,
             'typ' => 'JWT',
         ]));
 
@@ -386,7 +386,7 @@ class SSOOidcFlowTest extends TestCase
         $payload = $this->base64UrlEncode((string) json_encode($claims));
         $signingInput = $header.'.'.$payload;
 
-        openssl_sign($signingInput, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        openssl_sign($signingInput, $signature, $privateKey, $signAlgo ?? OPENSSL_ALGO_SHA256);
 
         return $signingInput.'.'.$this->base64UrlEncode($signature);
     }
@@ -394,5 +394,133 @@ class SSOOidcFlowTest extends TestCase
     private function base64UrlEncode(string $value): string
     {
         return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+    }
+
+    public function test_callback_does_not_follow_token_endpoint_redirect(): void
+    {
+        // audit(securite) #6539 : un 307/302 sur l'échange de code ne doit
+        // jamais être suivi (le POST avec client_secret serait rejoué vers la
+        // cible de redirection — fuite de secret + SSRF).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response('Redirecting', 307, ['Location' => 'http://169.254.169.254/latest/meta-data/']),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+
+        // La cible interne n'a jamais été appelée.
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '169.254.169.254'));
+    }
+
+    public function test_jwks_fetch_does_not_follow_redirect(): void
+    {
+        // audit(securite) #6539 : le fetch JWKS ne suit pas les redirections —
+        // une redirection vers une cible interne (SSRF) casse la validation de
+        // signature au lieu d'être suivie.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response(['id_token' => 'ignored'], 200),
+            $this->issuer.'/jwks*' => Http::response('Redirecting', 302, ['Location' => 'http://127.0.0.1/internal-jwks']),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '127.0.0.1'));
+    }
+
+    public function test_callback_rejects_token_with_unknown_kid(): void
+    {
+        // audit(securite) #6542 : plus aucun fallback « première clé JWKS » —
+        // un kid inconnu entraîne le rejet de la signature.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response(['id_token' => $this->signIdToken($privateKey, $nonce, kid: 'attacker-key')], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+    }
+
+    public function test_callback_rejects_alg_mismatch_token(): void
+    {
+        // audit(securite) #6542 : un id_token annonçant RS512 mais signé avec
+        // SHA256 (l'ancien algorithme figé) est rejeté — l'algorithme de
+        // vérification suit le header, il n'est plus deviné.
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response([
+                'id_token' => $this->signIdToken($privateKey, $nonce, alg: 'RS512', signAlgo: OPENSSL_ALGO_SHA256),
+            ], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'OIDC_CALLBACK_FAILED');
+    }
+
+    public function test_callback_accepts_rs512_token_signed_with_sha512(): void
+    {
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/token' => Http::response([
+                'id_token' => $this->signIdToken($privateKey, $nonce, alg: 'RS512', signAlgo: OPENSSL_ALGO_SHA512),
+            ], 200),
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?code=auth-code-123&state='.$state)
+            ->assertOk()
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
     }
 }

@@ -259,4 +259,57 @@ class ToolPermissionMatrixTest extends TestCase
             }
         });
     }
+
+    public function test_employee_cannot_read_pii_employee_tools(): void
+    {
+        // audit(securite) #6532 : les outils PII (liste/détail/recherche
+        // employés) sont désormais réservés aux managers — un employé qui les
+        // demande via le chat IA reçoit un refus, pas les données de
+        // l'entreprise.
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+
+        $engine = app(IntentEngine::class);
+
+        foreach (['get_employees', 'get_employee_details', 'search_employees'] as $toolName) {
+            $response = new AIResponse(
+                content: '',
+                toolCalls: [new ToolCall('call_1', $toolName, [])],
+            );
+
+            $results = $engine->executeToolCalls($response, $company->id, $employee->id);
+
+            $this->assertFalse($results[0]->success, "{$toolName} ne doit pas réussir pour un employé");
+            $this->assertSame('AI_TOOL_PERMISSION_DENIED', $this->payload($results[0]->content)['error'] ?? null);
+        }
+    }
+
+    public function test_manager_can_read_pii_employee_tools(): void
+    {
+        // Le manager garde l'accès (parité avec le REST EmployeeController).
+        [$company, $manager] = $this->aiFixture(role: 'manager');
+
+        $engine = app(IntentEngine::class);
+        $response = new AIResponse(
+            content: '',
+            toolCalls: [new ToolCall('call_1', 'get_employees', [])],
+        );
+
+        $results = $engine->executeToolCalls($response, $company->id, $manager->id);
+
+        $this->assertTrue($results[0]->success);
+        $this->assertArrayHasKey('employees', $this->payload($results[0]->content));
+    }
+
+    public function test_pii_tools_not_exposed_to_employee_in_registry(): void
+    {
+        // L'exposition LLM (getToolsForRole) ne propose plus les outils PII à
+        // un employé — le registre DB est aligné sur la matrice config.
+        $registry = app(ToolRegistry::class);
+        $employeeTools = $registry->getToolsForRole('employee', 'x');
+        $names = array_column($employeeTools, 'name');
+
+        $this->assertNotContains('get_employees', $names);
+        $this->assertNotContains('get_employee_details', $names);
+        $this->assertNotContains('search_employees', $names);
+    }
 }

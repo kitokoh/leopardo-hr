@@ -268,6 +268,88 @@ readonly class AuthService
      *
      * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
      */
+    /**
+     * Résolution d'un employé par email, BORNÉE au tenant (user_lookups →
+     * schéma tenant → employé), sans émission de token. Réutilisée par les
+     * flux Google/SSO pour ne jamais rechercher cross-tenant par email seul
+     * (audit #6531) et pour disposer du tenant_schema du challenge 2FA
+     * (audit #6540). Mêmes gardes que login() : schéma absent/migré partiel
+     * → null (jamais de 500).
+     *
+     * @return array{employee: Employee, tenant_schema: ?string}|null
+     */
+    public function resolveEmployeeByEmail(string $email): ?array
+    {
+        $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
+        $employeeSchema = null;
+
+        try {
+            /** @var Employee|null $employee */
+            $employee = null;
+
+            if ($this->lookupTableExists()) {
+                $lookup = DB::table($this->lookupTable())
+                    ->where('email', $email)
+                    ->first();
+
+                if ($lookup !== null) {
+                    $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+                    if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                        $this->setTenantSearchPath($lookupSchema);
+                        $employeeSchema = $lookupSchema;
+                    }
+
+                    if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                        /** @var Employee|null $employee */
+                        $employee = Employee::withoutGlobalScopes()
+                            ->with('company')
+                            ->where('company_id', $lookup->company_id)
+                            ->where('id', $lookup->employee_id)
+                            ->where('email', $email)
+                            ->first();
+                    }
+                }
+            }
+
+            if (! $employee) {
+                $found = $this->findEmployeeInTenantSchemas($email);
+                if ($found !== null) {
+                    [$employee, $employeeSchema] = $found;
+                    $this->setTenantSearchPath($employeeSchema);
+                }
+            }
+
+            // Fallback : comptes hors tenant (rôle ordinary, sans company_id)
+            // et environnements sans user_lookups. La vérification google_id
+            // (audit #6531) reste le contrôle de sécurité décisif quel que
+            // soit le chemin de résolution.
+            if (! $employee) {
+                $employee = Employee::withoutGlobalScopes()
+                    ->with('company')
+                    ->where('email', $email)
+                    ->first();
+            }
+        } catch (QueryException $e) {
+            Log::warning('auth.resolve_employee_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
+
+        if (! $employee) {
+            return null;
+        }
+
+        return [
+            'employee' => $employee,
+            'tenant_schema' => $employeeSchema,
+        ];
+    }
+
+    /** @return array<string, mixed> */
     public function loginViaEmail(string $email, ?string $deviceName = null): array
     {
         $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
