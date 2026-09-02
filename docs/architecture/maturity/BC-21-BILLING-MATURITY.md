@@ -74,3 +74,11 @@
 - [#6250] Contrat OpenAPI du périmètre billing
 - [#6251] Runbook exploitation billing + supervision du recouvrement
 - [#6252] Isolation tenant & RBAC billing (tests cross-tenant, droits support)
+     la contrainte `subscriptions_status_check`, avec `allowedTransitions()`
+     et `isTerminal()` ;
+     `InvalidArgumentException` (cancelled terminal, expired → active
+     uniquement).
+## Reste à faire (hors périmètre de cette PR courte)
+- Migrer les écritures `status` directes de `StripeService` vers `transitionTo()`
+- Prorata et grace period liée aux invoices
+- Réconciliation paiements/invoices (rapprochement Stripe ↔ factures)

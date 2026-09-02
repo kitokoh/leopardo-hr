@@ -424,6 +424,7 @@ class AttendanceController extends Controller
         ]);
 
         $query = AttendanceCorrectionRequest::query()
+            ->where('company_id', $actor->company_id)
             ->with(['employee:id,company_id,first_name,last_name,matricule', 'attendanceLog:id,employee_id,date,session_number,status'])
             ->where('company_id', $actor->company_id)
             ->when($validated['status'] ?? 'pending', fn ($builder, string $status) => $builder->where('status', $status))
@@ -569,6 +570,16 @@ class AttendanceController extends Controller
 
     public function update(Request $request, AttendanceLog $attendanceLog): JsonResponse
     {
+        // DEP-BC05 (#5881) : fail-closed cross-tenant — AttendanceLog n'a pas de
+        // scope global ; sans ce garde, un manager pouvait modifier un log d'un
+        // autre tenant (l'authorize ne vérifie que le rôle). 404 (convention
+        // anti-existence, pattern show/approve/reject).
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($attendanceLog->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         $this->authorize('update', $attendanceLog);
 
         $validated = $request->validate([

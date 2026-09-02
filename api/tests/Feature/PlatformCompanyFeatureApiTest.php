@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
+use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureApiTest extends TestCase
 {
@@ -77,5 +78,6 @@ class PlatformCompanyFeatureApiTest extends TestCase
         $this->assertTrue($company->hasFeature('finance'));
         $this->assertArrayNotHasKey('unknown', $company->features ?? []);
     }
-}
 
+
+}

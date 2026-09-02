@@ -12,6 +12,7 @@ use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Core\Auth\Domain\Models\AuditLog;use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller
 {
@@ -87,4 +88,31 @@ class PlatformCompanyFeatureController extends Controller
     }
 
 
+
+    private function auditFeatureChange(Request $request, Company $company, array $previousFeatures, array $newFeatures): void
+    {
+        try {
+            DB::table($this->tenantTable('audit_logs'))->insert([
+                'company_id' => $company->id,
+                'user_id' => null,
+                'action' => 'platform.company.features.update',
+                'module' => 'platform',
+                'auditable_type' => null,
+                'auditable_id' => null,
+                'old_values' => json_encode($previousFeatures),
+                'new_values' => json_encode($newFeatures),
+                'ip_address' => $request->ip(),
+                'user_agent' => mb_substr((string) $request->userAgent(), 0, 255),
+                'metadata' => json_encode(['actor' => (string) ($request->user()?->getAuthIdentifier() ?? 'system')]),
+                'created_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    private function tenantTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
+    }
 }
