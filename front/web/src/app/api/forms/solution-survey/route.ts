@@ -27,7 +27,7 @@ const solutionSurveySchema = z.object({
   timestamp: z.string().optional(),
   data: z.object({
     solution: z.string().min(1).max(40),
-    answers: z.record(z.unknown()).optional(),
+    answers: z.record(z.string(), z.unknown()).optional(),
     packages: z.array(z.string().min(1).max(60)).max(30).optional(),
   }),
 });
