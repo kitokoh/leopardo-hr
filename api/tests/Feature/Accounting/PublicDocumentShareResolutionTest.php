@@ -109,13 +109,13 @@ class PublicDocumentShareResolutionTest extends TestCase
             ['Accept-Language' => 'fr']
         )->assertStatus(404)
             ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
-            ->assertJsonPath('localized_message', 'Partage de document introuvable ou expiré.');
+            ->assertJsonPath('localized_message', 'Lien de partage introuvable ou expiré.');
 
         $this->getJson(
             '/api/v1/accounting/documents/shared/'.str_repeat('y', 64),
             ['Accept-Language' => 'en']
         )->assertStatus(404)
             ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
-            ->assertJsonPath('localized_message', 'Document share not found or expired.');
+            ->assertJsonPath('localized_message', 'Share link not found or expired.');
     }
 }
