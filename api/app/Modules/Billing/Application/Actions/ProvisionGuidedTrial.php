@@ -83,7 +83,7 @@ class ProvisionGuidedTrial
             throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults): array {
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -144,19 +144,22 @@ class ProvisionGuidedTrial
                 // Basic Seeding to make it look active
                 $this->seedBasicSandboxData($company->id, $manager->id);
 
+                // BC-25 (#6693) : activation des solutions sectorielles
+                // demandées à l'inscription (idempotente, auditée
+                // « solution.activated » + « solution.dependencies_activated »,
+                // modules requis du pack activés — fail-closed : une solution
+                // inconnue annule le provisioning, rollback complet).
+                // DANS le contexte tenant (audit_logs est une table tenant) —
+                // avant le resetToPrevious du finally.
+                foreach ($solutions as $solutionCode) {
+                    $this->solutionActivator->activateWithDependencies($company, $solutionCode);
+                }
+
             } finally {
                 $this->tenantManager->resetToPrevious();
             }
 
             event(new CompanyCreated($company));
-
-            // BC-25 (#6693) : activation des solutions sectorielles demandées
-            // à l'inscription (idempotente, auditée « solution.activated »,
-            // modules requis du pack activés — fail-closed : une solution
-            // inconnue annule le provisioning, rollback complet).
-            foreach ($solutions as $solutionCode) {
-                $this->solutionActivator->activateWithDependencies($company, $solutionCode);
-            }
 
             return [
                 'success' => true,
