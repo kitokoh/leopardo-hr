@@ -156,6 +156,9 @@ jobs:
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
+      - name: Attendance/Payroll boundary guard — presence events owned by Attendance (ATT-001, issue #6760)
+        run: bash dev-hub/tools/check-attendance-boundary.sh api
+
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 
