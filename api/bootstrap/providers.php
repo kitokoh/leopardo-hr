@@ -2,6 +2,12 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
+<<<<<<< HEAD
+=======
+
+use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\Delivery\Providers\DeliveryServiceProvider;
+>>>>>>> origin/main
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
@@ -27,7 +33,6 @@ use App\Providers\EventServiceProvider;
 use App\Providers\FeatureDetectionServiceProvider;
 use App\Providers\FeatureRegistryServiceProvider;
 use App\Providers\QueueCorrelationServiceProvider;
-
 return [
     AppServiceProvider::class,
     AuthServiceProvider::class,
@@ -62,6 +67,18 @@ return [
     MarketingServiceProvider::class,
     // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
+
+
+
+
+
+
+
+
 ];
