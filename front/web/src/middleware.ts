@@ -46,8 +46,16 @@ export function middleware(request: NextRequest) {
     // the client-side app mounts. It is NOT a security boundary: a valid
     // shape here does not mean a valid session. Real authentication and
     // authorization are enforced server-side by the API on every request.
+    //
+    // Deux formats de cookie sont acceptés (issue #6726) :
+    //  - token opaque historique (>= 20 caractères alnum/._-) ;
+    //  - token Sanctum `{id}|{plaintext}` (ex. « 990|1FVyYnVzSbMu8F1OCOtk… »),
+    //    posé par le route handler `app/api/v1/auth/login/route.ts` — le `|`
+    //    était exclu du regex d'origine, rendant le dashboard inaccessible.
     const isValidToken =
-      !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+      !!token &&
+      token.length >= 20 &&
+      (/^[A-Za-z0-9._-]+$/.test(token) || /^\d+\|[A-Za-z0-9._-]+$/.test(token));
 
     if (!isValidToken) {
       const loginUrl = new URL('/auth/login', request.url);
