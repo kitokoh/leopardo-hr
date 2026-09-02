@@ -32,7 +32,17 @@ class EnsureDeliveryPermissionMiddleware
             ], 403);
         }
 
-        if (! (new DeliveryRoleResolver())->hasAnyRole($employee, $permissions)) {
+        // Les gardes utilisent la syntaxe `delivery.permission:rider|manager`
+        // (pipes) — Laravel passe alors UN SEUL paramètre. Sans split, aucun
+        // rôle ne matchait jamais → 403 DELIVERY_ROLE_REQUIRED sur toutes les
+        // routes protégées (BC-26, constat consolidation 2026-09-02).
+        $required = [];
+        foreach ($permissions as $permission) {
+            array_push($required, ...explode('|', $permission));
+        }
+        $required = array_values(array_filter(array_map('trim', $required)));
+
+        if (! (new DeliveryRoleResolver)->hasAnyRole($employee, $required)) {
             return response()->json([
                 'error' => 'DELIVERY_ROLE_REQUIRED',
                 'message' => 'DELIVERY_ROLE_REQUIRED',

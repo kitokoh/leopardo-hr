@@ -92,6 +92,11 @@ final class DeliveryEventService
 
             try {
                 $delivery->transitionTo(DeliveryStatus::from($type), hasProof: $delivered);
+                // #675x (consolidation BC-26) : transitionTo() ne mute que le
+                // modèle en mémoire — sans save(), le statut n'était jamais
+                // persisté (la livraison restait « picked_up » → INVALID_TRANSITION
+                // au statut suivant).
+                $delivery->save();
             } catch (InvalidDeliveryTransitionException) {
                 abort(409, 'INVALID_TRANSITION');
             }

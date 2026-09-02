@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
+use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * Événement de tracking (DELIVERY-204, issue #6288) — allowlisté, payload
  * exposé (proof_document_id) sans clé interne.
  *
- * @mixin \App\Modules\Delivery\Domain\Models\DeliveryEvent
+ * @mixin DeliveryEvent
  */
 final class DeliveryEventResource extends JsonResource
 {

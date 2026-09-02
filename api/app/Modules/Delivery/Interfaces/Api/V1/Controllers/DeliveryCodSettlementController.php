@@ -49,7 +49,6 @@ final class DeliveryCodSettlementController
     {
         $this->requireAdmin($request);
 
-
         $updated = $this->settlements->settle($settlement, $this->companyId($request));
 
         return (new DeliveryCodSettlementResource($updated))->response();
@@ -58,7 +57,6 @@ final class DeliveryCodSettlementController
     public function reconcile(Request $request, int $settlement): JsonResponse
     {
         $this->requireAdmin($request);
-
 
         $updated = $this->settlements->reconcile($settlement, $this->companyId($request));
 
@@ -134,7 +132,6 @@ final class DeliveryCodSettlementController
             abort(403, 'DELIVERY_ROLE_REQUIRED');
         }
     }
-
 
     private function companyId(Request $request): string
     {

@@ -6,6 +6,8 @@ namespace Tests\Feature\Delivery;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\DispatchDeliveryNotificationJob;
+use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
 use App\Modules\Delivery\Domain\Models\DeliveryRecipientOptOut;
@@ -53,7 +55,7 @@ class DeliveryNotificationApiTest extends TestCase
         return $manager;
     }
 
-    private function deliveryWithPhone(?string $phone = '+213555010203'): Delivery
+    private function deliveryWithPhone(?string $phone = '+213555010203', string $status = 'assigned'): Delivery
     {
         /** @var Delivery $delivery */
         $delivery = Delivery::query()->create([
@@ -61,7 +63,7 @@ class DeliveryNotificationApiTest extends TestCase
             'reference' => 'DLV-2026-444001',
             'source' => 'manual',
             'type' => 'parcel',
-            'status' => 'assigned',
+            'status' => $status,
             'dropoff_contact' => 'Client',
             'dropoff_phone' => $phone,
             'dropoff_address' => 'Alger',
@@ -132,7 +134,8 @@ class DeliveryNotificationApiTest extends TestCase
         Queue::fake();
 
         Sanctum::actingAs($this->manager());
-        $delivery = $this->deliveryWithPhone();
+        // Machine à états : 'arrived' exige d'être déjà out_for_delivery.
+        $delivery = $this->deliveryWithPhone(status: 'out_for_delivery');
 
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => $delivery->id,
@@ -142,8 +145,8 @@ class DeliveryNotificationApiTest extends TestCase
         $notification = DeliveryNotification::query()->where('delivery_id', $delivery->id)->firstOrFail();
 
         // Exécution synchrone du job (seam BC-13 → succès).
-        (new \App\Jobs\DispatchDeliveryNotificationJob((int) $notification->id))
-            ->handle(app(\App\Modules\Delivery\Domain\Contracts\RecipientMessageContract::class));
+        (new DispatchDeliveryNotificationJob((int) $notification->id))
+            ->handle(app(RecipientMessageContract::class));
 
         $notification->refresh();
         self::assertSame('sent', $notification->status);

@@ -6,9 +6,9 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Models\Delivery;
+use App\Modules\Delivery\Domain\ValueObjects\DeliveryReference;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStoreRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryResource;
-use App\Modules\Delivery\Domain\ValueObjects\DeliveryReference;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

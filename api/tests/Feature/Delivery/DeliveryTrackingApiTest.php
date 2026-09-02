@@ -217,7 +217,10 @@ class DeliveryTrackingApiTest extends TestCase
 
         $this->getJson('/api/v1/deliveries/tracking/'.$share->share_token)
             ->assertStatus(404)
-            ->assertJson(['message' => 'TRACKING_LINK_NOT_FOUND']);
+            // Contrat d'erreur applicatif : les 404 sont normalisés en
+            // RESOURCE_NOT_FOUND (renderer HttpException, #4689) — le message
+            // brut abort() n'est pas exposé.
+            ->assertJson(['error' => 'RESOURCE_NOT_FOUND']);
     }
 
     public function test_events_are_tenant_scoped(): void

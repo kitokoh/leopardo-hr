@@ -7,11 +7,6 @@ namespace Tests\Feature\Delivery;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Delivery\Domain\Models\Delivery;
-use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
-use App\Modules\Delivery\Domain\Models\DeliveryNotification;
-use App\Modules\Delivery\Domain\Models\DeliveryRoute;
-use App\Modules\Delivery\Domain\Models\DeliveryTrackingShare;
-use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -103,14 +98,11 @@ class DeliveryGoldenJourneyTest extends TestCase
             'vehicle_code' => 'VEH-AG-01',
         ])->assertOk()->assertJsonPath('data.status', 'assigned');
 
-
         // La PR #6307 fera passer les colis à `assigned` à l'affectation ;
         // en attendant, le seed force l'état (machine à états : created →
         // picked_up est illégal).
         Delivery::query()->whereIn('id', [...$manual, (int) $resto['id']])
             ->update(['status' => 'assigned']);
-
-
 
         // ── 3. Le rider voit SA tournée du jour.
         Sanctum::actingAs($this->rider);
@@ -120,27 +112,17 @@ class DeliveryGoldenJourneyTest extends TestCase
             ->assertJsonPath('data.0.driver_id', 91);
         $stops = collect($today->json('data.0.stops'));
 
-
         // ── 4. Exécution : picked_up (manager — gate api.manager tant que la
         //    matrice delivery.role n'est pas mergée, BC-26-D05/#6312) puis
         //    en_route → arrived → delivered (POD) par le rider via les stops.
         $firstStopId = (int) $stops->first()['id'];
 
         Sanctum::actingAs($this->manager);
-
-        // ── 4. Exécution : picked_up → en_route → arrived → delivered (POD).
-        $firstStopId = (int) $stops->first()['id'];
-
-
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => (int) $stops->first()['delivery_id'],
             'type' => 'picked_up',
             'origin' => 'mobile',
         ])->assertStatus(201);
-
-        Sanctum::actingAs($this->rider);
-
-
 
         Sanctum::actingAs($this->rider);
 
@@ -160,10 +142,6 @@ class DeliveryGoldenJourneyTest extends TestCase
         $secondStopId = (int) $stops->get(1)['id'];
 
         Sanctum::actingAs($this->manager);
-
-
-
-        Sanctum::actingAs($this->manager);
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => (int) $stops->get(1)['delivery_id'],
             'type' => 'picked_up',
@@ -171,11 +149,16 @@ class DeliveryGoldenJourneyTest extends TestCase
         ])->assertStatus(201);
 
         Sanctum::actingAs($this->rider);
-
-
-        Sanctum::actingAs($this->rider);
         $this->postJson(sprintf('/api/v1/delivery/deliveries/stops/%d/status', $secondStopId), [
             'status' => 'failed',
+        ])->assertOk();
+
+        // Le 3e stop (resto) n'est pas desservi → skipped (terminal) pour
+        // permettre la clôture (ROUTE_INCOMPLETE sinon, la fermeture exige
+        // que TOUS les stops soient terminaux).
+        $thirdStopId = (int) $stops->get(2)['id'];
+        $this->postJson(sprintf('/api/v1/delivery/deliveries/stops/%d/status', $thirdStopId), [
+            'status' => 'skipped',
         ])->assertOk();
 
         // ── 5. Clôture de la tournée → totaux dénormalisés.

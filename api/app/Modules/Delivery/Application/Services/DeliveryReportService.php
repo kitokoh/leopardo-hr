@@ -7,7 +7,6 @@ namespace App\Modules\Delivery\Application\Services;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Read model des rapports livraison (DELIVERY-207, issue #6291).
@@ -146,11 +145,14 @@ final class DeliveryReportService
     private function byDriver(string $companyId, Carbon $from, Carbon $to): array
     {
         return Delivery::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('created_at', [$from, $to])
+            // #675x : qualification explicite — delivery_stops/delivery_routes
+            // portent AUSSI company_id/created_at (tables tenant-scopées) →
+            // sans préfixe, PostgreSQL lève 42702 « ambiguous column » après
+            // les leftJoin (constat consolidation BC-26, 2026-09-02).
+            ->where('delivery_deliveries.company_id', $companyId)
+            ->whereBetween('delivery_deliveries.created_at', [$from, $to])
             ->leftJoin('delivery_stops', 'delivery_stops.delivery_id', '=', 'delivery_deliveries.id')
             ->leftJoin('delivery_routes', 'delivery_routes.id', '=', 'delivery_stops.route_id')
-            ->whereNull('delivery_stops.deleted_at')
             ->selectRaw(
                 'delivery_routes.driver_id AS driver_id,
                  COUNT(DISTINCT delivery_deliveries.id) AS deliveries,

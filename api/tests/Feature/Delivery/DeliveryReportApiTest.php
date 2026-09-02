@@ -143,15 +143,16 @@ class DeliveryReportApiTest extends TestCase
         }
 
         // COD collecté : 7000 sur la tournée du livreur 5.
-        DeliveryCodSettlement::query()->create([
+        // created_at n'est pas mass-assignable → forceFill pour rester dans la fenêtre.
+        $settlement = DeliveryCodSettlement::query()->create([
             'company_id' => $this->company->id,
             'route_id' => $route->id,
             'driver_id' => 5,
             'expected_minor' => 8000,
             'collected_minor' => 7000,
             'status' => 'collected',
-            'created_at' => $created->copy()->addHours(6),
         ]);
+        $settlement->forceFill(['created_at' => $created->copy()->addHours(6)])->save();
     }
 
     public function test_summary_is_deterministic_and_hand_computed(): void
@@ -175,7 +176,7 @@ class DeliveryReportApiTest extends TestCase
         self::assertSame(4, $totals['deliveries']);
         self::assertSame(3, $totals['delivered']);
         self::assertSame(1, $totals['failed']);
-        self::assertSame(75.0, $totals['success_rate_pct']);
+        self::assertSame(75, $totals['success_rate_pct']);       // contrat API : entier
         self::assertSame(8000, $totals['cod_expected_minor']);      // 5000 + 3000 (livrées)
         self::assertSame(7000, $totals['cod_collected_minor']);     // règlement existant
         self::assertSame(100, $totals['avg_delivery_delay_minutes']); // (2h, 2h, 1h) → 100 min
@@ -185,7 +186,7 @@ class DeliveryReportApiTest extends TestCase
         self::assertSame(3, $bySource['manual']['deliveries']);
         self::assertSame(2, $bySource['manual']['delivered']);
         self::assertSame(1, $bySource['restaurant']['deliveries']);
-        self::assertSame(100.0, $bySource['restaurant']['success_rate_pct']);
+        self::assertSame(100, $bySource['restaurant']['success_rate_pct']); // contrat API : entier
 
         // Par jour : 2026-08-01 concentre les 4 livraisons.
         $byDay = collect($first->json('data.by_day'))->keyBy('date');
