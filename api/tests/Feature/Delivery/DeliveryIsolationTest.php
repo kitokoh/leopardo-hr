@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Delivery;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
