@@ -253,8 +253,14 @@ class ContractController extends Controller
      */
     public function templates(Request $request): JsonResponse
     {
-        /** @var Employee $actor */
+        /** @var Employee|null $actor */
         $actor = $request->user();
+        // #6671 : garde défensive — un token valide sans employé résolu (ex.
+        // compte supprimé) ne doit jamais produire un 500 fatal sur
+        // ->hasManagerRole() ; 401 explicite à la place.
+        if ($actor === null) {
+            abort(401);
+        }
         if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }

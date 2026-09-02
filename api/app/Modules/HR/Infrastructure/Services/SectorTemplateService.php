@@ -149,6 +149,11 @@ class SectorTemplateService
             $positions = ['Employé', 'Manager', 'Directeur'];
         }
 
+        // La table réelle `positions` (migration tenant 000100) ne porte que
+        // `created_at` — `updated_at` n'est ajouté que si le schéma l'expose
+        // (parité avec le pattern `company_id`). #6684
+        $positionsHasUpdatedAt = $this->sharedColumnExists('positions', 'updated_at');
+
         $insertData = [];
         foreach ($positions as $position) {
             $insertData[] = [
@@ -156,7 +161,7 @@ class SectorTemplateService
                 'name' => $position,
                 ...($departmentId !== null ? ['department_id' => $departmentId] : []),
                 'created_at' => now(),
-                'updated_at' => now(),
+                ...($positionsHasUpdatedAt ? ['updated_at' => now()] : []),
             ];
         }
 
@@ -188,6 +193,11 @@ class SectorTemplateService
             return (int) $fallbackId;
         }
 
+        // La table réelle `departments` (migration tenant 000100) ne porte que
+        // `created_at` — insérer `updated_at` la fait échouer en 500 sur
+        // PostgreSQL (SQLSTATE 42703). #6684
+        $departmentHasUpdatedAt = $this->sharedColumnExists('departments', 'updated_at');
+
         $payload = [
             'name' => 'Operations',
             // Issue #6684 : la table departments n'a PAS de colonne updated_at
@@ -207,6 +217,10 @@ class SectorTemplateService
 
         if ($departmentHasCompany) {
             $payload['company_id'] = $companyId;
+        }
+
+        if ($departmentHasUpdatedAt) {
+            $payload['updated_at'] = now();
         }
 
         return (int) DB::table($this->tenantTable('departments'))->insertGetId($payload);

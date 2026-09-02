@@ -409,6 +409,42 @@ class ZktecoControllerTest extends TestCase
         ]);
     }
 
+    public function test_devices_index_show_sync_logs_serialize_with_casts(): void
+    {
+        // #6672 : non-régression — GET /zkteco/devices, /devices/{id} et
+        // /devices/{id}/sync-logs doivent répondre 200 quand le schéma tenant
+        // porte les colonnes `capabilities`/`punch_methods`/`sync_token_hash`
+        // (migrations 2026-08-14/19). En prod, un schéma non rejoué faisait
+        // 500 INTERNAL_ERROR sur la sérialisation.
+        /** @var ZktecoDevice $device */
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-IDX-001',
+            'name' => 'Porte Index',
+            'sync_token_hash' => hash('sha256', 'secret-token'),
+            'capabilities' => ['fingerprint', 'face'],
+            'punch_methods' => ['fingerprint', 'face'],
+        ]);
+
+        $index = $this->actingAs($this->manager)->getJson('/api/v1/zkteco/devices');
+        $index->assertOk();
+        $this->assertSame($device->id, $index->json('data.0.id'));
+        $this->assertSame(['fingerprint', 'face'], $index->json('data.0.capabilities'));
+        $this->assertSame(['fingerprint', 'face'], $index->json('data.0.punch_methods'));
+
+        $show = $this->actingAs($this->manager)->getJson("/api/v1/zkteco/devices/{$device->id}");
+        $show->assertOk()
+            ->assertJsonPath('data.id', $device->id)
+            ->assertJsonPath('data.serial_number', 'SN-IDX-001');
+
+        $logs = $this->actingAs($this->manager)->getJson("/api/v1/zkteco/devices/{$device->id}/sync-logs");
+        $logs->assertOk()
+            ->assertJsonPath('data', []);
+
+        // Le hash du token de sync ne doit jamais fuiter (hidden).
+        $this->assertArrayNotHasKey('sync_token_hash', (array) $show->json('data'));
+    }
+
     public function test_register_device_without_punch_methods_stores_null(): void
     {
         $response = $this->actingAs($this->manager)

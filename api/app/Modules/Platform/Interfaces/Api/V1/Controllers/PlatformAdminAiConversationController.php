@@ -182,4 +182,16 @@ class PlatformAdminAiConversationController extends Controller
         return str_contains((string) $exception->getCode(), '42P01')
             || str_contains($exception->getMessage(), 'ai_conversations');
     }
+
+    public function isFeatureUnavailable(\Throwable $exception): bool
+    {
+        $previous = $exception->getPrevious();
+        $sqlState = (string) ($previous?->getCode() ?: $exception->getCode());
+        $message = $exception->getMessage().' '.($previous?->getMessage() ?? '');
+
+        return in_array($sqlState, ['42P01', '42S02', '1146'], true)
+            || str_contains($message, 'no such table')
+            || (str_contains($message, 'relation') && str_contains($message, 'does not exist'))
+            || str_contains($message, 'doesn\'t exist');
+    }
 }

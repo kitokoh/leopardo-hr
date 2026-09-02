@@ -36,6 +36,14 @@ curl -X POST https://gestionemployerbackend.onrender.com/api/v1/auth/login \
 > [DEMO_ACCOUNTS.md](../DEMO_ACCOUNTS.md)). Replace with a real account when
 > targeting an environment without demo mode enabled.
 
+> ⚠️ **Comptes ordinaires — routes `/user/*`** (#6677) : les endpoints
+> `/user/me`, `/user/profile`, `/user/change-password`, `/user/company-requests`,
+> etc. utilisent un **guard distinct (`auth:user_api`)** et concernent les
+> comptes ordinaires (personnes sans entreprise, créées via `/user/register`).
+> Un **token Sanctum d'employé** (valide sur `/auth/me`, `/employees`, …) reçoit
+> `401 UNAUTHENTICATED` sur ces routes — ce n'est pas un bug, c'est le guard
+> voulu. Voir `openapi.yaml` (opérations `/user/*`) pour le détail.
+
 ---
 
 ## 🏗 Core Resource Groups

@@ -74,6 +74,29 @@ class ContractByCountryTest extends TestCase
         $this->getJson('/api/v1/contracts/templates?country=DZ')->assertForbidden();
     }
 
+    public function test_templates_endpoint_accepts_rh_manager_role(): void
+    {
+        // #6671 : la route doit servir le bundle pour principal ET rh (les
+        // deux rôles cités dans le repro prod) — jamais de 500.
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'schema_name' => 'shared_tenants',
+            'country' => 'DZ',
+            'timezone' => 'UTC',
+        ]);
+        $rh = $this->createEmployee($company, 'manager.rh@a.test', 'manager', 'rh');
+
+        Sanctum::actingAs($rh);
+
+        $this->getJson('/api/v1/contracts/templates?country=DZ')
+            ->assertOk()
+            ->assertJsonPath('data.country', 'DZ');
+        // Pays non supporté → 422 attendu (jamais 500).
+        $this->getJson('/api/v1/contracts/templates?country=XX')
+            ->assertStatus(422)
+            ->assertJsonPath('error.code', 'CONTRACT_TEMPLATE_NOT_FOUND');
+    }
+
     public function test_store_seeds_legal_clauses_from_country_template(): void
     {
         [$company, $manager, $employee] = $this->createActors('DZ');
