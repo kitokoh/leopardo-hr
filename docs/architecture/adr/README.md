@@ -17,6 +17,11 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0009](0009-ai-agent-tool-contracts-and-human-validation.md) | Acceptee | Contrats d'outils pour l'agent IA : permissions RBAC, audit et validation humaine avant toute ecriture |
 | [0010](0010-marketplace-plugin-permissions-billing-webhooks.md) | Acceptee | Plugins marketplace : scopes Sanctum existants, gating via FeaturePlanMatrix, revenu via Partner/Commission, webhooks via AVAILABLE_EVENTS |
 | [0013](0013-notifications-read-path-unification.md) | Proposee | Notifications in-app : read-path unifie sur `app_notifications`, migration du canal historique `notifications` (3 etapes) |
+| [0011](0011-billing-payroll-domain-boundary.md) | Acceptee | Billing/Payroll : frontiere de domaine — casse la dependance circulaire (regles de facturation dans Billing, calculs de paie dans Payroll) |
+| [0012](0012-focus-core-depth-peripheral-maintenance.md) | Proposee | Programme FOCUS : profondeur du noyau (HR/Payroll/Attendance), maintenance du peripherique |
+| [0014](0014-plan-pricing-canonical-decisions.md) | Acceptee | Plans tarifaires canoniques, plan Free public, duree d'essai |
+| [0015](0015-onboarding-steps-canonical.md) | Proposee | Onboarding : 6 etapes seedees canoniques (dont optionnelles), Quick Start < 15 employes |
+| [0017](0017-paiement-en-ligne-portail-client.md) | Proposee | Paiement en ligne des factures (portail client) : passerelle(s) et architecture |
 | [0016](0016-attendance-smartattendance-fusion.md) | Proposee | Fusion progressive Attendance + SmartAttendance en un module unique (5 phases, zero perte de donnees, contrat API preserve) |
 
 ## Format
