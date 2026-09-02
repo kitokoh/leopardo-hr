@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionActivator;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
@@ -18,6 +19,7 @@ class ProvisionGuidedTrial
 {
     public function __construct(
         private readonly TenantManager $tenantManager,
+        private readonly SolutionActivator $solutionActivator,
     ) {}
 
     /**
@@ -28,8 +30,15 @@ class ProvisionGuidedTrial
      *
      * @return array<string, mixed>
      */
-    public function execute(string $email, string $companyName, ?string $country = null): array
+    public function execute(string $email, string $companyName, ?string $country = null, array $solutions = []): array
     {
+        // BC-25 (#6693) : les solutions demandées doivent exister au catalogue
+        // (fail-closed) AVANT tout provisioning — jamais de tenant partiel.
+        $solutions = array_values(array_unique(array_map(
+            static fn (mixed $code): string => strtolower(trim((string) $code)),
+            $solutions,
+        )));
+
         // #3600 : idempotence — un retry de job (tries/backoff) ou une double
         // soumission ne doit jamais créer un second tenant sandbox pour le
         // même email. Le provisioning est transactionnel, mais une erreur
@@ -140,6 +149,14 @@ class ProvisionGuidedTrial
             }
 
             event(new CompanyCreated($company));
+
+            // BC-25 (#6693) : activation des solutions sectorielles demandées
+            // à l'inscription (idempotente, auditée « solution.activated »,
+            // modules requis du pack activés — fail-closed : une solution
+            // inconnue annule le provisioning, rollback complet).
+            foreach ($solutions as $solutionCode) {
+                $this->solutionActivator->activateWithDependencies($company, $solutionCode);
+            }
 
             return [
                 'success' => true,

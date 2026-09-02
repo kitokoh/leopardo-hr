@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionActivator;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
@@ -30,6 +32,8 @@ class VerifyTrialSignup
         private readonly TenantManager $tenantManager,
         private readonly PartnerService $partnerService,
         private readonly RequestTrialSignup $requestTrialSignup,
+        private readonly SolutionActivator $solutionActivator,
+        private readonly SolutionCatalogue $solutionCatalogue,
     ) {}
 
     /**
@@ -190,6 +194,31 @@ class VerifyTrialSignup
         }
 
         event(new CompanyCreated($result['company']));
+
+        // BC-25 (#6693) : activation des solutions sectorielles demandées au
+        // signup (fail-closed — un code inconnu ou une dépendance manquante
+        // annule la demande, status reverté pour retry propre).
+        $solutions = array_values(array_unique(array_map(
+            static fn (mixed $code): string => strtolower(trim((string) $code)),
+            $payload['solutions'] ?? [],
+        )));
+        foreach ($solutions as $solutionCode) {
+            if (! $this->solutionCatalogue->has($solutionCode)) {
+                Log::warning('SelfServiceTrial: unknown solution requested at verify', [
+                    'email' => $email,
+                    'solution' => $solutionCode,
+                ]);
+                $companyRequest->update(['status' => 'pending']);
+
+                return [
+                    'success' => false,
+                    'error' => 'INVALID_SOLUTION',
+                    'message' => __('errors.INVALID_SOLUTION', ['solution' => $solutionCode]),
+                    'status' => 422,
+                ];
+            }
+            $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
+        }
 
         $companyRequest->update([
             'status' => 'approved',

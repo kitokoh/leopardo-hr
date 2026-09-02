@@ -102,6 +102,7 @@ return [
     'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
     'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
     'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+    'INVALID_SOLUTION' => "Solution sectorielle inconnue ou non disponible : ':solution'.",
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
     'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',

@@ -33,6 +33,50 @@ final class SolutionActivator
     }
 
     /**
+     * Activation au provisioning (BC-25, #6693) — plan d'activation complet :
+     * active d'abord les modules requis du manifest (commande `activate_modules`
+     * de la spec PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md), puis la
+     * solution elle-même. Contrairement à `activate()` (fail-closed strict,
+     * pour l'activation manuelle d'un tenant déjà en vie), ici les modules
+     * requis font partie du pack demandé par le prospect au signup : un
+     * tenant frais n'a que `rh` d'actif, il faut donc activer les modules
+     * transversaux du pack avant la solution.
+     *
+     * @return array{code: string, status: string, missing: list<string>}
+     */
+    public function activateWithDependencies(Company $company, string $code, ?int $actorId = null): array
+    {
+        $manifest = $this->catalogue->resolve($code); // 404 si inconnu
+
+        $enabled = [];
+        foreach ($manifest->requiredModules() as $module) {
+            if (! $company->hasFeature($module)) {
+                $company->setFeature($module, true);
+                $enabled[] = $module;
+            }
+        }
+
+        if ($enabled !== []) {
+            $company->save();
+
+            AuditLog::create([
+                'company_id' => $company->id,
+                'user_id' => $actorId,
+                'action' => 'solution.dependencies_activated',
+                'auditable_type' => Company::class,
+                'auditable_id' => null,
+                'old_values' => ['modules' => []],
+                'new_values' => [
+                    'solution' => $code,
+                    'modules' => $enabled,
+                ],
+            ]);
+        }
+
+        return $this->activate($company, $code, $actorId);
+    }
+
+    /**
      * @return array{code: string, status: string, missing: list<string>}
      */
     public function activate(Company $company, string $code, ?int $actorId = null): array
