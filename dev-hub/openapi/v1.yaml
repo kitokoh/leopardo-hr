@@ -24673,7 +24673,10 @@ paths:
                   data:
                     $ref: '#/components/schemas/DeliveryCodSettlement'
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
   /delivery/deliveries/notifications/opt-out:
     post:
       tags:
@@ -24732,7 +24735,10 @@ paths:
                       phone_masked:
                         type: boolean
 
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-206-notifications
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
   /delivery/deliveries/cod-settlements/report:
     get:
       tags:
@@ -26760,7 +26766,10 @@ components:
           nullable: true
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
     DeliveryNotification:
       type: object
       properties:
@@ -26786,7 +26795,10 @@ components:
           format: date-time
           nullable: true
 
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-206-notifications
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
     DeliveryCodSettlement:
       type: object
       properties:

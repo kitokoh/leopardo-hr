@@ -83,12 +83,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-206-notifications
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
         });
     });
 

@@ -20,12 +20,18 @@ use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-205-cod
 =======
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use Illuminate\Support\Facades\Event;
 >>>>>>> origin/feat/delivery-206-notifications
+=======
+use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
+use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
+use Illuminate\Support\Facades\Event;
+>>>>>>> origin/feat/delivery-208-source-contracts
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -68,14 +74,20 @@ class DeliveryServiceProvider extends ServiceProvider
         // source-référencées ne sont pas branchées.
         $this->app->singleton(DeliveryAccountingContract::class, LoggingDeliveryAccountingAdapter::class);
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-205-cod
 =======
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
 
         // Contrat BC-13 COMMS (DELIVERY-206/#6290) : envoi destinataire externe
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-206-notifications
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
     }
 
     public function boot(): void

@@ -9,6 +9,7 @@ use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStoreRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryResource;
 use App\Modules\Delivery\Domain\ValueObjects\DeliveryReference;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -60,6 +61,25 @@ final class DeliveryController
         $validated = $request->validated();
         $companyId = $this->companyId($request);
 
+        // Contrats sources (DELIVERY-208/#6299) : une commande source
+        // (restaurant RST-…, retail POS-…, e-commerce, crm) crée sa livraison
+        // une seule fois — unique (company_id, source, source_reference).
+        // Le rejeu (webhook e-commerce, retry client) retourne l'existante.
+        $source = (string) $validated['source'];
+        $sourceReference = $validated['source_reference'] ?? null;
+
+        if ($source !== 'manual' && $sourceReference !== null && $sourceReference !== '') {
+            $existing = Delivery::query()
+                ->where('company_id', $companyId)
+                ->where('source', $source)
+                ->where('source_reference', $sourceReference)
+                ->first();
+
+            if ($existing !== null) {
+                return (new DeliveryResource($existing))->response();
+            }
+        }
+
         // Référence DLV-YYYY-NNNNNN : séquence du jour par tenant (borne
         // d'unicité) — l'index unique (company_id, reference) protège la course.
         $sequence = (int) Delivery::query()
@@ -67,6 +87,38 @@ final class DeliveryController
             ->whereYear('created_at', now()->year)
             ->max('id') + 1;
 
+        try {
+            $delivery = $this->insertDelivery($companyId, $validated, $sequence);
+        } catch (QueryException $exception) {
+            // Course sur l'unicité (company, source, source_reference) : deux
+            // webhooks simultanés → le perdant refetch et retourne l'existante.
+            if ($source !== 'manual' && $exception->getCode() === '23505') {
+                $existing = Delivery::query()
+                    ->where('company_id', $companyId)
+                    ->where('source', $source)
+                    ->where('source_reference', $sourceReference)
+                    ->first();
+
+                if ($existing !== null) {
+                    return (new DeliveryResource($existing))->response();
+                }
+            }
+
+            throw $exception;
+        }
+
+        return (new DeliveryResource($delivery))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    /**
+     * Insertion de la livraison (extraite pour le catch d'unicité).
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function insertDelivery(string $companyId, array $validated, int $sequence): Delivery
+    {
         /** @var Delivery $delivery */
         $delivery = Delivery::query()->create([
             'company_id' => $companyId,
@@ -89,9 +141,7 @@ final class DeliveryController
             'idempotency_key' => $validated['idempotency_key'] ?? null,
         ]);
 
-        return (new DeliveryResource($delivery))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
+        return $delivery;
     }
 
     public function show(Request $request, int $delivery): JsonResponse

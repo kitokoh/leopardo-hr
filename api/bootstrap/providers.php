@@ -71,10 +71,13 @@ return [
     FuelStationServiceProvider::class,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
 =======
 >>>>>>> origin/feat/delivery-206-notifications
 =======
 >>>>>>> origin/feat/delivery-207-reports
+=======
+>>>>>>> origin/feat/delivery-208-source-contracts
 ];
