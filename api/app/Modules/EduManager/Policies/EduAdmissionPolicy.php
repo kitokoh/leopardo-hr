@@ -43,4 +43,16 @@ class EduAdmissionPolicy
     {
         return $this->view($actor, $admission);
     }
+    /** B3: relance du dossier (batch3) — même périmètre que view. */
+    public function followUp(Employee $actor, EduAdmission $admission): bool
+    {
+        return $this->view($actor, $admission);
+    }
+
+    /** B3: désinscription (batch3) — même périmètre que view. */
+    public function optOut(Employee $actor, EduAdmission $admission): bool
+    {
+        return $this->view($actor, $admission);
+    }
+
 }
