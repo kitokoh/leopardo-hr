@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Marketing\Domain\Models\MarketingLead;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Statistiques de pilotage des surveys de solutions (vitrine) — BC-25 #6694.
  *
  * Contrat SPA admin-dashboard : GET /admin/solutions/survey-stats (super-admin).
  *
- * Agrège les leads de type `solution_survey` (MarketingLead, table globale
- * public.marketing_leads) : volume par solution, distribution des réponses,
- * packs les plus suggérés et conversion survey → inscription.
+ * Agrège les leads de type `solution_survey` (table globale `marketing_leads`,
+ * schéma public) : volume par solution, distribution des réponses, packs les
+ * plus suggérés et conversion survey → inscription.
+ *
+ * Isolation modules (ARCHITECTURE.md §2, garde #5584) : la lecture se fait via
+ * `DB::table('marketing_leads')` (aucun import du module Marketing — même
+ * pattern que PlatformAdminAiConversationController pour les lectures
+ * cross-module en lecture seule).
  *
  * Borné (#6562) : `limit` par défaut 200, plafonné à 1000 — les agrégats sont
  * calculés en PHP sur l'échantillon (le payload des réponses est du JSON
@@ -24,6 +29,10 @@ use Illuminate\Http\Request;
  */
 final class PlatformSolutionSurveyStatsController extends Controller
 {
+    private const LEADS_TABLE = 'marketing_leads';
+
+    private const SURVEY_LEAD_TYPE = 'solution_survey';
+
     private const DEFAULT_LIMIT = 200;
 
     private const MAX_LIMIT = 1000;
@@ -37,23 +46,26 @@ final class PlatformSolutionSurveyStatsController extends Controller
         $limit = (int) $request->integer('limit', self::DEFAULT_LIMIT);
         $limit = min(max($limit, 1), self::MAX_LIMIT);
 
-        $leads = MarketingLead::query()
-            ->where('type', MarketingLead::TYPE_SOLUTION_SURVEY)
+        $rows = DB::table(self::LEADS_TABLE)
+            ->where('type', self::SURVEY_LEAD_TYPE)
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();
 
-        $total = $leads->count();
-        $converted = $leads->filter(fn (MarketingLead $lead): bool => $lead->converted_company_id !== null)->count();
+        $total = $rows->count();
+        $converted = $rows->filter(
+            fn (object $row): bool => filled($row->converted_company_id ?? null)
+        )->count();
 
         $bySolution = [];
         $packages = [];
         $answers = [];
 
-        foreach ($leads as $lead) {
-            $payload = $lead->payload ?? [];
+        foreach ($rows as $row) {
+            $payload = is_string($row->payload ?? null) ? json_decode($row->payload, true) : [];
+            $payload = is_array($payload) ? $payload : [];
 
-            $solution = is_string($payload['solution'] ?? null) ? $payload['solution'] : ($lead->source ?? 'unknown');
+            $solution = is_string($payload['solution'] ?? null) ? $payload['solution'] : (string) ($row->source ?? 'unknown');
             $bySolution[$solution] = ($bySolution[$solution] ?? 0) + 1;
 
             $leadPackages = is_array($payload['packages'] ?? null) ? $payload['packages'] : [];
@@ -113,7 +125,7 @@ final class PlatformSolutionSurveyStatsController extends Controller
                 'answers' => $answerDistribution,
                 'window' => [
                     'limit' => $limit,
-                    'type' => MarketingLead::TYPE_SOLUTION_SURVEY,
+                    'type' => self::SURVEY_LEAD_TYPE,
                 ],
             ],
         ]);
