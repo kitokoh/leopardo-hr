@@ -44,7 +44,7 @@
 3. La décision appartient au fondateur (pas à l'agent) — les agents ne s'auto-autorisent pas une exception
 
 ## Liens
-- Plan 60 jours : `PLAN_60_JOURS.md` (racine du repo)
+- Plan 60 jours : `PLAN_60_JOURS.md` (racine du repo, plan J1-J60 actif) — voir aussi `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` (gate de scope)
 - Issues : #5144 → #5160 (batches 1-3) ; épics FOCUS (fermés) pour la paie DZ
 - Constitution : `.specify/constitution.md`
 

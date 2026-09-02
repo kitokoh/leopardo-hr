@@ -39,6 +39,8 @@ services:
       # #6604 : une seule copie de la clé publique dans le repo
       # (edge/keys/edge_license_public.pem — servie aussi par l'API cloud).
       - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
+      # Issue #2751 — chemins relatifs au fichier compose (edge/) :
+      # ./edge/license.pub résolvait edge/edge/license.pub (inexistant).
     ports:
       - "7878:80"       # http://leopardo.local:7878
     networks:
