@@ -1,5 +1,5 @@
 {
-  "$comment": "Budgets de performance et guards N+1 (MAT-014, issue #5872). Source de vérité pour check-performance-budgets.sh : endpoints critiques avec budgets (requêtes max, cible p95, pagination obligatoire), index obligatoires par table, règles transverses. Les scans lents (get() non paginé, requêtes dans des boucles) sont SIGNALÉS en warning par le garde.",
+  "$comment": "Budgets de performance et guards N+1 (MAT-014, issue #5872). Source de vérité pour check-performance-budgets.sh : endpoints critiques avec budgets (requêtes max, cible p95, pagination obligatoire), index obligatoires par table, règles transverses. Les scans lents (get() non paginé, requêtes dans des boucles) sont SIGNALÉS en warning par le garde. Endpoints de reporting BC-22 (issue #5898) : dashboards/export en lecture seule, agrégations scopées, budgets p95 verrouillés.",
   "rules": {
     "pagination": "Tout endpoint de liste tenant doit paginer (paginate/limit explicite) — get() non paginé signalé.",
     "n_plus_one": "Aucune requête Eloquent dans une boucle (foreach/while) — requête par itération signalée.",

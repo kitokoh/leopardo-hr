@@ -31,6 +31,9 @@ class BillingIsolationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * @return array{0: Company, 1: Subscription, 2: Invoice}
+     */
     private function tenantWithBillingData(): array
     {
         /** @var Company $company */
@@ -225,8 +228,12 @@ class BillingIsolationTest extends TestCase
         // Console, sans contexte tenant : traite A ET B (exit 0, aucune fuite).
         $this->artisan('billing:reconcile-payments --apply')->assertExitCode(0);
 
-        $this->assertSame('paid', $invoiceA->fresh()->status);
-        $this->assertSame('paid', $invoiceB->fresh()->status);
+        $freshInvoiceA = $invoiceA->fresh();
+        $freshInvoiceB = $invoiceB->fresh();
+        $this->assertNotNull($freshInvoiceA);
+        $this->assertNotNull($freshInvoiceB);
+        $this->assertSame('paid', $freshInvoiceA->status);
+        $this->assertSame('paid', $freshInvoiceB->status);
 
         // Aucune route API tenant ne permet de lire l'état de l'autre tenant.
         /** @var Employee $managerB */

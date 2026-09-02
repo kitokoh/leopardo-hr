@@ -19,6 +19,7 @@ use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Modules\Accounting\Domain\Enums\PaymentMethod;use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;use App\Modules\Accounting\Domain\Models\AccountingContact;use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 
 /**
  * Issue #5223 — Workflow documents + numérotation paramétrable.
@@ -279,5 +280,78 @@ class DocumentWorkflowNumberingTest extends TestCase
         $this->assertSame(1, $count);
         $this->assertSame(DocumentStatus::Overdue->value, $overdue->refresh()->status);
         $this->assertSame(DocumentStatus::Sent->value, $future->refresh()->status);
+    }
+
+
+    private function workflow(): DocumentWorkflowService
+    {
+        return new DocumentWorkflowService(new SequentialDocumentNumbering);
+    }
+
+
+    private function addLine(AccountingDocument $document, string $description = 'Prestation workflow', float $unitPrice = 1900.0): void
+    {
+        AccountingDocumentLine::create([
+            'company_id' => $this->company->id,
+            'document_id' => $document->id,
+            'description' => $description,
+            'quantity' => 1.0,
+            'unit_price' => $unitPrice,
+            'discount' => 0.0,
+            'sort_order' => (int) $document->lines()->count(),
+        ]);
+    }
+
+    private function sentInvoice(array $overrides = []): AccountingDocument
+    {
+        $document = $this->makeDocument(DocumentType::Invoice, array_merge(['contact_id' => $this->contact->id], $overrides));
+        $this->addLine($document);
+
+        $this->workflow()->send($document);
+
+        return $document->refresh();
+    }
+
+
+    public function test_workflow_send_requires_lines(): void
+    {
+        $document = $this->makeDocument(DocumentType::Invoice, ['contact_id' => $this->contact->id]);
+
+        $this->expectException(DocumentWorkflowException::class);
+        $this->workflow()->send($document);
+    }
+
+
+    public function test_partially_paid_with_partial_payment(): void
+    {
+        $document = $this->sentInvoice();
+
+        // Sans paiement, le document reste sent.
+        $this->assertSame(DocumentStatus::Sent->value, $document->status);
+
+        $this->workflow()->recordPayment($document, 1000.0, PaymentMethod::Cash);
+
+        $this->assertSame(DocumentStatus::PartiallyPaid->value, $document->refresh()->status);
+    }
+
+
+    public function test_credit_note_requires_invoice_source(): void
+    {
+        $quote = $this->makeDocument(DocumentType::Quote);
+
+        $this->expectException(DocumentWorkflowException::class);
+        $this->workflow()->createCreditNote($quote, [
+            'lines' => [['description' => 'Avoir', 'quantity' => 1.0, 'unit_price' => 500.0]],
+        ]);
+    }
+
+
+    public function test_cancel_rejects_paid_document(): void
+    {
+        $document = $this->sentInvoice();
+        $this->workflow()->recordPayment($document, 2261.0, PaymentMethod::BankTransfer);
+
+        $this->expectException(DocumentWorkflowException::class);
+        $this->workflow()->cancel($document->refresh());
     }
 }

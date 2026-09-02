@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 
 /**
  * Issue #5274 — Données démo/seed + E2E parcours facture.
@@ -450,4 +451,6 @@ class AccountingDemoE2ETest extends TestCase
 
         return $payment;
     }
+
+
 }

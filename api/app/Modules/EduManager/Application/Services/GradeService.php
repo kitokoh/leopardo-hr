@@ -318,7 +318,7 @@ final class GradeService
      */
     private function assertSameTenant(Model $model): void
     {
-        if ($model->company_id !== currentCompany()->id) {
+        if ($model->getAttribute('company_id') !== currentCompany()->id) {
             throw new TenantContextMissingException;
         }
     }
