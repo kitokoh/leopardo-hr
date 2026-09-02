@@ -38,4 +38,3 @@ class ArchiveGrowthClicksCommand extends Command
         return self::SUCCESS;
     }
 }
-
