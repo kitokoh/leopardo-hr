@@ -32,8 +32,9 @@ services:
     volumes:
       - edge_data:/var/leopardo
       # Issue #2751 — chemins relatifs au fichier compose (edge/) :
-      # ./edge/license.pub résolvait edge/edge/license.pub (inexistant).
-      - ./license.pub:/var/leopardo/license.pub:ro
+      # #6700 : clé canonique edge/keys/edge_license_public.pem (le doublon
+      # edge/license.pub a été supprimé). Le chemin conteneur reste stable.
+      - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
     ports:
       - "7878:80"       # http://leopardo.local:7878
     networks:
