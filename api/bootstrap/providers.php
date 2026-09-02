@@ -7,6 +7,7 @@ use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\EduManager\Providers\EduManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
@@ -31,7 +32,6 @@ use App\Providers\EventServiceProvider;
 use App\Providers\FeatureDetectionServiceProvider;
 use App\Providers\FeatureRegistryServiceProvider;
 use App\Providers\QueueCorrelationServiceProvider;
-
 return [
     AppServiceProvider::class,
     AuthServiceProvider::class,
@@ -164,4 +164,6 @@ return [
 
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
 ];
