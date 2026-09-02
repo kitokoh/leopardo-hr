@@ -400,6 +400,27 @@ trait CreatesMvpSchema
             $table->timestamps();
         });
 
+        // BIO-003 (#6764) — miroir de 2026_09_02_000200_6764_create_biometric_enrollments_table.php.
+        Schema::create($this->tenantTable('biometric_enrollments'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->index();
+            $table->string('method', 20);
+            $table->string('status', 20)->default('pending');
+            $table->unsignedSmallInteger('version')->default(1);
+            $table->unsignedSmallInteger('template_key_version')->default(1);
+            $table->text('template');
+            $table->string('provider', 60)->nullable();
+            $table->string('correlation_id', 100)->nullable();
+            $table->string('enrolled_via', 20)->default('kiosk');
+            $table->unsignedInteger('created_by_employee_id')->nullable();
+            $table->unsignedInteger('activated_by_employee_id')->nullable();
+            $table->unsignedInteger('revoked_by_employee_id')->nullable();
+            $table->timestampTz('enrolled_at')->nullable();
+            $table->timestampTz('revoked_at')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create($this->tenantTable('cameras'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->index();
@@ -2420,7 +2441,6 @@ trait CreatesMvpSchema
             });
         }
 
-
         // ── BC-26 DELIVERY (delivery_exports) ─────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
             Schema::create($this->moduleTable('delivery_exports'), function (Blueprint $table): void {
@@ -2791,13 +2811,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
-
-
-
-
-
-
-
 
     }
 
