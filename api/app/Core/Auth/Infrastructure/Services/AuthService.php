@@ -266,7 +266,7 @@ readonly class AuthService
      * cross-schema `public.user_lookups` et les mêmes gardes que login()
      * (statut compte, statut employé, company résolue, abilities tenant).
      *
-     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: string|null}
      */
     /**
      * Résolution d'un employé par email, BORNÉE au tenant (user_lookups →

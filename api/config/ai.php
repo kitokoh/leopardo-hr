@@ -101,7 +101,7 @@ return [
         'get_attendance_anomalies' => ['role' => 'manager', 'permissions' => ['attendance.view']],
         'get_monthly_report' => ['role' => 'manager', 'permissions' => ['attendance.view']],
         'get_absences' => ['role' => 'employee', 'permissions' => ['absences.view']],
-        'get_daily_summary' => ['role' => 'employee', 'permissions' => ['estimations.view']],
+        'get_daily_summary' => ['role' => 'manager', 'permissions' => ['estimations.view']],
         'get_notifications' => ['role' => 'employee', 'permissions' => ['notifications.view']],
         'get_leave_balances' => ['role' => 'employee', 'permissions' => ['leave.view']],
         'get_payroll_summary' => ['role' => 'manager', 'permissions' => ['payroll.view']],

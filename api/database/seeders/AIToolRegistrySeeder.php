@@ -159,7 +159,7 @@ class AIToolRegistrySeeder extends Seeder
                     ],
                 ]),
                 'required_permissions' => '["estimations.view"]',
-                'required_role' => 'employee',
+                'required_role' => 'manager',
                 'module' => 'rh',
             ],
             [

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
+use App\Core\Auth\Domain\Exceptions\TwoFactorException;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;
 use App\Core\Auth\Infrastructure\Services\TotpService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanySetting;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
@@ -68,11 +71,12 @@ class SsoTwoFactorGuardTest extends TestCase
     {
         $abstractUser = \Mockery::mock('Laravel\Socialite\Two\User');
         $abstractUser->shouldReceive('getEmail')->andReturn($email);
+        $abstractUser->shouldReceive('getId')->andReturn('sub-'.md5($email));
         $abstractUser->shouldReceive('getName')->andReturn('Google User');
         $abstractUser->shouldReceive('offsetGet')->with('given_name')->andReturn('Google');
         $abstractUser->shouldReceive('offsetGet')->with('family_name')->andReturn('User');
         $abstractUser->shouldReceive('offsetGet')->with('email_verified')->andReturn(true);
-        $abstractUser->shouldReceive('getRaw')->andReturn(['email_verified' => true, 'email' => $email]);
+        $abstractUser->shouldReceive('getRaw')->andReturn(['email_verified' => true, 'email' => $email, 'sub' => 'sub-'.md5($email)]);
 
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider = \Mockery::mock('Laravel\Socialite\Two\GoogleProvider'));
         $provider->shouldReceive('stateless')->andReturn($provider);
@@ -156,5 +160,54 @@ class SsoTwoFactorGuardTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure(['data' => ['id', 'email'], 'token']);
+    }
+
+    // ================= #6540 (audit sécurité — 2FA SSO tenant_schema) =================
+
+    public function test_google_token_2fa_challenge_carries_tenant_schema(): void
+    {
+        $this->mockGoogleUser('schema-2fa@example.com');
+        [, $employee] = $this->seedEmployee('schema-2fa@example.com', with2fa: true);
+
+        $response = $this->postJson('/api/v1/auth/google/token', ['access_token' => 'fake-token']);
+
+        $response->assertStatus(200)->assertJsonPath('mfa_challenge', true);
+        $token = (string) $response->json('mfa_challenge_token');
+
+        /** @var array{tenant_schema: string|null}|null $context */
+        $context = Cache::get('mfa:challenge:'.$token);
+        $this->assertIsArray($context, 'le challenge doit exister en cache');
+        // #6540 : le challenge doit porter le schéma du tenant (shared_tenants
+        // ici), pas null — sinon verifyChallenge ne positionne pas le search_path
+        // et le flux 2FA des tenants à schéma échoue en 401.
+        $this->assertSame('shared_tenants', $context['tenant_schema'] ?? null);
+    }
+
+    public function test_verify_challenge_rejects_mismatched_email_context(): void
+    {
+        [$company, $employee] = $this->seedEmployee('ctx@example.com', with2fa: true);
+
+        $service = app(TwoFactorAuthService::class);
+        // #6540 : challenge émis pour un email DIFFÉRENT de celui de l'employé
+        // (challenge volé ou recoupement cassé) → refus avant l'émission du token.
+        $challenge = $service->issueChallenge([
+            'employee_id' => $employee->id,
+            'company_id' => (string) $company->id,
+            'tenant_schema' => 'shared_tenants',
+            'email' => 'victim@example.com',
+            'device_name' => 'test',
+        ]);
+
+        $this->expectException(TwoFactorException::class);
+        $service->verifyChallenge(
+            $challenge['token'],
+            code: '000000',
+            recoveryCode: null,
+        );
+
+        // Le challenge doit rester consommable (pas brûlé par le refus).
+        $context = Cache::get('mfa:challenge:'.$challenge['token']);
+        $this->assertIsArray($context);
+        $this->assertSame('victim@example.com', $context['email']);
     }
 }

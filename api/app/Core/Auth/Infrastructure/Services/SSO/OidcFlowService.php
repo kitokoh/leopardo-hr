@@ -139,7 +139,10 @@ final class OidcFlowService
             $challenge = $this->twoFactorService->issueChallenge([
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
-                'tenant_schema' => null,
+                // #6540 : propager le schéma tenant résolu par loginViaEmail —
+                // sinon verifyChallenge ne change pas le search_path et le
+                // challenge 2FA échoue (401) pour les tenants à schéma.
+                'tenant_schema' => $result['tenant_schema'] ?? null,
                 'email' => (string) $employee->email,
                 'device_name' => 'sso-oidc',
             ]);
