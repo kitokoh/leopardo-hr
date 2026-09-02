@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Restaurant\Domain\Solution;
 
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Modules\Restaurant\Domain\Survey\RestaurantSurvey;
 
 /**
  * Manifest de la solution sectorielle Restaurant — REST-001.
@@ -17,7 +18,7 @@ use App\Core\Solutions\Contracts\SolutionManifest;
  * (RestaurantSurvey) détermine, selon les réponses du prospect, quels
  * packages de ce pack lui sont suggérés.
  *
- * @see \App\Modules\Restaurant\Domain\Survey\RestaurantSurvey
+ * @see RestaurantSurvey
  * @see docs/specifications/PLATFORM_ONBOARDING_AND_VERTICAL_SOLUTIONS.md
  * @see docs/architecture/RESTAURANT_SOLUTION_SURVEY.md
  */

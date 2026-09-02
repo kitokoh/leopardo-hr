@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core\Solutions\Interfaces\Api\V1;
 
+use App\Core\Solutions\Infrastructure\Services\SolutionPackPdfGenerator;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Solutions\Survey\SolutionSurveyEngine;
 use App\Core\Solutions\Survey\SolutionSurveyRegistry;
-use App\Core\Solutions\Infrastructure\Services\SolutionPackPdfGenerator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

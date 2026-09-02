@@ -322,7 +322,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modulesEvaluations => 'Evaluations';
 
   @override
-  String get modulesRestaurant => 'Kitchen display';
+  String get modulesRestaurant => 'Point of sale (POS)';
 
   @override
   String get emailsInvitationSubject =>
@@ -8282,6 +8282,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get crmPipelineStageLost => 'Lost';
+
+  @override
+  String get restaurantPosTitle => 'Point of sale (POS)';
+
+  @override
+  String get restaurantPosSubtitle => 'Order taking and payment';
+
+  @override
+  String get restaurantPosProducts => 'Catalog';
+
+  @override
+  String get restaurantPosCart => 'Current order';
+
+  @override
+  String get restaurantPosNoproducts => 'No products available.';
+
+  @override
+  String get restaurantPosNosession => 'No open cash session for this branch.';
+
+  @override
+  String get restaurantPosOpensession => 'Open cash session';
+
+  @override
+  String get restaurantPosNoorder => 'No current order.';
+
+  @override
+  String get restaurantPosNeworder => 'New order';
+
+  @override
+  String get restaurantPosSubmit => 'Submit';
+
+  @override
+  String get restaurantPosConfirm => 'Confirm (kitchen)';
+
+  @override
+  String get restaurantPosBill => 'Bill';
+
+  @override
+  String get restaurantPosPaycash => 'Pay cash';
+
+  @override
+  String get restaurantPosPaid => 'Order paid';
+
+  @override
+  String get restaurantPosSubtotal => 'Subtotal';
+
+  @override
+  String get restaurantPosTax => 'Tax';
+
+  @override
+  String get restaurantPosTotal => 'Total';
+
+  @override
+  String get restaurantPosRemoveitem => 'Remove';
+
+  @override
+  String get restaurantPosUncategorized => 'Uncategorized';
+
+  @override
+  String get restaurantPosLoaderror => 'Unable to load the point of sale.';
+
+  @override
+  String get restaurantPosLoading => 'Loading point of sale…';
+
+  @override
+  String get restaurantPosActionerror => 'Action failed, please retry.';
 
   @override
   String get restaurantKitchentitle => 'Kitchen display';

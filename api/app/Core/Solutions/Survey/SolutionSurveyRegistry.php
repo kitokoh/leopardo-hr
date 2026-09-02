@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Core\Solutions\Survey;
 
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Solutions\Survey\Contracts\SolutionSurvey;
 use App\Core\Solutions\Survey\Exceptions\SolutionSurveyNotFoundException;
 
 /**
  * Registre des questionnaires de solutions — allowlist serveur.
  *
- * Miroir de {@see \App\Core\Solutions\SolutionCatalogue} : les surveys sont
+ * Miroir de {@see SolutionCatalogue} : les surveys sont
  * enregistrés par les providers des modules (inversion de dépendance), ce
  * registre ne référence jamais `App\Modules\*` directement (garde d'isolation
  * #5584). Un code inconnu est REFUSÉ (fail-closed).

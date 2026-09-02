@@ -325,7 +325,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get modulesEvaluations => 'Evaluations';
 
   @override
-  String get modulesRestaurant => 'Écran cuisine';
+  String get modulesRestaurant => 'Point de vente (POS)';
 
   @override
   String get emailsInvitationSubject =>
@@ -8386,6 +8386,74 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get crmPipelineStageLost => 'Perdu';
+
+  @override
+  String get restaurantPosTitle => 'Point de vente (POS)';
+
+  @override
+  String get restaurantPosSubtitle => 'Prise de commande et encaissement';
+
+  @override
+  String get restaurantPosProducts => 'Catalogue';
+
+  @override
+  String get restaurantPosCart => 'Commande en cours';
+
+  @override
+  String get restaurantPosNoproducts => 'Aucun produit disponible.';
+
+  @override
+  String get restaurantPosNosession =>
+      'Aucune caisse ouverte pour cette branche.';
+
+  @override
+  String get restaurantPosOpensession => 'Ouvrir la caisse';
+
+  @override
+  String get restaurantPosNoorder => 'Aucune commande en cours.';
+
+  @override
+  String get restaurantPosNeworder => 'Nouvelle commande';
+
+  @override
+  String get restaurantPosSubmit => 'Soumettre';
+
+  @override
+  String get restaurantPosConfirm => 'Confirmer (cuisine)';
+
+  @override
+  String get restaurantPosBill => 'Addition';
+
+  @override
+  String get restaurantPosPaycash => 'Encaisser espèces';
+
+  @override
+  String get restaurantPosPaid => 'Commande payée';
+
+  @override
+  String get restaurantPosSubtotal => 'Sous-total';
+
+  @override
+  String get restaurantPosTax => 'TVA';
+
+  @override
+  String get restaurantPosTotal => 'Total';
+
+  @override
+  String get restaurantPosRemoveitem => 'Retirer';
+
+  @override
+  String get restaurantPosUncategorized => 'Sans catégorie';
+
+  @override
+  String get restaurantPosLoaderror =>
+      'Impossible de charger le point de vente.';
+
+  @override
+  String get restaurantPosLoading => 'Chargement du point de vente…';
+
+  @override
+  String get restaurantPosActionerror => 'Action impossible, réessayez.';
 
   @override
   String get restaurantKitchentitle => 'Écran cuisine';

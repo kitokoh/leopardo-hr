@@ -323,7 +323,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modulesEvaluations => 'Degerlendirmeler';
 
   @override
-  String get modulesRestaurant => 'Mutfak ekranı';
+  String get modulesRestaurant => 'Satış noktası (POS)';
 
   @override
   String get emailsInvitationSubject =>
@@ -8293,6 +8293,72 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get crmPipelineStageLost => 'Kaybedildi';
+
+  @override
+  String get restaurantPosTitle => 'Satış noktası (POS)';
+
+  @override
+  String get restaurantPosSubtitle => 'Sipariş alma ve tahsilat';
+
+  @override
+  String get restaurantPosProducts => 'Katalog';
+
+  @override
+  String get restaurantPosCart => 'Güncel sipariş';
+
+  @override
+  String get restaurantPosNoproducts => 'Uygun ürün yok.';
+
+  @override
+  String get restaurantPosNosession => 'Bu şube için açık kasa oturumu yok.';
+
+  @override
+  String get restaurantPosOpensession => 'Kasa oturumu aç';
+
+  @override
+  String get restaurantPosNoorder => 'Güncel sipariş yok.';
+
+  @override
+  String get restaurantPosNeworder => 'Yeni sipariş';
+
+  @override
+  String get restaurantPosSubmit => 'Gönder';
+
+  @override
+  String get restaurantPosConfirm => 'Onayla (mutfak)';
+
+  @override
+  String get restaurantPosBill => 'Hesap';
+
+  @override
+  String get restaurantPosPaycash => 'Nakit tahsil';
+
+  @override
+  String get restaurantPosPaid => 'Sipariş ödendi';
+
+  @override
+  String get restaurantPosSubtotal => 'Ara toplam';
+
+  @override
+  String get restaurantPosTax => 'Vergi';
+
+  @override
+  String get restaurantPosTotal => 'Toplam';
+
+  @override
+  String get restaurantPosRemoveitem => 'Kaldır';
+
+  @override
+  String get restaurantPosUncategorized => 'Kategorisiz';
+
+  @override
+  String get restaurantPosLoaderror => 'Satış noktası yüklenemedi.';
+
+  @override
+  String get restaurantPosLoading => 'Satış noktası yükleniyor…';
+
+  @override
+  String get restaurantPosActionerror => 'İşlem başarısız, tekrar deneyin.';
 
   @override
   String get restaurantKitchentitle => 'Mutfak ekranı';
