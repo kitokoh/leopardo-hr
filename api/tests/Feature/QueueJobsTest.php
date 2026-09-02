@@ -81,4 +81,24 @@ class QueueJobsTest extends TestCase
 
         $this->assertInstanceOf(\App\Contracts\Queue\TenantScopedJob::class, $job);
     }
+
+    public function test_database_queue_retry_after_covers_longest_job_timeout(): void
+    {
+        // #6535 — retry_after < timeout d'un job → le driver re-délivre le
+        // job avant la fin et l'exécute en double. ProcessPayrollBatchJob a
+        // le timeout le plus long (600s) ; la connexion `database` (prod)
+        // doit avoir un retry_after >= 600 pour ne jamais re-délivrer un
+        // job encore en cours.
+        $this->assertGreaterThanOrEqual(
+            600,
+            (int) config('queue.connections.database.retry_after'),
+            'database retry_after must be >= max job timeout (ProcessPayrollBatchJob=600s)'
+        );
+
+        $this->assertGreaterThanOrEqual(
+            600,
+            (int) config('queue.connections.redis-payroll.retry_after'),
+            'redis-payroll retry_after must be >= payroll job timeouts'
+        );
+    }
 }

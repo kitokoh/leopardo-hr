@@ -50,6 +50,7 @@ class Invoice extends Model
         'company_id',
         'subscription_id',
         'number',
+        'period',
         'amount',
         'currency',
         'tax_amount',

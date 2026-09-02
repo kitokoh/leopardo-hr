@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -128,6 +129,10 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
         $redis = Redis::connection('default');
         $redisUnavailable = false;
 
+        // #6548 : un claim non libéré (worker mort entre claim et traitement)
+        // ne doit JAMAIS faire compter un slip non payé comme payé.
+        $hasUnprocessedSlips = false;
+
         foreach ($slips as $slip) {
             try {
                 $claimed = false;
@@ -150,8 +155,32 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                 }
 
                 if (! $claimed) {
-                    // Slip déjà traité par une tentative précédente → skip.
+                    // #6548 : un claim existant peut être le vestige d'un
+                    // worker mort ENTRE le claim et le traitement. Re-vérifier
+                    // l'état réel du slip avant de le considérer traité :
+                    // encore éligible (calculated/validated) sans document de
+                    // paiement = JAMAIS payé → échec visible au lieu d'un
+                    // skip silencieux qui ferait passer le run `paid` à tort.
+                    $slip->refresh();
+                    $hasPaymentDocument = PaymentDocument::query()
+                        ->where('pay_slip_id', $slip->id)
+                        ->where('document_type', PaymentDocument::TYPE_PAYMENT_SLIP)
+                        ->exists();
+
+                    if (! in_array($slip->status, ['calculated', 'validated'], true) || $hasPaymentDocument) {
+                        // Slip réellement déjà traité → skip légitime.
+                        $done++;
+                        continue;
+                    }
+
+                    $failures[] = [
+                        'pay_slip_id' => $slip->id,
+                        'employee_id' => (int) $slip->employee_id,
+                        'error' => 'slip_claim_unavailable_but_unprocessed',
+                    ];
+                    $hasUnprocessedSlips = true;
                     $done++;
+                    $this->updateProgress($done, 'processing', $total, $failures);
                     continue;
                 }
 
@@ -173,7 +202,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
                 $failures[] = [
                     'pay_slip_id' => $slip->id,
-                    'employee_id' => $slip->employee_id,
+                    'employee_id' => (int) $slip->employee_id,
                     'error' => $e->getMessage(),
                 ];
             }
@@ -215,7 +244,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             ->whereNotIn('id', $slips->pluck('id'))
             ->exists();
 
-        if (! $remainingUnpaid) {
+        if (! $remainingUnpaid && ! $hasUnprocessedSlips) {
             $run->update([
                 'status' => 'paid',
                 'paid_at' => now(),
@@ -344,7 +373,23 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
         ]);
 
         try {
-            Redis::connection('default')->del("bulk_pay:run:{$this->payrollRunId}");
+            $redis = Redis::connection('default');
+            $redis->del("bulk_pay:run:{$this->payrollRunId}");
+
+            // #6548 : libérer aussi les claims de slips posés par l'essai
+            // avorté pour les slips encore éligibles (calculated/validated) —
+            // un redispatch doit réellement les retraiter, pas les retrouver
+            // « claimés » et les compter payés à tort. Les slips déjà traités
+            // (documents générés) conservent leur claim : l'idempotence tient.
+            $orphanSlipIds = PaySlip::query()
+                ->withoutGlobalScopes()
+                ->where('payroll_run_id', $this->payrollRunId)
+                ->whereIn('status', ['calculated', 'validated'])
+                ->pluck('id');
+
+            foreach ($orphanSlipIds as $slipId) {
+                $redis->del("bulk_pay:slip:{$this->payrollRunId}:{$slipId}");
+            }
         } catch (Throwable) {
             // non bloquant
         }
