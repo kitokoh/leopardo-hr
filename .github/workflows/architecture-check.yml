@@ -109,9 +109,6 @@ jobs:
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
-      - name: Migration SQL quote guard (issue #6418)
-        run: bash dev-hub/tools/check-migration-sql-quotes.sh
-
       - name: Migration prefix inter-PR guard (issue #5437)
         run: node dev-hub/tools/check-migration-prefixes.mjs
         env:
@@ -132,9 +129,6 @@ jobs:
         run: bash dev-hub/tools/check-migrations-tenant-schema.sh
       - name: Migrations BC conventions guard (MAT-005 #5863)
         run: bash dev-hub/tools/check-migrations-bc-conventions.sh
-
-      - name: Event catalogue guard (MAT-006 #5864)
-        run: bash dev-hub/tools/check-event-catalogue.sh
       - name: Geofence single usage path guard (ADR-0016 Phase 2, issue #5353)
         run: bash dev-hub/tools/check-geofence-single-usage.sh
 
@@ -156,35 +150,18 @@ jobs:
       - name: Providers syntax guard — php -l sur *ServiceProvider.php (issue #5519)
         run: bash dev-hub/tools/check-providers-syntax.sh api
 
-      - name: Gate::policy single point guard — AuthServiceProvider only (PA2-ARCH-008, issue #6575)
-        run: bash dev-hub/tools/check-policies-single-point.sh api
-
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
-
-      - name: Actions convention guard — execute() + no Service/Job in Actions/ (issue #6570)
-        run: bash dev-hub/tools/check-actions-convention.sh api
 
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 
       - name: Routes tenant/platform guard self-test (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform-test.sh
-      - name: Route owner guard — platform/tenant (MAT-003 / issue #5861)
-        # Une route platform ne doit pas être exposée dans l'espace tenant et
-        # inversement. Couche statique (fichiers de routes) + classification
-        # route:list (middleware résolus) — bloque si violation, warning sinon.
-        run: bash dev-hub/tools/check-route-owner-guard.sh
 
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
-      - name: Check CRM client module boundary imports (issue #5745)
-        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
-        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
-        # import inter-module exige une exemption justifiée dans
-        # crm-boundary-allowlist.txt.
-        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
       - name: Runbook coverage guard par BC — backup/restore/rollback (issue #5873, MAT-015)
         run: bash dev-hub/tools/check-runbooks.sh
       - name: Golden journeys guard — routes des parcours critiques (issue #5871, MAT-013)
@@ -208,6 +185,26 @@ jobs:
           GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: bash dev-hub/tools/check-tests-deterministic.sh
 
+
+      - name: Migration SQL quote guard (issue #6418)
+        run: bash dev-hub/tools/check-migration-sql-quotes.sh
+      - name: Event catalogue guard (MAT-006 #5864)
+        run: bash dev-hub/tools/check-event-catalogue.sh
+      - name: Gate::policy single point guard — AuthServiceProvider only (PA2-ARCH-008, issue #6575)
+        run: bash dev-hub/tools/check-policies-single-point.sh api
+      - name: Actions convention guard — execute() + no Service/Job in Actions/ (issue #6570)
+        run: bash dev-hub/tools/check-actions-convention.sh api
+      - name: Route owner guard — platform/tenant (MAT-003 / issue #5861)
+        # Une route platform ne doit pas être exposée dans l'espace tenant et
+        # inversement. Couche statique (fichiers de routes) + classification
+        # route:list (middleware résolus) — bloque si violation, warning sinon.
+        run: bash dev-hub/tools/check-route-owner-guard.sh
+      - name: Check CRM client module boundary imports (issue #5745)
+        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
+        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
+        # import inter-module exige une exemption justifiée dans
+        # crm-boundary-allowlist.txt.
+        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
 
   phpstan-modules:
     timeout-minutes: 45
@@ -253,7 +250,6 @@ jobs:
   # breakdown and the plan to shrink the baseline over time.
   phpstan-strict:
     needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: PHPStan — Strict (Core/Modules/Shared, level 8)
     runs-on: ubuntu-latest
@@ -286,7 +282,6 @@ jobs:
 
   module-structure-check:
     needs: detect-changes
-    if: needs.detect-changes.outputs.api_changed == 'true'
     timeout-minutes: 45
     name: Module Structure Validator
     runs-on: ubuntu-latest
@@ -379,66 +374,6 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
-      - name: Check webhook event catalog drift (issue #5744)
-        # Contrat partenaire : AVAILABLE_EVENTS ↔ WebhookListener::EVENT_NAMES.
-        # Annoncé non émis = contrat fantôme ; émis non annoncé = contrat
-        # implicite ; nom invalide = contrat cassé. Allowlist justifiée pour
-        # les événements planifiés (ADR 0010).
-        run: bash dev-hub/tools/check-webhook-event-catalog.sh api
-      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
-        # Matrice versionnée deny-by-default : toute arête inter-contextes
-        # absente de bounded-context-dependencies.json fait échouer la CI
-        # (message actionnable fichier + import + arête).
-        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
-      - name: Event catalogue guard self-test (MAT-006 / issue #5864)
-        run: python3 dev-hub/tools/check-event-catalogue-test.py
-
-      - name: Event catalogue guard (MAT-006 / issue #5864)
-        # Chaque classe App\Events\*.php doit avoir une entrée à jour dans
-        # dev-hub/governance/event-catalogue.json (owner, version, payload,
-        # consumers). Détecte les breaking changes de payload non versionnés
-        # et les événements supprimés du code sans dépréciation actée.
-        run: python3 dev-hub/tools/check-event-catalogue.py .
-
-
-      - name: Check for orphan (unrouted) controllers
-        if: needs.detect-changes.outputs.api_changed == 'true'
-        run: dev-hub/tools/check-unrouted-controllers.sh api
-
-      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
-        if: needs.detect-changes.outputs.api_changed == 'true'
-        run: bash dev-hub/tools/check-architecture-docs-parity.sh
-
-      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
-        # Matrice versionnée deny-by-default : toute arête inter-contextes
-        # absente de bounded-context-dependencies.json fait échouer la CI
-        # (message actionnable fichier + import + arête).
-        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
-      - name: Check for orphan (unrouted) controllers
-        run: dev-hub/tools/check-unrouted-controllers.sh api
-      - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
-        run: bash dev-hub/tools/check-architecture-docs-parity.sh
-      - name: Cross-module import guard — no new inter-module imports (issue #5584)
-        env:
-          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-        run: |
-          set -euo pipefail
-          base_sha="${DIFF_BASE_SHA:-}"
-          head_sha="${DIFF_HEAD_SHA:-}"
-          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
-            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
-          fi
-          if [[ -z "${head_sha}" ]]; then
-            head_sha="$(git rev-parse HEAD)"
-          bash dev-hub/tools/check-cross-module-imports.sh "${base_sha}" "${head_sha}" api
-      - name: Check migration basename collisions (issue #1962)
-        if: needs.detect-changes.outputs.api_changed == 'true'
-        run: dev-hub/tools/check-migration-basename-collisions.sh
-
-      - name: Check migration SQL quotes (issue #6418)
-        run: dev-hub/tools/check-migration-sql-quotes.sh
-
       - name: Event catalogue guard self-test (MAT-006 / issue #5864)
         run: python3 dev-hub/tools/check-event-catalogue-test.py
 
@@ -450,15 +385,19 @@ jobs:
         run: python3 dev-hub/tools/check-event-catalogue.py .
 
       - name: Check for orphan (unrouted) controllers
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api
 
       - name: Architecture docs parity guard — modules réels ↔ docs (issue #5589)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: bash dev-hub/tools/check-architecture-docs-parity.sh
 
       - name: Check migration basename collisions (issue #1962)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-migration-basename-collisions.sh
 
       - name: Report test-schema drift vs migrations (issue #1489, non blocking)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         continue-on-error: true
         run: dev-hub/tools/check-test-schema-drift.sh api
 
@@ -534,23 +473,8 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-delta.sh "${base_sha}" "${head_sha}" api
 
-      - name: Golden tests required guard (MAT-007 #5865)
-        env:
-          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-        run: |
-          set -euo pipefail
-          base_sha="${DIFF_BASE_SHA:-}"
-          head_sha="${DIFF_HEAD_SHA:-}"
-          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
-            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
-          fi
-          if [[ -z "${head_sha}" ]]; then
-            head_sha="$(git rev-parse HEAD)"
-          fi
-          bash dev-hub/tools/check-golden-tests-required.sh
-
       - name: Check no PR adds PHPStan baseline debt (#5448 - garde 0 nouvelle entree)
+        if: needs.detect-changes.outputs.api_changed == 'true'
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -573,6 +497,32 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-debt.sh guard "${base_sha}" "${head_sha}" api
 
+      - name: Check webhook event catalog drift (issue #5744)
+        # Contrat partenaire : AVAILABLE_EVENTS ↔ WebhookListener::EVENT_NAMES.
+        # Annoncé non émis = contrat fantôme ; émis non annoncé = contrat
+        # implicite ; nom invalide = contrat cassé. Allowlist justifiée pour
+        # les événements planifiés (ADR 0010).
+        run: bash dev-hub/tools/check-webhook-event-catalog.sh api
+      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
+        # Matrice versionnée deny-by-default : toute arête inter-contextes
+        # absente de bounded-context-dependencies.json fait échouer la CI
+        # (message actionnable fichier + import + arête).
+        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
+      - name: Golden tests required guard (MAT-007 #5865)
+        env:
+          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          base_sha="${DIFF_BASE_SHA:-}"
+          head_sha="${DIFF_HEAD_SHA:-}"
+          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
+            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          if [[ -z "${head_sha}" ]]; then
+            head_sha="$(git rev-parse HEAD)"
+          fi
+          bash dev-hub/tools/check-golden-tests-required.sh
       - name: Check layer purity — Domain/Application vs Application/Infrastructure + facades (issue #6568)
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: |
@@ -580,7 +530,6 @@ jobs:
 
   frontend-lint:
     needs: detect-changes
-    if: needs.detect-changes.outputs.web_changed == 'true'
     timeout-minutes: 15
     name: Frontend — ESLint + TypeScript
     runs-on: ubuntu-latest
