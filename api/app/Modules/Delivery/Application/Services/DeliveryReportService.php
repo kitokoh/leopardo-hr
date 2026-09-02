@@ -78,13 +78,13 @@ final class DeliveryReportService
             ->first();
 
         return [
-            'deliveries' => (int) ($row->deliveries ?? 0),
-            'delivered' => (int) ($row->delivered ?? 0),
-            'failed' => (int) ($row->failed ?? 0),
-            'cancelled' => (int) ($row->cancelled ?? 0),
-            'returned' => (int) ($row->returned ?? 0),
-            'avg_delay_minutes' => (int) round((float) ($row->avg_delay_minutes ?? 0)),
-            'cod_expected_minor' => (int) ($row->cod_expected_minor ?? 0),
+            'deliveries' => (int) ($row->getAttribute('deliveries') ?? 0),
+            'delivered' => (int) ($row->getAttribute('delivered') ?? 0),
+            'failed' => (int) ($row->getAttribute('failed') ?? 0),
+            'cancelled' => (int) ($row->getAttribute('cancelled') ?? 0),
+            'returned' => (int) ($row->getAttribute('returned') ?? 0),
+            'avg_delay_minutes' => (int) round((float) ($row->getAttribute('avg_delay_minutes') ?? 0)),
+            'cod_expected_minor' => (int) ($row->getAttribute('cod_expected_minor') ?? 0),
         ];
     }
 
@@ -93,7 +93,7 @@ final class DeliveryReportService
      */
     private function bySource(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
+        $rows = Delivery::query()
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw(
@@ -107,11 +107,15 @@ final class DeliveryReportService
             ->get()
             ->map(fn ($row): array => [
                 'source' => (string) $row->source,
-                'deliveries' => (int) $row->deliveries,
-                'delivered' => (int) $row->delivered,
-                'success_rate_pct' => $row->deliveries > 0 ? round(((int) $row->delivered / (int) $row->deliveries) * 100, 1) : 0.0,
+                'deliveries' => (int) $row->getAttribute('deliveries'),
+                'delivered' => (int) $row->getAttribute('delivered'),
+                'success_rate_pct' => (int) $row->getAttribute('deliveries') > 0
+                    ? round(((int) $row->getAttribute('delivered') / (int) $row->getAttribute('deliveries')) * 100, 1)
+                    : 0.0,
             ])
             ->all();
+
+        return array_values($rows);
     }
 
     /**
@@ -119,7 +123,7 @@ final class DeliveryReportService
      */
     private function byDay(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
+        $rows = Delivery::query()
             ->where('company_id', $companyId)
             ->whereBetween('created_at', [$from, $to])
             ->selectRaw(
@@ -132,11 +136,13 @@ final class DeliveryReportService
             ->orderBy('day')
             ->get()
             ->map(fn ($row): array => [
-                'date' => (string) $row->day,
-                'deliveries' => (int) $row->deliveries,
-                'delivered' => (int) $row->delivered,
+                'date' => (string) $row->getAttribute('day'),
+                'deliveries' => (int) $row->getAttribute('deliveries'),
+                'delivered' => (int) $row->getAttribute('delivered'),
             ])
             ->all();
+
+        return array_values($rows);
     }
 
     /**
@@ -144,7 +150,7 @@ final class DeliveryReportService
      */
     private function byDriver(string $companyId, Carbon $from, Carbon $to): array
     {
-        return Delivery::query()
+        $rows = Delivery::query()
             // #675x : qualification explicite — delivery_stops/delivery_routes
             // portent AUSSI company_id/created_at (tables tenant-scopées) →
             // sans préfixe, PostgreSQL lève 42702 « ambiguous column » après
@@ -164,10 +170,12 @@ final class DeliveryReportService
             ->get()
             ->map(fn ($row): array => [
                 'driver_id' => $row->driver_id !== null ? (int) $row->driver_id : null,
-                'deliveries' => (int) $row->deliveries,
-                'delivered' => (int) $row->delivered,
+                'deliveries' => (int) $row->getAttribute('deliveries'),
+                'delivered' => (int) $row->getAttribute('delivered'),
             ])
             ->all();
+
+        return array_values($rows);
     }
 
     private function codCollected(string $companyId, Carbon $from, Carbon $to): int
