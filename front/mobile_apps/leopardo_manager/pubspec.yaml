@@ -28,8 +28,8 @@ dependencies:
   local_auth: ^3.0.2
   json_annotation: ^4.11.0
   url_launcher: ^6.3.1
-  firebase_core: ^4.13.0
-  firebase_messaging: ^16.5.0
+  firebase_core: ^4.14.0
+  firebase_messaging: ^16.6.0
   flutter_local_notifications: ^22.3.0
   sentry_flutter: ^8.9.0
   graphview: ^1.2.1
@@ -38,7 +38,7 @@ dependencies:
 
   flutter_animate: ^4.5.2
   google_sign_in: ^7.2.0
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.0
 
 dev_dependencies:
   flutter_test:
