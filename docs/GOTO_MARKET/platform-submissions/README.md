@@ -16,7 +16,7 @@ Ce dossier contient les textes et champs prêts à être adaptés dans les plate
 | `capterra-getapp.md` | Fiche commune Capterra et GetApp (Réseau Gartner) |
 | `fosshub.md` | Fiche pour l'annuaire de logiciels libres FOSS Hub |
 | `awesome-selfhosted.md` | Entrée pour la liste GitHub Awesome Self-Hosted |
-| `../assets/` | Instructions pour les captures d'écran (pointeurs LFS) |
+| `01_PRODUCT/PRODUCT_BRIEF.md` | Notes captures d'écran (Git LFS — captures fraîches requises) |
 
 ## Ordre de priorité
 
