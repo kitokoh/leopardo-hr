@@ -119,6 +119,12 @@ consommateurs).
 
 ---
 
+> **Dérogation documentée — `app/Http/Controllers/Web/` (surface session, audit #6578)** : les
+> contrôleurs `Web/*` (KioskController, DashboardController, InvitationController,
+> PlatformAuthController…) constituent la surface **session/blade** (portail Laravel),
+> distincte de l'API JSON par module — basenames partagés avec des modules volontairement
+> (surface produit différente), placement conservé et acté.
+>
 ## Conventions de nommage
 
 ### Actions (Use Cases)
