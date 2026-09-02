@@ -19,7 +19,7 @@
     },
     "delivery": {
       "label": "DeliveryAgency (BC-26 DELIVERY)",
-      "status": "active"
+      "status": "planned"
     },
     "restaurantmanager": {
       "label": "RestaurantManager (verticale BC-25)",
