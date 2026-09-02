@@ -15,8 +15,8 @@ use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
@@ -121,6 +121,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve'])->middleware('api.manager');
     Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject'])->middleware('api.manager');
     Route::post('/kiosks', [KioskController::class, 'register'])->middleware('api.manager');
+    // BIO-005 (#6766) : révocation d'appareil + rotation du secret.
+    Route::post('/kiosks/{kiosk}/revoke', [KioskController::class, 'revoke'])->whereNumber('kiosk')->middleware('api.manager');
+    Route::post('/kiosks/{kiosk}/rotate-token', [KioskController::class, 'rotateToken'])->whereNumber('kiosk')->middleware('api.manager');
 
     // ── Module 1 — Absences ───────────────────────────────────────────────────
     // PA2-ARCH-011 : les routes /absences/* sont la source unique dans
@@ -269,4 +272,6 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+    // BIO-006 (#6767) : matrice de méthodes pilotée par le serveur.
+    Route::get('/kiosks/{deviceCode}/config', [KioskController::class, 'config']);
 });

@@ -397,6 +397,28 @@ trait CreatesMvpSchema
             $table->string('trusted_device_label', 120)->nullable();
             $table->timestampTz('last_seen_at')->nullable();
             $table->timestampTz('last_sync_at')->nullable();
+            $table->unsignedInteger('site_id')->nullable()->index();
+            $table->json('punch_methods')->nullable();
+            $table->timestampTz('revoked_at')->nullable();
+            $table->unsignedInteger('revoked_by_employee_id')->nullable();
+            $table->timestamps();
+        });
+
+        // BIO-008 (#6773) — miroir de 2026_09_02_000203_6773_create_biometric_audit_logs_table.php.
+        Schema::create($this->tenantTable('biometric_audit_logs'), function (Blueprint $table): void {
+            $table->increments('id');
+            $table->uuid('company_id')->index();
+            $table->unsignedInteger('employee_id')->nullable();
+            $table->unsignedInteger('kiosk_id')->nullable();
+            $table->unsignedInteger('site_id')->nullable();
+            $table->unsignedInteger('actor_employee_id')->nullable();
+            $table->string('event', 60);
+            $table->string('method', 20)->nullable();
+            $table->string('result_code', 60)->nullable();
+            $table->string('correlation_id', 100)->nullable();
+            $table->string('device_code_hash', 80)->nullable();
+            $table->json('context')->nullable();
+            $table->timestampTz('occurred_at')->useCurrent();
             $table->timestamps();
         });
 

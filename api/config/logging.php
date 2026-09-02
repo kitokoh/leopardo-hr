@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Logging\RedactingJsonFormatter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\SlackWebhookHandler;
@@ -139,12 +140,23 @@ return [
             'replace_placeholders' => true,
             // MAT-009 (#5867) : redaction PII/secrets au moment de la
             // sérialisation (lazy — aucune résolution anticipée du canal).
-            'formatter' => \App\Logging\RedactingJsonFormatter::class,
+            'formatter' => RedactingJsonFormatter::class,
         ],
 
         'audit' => [
             'driver' => 'daily',
             'path' => storage_path('logs/audit.log'),
+            'level' => 'info',
+            'days' => 90,
+            'replace_placeholders' => true,
+            'formatter' => JsonFormatter::class,
+        ],
+
+        // BIO-008 (#6773) : observabilité biométrique — canal dédié avec les
+        // mêmes garanties de rédaction que l'audit (aucun payload biométrique).
+        'biometric' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/biometric.log'),
             'level' => 'info',
             'days' => 90,
             'replace_placeholders' => true,

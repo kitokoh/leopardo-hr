@@ -36,6 +36,7 @@ final class BiometricEnrollmentLifecycleService
 {
     public function __construct(
         private readonly BiometricEnrollmentStateMachine $stateMachine,
+        private readonly BiometricAuditLogger $biometricAudit,
     ) {}
 
     public function start(
@@ -174,6 +175,17 @@ final class BiometricEnrollmentLifecycleService
      */
     private function audit(BiometricEnrollment $enrollment, string $action, int $actorEmployeeId, array $extra = []): void
     {
+        // BIO-008 (#6773) : audit biométrique dédié (ids + codes uniquement).
+        $this->biometricAudit->log(
+            companyId: $enrollment->company_id,
+            event: $action,
+            employeeId: (int) $enrollment->employee_id,
+            actorEmployeeId: $actorEmployeeId,
+            method: $enrollment->method,
+            correlationId: $enrollment->correlation_id,
+            context: $extra,
+        );
+
         $metadata = array_merge([
             'enrollment_id' => $enrollment->id,
             'employee_id' => $enrollment->employee_id,
