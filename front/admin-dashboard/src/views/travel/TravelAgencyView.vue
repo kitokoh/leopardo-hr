@@ -135,11 +135,14 @@ async function checkGate() {
   gateStatus.value = 'checking'
   gateError.value = ''
   try {
-    await api.get('/travel/ping', { _skipAuthRedirect: true })
+    await api.get('/travel/ping', { _skipAuthRedirect: true, _skipToast: true })
     gateStatus.value = 'ready'
   } catch (err) {
     const status = err.response?.status
-    if (status === 403) {
+    // #6713 : le backend BC-24 n'est pas encore livré sur main (#6127) —
+    // /travel/ping répond 404 au lieu du 403 attendu. Les deux états sont
+    // « module non disponible » : jamais d'erreur rouge + Retry.
+    if (status === 403 || status === 404) {
       gateStatus.value = 'disabled'
     } else {
       gateStatus.value = 'error'
