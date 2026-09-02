@@ -21,8 +21,15 @@
  */
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryAsyncExportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRiderController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
@@ -85,6 +92,37 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
+        // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
+        // dispatcher/manager/admin (la création vient du dispatcher/manager).
+        Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
+            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
+            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+            });
+            Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
+            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
+            // ouverte au rider (mobile livreur, DELIVERY-203).
+            // Rapports & KPIs (DELIVERY-207/#6291).
+            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
+            // pending→collected→settled→reconciled, idempotent.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
+                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
+            // Export CSV async (BC-26-D07/#6295) — job tenant-scoped,
+            // observable (pending → generating → done/failed).
+            Route::post('/deliveries/reports/async-export', [DeliveryAsyncExportController::class, 'store'])
+            Route::get('/deliveries/reports/async-export/{export}', [DeliveryAsyncExportController::class, 'show'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
+            Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
         });
     // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
     // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
