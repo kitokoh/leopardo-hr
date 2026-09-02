@@ -13,6 +13,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -59,7 +60,11 @@ final class PublicDocumentShareController
         ])->header('Referrer-Policy', 'no-referrer');
     }
 
-    public function download(string $token): StreamedResponse
+    /**
+     * @return Response (StreamedResponse en succès, JsonResponse localisée sur
+     *                  erreur #6676 — type commun Symfony)
+     */
+    public function download(string $token): Response
     {
         $share = $this->resolveShare($token);
 
