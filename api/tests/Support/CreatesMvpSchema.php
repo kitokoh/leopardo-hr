@@ -1060,38 +1060,49 @@ trait CreatesMvpSchema
         $this->setPostgresSearchPath('public');
 
         // Issue #6754 — pollution croisée : après une classe
-        // `RefreshTenantDatabase` (migration COMPLÈTE), le schéma `public`
-        // contient ~100 tables canoniques alors que `dropPostgresPublicTables`
-        // n'en couvre qu'une vingtaine → la fixture re-crée des tables déjà
-        // présentes (42P07 « relation ... already exists », ex.
-        // user_employee_links / personal_access_tokens) et des types orphelins
-        // survivent. Purge complète table + type pour un état de départ vierge.
-        $this->purgePublicSchema();
-
+        // `RefreshTenantDatabase` (migration COMPLÈTE) ou le bootstrap CI
+        // (setup-backend-db), le schéma `public` garde des types
+        // composites/enum/domain orphelins que `DROP TABLE ... CASCADE` ne
+        // supprime pas → le `CREATE TABLE` homonyme de la fixture SQL lève
+        // 23505 (pg_type_typname_nsp_index, ex. `seed_locks`). On purge donc
+        // les TYPES orphelins APRÈS les drops de tables gérées par la
+        // fixture. Les tables publiques issues de vraies migrations
+        // (company_requests, platform_support_tickets, …) DOIVENT survivre :
+        // de nombreux tests CreatesMvpSchema les requêtent (contrat API réel)
+        // alors que la fixture ne les recrée pas. (Régression 2026-09-02 :
+        // purge des tables en plus des types → 28 tests Feature rouges,
+        // relation "platform_support_tickets"/"company_requests" does not
+        // exist.)
         $this->dropPostgresPublicTables();
+
+        $this->purgeOrphanPublicTypes();
 
         DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
     }
 
     /**
-     * Purge les tables ET les types du schéma `public` (issue #6754).
+     * Purge les types composites/enum/domain ORPHELINS du schéma `public`
+     * (issue #6754) — PAS les tables.
      *
-     * @see RefreshTenantDatabase::purgePublicSchema()
+     * Les tables publiques issues de vraies migrations (bootstrap CI ou
+     * fichier RefreshTenantDatabase précédent) sont volontairement
+     * CONSERVÉES : la fixture ne recrée pas toutes les tables publiques que
+     * les tests CreatesMvpSchema requêtent (ex. company_requests,
+     * platform_support_tickets). Les tables que la fixture gère sont déjà
+     * purgées par `dropPostgresPublicTables()` + les DROP en tête de
+     * mvp_schema.pgsql.sql.
+     *
+     * @see RefreshTenantDatabase::purgePublicSchema() (lui purge table +
+     *     type car une re-migration complète suit immédiatement)
      */
-    private function purgePublicSchema(): void
+    private function purgeOrphanPublicTypes(): void
     {
         DB::statement(<<<'SQL'
             DO $do$
             DECLARE
                 r record;
             BEGIN
-                FOR r IN
-                    SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'
-                LOOP
-                    EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
-                END LOOP;
-
                 FOR r IN
                     SELECT t.typname
                     FROM pg_catalog.pg_type t
