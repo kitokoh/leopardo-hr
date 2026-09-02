@@ -10,10 +10,10 @@ declare(strict_types=1);
  * (contrat unique /attendance/*, vérifié mobile + web).
  */
 
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceDayClosureController;
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceModeController;
-use App\Modules\Attendance\Interfaces\Api\V1\GeoAttendanceController;
-use App\Modules\Attendance\Interfaces\Api\V1\GeoSessionController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceDayClosureController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceModeController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\GeoAttendanceController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\GeoSessionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/v1/attendance')

@@ -3915,10 +3915,10 @@ parameters:
 			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
-			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetDocumentController.php
+			path: app/Modules/Cabinet/Interfaces/Api/V1/Controllers/CabinetDocumentController.php
 
 		-
 			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
-			path: app/Modules/Cabinet/Interfaces/Api/V1/CabinetDocumentController.php
+			path: app/Modules/Cabinet/Interfaces/Api/V1/Controllers/CabinetDocumentController.php

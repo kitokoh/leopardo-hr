@@ -13,24 +13,24 @@ declare(strict_types=1);
  * BelongsToCompany (scope global fail-closed #3727).
  */
 
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingActivationController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingAuditController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingChartController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingCheckoutController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingContactController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingCurrencyController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDashboardController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingDocumentController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingFecController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingFiscalYearController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingJournalController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingLedgerController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingLetteringController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingReportController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingSettingsController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingStatementController;
-use App\Modules\Accounting\Interfaces\Api\V1\PublicDocumentShareController;
-use App\Modules\Accounting\Interfaces\Api\V1\ShareAccessController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingActivationController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingAuditController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingChartController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingCheckoutController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingContactController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingCurrencyController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingDashboardController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingDocumentController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFecController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingFiscalYearController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingJournalController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLedgerController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingLetteringController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingReportController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingSettingsController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingStatementController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\PublicDocumentShareController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\ShareAccessController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
@@ -147,8 +147,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  * direction et aux comptables (aucun accès RH/marketing).
  */
 
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentController;
-use App\Modules\Accounting\Interfaces\Api\V1\BankStatementController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\BankStatementController;
 
 Route::middleware(['auth:sanctum', 'token.refresh', 'tenant', 'api.manager:principal,comptable'])->group(function (): void {
     Route::get('accounting/payments', [AccountingPaymentController::class, 'index']);

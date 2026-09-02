@@ -10,9 +10,9 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
-use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
-use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
@@ -30,15 +30,15 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\ConversationControlle
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationStreamController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\SseTokenController;
-use App\Modules\Payroll\Interfaces\Api\V1\EndOfContractController;
-use App\Modules\Payroll\Interfaces\Api\V1\EstimationController;
-use App\Modules\Payroll\Interfaces\Api\V1\LedgerController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
-use App\Modules\Payroll\Interfaces\Api\V1\SalaryAdvanceController;
-use App\Modules\Planning\Interfaces\Api\V1\ProjectController;
-use App\Modules\Planning\Interfaces\Api\V1\ScheduleController;
-use App\Modules\Planning\Interfaces\Api\V1\TaskController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EndOfContractController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EstimationController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\LedgerController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SalaryAdvanceController;
+use App\Modules\Planning\Interfaces\Api\V1\Controllers\ProjectController;
+use App\Modules\Planning\Interfaces\Api\V1\Controllers\ScheduleController;
+use App\Modules\Planning\Interfaces\Api\V1\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {

@@ -6,13 +6,13 @@ parameters:
 			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
+			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php
 
 		-
 			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
 			identifier: class.notFound
 			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
+			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php
 
 		-
 			message: '#^Parameter \#2 \$file of method App\\Modules\\Cabinet\\Infrastructure\\Services\\CabinetService\:\:uploadDocument\(\) expects Illuminate\\Http\\UploadedFile, array given\.$#'
@@ -54,13 +54,13 @@ parameters:
 			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$licenseService is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
-			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
+			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php
 
 		-
 			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
-			path: app/Modules/EdgeSync/Interfaces/Api/V1/EdgeController.php
+			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php
 
 		-
 			message: '#^Property App\\Modules\\HR\\Domain\\Models\\UserInvitation\:\:\$employee_id \(string\|null\) does not accept int\.$#'
