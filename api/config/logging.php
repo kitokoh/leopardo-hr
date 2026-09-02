@@ -84,6 +84,11 @@ return [
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            // #6551 (audit-secu M5) : le canal par défaut (stack→single) n'avait
+            // aucune rédaction — les Log::error($e->getMessage()) des jobs
+            // (QueryException) écrivaient SQL + bindings (bcrypt, montants)
+            // en clair. Même processeur que le canal structured (MAT-009).
+            'processors' => [\App\Logging\PiiRedactionProcessor::class],
         ],
 
         'daily' => [
@@ -92,6 +97,8 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+            // #6551 — même rédaction PII que `single` (canal alternatif du stack).
+            'processors' => [\App\Logging\PiiRedactionProcessor::class],
         ],
 
         'slack' => [
