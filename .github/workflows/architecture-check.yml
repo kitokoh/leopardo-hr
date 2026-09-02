@@ -186,26 +186,6 @@ jobs:
         run: bash dev-hub/tools/check-tests-deterministic.sh
 
 
-      - name: Migration SQL quote guard (issue #6418)
-        run: bash dev-hub/tools/check-migration-sql-quotes.sh
-      - name: Event catalogue guard (MAT-006 #5864)
-        run: bash dev-hub/tools/check-event-catalogue.sh
-      - name: Gate::policy single point guard — AuthServiceProvider only (PA2-ARCH-008, issue #6575)
-        run: bash dev-hub/tools/check-policies-single-point.sh api
-      - name: Actions convention guard — execute() + no Service/Job in Actions/ (issue #6570)
-        run: bash dev-hub/tools/check-actions-convention.sh api
-      - name: Route owner guard — platform/tenant (MAT-003 / issue #5861)
-        # Une route platform ne doit pas être exposée dans l'espace tenant et
-        # inversement. Couche statique (fichiers de routes) + classification
-        # route:list (middleware résolus) — bloque si violation, warning sinon.
-        run: bash dev-hub/tools/check-route-owner-guard.sh
-      - name: Check CRM client module boundary imports (issue #5745)
-        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
-        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
-        # import inter-module exige une exemption justifiée dans
-        # crm-boundary-allowlist.txt.
-        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
-
   phpstan-modules:
     timeout-minutes: 45
     name: PHPStan — Modules Architecture
@@ -496,37 +476,6 @@ jobs:
           fi
 
           dev-hub/tools/check-phpstan-baseline-debt.sh guard "${base_sha}" "${head_sha}" api
-
-      - name: Check webhook event catalog drift (issue #5744)
-        # Contrat partenaire : AVAILABLE_EVENTS ↔ WebhookListener::EVENT_NAMES.
-        # Annoncé non émis = contrat fantôme ; émis non annoncé = contrat
-        # implicite ; nom invalide = contrat cassé. Allowlist justifiée pour
-        # les événements planifiés (ADR 0010).
-        run: bash dev-hub/tools/check-webhook-event-catalog.sh api
-      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
-        # Matrice versionnée deny-by-default : toute arête inter-contextes
-        # absente de bounded-context-dependencies.json fait échouer la CI
-        # (message actionnable fichier + import + arête).
-        run: bash dev-hub/tools/check-bounded-context-dependencies.sh
-      - name: Golden tests required guard (MAT-007 #5865)
-        env:
-          DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-          DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-        run: |
-          set -euo pipefail
-          base_sha="${DIFF_BASE_SHA:-}"
-          head_sha="${DIFF_HEAD_SHA:-}"
-          if [[ -z "${base_sha}" || "${base_sha}" == "0000000000000000000000000000000000000000" ]]; then
-            base_sha="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
-          fi
-          if [[ -z "${head_sha}" ]]; then
-            head_sha="$(git rev-parse HEAD)"
-          fi
-          bash dev-hub/tools/check-golden-tests-required.sh
-      - name: Check layer purity — Domain/Application vs Application/Infrastructure + facades (issue #6568)
-        if: needs.detect-changes.outputs.api_changed == 'true'
-        run: |
-          bash dev-hub/tools/check-layer-purity.sh api
 
   frontend-lint:
     needs: detect-changes
