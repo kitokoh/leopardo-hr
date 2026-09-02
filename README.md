@@ -299,7 +299,6 @@ leopardo-hr/
 ├── front/               Web, mobile and future desktop surfaces
 ├── shared/              Shared contracts, design system and tooling
 ├── edge/                Edge and kiosk-related components
-├── marketing/           Platform marketing and acquisition assets
 ├── docs/                Architecture, security, specifications and runbooks
 ├── dev-hub/             Quality gates, scripts and engineering tools
 ├── assets/              Product visuals and documentation assets
