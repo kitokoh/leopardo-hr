@@ -44,7 +44,6 @@ Vitrine web (/restaurant)                     API Laravel
 | GET | `/api/v1/solutions` | — | `{ data: [{ code, name, description, maturity }] }` |
 | GET | `/api/v1/solutions/{code}/survey` | — | `{ data: { code, questions, packages } }` |
 | POST | `/api/v1/solutions/{code}/survey` | `{ answers: { clé_question: valeur } }` | `{ data: { code, packages: [{ key, type, label_key, reason_key, priority, app?, download? }], total } }` |
-<<<<<<< HEAD
 | GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*` ×4) |
 | POST | `/api/forms/solution-survey` (vitrine Next) | `{ email, consent: true, data: { solution, answers, packages } }` | Lead persiste via PA2-MKT-007 (`marketing_leads`, type `solution_survey`) |
 
@@ -63,10 +62,6 @@ php artisan leopardo:solution:activate {company_uuid} restaurant [--actor={emplo
 ```
 
 L'activation **à l'inscription** (provisioning tenant → `SolutionActivator`) reste à câbler (issue #6693).
-=======
-| GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*`) |
->>>>>>> origin/feat/restaurant-solution-survey
-
 ## Ajouter une nouvelle solution (ex. FuelStation)
 
 1. `SolutionManifest` (déjà fait pour FuelStation) : `Modules/FuelStation/Domain/Solution/…`.
@@ -82,7 +77,6 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 - **Label_i18n clés** : `label_key`/`reason_key` résolus par `SOLUTION_LABELS` côté front (fr/en complets, tr/ar → en). Chemin production : catalogue central `/i18n/catalog`.
 - **Sans inscription** : endpoints publics (pré-qualification). L'activation réelle d'une solution par tenant passe par l'existant `SolutionActivator` (feature flags) au moment du provisioning.
 
-<<<<<<< HEAD
 ## Activation de la solution sur un tenant (#6693)
 
 ### Activation automatique à l'inscription
@@ -111,29 +105,3 @@ commande console ou le dashboard (voir ci-dessous).
 - **Dashboard super-admin** : édition de la société (`/platform/companies/{id}/edit`),
   toggles `features` par module connu (`Company::KNOWN_MODULES` — `restaurant`
   y est déclaré), puis sauvegarde.
-
-=======
->>>>>>> origin/feat/restaurant-solution-survey
-## Budget zéro — dépendances
-
-- Backend : aucune nouvelle dépendance (PHP pur).
-- Front : `qrcode` et `framer-motion` déjà présents dans `front/web/package.json`.
-- Distribution APK : GitHub Releases ou Firebase App Distribution (free tier) — liens branchés via `mobileDownloadTarget`.
-- Edge : commande `install.sh` existante (serveur Render).
-
-## À faire (prochaines étapes)
-
-<<<<<<< HEAD
-- [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*` ×4 (fr/en/tr/ar)
-- [x] Labels ×4 du wizard (SOLUTION_LABELS tr/ar + garde PA2-I18N-014) — #6691
-- [x] Capture des leads (email + consentement RGPD) via `POST /api/forms/solution-survey` → `marketing_leads` (type `solution_survey`) — #6692
-- [ ] Branchement `/i18n/catalog` pour les messages de réponse des routes forms
-- [x] Activation tenant post-inscription via `SolutionActivator` (commande `leopardo:solution:activate` documentée + wiring signup) — #6693
-- [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
-=======
-- [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
-- [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
-- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
-- [ ] Activation tenant post-inscription via `SolutionActivator`
-- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
->>>>>>> origin/feat/restaurant-solution-survey
