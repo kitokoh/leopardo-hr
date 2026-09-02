@@ -69,6 +69,9 @@ return [
     DeliveryServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+<<<<<<< HEAD
     // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
+=======
+>>>>>>> origin/feat/delivery-206-notifications
 ];

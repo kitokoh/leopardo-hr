@@ -12,10 +12,14 @@ use Tests\TestCase;
  * DELIVERY-102 (#6283) — Harness de test BC-26 : schéma tenant complet.
  *
 <<<<<<< HEAD
+<<<<<<< HEAD
  * Garantit que les 5 tables du module Delivery sont créées par le runner de
 =======
  * Garantit que les 6 tables du module Delivery sont créées par le runner de
 >>>>>>> origin/feat/delivery-205-cod
+=======
+ * Garantit que les 8 tables du module Delivery sont créées par le runner de
+>>>>>>> origin/feat/delivery-206-notifications
  * migrations tenant (`leopardo:migrate`) et donc disponibles dans tous les
  * tests Feature utilisant `RefreshTenantDatabase` (parité CreatesMvpSchema
  * #5443 maintenue dans api/tests/Support/CreatesMvpSchema.php).
@@ -47,7 +51,12 @@ class DeliverySchemaTest extends TestCase
             'delivery_events',
             'delivery_cod_settlements',
             'delivery_tracking_shares',
+<<<<<<< HEAD
 >>>>>>> origin/feat/delivery-205-cod
+=======
+            'delivery_notifications',
+            'delivery_recipient_opt_outs',
+>>>>>>> origin/feat/delivery-206-notifications
         ];
     }
 

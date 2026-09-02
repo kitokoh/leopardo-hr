@@ -21,11 +21,15 @@
  */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 =======
+=======
+>>>>>>> origin/feat/delivery-206-notifications
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
@@ -78,6 +82,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
+<<<<<<< HEAD
+=======
+            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
+            // effectif + outbox (numéros masqués RGPD hors admin).
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
+>>>>>>> origin/feat/delivery-206-notifications
         });
     });
 
