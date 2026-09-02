@@ -9,16 +9,17 @@
 
 Dépenses, avances, prêts, remboursements et avantages, avec contrat Finance :
 `api/app/Modules/Expense`, routes `/api/v1/expense-claims*`, intégration
-Accounting (écritures). Le module est en mode « facade » (dérogation
-PA2-ARCH-011 documentée dans `api/ARCHITECTURE.md`) : les modèles métier
-réels (`ExpenseClaim`, `ExpenseItem`) vivent dans `Modules/Planning`, le
-contrôleur route consomme `Planning\...\ExpenseClaim`.
+Accounting (écritures). Le module est un module DDD complet depuis #5235
+(`Domain/Infrastructure/Interfaces/Providers`, écritures comptables
+ExpenseAccountingEntry + contrôleur dédié) ; seuls les modèles de notes de
+frais (`ExpenseClaim`, `ExpenseItem`) restent sous contrat `Planning` —
+l'ex-dérogation façade PA2-ARCH-011 (#1414) a été résorbée par #5235.
 
 ## Verdict par dimension
 
 | # | Dimension | Verdict | Preuves / constats |
 |---|---|---|---|
-| D1 | Domaine | 🟡 PARTIEL | Module DDD partiel (Domain/Infrastructure/Interfaces/Providers) ; pas de couches Application/Domain complètes (dérogation facade #1414). Vocabulaire : ExpenseClaim, ExpenseItem (Planning), ExpenseAccountingEntry (Expense). Invariants (approbation, double paiement) portés par les tests. |
+| D1 | Domaine | 🟢 PRÉSENT | Module DDD complet depuis #5235 (Domain/Infrastructure/Interfaces/Providers — ExpenseAccountingEntry, listeners, services comptables) ; modèles de notes de frais sous contrat `Planning` (ex-dérogation façade #1414 résorbée). Vocabulaire : ExpenseClaim, ExpenseItem (Planning), ExpenseAccountingEntry (Expense). Invariants (approbation, double paiement) portés par les tests. |
 | D2 | Données | 🟢 PRÉSENT | Tables tenant (`expense_claims`, `expense_items`), FK/index cohérents, migration `check-migrations-tenant-schema.sh` vert. |
 | D3 | Tenant | 🟢 PRÉSENT | Modèles scopés (BelongsToCompany), `company_id` auto-rempli, workflow testé cross-tenant (ExpenseClaimWorkflowTest). |
 | D4 | API | 🟢 PRÉSENT | `ExpenseClaimController` (15 routes déclarées), Requests/Resources, erreurs sûres, OpenAPI couvert. |
@@ -40,9 +41,10 @@ php artisan test --filter="ExpenseClaimControllerTest|ExpenseClaimWorkflowTest|E
 
 ## Recommandations (PR futures, non bloquantes)
 
-1. **Sortir le mode facade** (D1) : matérialiser les invariants Expense
-   (approbation, remboursement unique, devise) dans le module plutôt que
-   dépendre des modèles Planning — dérogation #1414 à re-auditer.
+1. **Contrat Planning** (D1) : les invariants Expense (approbation,
+   remboursement unique, devise) restent portés par les modèles Planning —
+   à matérialiser dans le module pour sortir du contrat (dérogation #1414,
+   résorbée pour les couches, à re-auditer pour les modèles).
 2. **Golden journey** (D12) : test end-to-end demande → approbation →
    écriture comptable → export, avec seed déterministe.
 3. **Contrat Finance** : formaliser l'interface d'écriture vers Accounting
