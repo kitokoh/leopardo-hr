@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
+use App\Modules\Payroll\Domain\Models\Payment;
 
 /**
  * @property int $id
@@ -122,4 +123,6 @@ class Invoice extends Model
 
         return $this;
     }
+
+
 }

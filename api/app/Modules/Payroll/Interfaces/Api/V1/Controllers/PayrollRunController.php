@@ -23,6 +23,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -68,14 +69,45 @@ class PayrollRunController extends Controller
 
         $validated = $request->validated();
 
-        $run = PayrollRun::create([
-            'company_id' => $actor->company_id,
-            'period_start' => $validated['period_start'],
-            'period_end' => $validated['period_end'],
-            'country_code' => $validated['country_code'],
-            'status' => 'draft',
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        // #6552 (audit) : garde anti-doublon de période — un run (non
+        // annulé) existe déjà pour cette période → 409 propre. L'index
+        // unique partiel en base est le verrou final en cas de course
+        // (catch 23505 ci-dessous).
+        $existing = PayrollRun::query()
+            ->where('company_id', $actor->company_id)
+            ->where('period_start', $validated['period_start'])
+            ->where('period_end', $validated['period_end'])
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        if ($existing) {
+            return new JsonResponse([
+                'error' => 'PAYROLL_RUN_PERIOD_ALREADY_EXISTS',
+                'message' => __('errors.PAYROLL_RUN_PERIOD_ALREADY_EXISTS'),
+            ], 409);
+        }
+
+        try {
+            $run = PayrollRun::create([
+                'company_id' => $actor->company_id,
+                'period_start' => $validated['period_start'],
+                'period_end' => $validated['period_end'],
+                'country_code' => $validated['country_code'],
+                'status' => 'draft',
+                'notes' => $validated['notes'] ?? null,
+            ]);
+        } catch (QueryException $e) {
+            // #6552 : course perdue sur l'index unique partiel → même réponse
+            // 409, jamais de 500.
+            if ($e->getCode() === '23505') {
+                return new JsonResponse([
+                    'error' => 'PAYROLL_RUN_PERIOD_ALREADY_EXISTS',
+                    'message' => __('errors.PAYROLL_RUN_PERIOD_ALREADY_EXISTS'),
+                ], 409);
+            }
+
+            throw $e;
+        }
 
         $response = (new PayrollRunResource($run))->response();
         $response->setStatusCode(201);

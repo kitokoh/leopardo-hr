@@ -17,6 +17,7 @@ use App\Modules\Accounting\Infrastructure\Services\PaymentGatewayFactory;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -54,19 +55,30 @@ final class OnlinePaymentService
         string $successUrl,
         string $cancelUrl,
     ): array {
-        $this->assertPayable($document);
+        // #6553 (audit) : verrou pessimiste — deux checkouts concurrents sur
+        // le même document se sérialisent (le solde restant est relu sous
+        // lock) : jamais deux sessions de paiement pour le même montant.
+        return DB::transaction(function () use ($document, $successUrl, $cancelUrl): array {
+            $locked = AccountingDocument::query()->lockForUpdate()->find($document->id);
 
-        $company = currentCompany();
-        $gateway = $this->factory->forCountry($company->country);
+            if ($locked === null) {
+                throw new DocumentNotSendableException('not_found');
+            }
 
-        $remaining = round((float) $document->total_ttc - (float) $document->paid_amount, 2);
-        $checkout = $gateway->createCheckout($document, $remaining, $successUrl, $cancelUrl);
+            $this->assertPayable($locked);
 
-        return [
-            'checkout_url' => $checkout->url,
-            'expires_at' => $checkout->expiresAt->toIso8601String(),
-            'gateway' => $checkout->gateway,
-        ];
+            $company = currentCompany();
+            $gateway = $this->factory->forCountry($company->country);
+
+            $remaining = round((float) $locked->total_ttc - (float) $locked->paid_amount, 2);
+            $checkout = $gateway->createCheckout($locked, $remaining, $successUrl, $cancelUrl);
+
+            return [
+                'checkout_url' => $checkout->url,
+                'expires_at' => $checkout->expiresAt->toIso8601String(),
+                'gateway' => $checkout->gateway,
+            ];
+        });
     }
 
     /**

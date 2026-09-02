@@ -135,29 +135,6 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
                     'Content-Type' => 'application/json',
                 ])
                 ->post($this->endpoint->url, $body);
-
-            $durationMs = (int) ((microtime(true) - $start) * 1000);
-
-            WebhookDelivery::create([
-                'webhook_endpoint_id' => $this->endpoint->id,
-                'event' => $this->event,
-                'payload' => $body,
-                'response_code' => $response->status(),
-                'response_body' => mb_substr($response->body(), 0, 2000),
-                'duration_ms' => $durationMs,
-            ]);
-
-            if ($response->successful()) {
-                $this->endpoint->update([
-                    'failure_count' => 0,
-                    'last_triggered_at' => now(),
-                ]);
-            } else {
-                $this->endpoint->increment('failure_count');
-                if ($this->endpoint->failure_count >= 10) {
-                    $this->endpoint->update(['active' => false]);
-                }
-            }
         } catch (Throwable $e) {
             $durationMs = (int) ((microtime(true) - $start) * 1000);
 
@@ -180,5 +157,44 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
 
             throw $e;
         }
+
+        $durationMs = (int) ((microtime(true) - $start) * 1000);
+
+        WebhookDelivery::create([
+            'webhook_endpoint_id' => $this->endpoint->id,
+            'event' => $this->event,
+            'payload' => $body,
+            'response_code' => $response->status(),
+            'response_body' => mb_substr($response->body(), 0, 2000),
+            'duration_ms' => $durationMs,
+        ]);
+
+        if ($response->successful()) {
+            // #6550 (audit) : un succès réactive l'endpoint (la désactivation
+            // n'est plus définitive — un aléa réseau ne tue plus le webhook
+            // pour toujours).
+            $this->endpoint->update([
+                'active' => true,
+                'failure_count' => 0,
+                'last_triggered_at' => now(),
+            ]);
+
+            return;
+        }
+
+        // #6550 (audit) : un non-2xx doit être RETHROWN pour que le job
+        // repasse par les retries (tries/backoff) puis par failed() →
+        // dead-letter. Avant : la livraison était marquée réussie (aucun
+        // retry, aucune dead-letter) — perte sèche. Le throw est HORS du
+        // try/catch : le catch réseau (ci-dessus) n'est pas ré-exécuté, le
+        // compteur d'échecs n'est pas incrémenté deux fois.
+        $this->endpoint->increment('failure_count');
+        if ($this->endpoint->failure_count >= 10) {
+            $this->endpoint->update(['active' => false]);
+        }
+
+        throw new \RuntimeException(
+            sprintf('Webhook delivery failed with status %d: %s', $response->status(), mb_substr($response->body(), 0, 500))
+        );
     }
 }

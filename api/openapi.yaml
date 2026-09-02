@@ -8423,12 +8423,12 @@ paths:
           description: Progression de l'onboarding
         '401':
           $ref: '#/components/responses/Error401'
-  /company-integration-requests:
+  /company-integration-requests/manage:
     get:
       tags:
       - User
       summary: Lister les demandes d'integration de mon entreprise (manager)
-      description: Liste tenant-scope des demandes d'integration recues (manager/principal).
+      description: Liste tenant-scope des demandes d'integration recues (manager/principal). Chemin dedie /manage (issue #6566) — la GET employe /user/company-integration-requests reste la liste personnelle.
       security:
       - BearerAuth: []
       responses:

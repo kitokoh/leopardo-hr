@@ -5322,18 +5322,6 @@ parameters:
 			path: tests/Feature/EmailBounceWebhookControllerTest.php
 
 		-
-			message: '#^Cannot access property \$email_bounce_reason on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/EmailBounceWebhookControllerTest.php
-
-		-
-			message: '#^Cannot access property \$email_bounced_at on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: property.nonObject
-			count: 4
-			path: tests/Feature/EmailBounceWebhookControllerTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\EmailBounceWebhookControllerTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: return.type
 			count: 1

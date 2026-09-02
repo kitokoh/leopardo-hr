@@ -11,6 +11,7 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Console\Isolatable;use Illuminate\Database\QueryException;
 
 class GenerateMonthlyInvoices extends Command
 {
@@ -119,5 +120,22 @@ class GenerateMonthlyInvoices extends Command
         $this->info("Generated {$generated} invoice(s).");
 
         return self::SUCCESS;
+    }
+
+    private function nextSequence(int $year): int
+    {
+        /** @var object{last_number: int}|null $row */
+        $row = DB::selectOne(
+            <<<'SQL'
+            INSERT INTO billing_invoice_number_counters (year, last_number, created_at, updated_at)
+            VALUES (?, 1, now(), now())
+            ON CONFLICT (year)
+            DO UPDATE SET last_number = billing_invoice_number_counters.last_number + 1, updated_at = now()
+            RETURNING last_number
+            SQL,
+            [$year],
+        );
+
+        return $row === null ? 1 : (int) $row->last_number;
     }
 }

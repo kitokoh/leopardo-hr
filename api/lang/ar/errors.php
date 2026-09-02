@@ -278,4 +278,5 @@ return [
     'INTEGRATION_REQUEST_NOT_FOUND' => 'طلب التكامل غير موجود.',
     'OTP_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تحقق من بريدك الإلكتروني وحاول مجددًا بعد 15 دقيقة.',
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تم إبطال الرمز، يرجى تسجيل الدخول مجددًا.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'توجد بالفعل دورة رواتب لهذه الفترة.',
 ];

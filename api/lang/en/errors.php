@@ -287,4 +287,5 @@ return [
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Integration request not found.',
     'OTP_TOO_MANY_ATTEMPTS' => 'Too many attempts. Check your inbox and try again in 15 minutes.',
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Too many attempts. The code was invalidated, please sign in again.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'A payroll run already exists for this period.',
 ];
