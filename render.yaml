@@ -213,6 +213,12 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
+      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
+      # workers/scheduler (course de migrations + seed non idempotent à
+      # chaque redémarrage).
+      - key: RUN_MIGRATIONS
+        value: "false"
       # Audit #4412 : les workers génèrent des URLs absolues (reset password,
       # notifications, liens bulletins) — APP_URL requis sur tous les services.
       - key: APP_URL
@@ -335,6 +341,12 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
+      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
+      # workers/scheduler (course de migrations + seed non idempotent à
+      # chaque redémarrage).
+      - key: RUN_MIGRATIONS
+        value: "false"
       # Audit #4412 : les workers génèrent des URLs absolues (reset password,
       # notifications, liens bulletins) — APP_URL requis sur tous les services.
       - key: APP_URL

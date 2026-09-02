@@ -155,7 +155,10 @@ class EdgeNodeController extends Controller
 
         $queued = $this->pushEdgeRecords->execute($node, $validated['records']);
 
-        return response()->json(['queued' => $queued]);
+        return response()->json([
+            'queued'  => $queued['queued'],
+            'results' => $queued['results'],
+        ]);
     }
 
     /**

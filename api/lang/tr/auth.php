@@ -23,5 +23,6 @@ return [
     'twofa_already_enabled' => 'Bu hesap icin 2FA zaten etkin.',
     'twofa_not_setup' => 'Onceki adimda setup2fa cagirarak bir secret olusturun.',
     'twofa_code_invalid_value' => 'Saglanan 2FA kodu gecersiz.',
+    'account_locked' => 'Hesap, birden fazla basarisiz giris denemesi nedeniyle gecici olarak kilitlendi. 15 dakika sonra tekrar deneyin.',,
     'password_incorrect' => 'Hatali sifre.',
 ];

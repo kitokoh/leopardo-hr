@@ -35,6 +35,18 @@ use Laravel\Sanctum\Contracts\HasApiTokens as HasApiTokensContract;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
+ * Modèle canonique Employé (toutes surfaces : API, web, mobile, jobs).
+ *
+ * Note sécurité (#6560, audit F2) : les champs salariaux (`salary_base`,
+ * `salary_type`, `salary_structure_id`) sont stockés EN CLAIR — décision
+ * assumée pour permettre les agrégations paie (totaux, moyennes, exports
+ * CNAS/CNPS/CNSS-MA) côté base de données. Les données RGPD sensibles
+ * (iban, bank_account, national_id) sont chiffrées via les casts
+ * `encrypted`. Si le chiffrement des salaires devient requis (TDE ou
+ * chiffrement applicatif + agrégations en mémoire), ouvrir une issue dédiée
+ * avec impact paie/performance — ne pas chiffrer sans étude (les scopes
+ * `where('salary_base', ...)` et les agrégations SQL caseraient).
+ *
  * @property int $id
  * @property string|null $company_id
  * @property int|null $department_id

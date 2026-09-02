@@ -42,6 +42,15 @@ class CameraStreamTokenService
             return $configured;
         }
 
+        // #6560 (audit sécurité F1) : en production, le secret DÉDIÉ
+        // (CAMERAS_STREAM_TOKEN_SECRET) est obligatoire. Dériver de APP_KEY
+        // rendrait tous les stream_tokens forgables en cas de compromission
+        // d'APP_KEY (défense en profondeur). Le fallback APP_KEY reste
+        // accepté en dev/test uniquement.
+        if (app()->environment('production')) {
+            throw new RuntimeException('CAMERAS_STREAM_TOKEN_SECRET is required in production.');
+        }
+
         $appKey = Config::get('app.key');
 
         if (! is_string($appKey) || $appKey === '') {

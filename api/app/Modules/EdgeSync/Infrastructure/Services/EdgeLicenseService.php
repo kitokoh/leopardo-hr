@@ -103,6 +103,15 @@ class EdgeLicenseService
             return \Firebase\JWT\JWT::encode($payload, $privateKey, 'RS256');
         }
 
+        // #6560 (audit sécurité F4) : en production, la paire RSA est
+        // OBLIGATOIRE — ne jamais signer les licences Edge avec HS256(APP_KEY)
+        // (clé symétrique partagée, compromission ⇒ licences forgées). Le
+        // fallback HS256 reste réservé au dev/test (le décodage est déjà
+        // fail-closed en production, cf. decode()).
+        if (app()->environment('production')) {
+            throw new \RuntimeException('Edge license private key not configured (production)');
+        }
+
         // Dev/test fallback — HS256 with app key
         $header  = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']) ?: '');
         $body    = base64url_encode(json_encode($payload) ?: '');
