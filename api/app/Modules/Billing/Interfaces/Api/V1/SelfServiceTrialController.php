@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionCatalogue;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
@@ -54,9 +57,26 @@ class SelfServiceTrialController extends Controller
             'source' => ['nullable', 'string', 'max:120'],
             'referral_code' => ['nullable', 'string', 'max:50'],
             'requestedWorkflow' => ['nullable', 'string', 'in:guided_trial,self_service'],
+            // BC-25 (#6693) : solutions sectorielles demandées à l'inscription
+            // (ex. « restaurant » depuis le wizard vitrine). Codes vérifiés
+            // contre le catalogue serveur (fail-closed : code inconnu → 422,
+            // pas de provisioning partiel). Idempotent : une solution déjà
+            // active est un no-op.
+            'solutions' => ['nullable', 'array', 'max:20'],
+            'solutions.*' => [
+                'string',
+                'max:40',
+                'distinct',
+                function (string $attribute, string $value, \Closure $fail): void {
+                    $code = strtolower(trim($value));
+                    if (! App::make(SolutionCatalogue::class)->has($code)) {
+                        $fail(__('errors.INVALID_SOLUTION', ['solution' => $code]));
+                    }
+                },
+            ],
         ]);
 
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null} $validated */
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
@@ -164,7 +184,7 @@ class SelfServiceTrialController extends Controller
                 throw $e;
             }
 
-            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken);
+            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken, $validated['solutions'] ?? []);
 
             return new JsonResponse([
                 'success' => true,
@@ -307,6 +327,7 @@ class SelfServiceTrialController extends Controller
         // verify) : toute exception inattendue du provisioning est convertie
         // en réponse structurée réessayable.
         try {
+            /** @var array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int} $result */
             $result = $this->verifyTrialSignup->execute($email, $validated['code']);
         } catch (\Throwable $e) {
             Log::channel('structured')->error('trial.verify.unexpected', [
@@ -335,7 +356,10 @@ class SelfServiceTrialController extends Controller
         // toutefois résolu et persisté la langue depuis le pays du signup;
         // utiliser cette langue pour le message de succès garantit un contrat
         // cohérent avec la société créée.
-        App::setLocale((string) ($result['company']->language ?? config('app.locale', 'en')));
+        /** @var Company $company */
+        $company = $result['company'];
+        $fallbackLocale = config('app.locale', 'en');
+        App::setLocale($company->language ?: (\is_string($fallbackLocale) ? $fallbackLocale : 'en'));
 
         return new JsonResponse([
             'success' => true,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionActivator;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
@@ -18,6 +19,7 @@ class ProvisionGuidedTrial
 {
     public function __construct(
         private readonly TenantManager $tenantManager,
+        private readonly SolutionActivator $solutionActivator,
     ) {}
 
     /**
@@ -26,10 +28,18 @@ class ProvisionGuidedTrial
      * (invariant 10 de la spec MULTI_PAYS_RULES_ENGINE). La langue, la
      * devise et le fuseau sont dérivés du pays validé.
      *
+     * @param  list<string>  $solutions  Codes de solutions sectorielles demandées (#6693)
      * @return array<string, mixed>
      */
-    public function execute(string $email, string $companyName, ?string $country = null): array
+    public function execute(string $email, string $companyName, ?string $country = null, array $solutions = []): array
     {
+        // BC-25 (#6693) : les solutions demandées doivent exister au catalogue
+        // (fail-closed) AVANT tout provisioning — jamais de tenant partiel.
+        $solutions = array_values(array_unique(array_map(
+            static fn (mixed $code): string => strtolower(trim((string) $code)),
+            $solutions,
+        )));
+
         // #3600 : idempotence — un retry de job (tries/backoff) ou une double
         // soumission ne doit jamais créer un second tenant sandbox pour le
         // même email. Le provisioning est transactionnel, mais une erreur
@@ -74,7 +84,7 @@ class ProvisionGuidedTrial
             throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults): array {
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -87,7 +97,7 @@ class ProvisionGuidedTrial
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
+                'subscription_end' => now()->addDays($this->trialDays())->toDateString(),
                 'language' => strtolower($countryDefaults['language']),
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
@@ -135,6 +145,17 @@ class ProvisionGuidedTrial
                 // Basic Seeding to make it look active
                 $this->seedBasicSandboxData($company->id, $manager->id);
 
+                // BC-25 (#6693) : activation des solutions sectorielles
+                // demandées à l'inscription (idempotente, auditée
+                // « solution.activated » + « solution.dependencies_activated »,
+                // modules requis du pack activés — fail-closed : une solution
+                // inconnue annule le provisioning, rollback complet).
+                // DANS le contexte tenant (audit_logs est une table tenant) —
+                // avant le resetToPrevious du finally.
+                foreach ($solutions as $solutionCode) {
+                    $this->solutionActivator->activateWithDependencies($company, $solutionCode);
+                }
+
             } finally {
                 $this->tenantManager->resetToPrevious();
             }
@@ -151,6 +172,7 @@ class ProvisionGuidedTrial
 
     private function resolveTrialPlanId(): int
     {
+        /** @var object{id: int}|null $plan */
         $plan = DB::table('plans')->where('is_active', true)->first();
         if ($plan) {
             return $plan->id;
@@ -162,7 +184,7 @@ class ProvisionGuidedTrial
             'price_yearly' => 0,
             'max_employees' => 50,
             'features' => json_encode(['rh' => true, 'tasks' => true, 'attendance' => true, 'mobile_apps' => true]),
-            'trial_days' => (int) config('billing.trial_days'),
+            'trial_days' => $this->trialDays(),
             'is_active' => true,
         ]);
     }
@@ -232,5 +254,12 @@ class ProvisionGuidedTrial
                 'updated_at' => now(),
             ]);
         }
+    }
+
+    private function trialDays(): int
+    {
+        $days = config('billing.trial_days');
+
+        return \is_int($days) ? $days : 14;
     }
 }
