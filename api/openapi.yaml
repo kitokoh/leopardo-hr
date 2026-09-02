@@ -40,8 +40,6 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
-- name: Delivery
-  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
   description: Groupe d'opérations Auth
 - name: Delivery
   description: Groupe d'opérations Delivery (BC-26 DELIVERY)
