@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Checkout (historique complet pour l'analyse)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Récupérer l'historique de la branche base (main) sur la fenêtre.
           # fetch-depth 0 pour ne pas rater les commits anciens.
