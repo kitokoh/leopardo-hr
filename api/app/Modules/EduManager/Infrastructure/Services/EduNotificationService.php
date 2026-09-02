@@ -9,7 +9,7 @@ use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Infrastructure\Jobs\SendEduNotificationJob;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * Notifications EduManager — EDU-014 (issue #5830).
@@ -41,11 +41,12 @@ final class EduNotificationService
 
     public function absenceRecorded(EduAttendance $attendance): void
     {
-        $studentName = $attendance->student?->display_name ?? 'Élève';
+        $student = $attendance->student;
+        $studentName = $student !== null ? $student->display_name : 'Élève';
 
         $this->dispatchToDirectors($attendance->company_id, self::TEMPLATE_ABSENCE_RECORDED, [
             'student_name' => $studentName,
-            'date' => $attendance->attendance_date?->toDateString() ?? '',
+            'date' => $attendance->attendance_date->toDateString(),
             'status' => $attendance->status,
             'category' => 'edu',
         ]);
@@ -53,7 +54,8 @@ final class EduNotificationService
 
     public function reportCardPublished(EduReportCard $card): void
     {
-        $studentName = $card->student?->display_name ?? 'Élève';
+        $student = $card->student;
+        $studentName = $student !== null ? $student->display_name : 'Élève';
 
         $this->dispatchToDirectors($card->company_id, self::TEMPLATE_REPORT_CARD_PUBLISHED, [
             'student_name' => $studentName,
@@ -81,7 +83,7 @@ final class EduNotificationService
 
         SendEduNotificationJob::dispatch(
             $companyId,
-            $directorIds->map(fn (int $id): int => $id)->all(),
+            array_values($directorIds->all()),
             $templateKey,
             $context
         );

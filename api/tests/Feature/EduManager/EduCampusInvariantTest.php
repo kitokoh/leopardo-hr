@@ -133,16 +133,25 @@ class EduCampusInvariantTest extends TestCase
             'relationship_code' => 'parent',
         ]);
 
-        // Campus du tenant A pour vérifier que la FK est bien composite.
+        // Campus + élève du tenant A (paire student valide) pour vérifier que
+        // c'est bien la FK GUARDIAN qui est composite (student_id, company_id)
+        // passe, (guardian_id, company_id) viole la FK.
         $this->campus($this->companyA, 'CAMPUS-A');
+        /** @var EduStudent $studentA */
+        $studentA = EduStudent::query()->create([
+            'company_id' => $this->companyA->id,
+            'student_number' => 'STU-A-1',
+            'display_name' => 'Élève A',
+            'status' => EduStudent::STATUS_ACTIVE,
+        ]);
 
         try {
-            DB::transaction(function () use ($studentB, $guardianB): void {
-                // Tente de lier l'élève B (company B) à un guardian B avec company A :
-                // la paire (guardian_id, company_id) viole la FK composite.
+            DB::transaction(function () use ($studentA, $guardianB): void {
+                // Tente de lier l'élève A (company A) à un guardian B (company B)
+                // avec company A : la paire (guardian_id, company_id) viole la FK composite.
                 EduStudentGuardian::query()->create([
                     'company_id' => $this->companyA->id,
-                    'student_id' => (int) $studentB->getAttribute('id'),
+                    'student_id' => (int) $studentA->getAttribute('id'),
                     'guardian_id' => (int) $guardianB->getAttribute('id'),
                     'relationship_code' => 'parent',
                 ]);

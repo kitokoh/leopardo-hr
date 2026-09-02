@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
+use App\Modules\EduManager\Domain\Models\EduCampus;
 use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduReportCardLine;
@@ -17,6 +18,7 @@ use App\Modules\EduManager\Infrastructure\Services\EduAcademicYearService;
 use App\Modules\EduManager\Infrastructure\Services\EduGradeService;
 use App\Modules\EduManager\Infrastructure\Services\EduReportCardService;
 use Illuminate\Support\Facades\Schema;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -33,6 +35,10 @@ class EduReportCardServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
 
     private Company $companyB;
 
@@ -68,6 +74,13 @@ class EduReportCardServiceTest extends TestCase
         $teacherA = Employee::factory()->create(['company_id' => $companyA->id]);
         $this->teacherA = $teacherA;
 
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
         $yearService = app(EduAcademicYearService::class);
         /** @var EduAcademicYear $year */
         $year = $yearService->createYear($principalA, [
@@ -75,10 +88,11 @@ class EduReportCardServiceTest extends TestCase
             'start_date' => '2025-09-01',
             'end_date' => '2026-08-31',
         ]);
+        $this->yearA = $year;
 
         /** @var EduClass $class */
         $class = $yearService->createClass($principalA, [
-            'campus_id' => 1,
+            'campus_id' => (int) $this->campusA->getAttribute('id'),
             'academic_year_id' => (int) $year->getAttribute('id'),
             'code' => 'CL-1',
             'name' => '6ème A',
@@ -133,7 +147,7 @@ class EduReportCardServiceTest extends TestCase
 
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -142,7 +156,7 @@ class EduReportCardServiceTest extends TestCase
 
         $line = EduReportCardLine::query()->where('report_card_id', (int) $card->getAttribute('id'))->firstOrFail();
         $this->assertSame('14.00', $line->average);
-        $this->assertSame('2', $line->coefficient);
+        $this->assertSame('2.00', $line->coefficient);
         $this->assertSame(1, (int) $line->assessment_count);
     }
 
@@ -151,11 +165,11 @@ class EduReportCardServiceTest extends TestCase
         $service = app(EduReportCardService::class);
 
         $first = $service->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
         $second = $service->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -168,7 +182,7 @@ class EduReportCardServiceTest extends TestCase
         $this->expectExceptionMessage('EDU_REPORT_CARD_PERIOD');
 
         app(EduReportCardService::class)->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => 'semester9',
         ]);
     }
@@ -177,7 +191,7 @@ class EduReportCardServiceTest extends TestCase
     {
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -193,7 +207,7 @@ class EduReportCardServiceTest extends TestCase
         $this->expectExceptionMessage('EDU_REPORT_CARD_LOCKED');
 
         $service->generate($this->principalA, $published->student()->firstOrFail(), [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
     }
@@ -202,7 +216,7 @@ class EduReportCardServiceTest extends TestCase
     {
         $service = app(EduReportCardService::class);
         $card = $service->generate($this->principalA, $this->studentA, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
 
@@ -221,10 +235,10 @@ class EduReportCardServiceTest extends TestCase
             'status' => EduStudent::STATUS_ACTIVE,
         ]);
 
-        $this->expectExceptionCode(404);
+        $this->expectException(NotFoundHttpException::class);
 
         app(EduReportCardService::class)->generate($this->principalA, $studentB, [
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
         ]);
     }

@@ -23,9 +23,7 @@ class EduRetentionController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduRetentionService $retention)
-    {
-    }
+    public function __construct(private readonly EduRetentionService $retention) {}
 
     public function anonymize(Request $request, EduStudent $student): JsonResponse
     {

@@ -6,13 +6,17 @@ namespace Tests\Feature\EduManager;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EduManager\Domain\Models\EduAcademicYear;
 use App\Modules\EduManager\Domain\Models\EduAdmission;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
+use App\Modules\EduManager\Domain\Models\EduCampus;
+use App\Modules\EduManager\Domain\Models\EduClass;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Jobs\SendEduNotificationJob;
 use App\Modules\EduManager\Infrastructure\Services\EduNotificationService;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Queue;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -30,6 +34,12 @@ class EduNotificationServiceTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
+    private EduCampus $campusA;
+
+    private EduAcademicYear $yearA;
+
+    private EduClass $classA;
 
     private Company $companyB;
 
@@ -64,6 +74,31 @@ class EduNotificationServiceTest extends TestCase
             'display_name' => 'Lina Benali',
             'status' => EduStudent::STATUS_ACTIVE,
         ]);
+        /** @var EduCampus $campusA */
+        $campusA = EduCampus::query()->create([
+            'company_id' => $companyA->id,
+            'code' => 'CAMPUS-A',
+            'name' => 'Campus A',
+        ]);
+        $this->campusA = $campusA;
+        /** @var EduAcademicYear $yearA */
+        $yearA = EduAcademicYear::query()->create([
+            'company_id' => $companyA->id,
+            'name' => '2025-2026',
+            'start_date' => '2025-09-01',
+            'end_date' => '2026-08-31',
+            'status' => EduAcademicYear::STATUS_ACTIVE,
+        ]);
+        $this->yearA = $yearA;
+        /** @var EduClass $classA */
+        $classA = EduClass::query()->create([
+            'company_id' => $companyA->id,
+            'campus_id' => (int) $campusA->getAttribute('id'),
+            'academic_year_id' => (int) $yearA->getAttribute('id'),
+            'code' => 'CL-A1',
+            'name' => '6ème A',
+        ]);
+        $this->classA = $classA;
         $this->studentA = $studentA;
     }
 
@@ -80,7 +115,7 @@ class EduNotificationServiceTest extends TestCase
         }
 
         foreach (['fr', 'en', 'ar', 'tr'] as $locale) {
-            $lines = \Illuminate\Support\Facades\Lang::get('notifications', [], $locale);
+            $lines = Lang::get('notifications', [], $locale);
             $this->assertIsArray($lines);
             $this->assertArrayHasKey('edu_admission_converted_title', $lines, "clé absente ({$locale})");
             $this->assertArrayHasKey('edu_absence_recorded_title', $lines, "clé absente ({$locale})");
@@ -95,7 +130,7 @@ class EduNotificationServiceTest extends TestCase
         /** @var EduAdmission $admission */
         $admission = EduAdmission::query()->create([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'admission_number' => 'ADM-2026-00001',
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',
@@ -120,7 +155,7 @@ class EduNotificationServiceTest extends TestCase
         /** @var EduAttendance $attendance */
         $attendance = EduAttendance::query()->create([
             'company_id' => $this->companyA->id,
-            'class_id' => 1,
+            'class_id' => (int) $this->classA->getAttribute('id'),
             'student_id' => (int) $this->studentA->getAttribute('id'),
             'attendance_date' => '2026-09-07',
             'status' => EduAttendance::STATUS_ABSENT,
@@ -143,7 +178,7 @@ class EduNotificationServiceTest extends TestCase
         $card = EduReportCard::query()->create([
             'company_id' => $this->companyA->id,
             'student_id' => (int) $this->studentA->getAttribute('id'),
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'period' => EduReportCard::PERIOD_TERM1,
             'status' => EduReportCard::STATUS_PUBLISHED,
         ]);
@@ -160,13 +195,15 @@ class EduNotificationServiceTest extends TestCase
     {
         Queue::fake();
 
-        // Aucun manager actif (le principal est inactif).
-        $this->principalA->update(['status' => 'inactive']);
+        // Aucun manager actif (le principal est suspendu).
+        // 'status' n'est pas fillable sur Employee → mise à jour via query builder
+        // (CHECK employees_status_check : active/suspended/archived/departed).
+        Employee::query()->whereKey($this->principalA->id)->update(['status' => 'suspended']);
 
         /** @var EduAdmission $admission */
         $admission = EduAdmission::query()->create([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'admission_number' => 'ADM-2026-00002',
             'applicant_first_name' => 'Yacine',
             'applicant_last_name' => 'Meziane',
@@ -192,7 +229,7 @@ class EduNotificationServiceTest extends TestCase
         /** @var EduAdmission $admission */
         $admission = EduAdmission::query()->create([
             'company_id' => $this->companyA->id,
-            'academic_year_id' => 1,
+            'academic_year_id' => (int) $this->yearA->getAttribute('id'),
             'admission_number' => 'ADM-2026-00003',
             'applicant_first_name' => 'Lina',
             'applicant_last_name' => 'Benali',

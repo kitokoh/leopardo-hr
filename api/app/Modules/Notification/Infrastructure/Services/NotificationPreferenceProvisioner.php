@@ -127,6 +127,3 @@ class NotificationPreferenceProvisioner
         ];
     }
 }
-
-
-

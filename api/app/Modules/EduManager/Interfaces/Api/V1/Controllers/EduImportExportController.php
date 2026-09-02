@@ -28,8 +28,7 @@ class EduImportExportController extends Controller
     public function __construct(
         private readonly EduImportService $imports,
         private readonly EduExportService $exports,
-    ) {
-    }
+    ) {}
 
     public function preview(PreviewEduImportRequest $request): JsonResponse
     {

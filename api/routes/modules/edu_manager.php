@@ -22,15 +22,16 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMarketingController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduNotificationController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
-use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMeController;
-use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -96,7 +97,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'update'])->whereNumber('assessment');
     Route::delete('/edu-manager/assessments/{assessment}', [EduAssessmentController::class, 'destroy'])->whereNumber('assessment');
     Route::post('/edu-manager/assessments/{assessment}/grades', [EduAssessmentController::class, 'grade'])->whereNumber('assessment');
-    Route::post('/edu-manager/assessments/{assessment}/publish', [EduAssessmentController::class, 'publish'])->whereNumber('assessment');
     Route::post('/edu-manager/grades/{grade}/publish', [EduAssessmentController::class, 'publishGrade'])->whereNumber('grade');
     Route::post('/edu-manager/grades/{grade}/correct', [EduAssessmentController::class, 'correctGrade'])->whereNumber('grade');
 
@@ -123,27 +123,26 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/edu-manager/students/{student}/anonymize', [EduRetentionController::class, 'anonymize'])->whereNumber('student');
     Route::get('/edu-manager/students/{student}/privacy-export', [EduRetentionController::class, 'privacyExport'])->whereNumber('student');
 
+    // EDU-016 (#5832) — frais scolaires (direction ; contrat Accounting read model).
+    Route::get('/edu-manager/fees', [EduFeeController::class, 'index']);
+    Route::post('/edu-manager/fees', [EduFeeController::class, 'store']);
+    Route::get('/edu-manager/fees/{fee}', [EduFeeController::class, 'show'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/pay', [EduFeeController::class, 'pay'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/cancel', [EduFeeController::class, 'cancel'])->whereNumber('fee');
+    Route::post('/edu-manager/fees/{fee}/waive', [EduFeeController::class, 'waive'])->whereNumber('fee');
 
-    // EDU-011 — profil rôle-aware (navigation direction/enseignant).
-    Route::get('/edu-manager/me', [EduMeController::class, 'show']);
+    // EDU-015 (#5831) — marketing admissions (segments consentis + opt-out).
+    Route::get('/edu-manager/marketing/eligible-prospects', [EduMarketingController::class, 'eligibleProspects']);
+    Route::post('/edu-manager/admissions/{admission}/opt-out', [EduMarketingController::class, 'optOut'])->whereNumber('admission');
 
-    // EDU-012 — interface enseignant (périmètre = SES classes, 404 sinon).
-    Route::get('/edu-manager/teacher/classes', [EduTeacherInterfaceController::class, 'classes']);
-    Route::get('/edu-manager/teacher/classes/{class}/students', [EduTeacherInterfaceController::class, 'students'])->whereNumber('class');
-    Route::get('/edu-manager/teacher/classes/{class}/assessments', [EduTeacherInterfaceController::class, 'assessments'])->whereNumber('class');
-    Route::post('/edu-manager/teacher/grades/{grade}/submit', [EduTeacherInterfaceController::class, 'submitGrade'])->whereNumber('grade');
+    // EDU-014 (#5830) — notifications EduManager (lecture direction).
+    Route::get('/edu-manager/notifications', [EduNotificationController::class, 'index']);
 
-    // EDU-013/EDU-010 — portail guardian : émission d'un lien d'accès
-    // expirable à usage unique (direction uniquement, policy createAccessLink).
-    Route::post('/edu-manager/guardians/{guardian}/access-links', [EduGuardianPortalController::class, 'createAccessLink'])
-        ->whereNumber('guardian');
-
+    // EDU-013 (#5829) — portail guardian (profil, enfants, présence, bulletins, liens expirables).
+    Route::get('/edu-manager/guardians/me', [EduGuardianPortalController::class, 'me']);
+    Route::get('/edu-manager/guardians/me/students', [EduGuardianPortalController::class, 'students']);
+    Route::get('/edu-manager/guardians/me/students/{student}/presences', [EduGuardianPortalController::class, 'presences'])->whereNumber('student');
+    Route::get('/edu-manager/guardians/me/students/{student}/report-cards', [EduGuardianPortalController::class, 'reportCards'])->whereNumber('student');
+    Route::post('/edu-manager/guardians/access-links', [EduGuardianPortalController::class, 'issueLink']);
+    Route::post('/edu-manager/guardians/access-links/redeem', [EduGuardianPortalController::class, 'redeem']);
 });
-
-// EDU-013 (#5829) — portail guardian : consommation du lien (route PUBLIQUE,
-// sans auth:sanctum — le token EST le secret, HMAC 256 bits hashé au repos).
-// Replay/expiration → 410 ; throttle dédié anti-bruteforce (par token + IP).
-Route::middleware('throttle:guardian-portal')->post(
-    '/edu-manager/guardian-portal/access-links/{token}/consume',
-    [EduGuardianPortalController::class, 'consume']
-)->where('token', '[A-Za-z0-9_-]{40,120}');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
@@ -48,8 +49,7 @@ class SendEduNotificationJob implements ShouldQueue, TenantScopedJob
         public readonly array $employeeIds,
         public readonly string $templateKey,
         public readonly array $context = [],
-    ) {
-    }
+    ) {}
 
     public function tenantCompanyId(): ?string
     {
@@ -73,7 +73,7 @@ class SendEduNotificationJob implements ShouldQueue, TenantScopedJob
         }
 
         foreach ($this->employeeIds as $employeeId) {
-            $employee = \App\Core\Auth\Domain\Models\Employee::query()
+            $employee = Employee::query()
                 ->where('company_id', $company->id)
                 ->where('id', $employeeId)
                 ->first();

@@ -27,9 +27,7 @@ class EduAssessmentController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduGradeService $grades)
-    {
-    }
+    public function __construct(private readonly EduGradeService $grades) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -131,29 +129,6 @@ class EduAssessmentController extends Controller
         $grade = $this->grades->grade($actor, $assessment, $request->validated());
 
         return response()->json(['data' => $this->gradePayload($grade)], 201);
-    }
-
-    /**
-     * Publication de l'évaluation (idempotente) — EDU-011 (#5827).
-     *
-     * Pose `published_at` sur l'évaluation ; les notes restent publiables
-     * individuellement via POST /grades/{grade}/publish. Une évaluation
-     * publiée est verrouillée (plus de saisie directe côté UI).
-     */
-    public function publish(Request $request, EduAssessment $assessment): JsonResponse
-    {
-        $this->assertSolutionActive();
-
-        /** @var Employee $actor */
-        $actor = $request->user();
-        $this->assertSameTenant($assessment, $actor->company_id);
-        $this->authorize('update', $assessment);
-
-        if (! $assessment->isPublished()) {
-            $assessment->update(['published_at' => now()]);
-        }
-
-        return response()->json(['data' => $this->payload($assessment->refresh())]);
     }
 
     public function publishGrade(Request $request, EduGrade $grade): JsonResponse

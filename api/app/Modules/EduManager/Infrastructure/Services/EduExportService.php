@@ -55,7 +55,7 @@ final class EduExportService
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function students(Employee $actor): array
     {
@@ -73,7 +73,7 @@ final class EduExportService
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function presence(Employee $actor): array
     {
@@ -84,7 +84,7 @@ final class EduExportService
             ->get()
             ->map(fn (EduAttendance $attendance): array => [
                 'student_number' => $attendance->student?->student_number,
-                'attendance_date' => $attendance->attendance_date?->toDateString(),
+                'attendance_date' => $attendance->attendance_date->toDateString(),
                 'status' => $attendance->status,
                 'reason' => $attendance->reason,
             ])
@@ -92,7 +92,7 @@ final class EduExportService
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function grades(Employee $actor): array
     {
@@ -113,7 +113,7 @@ final class EduExportService
     }
 
     /**
-     * @param  list<array<string, mixed>>  $rows
+     * @param  array<int, array<string, mixed>>  $rows
      */
     private function toCsv(array $rows): string
     {

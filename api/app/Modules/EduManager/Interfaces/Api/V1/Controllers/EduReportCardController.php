@@ -25,9 +25,7 @@ class EduReportCardController extends Controller
 {
     use ChecksEduSolution;
 
-    public function __construct(private readonly EduReportCardService $cards)
-    {
-    }
+    public function __construct(private readonly EduReportCardService $cards) {}
 
     public function index(Request $request): JsonResponse
     {

@@ -14,13 +14,14 @@ use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Notification\Infrastructure\Services\Providers\AuditMessageProvider;
 use App\Modules\Notification\Infrastructure\Services\Providers\MailMessageProvider;
 use App\Modules\Notification\Infrastructure\Services\Providers\WhatsappCloudApiMessageProvider;
+use App\Shared\Contracts\Notification\EmployeeNotifier;
 use App\Support\I18nCatalog;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CommunicationService
+class CommunicationService implements EmployeeNotifier
 {
     public function __construct(
         private readonly PushNotificationService $pushNotifications,
