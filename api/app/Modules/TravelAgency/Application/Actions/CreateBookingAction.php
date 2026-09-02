@@ -145,7 +145,7 @@ final class CreateBookingAction
      * premiers libres. Echoue en 409 si un siege demande est indisponible.
      *
      * @param  list<PassengerInput>  $passengers
-     * @return list<TravelTripSeat>
+     * @return array<int, TravelTripSeat>
      */
     private function resolveSeats(TravelTrip $trip, array $passengers): array
     {

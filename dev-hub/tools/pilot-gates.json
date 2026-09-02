@@ -312,6 +312,58 @@
           "status": "pending"
         }
       ]
+    },
+    {
+      "id": "travel",
+      "label": "TravelAgency (BC-24)",
+      "go_decision": "pending",
+      "gates": [
+        {
+          "id": "manifest",
+          "label": "Manifest + activation tenant (TRAVEL-101..107)",
+          "status": "pending"
+        },
+        {
+          "id": "core_flow",
+          "label": "Parcours réseau → trajet → réservation → paiement → billet → check-in (TRAVEL-301..318, 401..413)",
+          "status": "pending"
+        },
+        {
+          "id": "api_security",
+          "label": "API, Policies, tests cross-tenant + RBAC (TRAVEL-322)",
+          "status": "pending"
+        },
+        {
+          "id": "runbook",
+          "label": "Runbook pilote + recette UAT + rollback (TRAVEL-1010)",
+          "status": "pending"
+        },
+        {
+          "id": "security_review",
+          "label": "Audit sécurité & RGPD (PII passagers, paiements, exports — TRAVEL-1013)",
+          "status": "pending"
+        },
+        {
+          "id": "performance",
+          "label": "Budgets p95 & index (MAT-014 — endpoints livraison/reservations)",
+          "status": "pending"
+        },
+        {
+          "id": "observability",
+          "label": "Observabilité (outbox, jobs, erreurs — TRAVEL-414/418)",
+          "status": "pending"
+        },
+        {
+          "id": "golden_journey",
+          "label": "Golden journey GJ-TRAVEL-01 (TRAVEL-1007)",
+          "status": "pending"
+        },
+        {
+          "id": "recette",
+          "label": "Recette signée tenant pilote (TRAVEL-1012)",
+          "status": "pending"
+        }
+      ]
     }
   ],
   "decision_rules": {

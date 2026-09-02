@@ -1,0 +1,483 @@
+{
+  "info": {
+    "name": "Leopardo HR — TravelAgency (BC-24)",
+    "description": "API TravelAgency : référentiel, réseau, ventes, billets, paiements, boutique publique, multi-devise, corporate, PDV. Guide : docs/architecture/travel-partner-integration.md",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.leopardo.example"
+    },
+    {
+      "key": "shop_token",
+      "value": "tshop_..."
+    }
+  ],
+  "item": [
+    {
+      "name": "Santé — ping",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/ping",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "ping"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Référentiel — pays",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/countries",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "countries"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Réseau — créer trajet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/trips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "trips"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"DLA-YDE-001\",\n  \"route_id\": 1,\n  \"carrier_id\": 1,\n  \"departure_date\": \"2026-10-01\",\n  \"departure_time\": \"08:00\",\n  \"arrival_date\": \"2026-10-01\",\n  \"arrival_time\": \"11:30\",\n  \"means_of_transport\": \"bus\",\n  \"total_seats\": 40\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Réseau — publier trajet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/trips/1/publish",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "trips",
+            "1",
+            "publish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Vente — réservation guichet",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/bookings",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "bookings"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trip_id\": 1,\n  \"booking_source\": \"office\",\n  \"idempotency_key\": \"postman-1\",\n  \"passengers\": [\n    {\n      \"full_name\": \"Jean Dupont\",\n      \"age_category\": \"adult\",\n      \"class_id\": 1\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Vente — confirmer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/bookings/1/confirm",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "bookings",
+            "1",
+            "confirm"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Vente — émettre billets",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/bookings/1/issue-ticket",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "bookings",
+            "1",
+            "issue-ticket"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Vente — check-in",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/tickets/1/check-in",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "tickets",
+            "1",
+            "check-in"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Rapports — ventes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/reports/sales",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "reports",
+            "sales"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Paiement — initier",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/payments/initiate",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "payments",
+            "initiate"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"booking_reference\": \"GV-XXXXXXXXXX\",\n  \"provider_code\": \"cash\",\n  \"idempotency_key\": \"postman-pay-1\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Boutique publique — recherche",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Travel-Shop-Token",
+            "value": "{{shop_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/public/travel/shop/trips",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "public",
+            "travel",
+            "shop",
+            "trips"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Boutique publique — réservation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Travel-Shop-Token",
+            "value": "{{shop_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/public/travel/shop/bookings",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "public",
+            "travel",
+            "shop",
+            "bookings"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"trip_id\": 1,\n  \"idempotency_key\": \"postman-shop-1\",\n  \"passengers\": [\n    {\n      \"full_name\": \"Client\",\n      \"age_category\": \"adult\",\n      \"class_id\": 1\n    }\n  ],\n  \"contact_email\": \"client@example.com\",\n  \"notify_consent\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Multi-devise — conversion",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/currency-rates/convert?amount_minor=60000&from=XAF&to=EUR",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "currency-rates",
+            "convert?amount_minor=60000&from=XAF&to=EUR"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Correspondances — recherche",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/shop/connections?origin_city_id=1&destination_city_id=2&date=2026-10-01",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "shop",
+            "connections?origin_city_id=1&destination_city_id=2&date=2026-10-01"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Corporate — devis",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/corporate-quotes",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "corporate-quotes"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"corporate_account_id\": 1,\n  \"trip_id\": 1,\n  \"class_id\": 1,\n  \"passengers_count\": 6\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "PDV — ouvrir caisse",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/travel/pdv/session/open",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "travel",
+            "pdv",
+            "session",
+            "open"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"opening_balance_minor\": 0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
