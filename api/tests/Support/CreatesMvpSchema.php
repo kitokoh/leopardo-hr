@@ -4474,6 +4474,23 @@ if (! Schema::hasTable($this->moduleTable('delivery_recipient_opt_outs'))) {
                 $table->unique(['company_id', 'phone'], 'delivery_recipient_opt_outs_company_phone_unique');
             });
         }
+
+
+if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
+            Schema::create($this->moduleTable('delivery_exports'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('status', 20)->default('pending');
+                $table->date('from_date');
+                $table->date('to_date');
+                $table->string('filename', 255)->nullable();
+                $table->string('error_message', 500)->nullable();
+                $table->unsignedBigInteger('requested_by')->nullable();
+                $table->timestamp('completed_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'status'], 'delivery_exports_company_status_idx');
+            });
+        }
 }
 
     private function dropMvpTables(): void
