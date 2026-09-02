@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Accounting;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Exceptions\CreditNoteRequiresSourceInvoiceException;
@@ -14,9 +15,7 @@ use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -275,7 +274,7 @@ class DocumentWorkflowNumberingTest extends TestCase
         $future = $this->makeDocument(overrides: ['due_date' => '2026-09-30']);
         $workflow->transition($future, DocumentStatus::Sent);
 
-        $count = $workflow->refreshOverdue($this->company, Carbon::parse('2026-08-15'));
+        $count = $workflow->refreshOverdue($this->company->id); // #6572 : signature refreshOverdue(string \$companyId) — le seuil « aujourd'hui » est now()
 
         $this->assertSame(1, $count);
         $this->assertSame(DocumentStatus::Overdue->value, $overdue->refresh()->status);

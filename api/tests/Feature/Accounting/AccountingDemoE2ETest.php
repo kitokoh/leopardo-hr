@@ -7,6 +7,8 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
+use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
@@ -16,7 +18,6 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -59,7 +60,7 @@ class AccountingDemoE2ETest extends TestCase
         $companyB = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD', 'timezone' => 'UTC']);
         $this->companyB = $companyB;
 
-        $this->workflow = new DocumentWorkflowService(app(\App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface::class));
+        $this->workflow = new DocumentWorkflowService(app(DocumentNumberingInterface::class));
 
         // PDF : fake tant que l'implémentation #5224 n'est pas mergée.
         app()->instance(PdfRendererInterface::class, new class implements PdfRendererInterface
@@ -329,7 +330,7 @@ class AccountingDemoE2ETest extends TestCase
         $this->recomputeTotals($invoice, 19.0);
         $this->workflow->transition($invoice, DocumentStatus::Sent);
 
-        $count = $this->workflow->refreshOverdue($this->companyA);
+        $count = $this->workflow->refreshOverdue($this->companyA->id); // #6572 : signature refreshOverdue(string \$companyId)
 
         // La facture du test est échue ; la facture partielle de la vitrine demo
         // (échéance J-5) l'est aussi → au moins 2 factures overdue.
