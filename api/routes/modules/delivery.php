@@ -25,6 +25,7 @@ use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryEventController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRiderController;
@@ -70,6 +71,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
+            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
+            // effectif + outbox (numéros masqués RGPD hors admin).
+            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
+            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
         });
     // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
     // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
