@@ -66,6 +66,11 @@ const ignorePathFragments = [
   // même mécanique que vitrine-locale.ts : c'est le catalogue inline, pas une
   // chaîne hardcodée hors i18n. Issue #4703.
   '/vitrine/lib/case-studies.ts',
+  // Route forms solution-survey (#6692) : messages de réponse français
+  // opérationnels, même pattern que les routes forms pré-existantes
+  // (contact/signup/newsletter/demo, PA2-MKT-007). Leur localisation est un
+  // follow-up documenté dans l'issue #6692.
+  '/api/forms/solution-survey/route.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never

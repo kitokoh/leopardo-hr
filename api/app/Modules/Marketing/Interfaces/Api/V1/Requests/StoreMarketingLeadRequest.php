@@ -18,7 +18,7 @@ class StoreMarketingLeadRequest extends FormRequest
     {
         return [
             'external_id' => ['required', 'string', 'max:80'],
-            'type' => ['required', 'string', 'in:signup,demo_request,newsletter,contact'],
+            'type' => ['required', 'string', 'in:signup,demo_request,newsletter,contact,solution_survey'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'locale' => ['sometimes', 'string', 'max:5'],
             'country' => ['sometimes', 'nullable', 'string', 'max:2'],

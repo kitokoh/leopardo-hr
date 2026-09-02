@@ -44,7 +44,24 @@ Vitrine web (/restaurant)                     API Laravel
 | GET | `/api/v1/solutions` | — | `{ data: [{ code, name, description, maturity }] }` |
 | GET | `/api/v1/solutions/{code}/survey` | — | `{ data: { code, questions, packages } }` |
 | POST | `/api/v1/solutions/{code}/survey` | `{ answers: { clé_question: valeur } }` | `{ data: { code, packages: [{ key, type, label_key, reason_key, priority, app?, download? }], total } }` |
-| GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*`) |
+| GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*` ×4) |
+| POST | `/api/forms/solution-survey` (vitrine Next) | `{ email, consent: true, data: { solution, answers, packages } }` | Lead persiste via PA2-MKT-007 (`marketing_leads`, type `solution_survey`) |
+
+## Capture du lead (#6692)
+
+Le wizard (étape téléchargement) propose « Recevez votre pack par email » : email + **consentement marketing explicite** (obligatoire, horodaté dans `payload.consented_at`). La route Next `front/web/src/app/api/forms/solution-survey/route.ts` valide (zod, rate-limit) puis persiste via `captureMarketingLead()` → `POST /marketing/leads` (secret partagé, idempotent) avec le pack sélectionné dans `payload`.
+
+**RGPD** : aucun lead sans consentement ; le registre `docs/RGPD_REGISTRE_TRAITEMENTS.md` doit référencer ce traitement (follow-up).
+
+## Activation d'une solution sur un tenant (#6693)
+
+La commande existante active une solution par tenant (idempotente, auditée, fail-closed) :
+
+```bash
+php artisan leopardo:solution:activate {company_uuid} restaurant [--actor={employee_id}]
+```
+
+L'activation **à l'inscription** (provisioning tenant → `SolutionActivator`) reste à câbler (issue #6693).
 
 ## Ajouter une nouvelle solution (ex. FuelStation)
 
@@ -99,8 +116,9 @@ commande console ou le dashboard (voir ci-dessous).
 
 ## À faire (prochaines étapes)
 
-- [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
-- [x] Traductions tr/ar des labels (ou branchement `/i18n/catalog`) — #6691
-- [x] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant — #6692
-- [x] Activation tenant post-inscription via `SolutionActivator` — #6693
+- [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*` ×4 (fr/en/tr/ar)
+- [x] Labels ×4 du wizard (SOLUTION_LABELS tr/ar + garde PA2-I18N-014) — #6691
+- [x] Capture des leads (email + consentement RGPD) via `POST /api/forms/solution-survey` → `marketing_leads` (type `solution_survey`) — #6692
+- [ ] Branchement `/i18n/catalog` pour les messages de réponse des routes forms
+- [x] Activation tenant post-inscription via `SolutionActivator` (commande `leopardo:solution:activate` documentée + wiring signup) — #6693
 - [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694

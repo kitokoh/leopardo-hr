@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
-type MarketingLeadType = 'signup' | 'demo_request' | 'newsletter' | 'contact';
+type MarketingLeadType = 'signup' | 'demo_request' | 'newsletter' | 'contact' | 'solution_survey';
 
 /**
  * Whether marketing forms are enabled for the vitrine, mirroring
