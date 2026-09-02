@@ -101,6 +101,7 @@ return [
     'ALREADY_PROCESSED' => 'Bu deneme talebi zaten işlendi.',
     'INVALID_OR_EXPIRED_CODE' => 'Geçersiz veya süresi dolmuş doğrulama kodu.',
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
+    'INVALID_SOLUTION' => 'Bilinmeyen veya kullanılamayan sektörel çözüm: :solution.',
     'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
     'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
     'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',

@@ -54,6 +54,23 @@ class SelfServiceTrialController extends Controller
             'source' => ['nullable', 'string', 'max:120'],
             'referral_code' => ['nullable', 'string', 'max:50'],
             'requestedWorkflow' => ['nullable', 'string', 'in:guided_trial,self_service'],
+            // BC-25 (#6693) : solutions sectorielles demandées à l'inscription
+            // (ex. « restaurant » depuis le wizard vitrine). Codes vérifiés
+            // contre le catalogue serveur (fail-closed : code inconnu → 422,
+            // pas de provisioning partiel). Idempotent : une solution déjà
+            // active est un no-op.
+            'solutions' => ['nullable', 'array', 'max:20'],
+            'solutions.*' => [
+                'string',
+                'max:40',
+                'distinct',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $code = strtolower(trim((string) $value));
+                    if (! App::make(\App\Core\Solutions\SolutionCatalogue::class)->has($code)) {
+                        $fail(__('errors.INVALID_SOLUTION', ['solution' => $code]));
+                    }
+                },
+            ],
         ]);
 
         /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null} $validated */
@@ -164,7 +181,7 @@ class SelfServiceTrialController extends Controller
                 throw $e;
             }
 
-            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken);
+            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken, $validated['solutions'] ?? []);
 
             return new JsonResponse([
                 'success' => true,

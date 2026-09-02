@@ -1288,6 +1288,13 @@ paths:
                   enum:
                   - guided_trial
                   - self_service
+                solutions:
+                  type: array
+                  description: Solutions sectorielles demandées à l'inscription (BC-25 #6693) — codes du catalogue serveur (ex. restaurant, fuel_station) ; code inconnu → 422.
+                  maxItems: 20
+                  items:
+                    type: string
+                    maxLength: 40
       responses:
         '200':
           description: 'Demande reçue (guided_trial : provisioning lancé)'
