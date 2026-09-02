@@ -11,7 +11,6 @@ use Illuminate\Validation\Rule;
 
 /**
  * RESTO-606 (#6211) — Activation d'un client fidélité (opt-in RGPD requis).
-use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * RESTO-606 (#6211) — Validation de l'opt-in fidélité d'un client.

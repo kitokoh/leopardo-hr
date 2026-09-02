@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * (regeneration) invalide l'ancien jeton. Consomme par le middleware
  * `restaurant.public.shop` pour resoudre le tenant sans authentification
  * utilisateur (pattern TravelPublicShopToken, TRAVEL-1001/#6114).
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * RESTO-805 (#6226) — Jeton de la boutique publique RestaurantManager.

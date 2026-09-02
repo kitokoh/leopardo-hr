@@ -25,9 +25,6 @@ use Illuminate\Support\Carbon;
  * L'enforcement opérationnel de l'accès est porté par `companies.status`
  * (active/suspended), distinct de l'état de la souscription. La récupération
  * (paiement) passe par `transitionTo(Active)`.
-use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
-use App\Modules\Billing\Domain\Models\Subscription;
-use Illuminate\Console\Command;
 
 /**
  * billing:enforce-delinquency — Politique EXPLICITE de recouvrement des

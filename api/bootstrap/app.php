@@ -27,7 +27,6 @@ use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
 use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
-use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;

@@ -7,7 +7,6 @@ namespace App\Modules\EduManager\Providers;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Console\Commands\EduOutboxDispatchCommand;
-use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Infrastructure\Services\EduOutboxConsumerRegistry;
 use Illuminate\Support\ServiceProvider;
 

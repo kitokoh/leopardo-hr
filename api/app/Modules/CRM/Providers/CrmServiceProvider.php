@@ -44,7 +44,6 @@ use App\Modules\CRM\Policies\CrmMergePolicy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Foundation\Application;
 
 /**
  * Provider du module CRM client — #5714/#5717/#5718/#5741 (import CSV,
