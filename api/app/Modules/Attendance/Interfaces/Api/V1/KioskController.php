@@ -11,6 +11,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use App\Modules\Attendance\Infrastructure\Services\BiometricAuditLogger;
 use App\Modules\Attendance\Infrastructure\Services\KioskAttendanceService;
+use App\Modules\Attendance\Infrastructure\Services\KioskFaceVerificationService;
 use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
@@ -30,6 +31,7 @@ class KioskController extends Controller
         private readonly KioskAttendanceService $kioskAttendanceService,
         private readonly OnboardingQrInterface $onboardingQr,
         private readonly BiometricAuditLogger $biometricAudit,
+        private readonly KioskFaceVerificationService $faceVerification,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -504,6 +506,82 @@ class KioskController extends Controller
                 'status' => $log->status,
             ],
         ], $statusCode);
+    }
+
+    /**
+     * BIO-004 (#6765) — pointage kiosque par vérification faciale 1:1.
+     *
+     * Identification → capture (multipart) → qualité/liveness/comparaison
+     * (moteur configurable, défaut fail-closed) → événement de pointage.
+     * Un échec facial ne crée jamais de présence : réponse structurée avec
+     * les méthodes de repli réellement activées (BIO-006).
+     */
+    public function verifyFace(Request $request, string $deviceCode): JsonResponse
+    {
+        $validated = $request->validate([
+            'identifier' => ['required', 'string', 'max:150'],
+            'capture' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'action' => ['nullable', 'in:check_in,check_out'],
+            'work_type' => ['nullable', 'string', 'in:normal,overtime,break,resume,mission,travel,training,other'],
+            'device_event_id' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $kiosk = $this->resolveAuthorizedKiosk($request, $deviceCode);
+        $company = $kiosk->company;
+        app()->instance('current_company', $company);
+
+        $capture = $request->file('capture');
+        if (! $capture instanceof \Illuminate\Http\UploadedFile) {
+            abort(422, 'CAPTURE_REQUIRED');
+        }
+
+        $result = $this->faceVerification->verifyAndPunch(
+            kiosk: $kiosk,
+            identifier: trim((string) $validated['identifier']),
+            capture: $capture,
+            action: (string) ($validated['action'] ?? 'check_in'),
+            workType: (string) ($validated['work_type'] ?? 'normal'),
+            deviceEventId: isset($validated['device_event_id']) ? (string) $validated['device_event_id'] : null,
+        );
+
+        $log = $result['log'];
+
+        if ($result['status']->isVerified() && $log !== null) {
+            $statusCode = $log->check_out !== null ? 200 : 201;
+
+            return new JsonResponse([
+                'data' => [
+                    'verified' => true,
+                    'employee_id' => $log->employee_id,
+                    'date' => $log->date?->format('Y-m-d'),
+                    'check_in' => optional($log->check_in)->toIso8601String(),
+                    'check_out' => optional($log->check_out)->toIso8601String(),
+                    'method' => $log->method,
+                    'work_type' => $log->work_type,
+                    'session_number' => $log->session_number,
+                    'status' => $log->status,
+                    'correlation_id' => $result['correlation_id'],
+                ],
+            ], $statusCode);
+        }
+
+        // Échec facial (rejet, qualité, liveness, indisponibilité, employé
+        // non enrôlé) : 422/503 structuré + méthodes de repli — jamais de
+        // présence créée, jamais d'absence automatique.
+        $httpStatus = $result['status'] === \App\Core\AI\Domain\Enums\FaceVerificationStatus::ProviderUnavailable
+            ? 503
+            : 422;
+
+        return new JsonResponse([
+            'error' => $result['reason_code'] ?? 'FACE_VERIFICATION_FAILED',
+            'message' => $result['reason_code'] ?? 'FACE_VERIFICATION_FAILED',
+            'data' => [
+                'verified' => false,
+                'reason_code' => $result['reason_code'],
+                'correlation_id' => $result['correlation_id'],
+                'fallback_methods' => $result['fallback_methods'],
+            ],
+        ], $httpStatus);
     }
 
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk

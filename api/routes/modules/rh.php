@@ -274,4 +274,6 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
     // BIO-006 (#6767) : matrice de méthodes pilotée par le serveur.
     Route::get('/kiosks/{deviceCode}/config', [KioskController::class, 'config']);
+    // BIO-004 (#6765) : pointage kiosque par vérification faciale (multipart).
+    Route::post('/kiosks/{deviceCode}/verify-face', [KioskController::class, 'verifyFace']);
 });
