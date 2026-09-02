@@ -12,6 +12,10 @@ return [
     'accounting_payment_reminder_title' => 'تذكير بالدفع',
     'accounting_payment_reminder_body' => 'الفاتورة {document_number} ({document_total}) غير مدفوعة منذ {due_date} — تذكير اليوم {days_overdue}.',
     'generic_body' => 'تتوفر معلومات جديدة في مساحتك.',
+    'fuel_incident_reported_title' => 'تم الإبلاغ عن حادث (محطة :station_id)',
+    'fuel_incident_reported_body' => 'تم الإبلاغ عن حادث بخطورة :severity للمحطة :station_id.',
+    'fuel_stock_low_title' => 'مخزون منخفض (محطة :station_id)',
+    'fuel_stock_low_body' => 'المنتج :product أقل من الحد الأدنى (:level لتر) للمحطة :station_id.',
 
     'absence_approved_title' => 'تمت الموافقة على طلب الغياب',
     'absence_approved_body' => 'تمت الموافقة على طلب غيابك.',

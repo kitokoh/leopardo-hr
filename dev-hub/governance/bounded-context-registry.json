@@ -446,7 +446,7 @@
       "responsibility": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans.",
       "owner": "Agent 15 — BC-FUEL",
       "priority": "P0",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Solutions/FuelStation",

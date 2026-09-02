@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -21,9 +22,17 @@ use Illuminate\Support\Facades\Schema;
  *   Session de caisse toujours validée contre `fuel_cash_sessions` (même
  *   tenant). Station/pompe sont BIGINTs reliés par FKs composites
  *   (x, company_id) → fuel_stations/fuel_pumps (pattern FUEL-002/003).
+ * - Contrat Accounting (FUEL-015) : publication outbox
+ *   `fuel.sale.recorded.v1` après commit — agrégat validé, sans PII.
+ * - Fidélité (FUEL-016) : points crédités si la vente est liée à un client.
  */
 final class FuelSaleService
 {
+    public function __construct(
+        private readonly FuelOutboxPublisher $outbox,
+        private readonly FuelLoyaltyService $loyalty,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -53,6 +62,7 @@ final class FuelSaleService
             'station_id' => $data['station_id'] ?? null,
             'pump_id' => $data['pump_id'] ?? null,
             'cash_session_id' => $data['cash_session_id'] ?? null,
+            'customer_id' => $data['customer_id'] ?? null,
             'employee_id' => $actor->id,
             'product' => is_string($data['product'] ?? null) ? $data['product'] : '',
             'quantity' => $quantity,
@@ -65,7 +75,32 @@ final class FuelSaleService
         ]);
 
         // sale_time est un défaut DB (useCurrent) : refresh pour le charger.
-        return $sale->refresh();
+        $sale = $sale->refresh();
+
+        // Contrat Accounting (FUEL-015) : agrégat validé, idempotent par vente.
+        $this->outbox->publish(
+            (string) $actor->company_id,
+            FuelOutboxEvent::EVENT_SALE_RECORDED,
+            [
+                'sale_id' => $sale->id,
+                'station_id' => $sale->station_id,
+                'product' => $sale->product,
+                'quantity' => $sale->quantity,
+                'amount' => $sale->amount,
+                'sale_time' => $sale->sale_time->toISOString(),
+                'source' => $sale->source,
+            ],
+            'fuel_sale',
+            (string) $sale->id,
+            'sale-'.$sale->id,
+        );
+
+        // Fidélité (FUEL-016) : points crédités pour une vente liée client.
+        if ($sale->customer_id !== null) {
+            $this->loyalty->accruePointsForSale($sale);
+        }
+
+        return $sale;
     }
 
     private function assertPumpBelongsToTenant(Employee $actor, mixed $pumpId): void
