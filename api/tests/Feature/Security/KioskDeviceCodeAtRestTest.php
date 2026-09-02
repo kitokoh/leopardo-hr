@@ -121,10 +121,15 @@ class KioskDeviceCodeAtRestTest extends TestCase
             ])
             ->assertCreated();
 
+        $deviceCode = $response->json('data.device_code');
+        $syncToken = $response->json('data.sync_token');
+        $this->assertIsString($deviceCode);
+        $this->assertIsString($syncToken);
+
         return [
             $manager,
-            (string) $response->json('data.device_code'),
-            (string) $response->json('data.sync_token'),
+            $deviceCode,
+            $syncToken,
         ];
     }
 
@@ -185,5 +190,102 @@ class KioskDeviceCodeAtRestTest extends TestCase
         DB::statement('SET search_path TO public');
 
         return [$manager];
+    }
+    // ── #6678 — provisioning kiosque fail-closed (repro prod 2026-09-01) ──
+
+    public function test_register_fails_closed_when_kiosk_not_resolvable_in_public_context(): void
+    {
+        // Tenant en mode schema-par-tenant : le provisioning écrit la ligne
+        // dans le schéma du tenant, alors que les routes publiques kiosque
+        // (roster/punch/sync) résolvent uniquement dans shared_tenants
+        // (resolveAuthorizedKiosk). Avant #6678 : 201 + credentials
+        // inutilisables (404 permanent sur roster). Après : 500 fail-closed +
+        // ligne orpheline supprimée + audit.
+        DB::statement('CREATE SCHEMA IF NOT EXISTS tenant_a');
+        DB::statement('SET search_path TO tenant_a,public');
+        DB::statement("CREATE TABLE attendance_kiosks (
+            id BIGSERIAL PRIMARY KEY,
+            company_id UUID NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            location_label VARCHAR(255) NULL,
+            device_code VARCHAR(255) NOT NULL,
+            status VARCHAR(50) NOT NULL DEFAULT 'active',
+            biometric_mode VARCHAR(50) NULL,
+            trusted_device_label VARCHAR(255) NULL,
+            sync_token_hash VARCHAR(255) NULL,
+            last_seen_at TIMESTAMPTZ NULL,
+            last_sync_at TIMESTAMPTZ NULL,
+            created_at TIMESTAMPTZ NULL,
+            updated_at TIMESTAMPTZ NULL
+        )");
+        DB::statement('SET search_path TO shared_tenants,public');
+
+        $company = Company::query()->create([
+            'name' => 'Schema Tenant Corp',
+            'slug' => 'schema-tenant-'.Str::random(6),
+            'sector' => 'services',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'schema@kiosk-hash.test',
+            'plan_id' => 1,
+            'schema_name' => 'tenant_a',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+        ]);
+        // Le mode schema est verrouillé à la création (COMPANY_SCHEMA_MODE_LOCKED) :
+        // on bascule le flag via saveQuietly pour simuler un tenant schema réel.
+        $company->forceFill(['tenancy_type' => 'schema', 'schema_name' => 'tenant_a'])->saveQuietly();
+
+        $manager = new Employee([
+            'first_name' => 'Manager',
+            'last_name' => 'Schema',
+            'email' => 'manager.schema@kiosk-hash.test',
+            'matricule' => 'EMP-SCHEMA-001',
+        ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
+
+        try {
+            $this->actingAs($manager, 'sanctum')
+                ->postJson('/api/v1/kiosks', ['name' => 'Kiosk schema'])
+                ->assertStatus(500)
+                ->assertJsonPath('error', 'KIOSK_PROVISIONING_FAILED');
+
+            // Fail-closed : la ligne orpheline a été supprimée du schéma tenant.
+            DB::statement('SET search_path TO tenant_a,public');
+            $this->assertSame(0, DB::table('attendance_kiosks')->count());
+        } finally {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
+    }
+
+    public function test_register_after_search_path_leak_still_provisions_resolvable_kiosk(): void
+    {
+        [$manager] = $this->seedCompanyManager();
+
+        // Repro #6678 : le provisioning intervient après une rafale de
+        // requêtes tenant ; si l'une d'elles a laissé fuir un search_path
+        // (famille #4787/#4798/#4852), le create doit quand même atterrir
+        // dans shared_tenants et les credentials rester utilisables.
+        DB::statement('SET search_path TO tenant_leak,public');
+
+        try {
+            [, $deviceCode, $syncToken] = $this->registerKiosk($manager);
+
+            $this->withHeader('X-Kiosk-Token', $syncToken)
+                ->getJson('/api/v1/kiosks/'.$deviceCode.'/roster')
+                ->assertOk()
+                ->assertJsonPath('data.device_code', $deviceCode);
+        } finally {
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
     }
 }

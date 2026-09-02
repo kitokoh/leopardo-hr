@@ -71,6 +71,11 @@ class KioskController extends Controller
             'status' => 'active',
         ]);
 
+        // #6678 — garde fail-closed de provisioning (repro prod 2026-09-01) :
+        // ne rendre des credentials QUE si la ligne est résolvable par les
+        // routes publiques kiosque (roster/punch/sync). Sinon 500 + audit.
+        $this->assertKioskProvisionedInPublicContext($kiosk);
+
         return new JsonResponse([
             'data' => array_replace($this->serializeKiosk($kiosk), [
                 'device_code' => $plainDeviceCode,
@@ -674,5 +679,48 @@ class KioskController extends Controller
             'face_enabled' => $hasFaceColumn ? (bool) ($employee->biometric_face_enabled ?? false) : false,
             'fingerprint_enabled' => $hasFingerprintColumn ? (bool) ($employee->biometric_fingerprint_enabled ?? false) : false,
         ];
+    }
+
+    /**
+     * #6678 — garde fail-closed de provisioning kiosque (repro prod
+     * 2026-09-01 : 1 kiosque sur 3 créé via POST /kiosks devenait
+     * introuvable — 404 permanent sur roster malgré device_code +
+     * sync_token valides).
+     *
+     * Les routes publiques kiosque (roster/punch/sync, middleware
+     * `kiosk.search_path`) résolvent le device dans `shared_tenants`
+     * (resolveAuthorizedKiosk). Si la ligne vient d'être écrite ailleurs
+     * (fuite de search_path sur worker partagé — famille #4787/#4798/#4852 —
+     * ou tenant en mode schema-par-tenant), les credentials rendus seraient
+     * inutilisables : on supprime la ligne orpheline, on trace l'audit et on
+     * échoue (500) au lieu de livrer un kiosque introuvable sur site.
+     */
+    private function assertKioskProvisionedInPublicContext(AttendanceKiosk $kiosk): void
+    {
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'shared_tenants,public';
+
+        // Contexte EXACT des routes publiques (resolveAuthorizedKiosk).
+        DB::statement('SET search_path TO shared_tenants,public');
+        $resolvable = AttendanceKiosk::query()
+            ->where('device_code', $kiosk->device_code)
+            ->where('status', 'active')
+            ->exists();
+        DB::statement('SET search_path TO '.$previous);
+
+        if ($resolvable) {
+            return;
+        }
+
+        // Fail-closed : ne jamais rendre des credentials inutilisables.
+        $kiosk->delete();
+        Log::channel('audit')->error('kiosk.provisioning.mismatch', [
+            'kiosk_id' => $kiosk->id,
+            'company_id' => $kiosk->company_id,
+            'device_code_hash' => $kiosk->device_code,
+        ]);
+        abort(500, 'KIOSK_PROVISIONING_FAILED');
     }
 }
