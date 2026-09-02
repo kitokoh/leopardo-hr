@@ -15,16 +15,6 @@ use Illuminate\Support\Facades\Schema;
  * seul le hash SHA-256 est persiste, la rotation invalide l'ancien jeton.
  * `company_id` non nullable ; scope BelongsToCompany → aucune fuite
  * cross-tenant (critere d'acceptation RESTO-805).
-use Illuminate\Support\Facades\Schema;
-
-/**
- * #6226 (RESTO-805) — Commande en ligne publique : jeton signé par tenant.
- *
- * Un jeton actif par tenant (hash SHA-256 seul persisté, jamais le jeton en
- * clair — pattern TravelPublicShopToken #6114). Les endpoints publics
- * (`/public/restaurant/*`) résolvent le tenant par ce jeton : aucune donnée
- * d'un autre tenant n'est accessible (critère d'acceptation RESTO-805).
- * La rotation (régénération) invalide l'ancien jeton.
  */
 return new class extends Migration
 {
@@ -46,13 +36,6 @@ return new class extends Migration
             });
 
             DB::statement("COMMENT ON TABLE restaurant_public_shop_tokens IS 'Jetons signes de la boutique publique RestaurantManager : hash SHA-256 seul, rotation possible (RESTO-805/#6226).';");
-                $table->uuid('company_id')->unique();
-                $table->string('token_hash', 64);
-                $table->string('name', 80)->nullable();
-                $table->boolean('active')->default(true);
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamps();
-            });
         }
     }
 

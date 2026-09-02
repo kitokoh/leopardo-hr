@@ -30,20 +30,6 @@ use Throwable;
  *
  * Usage : php artisan travel:outbox-dispatch --limit=100
  * Scheduler : toutes les minutes (routes/console.php).
- * TRAVEL-414 (#6066) — Consomme l'outbox des événements TravelAgency
- * (pattern CrmOutboxDispatchCommand #5741).
- *
- * Pour chaque événement pending et dû (available_at ≤ now), dans la limite
- * du lot :
- *   1. claim atomique pending → published (un seul worker traite) ;
- *   2. résolution du consommateur ; aucun → l'événement reste pending
- *      (l'adaptateur CRM/Accounting arrive avec les issues de
- *      consommation — ne pas dead-letter des événements métier) ;
- *   3. exécution idempotente dans le contexte tenant ;
- *   4. succès → published ; erreur transitoire → retry avec backoff
- *      exponentiel ; erreurs répétées (attempts ≥ max) → dead-letter (failed).
- *
- * Usage : php artisan travel:outbox-dispatch --limit=100
  */
 class TravelOutboxDispatchCommand extends Command
 {
@@ -53,7 +39,6 @@ class TravelOutboxDispatchCommand extends Command
     protected $description = 'Consomme les événements d\'outbox TravelAgency dus (idempotent, retry avec backoff, dead-letter).';
 
     /** Durée de lease d'un événement en cours de traitement (pattern #5741). */
-    /** Durée de lease d'un événement en cours de traitement (crash worker). */
     private const PROCESSING_LEASE_MINUTES = 15;
 
     public function __construct(
@@ -89,8 +74,6 @@ class TravelOutboxDispatchCommand extends Command
     /**
      * Claim atomique d'un lot : pending+due → processing, ET reprise des
      * `processing` orphelins (lease expirée — worker crash, pattern #5741).
-     * Claim atomique d'un lot : pending+due → published, ET reprise des
-     * événements orphelins (lease expirée — worker crash).
      *
      * @return list<int>
      */
@@ -123,11 +106,6 @@ class TravelOutboxDispatchCommand extends Command
         }
 
         return array_map('intval', $claimed);
-                $claimed[] = (int) $id;
-            }
-        }
-
-        return $claimed;
     }
 
     private function processEvent(int $eventId): void
@@ -143,15 +121,6 @@ class TravelOutboxDispatchCommand extends Command
 
         if ($consumer === null) {
             $this->deadLetter($event, 'no_consumer');
-        $consumer = $this->registry->consumerFor((string) $event->event_type);
-
-        if ($consumer === null) {
-            // Aucun adaptateur enregistré : on diffère (pas de dead-letter),
-            // les consommateurs Notifications/CRM/Accounting arrivent avec les
-            // issues de consommation. L'événement redevient pending.
-            $event->update(['status' => TravelOutboxEvent::STATUS_PENDING]);
-
-            $this->warn("[travel:outbox-dispatch] #{$event->id} pas de consommateur pour {$event->event_type} — différé.");
 
             return;
         }
@@ -161,12 +130,6 @@ class TravelOutboxDispatchCommand extends Command
             $company = Company::query()->findOrFail($event->company_id);
 
             $this->tenants->withinTenant($company, fn () => $consumer->handle($event->payload_redacted));
-            $company = Company::query()->findOrFail((string) $event->company_id);
-
-            $this->tenants->withinTenant($company, fn () => $consumer->handle(
-                $event,
-                is_array($event->payload_redacted) ? $event->payload_redacted : []
-            ));
 
             $event->forceFill([
                 'status' => TravelOutboxEvent::STATUS_PUBLISHED,
@@ -180,7 +143,6 @@ class TravelOutboxDispatchCommand extends Command
             $this->retry($event, $e->getMessage());
         } catch (Throwable $e) {
             // Transitoire par défaut : retry avec backoff (borné par MAX_ATTEMPTS).
-        } catch (Throwable $e) {
             $this->retry($event, $e->getMessage());
         }
     }

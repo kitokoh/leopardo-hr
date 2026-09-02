@@ -32,15 +32,6 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobile
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileRiderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileServerController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMobileSyncController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryRiderController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHealthController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantHourController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantIngredientController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKitchenController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyaltyController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMenuItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantOrderTransitionController;
@@ -49,26 +40,20 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPosSes
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
-Temporary merge branch 2
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicMenuLinkController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicOrderController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantProductIngredientController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPurchaseOrderItemController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReceivingController;
-Temporary merge branch 2
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
+
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyaltyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportController;
-origin/pm/merge-all-open-branches
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportExportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationAvailabilityController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReservationController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockLevelController;
-Temporary merge branch 2
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantRefundController;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantSupplierController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableSessionController;
@@ -231,7 +216,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/inventory-counts', [RestaurantInventoryCountController::class, 'index']);
         Route::post('/inventory-counts', [RestaurantInventoryCountController::class, 'store']);
         Route::get('/inventory-counts/{restaurantInventoryCount}', [RestaurantInventoryCountController::class, 'show']);
-        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/submit', [RestaurantInventoryCountController::class, 'submit']);
         Route::post('/inventory-counts/{restaurantInventoryCount}/approve', [RestaurantInventoryCountController::class, 'approve']);
 
@@ -247,108 +231,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/reservations/{restaurantReservation}/check-in', [RestaurantReservationController::class, 'checkIn']);
         Route::post('/reservations/{restaurantReservation}/no-show', [RestaurantReservationController::class, 'noShow']);
         Route::post('/reservations/{restaurantReservation}/cancel', [RestaurantReservationController::class, 'cancel']);
-Temporary merge branch 2
 
-
-        // --- Routes ajoutées (union PM) ---
-        Route::get('/delivery-riders', [RestaurantDeliveryRiderController::class, 'index']);
-        Route::post('/delivery-riders', [RestaurantDeliveryRiderController::class, 'store']);
-        Route::get('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'show']);
-        Route::put('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'update']);
-        Route::delete('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'destroy']);
-        Route::get('/deliveries', [RestaurantDeliveryController::class, 'index']);
-        Route::post('/deliveries', [RestaurantDeliveryController::class, 'store']);
-        Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
-        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'assign']);
-        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'outForDelivery']);
-        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'deliver']);
-        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'cancel']);
-        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexProgram']);
-        Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
-        Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
-        Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
-        Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
-        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/credit', [RestaurantLoyaltyController::class, 'creditCustomer']);
-        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeemCustomer']);
-        Route::get('/promotions', [RestaurantPromotionController::class, 'index']);
-        Route::post('/promotions', [RestaurantPromotionController::class, 'store']);
-        Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
-        Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
-        Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
-        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validate']);
-        Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
-        Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
-        Route::get('/reports/products', [RestaurantReportController::class, 'products']);
-        Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
-        Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
-        Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
-        Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
-
-
-        // --- Routes ajoutées (union PM) ---
-        // ── Livraison (RESTO-605/#6210) ─────────────────────────────────────
-        Route::get('/delivery-riders', [RestaurantDeliveryRiderController::class, 'index']);
-        Route::post('/delivery-riders', [RestaurantDeliveryRiderController::class, 'store']);
-        Route::get('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'show']);
-        Route::put('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'update']);
-        Route::delete('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'destroy']);
-        Route::get('/deliveries', [RestaurantDeliveryController::class, 'index']);
-        Route::post('/deliveries', [RestaurantDeliveryController::class, 'store']);
-        Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
-        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'assign']);
-        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'outForDelivery']);
-        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'deliver']);
-        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'cancel']);
-        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexProgram']);
-        Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
-        Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
-        Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
-        Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
-        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/credit', [RestaurantLoyaltyController::class, 'creditCustomer']);
-        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeemCustomer']);
-
-        Route::post('/orders/{restaurantOrder}/delivery', [RestaurantDeliveryController::class, 'store']);
-        Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
-        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'transition']);
-        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'transition']);
-        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'transition']);
-        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'transition']);
-
-        // ── Fidélité (RESTO-606/#6211) ──────────────────────────────────────
-        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexPrograms']);
-        Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
-        Route::get('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'showProgram']);
-        Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
-
-        Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
-        Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
-        Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}', [RestaurantLoyaltyController::class, 'showCustomer']);
-        Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}/movements', [RestaurantLoyaltyController::class, 'customerMovements']);
-        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeem']);
-
-        // ── Promotions (RESTO-607/#6212) ────────────────────────────────────
-        Route::get('/promotions', [RestaurantPromotionController::class, 'index']);
-        Route::post('/promotions', [RestaurantPromotionController::class, 'store']);
-        Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
-        Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
-        Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
-        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validate']);
-
-        // ── Rapports & pilotage (RESTO-701/702/703, #6214/#6215/#6216) ──────
-        Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
-        Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
-        Route::get('/reports/products', [RestaurantReportController::class, 'products']);
-        Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
-        Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
-        Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
-        Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
-    });
-
-// Téléchargement d'export signé — route publique (la signature EST l'auth).
-// La signature est émise par `RestaurantReportExportService` (TTL 10 min).
-Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportController::class, 'download'])
-    ->name('restaurant.reports.export.download')
-    ->middleware('signed');
         // ── Boutique publique : gestion du jeton (RESTO-805/#6226) ─────────
         Route::get('/shop/token', [RestaurantPublicShopController::class, 'token']);
         Route::post('/shop/token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
@@ -376,45 +259,48 @@ Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportControl
             // Synchronisation offline (RESTO-804/#6225) : file idempotente.
             Route::post('/sync', [RestaurantMobileSyncController::class, 'sync']);
         });
-Temporary merge branch 2
-        Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
-        Route::post('/reports/export', [RestaurantReportController::class, 'export']);
-        Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
+Route::get('/delivery-riders', [RestaurantDeliveryRiderController::class, 'index']);
+Route::post('/delivery-riders', [RestaurantDeliveryRiderController::class, 'store']);
+Route::get('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'show']);
+Route::put('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'update']);
+Route::delete('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'destroy']);
+Route::post('/orders/{restaurantOrder}/delivery', [RestaurantDeliveryController::class, 'store']);
+Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
+Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'transition']);
+Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexPrograms']);
+Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
+Route::get('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'showProgram']);
+Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
+Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
+Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
+Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}', [RestaurantLoyaltyController::class, 'showCustomer']);
+Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}/movements', [RestaurantLoyaltyController::class, 'customerMovements']);
+Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeem']);
+Route::get('/promotions', [RestaurantPromotionController::class, 'index']);
+Route::post('/promotions', [RestaurantPromotionController::class, 'store']);
+Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
+Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
+Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
+Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
+Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
+Route::get('/reports/products', [RestaurantReportController::class, 'products']);
+Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
+Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
+Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
+Route::post('/reports/export', [RestaurantReportController::class, 'export']);
+Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
             ->name('restaurant.reports.export.download');
-    });
-        // ── Commande en ligne publique (RESTO-805/#6226) — lien signé ──────
-        Route::post('/branches/{restaurantBranch}/public-menu-link', [RestaurantPublicMenuLinkController::class, 'store']);
-    });
-
-/**
- * Commande en ligne publique (RESTO-805 #6226) — routes PUBLIQUES protégées
- * par le middleware `signed` (token signé expirable, le company_id est un
- * paramètre signé) : forger un lien pour un autre tenant est impossible.
- * Webhook apps de livraison (RESTO-806 #6227) — public, signature HMAC
- * vérifiée avec le secret du tenant (X-Signature).
- */
-Route::get('/restaurant/public/menu', [RestaurantPublicOrderController::class, 'menu'])
-    ->middleware(['signed', 'throttle:60,1'])
-    ->name('restaurant.public.menu');
-Route::post('/restaurant/public/orders', [RestaurantPublicOrderController::class, 'store'])
-    ->middleware(['signed', 'throttle:60,1'])
-    ->name('restaurant.public.orders.store');
-Route::post('/restaurant/public/orders/{order}/pay', [RestaurantPublicOrderController::class, 'pay'])
-    ->middleware(['signed', 'throttle:60,1'])
-    ->name('restaurant.public.orders.pay');
-Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantPublicOrderController::class, 'deliveryWebhook'])
-    ->middleware('throttle:60,1');
-        // Boutique en ligne publique — gestion du jeton (RESTO-805/#6226,
-        // restaurant.manage). Le jeton en clair n'est renvoyé qu'à la rotation.
-        Route::get('/public-shop-token', [RestaurantPublicShopController::class, 'token']);
-        Route::post('/public-shop-token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
+Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
+        // --- Routes ajoutées (union PM) ---
         Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
         Route::get('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'show']);
         Route::delete('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'destroy']);
         Route::get('/inventory-movements/{restaurantInventoryMovement}', [RestaurantInventoryMovementController::class, 'show']);
         Route::get('/stock/alerts', [RestaurantStockAlertController::class, 'index']);
         Route::get('/receivings/{restaurantReceiving}', [RestaurantReceivingController::class, 'show']);
-        Route::put('/inventory-counts/{restaurantInventoryCount}/items/{item}', [RestaurantInventoryCountController::class, 'recordItem']);
         Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
         Route::post('/reservations/{restaurantReservation}/deposit', [RestaurantReservationController::class, 'deposit']);
         Route::put('/branches/{restaurantBranch}/cancellation-policy', [RestaurantCancellationPolicyController::class, 'update']);
@@ -424,4 +310,22 @@ Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantPublicOr
         Route::put('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'update']);
         Route::delete('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'destroy']);
         Route::get('/delivery-zones/{restaurantDeliveryZone}/quote', [RestaurantDeliveryZoneController::class, 'quote']);
+        Route::get('/deliveries', [RestaurantDeliveryController::class, 'index']);
+        Route::post('/deliveries', [RestaurantDeliveryController::class, 'store']);
+        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'assign']);
+        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'outForDelivery']);
+        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'deliver']);
+        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'cancel']);
+        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexProgram']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/credit', [RestaurantLoyaltyController::class, 'creditCustomer']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeemCustomer']);
+        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validateCode']);
+        Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
+        Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
     });
+
+// Téléchargement d'export signé — route publique (la signature EST l'auth).
+// La signature est émise par `RestaurantReportExportService` (TTL 10 min).
+Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportController::class, 'download'])
+    ->name('restaurant.reports.export.download')
+    ->middleware('signed');

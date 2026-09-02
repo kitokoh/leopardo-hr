@@ -183,3 +183,4 @@ class EduFeePolicy
     {
         return EduAccess::isAdmin($actor);
     }
+}

@@ -9,7 +9,6 @@ use App\Events\SubscriptionPaid;
 use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
-use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Payroll\Domain\Models\Payment;
@@ -46,12 +45,6 @@ class StripeService
             'pilot' => strval(config('services.stripe.price_pilot')),
             'operations' => strval(config('services.stripe.price_operations')),
             'enterprise' => strval(config('services.stripe.price_enterprise')),
-        $this->secretKey = (string) config('services.stripe.secret');
-        $this->webhookSecret = (string) config('services.stripe.webhook_secret');
-        $this->priceIds = [
-            'pilot' => (string) config('services.stripe.price_pilot'),
-            'operations' => (string) config('services.stripe.price_operations'),
-            'enterprise' => (string) config('services.stripe.price_enterprise'),
         ];
     }
 
@@ -108,9 +101,6 @@ class StripeService
         return [
             'url' => strval($data['url']),
             'session_id' => strval($data['id']),
-        return [
-            'url' => $data['url'],
-            'session_id' => $data['id'],
         ];
     }
 
@@ -234,11 +224,6 @@ class StripeService
         $company = Company::query()
             ->from(DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies')
             ->find($companyId);
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
-        }
-
-        $company = Company::query()->find($companyId);
         if (! $company) {
             Log::warning('Stripe: Company not found', ['company_id' => $companyId]);
 
@@ -282,21 +267,6 @@ class StripeService
         } else {
             $this->transitionSubscription($subscription, SubscriptionStatus::Active, $attributes, allowReactivation: true);
         }
-        // Create or update subscription
-        Subscription::query()->updateOrCreate(
-            ['company_id' => $company->id],
-            [
-                'plan' => $plan,
-                'status' => 'active',
-                'payment_method' => 'stripe',
-                'stripe_subscription_id' => $subscriptionId,
-                'current_period_start' => now(),
-                'current_period_end' => now()->addMonth(),
-                'trial_ends_at' => null,
-                'cancelled_at' => null,
-                'cancel_reason' => null,
-            ]
-        );
 
         Log::info('Stripe: Subscription activated', [
             'company_id' => $companyId,
@@ -318,8 +288,6 @@ class StripeService
             }
 
             $this->transitionInvoice($invoiceModel, InvoiceStatus::Paid, [
-            $invoiceModel->update([
-                'status' => 'paid',
                 'paid_at' => now(),
                 'payment_method' => 'stripe',
             ]);
@@ -345,7 +313,6 @@ class StripeService
 
             if ($invoiceModel->subscription) {
                 $this->transitionSubscription($invoiceModel->subscription, SubscriptionStatus::Active);
-                $invoiceModel->subscription->update(['status' => 'active']);
             }
         }
 
@@ -360,8 +327,6 @@ class StripeService
 
         if ($subscription) {
             $this->transitionSubscription($subscription, SubscriptionStatus::Active, [
-            $subscription->update([
-                'status' => 'active',
                 'current_period_start' => isset($invoice['period_start'])
                     ? Carbon::createFromTimestamp($invoice['period_start'])
                     : now(),
@@ -386,10 +351,6 @@ class StripeService
 
         if ($invoiceModel->subscription) {
             $this->transitionSubscription($invoiceModel->subscription, SubscriptionStatus::PastDue);
-        $invoiceModel->update(['status' => 'overdue']);
-
-        if ($invoiceModel->subscription) {
-            $invoiceModel->subscription->update(['status' => 'past_due']);
         }
     }
 
@@ -427,18 +388,6 @@ class StripeService
         }
 
         $this->transitionSubscription($sub, $status);
-        $status = match ($subscription['status'] ?? '') {
-            'active' => 'active',
-            'past_due' => 'past_due',
-            'canceled', 'cancelled' => 'cancelled',
-            // DEP-BC21 #5897 : Stripe `unpaid` = paiement échoué, la
-            // souscription continue en défaut → `past_due` (l'écriture
-            // `unpaid` violait subscriptions_status_check).
-            'unpaid' => 'past_due',
-            default => $sub->status,
-        };
-
-        $sub->update(['status' => $status]);
     }
 
     private function handleSubscriptionDeleted(array $subscription): void
@@ -449,8 +398,6 @@ class StripeService
 
         if ($sub) {
             $this->transitionSubscription($sub, SubscriptionStatus::Cancelled, [
-            $sub->update([
-                'status' => 'cancelled',
                 'cancelled_at' => now(),
             ]);
 
