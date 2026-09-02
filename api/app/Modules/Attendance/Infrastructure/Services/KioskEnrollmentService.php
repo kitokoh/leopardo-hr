@@ -208,7 +208,9 @@ final class KioskEnrollmentService
             ->first();
 
         if (! $enrollment) {
-            abort(404, 'ENROLLMENT_NOT_FOUND');
+            // 404 neutre (renderer standard RESOURCE_NOT_FOUND) : aucun indice
+            // d'existence cross-tenant (QLT-001 #6775).
+            throw (new ModelNotFoundException)->setModel(BiometricEnrollment::class);
         }
 
         return $enrollment;
