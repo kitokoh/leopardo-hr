@@ -93,4 +93,24 @@ class PlatformAdminAiChatTest extends TestCase
         $after = DB::table('shared_tenants.ai_conversations')->where('id', $conversationId)->value('messages');
         $this->assertSame($before, $after);
     }
+    // ── #6690 — IA non provisionnée : état métier attendu (404), pas un 500 ──
+
+    public function test_conversations_index_returns_404_when_ai_table_missing(): void
+    {
+        // L'IA n'a jamais été provisionnée : la table tenant n'existe pas.
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.ai_conversations CASCADE');
+
+        $this->getJson('/api/v1/admin/ai/conversations')
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'AI_CONVERSATIONS_UNAVAILABLE');
+    }
+
+    public function test_conversation_messages_returns_404_when_ai_table_missing(): void
+    {
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.ai_conversations CASCADE');
+
+        $this->getJson('/api/v1/admin/ai/conversations/1/messages')
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'AI_MESSAGES_UNAVAILABLE');
+    }
 }
