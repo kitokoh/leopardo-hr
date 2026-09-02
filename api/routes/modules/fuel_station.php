@@ -33,6 +33,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSiteController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationReferentialController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
@@ -42,6 +43,15 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMetricsController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+    // #6712 — référentiel read-only consommé par le dashboard admin
+    // (FuelManagerView) : stations, incidents (équipements non actifs),
+    // rapprochements de caisse. RBAC manager.
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/fuel-station/stations', [FuelStationReferentialController::class, 'stations']);
+        Route::get('/fuel-station/incidents', [FuelStationReferentialController::class, 'incidents']);
+        Route::get('/fuel-station/reconciliations', [FuelStationReferentialController::class, 'reconciliations']);
+    });
+
     // FUEL-004 — relevés de compteur par pompe (spec §13.4).
     Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings', [FuelMeterReadingController::class, 'record'])
         ->whereNumber('station')
