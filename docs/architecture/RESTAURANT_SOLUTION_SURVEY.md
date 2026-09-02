@@ -127,5 +127,4 @@ commande console ou le dashboard (voir ci-dessous).
 - [ ] Branchement `/i18n/catalog` pour les messages de réponse des routes forms
 - [x] Activation tenant post-inscription via `SolutionActivator` (commande `leopardo:solution:activate` documentée + wiring signup) — #6693
 - [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
-=======
 - [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`

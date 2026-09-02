@@ -83,9 +83,7 @@ return [
     'EDU_REPORT_CARD_LOCKED' => 'This report card is published and cannot be modified.',
     'EDU_REPORT_CARD_NOT_VALIDATED' => 'The report card must be validated before publishing.',
     'FUEL_READING_FUTURE' => 'The reading is dated in the future.',
-=======
     'FUEL_READING_FUTURE' => 'The reading is dated in the future.',
->>>>>>> origin/pm/merge-all-open-branches
     'FUEL_READING_REJECTED' => 'The reading was rejected.',
     'FUEL_READING_REVIEWED' => 'This reading has already been corrected or reviewed.',
     'INVALID_CURRENT_PASSWORD' => 'The current password is incorrect.',

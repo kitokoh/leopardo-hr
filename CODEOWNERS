@@ -32,17 +32,11 @@
 /api/app/Modules/Growth/    @kitokoh
 /api/app/Modules/Notification/ @kitokoh
 /api/app/Modules/RestaurantManager/ @kitokoh
-<<<<<<< HEAD
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| 911b7be0b
-=========
-=======
+Temporary merge branch 2
 /api/app/Modules/CRM/       @kitokoh
 /api/app/Modules/Marketing/ @kitokoh
 /api/app/Modules/Growth/    @kitokoh
 /api/app/Modules/Notification/ @kitokoh
->>>>>>> origin/pm/merge-all-open-branches
 /api/app/Modules/Delivery/    @kitokoh
 /api/app/Contracts/Communication/ @kitokoh
 /api/app/Jobs/              @kitokoh

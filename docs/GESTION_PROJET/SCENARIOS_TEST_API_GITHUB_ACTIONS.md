@@ -25,7 +25,6 @@ Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /
 
 Note 2026-08-31 (BC-16 EDU, EduManager — PR #6378) : nouvelle surface API verticale `EduManager` (`api/routes/modules/edu_manager.php`, préfixe `/edu-manager`, middleware `throttle:api → auth:sanctum → token.refresh → tenant → throttle:api-plan → module.edumanager`). 77 routes : référentiel (campuses, academic-years, subjects, classes + affectation enseignants, students + responsables légaux), admissions (CRUD + convert → student), présence (index/store par classe + correct), emplois du temps (course-slots), évaluations & notes versionnées, bulletins (report cards + publication), frais & contrat Accounting (fees), import/export sécurisé, marketing admissions, notifications & portail guardian (tokens d'accès). Les scénarios CI associés vivent dans `api/tests/Feature/EduManager/*` (`EduApiTest`, `EduCampusInvariantTest`, `EduAttendanceServiceTest`, `EduGradeServiceTest`, `EduImportExportTest`, `EduGuardianPortalApiTest`, `EduFeeApiTest`, `EduMarketingApiTest`, `EduNotificationApiTest`, ...) et couvrent : RBAC scolaire (director/headmaster/teacher/guardian), isolation tenant (404 sûr cross-tenant), invariants de présence/notes/bulletins, idempotence import/export et 401/403 feature-gate. Actif via le flag `companies.features.edumanager` (kill switch).
 
-=======
 Note 2026-08-30 (BC-26 DELIVERY, DELIVERY-101/#6282) : nouvelle surface API du module de
 livraison generique — smoke `GET /api/v1/delivery/ping` (feature flag `companies.features.delivery`,
 403 FEATURE_NOT_ENABLED sans flag) ; les API livraisons/tournees/tracking/COD/rapports
@@ -38,13 +37,8 @@ Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouv
 - `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
 - RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
 - Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
-<<<<<<< HEAD
-||||||| merged common ancestors
+Temporary merge branch 2
 
->>>>>>>>> Temporary merge branch 2
-=======
-
->>>>>>> origin/pm/merge-all-open-branches
 ## Perimetre
 
 - API publique
@@ -1624,16 +1618,7 @@ Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client ten
 - Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
 - Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
 Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
-<<<<<<< HEAD
-## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
-- Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).
-- `billing:report` : agrège des compteurs non nominatifs (souscriptions/factures/paiements par statut) ; base vide → exit 0 sans erreur. Couverture : `BillingReportCommandTest`.
-- `billing:reconcile-payments` : dry-run par défaut (aucune mutation) ; `--apply` corrige uniquement les écarts sûrs (montant + company concordants, via `Invoice::transitionTo(Paid)`) ; doublons `provider_reference` et factures `paid` orphelines signalés (jamais corrigés) ; code retour 0 = aucun écart / 2 = écarts ; rejoué → idempotent. Couverture : `BillingReconcilePaymentsTest`.
-- Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| df73cea26
-=========
+Temporary merge branch 2
 ## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
 
 - Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).
@@ -1641,9 +1626,6 @@ Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consent
 - `billing:reconcile-payments` : dry-run par défaut (aucune mutation) ; `--apply` corrige uniquement les écarts sûrs (montant + company concordants, via `Invoice::transitionTo(Paid)`) ; doublons `provider_reference` et factures `paid` orphelines signalés (jamais corrigés) ; code retour 0 = aucun écart / 2 = écarts ; rejoué → idempotent. Couverture : `BillingReconcilePaymentsTest`.
 - Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
 
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
@@ -1751,19 +1733,7 @@ Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livra
 - Dimensions : glossaire (D01, #6292), isolation cross-tenant (D03, #6293), asynchronisme jobs tenant-scoped DLQ/replay (D07, #6294/#6295), budgets p95 (D10, #6296), golden journey E2E + seed pilote (D12, #6297).
 - Scénarios à vérifier : CRUD colis RBAC dispatcher (403 employé), tournée chevauchement rejeté (409), POD photo/signature, tracking idempotent (rejeu zéro doublon), COD posting comptable idempotent, notification opt-out respecté, rapport recalculé déterministe, contrat source idempotent par `external_ref`, isolation cross-tenant (404 sur IDs connus d'un autre tenant), jobs replay sans perte ni doublon.
 - Couverture : `tests/Feature/Delivery/*` (129 tests, 522 assertions) + `DeliveryReferenceTest`, `DeliveryOutboxTest`, `DeliveryIsolationTest`, `DeliveryGoldenJourneyTest`.
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=======
->>>>>>> 24df3e4bc (feat(travel): schéma, domaine & API back-office TravelAgency (Closes #6017-#6035) (#6129))
->>>>>>>>>>> Temporary merge branch 2
-=========
->>>>>>>>> Temporary merge branch 2
-||||||||| df73cea26
-=========
 
->>>>>>>>> Temporary merge branch 2
-||||||||| df73cea26
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
 - Équipements (FUEL-003) : `fuel_pumps`, `fuel_tanks` (capacity_minor CHECK > 0, unit_code CHECK l|gal), `fuel_meter_registers` (meter_type/status/unit CHECKs, `UNIQUE (company_id, pump_id, meter_code)`) — FK composites anti cross-tenant. Tests : `FuelEquipmentTest`.
@@ -1773,9 +1743,6 @@ Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livra
 - Sessions de caisse (FUEL-007) : ouverture `POST /fuel-station/cash-sessions`, mouvements, clôture idempotente `POST /fuel-station/cash-sessions/{session}/close` (écarts + approbation manager, événement `FuelCashSessionClosed`). Tests : `FuelCashSessionApiTest`.
 - Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
 - Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).
-=========
->>>>>>>>> Temporary merge branch 2
-=======
 Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livraison générique multi-tenant.
 - Socle : manifest `DeliveryManifest` (DELIVERY-101, #6282), schéma tenant 5 tables `delivery_*` avec `company_id` non nullable + FK composites (DELIVERY-102, #6283), domaine (machine à états livraison, VOs, enums) (DELIVERY-103, #6284), modèles + repository tenant-scoped (DELIVERY-104, #6304).
 - API : CRUD colis dispatcher versionné (DELIVERY-201, #6285), tournées création/affectation livreur+véhicule/ordre des stops/clôture (DELIVERY-202, #6286), mobile livreur tournée du jour/statuts/POD (DELIVERY-203, #6287), tracking idempotent + lien destinataire borné (DELIVERY-204, #6288), COD & commissions posting BC-08 idempotent (DELIVERY-205, #6289), notifications destinataire outbox + opt-out RGPD (DELIVERY-206, #6290), rapports KPIs déterministes + export CSV (DELIVERY-207, #6291), contrats sources restaurant/retail/ecommerce/crm (DELIVERY-208, #6299).
@@ -1790,4 +1757,3 @@ Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livra
 - Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
 
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
->>>>>>> origin/pm/merge-all-open-branches

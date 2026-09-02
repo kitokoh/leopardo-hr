@@ -25,9 +25,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;
 use Illuminate\Support\Facades\Event;
-=======
 use Illuminate\Support\Facades\Event;
->>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\ServiceProvider;
 
 /**

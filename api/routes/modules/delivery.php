@@ -26,35 +26,14 @@
  */
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
-=======
-||||||| merged common ancestors
-<<<<<<<<< Temporary merge branch 1
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryAsyncExportController;
-<<<<<<< HEAD
-<<<<<<< HEAD
-||||||| merged common ancestors
+Temporary merge branch 2
+Temporary merge branch 2
+Temporary merge branch 2
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>>>> Temporary merge branch 2
-<<<<<<< HEAD
-||||||| merged common ancestors
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>>>> Temporary merge branch 2
-=======
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>> origin/bc/bc26-delivery-consolidation
-||||||| merged common ancestors
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
-||||||||| 12f354976
-=========
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>>>> Temporary merge branch 2
-||||||||| 3971be342
-=========
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>>>> Temporary merge branch 2
-=======
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
->>>>>>> origin/pm/merge-all-open-branches
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryNotificationController;
@@ -97,7 +76,6 @@ Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, '
 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
 Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
-=======
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -105,46 +83,7 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
-<<<<<<< HEAD
-            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
-            // effectif + outbox (numéros masqués RGPD hors admin).
-            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
-            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
-        // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
-        // dispatcher/manager/admin (la création vient du dispatcher/manager).
-        Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
-            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-            });
-||||||||| merged common ancestors
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| 49b045c37
-=======
->>>>>>> origin/pm/merge-all-open-branches
+Temporary merge branch 2
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
@@ -157,11 +96,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
-||||||||| merged common ancestors
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -172,12 +109,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -188,12 +122,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -204,9 +135,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||| merged common ancestors
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -217,12 +145,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||||| 70e9b4df5
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -233,12 +158,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||||| 21b21b42e
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -249,12 +171,9 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-||||||||| 6c16be60b
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
-=========
         // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
         // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
         // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
@@ -265,18 +184,10 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
         // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
         Route::middleware('api.manager')->group(function (): void {
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
 
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
@@ -287,74 +198,8 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-=======
-            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-        // ── Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
-        // d'arrêts. Rider + dispatcher/admin ; le contrôleur vérifie la
-        // PROPRIÉTÉ (driver_id = employé authentifié) pour les riders.
-        Route::middleware('delivery.role:rider,dispatcher,admin')->group(function (): void {
-            Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
-            Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
-        });
+origin/pm/merge-all-open-branches
 
-        // ── BC-26-D05 (#6294) : RBAC fin deny-by-default — matrice
-        // `docs/architecture/DELIVERY_RBAC.md`. Chaque groupe est borné aux
-        // rôles qui ont droit à l'action ; les décisions par ressource
-        // (ownership livreur, scope tenant) sont dans les Policies.
-        //
-        // Gestion des livraisons/tournées/tracking-links : dispatcher + admin.
-        Route::middleware('delivery.role:dispatcher,admin')->group(function (): void {
-            Route::get('/deliveries', [DeliveryController::class, 'index']);
-            Route::post('/deliveries', [DeliveryController::class, 'store']);
-            Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-
-            // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
-            // clôture idempotente, détail avec stops ordonnés.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-
-            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // restent réservés à l'admin (check dans le contrôleur).
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
-            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
-            // effectif + outbox (numéros masqués RGPD hors admin).
-            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
-            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
-            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
-            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
-                Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
-            });
-
-            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-            Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
-                Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-                Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-                Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-                Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-            });
->>>>>>> origin/pm/merge-all-open-branches
-
-<<<<<<<<< Temporary merge branch 1
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
@@ -365,31 +210,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-||||||||| 70e9b4df5
-            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
-            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
-                Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
-            });
-
-||||||||| 21b21b42e
-            // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
-            // propriété (driver_id = employé) + statuts d'arrêts idempotents.
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
-                Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
-            });
-
-=========
->>>>>>>>> Temporary merge branch 2
+Temporary merge branch 2
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
 
-<<<<<<<<< Temporary merge branch 1
             // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
             // ouverte au rider (mobile livreur, DELIVERY-203).
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -403,75 +230,11 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
                 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
             });
-=========
-            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+Temporary merge branch 2
+Temporary merge branch 2
+Temporary merge branch 2
 
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
->>>>>>>>> Temporary merge branch 2
-||||||||| 21b21b42e
-            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
-            // ouverte au rider (mobile livreur, DELIVERY-203).
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-            });
-
-            // Rapports & KPIs (DELIVERY-207/#6291).
-            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
-                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
-            });
-=========
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
->>>>>>>>> Temporary merge branch 2
-||||||||| 6c16be60b
-            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
-            // ouverte au rider (mobile livreur, DELIVERY-203).
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-            });
-
-            // Rapports & KPIs (DELIVERY-207/#6291).
-            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
-                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
-            });
-=========
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
->>>>>>>>> Temporary merge branch 2
-
-=======
-            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
-            // ouverte au rider (mobile livreur, DELIVERY-203).
-            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
-                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-            });
-
-            // Rapports & KPIs (DELIVERY-207/#6291).
-            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
-                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
-                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
-            });
-
->>>>>>> origin/pm/merge-all-open-branches
+origin/pm/merge-all-open-branches
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
@@ -483,44 +246,10 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-||||||| merged common ancestors
-<<<<<<<<< Temporary merge branch 1
-            // pending→collected→settled→reconciled, idempotent.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
-                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
-                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
-                ->middleware('delivery.permission:admin')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
-                ->middleware('delivery.permission:admin|manager');
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
-||||||||| 70e9b4df5
-=========
-=======
-            // pending→collected→settled→reconciled, idempotent.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
-                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
-                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
-                ->middleware('delivery.permission:admin')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
-                ->middleware('delivery.permission:admin')->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
-                ->middleware('delivery.permission:admin|manager');
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
-                ->middleware('delivery.permission:admin|manager');
-
->>>>>>> origin/pm/merge-all-open-branches
+origin/pm/merge-all-open-branches
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
-<<<<<<< HEAD
-            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
-            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
+Temporary merge branch 2
             // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
             // clôture idempotente, détail avec stops ordonnés.
             // Tracking (DELIVERY-204/#6288) — événements idempotents, lien
@@ -528,7 +257,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-||||||| merged common ancestors
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
                 ->middleware('delivery.permission:admin|manager');
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
@@ -542,7 +270,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
             Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
-||||||||| 12f354976
             // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
             // clôture idempotente, détail avec stops ordonnés.
             // Tracking (DELIVERY-204/#6288) — événements idempotents, lien
@@ -550,7 +277,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-=======
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
                 ->middleware('delivery.permission:admin|manager');
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
@@ -564,7 +290,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
             Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
->>>>>>> origin/pm/merge-all-open-branches
 
         });
 
@@ -601,7 +326,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-=========
             // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
             // propriété (driver_id = employé) + statuts d'arrêts idempotents.
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -609,9 +333,7 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
             });
 
-||||||||| merged common ancestors
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-=======
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
@@ -625,9 +347,8 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
 
-<<<<<<<<< Temporary merge branch 1
-=========
->>>>>>>>> Temporary merge branch 2
+
+Temporary merge branch 2
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
@@ -638,7 +359,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-||||||||| merged common ancestors
             // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
             // propriété (driver_id = employé) + statuts d'arrêts idempotents.
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -646,7 +366,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
             });
 
-||||||||| merged common ancestors
             // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
             // propriété (driver_id = employé) + statuts d'arrêts idempotents.
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -654,23 +373,14 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
             });
 
-=========
->>>>>>>>> Temporary merge branch 2
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
 
-<<<<<<<<< Temporary merge branch 1
-=======
-                Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-                Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-                Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-                Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-            });
 
->>>>>>> origin/bc/bc26-delivery-consolidation
+origin/bc/bc26-delivery-consolidation
             // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
             // ouverte au rider (mobile livreur, DELIVERY-203).
             // Rapports & KPIs (DELIVERY-207/#6291).
@@ -703,7 +413,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-||||||||| merged common ancestors
             // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
             // ouverte au rider (mobile livreur, DELIVERY-203).
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -717,13 +426,10 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
                 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
             });
-=========
             // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
             // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
             // ouverte au rider (mobile livreur, DELIVERY-203).
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -737,44 +443,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
                 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
             });
-=========
             // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
             Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
->>>>>>>>> Temporary merge branch 2
 
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-<<<<<<<<< Temporary merge branch 1
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
-<<<<<<<<< Temporary merge branch 1
-            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
-            // effectif + outbox (numéros masqués RGPD hors admin).
-            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
-                ->middleware('delivery.permission:admin|manager');
-            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index'])
-                ->middleware('delivery.permission:admin|manager');
-
-            // Export CSV async (BC-26-D07/#6295) — job tenant-scoped,
-            // observable (pending → generating → done/failed).
-            Route::post('/deliveries/reports/async-export', [DeliveryAsyncExportController::class, 'store'])
-                ->middleware('delivery.permission:admin|manager');
-            Route::get('/deliveries/reports/async-export/{export}', [DeliveryAsyncExportController::class, 'show'])
-                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
-            Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
-                ->middleware('delivery.permission:admin|manager')->whereNumber('export');
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
-||||||||| merged common ancestors
+Temporary merge branch 2
             // pending→collected→settled→reconciled, idempotent.
             Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
                 ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
@@ -789,7 +464,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
                 ->middleware('delivery.permission:admin|manager');
 
-=========
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
             // (delivery.role) est portée par BC-26-D05/#6312.
@@ -799,17 +473,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
->>>>>>>>> Temporary merge branch 2
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
->>>>>>>>> Temporary merge branch 2
-=======
                 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
                 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
             });
-||||||| merged common ancestors
 
             // Tournées (DELIVERY-202/#6286) — création, affectation idempotente,
             // clôture idempotente, détail avec stops ordonnés.
@@ -817,7 +487,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
             Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
             Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-=========
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
             Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
@@ -829,28 +498,19 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
             Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
 
-<<<<<<<<< Temporary merge branch 1
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
             // (delivery.role) est portée par BC-26-D05/#6312.
-||||||||| 49b045c37
-            // pending→collected→settled→reconciled, idempotent. Le contrôleur
-            // vérifie le rôle (admin requis pour settle/reconcile) ; la
-            // matrice RBAC fine (delivery.role) est BC-26-D05/#6312.
-=========
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
->>>>>>>>> Temporary merge branch 2
+Temporary merge branch 2
             Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
             Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
             Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
-<<<<<<<<< Temporary merge branch 1
-||||||||| 21b21b42e
+
+Temporary merge branch 2
             // pending→collected→settled→reconciled, idempotent.
             Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
                 ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
@@ -865,7 +525,6 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
                 ->middleware('delivery.permission:admin|manager');
 
-=========
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
             // (delivery.role) est portée par BC-26-D05/#6312.
@@ -875,43 +534,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
->>>>>>>>> Temporary merge branch 2
-||||||||| 6c16be60b
-            // pending→collected→settled→reconciled, idempotent.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
-                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
-                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
-                ->middleware('delivery.permission:admin')->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
-                ->middleware('delivery.permission:admin')->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
-                ->middleware('delivery.permission:admin|manager');
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
-                ->middleware('delivery.permission:admin|manager');
-
-=========
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
->>>>>>>>> Temporary merge branch 2
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
->>>>>>>>> Temporary merge branch 2
-||||||||| 3971be342
             // Rapports & KPIs (DELIVERY-207/#6291).
             Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
             Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
-=========
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
@@ -922,20 +551,14 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
             Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
             Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
->>>>>>>>> Temporary merge branch 2
-||||||||| 49b045c37
-=========
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
             Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
->>>>>>>>> Temporary merge branch 2
         });
     });
-=======
         });
     });
->>>>>>> origin/pm/merge-all-open-branches
 
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
             // pending→collected→settled→reconciled, idempotent.
@@ -967,25 +590,14 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
             Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
->>>>>>> origin/bc/bc26-delivery-consolidation
         });
     // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
     // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
         ->middleware('throttle:60,1')
         ->where('token', '[A-Za-z0-9]{64}');
-<<<<<<< HEAD
-<<<<<<< HEAD
-    });
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-<<<<<<< HEAD
-    });
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/bc/bc26-delivery-consolidation
-||||||| c1baa0189
-=======
+Temporary merge branch 2
+Temporary merge branch 2
+Temporary merge branch 2
 <?php
 
 /**
@@ -1103,10 +715,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
     ->middleware('throttle:60,1')
     ->where('token', '[A-Za-z0-9]{64}');
->>>>>>> origin/pm/merge-delivery-socle
-||||||| merged common ancestors
-||||||||| 911b7be0b
-=========
 <?php
 
 /**
@@ -1138,6 +746,3 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // Smoke test du module (DELIVERY-101/#6282) — lecture pure.
         Route::get('/ping', [DeliveryHealthController::class, 'ping']);
     });
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches

@@ -151,7 +151,6 @@ l'envoi (RGPD). Aucune relance sans `consent_contact`
 - `edu_portal_access_logs` : journal d'audit de chaque consultation
   (guardian, lien, horodatage). Le portail ne renvoie QUE les enfants liés
   à CE guardian (edu_student_guardians, même tenant) — jamais d'énumération.
-=======
 # EduManager — Modèle de données (EDU-001..010)
 
 > Référence du schéma tenant du module EduManager (solution verticale, flag
@@ -313,4 +312,3 @@ l'envoi (RGPD). Aucune relance sans `consent_contact`
 - `edu_portal_access_logs` : journal d'audit de chaque consultation
   (guardian, lien, horodatage). Le portail ne renvoie QUE les enfants liés
   à CE guardian (edu_student_guardians, même tenant) — jamais d'énumération.
->>>>>>> origin/pm/merge-all-open-branches

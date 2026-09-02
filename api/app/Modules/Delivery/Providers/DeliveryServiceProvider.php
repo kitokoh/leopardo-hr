@@ -22,12 +22,9 @@ use Illuminate\Support\Facades\Event;
 use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
-||||||||| 49b045c37
-=========
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use Illuminate\Support\Facades\Event;
->>>>>>>>> Temporary merge branch 2
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -59,34 +56,18 @@ class DeliveryServiceProvider extends ServiceProvider
         // contrat, conformément au pattern CrmLeadRepository /
         // RestaurantOrderRepository.
         $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
-<<<<<<<<< Temporary merge branch 1
 
         // Contrat BC-08 (DELIVERY-205/#6289) : posting comptable des
         // encaissements COD — seam journalisé tant que les écritures
         // source-référencées ne sont pas branchées.
         $this->app->singleton(DeliveryAccountingContract::class, LoggingDeliveryAccountingAdapter::class);
-<<<<<<<<< Temporary merge branch 1
 
         // Contrat BC-13 COMMS (DELIVERY-206/#6290) : envoi destinataire externe
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
-||||||||| 3971be342
-=========
-
-        // Contrat BC-08 (DELIVERY-205/#6289) : posting comptable des
-        // encaissements COD — seam journalisé tant que les écritures
-        // source-référencées ne sont pas branchées.
-        $this->app->singleton(DeliveryAccountingContract::class, LoggingDeliveryAccountingAdapter::class);
->>>>>>>>> Temporary merge branch 2
-||||||||| 49b045c37
-=========
-
-        // Contrat BC-13 COMMS (DELIVERY-206/#6290) : envoi destinataire externe
-        // — seam journalisé (PII hachée) tant que les providers ne sont pas
-        // branchés sur les destinataires externes.
-        $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
->>>>>>>>> Temporary merge branch 2
+Temporary merge branch 2
+Temporary merge branch 2
     }
 
     public function boot(): void
@@ -100,8 +81,6 @@ class DeliveryServiceProvider extends ServiceProvider
         });
     }
 }
-||||||||| 911b7be0b
-=========
 <?php
 
 declare(strict_types=1);
@@ -110,7 +89,6 @@ namespace App\Modules\Delivery\Providers;
 
 use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
 use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
-=======
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use App\Modules\Delivery\Console\Commands\CloseDeliveryRouteCommand;
 use App\Modules\Delivery\Console\Commands\ExportDeliveryReportCommand;
@@ -130,7 +108,6 @@ use App\Modules\Delivery\Policies\DeliveryPolicy;
 use App\Modules\Delivery\Policies\DeliveryRoutePolicy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
->>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -175,26 +152,11 @@ use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
 use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
 use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
-<<<<<<<<< Temporary merge branch 1
 use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
-||||||||| merged common ancestors
-=========
+Temporary merge branch 2
 use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use Illuminate\Support\Facades\Event;
-||||||||| merged common ancestors
-=========
-use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
-use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
-use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
-use Illuminate\Support\Facades\Event;
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
-use App\Modules\Delivery\Infrastructure\Services\LoggingRecipientMessageAdapter;
-use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
-use Illuminate\Support\Facades\Event;
->>>>>>>>> Temporary merge branch 2
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -221,9 +183,7 @@ class DeliveryServiceProvider extends ServiceProvider
     {
         $this->app->singleton(SolutionManifest::class, DeliveryManifest::class);
 
-=======
 
->>>>>>> origin/bc/bc26-delivery-consolidation
         // Ports & adapters de persistance (DELIVERY-201/#6285) : les
         // implémentations Eloquent sont résolues en singleton derrière leur
         // contrat, conformément au pattern CrmLeadRepository /
@@ -237,8 +197,6 @@ class DeliveryServiceProvider extends ServiceProvider
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
-||||||||| merged common ancestors
-=========
 
         // Contrat BC-08 (DELIVERY-205/#6289) : posting comptable des
         // encaissements COD — seam journalisé tant que les écritures
@@ -249,16 +207,11 @@ class DeliveryServiceProvider extends ServiceProvider
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
 
         // Contrat BC-13 COMMS (DELIVERY-206/#6290) : envoi destinataire externe
         // — seam journalisé (PII hachée) tant que les providers ne sont pas
         // branchés sur les destinataires externes.
         $this->app->singleton(RecipientMessageContract::class, LoggingRecipientMessageAdapter::class);
->>>>>>>>> Temporary merge branch 2
-=======
 
         // Contrat BC-08 (DELIVERY-205/#6289) : posting comptable des
         // encaissements COD — seam journalisé tant que les écritures
@@ -276,9 +229,6 @@ class DeliveryServiceProvider extends ServiceProvider
 
 
 
->>>>>>> origin/bc/bc26-delivery-consolidation
-||||||| merged common ancestors
-=======
         // Ports & adapters de persistance (DELIVERY-201/#6285) : les
         // implémentations Eloquent sont résolues en singleton derrière leur
         // contrat, conformément au pattern CrmLeadRepository /
@@ -302,7 +252,6 @@ class DeliveryServiceProvider extends ServiceProvider
             ExportDeliveryReportCommand::class,
             ReplayDeliveryDlqCommand::class,
         ]);
->>>>>>> origin/pm/merge-all-open-branches
     }
 
     public function boot(): void
@@ -324,31 +273,9 @@ class DeliveryServiceProvider extends ServiceProvider
         Gate::policy(DeliveryRoute::class, DeliveryRoutePolicy::class);
     }
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
-use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
-        // Ports & adapters de persistance (DELIVERY-201/#6285) : les
-        // implémentations Eloquent sont résolues en singleton derrière leur
-        // contrat, conformément au pattern CrmLeadRepository /
-        // RestaurantOrderRepository.
-        $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-<<<<<<< HEAD
-use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
-use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
-        // Ports & adapters de persistance (DELIVERY-201/#6285) : les
-        // implémentations Eloquent sont résolues en singleton derrière leur
-        // contrat, conformément au pattern CrmLeadRepository /
-        // RestaurantOrderRepository.
-        $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/bc/bc26-delivery-consolidation
-||||||| c1baa0189
-=======
+Temporary merge branch 2
+Temporary merge branch 2
+Temporary merge branch 2
 <?php
 
 declare(strict_types=1);
@@ -446,8 +373,3 @@ class DeliveryServiceProvider extends ServiceProvider
         });
     }
 }
->>>>>>> origin/pm/merge-delivery-socle
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches

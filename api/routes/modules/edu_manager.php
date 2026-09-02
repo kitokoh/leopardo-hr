@@ -285,7 +285,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
  * (edu_portal_access_logs). Throttle dédié 60/min.
 Route::get('/edu-manager/portal/{token}', [EduGuardianPortalController::class, 'summary'])
     ->middleware('throttle:60,1');
-=======
     Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validate'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
 
@@ -351,4 +350,3 @@ Route::middleware('throttle:guardian-portal')->post(
     '/edu-manager/guardian-portal/access-links/{token}/consume',
     [EduGuardianPortalController::class, 'consume']
 )->where('token', '[A-Za-z0-9_-]{40,120}');
->>>>>>> origin/pm/merge-all-open-branches

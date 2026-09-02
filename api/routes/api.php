@@ -69,29 +69,19 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskC
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
-<<<<<<<<< Temporary merge branch 1
-||||||||| ebc40d63e
-=========
-=======
->>>>>>> origin/pm/merge-all-open-branches
+
+origin/pm/merge-all-open-branches
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
-<<<<<<< HEAD
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
+Temporary merge branch 2
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
->>>>>>>>> Temporary merge branch 2
-=======
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMarketplaceWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
->>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -359,57 +349,21 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/restaurantmanager.php';
 
     require __DIR__.'/modules/restaurantmanager.php';
-<<<<<<<<< Temporary merge branch 1
-||||||||| 48418fe39
-=========
-||||||||| ebc40d63e
-=========
-    require __DIR__.'/modules/travelagency.php';
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-||||||||||| 455618aef
-===========
-=========
 
->>>>>>>>> Temporary merge branch 2
+Temporary merge branch 2
+
     require __DIR__.'/modules/fuel_station.php';
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
-<<<<<<<<< Temporary merge branch 1
->>>>>>>>> Temporary merge branch 2
-||||||||| ebc40d63e
-=========
-=======
+Temporary merge branch 2
     require __DIR__.'/modules/travelagency.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
->>>>>>> origin/pm/merge-all-open-branches
     require __DIR__.'/modules/travelagency.php';
-<<<<<<< HEAD
-    require __DIR__.'/modules/fuel_station.php';
+Temporary merge branch 2
     require __DIR__.'/modules/edu_manager.php';
-    require __DIR__.'/modules/solutions.php';
-    require __DIR__.'/modules/travelagency.php';
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| 2c931d459
-=========
     require __DIR__.'/modules/edu_manager.php';
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
->>>>>>>>>>> Temporary merge branch 2
-=========
->>>>>>>>> Temporary merge branch 2
-||||||||| 07716fa19
-=========
-    require __DIR__.'/modules/edu_manager.php';
->>>>>>>>> Temporary merge branch 2
-=======
     require __DIR__.'/modules/restaurantmanager.php';
 
     require __DIR__.'/modules/fuel_station.php';
->>>>>>> origin/pm/merge-all-open-branches
 
 
     // Multi-App dedicated route modules

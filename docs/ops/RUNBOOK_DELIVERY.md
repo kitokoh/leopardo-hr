@@ -118,7 +118,6 @@
   `idempotency_key` client → un rejeu retourne l'événement existant.
 - Création de livraison source : unique `(company_id, source, source_reference)`
   → zéro doublon par commande source (webhook e-commerce rejoué = 1 livraison).
-=======
 - Clôture : deux exécutions → mêmes totaux (exigence sortie BC-26, testé).
 ## Asynchronisme (BC-26-D07) & jobs
 - `CloseDeliveryRouteJob` : clôture asynchrone volumineuse (commandes

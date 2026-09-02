@@ -118,34 +118,13 @@ return [
         'cabinet' => 'Belge kasasi',
         'notifications' => 'Bildirimler',
         'evaluations' => 'Degerlendirmeler',
-=======
         'restaurant' => 'Mutfak ekranı',
         'restaurant' => 'Satış noktası (POS)',
-<<<<<<< HEAD
+Temporary merge branch 2
         'restaurant' => 'Mutfak ekranı',
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-||||||||| 8f2ae1d83
-=========
         'restaurant' => 'Mutfak ekranı',
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
         'restaurant' => 'Mutfak ekranı',
->>>>>>>>> Temporary merge branch 2
-||||||||| merged common ancestors
-=========
         'restaurant' => 'Mutfak ekranı',
->>>>>>>>> Temporary merge branch 2
-||||||||| df73cea26
-=========
         'restaurant' => 'Mutfak ekranı',
->>>>>>>>> Temporary merge branch 2
-||||||||| df73cea26
-=========
-        'restaurant' => 'Mutfak ekranı',
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches
     ],
 ];

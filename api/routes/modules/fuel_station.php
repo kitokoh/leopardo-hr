@@ -35,8 +35,6 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMaintenanceTaskCon
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
-=======
->>>>>>> origin/pm/merge-all-open-branches
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
@@ -49,7 +47,6 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationReferentialController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
-=======
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,7 +61,6 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
->>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\Facades\Route;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
@@ -210,7 +206,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             ->whereNumber('id');
         Route::put('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'update'])
         Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
-=======
     });
 
     // ———— Batch A (FUEL-009/010/011/014/016/017/018/019/020) ————
@@ -413,7 +408,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
         Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
         Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
->>>>>>> origin/pm/merge-all-open-branches
     });
 
     // ———— Batch A (FUEL-009/010/011/014/016/017/018/019/020) ————

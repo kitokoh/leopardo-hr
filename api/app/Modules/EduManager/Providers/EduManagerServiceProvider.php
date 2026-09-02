@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
-=======
 use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Console\Commands\EduOutboxDispatchCommand;
 use App\Modules\EduManager\Domain\Solution\EduManagerManifest;

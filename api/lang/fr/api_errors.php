@@ -83,9 +83,7 @@ return [
     'EDU_REPORT_CARD_LOCKED' => 'Ce bulletin est publié et ne peut plus être modifié.',
     'EDU_REPORT_CARD_NOT_VALIDATED' => 'Le bulletin doit être validé avant publication.',
     'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
-=======
     'FUEL_READING_FUTURE' => 'Le relevé est daté dans le futur.',
->>>>>>> origin/pm/merge-all-open-branches
     'FUEL_READING_REJECTED' => 'Le relevé a été rejeté.',
     'FUEL_READING_REVIEWED' => 'Ce relevé a déjà été corrigé ou revu.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',

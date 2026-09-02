@@ -25,7 +25,6 @@ return [
         // PaymentCallbackSigner).
         'webhook_secret' => env('RESTAURANT_MOBILE_MONEY_WEBHOOK_SECRET'),
     ],
-=======
     /*
     |--------------------------------------------------------------------------
     | Stock (spec §4.4, RESTO-411/#6198)
@@ -89,47 +88,7 @@ return [
             'outbound_url' => env('RESTAURANT_GLOVO_OUTBOUND_URL'),
         ],
     ],
-<<<<<<< HEAD
-
-    /*
-    |--------------------------------------------------------------------------
-    | Boutique en ligne publique (RESTO-805/#6226)
-    |--------------------------------------------------------------------------
-    |
-    | Endpoints publics `/public/restaurant/*` résolus par jeton tenant signé
-    | (X-Restaurant-Shop-Token, hash SHA-256 en base). Hook anti-bot optionnel :
-    | si `captcha_secret` est renseigné, un jeton CAPTCHA (X-Captcha-Token)
-    | non vide est exigé sur les endpoints publics.
-    |
-    */
-    'public_shop' => [
-        'captcha_secret' => env('RESTAURANT_SHOP_CAPTCHA_SECRET'),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Apps de livraison (RESTO-806/#6227)
-    |--------------------------------------------------------------------------
-    |
-    | Secrets de signature des webhooks entrants (HMAC-SHA256, fail-closed :
-    | pas de secret configuré = webhook refusé) et URL de notification des
-    | statuts sortants. Aucun secret en dur — variables d'environnement.
-    |
-    */
-    'marketplace' => [
-        'uber_eats' => [
-            'webhook_secret' => env('RESTAURANT_UBER_EATS_WEBHOOK_SECRET'),
-            'outbound_url' => env('RESTAURANT_UBER_EATS_OUTBOUND_URL'),
-        ],
-        'glovo' => [
-            'webhook_secret' => env('RESTAURANT_GLOVO_WEBHOOK_SECRET'),
-            'outbound_url' => env('RESTAURANT_GLOVO_OUTBOUND_URL'),
-        ],
-    ],
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches
+Temporary merge branch 2
 ];
     | Stock (RESTO-411, issue #6198 — décrément à la confirmation)
     | Politique appliquée quand une confirmation de commande consomme plus

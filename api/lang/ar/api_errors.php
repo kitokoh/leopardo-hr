@@ -83,9 +83,7 @@ return [
     'EDU_REPORT_CARD_LOCKED' => 'تم نشر كشف الدرجات ولا يمكن تعديله.',
     'EDU_REPORT_CARD_NOT_VALIDATED' => 'يجب التحقق من كشف الدرجات قبل النشر.',
     'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
-=======
     'FUEL_READING_FUTURE' => 'القراءة مؤرخة في المستقبل.',
->>>>>>> origin/pm/merge-all-open-branches
     'FUEL_READING_REJECTED' => 'تم رفض القراءة.',
     'FUEL_READING_REVIEWED' => 'تم تصحيح هذه القراءة أو مراجعتها بالفعل.',
     'INVALID_CURRENT_PASSWORD' => 'كلمة المرور الحالية غير صحيحة.',

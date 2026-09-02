@@ -122,19 +122,10 @@ $mobileFeatureChanged = $false
 $webFeatureChanged = $false
 
 foreach ($line in $changedList) {
-<<<<<<< HEAD
     if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Policies/|api/app/Http/Requests/Api/)') {
         $apiFeatureChanged = $true
     }
     if ($line -match '^(front/mobile_apps/)') {
-=======
-    if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Policies/|api/app/Http/Requests/Api/|api/app/Modules/.*/Interfaces/)') {
-        $apiFeatureChanged = $true
-    }
-    # Issue #6601 : chemins réels des apps Flutter (le dossier `mobile/` a été
-    # supprimé — il vit sous front/mobile_apps/).
-    if ($line -match '^(front/mobile_apps/.*/lib/features/|front/mobile_apps/.*/integration_test/|front/mobile_apps/.*/test/features/)') {
->>>>>>> origin/main
         $mobileFeatureChanged = $true
     }
     if ($line -match '^(front/admin-dashboard/src/|front/admin-dashboard/e2e/|front/admin-dashboard/playwright\.config\.js)') {

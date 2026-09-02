@@ -5,12 +5,10 @@
 > **Date :** 2026-08-29
 > **Statut :** **Code livré (branche travel, PRs #6127/#6273/#6330/#6334/#6351 + lot 3b)** — maturité à verrouiller au merge `main` et au GO pilote (gates MAT-018, `pilot-gates.json` entrée `travel`). 302 tests Feature verts, PHPStan 0 erreur, OpenAPI coverage 0 drift, Redocly 0 erreur.
 > **Spécification :** `docs/specifications/SOLUTION_TRAVEL_AGENCY.md`
-=======
 > **Date :** 2026-08-30
 > **Statut :** **Planifié** — le module n'est pas encore sur `main` ; fondations, schéma, domaine, API back-office et extensions sont implémentés sur branches (PRs #6127/#6129, #6273, #6340). Scorecard ci-dessous = état des branches au 2026-08-30, à re-valider à l'arrivée du code sur `main`.
 > **Spécification :** `docs/specifications/SOLUTION_TRAVEL_AGENCY.md` (validée propriétaire 2026-08-29)
 > **Registre :** `dev-hub/governance/bounded-context-registry.json` — BC-24 = `planned`, owner @kitokoh, dépendances BC-02/03/04/11/13/20
->>>>>>> origin/pm/merge-all-open-branches
 
 ## 1. Cartographie (état `main`)
 
@@ -35,7 +33,6 @@
 | Performance (8) | ⏳ | Budgets p95 à valider au pilote (gate `performance`, MAT-014) |
 | Golden journey (9) | ✅ | GJ-TRAVEL-01 vert (`TravelGoldenJourneyTest`) + tunnel public E2E |
 | Runbook & pilote (10-12) | ✅ | Runbook + recette UAT + pilot gates + pilot-check livrés |
-=======
 | # | Dimension | Statut | Constat / preuve |
 |---|---|---|---|
 | 1 | Domaine | 🏃 (branche) | Enums + Value Objects (TRAVEL-215), invariants machines à états trajet/réservation/billet/paiement/location, actions applicatives dédiées (GenerateTripSeatsAction, CreateBookingAction, CheckInTicketAction…) |
@@ -50,7 +47,6 @@
 | 10 | Performance | ⏳ | Gate `performance` pending (budgets MAT-014, benchmarks trajets/recherche) |
 | 11 | Exploitation | 🏃 (lot courant) | Runbook pilote + recette UAT (TRAVEL-050) — `docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md` + `RECETTE_UAT_TRAVELAGENCY.md` ; drill DR-26 planifié |
 | 12 | Produit | ⏳ | GJ-TRAVEL-01 (TRAVEL-1007 en cours) + pilote tenant synthétique (TRAVEL-051) — GO verrouillé par `pilot-gates.json` |
->>>>>>> origin/pm/merge-all-open-branches
 
 ## 3. Gates pilote (MAT-018 #5876)
 

@@ -83,9 +83,7 @@ return [
     'EDU_REPORT_CARD_LOCKED' => 'Karne yayınlandı ve değiştirilemez.',
     'EDU_REPORT_CARD_NOT_VALIDATED' => 'Karne yayınlanmadan önce onaylanmalıdır.',
     'FUEL_READING_FUTURE' => 'Okuma gelecekte bir tarihte.',
-=======
     'FUEL_READING_FUTURE' => 'Okuma gelecekte bir tarihte.',
->>>>>>> origin/pm/merge-all-open-branches
     'FUEL_READING_REJECTED' => 'Okuma reddedildi.',
     'FUEL_READING_REVIEWED' => 'Bu okuma zaten düzeltildi veya incelendi.',
     'INVALID_CURRENT_PASSWORD' => 'Mevcut sifre yanlis.',

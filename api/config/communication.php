@@ -161,7 +161,6 @@ return [
             'title_key' => 'notifications.security_alert_title',
             'body_key' => 'notifications.security_alert_body',
         ],
-=======
         // BC-25 RESTAURANT (RESTO-605/#6210, RESTO-608/#6213) — notifications
         // de la verticale RestaurantManager (livraison, rappel réservation).
         'restaurant_delivery_status_changed' => [
@@ -183,19 +182,7 @@ return [
             'title_key' => 'notifications.restaurant_order_ready_title',
             'body_key' => 'notifications.restaurant_order_ready_body',
         ],
-<<<<<<< HEAD
-        // BC-25 RESTAURANT (RESTO-605/#6210, RESTO-608/#6213) — notifications
-        // de la verticale RestaurantManager (livraison, rappel réservation).
-        'restaurant_delivery_status_changed' => [
-            'title_key' => 'notifications.restaurant_delivery_status_changed_title',
-            'body_key' => 'notifications.restaurant_delivery_status_changed_body',
-        'restaurant_reservation_reminder' => [
-            'title_key' => 'notifications.restaurant_reservation_reminder_title',
-            'body_key' => 'notifications.restaurant_reservation_reminder_body',
-||||||| merged common ancestors
->>>>>>>>> Temporary merge branch 2
-=======
->>>>>>> origin/pm/merge-all-open-branches
+Temporary merge branch 2
         'task_comment_added' => [
             'category' => 'task',
             'title_key' => 'notifications.task_comment_added_title',

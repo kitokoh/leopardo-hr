@@ -400,9 +400,7 @@ jobs:
         # et les événements supprimés du code sans dépréciation actée.
         run: python3 dev-hub/tools/check-event-catalogue.py .
 
-=======
 
->>>>>>> origin/pm/merge-all-open-branches
       - name: Check for orphan (unrouted) controllers
         if: needs.detect-changes.outputs.api_changed == 'true'
         run: dev-hub/tools/check-unrouted-controllers.sh api
