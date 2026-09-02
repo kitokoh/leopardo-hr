@@ -55,4 +55,8 @@ return [
     'fuel_stock_variance_body' => 'تسوية #:run_id تُظهر فرقًا غير مفسر.',
     'fuel_maintenance_due_title' => 'صيانة متأخرة',
     'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
+    'restaurant_new_order_title' => 'طلب جديد',
+    'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
+    'restaurant_order_ready_title' => 'الطلب جاهز',
+    'restaurant_order_ready_body' => 'الطلب :reference جاهز للتقديم (طاولة :table).',
 ];

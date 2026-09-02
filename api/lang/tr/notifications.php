@@ -55,4 +55,8 @@ return [
     'fuel_stock_variance_body' => ':run_id numaralı mutabakat açıklanamayan bir fark gösteriyor.',
     'fuel_maintenance_due_title' => 'Gecikmiş bakım',
     'fuel_maintenance_due_body' => '“:task_title” görevi süresi geçmiş.',
+    'restaurant_new_order_title' => 'Yeni sipariş',
+    'restaurant_new_order_body' => 'Sipariş :reference — :covers kişi.',
+    'restaurant_order_ready_title' => 'Sipariş hazır',
+    'restaurant_order_ready_body' => 'Sipariş :reference servise hazır (masa :table).',
 ];

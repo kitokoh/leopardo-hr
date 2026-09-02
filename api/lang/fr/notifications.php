@@ -55,4 +55,8 @@ return [
     'fuel_stock_variance_body' => 'Le rapprochement #:run_id présente un écart non expliqué.',
     'fuel_maintenance_due_title' => 'Maintenance en retard',
     'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
+    'restaurant_new_order_title' => 'Nouvelle commande',
+    'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
+    'restaurant_order_ready_title' => 'Commande prête',
+    'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
 ];

@@ -55,4 +55,8 @@ return [
     'fuel_stock_variance_body' => 'Reconciliation run #:run_id shows an unexplained variance.',
     'fuel_maintenance_due_title' => 'Overdue maintenance',
     'fuel_maintenance_due_body' => 'Task “:task_title” is past due.',
+    'restaurant_new_order_title' => 'New order',
+    'restaurant_new_order_body' => 'Order :reference — :covers cover(s).',
+    'restaurant_order_ready_title' => 'Order ready',
+    'restaurant_order_ready_body' => 'Order :reference ready to serve (table :table).',
 ];
