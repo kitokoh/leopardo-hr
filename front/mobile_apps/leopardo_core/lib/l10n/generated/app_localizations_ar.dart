@@ -8255,6 +8255,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
+<<<<<<< HEAD
+=======
 
   @override
   String get navigationTravelagency => 'وكالة السفر';
@@ -8973,4 +8975,5 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelFormMoneyminor => 'المبلغ بالعملة (1 = 100 وحدة صغيرة)';
+>>>>>>> origin/main
 }

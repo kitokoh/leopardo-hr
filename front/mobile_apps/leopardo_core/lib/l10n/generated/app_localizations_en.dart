@@ -8334,6 +8334,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'Loading kitchen queue…';
+<<<<<<< HEAD
+=======
 
   @override
   String get navigationTravelagency => 'Travel agency';
@@ -9053,4 +9055,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get travelFormMoneyminor => 'Amount in currency (1 = 100 minor)';
+>>>>>>> origin/main
 }

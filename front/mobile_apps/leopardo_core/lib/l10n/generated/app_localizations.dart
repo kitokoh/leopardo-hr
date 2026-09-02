@@ -15667,6 +15667,8 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Chargement de la file cuisine…'**
   String get restaurantLoading;
+<<<<<<< HEAD
+=======
 
   /// No description provided for @navigationTravelagency.
   ///
@@ -17089,6 +17091,7 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Montant en devises (1 = 100 minor)'**
   String get travelFormMoneyminor;
+>>>>>>> origin/main
 }
 
 class _AppLocalizationsDelegate

@@ -93,6 +93,7 @@ final class JournalPostingService
         $description = ($document->type === DocumentType::Invoice->value ? 'Facture' : 'Avoir').' '.$piece;
 
         return $this->postLines(
+            companyId: (string) $document->company_id,
             sourceType: 'document',
             sourceId: $document->id,
             entryDate: $document->issue_date,
@@ -131,6 +132,7 @@ final class JournalPostingService
         $description = 'Encaissement '.$method->value.($payment->reference !== null ? ' ('.$payment->reference.')' : '');
 
         return $this->postLines(
+            companyId: (string) $payment->company_id,
             sourceType: 'payment',
             sourceId: $payment->id,
             entryDate: $entryDate,
@@ -179,10 +181,16 @@ final class JournalPostingService
     /**
      * Clôture une période comptable (idempotent) : plus aucun posting accepté.
      */
-    public function closePeriod(string $period, ?string $closedBy = null): AccountingClosedPeriod
+    public function closePeriod(string $period, ?string $closedBy = null, ?string $companyId = null): AccountingClosedPeriod
     {
+        $attributes = ['period' => $period];
+
+        if ($companyId !== null) {
+            $attributes['company_id'] = $companyId;
+        }
+
         return AccountingClosedPeriod::query()->firstOrCreate(
-            ['period' => $period],
+            $attributes,
             ['closed_by' => $closedBy, 'closed_at' => Carbon::now()],
         );
     }
@@ -228,6 +236,7 @@ final class JournalPostingService
      * @param  list<array{account: string, account_label: string, debit: float, credit: float}>  $lines
      */
     private function postLines(
+        string $companyId,
         string $sourceType,
         int $sourceId,
         Carbon $entryDate,
@@ -244,12 +253,13 @@ final class JournalPostingService
 
         $period = $entryDate->format('Y-m');
 
-        return DB::transaction(function () use ($sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines): int {
+        return DB::transaction(function () use ($companyId, $sourceType, $sourceId, $entryDate, $period, $piece, $description, $lines): int {
             $count = 0;
 
             foreach ($lines as $line) {
                 AccountingJournalEntry::query()->updateOrCreate(
                     [
+                        'company_id' => $companyId,
                         'source_type' => $sourceType,
                         'source_id' => $sourceId,
                         'account_code' => $line['account'],

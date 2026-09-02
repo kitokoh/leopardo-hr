@@ -8438,6 +8438,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'Chargement de la file cuisine…';
+<<<<<<< HEAD
+=======
 
   @override
   String get navigationTravelagency => 'Agence de voyage';
@@ -9160,4 +9162,5 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelFormMoneyminor => 'Montant en devises (1 = 100 minor)';
+>>>>>>> origin/main
 }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\FeatureDetectorInterface;
 use App\Contracts\FeatureRegistryInterface;
+use App\Core\Feature\Infrastructure\Services\FeatureFlagRegistry;
 use App\Core\Feature\Infrastructure\Services\FeatureRegistry;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Cache\TaggableStore;
@@ -35,6 +36,10 @@ class FeatureRegistryServiceProvider extends ServiceProvider
 
         // Alias pour faciliter l'injection
         $this->app->alias(FeatureRegistryInterface::class, 'feature.registry');
+
+        // MAT-010 (#5868) — registre versionné des feature flags + kill
+        // switches (consommé par FeatureFlag::enabled/for).
+        $this->app->singleton(FeatureFlagRegistry::class, fn (): FeatureFlagRegistry => new FeatureFlagRegistry((array) config('feature-flags')));
     }
 
     /**

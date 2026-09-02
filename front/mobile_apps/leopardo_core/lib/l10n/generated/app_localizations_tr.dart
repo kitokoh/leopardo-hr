@@ -8345,6 +8345,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
+<<<<<<< HEAD
+=======
 
   @override
   String get navigationTravelagency => 'Seyahat acentesi';
@@ -9065,4 +9067,5 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get travelFormMoneyminor =>
       'Para birimi cinsinden tutar (1 = 100 birim)';
+>>>>>>> origin/main
 }
