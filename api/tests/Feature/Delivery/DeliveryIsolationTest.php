@@ -53,6 +53,7 @@ class DeliveryIsolationTest extends TestCase
 
         // …mais un même tenant ne peut pas créer deux livraisons pour la même source.
         try {
+<<<<<<< HEAD
             DB::beginTransaction();
             $this->insertDelivery($companyA, 'DLV-2026-000003', 'restaurant', 'RST-2026-0001');
             DB::commit();
@@ -64,6 +65,15 @@ class DeliveryIsolationTest extends TestCase
         // La tentative en doublon n'a rien créé : le tenant A ne garde que
         // SA livraison d'origine.
         self::assertSame(1, DB::table('delivery_deliveries')->where('company_id', $companyA->id)->count());
+=======
+            $this->insertDelivery($companyA, 'DLV-2026-000003', 'restaurant', 'RST-2026-0001');
+            self::fail('Unique (company_id, source, source_reference) attendu.');
+        } catch (\Throwable) {
+            self::assertTrue(true);
+        }
+
+        self::assertSame(2, DB::table('delivery_deliveries')->where('company_id', $companyA->id)->count());
+>>>>>>> origin/feat/delivery-205-cod
     }
 
     public function test_routes_and_events_are_scoped_per_company(): void
