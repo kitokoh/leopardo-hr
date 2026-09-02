@@ -595,6 +595,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/admin/social-contributions/{socialContribution}", options);
     },
 
+    /** Statistiques des surveys de solutions (super-admin) */
+    getAdminSolutionsSurveyStats(options = {}) {
+      return request("GET", "/admin/solutions/survey-stats", options);
+    },
+
     /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
     listAdminTaxSlabs(options = {}) {
       return request("GET", "/admin/tax-slabs", options);

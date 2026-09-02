@@ -4340,7 +4340,8 @@
     "accountingDashboard": "Accounting — Dashboard",
     "accountingSettings": "Accounting — Settings",
     "fuelStation": "Fuel stations",
-    "travelAgency": "Travel agency"
+    "travelAgency": "Travel agency",
+    "surveyStats": "Solution surveys"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -4829,5 +4830,26 @@
       "expired": "Expired",
       "archived": "Archived"
     }
+  },
+  "surveyStats": {
+    "title": "Solution surveys",
+    "subtitle": "Track vitrine wizard conversion (responses, suggested packs, signups).",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "empty": "No survey responses yet.",
+    "metricResponses": "Responses",
+    "metricConverted": "Signups",
+    "metricConversionRate": "Conversion rate",
+    "metricPackagesSuggested": "Suggested packs",
+    "bySolutionTitle": "Volume per solution",
+    "bySolutionHint": "Response distribution per sectorial solution.",
+    "packagesTitle": "Top suggested packs",
+    "packagesHint": "Frequency of packs suggested by the engine.",
+    "answersTitle": "Answer distribution",
+    "answersHint": "Answer values per question (bounded sample).",
+    "solutionColumn": "Solution",
+    "responsesColumn": "Responses",
+    "shareColumn": "Share"
   }
 }

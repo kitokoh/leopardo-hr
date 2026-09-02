@@ -4340,7 +4340,8 @@
     "accountingDashboard": "Muhasebe — Panel",
     "accountingSettings": "Muhasebe — Ayarlar",
     "fuelStation": "Akaryakıt istasyonları",
-    "travelAgency": "Seyahat acentesi"
+    "travelAgency": "Seyahat acentesi",
+    "surveyStats": "Çözüm anketleri"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
@@ -4829,5 +4830,26 @@
       "expired": "Süresi doldu",
       "archived": "Arşivlendi"
     }
+  },
+  "surveyStats": {
+    "title": "Çözüm anketleri",
+    "subtitle": "Vitrin sihirbazı dönüşümünü izleyin (yanıtlar, önerilen paketler, kayıtlar).",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "empty": "Henüz anket yanıtı yok.",
+    "metricResponses": "Yanıtlar",
+    "metricConverted": "Kayıtlar",
+    "metricConversionRate": "Dönüşüm oranı",
+    "metricPackagesSuggested": "Önerilen paketler",
+    "bySolutionTitle": "Çözüm başına hacim",
+    "bySolutionHint": "Sektörel çözüme göre yanıt dağılımı.",
+    "packagesTitle": "En çok önerilen paketler",
+    "packagesHint": "Motor tarafından önerilen paketlerin sıklığı.",
+    "answersTitle": "Yanıt dağılımı",
+    "answersHint": "Soru başına yanıt değerleri (sınırlı örneklem).",
+    "solutionColumn": "Çözüm",
+    "responsesColumn": "Yanıtlar",
+    "shareColumn": "Pay"
   }
 }

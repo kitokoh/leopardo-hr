@@ -496,6 +496,10 @@ class LeopardoClient:
         """Modifier une règle de cotisation nationale (platform_admin) — issue #1815"""
         return self.request("PUT", "/admin/social-contributions/{socialContribution}", **kwargs)
 
+    def get_admin_solutions_survey_stats(self, **kwargs):
+        """Statistiques des surveys de solutions (super-admin)"""
+        return self.request("GET", "/admin/solutions/survey-stats", **kwargs)
+
     def listadmintaxslabs(self, **kwargs):
         """Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"""
         return self.request("GET", "/admin/tax-slabs", **kwargs)

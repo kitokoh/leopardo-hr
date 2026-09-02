@@ -1295,10 +1295,6 @@ paths:
                   enum:
                   - guided_trial
                   - self_service
-                solution:
-                  type: string
-                  maxLength: 60
-                  description: 'Solution sectorielle demandée (allowlist SolutionCatalogue, ex. restaurant) — activée au provisioning tenant (#6693).'
       responses:
         '200':
           description: 'Demande reçue (guided_trial : provisioning lancé)'
@@ -4617,6 +4613,88 @@ paths:
           description: Nœud révoqué
         '404':
           $ref: '#/components/responses/Error404'
+  /admin/solutions/survey-stats:
+    get:
+      tags:
+      - Platform
+      summary: Statistiques des surveys de solutions (super-admin)
+      description: 'Pilotage des surveys de solutions vitrine (BC-25 #6694) : volume de réponses par solution, distribution des réponses, packs les plus suggérés et conversion survey → inscription. Agrégé depuis marketing_leads (type solution_survey), borné par le paramètre limit (défaut 200, max 1000).'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 200
+        description: Nombre maximal de réponses prises en compte pour les agrégats
+      responses:
+        '200':
+          description: Statistiques agrégées des surveys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          responses:
+                            type: integer
+                          converted:
+                            type: integer
+                          conversion_rate:
+                            type: number
+                      by_solution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            solution:
+                              type: string
+                            responses:
+                              type: integer
+                      packages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            count:
+                              type: integer
+                      answers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            question:
+                              type: string
+                            total:
+                              type: integer
+                            values:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  value:
+                                    type: string
+                                  count:
+                                    type: integer
+                      window:
+                        type: object
+                        properties:
+                          limit:
+                            type: integer
+                          type:
+                            type: string
+        '401':
+          $ref: '#/components/responses/Error401'
   /admin/ai/conversations:
     get:
       tags:
@@ -22062,8 +22140,7 @@ paths:
       - Solutions
       summary: Liste des solutions sectorielles disponibles
       description: Catalogue public des solutions (allowlist serveur) - code, nom, description, maturite.
-      security:
-      - []
+      security: []
       responses:
         '200':
           description: Liste des solutions
@@ -22091,8 +22168,7 @@ paths:
       - Solutions
       summary: Questions du questionnaire de pre-qualification d'une solution
       description: Retourne les questions et le catalogue de packages de la solution (sans auth, vitrine).
-      security:
-      - []
+      security: []
       parameters:
       - name: code
         in: path
@@ -22127,8 +22203,7 @@ paths:
       - Solutions
       summary: Evaluer les reponses et retourner le pack suggere
       description: Regles deterministes cote serveur (aucune IA) - packages tries par priorite, chacun avec sa raison i18n.
-      security:
-      - []
+      security: []
       parameters:
       - name: code
         in: path
@@ -22176,8 +22251,7 @@ paths:
       - Solutions
       summary: Guide PDF personnalise du pack d'une solution
       description: PDF A4 genere avec dompdf (deja en deps), localise via les fichiers lang serveur solutions.*.
-      security:
-      - []
+      security: []
       parameters:
       - name: code
         in: path

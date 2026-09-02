@@ -4340,7 +4340,8 @@
     "accountingDashboard": "المحاسبة — لوحة القيادة",
     "accountingSettings": "المحاسبة — الإعدادات",
     "fuelStation": "محطات الوقود",
-    "travelAgency": "وكالة السفر"
+    "travelAgency": "وكالة السفر",
+    "surveyStats": "استبيانات الحلول"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -4829,5 +4830,26 @@
       "expired": "منتهية",
       "archived": "مؤرشفة"
     }
+  },
+  "surveyStats": {
+    "title": "استبيانات الحلول",
+    "subtitle": "تتبّع تحويل معالج الواجهة (الردود، الحزم المقترحة، التسجيلات).",
+    "refresh": "تحديث",
+    "retry": "إعادة محاولة",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا توجد ردود استبيان بعد.",
+    "metricResponses": "الردود",
+    "metricConverted": "التسجيلات",
+    "metricConversionRate": "معدل التحويل",
+    "metricPackagesSuggested": "الحزم المقترحة",
+    "bySolutionTitle": "الحجم حسب الحل",
+    "bySolutionHint": "توزيع الردود حسب الحل القطاعي.",
+    "packagesTitle": "أكثر الحزم اقتراحًا",
+    "packagesHint": "تكرار الحزم المقترحة من المحرك.",
+    "answersTitle": "توزيع الردود",
+    "answersHint": "قيم الردود حسب السؤال (عينة محدودة).",
+    "solutionColumn": "الحل",
+    "responsesColumn": "الردود",
+    "shareColumn": "الحصة"
   }
 }

@@ -56,6 +56,15 @@ const routes = [
         }
       },
       {
+        path: '/solutions/survey-stats',
+        name: 'solutionSurveyStats',
+        component: () => import('@/views/solutions/SolutionSurveyStatsView.vue'),
+        meta: {
+          title: 'navigation.surveyStats',
+          icon: 'ChatBubbleLeftRightIcon'
+        }
+      },
+      {
         path: '/globe',
         name: 'globe',
         component: () => import('@/views/globe/GlobeView.vue'),

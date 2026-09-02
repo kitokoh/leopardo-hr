@@ -108,7 +108,6 @@ export function buildDefaultAnswers(
 
 export type VitrineLocale = 'fr' | 'en' | 'tr' | 'ar';
 
-
 export { SOLUTION_LABELS };
 export type { SurveyLocalized } from '../data/solution-survey-labels';
 
