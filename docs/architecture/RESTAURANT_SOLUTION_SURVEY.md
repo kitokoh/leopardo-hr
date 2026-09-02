@@ -44,7 +44,6 @@ Vitrine web (/restaurant)                     API Laravel
 | GET | `/api/v1/solutions` | — | `{ data: [{ code, name, description, maturity }] }` |
 | GET | `/api/v1/solutions/{code}/survey` | — | `{ data: { code, questions, packages } }` |
 | POST | `/api/v1/solutions/{code}/survey` | `{ answers: { clé_question: valeur } }` | `{ data: { code, packages: [{ key, type, label_key, reason_key, priority, app?, download? }], total } }` |
-<<<<<<< HEAD
 | GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*` ×4) |
 | POST | `/api/forms/solution-survey` (vitrine Next) | `{ email, consent: true, data: { solution, answers, packages } }` | Lead persiste via PA2-MKT-007 (`marketing_leads`, type `solution_survey`) |
 
@@ -63,9 +62,6 @@ php artisan leopardo:solution:activate {company_uuid} restaurant [--actor={emplo
 ```
 
 L'activation **à l'inscription** (provisioning tenant → `SolutionActivator`) reste à câbler (issue #6693).
-=======
-| GET | `/api/v1/solutions/{code}/pack?packages=k1,k2` | — | PDF A4 du pack (dompdf, i18n `solutions.*`) |
->>>>>>> origin/feat/restaurant-solution-survey
 
 ## Ajouter une nouvelle solution (ex. FuelStation)
 
@@ -87,7 +83,6 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 - **Automatique au provisioning** : `POST /platform/companies` accepte un champ `solutions: ["restaurant"]` (allowlist `SolutionCatalogue`, fail-closed : code inconnu → 422). `CompanyProvisioningService` active chaque solution après création du tenant (feature flag `Company::setFeature('restaurant', true)` + audit `solution.activated`). Les modules requis (`rh`, `attendance`, `documents`, `notifications` — transversaux, actifs par défaut) sont vérifiés ; un refus est tracé (`refused_missing_dependencies`) sans bloquer le provisioning.
 - **Manuelle (ops/pilote)** : `php artisan leopardo:solution:activate {company_uuid} restaurant [--actor=ID]` (idempotent). Un écran super-admin (feature toggles) reste le chemin production futur (voir `PlatformCompanyFeatureController`).
 
-<<<<<<< HEAD
 ## Activation de la solution sur un tenant (#6693)
 
 ### Activation automatique à l'inscription
@@ -117,8 +112,6 @@ commande console ou le dashboard (voir ci-dessous).
   toggles `features` par module connu (`Company::KNOWN_MODULES` — `restaurant`
   y est déclaré), puis sauvegarde.
 
-=======
->>>>>>> origin/feat/restaurant-solution-survey
 ## Budget zéro — dépendances
 
 - Backend : aucune nouvelle dépendance (PHP pur).
@@ -128,7 +121,6 @@ commande console ou le dashboard (voir ci-dessous).
 
 ## À faire (prochaines étapes)
 
-<<<<<<< HEAD
 - [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*` ×4 (fr/en/tr/ar)
 - [x] Labels ×4 du wizard (SOLUTION_LABELS tr/ar + garde PA2-I18N-014) — #6691
 - [x] Capture des leads (email + consentement RGPD) via `POST /api/forms/solution-survey` → `marketing_leads` (type `solution_survey`) — #6692
@@ -137,20 +129,3 @@ commande console ou le dashboard (voir ci-dessous).
 - [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
 =======
 - [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
-<<<<<<< HEAD
-- [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
-- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
-- [ ] Activation tenant post-inscription via `SolutionActivator`
-- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
->>>>>>> origin/feat/restaurant-solution-survey
-||||||| 37b21bf98
-- [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
-- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
-- [ ] Activation tenant post-inscription via `SolutionActivator`
-- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
-=======
-- [x] Traductions tr/ar des labels (SOLUTION_LABELS ×4 + `api/lang/{tr,ar}/solutions.php`) — #6691
-- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant (voir PR #6705)
-- [x] Activation tenant post-inscription via `SolutionActivator` — #6693 (provisioning + commande console)
-- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
->>>>>>> origin/bc/bc25-survey-i18n-activator-admin
