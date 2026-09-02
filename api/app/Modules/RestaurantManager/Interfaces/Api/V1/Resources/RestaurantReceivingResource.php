@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 
 /**
  * RESTO-503 (#6202) — Ressource API d'une réception de marchandises.
@@ -29,4 +30,6 @@ class RestaurantReceivingResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
+
+
 }

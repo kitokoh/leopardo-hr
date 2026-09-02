@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 
 /**
  * RESTO-504 (#6203) — Ressource API d'une ligne de comptage d'inventaire.
@@ -27,4 +28,6 @@ class RestaurantInventoryCountItemResource extends JsonResource
             'reason_code' => $this->reason_code,
         ];
     }
+
+
 }

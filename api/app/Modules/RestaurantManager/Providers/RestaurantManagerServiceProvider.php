@@ -148,6 +148,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // RESTO-107 (#6164) — seed de démonstration idempotent ;
         // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet) ;
         // RESTO-808 (#6229) — dispatcher outbox (consommation des événements).
+        // RESTO-505 (#6204) — alerte de seuil de stock (rescan complet).
         $this->commands([
             ActivateRestaurantManagerCommand::class,
             SeedRestaurantDemoCommand::class,

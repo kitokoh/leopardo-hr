@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 
 /**
  * RESTO-501 (#6200) — Ressource API d'un niveau de stock.
@@ -31,4 +32,6 @@ class RestaurantStockLevelResource extends JsonResource
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
+
+
 }

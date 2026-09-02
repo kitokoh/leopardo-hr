@@ -9,6 +9,7 @@ use App\Modules\RestaurantManager\Domain\Enums\StockMovementReason;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
 
 /**
  * RESTO-501 (#6200) — Validation stricte de création d'un mouvement de stock.
@@ -44,4 +45,6 @@ class StoreRestaurantInventoryMovementRequest extends FormRequest
             'note_redacted' => ['nullable', 'string', 'max:1000'],
         ];
     }
+
+
 }

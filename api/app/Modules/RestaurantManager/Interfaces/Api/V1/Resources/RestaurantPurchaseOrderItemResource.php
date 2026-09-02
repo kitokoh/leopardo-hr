@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrderItem;
 
 /**
  * RESTO-502 (#6201) — Ressource API d'une ligne de bon de commande.
@@ -26,4 +27,6 @@ class RestaurantPurchaseOrderItemResource extends JsonResource
             'line_total_minor' => $this->line_total_minor,
         ];
     }
+
+
 }

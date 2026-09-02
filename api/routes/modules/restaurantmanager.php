@@ -283,4 +283,5 @@ Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
 Route::post('/reports/export', [RestaurantReportController::class, 'export']);
 Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
             ->name('restaurant.reports.export.download');
+Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
     });

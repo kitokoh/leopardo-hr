@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 
 /**
  * RESTO-501 (#6200) — Ressource API d'un mouvement de stock.
@@ -32,4 +33,6 @@ class RestaurantInventoryMovementResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
+
+
 }
