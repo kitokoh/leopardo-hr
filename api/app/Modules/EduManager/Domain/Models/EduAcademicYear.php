@@ -6,7 +6,6 @@ namespace App\Modules\EduManager\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -14,9 +13,8 @@ use Illuminate\Support\Carbon;
 /**
  * Année scolaire d'un établissement — Issue #5819 (EDU-003).
  *
- * Tenant-scoped (`company_id`, schéma tenant). Une période scolaire doit
- * rester cohérente : `start_date` < `end_date` est garanti en base par le
- * CHECK `edu_academic_years_period_check` (migration #5819-1).
+ * Tenant-scoped (`company_id`, schéma tenant). Période cohérente garantie
+ * par le CHECK `start_date < end_date` ; nom unique par tenant.
  *
  * @property int $id
  * @property string $company_id
@@ -24,9 +22,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon $start_date
  * @property Carbon $end_date
  * @property string $status
+ * @property string|null $notes
+ * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, EduClass> $classes
  *
  * @mixin Builder<static>
  */
@@ -36,14 +35,11 @@ class EduAcademicYear extends Model
 
     public const STATUS_ACTIVE = 'active';
 
-    public const STATUS_INACTIVE = 'inactive';
-
-    public const STATUS_ARCHIVED = 'archived';
+    public const STATUS_CLOSED = 'closed';
 
     public const STATUSES = [
         self::STATUS_ACTIVE,
-        self::STATUS_INACTIVE,
-        self::STATUS_ARCHIVED,
+        self::STATUS_CLOSED,
     ];
 
     protected $table = 'edu_academic_years';
@@ -54,6 +50,8 @@ class EduAcademicYear extends Model
         'start_date',
         'end_date',
         'status',
+        'notes',
+        'created_by',
     ];
 
     protected $casts = [
@@ -63,8 +61,6 @@ class EduAcademicYear extends Model
     ];
 
     /**
-     * Classes rattachées à cette année scolaire.
-     *
      * @return HasMany<EduClass, $this>
      */
     public function classes(): HasMany

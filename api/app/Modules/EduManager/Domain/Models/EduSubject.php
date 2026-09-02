@@ -6,26 +6,25 @@ namespace App\Modules\EduManager\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * Matière enseignée d'un établissement — Issue #5819 (EDU-003).
+ * Matière enseignée — Issue #5819 (EDU-003).
  *
- * Tenant-scoped (`company_id`, schéma tenant). `code` unique PAR TENANT
- * (UNIQUE company_id+code) ; les affectations enseignant → matière sont
- * portées par `EduTeacherSubject`.
+ * Tenant-scoped (`company_id`, schéma tenant). Code unique par tenant ;
+ * rattachement facultatif à un campus (FK composite anti cross-tenant).
  *
  * @property int $id
  * @property string $company_id
+ * @property int|null $campus_id
  * @property string $code
  * @property string $name
+ * @property string $default_coefficient
  * @property string $status
+ * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, EduTeacherSubject> $teacherSubjects
  *
  * @mixin Builder<static>
  */
@@ -49,22 +48,17 @@ class EduSubject extends Model
 
     protected $fillable = [
         'company_id',
+        'campus_id',
         'code',
         'name',
+        'default_coefficient',
         'status',
+        'created_by',
     ];
 
     protected $casts = [
+        'campus_id' => 'integer',
+        'default_coefficient' => 'string',
         'status' => 'string',
     ];
-
-    /**
-     * Affectations enseignant → matière (par année scolaire).
-     *
-     * @return HasMany<EduTeacherSubject, $this>
-     */
-    public function teacherSubjects(): HasMany
-    {
-        return $this->hasMany(EduTeacherSubject::class, 'subject_id');
-    }
 }

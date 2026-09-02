@@ -65,4 +65,6 @@ return [
     AccountingServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
+    // — EduManager module (solution verticale, issue #5817)
+    EduManagerServiceProvider::class,
 ];

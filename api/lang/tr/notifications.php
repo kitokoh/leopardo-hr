@@ -36,4 +36,10 @@ return [
     'payment_document_ready_body' => 'Ödeme belgeniz oluşturuldu ve indirilmeye hazır.',
     'weekly_manager_digest_title' => 'Haftalık ekip özeti',
     'weekly_manager_digest_body' => ':week_start haftası — :team_size kişilik ekip · :present kayıtlı devam · :pending_absences bekleyen izin · :pending_advances bekleyen avans · :pending_corrections bekleyen düzeltme.',
-];
+
+    'edu_admission_converted_title' => 'Yeni kayıt dönüştürüldü',
+    'edu_admission_converted_body' => ':student_name için :admission_number kaydı öğrenciye dönüştürüldü.',
+    'edu_absence_recorded_title' => 'Devamsızlık kaydedildi',
+    'edu_absence_recorded_body' => ':student_name :date tarihinde :status.',
+    'edu_report_card_published_title' => 'Karne yayınlandı',
+    'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.', ];
