@@ -1,22 +1,6 @@
 # 📑 PILOTAGE — LEOPARDO RH
 # PROGRAM_VERSION = 4.24.0 | 2026-08-11
 # CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
-
-> ⚠️ **ARCHIVÉ (issue #6698, 2026-09-02)** — ce document n'est PLUS la source de
-> vérité opérationnelle. La gestion de projet active se fait **exclusivement via
-> GitHub Issues / GitHub Projects** (AGENTS.md, « NOUVELLE MÉTHODE DE GESTION DE
-> PROJET »). Sources canoniques à la place de ce fichier :
-> - backlog & affectations : **GitHub Issues** (labels BC, milestone « Audit & mise en ordre ») ;
-> - roadmap produit : `docs/REFERENTIEL_PRODUIT/ROADMAP.md` ;
-> - plan 60 jours : `PLAN_60_JOURS.md` (racine) + gate de scope `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` ;
-> - règles de travail : `AGENTS.md` (racine) ;
-> - exploitation : `docs/ops/` et `dev-hub/`.
-> Ce fichier est conservé pour traçabilité historique (versions 4.x) ; il peut
-> diverger du code livré — ne pas s'y référer pour une décision.
-
-# 📑 PILOTAGE — LEOPARDO RH
-# PROGRAM_VERSION = 4.24.0 | 2026-08-11
-# CE FICHIER EST LA SEULE SOURCE DE VÉRITÉ OPÉRATIONNELLE
 # Statut des anciens fichiers : voir section "Gouvernance documentaire"
 
 > ⚠️ **Avertissement — divergence scope vs code livré**
