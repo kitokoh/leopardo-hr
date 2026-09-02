@@ -319,7 +319,7 @@ const bankingForm = reactive({ company_iban: '', company_bic: '' })
 async function loadBanking() {
   isBankingLoading.value = true
   try {
-    const res = await api.get('/company/banking')
+    const res = await api.get('/company/banking', { _skipAuthRedirect: true })
     const data = res.data?.data || {}
     bankingData.company_iban = data.company_iban ?? null
     bankingData.company_bic = data.company_bic ?? null
@@ -341,7 +341,7 @@ async function submitBanking() {
     const res = await api.patch('/company/banking', {
       company_iban: bankingForm.company_iban.trim().toUpperCase().replace(/\s/g, '') || null,
       company_bic: bankingForm.company_bic.trim().toUpperCase() || null,
-    })
+    }, { _skipAuthRedirect: true })
     const data = res.data?.data || {}
     bankingData.company_iban = data.company_iban ?? null
     bankingData.company_bic = data.company_bic ?? null
