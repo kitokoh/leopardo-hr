@@ -51,13 +51,13 @@ parameters:
 			path: app/Modules/EdgeSync/Domain/Models/EdgeNode.php
 
 		-
-			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$licenseService is never read, only written\.$#'
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\Controllers\\EdgeController\:\:\$licenseService is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php
 
 		-
-			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\Controllers\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php

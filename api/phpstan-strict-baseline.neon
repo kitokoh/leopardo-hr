@@ -1831,13 +1831,13 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/ApprovalController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\ApprovalController\:\:approve\(\) should return App\\Http\\Resources\\Api\\V1\\ApprovalRequestResource but returns Illuminate\\Http\\JsonResponse\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\ApprovalController\:\:approve\(\) should return App\\Http\\Resources\\Api\\V1\\ApprovalRequestResource but returns Illuminate\\Http\\JsonResponse\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/ApprovalController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\ApprovalController\:\:reject\(\) should return App\\Http\\Resources\\Api\\V1\\ApprovalRequestResource but returns Illuminate\\Http\\JsonResponse\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\ApprovalController\:\:reject\(\) should return App\\Http\\Resources\\Api\\V1\\ApprovalRequestResource but returns Illuminate\\Http\\JsonResponse\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/ApprovalController.php
@@ -1861,7 +1861,7 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/AttendanceController.php
 
 		-
-			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\AttendanceController\:\:dailySessions\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Auth\\Domain\\Models\\Employee\> given\.$#'
+			message: '#^Parameter \#1 \$employee of method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\AttendanceController\:\:dailySessions\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, App\\Core\\Auth\\Domain\\Models\\Employee\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Auth\\Domain\\Models\\Employee\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/AttendanceController.php
@@ -1879,25 +1879,25 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/AttendanceController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\BiometricEnrollmentController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\BiometricEnrollmentController\:\:serialize\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/BiometricEnrollmentController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeLeaveBalance\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\KioskController\:\:serializeLeaveBalance\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeRosterEmployee\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\Controllers\\KioskController\:\:serializeRosterEmployee\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/Controllers/KioskController.php
@@ -2125,7 +2125,7 @@ parameters:
 			path: app/Modules/Billing/Interfaces/Api/V1/Controllers/CompanyRequestController.php
 
 		-
-			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, string\|null given\.$#'
+			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\Controllers\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Billing/Interfaces/Api/V1/Controllers/FeatureFlagController.php
@@ -2527,13 +2527,13 @@ parameters:
 			path: app/Modules/EdgeSync/Infrastructure/Services/EdgeDaemonSyncClient.php
 
 		-
-			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$licenseService is never read, only written\.$#'
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\Controllers\\EdgeController\:\:\$licenseService is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php
 
 		-
-			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
+			message: '#^Property App\\Modules\\EdgeSync\\Interfaces\\Api\\V1\\Controllers\\EdgeController\:\:\$syncEngine is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeController.php
