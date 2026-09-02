@@ -19,7 +19,7 @@
         {{ $t('travel.gate.disabledTitle', 'Module Agence de voyage non activé') }}
       </h2>
       <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-        {{ $t('travel.gate.disabledBody', "La verticale TravelAgency n'est pas activée pour le tenant connecté. Activez la fonctionnalité « travelagency » pour accéder à ce module.") }}
+        {{ gateMessage || $t('travel.gate.disabledBody', "La verticale TravelAgency n'est pas activée pour le tenant connecté. Activez la fonctionnalité « travelagency » pour accéder à ce module.") }}
       </p>
       <button class="btn-secondary mt-6" type="button" @click="checkGate">
         {{ $t('travel.gate.retry', 'Réessayer') }}
@@ -101,6 +101,7 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 /** checking | ready | disabled (403 flag) | error (autre) */
 const gateStatus = ref('checking')
 const gateError = ref('')
+const gateMessage = ref('')
 
 const activeTab = ref('referentiel')
 
@@ -134,13 +135,20 @@ function selectTab(tab) {
 async function checkGate() {
   gateStatus.value = 'checking'
   gateError.value = ''
+  gateMessage.value = ''
   try {
     await api.get('/travel/ping', { _skipAuthRedirect: true })
     gateStatus.value = 'ready'
   } catch (err) {
     const status = err.response?.status
-    if (status === 403) {
+    // 403 : flag « travelagency » désactivé pour le tenant connecté.
+    // 404 : backend BC-24 pas encore livré (#6127) — même rendu « non
+    // activé » au lieu d'une fausse panne (issue #6713).
+    if (status === 403 || status === 404) {
       gateStatus.value = 'disabled'
+      if (status === 404) {
+        gateMessage.value = t('travel.gate.notDeliveredBody', "Le module TravelAgency n'est pas encore disponible sur ce compte (service en cours de livraison). Revenez plus tard.")
+      }
     } else {
       gateStatus.value = 'error'
       gateError.value = err.response?.data?.message
