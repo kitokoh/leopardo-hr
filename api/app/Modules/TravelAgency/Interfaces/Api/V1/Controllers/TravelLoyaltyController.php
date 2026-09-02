@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelLoyaltyOptInR
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward;use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
 
 /**
  * TRAVEL-811 (#6101) — Fidélité voyageur.
@@ -185,4 +186,6 @@ class TravelLoyaltyController extends Controller
             'points_cost' => $reward->points_cost,
         ]])->setStatusCode(201);
     }
+
+
 }

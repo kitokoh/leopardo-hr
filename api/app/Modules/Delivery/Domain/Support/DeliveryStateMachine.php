@@ -57,6 +57,7 @@ final class DeliveryStateMachine
         bool $hasProof = false,
     ): void {
         $allowed = self::ALLOWED_TRANSITIONS[$from->value];
+        $allowed = self::ALLOWED_TRANSITIONS[$from->value] ?? [];
 
         if (! in_array($to->value, $allowed, true)) {
             throw InvalidDeliveryTransitionException::notAllowed($from, $to);

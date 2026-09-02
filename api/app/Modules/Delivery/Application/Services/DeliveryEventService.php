@@ -92,6 +92,7 @@ final class DeliveryEventService
 
             try {
                 $delivery->transitionTo(DeliveryStatus::from($type), hasProof: $delivered);
+                $delivery->save();
             } catch (InvalidDeliveryTransitionException) {
                 abort(409, 'INVALID_TRANSITION');
             }

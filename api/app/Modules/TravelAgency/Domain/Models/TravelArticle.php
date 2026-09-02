@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Database\Factories\TravelArticleFactory;use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — Article (contenu éditorial).
@@ -44,4 +45,6 @@ class TravelArticle extends Model
     {
         return $this->hasMany(TravelRating::class, 'article_id');
     }
+
+
 }

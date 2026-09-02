@@ -187,10 +187,22 @@ Schedule::command('travel:expire-adverts')
     ->withoutOverlapping()
     ->onOneServer();
 
+=======
 // CRM V1 (issue #5720) — relances internes des tâches en retard, idempotentes
 // (table crm_task_reminders, UNIQUE task_id+remind_date).
 Schedule::command('crm:tasks:send-overdue-reminders')
     ->everyThirtyMinutes()
+<<<<<<< HEAD
+||||||| merged common ancestors
+    ->withoutOverlapping()
+    ->onOneServer();
+
+>>>>>>>>> Temporary merge branch 2
+=======
+    ->withoutOverlapping()
+    ->onOneServer();
+
+>>>>>>> origin/pm/merge-all-open-branches
 Schedule::command('growth:archive-clicks --days=90')
     ->weekly();
 

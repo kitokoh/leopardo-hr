@@ -45,6 +45,11 @@
    - `Subscription::transitionTo()` — toute transition invalide lève
      `InvalidArgumentException` (ex. `trial → past_due` refusé — la politique
      de recouvrement passe par `expired`).
+     la contrainte `subscriptions_status_check`, avec `allowedTransitions()`
+     et `isTerminal()` ;
+   - `Subscription::transitionTo()` — toute transition invalide lève
+     `InvalidArgumentException` (cancelled terminal, expired → active
+     uniquement).
    - **Bug corrigé (D2)** : StripeService écrivait `unpaid` (violation de
      `subscriptions_status_check` en production) → mappé sur `past_due`.
 2. **Politique de recouvrement explicite (D11)** — `billing:enforce-delinquency` :
@@ -74,6 +79,7 @@
 - [#6250] Contrat OpenAPI du périmètre billing
 - [#6251] Runbook exploitation billing + supervision du recouvrement
 - [#6252] Isolation tenant & RBAC billing (tests cross-tenant, droits support)
+<<<<<<< HEAD
      la contrainte `subscriptions_status_check`, avec `allowedTransitions()`
      et `isTerminal()` ;
      `InvalidArgumentException` (cancelled terminal, expired → active
@@ -82,3 +88,12 @@
 - Migrer les écritures `status` directes de `StripeService` vers `transitionTo()`
 - Prorata et grace period liée aux invoices
 - Réconciliation paiements/invoices (rapprochement Stripe ↔ factures)
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+=======
+## Reste à faire (hors périmètre de cette PR courte)
+
+- Migrer les écritures `status` directes de `StripeService` vers `transitionTo()`
+- Prorata et grace period liée aux invoices
+- Réconciliation paiements/invoices (rapprochement Stripe ↔ factures)
+>>>>>>> origin/pm/merge-all-open-branches

@@ -14,6 +14,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Core\Auth\Domain\Models\Employee;use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
 
 /**
  * API mobile livreur (DELIVERY-203, issue #6287) — partie serveur.
@@ -149,6 +150,8 @@ final class DeliveryRiderController
 
         return $companyId;
     }
+
+
 
 
 }

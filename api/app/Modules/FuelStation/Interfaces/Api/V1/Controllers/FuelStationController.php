@@ -13,6 +13,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelStationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\FuelStation\Domain\Models\FuelSite;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelStationRequest;
 
 /**
  * CRUD des stations FuelStation (FUEL-011, issue #5805).
@@ -157,5 +158,42 @@ class FuelStationController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+    }
+
+
+    public function sitesStore(SaveFuelSiteRequest $request, FuelStation $station): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($station->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('create', FuelStation::class);
+
+        /** @var FuelSite $site */
+        $site = FuelSite::query()->create([
+            'company_id' => $actor->company_id,
+            'station_id' => $station->id,
+            ...$request->validated(),
+        ]);
+
+        return response()->json(['data' => $this->sitePayload($site)], 201);
+    }
+
+    private function sitePayload(FuelSite $site): array
+    {
+        return [
+            'id' => $site->id,
+            'station_id' => $site->station_id,
+            'code' => $site->code,
+            'name' => $site->name,
+            'address' => $site->address,
+            'status' => $site->status,
+            'created_at' => $site->created_at?->toISOString(),
+        ];
     }
 }

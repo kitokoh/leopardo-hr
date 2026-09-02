@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
  */
 final class RefundBookingAction
 {
+    public function __construct(private readonly TravelOutboxPublisher $outbox) {}
     public function __construct(
         private readonly TravelOutboxPublisher $outbox,
         private readonly TravelCancellationPolicyService $policies,
@@ -73,10 +74,18 @@ final class RefundBookingAction
             'cancelled_by' => $actor->id,
             'cancelled_at' => now()->toIso8601String(),
             'reason' => $reason,
+            'notification_intent' => 'travel.booking.cancelled',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
         ]);
 
         $this->outbox->publish($booking->company_id, 'travel.payment.refunded.v1', [
             'booking_reference' => $booking->reference,
+            'amount_minor' => $booking->total_amount_minor,
+            'currency' => $booking->currency,
+            'refunded_by' => $actor->id,
+            'refunded_at' => now()->toIso8601String(),
+            'notification_intent' => 'travel.payment.refunded',
+            'consent' => false, // Opt-in explicite requis via contrat CRM client (TRAVEL-416).
             'amount_minor' => $breakdown['refund_amount_minor'],
             'penalty_minor' => $breakdown['penalty_minor'],
             'currency' => $booking->currency,

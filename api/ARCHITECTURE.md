@@ -114,6 +114,9 @@ restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/Delivery` | 🔶 en cours (DELIVERY-1xx, routes #6282) | 🔶 squelette DDD | `DeliveryServiceProvider` |
+=======
+| `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
+| `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 V1 en construction (canaux #5725, automatisations #5728, exports #5729) | `CrmServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` || `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 

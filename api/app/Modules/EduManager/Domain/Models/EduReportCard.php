@@ -109,4 +109,9 @@ class EduReportCard extends Model
     {
         return $this->status === self::STATUS_PUBLISHED;
     }
+
+    public function class(): BelongsTo
+    {
+        return $this->belongsTo(EduClass::class, 'class_id');
+    }
 }

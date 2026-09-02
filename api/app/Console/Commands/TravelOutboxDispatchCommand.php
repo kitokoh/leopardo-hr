@@ -12,6 +12,7 @@ use Illuminate\Console\Command;
 use Throwable;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;use Illuminate\Database\Query\Builder;use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Query\Builder;
 
 /**
  * travel:outbox-dispatch — Consomme l'outbox des événements TravelAgency
@@ -239,6 +240,8 @@ class TravelOutboxDispatchCommand extends Command
 
         $this->warn("[travel:outbox-dispatch] #{$event->id} transitoire (tentative {$attempts}) : {$error}");
     }
+
+
 
 
 }

@@ -118,7 +118,34 @@ return [
         'cabinet' => 'خزانة المستندات',
         'notifications' => 'الاشعارات',
         'evaluations' => 'التقييمات',
-        'restaurant' => 'المطعم',
+=======
         'restaurant' => 'المطبخ',
+        'restaurant' => 'المطعم',
+<<<<<<< HEAD
+        'restaurant' => 'المطبخ',
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| 8f2ae1d83
+=========
+        'restaurant' => 'المطبخ',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'المطبخ',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'المطبخ',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'المطبخ',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'المطبخ',
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches
     ],
 ];

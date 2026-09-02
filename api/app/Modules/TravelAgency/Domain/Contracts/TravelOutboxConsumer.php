@@ -8,6 +8,7 @@ use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
+use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 
 /**
  * #6066 (TRAVEL-414) — Contrat de consommation d'un événement d'outbox
@@ -29,6 +30,8 @@ interface TravelOutboxConsumer
      * @param  array<string, mixed>  $payload
      */
     public function handle(array $payload): void;
+
+
 
 
 

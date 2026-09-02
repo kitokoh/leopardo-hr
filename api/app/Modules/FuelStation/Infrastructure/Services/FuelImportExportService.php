@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Modules\HR\Domain\Models\ExportHistory;
 
 /**
  * Import/export sécurisé FuelStation — FUEL-018 (issue #5812).
@@ -129,4 +130,6 @@ final class FuelImportExportService
             ->values()
             ->all();
     }
+
+
 }

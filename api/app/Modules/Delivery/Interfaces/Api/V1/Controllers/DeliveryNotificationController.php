@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 
 /**
  * Notifications destinataire (DELIVERY-206, issue #6290) — opt-out effectif
@@ -70,6 +71,8 @@ final class DeliveryNotificationController
 
         return $companyId;
     }
+
+
 
 
 }

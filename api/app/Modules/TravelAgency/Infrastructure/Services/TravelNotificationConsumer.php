@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 
 /**
  * TRAVEL-415 (#6067) — Notifications voyageur (confirmation/annulation/
@@ -161,6 +162,8 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
 
         return ['travel_booking_status', 'Mise à jour de votre réservation'];
     }
+
+
 
 
 }

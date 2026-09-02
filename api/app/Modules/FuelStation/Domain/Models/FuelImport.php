@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use App\Core\Auth\Domain\Models\Employee;use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Journal d'import FuelStation — FUEL-018 (issue #5812).
@@ -83,4 +84,6 @@ class FuelImport extends Model
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
+
+
 }

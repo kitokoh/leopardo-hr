@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+=======
+use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Console\Commands\EduOutboxDispatchCommand;
 use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
 use App\Modules\EduManager\Infrastructure\Services\EduOutboxConsumerRegistry;
@@ -12,6 +14,7 @@ use Illuminate\Support\ServiceProvider;
 
 /**
  * Module EduManager — enregistre le manifest de solution dans le
+ * catalogue (allowlist). Aucune route métier avant EDU-006/EDU-010.
  * catalogue (allowlist) et les commandes du module (outbox #5832).
  */
 class EduManagerServiceProvider extends ServiceProvider
@@ -34,6 +37,7 @@ class EduManagerServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Rien à booter tant que l'API EduManager n'existe pas (EDU-006/EDU-010).
         $this->commands([
             EduOutboxDispatchCommand::class,
         ]);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
+use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
@@ -11,7 +12,7 @@ use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 /**
  * Règlement COD (DELIVERY-205, issue #6289) — allowlisté.
  *
- * @mixin \App\Modules\Delivery\Domain\Models\DeliveryCodSettlement
+ * @mixin DeliveryCodSettlement
  */
 final class DeliveryCodSettlementResource extends JsonResource
 {

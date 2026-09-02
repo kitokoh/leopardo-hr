@@ -68,9 +68,30 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDelive
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+<<<<<<<<< Temporary merge branch 1
+||||||||| ebc40d63e
+=========
+=======
+>>>>>>> origin/pm/merge-all-open-branches
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+<<<<<<< HEAD
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+>>>>>>>>> Temporary merge branch 2
+=======
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantMarketplaceWebhookController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+>>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -171,6 +192,7 @@ Route::prefix('v1')->group(function (): void {
         // transporteurs (jeton X-Carrier-Token, upsert idempotent par clé
         // externe — public, authentifié dans le contrôleur).
         Route::post('/travel/carrier-sync/trips', [TravelCarrierSyncController::class, 'upsertTrip']);
+    Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
         // #5272 — webhook des paiements en ligne des documents comptables.
@@ -186,11 +208,28 @@ Route::prefix('v1')->group(function (): void {
         // verticale RestaurantManager. Public : la confiance est portée par la
         // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
         // depuis le payload signé puis posé via TenantManager (pattern #5272).
+        Route::post('/restaurant/payments/{payment}/callback', RestaurantPaymentCallbackController::class);
         Route::post('/restaurant/payments/{payment}/callback', [RestaurantPaymentCallbackController::class, 'handle']);
         // RESTO-806 (#6227) — webhooks entrants apps de livraison (Uber Eats,
         // Glovo, ...). Public : signature HMAC fail-closed par adaptateur
         // (secret par tenant), tenant résolu depuis le payload signé.
         Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantDeliveryAppWebhookController::class, 'handle']);
+        // RESTO-806 (#6227) — webhooks entrants des apps de livraison (Uber
+        // Eats, Glovo). Public : tenant résolu par le jeton de boutique
+        // (`?token=`, middleware restaurant.public.shop), confiance portée par
+        // la signature HMAC provider + idempotence par event_id.
+        Route::post('/restaurant/marketplace/{provider}/webhooks', [RestaurantMarketplaceWebhookController::class, 'handle']);
+    });
+
+    // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager (jeton
+    // tenant signé, sans auth utilisateur) — throttling renforcé
+    // `restaurant-shop-public` (anti-scraping par IP, pattern TRAVEL-1001).
+    Route::middleware(['throttle:restaurant-shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/menu', [RestaurantPublicShopController::class, 'menu']);
+        Route::get('/public/restaurant/branches', [RestaurantPublicShopController::class, 'branches']);
+        Route::post('/public/restaurant/orders', [RestaurantPublicShopController::class, 'storeOrder']);
+        Route::get('/public/restaurant/orders/{reference}', [RestaurantPublicShopController::class, 'show']);
+        Route::post('/public/restaurant/orders/{reference}/pay', [RestaurantPublicShopController::class, 'pay']);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
@@ -319,11 +358,58 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/marketing.php';
     require __DIR__.'/modules/restaurantmanager.php';
 
+    require __DIR__.'/modules/restaurantmanager.php';
+<<<<<<<<< Temporary merge branch 1
+||||||||| 48418fe39
+=========
+||||||||| ebc40d63e
+=========
     require __DIR__.'/modules/travelagency.php';
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+||||||||||| 455618aef
+===========
+=========
+
+>>>>>>>>> Temporary merge branch 2
+    require __DIR__.'/modules/fuel_station.php';
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+>>>>>>>>> Temporary merge branch 2
+||||||||| ebc40d63e
+=========
+=======
+    require __DIR__.'/modules/travelagency.php';
+    require __DIR__.'/modules/fuel_station.php';
+    require __DIR__.'/modules/edu_manager.php';
+>>>>>>> origin/pm/merge-all-open-branches
+    require __DIR__.'/modules/travelagency.php';
+<<<<<<< HEAD
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/solutions.php';
     require __DIR__.'/modules/travelagency.php';
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| 2c931d459
+=========
+    require __DIR__.'/modules/edu_manager.php';
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+>>>>>>>>>>> Temporary merge branch 2
+=========
+>>>>>>>>> Temporary merge branch 2
+||||||||| 07716fa19
+=========
+    require __DIR__.'/modules/edu_manager.php';
+>>>>>>>>> Temporary merge branch 2
+=======
+    require __DIR__.'/modules/restaurantmanager.php';
+
+    require __DIR__.'/modules/fuel_station.php';
+>>>>>>> origin/pm/merge-all-open-branches
 
 
     // Multi-App dedicated route modules

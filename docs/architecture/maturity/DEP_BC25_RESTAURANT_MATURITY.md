@@ -100,6 +100,16 @@ security_review), 5 gates `pending` (core_flow, performance, observability, gold
 2. Livrer mobile/extensions (RESTO-801..808).
 3. Valider les gates `performance`/`observability`/`recette` + recette UAT signée avant GO pilote.
 =======
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+||||||||| 48418fe39
+=========
+||||||||| merged common ancestors
+<<<<<<<<<<< Temporary merge branch 1
+||||||||||| 455618aef
+===========
+=======
+>>>>>>> origin/pm/merge-all-open-branches
 # DEP-BC25 — Rapport de maturité BC-25 RESTAURANT
 
 > **Issue :** DEP-BC25 (#6276) — Deep maturity du contexte RestaurantManager (fondations RESTO-104).
@@ -154,4 +164,14 @@ security_review), 5 gates `pending` (core_flow, performance, observability, gold
    + la série POS 4xx (via #6274 ou sa re-création orchestrée).
 2. Livrer mobile/extensions (RESTO-801..808).
 3. Valider les gates `performance`/`observability`/`recette` + recette UAT signée avant GO pilote.
+<<<<<<< HEAD
 >>>>>>> origin/bc/bc25-restaurant-qualite-pilote
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+>>>>>>>>>>> Temporary merge branch 2
+=========
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches

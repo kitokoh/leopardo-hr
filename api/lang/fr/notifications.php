@@ -43,8 +43,10 @@ return [
     'restaurant_delivery_status_changed_body' => 'La livraison #:delivery (commande #:order) est maintenant « :status ».',
     'restaurant_reservation_reminder_title' => 'Réservation à venir (J-1)',
     'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
+=======
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
+<<<<<<< HEAD
 
     'edu_admission_converted_title' => 'Nouvelle admission convertie',
     'edu_admission_converted_body' => 'L\'admission :admission_number de :student_name a été convertie en élève.',
@@ -52,6 +54,15 @@ return [
     'edu_absence_recorded_body' => ':student_name est :status le :date.',
     'edu_report_card_published_title' => 'Bulletin publié',
     'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+||||||| merged common ancestors
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+<<<<<<<<< Temporary merge branch 1
+>>>>>>>>> Temporary merge branch 2
+||||||||| 9a13c05aa
+=========
+=======
+>>>>>>> origin/pm/merge-all-open-branches
     'fuel_meter_anomaly_title' => 'Anomalie de relevé détectée',
     'fuel_meter_anomaly_body' => 'Un intervalle de relevé anormal n\'a pas été revu (intervalle #:interval_id).',
     'fuel_missing_closure_title' => 'Clôture de caisse manquante',
@@ -60,9 +71,45 @@ return [
     'fuel_stock_variance_body' => 'Le rapprochement #:run_id présente un écart non expliqué.',
     'fuel_maintenance_due_title' => 'Maintenance en retard',
     'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
+<<<<<<< HEAD
     'restaurant_new_order_title' => 'Nouvelle commande',
     'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
     'restaurant_order_ready_title' => 'Commande prête',
     'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
  origin/main
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+    'restaurant_new_order_title' => 'Nouvelle commande',
+    'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
+    'restaurant_order_ready_title' => 'Commande prête',
+    'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches
 ];
+    'edu_admission_converted_title' => 'Nouvelle admission convertie',
+    'edu_admission_converted_body' => 'L\'admission :admission_number de :student_name a été convertie en élève.',
+    'edu_absence_recorded_title' => 'Absence enregistrée',
+    'edu_absence_recorded_body' => ':student_name est :status le :date.',
+    'edu_report_card_published_title' => 'Bulletin publié',
+    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+=======
+
+    'edu_admission_converted_title' => 'Nouvelle admission convertie',
+    'edu_admission_converted_body' => 'L\'admission :admission_number de :student_name a été convertie en élève.',
+    'edu_absence_recorded_title' => 'Absence enregistrée',
+    'edu_absence_recorded_body' => ':student_name est :status le :date.',
+    'edu_report_card_published_title' => 'Bulletin publié',
+    'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+    'restaurant_delivery_status_changed_title' => 'Livraison : :status',
+    'restaurant_delivery_status_changed_body' => 'La livraison #:delivery (commande #:order) est maintenant « :status ».',
+    'restaurant_reservation_reminder_title' => 'Réservation à venir (J-1)',
+    'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
+    'restaurant_new_order_title' => 'Nouvelle commande',
+    'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
+    'restaurant_order_ready_title' => 'Commande prête',
+    'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
+];
+>>>>>>> origin/pm/merge-all-open-branches

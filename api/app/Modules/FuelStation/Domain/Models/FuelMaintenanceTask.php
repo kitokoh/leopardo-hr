@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use App\Core\Auth\Domain\Models\Employee;use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Tâche de maintenance préventive/corrective FuelStation — FUEL-010
@@ -85,4 +86,6 @@ class FuelMaintenanceTask extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
     }
+
+
 }

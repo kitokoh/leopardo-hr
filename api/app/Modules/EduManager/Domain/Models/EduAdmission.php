@@ -132,4 +132,9 @@ class EduAdmission extends Model
     {
         return in_array($this->status, self::TERMINAL_STATUSES, true);
     }
+
+    public function academicYear(): BelongsTo
+    {
+        return $this->belongsTo(EduAcademicYear::class, 'academic_year_id');
+    }
 }

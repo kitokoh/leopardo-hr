@@ -125,4 +125,46 @@ return new class extends Migration
             [$constraint, $schema]
         ) !== null;
     }
+
+
+    private function constraintExists(string $name): bool
+    {
+        $row = DB::selectOne('SELECT 1 FROM pg_constraint WHERE conname = ?', [$name]);
+
+        return $row !== null;
+    }
+
+
+    private function addChecks(): void
+    {
+        foreach ([
+            'fuel_deliveries' => [
+                'fuel_deliveries_status_check' => "status IN ('draft', 'received', 'verified')",
+                'fuel_deliveries_quantity_check' => 'quantity_minor > 0',
+            ],
+            'fuel_stock_movements' => [
+                'fuel_stock_movements_direction_check' => "direction IN ('in', 'out')",
+                'fuel_stock_movements_reason_check' => "reason IN ('delivery', 'sale', 'adjustment', 'opening')",
+                'fuel_stock_movements_quantity_check' => 'quantity_minor > 0',
+            ],
+            'fuel_stock_reconciliations' => [
+                'fuel_reconciliations_status_check' => "status IN ('pending_measurement', 'completed', 'exception')",
+                'fuel_reconciliations_period_check' => 'period_end >= period_start',
+            ],
+        ] as $table => $constraints) {
+            $schema = resolveTableSchema($table);
+
+            if ($schema === null) {
+                continue;
+            }
+
+            foreach ($constraints as $name => $check) {
+                if ($this->constraintExists($name)) {
+                    continue;
+                }
+
+                DB::statement("ALTER TABLE {$schema}.{$table} ADD CONSTRAINT {$name} CHECK ({$check})");
+            }
+        }
+    }
 };

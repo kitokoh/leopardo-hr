@@ -20,6 +20,7 @@ use App\Modules\EduManager\Policies\EduGuardianPortalPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Modules\EduManager\Infrastructure\Services\EduGuardianPortalService;use App\Modules\EduManager\Interfaces\Api\V1\Requests\CreateEduGuardianPortalLinkRequest;use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduGuardianAccessLinkRequest;
 
 /**
  * Portail guardian — EDU-013 (issue #5829).
@@ -283,5 +284,63 @@ class EduGuardianPortalController extends Controller
                     'can_view_grades' => (bool) ($student->getRelation('pivot')->can_view_grades ?? false),
                 ])->values(),
         ];
+    }
+
+
+    public function createLink(CreateEduGuardianPortalLinkRequest $request, EduGuardian $guardian): JsonResponse
+    public function createAccessLink(StoreEduGuardianAccessLinkRequest $request, EduGuardian $guardian): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $guardian = $this->guardianForActor($actor);
+
+        if ($guardian === null || ! $this->guardianCanViewStudent($guardian, $student, $actor)) {
+            abort(404);
+        }
+
+        $attendances = EduAttendance::query()
+            ->where('company_id', $actor->company_id)
+            ->where('student_id', (int) $student->getAttribute('id'))
+            ->orderByDesc('attendance_date')
+            ->limit(90)
+            ->get();
+
+        return response()->json([
+            'data' => $attendances->map(fn (EduAttendance $attendance): array => [
+                'id' => (int) $attendance->getAttribute('id'),
+                'date' => $attendance->attendance_date->toDateString(),
+                'status' => $attendance->status,
+            ])->values(),
+        ]);
+    }
+
+    public function summary(Request $request, string $token): JsonResponse
+    {
+        $link = $this->portal->resolveToken($token);
+
+        if ($link === null) {
+            abort(404, 'EDU_PORTAL_LINK_NOT_FOUND');
+        }
+
+        $this->portal->logAccess($link);
+
+        return response()->json(['data' => $this->portal->summary($link)])
+            ->header('Referrer-Policy', 'no-referrer')
+            ->header('Cache-Control', 'no-store');
+    public function consume(Request $request, string $token): JsonResponse
+    {
+        $payload = $this->portal->consume($token, $request);
+
+        return response()->json(['data' => $payload]);
+    }
+}
+
+    public function consume(Request $request, string $token): JsonResponse
+    {
+        $payload = $this->portal->consume($token, $request);
+
+        return response()->json(['data' => $payload]);
     }
 }

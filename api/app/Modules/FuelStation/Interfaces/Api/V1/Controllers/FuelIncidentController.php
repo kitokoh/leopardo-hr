@@ -15,6 +15,7 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelIncidentRequest
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;use Illuminate\Database\Eloquent\Model;
+use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelMaintenanceService;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\TransitionFuelIncidentRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelMaintenanceTaskRequest;use Illuminate\Database\Eloquent\Model;
 
 /**
  * Incidents équipements (FUEL-010, issue #5804).
@@ -333,5 +334,20 @@ class FuelIncidentController extends Controller
         if ($model->getAttribute('company_id') !== $actor->company_id) {
             abort(404);
         }
+    }
+
+
+    private function stationInTenant(int $stationId, Employee $actor): FuelStation
+    {
+        /** @var FuelStation|null $station */
+        $station = FuelStation::query()
+            ->where('company_id', $actor->company_id)
+            ->find($stationId);
+
+        if (! $station instanceof FuelStation) {
+            abort(404);
+        }
+
+        return $station;
     }
 }

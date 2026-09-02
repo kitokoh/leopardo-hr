@@ -259,4 +259,16 @@ class EduCourseSlotServiceTest extends TestCase
             $this->assertStringContainsString('edu_course_slots_class_company_fk', $exception->getMessage());
         }
     }
+
+    public function test_same_subject_same_slot_is_allowed(): void
+    {
+        $service = app(EduCourseSlotService::class);
+        $first = $service->create($this->managerA, $this->slotPayload());
+
+        // Même classe + même matière + même créneau → pas un conflit (rejeu).
+        $second = $service->create($this->managerA, $this->slotPayload());
+
+        $this->assertNotSame((int) $first->getAttribute('id'), (int) $second->getAttribute('id'));
+        $this->assertSame(2, EduCourseSlot::query()->where('company_id', $this->companyA->id)->count());
+    }
 }

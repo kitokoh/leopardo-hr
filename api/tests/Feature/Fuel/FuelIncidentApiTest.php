@@ -14,6 +14,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use Illuminate\Http\UploadedFile;
 
 /**
  * Incidents, maintenance et tâches — FUEL-010 (issue #5804).
@@ -430,5 +431,187 @@ class FuelIncidentApiTest extends TestCase
         ]);
 
         return $station;
+    }
+
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'features' => ['fuel_station' => true],
+        ]);
+        $this->companyA = $companyA;
+
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create([
+            'country' => 'MA',
+            'currency' => 'MAD',
+            'features' => ['fuel_station' => true],
+        ]);
+        $this->companyB = $companyB;
+    }
+
+
+    protected function tearDown(): void
+    {
+        app()->forgetInstance('tenant_scope_required');
+        app()->forgetInstance('current_company');
+
+        parent::tearDown();
+    }
+
+
+    public function test_operator_cannot_manage_incidents(): void
+    {
+        Sanctum::actingAs($this->operator($this->companyA));
+
+        $this->getJson('/api/v1/fuel-station/incidents')->assertStatus(403);
+        $this->postJson('/api/v1/fuel-station/incidents', [])->assertStatus(403);
+    }
+
+
+    public function test_manager_creates_incident_and_replay_is_idempotent(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+        $station = $this->station($this->companyA);
+
+        $payload = [
+            'station_id' => $station->id,
+            'equipment_type' => 'pump',
+            'equipment_id' => 42,
+            'severity' => 'high',
+            'title' => 'Pompe P-04 en surchauffe',
+            'description' => 'La pompe émet une odeur de brûlé pendant les ravitaillements.',
+            'idempotency_key' => 'incident-001',
+        ];
+
+        $this->postJson('/api/v1/fuel-station/incidents', $payload)
+            ->assertStatus(201)
+            ->assertJsonPath('data.status', 'reported')
+            ->assertJsonPath('data.severity', 'high')
+            ->assertJsonPath('data.equipment_type', 'pump');
+
+        $this->postJson('/api/v1/fuel-station/incidents', $payload)
+            ->assertStatus(200)
+            ->assertJsonPath('replayed', true);
+
+        $this->assertDatabaseCount('fuel_incidents', 1);
+    }
+
+
+    public function test_incident_workflow_is_audited(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+        $station = $this->station($this->companyA);
+
+        $incident = $this->postJson('/api/v1/fuel-station/incidents', [
+            'station_id' => $station->id,
+            'equipment_type' => 'tank',
+            'severity' => 'medium',
+            'title' => 'Fuite détectée sur la cuve C1',
+            'description' => 'Flaque sous la cuve C1, relevé de jauge en baisse.',
+            'idempotency_key' => 'incident-002',
+        ])->assertStatus(201)->json('data');
+
+        // Transition illégale (reported → resolved sans passer par in_progress).
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'resolved',
+            'resolution_notes' => 'Intervention terminée.',
+        ])->assertStatus(422);
+
+        // resolved sans notes de résolution → refusé.
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'assigned',
+        ])->assertOk()->assertJsonPath('data.status', 'assigned');
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'in_progress',
+        ])->assertOk()->assertJsonPath('data.status', 'in_progress');
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'resolved',
+        ])->assertStatus(422);
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'resolved',
+            'resolution_notes' => 'Soudure de la cuve effectuée, jauge stabilisée.',
+        ])->assertOk()
+            ->assertJsonPath('data.status', 'resolved')
+            ->assertJsonPath('data.resolved_at', fn ($v): bool => is_string($v));
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident['id']}/transition", [
+            'status' => 'closed',
+        ])->assertOk()->assertJsonPath('data.status', 'closed');
+    }
+
+
+    public function test_attachments_are_controlled(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+        $station = $this->station($this->companyA);
+
+        $incident = $this->postJson('/api/v1/fuel-station/incidents', [
+            'station_id' => $station->id,
+            'equipment_type' => 'meter',
+            'severity' => 'low',
+            'title' => 'Compteur C-04-A illisible',
+            'description' => 'Chiffres effacés sur le totalisateur.',
+            'idempotency_key' => 'incident-003',
+        ])->assertStatus(201)->json('data');
+
+        // Type non autorisé (exe) → 422.
+        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+            'attachment' => UploadedFile::fake()->create('malware.exe', 10),
+        ])->assertStatus(422);
+
+        // Taille > 5 Mo → 422.
+        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+            'attachment' => UploadedFile::fake()->create('photo.png', 6 * 1024),
+        ])->assertStatus(422);
+
+        // PDF valide → 201.
+        $this->post('/api/v1/fuel-station/incidents/' . $incident['id'] . '/attachments', [
+            'attachment' => UploadedFile::fake()->create('constat.pdf', 100, 'application/pdf'),
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.mime_type', 'application/pdf');
+
+        $this->assertDatabaseCount('fuel_incident_attachments', 1);
+    }
+
+
+    public function test_maintenance_tasks_lifecycle(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+        $station = $this->station($this->companyA);
+
+        $task = $this->postJson('/api/v1/fuel-station/maintenance-tasks', [
+            'station_id' => $station->id,
+            'task_type' => 'preventive',
+            'priority' => 'medium',
+            'title' => 'Contrôle trimestriel des cuves',
+            'description' => 'Inspection visuelle et test de jauge.',
+            'due_at' => '2026-09-15T08:00:00Z',
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.status', 'pending')
+            ->json('data');
+
+        $this->patchJson("/api/v1/fuel-station/maintenance-tasks/{$task['id']}", [
+            'status' => 'done',
+            'notes' => 'Aucune anomalie constatée.',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'done')
+            ->assertJsonPath('data.completed_at', fn ($v): bool => is_string($v));
+
+        $this->assertDatabaseHas('fuel_maintenance_tasks', [
+            'id' => $task['id'],
+            'status' => 'done',
+        ]);
     }
 }

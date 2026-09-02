@@ -52,6 +52,7 @@ class DeliveryRiderApiTest extends TestCase
     }
 
     private function createRouteFor(int $driverId, string $date = 'today', int $count = 2, string $deliveryStatus = 'assigned'): DeliveryRoute
+    private function createRouteFor(int $driverId, string $date = 'today', int $count = 2): DeliveryRoute
     {
         $ids = [];
         for ($i = 0; $i < $count; $i++) {
@@ -61,6 +62,7 @@ class DeliveryRiderApiTest extends TestCase
                 'source' => 'manual',
                 'type' => 'parcel',
                 'status' => $deliveryStatus,
+                'status' => 'assigned',
                 'dropoff_contact' => 'Client '.$i,
                 'dropoff_address' => 'Alger',
             ]);
@@ -126,6 +128,7 @@ class DeliveryRiderApiTest extends TestCase
         // Colis déjà picked_up (la machine à états interdit assigned →
         // out_for_delivery ; le picked_up est enregistré côté dispatcher/manager).
         $route = $this->createRouteFor(11, deliveryStatus: 'picked_up');
+        $route = $this->createRouteFor(11);
         $stopId = (int) $route->stops()->first()->id;
 
         Sanctum::actingAs($this->rider(11));
@@ -159,7 +162,7 @@ class DeliveryRiderApiTest extends TestCase
 
     public function test_stop_status_replay_is_idempotent(): void
     {
-        $route = $this->createRouteFor(11);
+        $route = $this->createRouteFor(11, deliveryStatus: 'out_for_delivery');
         $stopId = (int) $route->stops()->first()->id;
 
         Sanctum::actingAs($this->rider(11));

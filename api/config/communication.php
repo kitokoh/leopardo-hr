@@ -161,6 +161,17 @@ return [
             'title_key' => 'notifications.security_alert_title',
             'body_key' => 'notifications.security_alert_body',
         ],
+=======
+        // BC-25 RESTAURANT (RESTO-605/#6210, RESTO-608/#6213) — notifications
+        // de la verticale RestaurantManager (livraison, rappel réservation).
+        'restaurant_delivery_status_changed' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_delivery_status_changed_title',
+            'body_key' => 'notifications.restaurant_delivery_status_changed_body',
+        ],
+        'restaurant_reservation_reminder' => [
+            'title_key' => 'notifications.restaurant_reservation_reminder_title',
+            'body_key' => 'notifications.restaurant_reservation_reminder_body',
         // BC-25 RESTAURANT (RESTO-808/#6229) — notifications cuisine/service.
         'restaurant_new_order' => [
             'category' => 'restaurant',
@@ -172,6 +183,7 @@ return [
             'title_key' => 'notifications.restaurant_order_ready_title',
             'body_key' => 'notifications.restaurant_order_ready_body',
         ],
+<<<<<<< HEAD
         // BC-25 RESTAURANT (RESTO-605/#6210, RESTO-608/#6213) — notifications
         // de la verticale RestaurantManager (livraison, rappel réservation).
         'restaurant_delivery_status_changed' => [
@@ -180,6 +192,10 @@ return [
         'restaurant_reservation_reminder' => [
             'title_key' => 'notifications.restaurant_reservation_reminder_title',
             'body_key' => 'notifications.restaurant_reservation_reminder_body',
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches
         'task_comment_added' => [
             'category' => 'task',
             'title_key' => 'notifications.task_comment_added_title',
@@ -199,6 +215,17 @@ return [
         ],
 
         'fuel_incident_reported' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_incident_reported_title',
+            'body_key' => 'notifications.fuel_incident_reported_body',
+            // Aucune PII : pas de nom client ni description d'incident.
+            'vars' => ['severity', 'station_id'],
+        ],
+        'fuel_stock_low' => [
+            'title_key' => 'notifications.fuel_stock_low_title',
+            'body_key' => 'notifications.fuel_stock_low_body',
+            'vars' => ['station_id', 'product', 'level'],
+        'fuel_meter_anomaly' => [
             'category' => 'fuel',
             'title_key' => 'notifications.fuel_incident_reported_title',
             'body_key' => 'notifications.fuel_incident_reported_body',

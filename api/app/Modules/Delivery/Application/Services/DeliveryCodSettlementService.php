@@ -100,7 +100,14 @@ final class DeliveryCodSettlementService
                 'collected_at' => now(),
             ])->save();
 
-            return $settlement->fresh();
+            /** @var DeliveryCodSettlement|null $fresh */
+            $fresh = $settlement->fresh();
+
+            if (! $fresh instanceof DeliveryCodSettlement) {
+                throw new \RuntimeException('DeliveryCodSettlement disappeared during update');
+            }
+
+            return $fresh;
         });
     }
 
@@ -133,7 +140,14 @@ final class DeliveryCodSettlementService
                 'settled_at' => now(),
             ])->save();
 
-            return $settlement->fresh();
+            /** @var DeliveryCodSettlement|null $fresh */
+            $fresh = $settlement->fresh();
+
+            if (! $fresh instanceof DeliveryCodSettlement) {
+                throw new \RuntimeException('DeliveryCodSettlement disappeared during update');
+            }
+
+            return $fresh;
         });
     }
 
@@ -155,7 +169,14 @@ final class DeliveryCodSettlementService
 
             $settlement->forceFill(['status' => 'reconciled'])->save();
 
-            return $settlement->fresh();
+            /** @var DeliveryCodSettlement|null $fresh */
+            $fresh = $settlement->fresh();
+
+            if (! $fresh instanceof DeliveryCodSettlement) {
+                throw new \RuntimeException('DeliveryCodSettlement disappeared during update');
+            }
+
+            return $fresh;
         });
     }
 

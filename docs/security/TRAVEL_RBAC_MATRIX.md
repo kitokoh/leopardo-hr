@@ -11,6 +11,8 @@
 | `travel.manage` | Administration de la verticale (référentiel, réseau, trajets, réservations, tarifs, locations, hôtels, billets) | `hasManagerRole('principal', 'rh', 'manager')` sur toutes les Policies d'écriture |
 | `travel.agent` | Vente guichet / caisse (lecture + création de réservation) | Lecture ouverte à tout employé du tenant (`viewAny` → true) ; écriture via `travel.manage` |
 | `travel.checkin` | Contrôle embarquement / check-in | `TravelTicketPolicy::checkIn()` — rôle manager |
+=======
+| `travel.reports` | Rapports & exports (épic 5xx) | À câbler avec l'épic 5xx |
 | `travel.reports` | Rapports & exports (épic 5xx) | `hasManagerRole('principal', 'rh', 'manager')` (TravelReportPolicy) |
 
 ## Matrice par surface API (qui peut faire quoi)
@@ -46,4 +48,9 @@
 - Épic 5xx : câbler `travel.reports` sur les endpoints rapports.
 - App mobile agent (TRAVEL-701) : `travel.agent` devra autoriser la vente guichet
   sans rôle manager — décision à trancher avec le portail client (TRAVEL-702).
+<<<<<<< HEAD
 | `travel.reports` | Rapports & exports (épic 5xx) | À câbler avec l'épic 5xx |
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches

@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Core\Auth\Domain\Models\Employee;use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;use Illuminate\Database\Query\Builder;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;use Illuminate\Database\Query\Builder;
 
 /**
  * RESTO-605 (#6210) — Mise à jour d'un livreur.
@@ -43,4 +44,6 @@ class UpdateRestaurantDeliveryRiderRequest extends FormRequest
 
         return app()->bound('current_company') ? currentCompany()->id : null;
     }
+
+
 }

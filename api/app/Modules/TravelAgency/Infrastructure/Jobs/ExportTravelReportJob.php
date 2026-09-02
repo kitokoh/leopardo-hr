@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-505 (#6075) — Génération asynchrone d'un export CSV (pattern
@@ -258,4 +259,6 @@ class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
             }
         }
     }
+
+
 }

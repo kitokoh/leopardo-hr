@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Affectation enseignant → matière pour une classe — Issue #5819 (EDU-003).
@@ -57,4 +58,19 @@ class EduTeacherSubject extends Model
         'teacher_id' => 'integer',
         'status' => 'string',
     ];
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(EduTeacher::class, 'teacher_id');
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(EduSubject::class, 'subject_id');
+    }
+
+    public function academicYear(): BelongsTo
+    {
+        return $this->belongsTo(EduAcademicYear::class, 'academic_year_id');
+    }
 }

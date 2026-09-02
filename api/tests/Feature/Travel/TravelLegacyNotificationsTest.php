@@ -15,6 +15,7 @@ use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 use App\Modules\TravelAgency\Application\Actions\ConfirmBookingAction;use App\Modules\TravelAgency\Domain\Enums\BookingStatus;use App\Modules\TravelAgency\Domain\Enums\SeatStatus;use App\Modules\TravelAgency\Domain\Models\TravelBooking;use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;use Illuminate\Support\Facades\Artisan;
+use App\Modules\TravelAgency\Domain\Enums\BookingStatus;use App\Modules\TravelAgency\Domain\Enums\SeatStatus;use App\Modules\TravelAgency\Domain\Models\TravelBooking;use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;use Illuminate\Support\Facades\Artisan;
 
 /**
  * TRAVEL-910 (#6113) — Notifications legacy gv-back → canaux plateforme.
@@ -189,4 +190,6 @@ class TravelLegacyNotificationsTest extends TestCase
             self::assertStringStartsWith('travel.', $intent);
         }
     }
+
+
 }

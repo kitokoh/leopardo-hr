@@ -6,6 +6,7 @@ namespace App\Modules\FuelStation\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
 
 /**
  * RBAC des stations FuelStation (FUEL-011, #5805).
@@ -39,4 +40,6 @@ class FuelStationPolicy
     {
         return $actor->isManager() && $station->company_id === (string) $actor->company_id;
     }
+
+
 }

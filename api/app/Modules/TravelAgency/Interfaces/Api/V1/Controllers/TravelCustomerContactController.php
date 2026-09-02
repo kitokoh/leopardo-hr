@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\NotifyTravelContactReque
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelContactConsentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelContactConsentChannelRequest;
 
 /**
  * TRAVEL-910 (#6113) — Notifications manuelles (legacy gv-back) via les
@@ -137,5 +138,36 @@ class TravelCustomerContactController extends Controller
         );
 
         return response()->json(['data' => $result]);
+    }
+
+    public function updateConsentChannel(UpdateTravelContactConsentChannelRequest $request, TravelCustomerContact $travelCustomerContact): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($travelCustomerContact->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        $channel = (string) $request->validated('channel');
+        $given = $request->boolean('given');
+
+        $travelCustomerContact->forceFill(["{$channel}_consent_given" => $given]);
+        if ($given) {
+            $travelCustomerContact->forceFill([
+                "{$channel}_consent_at" => $travelCustomerContact->{"{$channel}_consent_at"} ?? now(),
+            ]);
+        }
+        $travelCustomerContact->save();
+
+        return response()->json(['data' => [
+            'id' => $travelCustomerContact->id,
+            'channel' => $channel,
+            'given' => $given,
+        ]]);
     }
 }

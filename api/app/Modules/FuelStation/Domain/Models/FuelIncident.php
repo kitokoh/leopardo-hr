@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use App\Core\Auth\Domain\Models\Employee;use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Incident équipement FuelStation — FUEL-010 (issue #5804).
@@ -131,5 +132,10 @@ class FuelIncident extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(FuelMaintenanceTask::class, 'incident_id');
+    }
+
+    public function station(): BelongsTo
+    {
+        return $this->belongsTo(FuelStation::class, 'station_id');
     }
 }

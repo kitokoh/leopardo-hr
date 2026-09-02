@@ -118,7 +118,34 @@ return [
         'cabinet' => 'Document vault',
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
-        'restaurant' => 'Point of sale (POS)',
+=======
         'restaurant' => 'Kitchen display',
+        'restaurant' => 'Point of sale (POS)',
+<<<<<<< HEAD
+        'restaurant' => 'Kitchen display',
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| 8f2ae1d83
+=========
+        'restaurant' => 'Kitchen display',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'Kitchen display',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'Kitchen display',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'Kitchen display',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'Kitchen display',
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches
     ],
 ];

@@ -5,6 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Providers;
 
 use App\Core\Solutions\SolutionCatalogue;
+use App\Modules\FuelStation\Domain\Solution\FuelStationManifest;
+use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingOutboxConsumer;
+use App\Modules\FuelStation\Infrastructure\Consumers\FuelNotificationOutboxConsumer;
+use App\Modules\FuelStation\Infrastructure\Services\FuelAlertService;
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
+use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;
 use App\Modules\FuelStation\Domain\Events\FuelIncidentReported;
 use App\Modules\FuelStation\Domain\Events\FuelStockVarianceDetected;
 use App\Modules\FuelStation\Domain\Models\FuelAlert;
@@ -17,6 +25,9 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use App\Modules\FuelStation\Infrastructure\Consumers\FuelAccountingContractConsumer;
 use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;
 use Illuminate\Support\Facades\Event;
+=======
+use Illuminate\Support\Facades\Event;
+>>>>>>> origin/pm/merge-all-open-branches
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -54,6 +65,7 @@ class FuelStationServiceProvider extends ServiceProvider
             $registry->register($this->app->make(FuelAccountingOutboxConsumer::class));
             $registry->register($this->app->make(FuelNotificationOutboxConsumer::class));
         });
+        // Rien à booter tant que l'API FuelStation n'existe pas (FUEL-006).
         // FUEL-019 (#5813) : alertes émises à partir des événements de
         // domaine — dédupliquées par alert_key, canaux pilotés par les
         // préférences tenant, jamais de PII dans les payloads.

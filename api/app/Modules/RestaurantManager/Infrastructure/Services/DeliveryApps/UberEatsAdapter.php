@@ -9,6 +9,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceOrderItem;
 use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
 
 /**
  * RESTO-806 (#6227) — Adapter Uber Eats.
@@ -120,4 +121,6 @@ final class UberEatsAdapter implements DeliveryAppAdapter
             note: isset($payload['note']) ? (string) $payload['note'] : null,
         );
     }
+
+
 }

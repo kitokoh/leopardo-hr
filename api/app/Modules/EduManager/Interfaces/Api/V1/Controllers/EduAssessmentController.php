@@ -194,4 +194,20 @@ class EduAssessmentController extends Controller
             'published_at' => $grade->published_at?->toIso8601String(),
         ];
     }
+
+    public function publish(Request $request, EduAssessment $assessment): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertSameTenant($assessment, $actor->company_id);
+        $this->authorize('update', $assessment);
+
+        if (! $assessment->isPublished()) {
+            $assessment->update(['published_at' => now()]);
+        }
+
+        return response()->json(['data' => $this->payload($assessment->refresh())]);
+    }
 }

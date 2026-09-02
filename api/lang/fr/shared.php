@@ -118,7 +118,34 @@ return [
         'cabinet' => 'Coffre documentaire',
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
-        'restaurant' => 'Point de vente (POS)',
+=======
         'restaurant' => 'Écran cuisine',
+        'restaurant' => 'Point de vente (POS)',
+<<<<<<< HEAD
+        'restaurant' => 'Écran cuisine',
+||||||| merged common ancestors
+>>>>>>>>> Temporary merge branch 2
+||||||||| 8f2ae1d83
+=========
+        'restaurant' => 'Écran cuisine',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'Écran cuisine',
+>>>>>>>>> Temporary merge branch 2
+||||||||| merged common ancestors
+=========
+        'restaurant' => 'Écran cuisine',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'Écran cuisine',
+>>>>>>>>> Temporary merge branch 2
+||||||||| df73cea26
+=========
+        'restaurant' => 'Écran cuisine',
+>>>>>>>>> Temporary merge branch 2
+=======
+>>>>>>> origin/pm/merge-all-open-branches
     ],
 ];

@@ -57,4 +57,9 @@ class EduAttendanceCorrection extends Model
     {
         return $this->belongsTo(EduAttendance::class, 'attendance_id');
     }
+
+    public function attendanceRecord(): BelongsTo
+    {
+        return $this->belongsTo(EduAttendanceRecord::class, 'attendance_record_id');
+    }
 }
