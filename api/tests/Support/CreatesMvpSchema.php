@@ -4431,6 +4431,19 @@ if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
                 $table->unique(['company_id', 'ticket_id'], 'travel_loyalty_transactions_company_ticket_unique');
             });
         }
+
+
+if (! Schema::hasTable($this->moduleTable('delivery_tracking_shares'))) {
+            Schema::create($this->moduleTable('delivery_tracking_shares'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('delivery_id');
+                $table->string('share_token', 64)->unique();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestamps();
+                $table->index(['company_id', 'delivery_id'], 'delivery_tracking_shares_company_delivery_idx');
+            });
+        }
 }
 
     private function dropMvpTables(): void
