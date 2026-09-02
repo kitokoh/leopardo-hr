@@ -62,7 +62,7 @@ final class RestaurantMobileServerService
                 'currency' => $order->currency,
                 'items_count' => (int) $order->items_count,
             ])
-            ->all();
+            ->values()->all();
     }
 
     /**
@@ -84,7 +84,7 @@ final class RestaurantMobileServerService
             'name' => (string) $session->table->label,
             'zone' => $session->table->zone instanceof RestaurantZone ? (string) $session->table->zone->name : null,
             'status' => 'occupied',
-        ])->all();
+        ])->values()->all();
     }
 
     /**

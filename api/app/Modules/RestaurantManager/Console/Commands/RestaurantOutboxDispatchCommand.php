@@ -33,15 +33,15 @@ use Throwable;
 class RestaurantOutboxDispatchCommand extends Command
 {
     protected $signature = 'restaurant:outbox-dispatch
-        {--limit=100 : nombre max d\'événements par passe (défaut 100)}';
+        {--limit=100 : nombre max d'evenements par passe (defaut 100)}';
 
-    protected $description = 'Consomme les événements d\'outbox RestaurantManager dus (idempotent, retry avec backoff, dead-letter).';
 
     public function __construct(
         private readonly RestaurantOutboxConsumerRegistry $registry,
         private readonly TenantManager $tenants,
     ) {
         parent::__construct();
+        $this->setDescription(__('restaurant.commands.outbox_description'));
     }
 
     public function handle(): int

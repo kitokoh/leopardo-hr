@@ -55,9 +55,13 @@ final class RestaurantMobileRiderService
             ->limit(100)
             ->get()
             ->map(fn (RestaurantDelivery $delivery): array => $this->present($delivery))
+            ->values()
             ->all();
     }
 
+    /**
+     * @return array{id: int, reference: string, status: string, customer_name: string|null, customer_phone: string|null, address: string|null, fee_minor: int|null, order_total_minor: int}
+     */
     public function delivery(Employee $actor, RestaurantDelivery $delivery): array
     {
         $rider = $this->riderFor($actor);
@@ -134,13 +138,13 @@ final class RestaurantMobileRiderService
 
         return [
             'id' => $delivery->id,
-            'reference' => $order?->reference ?? (string) $delivery->id,
+            'reference' => $order->reference ?? (string) $delivery->id,
             'status' => $delivery->status->value,
             'customer_name' => $delivery->delivered_to_contact,
             'customer_phone' => $order?->note_redacted,
             'address' => $delivery->zone?->name,
             'fee_minor' => $delivery->fee_minor,
-            'order_total_minor' => (int) ($order?->total_minor ?? 0),
+            'order_total_minor' => (int) ($order->total_minor ?? 0),
         ];
     }
 }

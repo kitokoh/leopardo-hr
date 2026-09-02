@@ -24,12 +24,12 @@ final class RestaurantReservationJobsCommand extends Command
     protected $signature = 'leopardo:restaurant:reservation-jobs
                             {company? : Company ID (uuid) or slug}';
 
-    protected $description = 'No-show + rappels de réservation RestaurantManager (idempotent).';
 
     public function __construct(
         private readonly RestaurantReservationJobsService $jobs,
     ) {
         parent::__construct();
+        $this->setDescription(__('restaurant.commands.reservation_jobs_description'));
     }
 
     public function handle(): int

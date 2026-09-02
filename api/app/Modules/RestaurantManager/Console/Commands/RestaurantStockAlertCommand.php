@@ -24,12 +24,12 @@ final class RestaurantStockAlertCommand extends Command
     protected $signature = 'leopardo:restaurant:stock-alerts
                             {company? : Company ID (uuid) or slug — scanne toutes les companies si absent}';
 
-    protected $description = 'Publie les alertes de seuil de stock RestaurantManager (idempotent, une par jour).';
 
     public function __construct(
         private readonly RestaurantStockAlertService $alerts,
     ) {
         parent::__construct();
+        $this->setDescription(__('restaurant.commands.stock_alert_description'));
     }
 
     public function handle(): int
@@ -63,7 +63,7 @@ final class RestaurantStockAlertCommand extends Command
             $total['alerts_duplicates'] += $result['alerts_duplicates'];
 
             $this->info(sprintf(
-                '%s (%s) : %d alerte(s) créée(s), %d doublon(s) ignoré(s).',
+                __('restaurant.commands.stock_alert_scan_result'),
                 $company->name,
                 $company->slug,
                 $result['alerts_created'],
@@ -71,7 +71,7 @@ final class RestaurantStockAlertCommand extends Command
             ));
         }
 
-        $this->info(sprintf('Total : %d alerte(s) créée(s), %d doublon(s).', $total['alerts_created'], $total['alerts_duplicates']));
+        $this->info(sprintf(__('restaurant.commands.stock_alert_total'), $total['alerts_created'], $total['alerts_duplicates']));
 
         return self::SUCCESS;
     }

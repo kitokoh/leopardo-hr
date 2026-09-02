@@ -177,11 +177,11 @@ class RestaurantReservationController extends Controller
         ]);
 
         if ($restaurantReservation->deposit_minor !== null && (int) $restaurantReservation->deposit_minor > 0) {
-            return response()->json(['message' => 'Un dépôt existe déjà pour cette réservation.'], 422);
+            return response()->json(['message' => __('restaurant.reservation.deposit_exists')], 422);
         }
 
         if (in_array($restaurantReservation->status->value, ['completed', 'cancelled', 'no_show'], true)) {
-            return response()->json(['message' => "Impossible d'enregistrer un dépôt sur une réservation terminée."], 422);
+            return response()->json(['message' => __('restaurant.reservation.deposit_on_terminated')], 422);
         }
 
         $restaurantReservation->deposit_minor = (int) $request->input('amount_minor');

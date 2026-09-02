@@ -44,7 +44,17 @@ const baseUser = {
 
 /** Mock d'état : la liste évolue avec les transitions, comme le backend réel. */
 function reservationStateFactory() {
-  const rows = [
+  const rows: Array<{
+    id: number;
+    reference: string;
+    contact_name: string;
+    contact_phone: string;
+    reserved_at: string;
+    covers: number;
+    table_id: number | null;
+    status: string;
+    deposit_minor: number | null;
+  }> = [
     {
       id: 1,
       reference: 'RES-0001',
