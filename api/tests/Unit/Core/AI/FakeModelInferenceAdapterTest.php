@@ -35,8 +35,10 @@ final class FakeModelInferenceAdapterTest extends TestCase
 
         $this->assertTrue($result->isUsable());
         $this->assertSame('corr-1', $result->correlationId);
-        $this->assertSame('12345', $result->payload['value']);
-        $this->assertSame('L', $result->payload['unit']);
+        $payload = $result->payload;
+        $this->assertIsArray($payload);
+        $this->assertSame('12345', $payload['value']);
+        $this->assertSame('L', $payload['unit']);
         $this->assertGreaterThan(0.9, $result->confidence);
     }
 
@@ -47,8 +49,12 @@ final class FakeModelInferenceAdapterTest extends TestCase
 
         $this->assertTrue($face->isUsable());
         $this->assertTrue($liveness->isUsable());
-        $this->assertTrue($face->payload['verified']);
-        $this->assertTrue($liveness->payload['live']);
+        $facePayload = $face->payload;
+        $livenessPayload = $liveness->payload;
+        $this->assertIsArray($facePayload);
+        $this->assertIsArray($livenessPayload);
+        $this->assertTrue($facePayload['verified']);
+        $this->assertTrue($livenessPayload['live']);
         $this->assertSame('face_verification', $face->type->value);
         $this->assertSame('liveness', $liveness->type->value);
     }
