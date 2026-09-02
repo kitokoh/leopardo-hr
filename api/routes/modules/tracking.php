@@ -1,11 +1,11 @@
 <?php
 
-use App\Modules\Attendance\Interfaces\Api\V1\TrackingSyncController;
-use App\Modules\Fleet\Interfaces\Api\V1\FleetController;
-use App\Modules\Fleet\Interfaces\Api\V1\VehicleAlertController;
-use App\Modules\Fleet\Interfaces\Api\V1\VehicleController;
-use App\Modules\Fleet\Interfaces\Api\V1\VehicleMaintenanceController;
-use App\Modules\Fleet\Interfaces\Api\V1\VehicleTripController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\TrackingSyncController;
+use App\Modules\Fleet\Interfaces\Api\V1\Controllers\FleetController;
+use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleAlertController;
+use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleController;
+use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleMaintenanceController;
+use App\Modules\Fleet\Interfaces\Api\V1\Controllers\VehicleTripController;
 use Illuminate\Support\Facades\Route;
 
 // Sécurité #2217 : le module Fleet est un outil de GESTION.

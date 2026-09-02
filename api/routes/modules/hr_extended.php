@@ -16,8 +16,8 @@ declare(strict_types=1);
  */
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
-use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
-use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\ApprovalController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\WebhookController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
@@ -27,10 +27,10 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\SelfServiceController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\TrainingController;
-use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
-use App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController;
-use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
-use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\EmployeeLoanController;
+use App\Modules\Planning\Interfaces\Api\V1\Controllers\LeavePolicyController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\JobPostingActionController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\RecruitmentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {

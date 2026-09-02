@@ -13,24 +13,24 @@ declare(strict_types=1);
  *   - Everything else: managers (principal, comptable)
  */
 
-use App\Modules\Payroll\Interfaces\Api\V1\BankExportController;
-use App\Modules\Payroll\Interfaces\Api\V1\BulkPaymentController;
-use App\Modules\Payroll\Interfaces\Api\V1\CotisationSimulationController;
-use App\Modules\Payroll\Interfaces\Api\V1\PaymentBatchController;
-use App\Modules\Payroll\Interfaces\Api\V1\PaymentDocumentController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollAccountingController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollCycleController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollPaymentOrderController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollRunController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
-use App\Modules\Payroll\Interfaces\Api\V1\PaySlipController;
-use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
-use App\Modules\Payroll\Interfaces\Api\V1\SalaryComponentController;
-use App\Modules\Payroll\Interfaces\Api\V1\SalaryStructureController;
-use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionController;
-use App\Modules\Payroll\Interfaces\Api\V1\SocialDeclarationController;
-use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\BankExportController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\BulkPaymentController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\CotisationSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PaymentBatchController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PaymentDocumentController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAccountingController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollCycleController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollPaymentOrderController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollRunController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PaySlipController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PublicHolidayController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SalaryComponentController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SalaryStructureController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SocialContributionController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SocialDeclarationController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\TaxSlabController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function (): void {

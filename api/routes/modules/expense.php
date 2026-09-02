@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
-use App\Modules\Expense\Interfaces\Api\V1\ExpenseAccountingController;
+use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseAccountingController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
