@@ -1,16 +1,9 @@
 {
   "source": "api/openapi.yaml",
-<<<<<<< HEAD
-  "spec_sha256": "7ff50f4bc999ff33816601c11e5005f0dcf34ed63640788747ad59b698650a4a",
+  "spec_sha256": "eae09542a4e00110caa2defedfb7ee12022c0a4f38a00a6304ee703dcbae6587",
   "openapi": "3.0.3",
   "api_version": "4.24.0",
-  "operation_count": 901,
-=======
-  "spec_sha256": "9a0ad54ef3a9669846fc42baeaeeae148cb1281144a6c411209fcdc1fc700bea",
-  "openapi": "3.0.3",
-  "api_version": "4.24.0",
-  "operation_count": 900,
->>>>>>> origin/feat/restaurant-solution-survey
+  "operation_count": 923,
   "targets": [
     "javascript",
     "python"
