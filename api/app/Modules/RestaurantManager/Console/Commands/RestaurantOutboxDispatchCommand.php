@@ -33,7 +33,7 @@ use Throwable;
 class RestaurantOutboxDispatchCommand extends Command
 {
     protected $signature = 'restaurant:outbox-dispatch
-        {--limit=100 : nombre max d'evenements par passe (defaut 100)}';
+        {--limit=100 : nombre max d\'evenements par passe (defaut 100)}';
 
 
     public function __construct(
