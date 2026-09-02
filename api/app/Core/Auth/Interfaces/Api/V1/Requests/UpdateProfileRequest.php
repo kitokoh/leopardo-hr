@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Auth\Interfaces\Requests;
+namespace App\Core\Auth\Interfaces\Api\V1\Requests;
 
 use App\Rules\GlobalEmailUnique;
 use Illuminate\Foundation\Http\FormRequest;
@@ -17,6 +17,7 @@ class UpdateProfileRequest extends FormRequest
         return true;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         $employeeId = $this->user()?->id;

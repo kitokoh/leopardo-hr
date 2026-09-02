@@ -12,6 +12,8 @@ use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Growth\Interfaces\Api\V1\Requests\ApplyPartnerRequest;
+use App\Modules\Growth\Interfaces\Api\V1\Requests\PartnerPayoutCreateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -54,25 +56,14 @@ class PartnerDashboardController extends Controller
     /**
      * Appliquer pour devenir partenaire.
      */
-    public function apply(Request $request): JsonResponse
+    public function apply(ApplyPartnerRequest $request): JsonResponse
     {
         $globalUser = $this->resolveGlobalUser(Auth::user());
         if (Partner::where('user_id', $globalUser->id)->exists()) {
             return new JsonResponse(['error' => 'ALREADY_EXISTS'], 400);
         }
 
-        $validated = $request->validate([
-            'type' => 'required|in:individual,agency,accountant',
-            // Issue #4383 : coordonnées de candidature (fix #4186 incomplet —
-            // la validation écrasait silencieusement les champs avant
-            // PartnerService::apply → ligne partners créée avec coordonnées NULL).
-            'name' => 'nullable|string|max:150',
-            'email' => 'nullable|email|max:150',
-            'phone' => 'nullable|string|max:40',
-            'website' => 'nullable|url|max:255',
-            'commission_rate' => 'nullable|numeric|min:0|max:1',
-            'payment_details' => 'nullable|string',
-        ]);
+$validated = $request->validated();
 
         try {
             $partner = $this->partnerService->apply($globalUser->id, $validated);
@@ -90,7 +81,7 @@ class PartnerDashboardController extends Controller
     /**
      * Demander un paiement.
      */
-    public function requestPayout(Request $request): JsonResponse
+    public function requestPayout(PartnerPayoutCreateRequest $request): JsonResponse
     {
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
@@ -99,10 +90,7 @@ class PartnerDashboardController extends Controller
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
         }
 
-        $validated = $request->validate([
-            'amount' => 'required|integer|min:100',
-            'currency' => 'required|string|size:3',
-        ]);
+        $validated = $request->validated();
 
         try {
             $payout = $this->partnerService->requestPayout($partner, $validated['amount'], $validated['currency']);

@@ -11,6 +11,8 @@ use App\Jobs\DispatchWebhook;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\StorePlatformWebhookRequest;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\UpdatePlatformWebhookRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
@@ -59,15 +61,9 @@ class PlatformAdminWebhookController extends Controller
     /**
      * POST /admin/webhooks — création cross-tenant (console plateforme).
      */
-    public function store(Request $request): JsonResponse
+    public function store(StorePlatformWebhookRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'company_id' => ['required', 'uuid', 'exists:companies,id'],
-            'url' => ['required', 'url', 'max:500'],
-            'events' => ['required', 'array', 'min:1'],
-            'events.*' => ['string', 'in:'.implode(',', $this->availableEvents())],
-            'active' => ['sometimes', 'boolean'],
-        ]);
+$validated = $request->validated();
 
         $webhook = WebhookEndpoint::create([
             'company_id' => $validated['company_id'],
@@ -85,14 +81,9 @@ class PlatformAdminWebhookController extends Controller
     /**
      * PUT/PATCH /admin/webhooks/{webhookEndpoint} — mise à jour.
      */
-    public function update(Request $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource
+    public function update(UpdatePlatformWebhookRequest $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource
     {
-        $validated = $request->validate([
-            'url' => ['sometimes', 'url', 'max:500'],
-            'events' => ['sometimes', 'array', 'min:1'],
-            'events.*' => ['string', 'in:'.implode(',', $this->availableEvents())],
-            'active' => ['sometimes', 'boolean'],
-        ]);
+$validated = $request->validated();
 
         $webhookEndpoint->update($validated);
         if (! empty($validated['active'])) {

@@ -6,7 +6,7 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
-use App\Modules\Accounting\Domain\Support\AccountingCurrencies;
+use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencies;
 use App\Support\CountryDefaults;
 
 /**

@@ -9,11 +9,13 @@ use App\AI\Workflows\WeeklyReportWorkflow;
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\PreparePayrollReportRequest;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\WeeklyReportRequest;
 use Illuminate\Http\Request;
 
 class AIWorkflowController extends Controller
 {
-    public function preparePayroll(Request $request): JsonResponse
+    public function preparePayroll(PreparePayrollReportRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -22,10 +24,7 @@ class AIWorkflowController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'period_start' => 'required|date',
-            'period_end' => 'required|date|after:period_start',
-        ]);
+        $validated = $request->validated();
 
         $workflow = new PreparePayrollWorkflow;
         $result = $workflow->execute(
@@ -37,7 +36,7 @@ class AIWorkflowController extends Controller
         return response()->json(['data' => $result]);
     }
 
-    public function weeklyReport(Request $request): JsonResponse
+    public function weeklyReport(WeeklyReportRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -46,9 +45,7 @@ class AIWorkflowController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'week_start' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $workflow = new WeeklyReportWorkflow;
         $result = $workflow->execute(

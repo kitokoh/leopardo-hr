@@ -9,13 +9,14 @@ use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\CommunicationAnalyticsQueryRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CommunicationAnalyticsController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(CommunicationAnalyticsQueryRequest $request): JsonResponse
     {
         $actor = $request->user();
 
@@ -25,9 +26,7 @@ class CommunicationAnalyticsController extends Controller
             ], 403);
         }
 
-        $validated = $request->validate([
-            'days' => ['sometimes', 'integer', 'min:1', 'max:90'],
-        ]);
+        $validated = $request->validated();
 
         $days = (int) ($validated['days'] ?? 30);
         $since = now()->subDays($days - 1)->startOfDay();

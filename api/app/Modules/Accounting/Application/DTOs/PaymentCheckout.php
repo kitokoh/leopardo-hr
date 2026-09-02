@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Domain\DTOs;
+namespace App\Modules\Accounting\Application\DTOs;
 
 use Carbon\CarbonImmutable;
 

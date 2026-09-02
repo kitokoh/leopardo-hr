@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Modules\Accounting\Domain\Contracts\PaymentGatewayInterface;
-use App\Modules\Accounting\Domain\DTOs\PaymentCheckout;
-use App\Modules\Accounting\Domain\DTOs\PaymentWebhookData;
+use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
+use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 use App\Modules\Accounting\Domain\Exceptions\PaymentGatewayNotConfiguredException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use Carbon\CarbonImmutable;
