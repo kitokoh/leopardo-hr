@@ -22,10 +22,14 @@
 
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.delivery'])
     ->prefix('delivery')
     ->group(function (): void {
         // Smoke test du module (DELIVERY-101/#6282) — lecture pure.
         Route::get('/ping', [DeliveryHealthController::class, 'ping']);
+Route::get('/deliveries', [DeliveryController::class, 'index']);
+Route::post('/deliveries', [DeliveryController::class, 'store']);
+Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
     });

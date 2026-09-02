@@ -58,6 +58,7 @@ Modules/<Name>/
 ```
 
 Modules actifs (24, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `TravelAgency`, `api/app/Core/`, `api/app/Modules/`, `Delivery` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 

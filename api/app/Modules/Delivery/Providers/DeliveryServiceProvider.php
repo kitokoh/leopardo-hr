@@ -43,3 +43,10 @@ class DeliveryServiceProvider extends ServiceProvider
         // existent (Gate::policy(Delivery::class, DeliveryPolicy::class)).
     }
 }
+use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
+use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
+        // Ports & adapters de persistance (DELIVERY-201/#6285) : les
+        // implémentations Eloquent sont résolues en singleton derrière leur
+        // contrat, conformément au pattern CrmLeadRepository /
+        // RestaurantOrderRepository.
+        $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
