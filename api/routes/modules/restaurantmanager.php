@@ -60,6 +60,16 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTableS
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantTaxRateController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantUnitController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantZoneController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCancellationPolicyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantCogsController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryRiderController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryZoneController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantLoyaltyController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPromotionController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantReportExportController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantStockAlertController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.restaurantmanager'])
@@ -284,4 +294,38 @@ Route::post('/reports/export', [RestaurantReportController::class, 'export']);
 Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
             ->name('restaurant.reports.export.download');
 Route::put('/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}', [RestaurantInventoryCountController::class, 'updateItem']);
+        // --- Routes ajoutées (union PM) ---
+        Route::post('/stock-levels', [RestaurantStockLevelController::class, 'store']);
+        Route::get('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'show']);
+        Route::delete('/stock-levels/{restaurantStockLevel}', [RestaurantStockLevelController::class, 'destroy']);
+        Route::get('/inventory-movements/{restaurantInventoryMovement}', [RestaurantInventoryMovementController::class, 'show']);
+        Route::get('/stock/alerts', [RestaurantStockAlertController::class, 'index']);
+        Route::get('/receivings/{restaurantReceiving}', [RestaurantReceivingController::class, 'show']);
+        Route::get('/pos-sessions/{restaurantPosSession}/cogs', [RestaurantCogsController::class, 'show']);
+        Route::post('/reservations/{restaurantReservation}/deposit', [RestaurantReservationController::class, 'deposit']);
+        Route::put('/branches/{restaurantBranch}/cancellation-policy', [RestaurantCancellationPolicyController::class, 'update']);
+        Route::get('/delivery-zones', [RestaurantDeliveryZoneController::class, 'index']);
+        Route::post('/delivery-zones', [RestaurantDeliveryZoneController::class, 'store']);
+        Route::get('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'show']);
+        Route::put('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'update']);
+        Route::delete('/delivery-zones/{restaurantDeliveryZone}', [RestaurantDeliveryZoneController::class, 'destroy']);
+        Route::get('/delivery-zones/{restaurantDeliveryZone}/quote', [RestaurantDeliveryZoneController::class, 'quote']);
+        Route::get('/deliveries', [RestaurantDeliveryController::class, 'index']);
+        Route::post('/deliveries', [RestaurantDeliveryController::class, 'store']);
+        Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'assign']);
+        Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'outForDelivery']);
+        Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'deliver']);
+        Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'cancel']);
+        Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexProgram']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/credit', [RestaurantLoyaltyController::class, 'creditCustomer']);
+        Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeemCustomer']);
+        Route::post('/promotions/validate', [RestaurantPromotionController::class, 'validateCode']);
+        Route::get('/dashboard/kpis', [RestaurantReportController::class, 'kpis']);
+        Route::post('/reports/export', [RestaurantReportExportController::class, 'export']);
     });
+
+// Téléchargement d'export signé — route publique (la signature EST l'auth).
+// La signature est émise par `RestaurantReportExportService` (TTL 10 min).
+Route::get('/restaurant/reports/export/{export}', [RestaurantReportExportController::class, 'download'])
+    ->name('restaurant.reports.export.download')
+    ->middleware('signed');

@@ -15,6 +15,5 @@ final class RefundRequest
         public readonly int $amountMinor,
         public readonly string $currency,
         public readonly string $reasonCode,
-    ) {
-    }
+    ) {}
 }

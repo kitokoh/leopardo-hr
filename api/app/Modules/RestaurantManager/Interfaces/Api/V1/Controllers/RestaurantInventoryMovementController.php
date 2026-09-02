@@ -48,6 +48,22 @@ class RestaurantInventoryMovementController extends Controller
         return RestaurantInventoryMovementResource::collection($movements)->response();
     }
 
+    public function show(Request $request, RestaurantInventoryMovement $restaurantInventoryMovement): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantInventoryMovement->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('view', $restaurantInventoryMovement)) {
+            abort(403);
+        }
+
+        return (new RestaurantInventoryMovementResource($restaurantInventoryMovement->load(['ingredient', 'branch'])))->response();
+    }
+
     public function store(StoreRestaurantInventoryMovementRequest $request): JsonResponse
     {
         /** @var Employee $actor */

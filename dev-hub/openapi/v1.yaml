@@ -9,7 +9,7 @@
 # To update: change api/openapi.yaml, then run:
 #   node dev-hub/tools/generate-openapi-sdk.mjs
 # CI (openapi-ci.yml) fails the build if this file drifts from the source.
-openapi: "3.0.3"
+openapi: 3.0.3
 info:
   title: Leopardo RH API
   version: 4.24.0
@@ -586,7 +586,8 @@ paths:
       tags:
       - Accounting
       summary: Declencher les relances de paiement
-      description: 'Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais de doublon. Notification in-app aux managers principal/comptable. Issue #5229.'
+      description: 'Relances J+7/J+15/J+30 (parametrables via accounting_settings.payment_reminder_days) pour les documents emis non soldes echus. Idempotent : une relance par (document, stage), jamais
+        de doublon. Notification in-app aux managers principal/comptable. Issue #5229.'
       responses:
         '200':
           description: Nombre de relances envoyees
@@ -631,7 +632,8 @@ paths:
       tags:
       - HR
       summary: 'Récapitulatif du préavis légal (issue #5325, G2)'
-      description: 'Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers, isole par tenant.'
+      description: 'Affiche la durée légale de préavis par pays/ancienneté (règle Payroll consommee, jamais recalculée) et le statut de service (employee_departures, workflow #5324). Reserve aux managers,
+        isole par tenant.'
       parameters:
       - name: employee
         in: path
@@ -684,7 +686,8 @@ paths:
       tags:
       - Payroll
       summary: Solde de tout compte (fin de contrat, F-08)
-      description: 'Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d''anciennete (1 mois/an, regime DZ documente). Reserve aux managers, isole par tenant.'
+      description: 'Calcul du solde de tout compte : prorata du dernier mois, indemnite de conges payes non pris, preavis, indemnite d''anciennete (1 mois/an, regime DZ documente). Reserve aux managers,
+        isole par tenant.'
       parameters:
       - name: employee
         in: path
@@ -2915,6 +2918,88 @@ paths:
                   data:
                     type: array
   /travel/ping:
+  /public/restaurant/kiosk/menu:
+    get:
+      tags:
+      - Restaurant
+      summary: Menu public du kiosque libre-service (RESTO-807/#6228)
+      description: 'Produits disponibles du tenant résolu par le jeton boutique
+        (X-Restaurant-Shop-Token). Sans auth utilisateur, tenant-scope,
+        rate limit shop-public.
+        '
+      security: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Menu du kiosque
+        '401':
+          description: Jeton boutique manquant ou invalide
+  /public/restaurant/kiosk/orders:
+    post:
+      summary: Commande kiosque libre-service (RESTO-807/#6228)
+      description: 'Crée une commande (source web) avec ticket court (`ticket_number`).
+        Montants calculés serveur ; idempotente (X-Idempotency-Key).
+      requestBody:
+        required: true
+        content:
+          application/json:
+              type: object
+              properties:
+                branch_id:
+                idempotency_key:
+                  type: string
+                items:
+                  type: array
+                    required:
+                    - product_code
+                    - quantity
+                      product_code:
+                      quantity:
+                        type: number
+        '201':
+          description: Commande créée (référence + ticket_number)
+          description: Rejeu idempotent (même commande)
+  /public/restaurant/kiosk/orders/{reference}:
+      summary: Suivi d'une commande kiosque (RESTO-807/#6228)
+      - name: reference
+        in: path
+          description: Statut de la commande
+        '404':
+          description: Commande introuvable (ou hors tenant)
+  /public/restaurant/shop/menu:
+      summary: Menu public de la boutique en ligne (RESTO-805/#6226)
+      description: 'Menu public par tenant (jeton signé, X-Restaurant-Shop-Token) :
+        catégories + produits disponibles. Aucune fuite cross-tenant.
+          description: Menu public
+  /public/restaurant/shop/orders:
+      summary: Commande en ligne publique (RESTO-805/#6226)
+      description: 'Crée une commande (source web) avec prix du référentiel, idempotente
+        (X-Idempotency-Key), événement restaurant.order.created.v1.
+              - items
+                customer_phone:
+          description: Commande créée
+          description: Rejeu idempotent
+  /public/restaurant/shop/orders/{reference}:
+      summary: Suivi d'une commande en ligne (RESTO-805/#6226)
+          description: Statut + totaux de la commande
+  /public/restaurant/shop/orders/{reference}/pay:
+      summary: Initiation de paiement commande en ligne (RESTO-805/#6226)
+      description: 'cash → paiement à l''encaissement ; mobile_money → paiement pending
+        (callback signé existant confirme). Montant vérifié serveur.
+              - provider_code
+                provider_code:
+                  enum:
+                  - cash
+                  - mobile_money
+          description: Paiement initié
+        '409':
+          description: Commande non payable
+  /restaurant/ping:
     get:
       tags:
       - Travel
@@ -2922,7 +3007,13 @@ paths:
       description: |
         Route de contrôle : prouve que le module est chargé, que le feature flag
         `travelagency` est actif pour le tenant courant et que le pipeline
+      - Restaurant
+      summary: Smoke test de la verticale RestaurantManager (BC-25 RESTAURANT, RESTO-101/#6158)
+      description: 'Route de contrôle : prouve que le module est chargé, que le feature flag
+        `restaurantmanager` est actif pour le tenant courant et que le pipeline
         middleware (auth → tenant → module) est opérationnel. Lecture pure.
+
+        '
       security:
       - BearerAuth: []
       responses:
@@ -3147,6 +3238,9 @@ paths:
                 status:
                   type: string
                   enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Gare créée
@@ -3224,6 +3318,9 @@ paths:
                 status:
                   type: string
                   enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Gare modifiée
@@ -3261,6 +3358,8 @@ paths:
         '404':
           description: Gare introuvable ou appartenant à un autre tenant
   /travel/offices:
+          description: Ressource introuvable ou hors tenant
+  /restaurant/branches/{restaurantBranch}/zones:
     get:
       tags:
       - Travel
@@ -3268,13 +3367,11 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: per_page
-        in: query
-        required: false
+      - name: restaurantBranch
+        in: path
+        required: true
         schema:
           type: integer
-          minimum: 1
-          maximum: 1000
       responses:
         '200':
           description: Liste paginée des bureaux de vente
@@ -3317,10 +3414,94 @@ paths:
                   nullable: true
                 contact_phone:
                   type: string
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+  /restaurant/categories:
+    get:
+      - Restaurant
+      summary: Liste des category (référentiel BC-25)
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantCategory'
+        '401':
+          description: Non authentifié
+        '403':
+      summary: Création d'un category
+                branch_id:
+                  minimum: 0
+                color:
+                  maxLength: 7
+                sort_order:
+                status:
+                  enum:
+                  - active
+                  - disabled
+        '201':
+          description: Ressource créée
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/categories/{restaurantCategory}:
+      summary: Détail d'un category
+      - name: restaurantCategory
+        in: path
+          description: Détail de la ressource
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      summary: Mise à jour d'un category
+          description: Ressource mise à jour
+          description: Ressource introuvable ou hors tenant
+          description: Validation échouée
+    delete:
+      summary: Suppression d'un category
+        '204':
+          description: Ressource supprimée
+  /restaurant/hours:
+      summary: Liste des hour (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantHour'
+      summary: Création d'un hour
+              - branch_id
+              - day_of_week
+                day_of_week:
+                opens_at:
+                  format: time
+                closes_at:
+                is_closed:
+                  type: boolean
+  /restaurant/hours/{restaurantHour}:
+      summary: Détail d'un hour
+      - name: restaurantHour
+      summary: Mise à jour d'un hour
+      summary: Suppression d'un hour
+  /restaurant/ingredients:
+      summary: Liste des ingredient (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantIngredient'
+      summary: Création d'un ingredient
+              - code
+              - unit_code
+                code:
+                  maxLength: 40
+                  maxLength: 150
+                unit_code:
+                  maxLength: 20
+                avg_cost_minor:
                   nullable: true
                 status:
                   type: string
                   enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '201':
           description: Bureau créé
@@ -3328,6 +3509,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TravelOffice'
+                $ref: '#/components/schemas/RestaurantIngredient'
         '401':
           description: Non authentifié
         '403':
@@ -3335,14 +3517,19 @@ paths:
         '422':
           description: Validation échouée (ville d'un autre tenant)
   /travel/offices/{travelOffice}:
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/ingredients/{restaurantIngredient}:
     get:
       tags:
       - Travel
       summary: Détail d'un bureau de vente (TRAVEL-303/#6033)
+      - Restaurant
+      summary: Détail d'un ingredient
       security:
       - BearerAuth: []
       parameters:
       - name: travelOffice
+      - name: restaurantIngredient
         in: path
         required: true
         schema:
@@ -3354,6 +3541,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TravelOffice'
+                $ref: '#/components/schemas/RestaurantIngredient'
         '401':
           description: Non authentifié
         '404':
@@ -3362,10 +3550,13 @@ paths:
       tags:
       - Travel
       summary: Modification d'un bureau de vente (TRAVEL-303/#6033)
+      - Restaurant
+      summary: Mise à jour d'un ingredient
       security:
       - BearerAuth: []
       parameters:
       - name: travelOffice
+      - name: restaurantIngredient
         in: path
         required: true
         schema:
@@ -3377,6 +3568,9 @@ paths:
             schema:
               type: object
               properties:
+                code:
+                  type: string
+                  maxLength: 40
                 name:
                   type: string
                   maxLength: 120
@@ -3387,10 +3581,19 @@ paths:
                   nullable: true
                 contact_phone:
                   type: string
+                  maxLength: 150
+                branch_id:
+                  minimum: 0
+                unit_code:
+                  maxLength: 20
+                avg_cost_minor:
                   nullable: true
                 status:
                   type: string
                   enum: [active, disabled]
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Bureau modifié
@@ -3402,6 +3605,7 @@ paths:
           description: Non authentifié
         '403':
           description: Permission travel.manage requise
+                $ref: '#/components/schemas/RestaurantIngredient'
         '404':
           description: Bureau introuvable ou appartenant à un autre tenant
         '422':
@@ -3410,10 +3614,13 @@ paths:
       tags:
       - Travel
       summary: Suppression d'un bureau de vente (TRAVEL-303/#6033)
+      - Restaurant
+      summary: Suppression d'un ingredient
       security:
       - BearerAuth: []
       parameters:
       - name: travelOffice
+      - name: restaurantIngredient
         in: path
         required: true
         schema:
@@ -3428,13 +3635,124 @@ paths:
         '404':
           description: Bureau introuvable ou appartenant à un autre tenant
   /travel/carriers:
+          description: Ressource introuvable ou hors tenant
+  /restaurant/kitchen/orders:
     get:
       tags:
       - Travel
       summary: Liste des compagnies de transport (TRAVEL-304/#6034)
+      - Restaurant
+      summary: RESTO-410 — File cuisine (commandes in_preparation/ready de la branche, branch_id obligatoire)
       security:
       - BearerAuth: []
       parameters:
+      - name: branch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: File cuisine de la branche
+          content:
+            application/json:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantKitchenOrder'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.kitchen/restaurant.manager requise
+        '404':
+          description: Branche introuvable ou hors tenant
+        '422':
+          description: branch_id absent
+  /restaurant/kitchen/orders/{restaurantOrder}/ready:
+    post:
+      tags:
+      - Restaurant
+      summary: RESTO-410 — Plat prêt (in_preparation → ready)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+          description: Commande prête
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/kitchen/orders/{restaurantOrder}/start:
+      summary: RESTO-410 — Prise en cuisine (open → in_preparation)
+          description: Commande en préparation
+  /restaurant/menus:
+    get:
+      summary: Liste des menu (référentiel BC-25)
+      - name: per_page
+        required: false
+          minimum: 1
+          maximum: 1000
+          description: Liste paginée
+                      $ref: '#/components/schemas/RestaurantMenu'
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+      summary: Création d'un menu
+      requestBody:
+              required:
+              - code
+              - name
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  maxLength: 150
+                branch_id:
+                  minimum: 0
+                  nullable: true
+                price_minor:
+                currency:
+                  maxLength: 3
+                starts_at:
+                  format: date-time
+                ends_at:
+                status:
+                  enum:
+                  - active
+                  - disabled
+        '201':
+          description: Ressource créée
+          description: Permission restaurant.manage/restaurant.manager requise
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/menus/{restaurantMenu}:
+      summary: Détail d'un menu
+      - name: restaurantMenu
+          description: Détail de la ressource
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      summary: Mise à jour d'un menu
+          description: Ressource mise à jour
+          description: Validation échouée
+    delete:
+      summary: Suppression d'un menu
+        '204':
+          description: Ressource supprimée
+  /restaurant/menus/{restaurantMenu}/items:
+      summary: Liste des menuitem (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantMenuItem'
+      summary: Création d'un menuitem
+              - product_id
+                product_id:
+                position:
+                is_optional:
+                  type: boolean
+  /restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}:
+      summary: Mise à jour d'un menuitem
+      - name: restaurantMenuItem
+      summary: Suppression d'un menuitem
+  /restaurant/orders:
+      summary: RESTO-402 — Liste des commandes (filtres branche/statut, paginée)
+      - name: status
       - name: per_page
         in: query
         required: false
@@ -3462,6 +3780,8 @@ paths:
       tags:
       - Travel
       summary: Création d'une compagnie de transport (TRAVEL-304/#6034)
+      - Restaurant
+      summary: RESTO-402 — Création de commande (idempotente, types salle/emporter/livraison)
       security:
       - BearerAuth: []
       requestBody:
@@ -3478,15 +3798,97 @@ paths:
                   type: string
                   maxLength: 40
                 name:
+                  enum:
+                  - dine_in
+                  - takeaway
+                  - delivery
+                table_id:
+                  type: integer
+                  nullable: true
+                zone_id:
+                covers:
+                  minimum: 1
+                pos_session_id:
+                customer_contact_id:
+                source:
                   type: string
                   maxLength: 120
                 type:
+                  enum:
+                  - pos
+                  - web
+                  - phone
+                  - delivery_app
+                note_redacted:
                   type: string
                   enum: [bus, train, plane, boat]
                 contact_phone:
                   type: string
                   nullable: true
                 logo_asset_id:
+      responses:
+        '201':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOrder'
+        '200':
+          description: Commande existante retournée (rejeu de la même idempotency_key)
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '422':
+          description: Validation échouée (table dine_in obligatoire, référence hors tenant)
+  /restaurant/orders/{restaurantOrder}:
+    get:
+      tags:
+      - Restaurant
+      summary: RESTO-402 — Détail d'une commande (articles + paiements)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+          type: integer
+          description: Détail de la commande
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/orders/{restaurantOrder}/bill:
+      summary: RESTO-405 — Addition (totaux recalculés serveur — sous-total, TVA, remise promo, total)
+      - name: promotion_code
+        in: query
+        required: false
+          type: string
+          description: Addition calculée
+                $ref: '#/components/schemas/RestaurantBill'
+          description: Code promotionnel inconnu, expiré, hors branche ou plafond atteint
+  /restaurant/orders/{restaurantOrder}/cancel:
+    post:
+      summary: RESTO-404 — Annulation de commande (draft|open → cancelled)
+          description: Commande annulée
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/orders/{restaurantOrder}/confirm:
+      summary: RESTO-404 — Confirmation de commande (open → in_preparation)
+          description: Commande confirmée
+  /restaurant/orders/{restaurantOrder}/items:
+      summary: RESTO-403 — Ajout d'un article (prix/TVA serveur, totaux recalculés)
+      requestBody:
+              type: object
+              required:
+              - product_id
+              - quantity
+              properties:
+                product_id:
+                quantity:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                  maximum: 9999
+                menu_id:
                   type: integer
                   nullable: true
                 status:
@@ -3499,6 +3901,129 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TravelCarrier'
+          description: Article ajouté
+                $ref: '#/components/schemas/RestaurantOrderItem'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Commande non modifiable (statut avancé)
+        '422':
+          description: Produit indisponible ou hors branche
+  /restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: RESTO-403 — Annulation d'une ligne d'article (totaux recalculés)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+          type: integer
+      - name: restaurantOrderItem
+        '200':
+          description: Ligne annulée
+          description: Ligne déjà annulée ou commande non modifiable
+  /restaurant/orders/{restaurantOrder}/pay:
+      summary: RESTO-407 — Encaissement (montant vérifié serveur, idempotent, callback signé pour mobile money)
+      requestBody:
+              type: object
+              required:
+              - provider_code
+              - amount_minor
+              properties:
+                provider_code:
+                  enum:
+                  - cash
+                  - card
+                  - mobile_money
+                amount_minor:
+                  minimum: 0
+                tip_minor:
+                  nullable: true
+                idempotency_key:
+                  format: uuid
+          description: Paiement créé (confirmé pour cash/carte, pending pour mobile money)
+                $ref: '#/components/schemas/RestaurantOrderPayment'
+          description: Commande déjà réglée ou non payable depuis ce statut
+          description: Montant incohérent avec le reste à payer
+  /restaurant/orders/{restaurantOrder}/refund:
+      summary: RESTO-408 — Remboursement (réservé restaurant.manage, motif, idempotent)
+              - reason_code
+                  minimum: 1
+                reason_code:
+                  - customer_request
+                  - wrong_item
+                  - quality_issue
+                  - no_show
+                  - duplicate_charge
+                  - other
+                reason_text:
+                  maxLength: 1000
+                payment_id:
+          description: Remboursement créé
+                $ref: '#/components/schemas/RestaurantRefund'
+          description: Permission restaurant.manage requise
+          description: Commande non payée ou déjà intégralement remboursée
+          description: Montant supérieur au restant remboursable
+  /restaurant/orders/{restaurantOrder}/serve:
+      summary: RESTO-404 — Service en salle (ready → served)
+          description: Commande servie
+                $ref: '#/components/schemas/RestaurantOrder'
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/orders/{restaurantOrder}/submit:
+      summary: RESTO-404 — Soumission de commande (draft → open, événement order.created.v1)
+          description: Commande soumise
+          description: Aucun article actif sur la commande
+  /restaurant/pos-sessions:
+      summary: RESTO-401 — Ouverture d'une session de caisse POS (une seule session ouverte par branche)
+              - branch_id
+              - opening_cash_minor
+                branch_id:
+                opening_cash_minor:
+          description: Session ouverte
+                $ref: '#/components/schemas/RestaurantPosSession'
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+          description: Une session est déjà ouverte pour cette branche
+          description: Validation échouée
+  /restaurant/pos-sessions/current:
+    get:
+      summary: RESTO-401 — Session de caisse en cours (par branche, sinon première branche du tenant)
+      - name: branch_id
+        in: query
+        required: false
+          description: Session en cours (data null si aucune)
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/RestaurantPosSession'
+                    - type: object
+  /restaurant/pos-sessions/{restaurantPosSession}:
+      summary: RESTO-401 — Détail d'une session de caisse
+      - name: restaurantPosSession
+          description: Détail de la session
+  /restaurant/pos-sessions/{restaurantPosSession}/close:
+      summary: RESTO-401 — Clôture d'une session de caisse (totaux recalculés serveur, écart + motif, immuable)
+              - counted_cash_minor
+                counted_cash_minor:
+                variance_reason:
+                  maxLength: 255
+          description: Session clôturée
+          description: Permission restaurant.manage/restaurant.manager requise
+          description: Session non ouverte ou modifiée concurrentement
+          description: Écart non nul sans motif
+  /restaurant/products:
+      summary: Liste des product (référentiel BC-25)
+      - name: per_page
+          maximum: 1000
+          description: Liste paginée
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantProduct'
         '401':
           description: Non authentifié
         '403':
@@ -3549,12 +4074,30 @@ paths:
               type: object
               properties:
                 code:
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      - Restaurant
+      summary: Création d'un product
+              required:
+              - code
+              - name
+              - category_id
                   type: string
                   maxLength: 40
                 name:
                   type: string
                   maxLength: 120
                 type:
+                  maxLength: 150
+                category_id:
+                  type: integer
+                  minimum: 0
+                branch_id:
+                  nullable: true
+                description_redacted:
+                  type: string
+                price_minor:
+                currency:
                   type: string
                   enum: [bus, train, plane, boat]
                 contact_phone:
@@ -3566,29 +4109,98 @@ paths:
                 status:
                   type: string
                   enum: [active, disabled]
+                  maxLength: 3
+                cost_minor:
+                  minimum: 0
+                tax_rate_id:
+                is_available:
+                  type: boolean
+                  enum:
+                  - active
+                  - disabled
       responses:
         '200':
           description: Compagnie modifiée
+        '201':
+          description: Ressource créée
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TravelCarrier'
+                $ref: '#/components/schemas/RestaurantProduct'
         '401':
           description: Non authentifié
         '403':
           description: Permission travel.manage requise
         '404':
           description: Compagnie introuvable ou appartenant à un autre tenant
+          description: Permission restaurant.manage/restaurant.manager requise
         '422':
           description: Validation échouée
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/products/{restaurantProduct}:
+    get:
+      tags:
+      - Restaurant
+      summary: Détail d'un product
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Détail de la ressource
+          content:
+            application/json:
+                $ref: '#/components/schemas/RestaurantProduct'
+        '401':
+          description: Non authentifié
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      summary: Mise à jour d'un product
+      requestBody:
+              type: object
+              properties:
+                code:
+                  type: string
+                  maxLength: 40
+                name:
+                  maxLength: 150
+                category_id:
+                  minimum: 0
+                branch_id:
+                  nullable: true
+                description_redacted:
+                price_minor:
+                currency:
+                  maxLength: 3
+                cost_minor:
+                tax_rate_id:
+                is_available:
+                  type: boolean
+                status:
+                  enum:
+                  - active
+                  - disabled
+          description: Ressource mise à jour
+          description: Ressource introuvable ou hors tenant
+        '422':
     delete:
       tags:
       - Travel
       summary: Suppression d'une compagnie de transport (TRAVEL-304/#6034)
+      - Restaurant
+      summary: Suppression d'un product
       security:
       - BearerAuth: []
       parameters:
       - name: travelCarrier
+      - name: restaurantProduct
         in: path
         required: true
         schema:
@@ -3600,13 +4212,18 @@ paths:
           description: Non authentifié
         '403':
           description: Permission travel.manage requise
+          description: Ressource supprimée
         '404':
           description: Compagnie introuvable ou appartenant à un autre tenant
   /travel/classes:
     get:
+          description: Ressource introuvable ou hors tenant
+  /restaurant/products/{restaurantProduct}/ingredients:
       tags:
       - Travel
       summary: Liste des classes de service (TRAVEL-305/#6035)
+      - Restaurant
+      summary: Liste des productingredient (référentiel BC-25)
       security:
       - BearerAuth: []
       parameters:
@@ -3686,6 +4303,7 @@ paths:
       - BearerAuth: []
       parameters:
       - name: travelClass
+      - name: restaurantProduct
         in: path
         required: true
         schema:
@@ -3693,22 +4311,89 @@ paths:
       responses:
         '200':
           description: Classe trouvée
+          description: Liste paginée
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TravelClass'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantProductIngredient'
         '401':
           description: Non authentifié
         '404':
           description: Classe introuvable ou appartenant à un autre tenant
     put:
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
       tags:
       - Travel
       summary: Modification d'une classe de service (TRAVEL-305/#6035)
+      - Restaurant
+      summary: Création d'un productingredient
       security:
       - BearerAuth: []
       parameters:
       - name: travelClass
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+              type: object
+              required:
+              - ingredient_id
+              - quantity
+              properties:
+                ingredient_id:
+                  minimum: 0
+                quantity:
+                  type: number
+                unit_code:
+                  type: string
+                  maxLength: 20
+      responses:
+        '201':
+          description: Ressource créée
+                $ref: '#/components/schemas/RestaurantProductIngredient'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}:
+    delete:
+      tags:
+      - Restaurant
+      summary: Suppression d'un productingredient
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProductIngredient
+        '204':
+          description: Ressource supprimée
+        '404':
+          description: Ressource introuvable ou hors tenant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel:
+    post:
+      summary: RESTO-502 — Annulation (draft|sent → cancelled)
+      - name: restaurantPurchaseOrder
+        '200':
+          description: Bon de commande annulé
+                $ref: '#/components/schemas/RestaurantPurchaseOrder'
+          description: Permission restaurant.manager requise
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/items:
+      summary: RESTO-502 — Ajout d'une ligne (total du PO recalculé serveur)
         in: path
         required: true
         schema:
@@ -3754,6 +4439,8 @@ paths:
       tags:
       - Travel
       summary: Suppression d'une classe de service (TRAVEL-305/#6035)
+      - Restaurant
+      summary: RESTO-502 — Suppression d'une ligne (draft uniquement)
       security:
       - BearerAuth: []
       parameters:
@@ -3772,10 +4459,245 @@ paths:
         '404':
           description: Classe introuvable ou appartenant à un autre tenant
   /travel/vehicles:
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Seul un draft est modifiable
+  /restaurant/suppliers:
+    get:
+      tags:
+      - Restaurant
+      summary: Liste des supplier (référentiel BC-25)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Liste paginée
+          content:
+            application/json:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantSupplier'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+    post:
+      summary: Création d'un supplier
+      requestBody:
+        required: true
+              required:
+              - name
+                name:
+                  type: string
+                  maxLength: 150
+                contact_phone:
+                  maxLength: 40
+                  nullable: true
+                email:
+                address:
+                  maxLength: 255
+                status:
+                  enum:
+                  - active
+                  - disabled
+        '201':
+          description: Ressource créée
+          description: Permission restaurant.manage/restaurant.manager requise
+        '422':
+          description: Validation échouée (données invalides ou référence d'un autre tenant)
+  /restaurant/suppliers/{restaurantSupplier}:
+      summary: Détail d'un supplier
+      - name: restaurantSupplier
+        in: path
+          description: Détail de la ressource
+        '404':
+          description: Ressource introuvable ou hors tenant (404 sûr)
+    put:
+      summary: Mise à jour d'un supplier
+          description: Ressource mise à jour
+          description: Validation échouée
+    delete:
+      summary: Suppression d'un supplier
+        '204':
+          description: Ressource supprimée
+  /restaurant/tables:
+      summary: Liste des table (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantTable'
+      summary: Création d'un table
+              - label
+              - branch_id
+                label:
+                  maxLength: 80
+                branch_id:
+                  minimum: 0
+                zone_id:
+                capacity:
+                min_covers:
+                is_mergeable:
+                  type: boolean
+  /restaurant/tables/{restaurantTable}:
+      summary: Détail d'un table
+      - name: restaurantTable
+      summary: Mise à jour d'un table
+      summary: Suppression d'un table
+  /restaurant/tables/{restaurantTable}/close:
+      summary: RESTO-409 — Clôture de la session d'occupation (immuable, événement table.closed.v1)
+          description: Session clôturée
+                $ref: '#/components/schemas/RestaurantTableSession'
+          description: Permission restaurant.server requise
+          description: Aucune session ouverte pour cette table ou ressource hors tenant
+  /restaurant/tables/{restaurantTable}/open:
+      summary: RESTO-409 — Ouverture d'une session d'occupation de table (table occupée → 409)
+                covers:
+                order_id:
+          description: Session ouverte
+          description: Table déjà occupée
+  /restaurant/tax-rates:
+      summary: Liste des taxrate (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantTaxRate'
+      summary: Création d'un taxrate
+              - code
+              - rate_bps
+                code:
+                  maxLength: 20
+                rate_bps:
+                is_default:
+  /restaurant/tax-rates/{restaurantTaxRate}:
+      summary: Détail d'un taxrate
+      - name: restaurantTaxRate
+      summary: Mise à jour d'un taxrate
+      summary: Suppression d'un taxrate
+  /restaurant/units:
+      summary: Liste des unit (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantUnit'
+      summary: Création d'un unit
+  /restaurant/units/{restaurantUnit}:
+      summary: Détail d'un unit
+      - name: restaurantUnit
+      summary: Mise à jour d'un unit
+      summary: Suppression d'un unit
+  /restaurant/zones:
+      summary: Liste des zone (référentiel BC-25)
+                      $ref: '#/components/schemas/RestaurantZone'
+      summary: Création d'un zone
+                  maxLength: 120
+                color:
+                  maxLength: 7
+                sort_order:
+  /restaurant/zones/{restaurantZone}:
+      summary: Détail d'un zone
+      - name: restaurantZone
+      summary: Mise à jour d'un zone
+      summary: Suppression d'un zone
+  /restaurant/stock-levels:
+      summary: RESTO-501 — Niveaux de stock (filtres branche/ingrédient, paginés)
+      - name: branch_id
+      - name: ingredient_id
+          description: Liste paginée des niveaux de stock
+                      $ref: '#/components/schemas/RestaurantStockLevel'
+          description: Contexte tenant absent, feature flag inactif, ou permission manquante
+      summary: RESTO-501 — Créer un niveau de stock (stock-levels)
+              $ref: '#/components/schemas/RestaurantStockLevelInput'
+          description: Niveau de stock créé
+          description: Non autorisé
+          description: Validation
+  /restaurant/stock-levels/{restaurantStockLevel}:
+      summary: RESTO-501 — Mise à jour des seuils/coût moyen (la quantité n'est JAMAIS écrite directement)
+      - name: restaurantStockLevel
+                reorder_level:
+                  type: number
+                alert_threshold:
+                avg_cost_minor:
+          description: Niveau de stock mis à jour
+          description: Permission restaurant.manage requise
+          description: Validation échouée (quantity prohibé, seuils invalides)
+      summary: RESTO-501 — Détail d'un niveau de stock
+          description: Niveau de stock
+          description: Introuvable
+      summary: RESTO-501 — Supprimer un niveau de stock
+          description: Supprimé
+  /restaurant/inventory-movements:
+      summary: RESTO-501 — Journal des mouvements de stock (filtres branche/raison)
+      - name: reason_code
+          - sale
+          - receiving
+          - count
+          - adjustment
+          - waste
+          - transfer
+          description: Liste paginée des mouvements
+                      $ref: '#/components/schemas/RestaurantInventoryMovement'
+      summary: RESTO-501 — Mouvement de stock manuel (adjustment|waste|transfer, jamais négatif)
+              - ingredient_id
+              - quantity_delta
+              - reason_code
+                ingredient_id:
+                quantity_delta:
+                reason_code:
+                note_redacted:
+                  maxLength: 1000
+          description: Mouvement enregistré (stock mis à jour)
+          description: Permission restaurant.manager requise
+          description: Stock insuffisant ou raison invalide
+  /restaurant/inventory-movements/{restaurantInventoryMovement}:
+    - name: restaurantInventoryMovement
+      summary: Détail des mouvements de stock
+          description: Détail
+          description: Ressource introuvable (ou autre tenant)
+  /restaurant/stock/alerts:
+      summary: Alertes de seuil de stock (RESTO-505/#6204)
+          description: Niveaux sous le seuil
+  /restaurant/purchase-orders:
+      summary: RESTO-502 — Bons de commande fournisseurs (filtres branche/statut)
+      - name: status
+          - draft
+          - sent
+          - received
+          - cancelled
+          description: Liste paginée des bons de commande
+                      $ref: '#/components/schemas/RestaurantPurchaseOrder'
+      summary: RESTO-502 — Création d'un bon de commande (total recalculé serveur)
+              - supplier_id
+                supplier_id:
+                reference:
+                expected_at:
+                  format: date-time
+                currency:
+                  maxLength: 3
+          description: Bon de commande créé
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}:
+      summary: RESTO-502 — Détail d'un bon de commande
+      - name: restaurantPurchaseOrder
+          description: Détail du bon de commande
+      summary: RESTO-502 — Mise à jour (draft uniquement)
+          description: Bon de commande mis à jour
+      summary: RESTO-502 — Suppression (draft uniquement)
+          description: Seul un draft est supprimable
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/send:
+      summary: RESTO-502 — Envoi au fournisseur (draft → sent)
+          description: Bon de commande envoyé
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/receive:
+      summary: RESTO-502 — Réception (sent → received, entrées de stock + coût moyen pondéré)
+          description: Bon de commande reçu (mouvements de stock générés)
+  /restaurant/receivings:
     get:
       tags:
       - Travel
       summary: Liste des véhicules de la flotte (TRAVEL-306/#6036)
+      - Restaurant
+      summary: RESTO-503 — Réceptions (filtres branche/bon de commande)
       security:
       - BearerAuth: []
       parameters:
@@ -3806,6 +4728,8 @@ paths:
       tags:
       - Travel
       summary: Création d'un véhicule de flotte (TRAVEL-306/#6036)
+      - Restaurant
+      summary: RESTO-503 — Réception (entrées stock + coût moyen pondéré, idempotente par référence)
       security:
       - BearerAuth: []
       requestBody:
@@ -3851,10 +4775,38 @@ paths:
         '422':
           description: Validation échouée
   /travel/vehicles/{travelVehicle}:
+  /restaurant/receivings/{restaurantReceiving}:
+    parameters:
+    - name: restaurantReceiving
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      tags:
+      - Restaurant
+      summary: Détail des réceptions
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Détail
+          content:
+            application/json:
+                $ref: '#/components/schemas/RestaurantReceiving'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+        '404':
+          description: Ressource introuvable (ou autre tenant)
+  /restaurant/inventory-counts:
     get:
       tags:
       - Travel
       summary: Détail d'un véhicule (TRAVEL-306/#6036)
+      - Restaurant
+      summary: RESTO-504 — Inventaires physiques (filtres branche/statut)
       security:
       - BearerAuth: []
       parameters:
@@ -3948,6 +4900,10 @@ paths:
       security:
       - BearerAuth: []
       parameters:
+          enum:
+          - draft
+          - submitted
+          - approved
       - name: per_page
         in: query
         required: false
@@ -3975,6 +4931,8 @@ paths:
       tags:
       - Travel
       summary: Création d'une route (TRAVEL-307/#6037)
+      - Restaurant
+      summary: RESTO-504 — Création d'un inventaire (lignes attendues pré-remplies depuis le stock)
       security:
       - BearerAuth: []
       requestBody:
@@ -4022,6 +4980,8 @@ paths:
       tags:
       - Travel
       summary: Détail d'une route (TRAVEL-307/#6037)
+      - Restaurant
+      summary: RESTO-504 — Détail d'un inventaire (lignes)
       security:
       - BearerAuth: []
       parameters:
@@ -4086,9 +5046,14 @@ paths:
         '403':
           description: Permission travel.manage requise
     delete:
+          description: Ressource introuvable ou hors tenant
+  /restaurant/inventory-counts/{restaurantInventoryCount}/submit:
+    post:
       tags:
       - Travel
       summary: Suppression d'une route (TRAVEL-307/#6037)
+      - Restaurant
+      summary: RESTO-504 — Soumission de l'inventaire (draft → submitted)
       security:
       - BearerAuth: []
       parameters:
@@ -4102,13 +5067,53 @@ paths:
           description: Route supprimée
         '404':
           description: Route introuvable ou hors tenant
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/inventory-counts/{restaurantInventoryCount}/approve:
+    post:
+      tags:
+      - Restaurant
+      summary: RESTO-504 — Approbation (submitted → approved, ajustements de stock — réservé manage)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Inventaire approuvé (ajustements appliqués)
+          content:
+            application/json:
+                $ref: '#/components/schemas/RestaurantInventoryCount'
+        '401':
+          description: Non authentifié
         '403':
           description: Permission travel.manage requise
   /travel/routes/{travelRoute}/stops:
+          description: Permission restaurant.manage requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+        '422':
+          description: Écart non justifié (motif manquant)
+  /restaurant/pos-sessions/{restaurantPosSession}/cogs:
+    parameters:
+    - name: restaurantPosSession
+      in: path
+      required: true
+      schema:
+        type: integer
     get:
       tags:
       - Travel
       summary: Étapes d'une route, triées par rang (TRAVEL-307/#6037)
+      - Restaurant
+      summary: COGS de la session de caisse (RESTO-506/#6205)
       security:
       - BearerAuth: []
       parameters:
@@ -4120,6 +5125,7 @@ paths:
       responses:
         '200':
           description: Étapes de la route
+          description: Coût des marchandises vendues (calcul serveur idempotent)
           content:
             application/json:
               schema:
@@ -4129,12 +5135,34 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/TravelRouteStop'
+                  pos_session_id:
+                    type: integer
+                  currency:
+                    type: string
+                  cogs_minor:
+                  computed_at:
+                    format: date-time
+                  orders_count:
+                  lines:
+                      type: object
+                      properties:
+                        product_id:
+                        quantity:
+        '401':
+          description: Non authentifié
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
         '404':
           description: Route introuvable ou hors tenant
     post:
+          description: Ressource introuvable (ou autre tenant)
+  /restaurant/reservations:
+    get:
       tags:
       - Travel
       summary: Ajout d'une étape à une route (TRAVEL-307/#6037)
+      - Restaurant
+      summary: RESTO-601 — Réservations (filtres branche/statut/date)
       security:
       - BearerAuth: []
       parameters:
@@ -4272,6 +5300,14 @@ paths:
         schema:
           type: integer
       - name: departure_date
+          enum:
+          - pending
+          - confirmed
+          - seated
+          - completed
+          - no_show
+          - cancelled
+      - name: date
         in: query
         required: false
         schema:
@@ -4892,6 +5928,8 @@ paths:
       tags:
       - Travel
       summary: Création d'une réservation guichet (TRAVEL-312/#6042)
+      - Restaurant
+      summary: RESTO-601 — Création d'une réservation (idempotente, conflit de créneau → 409)
       security:
       - BearerAuth: []
       requestBody:
@@ -4971,6 +6009,8 @@ paths:
       tags:
       - Travel
       summary: Détail d'une réservation (TRAVEL-312/#6042)
+      - Restaurant
+      summary: RESTO-601 — Détail d'une réservation
       security:
       - BearerAuth: []
       parameters:
@@ -4993,6 +6033,8 @@ paths:
       tags:
       - Travel
       summary: Confirmation d'une réservation (TRAVEL-313/#6043)
+      - Restaurant
+      summary: RESTO-601 — Mise à jour (pending|confirmed uniquement)
       security:
       - BearerAuth: []
       parameters:
@@ -6281,6 +7323,8 @@ paths:
       tags:
       - Travel
       summary: Suppression d'un véhicule en location (TRAVEL-319/#6049)
+      - Restaurant
+      summary: RESTO-601 — Confirmation (pending → confirmed, événement reservation.confirmed.v1)
       security:
       - BearerAuth: []
       parameters:
@@ -6327,6 +7371,8 @@ paths:
       tags:
       - Travel
       summary: Ajout d'une image (TRAVEL-319/#6049)
+      - Restaurant
+      summary: RESTO-601 — Arrivée client (confirmed → seated)
       security:
       - BearerAuth: []
       parameters:
@@ -6505,6 +7551,8 @@ paths:
       tags:
       - Travel
       summary: Annulation d'une réservation de location (TRAVEL-320/#6050)
+      - Restaurant
+      summary: RESTO-601 — Non venue (pending|confirmed → no_show)
       security:
       - BearerAuth: []
       parameters:
@@ -6514,6 +7562,31 @@ paths:
         schema:
           type: integer
       requestBody:
+      responses:
+        '200':
+          description: Réservation passée en no_show
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantReservation'
+        '401':
+          description: Non authentifié
+        '403':
+          description: Permission restaurant.server requise
+        '404':
+          description: Ressource introuvable ou hors tenant
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/reservations/{restaurantReservation}/cancel:
+    post:
+      tags:
+      - Restaurant
+      summary: RESTO-601 — Annulation (pending|confirmed → cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
         required: true
         content:
           application/json:
@@ -7406,6 +8479,210 @@ paths:
           description: Likes/partages/notes agrégés
         '401':
           description: Non authentifié
+        '409':
+          description: Transition non autorisée depuis le statut courant
+  /restaurant/reservations/{restaurantReservation}/deposit:
+    - name: restaurantReservation
+      - Restaurant
+      summary: Enregistrement d'un dépôt (arrhes, RESTO-603)
+              - amount_minor
+                amount_minor:
+                  minimum: 1
+          description: Dépôt enregistré
+                $ref: '#/components/schemas/RestaurantReservation'
+        '403':
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+          description: Ressource introuvable (ou autre tenant)
+          description: Validation ou invariant métier non respecté
+  /restaurant/reservations/availability:
+      summary: RESTO-602 — Disponibilité de créneaux (tables par capacité et conflits ±2h)
+      - name: branch_id
+        in: query
+      - name: reserved_at
+          format: date-time
+      - name: covers
+        required: false
+          maximum: 999
+          description: Tables disponibles sur le créneau
+                  data:
+                      branch_id:
+                      reserved_at:
+                      covers:
+                      available_tables:
+                        type: array
+                        items:
+                            id:
+                            label:
+                            capacity:
+                            zone_id:
+                              nullable: true
+          description: Branche introuvable ou hors tenant
+          description: Paramètres requis manquants
+  /restaurant/branches/{restaurantBranch}/cancellation-policy:
+    - name: restaurantBranch
+      summary: Politique d'annulation de la branche (RESTO-603/#6208)
+                cancel_free_hours:
+                  minimum: 0
+                cancel_fee_bps:
+                  maximum: 10000
+          description: Politique mise à jour
+  /restaurant/delivery-zones:
+      summary: Liste des zones de livraison
+      - name: per_page
+          maximum: 1000
+          description: Liste paginée
+                      $ref: '#/components/schemas/RestaurantDeliveryZone'
+      summary: Création des zones de livraison
+              $ref: '#/components/schemas/RestaurantDeliveryZoneInput'
+          description: Créée
+  /restaurant/delivery-zones/{restaurantDeliveryZone}:
+    - name: restaurantDeliveryZone
+      summary: Détail des zones de livraison
+          description: Détail
+      summary: Modification des zones de livraison
+          description: Modifiée
+      summary: Suppression des zones de livraison
+          description: Supprimée
+  /restaurant/delivery-zones/{restaurantDeliveryZone}/quote:
+      summary: Devis de livraison (frais serveur, RESTO-604/#6209)
+      - name: order_total_minor
+          description: Éligibilité + frais
+                      order_total_minor:
+                      min_order_minor:
+                      fee_minor:
+                      eligible:
+                        type: boolean
+  /restaurant/payments/{payment}/callback:
+      summary: Callback signé idempotent d'un paiement (RESTO-407)
+      security: []
+      - name: payment
+              additionalProperties: true
+          description: Callback acquitté (idempotent)
+          description: Signature invalide ou montant incohérent
+  /restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}:
+      summary: RESTO-504 — Saisie du compté (variance calculée serveur, motif si écart)
+      - name: restaurantInventoryCount
+      - name: restaurantInventoryCountItem
+              - counted_qty
+                counted_qty:
+                  type: number
+                reason_code:
+                  - damage
+                  - loss
+                  - theft
+                  - miscount
+                  - expiry
+                  - other
+          description: Ligne saisie
+                $ref: '#/components/schemas/RestaurantInventoryCountItem'
+          description: Permission restaurant.manager requise
+          description: Seul un draft est modifiable
+  /restaurant/mobile/manager/kpis:
+      summary: KPIs du jour pour l'app mobile gérant (RESTO-803/#6224)
+      description: 'CA, nombre de commandes, panier moyen, rotation des tables —
+        calculés côté serveur (jamais agrégés côté client).
+        '
+          description: KPIs du jour
+          description: Feature flag restaurantmanager inactif
+  /restaurant/mobile/manager/pos-sessions/current:
+      summary: Session de caisse courante (app gérant, RESTO-803/#6224)
+          description: Session ouverte courante (ou null)
+  /restaurant/mobile/manager/pos-sessions/{restaurantPosSession}/close:
+      summary: Clôture de caisse mobile (RESTO-803/#6224)
+      description: 'Délègue à ClosePosSessionAction (écart calculé serveur, événement
+        restaurant.pos.closed.v1). Rôle principal/rh/manager requis.
+      - name: restaurantPosSession
+              - counted_cash_minor
+                counted_cash_minor:
+                variance_reason:
+          description: Session clôturée
+          description: Permission close requise
+          description: Session introuvable ou hors tenant
+  /restaurant/mobile/manager/stock-alerts:
+      summary: Alertes de seuil de stock (app gérant, RESTO-803/#6224)
+          description: Niveaux sous le seuil d'alerte (100 max)
+  /restaurant/mobile/rider/deliveries:
+      summary: Tournées assignées au livreur connecté (RESTO-802/#6223)
+      description: 'Résolution du livreur par employee_id ; jamais de livraison d''un
+        autre tenant ou d''un autre livreur.
+          description: Livraisons assignées
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}:
+      summary: Détail d'une livraison (app livreur, RESTO-802/#6223)
+      - name: restaurantDelivery
+          description: Détail livraison (contact, adresse, totaux)
+          description: Livraison introuvable ou hors périmètre livreur
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/deliver:
+      summary: Livraison effectuée (RESTO-802/#6223)
+          description: Livraison livrée (delivered_at)
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/out-for-delivery:
+      summary: Départ en livraison (RESTO-802/#6223)
+          description: Livraison en cours
+  /restaurant/mobile/server/orders:
+      summary: File de service mobile serveur (RESTO-801/#6222)
+      description: 'Commandes actives (open/in_preparation/ready/served) du tenant,
+        triées par antériorité.
+          description: File de service
+  /restaurant/mobile/server/orders/{restaurantOrder}/pay:
+      summary: Encaissement cash mobile serveur (RESTO-801/#6222)
+      description: 'Montant vérifié serveur (PayOrderAction), idempotent, double
+        paiement impossible (409), pourboire optionnel.
+      - name: restaurantOrder
+                tip_minor:
+                idempotency_key:
+          description: Paiement confirmé
+          description: Montant ou transition invalide
+          description: Commande introuvable ou hors tenant
+  /restaurant/mobile/server/orders/{restaurantOrder}/serve:
+      summary: Service d'une commande (app serveur, RESTO-801/#6222)
+          description: Commande servie (idempotent)
+          description: Transition non autorisée
+  /restaurant/mobile/server/tables:
+      summary: Plan de salle — tables occupées (app serveur, RESTO-801/#6222)
+          description: Tables occupées
+  /restaurant/mobile/sync:
+      summary: Synchronisation offline mobile idempotente (RESTO-804/#6225)
+      description: 'Rejoue les opérations effectuées hors ligne (order.create,
+        order.add_item, order.pay) avec clés client — réponse par opération
+        created | duplicate | error. Borné à 50 opérations.
+              - operations
+                operations:
+                  maxItems: 50
+                    - type
+                    - idempotency_key
+                    - payload
+                      type:
+                      payload:
+          description: Résultats par opération
+  /restaurant/shop/token:
+      summary: Jeton boutique courant (RESTO-805/#6226)
+          description: Métadonnées du jeton (jamais le jeton en clair)
+  /restaurant/shop/token/rotate:
+      summary: Rotation du jeton boutique (RESTO-805/#6226)
+      description: 'Régénère le jeton (l''ancien est invalidé immédiatement). Réservé
+        principal/rh/manager. Le jeton en clair n''est retourné qu''à la rotation.
+          description: Nouveau jeton (retourné une seule fois)
+          description: Rôle manager requis
+  /restaurant/webhooks/delivery-apps/{provider}:
+      summary: Webhook entrant apps de livraison (RESTO-806/#6227)
+      description: 'Public (hors auth) : signature HMAC-SHA256 fail-closed par adaptateur
+        (Uber Eats / Glovo), secret par tenant. La commande marketplace entre
+        dans le workflow interne (prix du référentiel) ; idempotent par
+        external_id (rejeu sans doublon).
+      - name: provider
+          - uber_eats
+          - glovo
+              - company_id
+              - order
+                company_id:
+                order:
+                  - external_id
+                  - items
+                    external_id:
+                    customer:
+          description: Commande créée
+          description: Rejeu idempotent (même commande)
+          description: Signature invalide
+          description: Fournisseur inconnu ou payload invalide
   /health:
     get:
       tags:
@@ -9281,7 +10558,8 @@ paths:
       tags:
       - Payroll
       summary: 'Bordereau de paie d''un run (totaux par cotisation + recap, #5243)'
-      description: 'CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404).'
+      description: 'CSV : section TOTAUX_PAR_COTISATION (lignes de bulletin groupees par type + libelle) et section RECAPITULATIF_RUN (brut, cotisations salariales, IRG, autres deductions, net, cotisations
+        patronales, cout employeur, bulletins). Reserve aux managers, garde pays DZ (422 sinon), isolation tenant (404).'
       parameters:
       - name: payrollRun
         in: path
@@ -11407,7 +12685,8 @@ paths:
       tags:
       - Platform
       summary: Envoyer un message a l'assistant IA (super-admin)
-      description: 'Reponse honnete cote plateforme (issue #2311) : l''IA conversationnelle est configuree PAR TENANT et la console super-admin est cross-tenant en lecture seule. L''envoi retourne une reponse structuree indiquant que l''assistant n''est pas disponible au niveau plateforme. Aucune ecriture cross-tenant.'
+      description: 'Reponse honnete cote plateforme (issue #2311) : l''IA conversationnelle est configuree PAR TENANT et la console super-admin est cross-tenant en lecture seule. L''envoi retourne une reponse
+        structuree indiquant que l''assistant n''est pas disponible au niveau plateforme. Aucune ecriture cross-tenant.'
       security:
       - SuperAdminBearerAuth: []
       requestBody:
@@ -12778,24 +14057,29 @@ paths:
       tags:
       - FuelStation
       summary: Enregistrer un releve de compteur (cumulatif, idempotent)
-      description: |-
-        Releve cumule d'un compteur (valeur en unites mineures entieres).
+      description: 'Releve cumule d''un compteur (valeur en unites mineures entieres).
+
         Idempotent (idempotency_key). Valeur decroissante sans rollover
+
         documente → intervalle en anomalie (revue obligatoire). Solution
-        FuelStation active requise (403 sinon). Issue #5798.
+
+        FuelStation active requise (403 sinon). Issue #5798.'
       parameters:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
@@ -12828,15 +14112,18 @@ paths:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       responses:
         '200':
           description: Liste des releves (100 max, plus recents d'abord)
@@ -12849,15 +14136,18 @@ paths:
       - name: station
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: pump
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       - name: meter
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       responses:
         '200':
           description: Liste des intervalles (valid|rollover|anomaly|pending_review)
@@ -12870,17 +14160,24 @@ paths:
       - name: reading
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [reading_value_minor, reason]
+              required:
+              - reading_value_minor
+              - reason
               properties:
-                reading_value_minor: {type: integer, minimum: 0}
-                reason: {type: string, maxLength: 1000}
+                reading_value_minor:
+                  type: integer
+                  minimum: 0
+                reason:
+                  type: string
+                  maxLength: 1000
       responses:
         '200':
           description: Correction enregistree (nouvelle version, original marque corrected)
@@ -12897,17 +14194,25 @@ paths:
       - name: interval
         in: path
         required: true
-        schema: {type: integer}
+        schema:
+          type: integer
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [decision]
+              required:
+              - decision
               properties:
-                decision: {type: string, enum: [accept, reject]}
-                note: {type: string, maxLength: 1000}
+                decision:
+                  type: string
+                  enum:
+                  - accept
+                  - reject
+                note:
+                  type: string
+                  maxLength: 1000
       responses:
         '200':
           description: Revue enregistree
@@ -12915,7 +14220,6 @@ paths:
           description: Permission manager requise
         '409':
           description: Intervalle deja revu
-
   /fuel-station/me/shifts:
     get:
       tags:
@@ -12991,7 +14295,7 @@ paths:
                   nullable: true
                 start_time:
                   type: string
-                  example: '06:00'
+                  example: 06:00
                 end_time:
                   type: string
                   example: '14:00'
@@ -13061,7 +14365,7 @@ paths:
                   nullable: true
                 start_time:
                   type: string
-                  example: '06:00'
+                  example: 06:00
                 end_time:
                   type: string
                   example: '14:00'
@@ -13193,7 +14497,8 @@ paths:
       tags:
       - FuelStation
       summary: Roster de presence du shift pour une date (manager)
-      description: "FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift."
+      description: 'FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in
+        sort de la fenetre du shift.'
       security:
       - BearerAuth: []
       parameters:
@@ -13378,7 +14683,7 @@ paths:
       tags:
       - FuelStation
       summary: Cloturer une session (proprietaire, idempotente)
-      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      description: Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal).
       security:
       - BearerAuth: []
       parameters:
@@ -13498,7 +14803,7 @@ paths:
       tags:
       - FuelStation
       summary: Enregistrer une vente (pompiste, idempotent via external_id)
-      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
+      description: Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent.
       security:
       - BearerAuth: []
       requestBody:
@@ -17742,7 +19047,8 @@ paths:
       tags:
       - Notifications
       summary: Lister les annonces de l'entreprise
-      description: Un employe ne voit que les annonces publiees qui lui sont adressees (audience entreprise, departement ou employe) ; les managers principal/rh moderent aussi les brouillons et annonces planifiees.
+      description: Un employe ne voit que les annonces publiees qui lui sont adressees (audience entreprise, departement ou employe) ; les managers principal/rh moderent aussi les brouillons et annonces
+        planifiees.
       security:
       - BearerAuth: []
       parameters:
@@ -19202,7 +20508,8 @@ paths:
       tags:
       - AI
       summary: Exporter une conversation IA (asynchrone, idempotent)
-      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
+      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par
+        tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
       security:
       - BearerAuth: []
       parameters:
@@ -21451,7 +22758,8 @@ paths:
       tags:
       - Payroll Engine
       summary: Registre des pays supportes
-      description: 'Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite (regles resolubles ou non).'
+      description: 'Source unique de verite (MULTI-PAYS #1867) : pour chaque pays du referentiel — code ISO, libelle, langue, devise, fuseau horaire, niveau de confiance des regles de paie et disponibilite
+        (regles resolubles ou non).'
       operationId: listSupportedCountries
       responses:
         '200':
@@ -21592,7 +22900,8 @@ paths:
       tags:
       - Me
       summary: Telecharger mon bulletin archive dans le Cabinet (PDF)
-      description: 'Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne le PDF lui-meme : document archive si present, sinon repli sur le bulletin standard.'
+      description: 'Issue #1817 : apres cloture du run de paie, le bulletin est archive automatiquement dans le Cabinet employe (CabinetDocument payslip, lecture seule). Retourne le PDF lui-meme : document
+        archive si present, sinon repli sur le bulletin standard.'
       operationId: archivedMyPaySlipDocument
       parameters:
       - name: paySlip
@@ -21760,7 +23069,8 @@ paths:
       tags:
       - Payroll
       summary: Previsualiser un cycle de paie candidat
-      description: PA2-PAY-003 - Permet a un manager de previsualiser la periode resultante et un total de paie estime pour une regle de cycle candidate (journalier/hebdomadaire/mensuel, jour de paie, debut de semaine) avant de l'enregistrer via PUT /payroll/cycle-settings. Lecture seule, ne persiste rien.
+      description: PA2-PAY-003 - Permet a un manager de previsualiser la periode resultante et un total de paie estime pour une regle de cycle candidate (journalier/hebdomadaire/mensuel, jour de paie, debut
+        de semaine) avant de l'enregistrer via PUT /payroll/cycle-settings. Lecture seule, ne persiste rien.
       parameters:
       - in: query
         name: pay_cycle
@@ -22220,7 +23530,8 @@ paths:
       tags:
       - Payroll
       summary: 'Lister les enregistrements d''audit des calculs de paie (manager principal/RH) — issue #1874'
-      description: 'Audit immuable des calculs (runs de paie + simulations) du tenant courant : lecture seule, isolation tenant stricte (la liste est scopée à la société de l''acteur). RBAC : manager principal/RH (PayrollAuditPolicy).'
+      description: 'Audit immuable des calculs (runs de paie + simulations) du tenant courant : lecture seule, isolation tenant stricte (la liste est scopée à la société de l''acteur). RBAC : manager principal/RH
+        (PayrollAuditPolicy).'
       operationId: listPayrollAudits
       parameters:
       - name: status
@@ -22268,7 +23579,8 @@ paths:
       tags:
       - Payroll
       summary: 'Détail d''un enregistrement d''audit de calcul de paie (manager principal/RH) — issue #1874'
-      description: Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. 404 si l'enregistrement n'appartient pas au tenant courant.
+      description: Reproduction du contexte d'un calcul (pays, période, version de règles, paramètres agrégés, résultats agrégés, statut) à partir de son correlation_id. 404 si l'enregistrement n'appartient
+        pas au tenant courant.
       operationId: getPayrollAudit
       parameters:
       - name: correlationId
@@ -22431,7 +23743,7 @@ paths:
       tags:
       - Payroll
       summary: Valider la session de paie
-      description: Issue #5623 — un pays a baremes 'placeholder' (BF/ML/TG, non valides legalement) exige confirm_placeholder=true, sinon 422 PAYROLL_PLACEHOLDER_CONFIRM_REQUIRED.
+      description: Issue
       parameters:
       - name: payrollRun
         in: path
@@ -22485,7 +23797,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNSS mensuelle Côte d''Ivoire — CSV (CEDEAO #1830)'
-      description: 'CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75 %, AT 2 %, totaux) + TOTAUX. 422 si le run n''est pas CI. RBAC manager ; 404 cross-tenant.'
+      description: 'CSV DAS ivoirien : une ligne par bulletin validé (matricule CNSS, nom, prénom, brut, assiette plafonnée à 1 647 315 XOF, retraite salariale 3,2 %, retraite patronale 4,5 %, famille 5,75
+        %, AT 2 %, totaux) + TOTAUX. 422 si le run n''est pas CI. RBAC manager ; 404 cross-tenant.'
       operationId: downloadCnssCiDeclaration
       parameters:
       - name: payrollRun
@@ -22513,7 +23826,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)'
-      description: 'CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 7 %) + TOTAUX. 422 si le run n''est pas SN. RBAC manager ; 404 cross-tenant.'
+      description: 'CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2
+        cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 7 %) + TOTAUX. 422 si le run n''est pas SN. RBAC manager ; 404 cross-tenant.'
       operationId: downloadIpresSnDeclaration
       parameters:
       - name: payrollRun
@@ -22541,7 +23855,9 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)'
-      description: 'Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale 7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CM.'
+      description: 'Télécharge le CSV DAS du run : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette plafonnée à 750 000 XAF, vieillesse salariale/patronale 4,2 %, famille patronale
+        7,0 %, AT patronale 2,0 % non plafonnée, total patronal) + ligne TOTAUX. Taux et plafond résolus depuis CemacPayrollRules (asOf period du run). RBAC : manager principal/comptable ; 404 cross-tenant
+        ; 422 si le run n''est pas un run CM.'
       operationId: downloadCnpsCmDeclaration
       parameters:
       - name: payrollRun
@@ -22570,7 +23886,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)'
-      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee, plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run GA.'
+      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee,
+        plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run GA.'
       operationId: downloadCnssGaDeclaration
       parameters:
       - name: payrollRun
@@ -22598,7 +23915,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)'
-      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee, plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CG.'
+      description: 'CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee,
+        plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas un run CG.'
       operationId: downloadCnssCgDeclaration
       parameters:
       - name: payrollRun
@@ -22626,7 +23944,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)'
-      description: 'CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale 7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas BF.'
+      description: 'CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale
+        7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas BF.'
       operationId: downloadCnssBfDeclaration
       parameters:
       - name: payrollRun
@@ -22654,7 +23973,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)'
-      description: 'CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale 4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas ML.'
+      description: 'CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale
+        4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n''est pas ML.'
       operationId: downloadInpsMlDeclaration
       parameters:
       - name: payrollRun
@@ -22682,7 +24002,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Créer un run de régularisation (DZ-DEPTH #1818)'
-      description: Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created. Seul un run `locked` est régularisable (422 sinon).
+      description: Crée un run type=regularization lié à un run verrouillé (original_run_id), même période, statut draft — sans modifier l'original. Motif obligatoire, tracé dans l'audit payroll_run_regularization_created.
+        Seul un run `locked` est régularisable (422 sinon).
       operationId: regularizePayrollRun
       parameters:
       - name: payrollRun
@@ -23348,7 +24669,8 @@ paths:
       tags:
       - Platform Admin
       summary: Lister les fêtes islamiques d'une année (super-admin)
-      description: 'Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement accessible au super-admin (guard super_admin_api).'
+      description: 'Issue #1812 — Calendrier islamique dynamique : dates mobiles des fêtes islamiques (Aïd el-Fitr, Aïd el-Adha/Tabaski, Maouloud, Tamkharit, Nouvel an hégirien) saisies par année. Uniquement
+        accessible au super-admin (guard super_admin_api).'
       operationId: listIslamicCalendar
       parameters:
       - name: year
@@ -24118,7 +25440,8 @@ paths:
       tags:
       - Payroll Engine
       summary: Creer une regle de cotisation sociale (manager)
-      description: 'PA2-ARCH-004 : l''unicite de ''code'' est scopee par (company_id, effective_from), pas globale, pour permettre un nouveau taux date sans supprimer l''historique utilise par d''anciennes sessions de paie.'
+      description: 'PA2-ARCH-004 : l''unicite de ''code'' est scopee par (company_id, effective_from), pas globale, pour permettre un nouveau taux date sans supprimer l''historique utilise par d''anciennes
+        sessions de paie.'
       operationId: createSocialContribution
       requestBody:
         required: true
@@ -24488,7 +25811,8 @@ paths:
       tags:
       - Payroll Engine
       summary: 'Generer la declaration annuelle des salaires DAS (Algerie, #5243)'
-      description: 'Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l''annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net + ligne TOTAUX. Reserve aux managers principal/comptable.'
+      description: 'Agrege les bulletins valides (pay_slips.status=validated) des runs DZ de l''annee demandee, par employe : NIS, nom, mois, brut, CNAS salariale/patronale (9 %/26 %), IRG retenu, net +
+        ligne TOTAUX. Reserve aux managers principal/comptable.'
       operationId: generateDasDzDeclaration
       requestBody:
         required: true
@@ -24588,7 +25912,9 @@ paths:
       tags:
       - Payroll Engine
       summary: Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)
-      description: 'Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown) — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles et politique d''arrondi (docs/payroll/CALCULATION_CONTRACT.md).'
+      description: 'Delegue au moteur de paie (CountryRulesInterface via PayrollCalculator, issue #1782). Issue #1869 : la simulation et le bulletin passent par le meme noyau de calcul (computeNetBreakdown)
+        — resultats identiques pour un meme brut ; reponse complete et explicable : cotisations + assiette + impot + taxe de minimum fiscal + net + cout employeur, avec pays, devise, identifiant des regles
+        et politique d''arrondi (docs/payroll/CALCULATION_CONTRACT.md).'
       operationId: simulateCotisations
       requestBody:
         required: true
@@ -24824,7 +26150,8 @@ paths:
       tags:
       - Accounting
       summary: 'Creer un brouillon de document numerote (facture, proforma, devis, avoir, irsaliye, recu, #5223)'
-      description: Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes (TVA incluse).
+      description: Numero attribue a la creation (serie parametrable via accounting_settings.number_series, ex. FAC-2026-0001), concurrent-safe (contrainte unique + retry). Totaux calcules depuis les lignes
+        (TVA incluse).
       requestBody:
         required: true
         content:
@@ -27565,14 +28892,15 @@ paths:
       tags:
       - Exports
       summary: Export CSV mensuel des presences par employe
-      description: "Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export canonique avec historique. Manager uniquement."
+      description: Synthese mensuelle par employe (jours travailles, heures, HS, retards, sorties manquantes, corrections, estimation brute) - meme agregation que /attendance/monthly-report, surface d'export
+        canonique avec historique. Manager uniquement.
       parameters:
       - name: month
         in: query
-        description: "Mois au format YYYY-MM (defaut : mois courant)"
+        description: 'Mois au format YYYY-MM (defaut : mois courant)'
         schema:
           type: string
-          example: '2026-08'
+          example: 2026-08
       responses:
         '200':
           description: Enveloppe JSON {format, content, filename, count, month}
@@ -28021,7 +29349,8 @@ paths:
       tags:
       - Platform
       summary: Callback OpenID Connect (IdP -> SP)
-      description: 'Endpoint public recevant le code/id_token OIDC : verifie le state, echange le code contre les tokens, valide l''id_token (signature JWKS + iss/aud/exp/nonce) et emet un token Sanctum pour l''employe identifie (issue #2231).'
+      description: 'Endpoint public recevant le code/id_token OIDC : verifie le state, echange le code contre les tokens, valide l''id_token (signature JWKS + iss/aud/exp/nonce) et emet un token Sanctum
+        pour l''employe identifie (issue #2231).'
       security: []
       parameters:
       - name: companyId
@@ -29555,7 +30884,8 @@ paths:
       tags:
       - CRM
       summary: Convertir un lead en account + contact + opportunity
-      description: "Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même nom."
+      description: 'Conversion guidée et transactionnelle (#5717). Idempotente : un lead déjà converti répond 409 (CRM_LEAD_ALREADY_CONVERTED). Le compte est réutilisé si un compte du tenant porte le même
+        nom.'
       security:
       - BearerAuth: []
       parameters:
@@ -29615,7 +30945,7 @@ paths:
       tags:
       - CRM
       summary: Suggestions de doublons (explicables, tenant-scoped)
-      description: "Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh."
+      description: 'Déduplication supervisée (#5718) : paires par email normalisé identique ou nom similaire (Levenshtein ≤ 2). Jamais cross-tenant. Permission : principal/rh.'
       security:
       - BearerAuth: []
       parameters:
@@ -29679,7 +31009,7 @@ paths:
       tags:
       - CRM
       summary: Preview d'une fusion (aucune écriture)
-      description: "Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh."
+      description: 'Diff de champs + relations à transférer avant fusion (#5718). Permission : principal/rh.'
       security:
       - BearerAuth: []
       parameters:
@@ -29716,7 +31046,7 @@ paths:
       tags:
       - CRM
       summary: Fusion supervisée (principal uniquement)
-      description: "Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718)."
+      description: 'Fusion transactionnelle : champs complétés, relations transférées, perdant ARCHIVÉ (jamais supprimé — rollback logique), audit crm.merge.* (#5718).'
       security:
       - BearerAuth: []
       requestBody:
@@ -29778,7 +31108,8 @@ paths:
       tags:
       - CRM
       summary: Uploader et prévisualiser un import CSV CRM (preview sans écriture)
-      description: "Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d'import en statut previewed avec compteurs, erreurs par ligne et aperçu PII masqué. Issue #5714."
+      description: 'Parse et valide structurellement un fichier CSV (accounts/contacts/leads) sans rien écrire dans les tables cibles. Retourne une session d''import en statut previewed avec compteurs,
+        erreurs par ligne et aperçu PII masqué. Issue #5714.'
       security:
       - BearerAuth: []
       requestBody:
@@ -29850,7 +31181,7 @@ paths:
       tags:
       - CRM
       summary: Committer un import CSV prévisualisé (explicite, idempotent)
-      description: "Claim atomique puis persistance asynchrone des lignes validées. Un second commit répond 409 (CRM_IMPORT_ALREADY_COMMITTED). Issue #5714."
+      description: 'Claim atomique puis persistance asynchrone des lignes validées. Un second commit répond 409 (CRM_IMPORT_ALREADY_COMMITTED). Issue #5714.'
       security:
       - BearerAuth: []
       parameters:
@@ -30192,7 +31523,8 @@ paths:
       tags:
       - Marketing
       summary: Publier immediatement ou (re)planifier une publication
-      description: scheduled_at absent = publication immediate via l'agregateur Ayrshare (SocialPublishingService::publishNow) ; scheduled_at futur = planification (statut scheduled), publie automatiquement par le job PublishScheduledSocialPost quand echu.
+      description: scheduled_at absent = publication immediate via l'agregateur Ayrshare (SocialPublishingService::publishNow) ; scheduled_at futur = planification (statut scheduled), publie automatiquement
+        par le job PublishScheduledSocialPost quand echu.
       security:
       - BearerAuth: []
       parameters:
@@ -32056,8 +33388,9 @@ paths:
     post:
       tags:
       - Accounting
-      summary: Activer le module Comptabilite (wizard 4 etapes, #5626)
-      description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture d''exemple. Idempotent (RBAC principal/comptable).'
+      summary: Activer le module Comptabilite (wizard 4 etapes,
+      description: 'Execute l''activation complete : parametrage (langue des documents, devise, taux TVA, series de numerotation, modele PDF, mentions) puis creation du contact de test et de la facture
+        d''exemple. Idempotent (RBAC principal/comptable).'
       security:
       - BearerAuth: []
       requestBody:
@@ -32113,7 +33446,8 @@ paths:
       tags:
       - Accounting
       summary: 'Audit trail du module Comptabilité (qui/quoi/quand, #5273)'
-      description: Evenements accounting.* (creation, envoi, paiement, annulation, avoir) journalises via DataAccessAuditLogger. Scope tenant, reserve aux managers principal/comptable (le endpoint global /audit-logs reste principal-only). Lecture seule, append-only.
+      description: Evenements accounting.* (creation, envoi, paiement, annulation, avoir) journalises via DataAccessAuditLogger. Scope tenant, reserve aux managers principal/comptable (le endpoint global
+        /audit-logs reste principal-only). Lecture seule, append-only.
       parameters:
       - name: per_page
         in: query
@@ -32480,7 +33814,9 @@ paths:
       tags:
       - Accounting
       summary: Audit des accès au portail client pour un document partagé (#5522)
-      description: 'Réponse à incident RGPD (loi 18-07) : qui a consulté / téléchargé un document partagé, quand, depuis quelle IP. Liste paginée (date décroissante) des événements accounting.share.info / accounting.share.download tracés par le portail public (#5429/#5520), pour tous les partages du document. RBAC managers principal/comptable ; isolation tenant fail-closed (document inconnu ou cross-tenant → 404). Le share_token n''est jamais exposé.'
+      description: 'Réponse à incident RGPD (loi 18-07) : qui a consulté / téléchargé un document partagé, quand, depuis quelle IP. Liste paginée (date décroissante) des événements accounting.share.info
+        / accounting.share.download tracés par le portail public (#5429/#5520), pour tous les partages du document. RBAC managers principal/comptable ; isolation tenant fail-closed (document inconnu ou
+        cross-tenant → 404). Le share_token n''est jamais exposé.'
       parameters:
       - name: document
         in: path
@@ -33093,7 +34429,8 @@ paths:
       tags:
       - Expenses
       summary: Ecritures comptables d'une note de frais approuvee (#5235)
-      description: Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable, isolation tenant (404).
+      description: Lignes d'ecriture (debit charge / credit personnel 425) generees automatiquement a l'approbation de la note (observer Eloquent) depuis le module Expense. Reserve aux managers principal/comptable,
+        isolation tenant (404).
       parameters:
       - name: expenseClaim
         in: path
@@ -33292,7 +34629,8 @@ paths:
       tags:
       - Payroll
       summary: Ecrires comptables d'un run de paie valide (#5239)
-      description: Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines(). Reserve aux managers principal/comptable, isolation tenant (404).
+      description: Lignes d'ecriture (D 641 brut, D 645 patronales, C 421 net, C 431 cotisations, C 4421 impot, C 425 residu) generees automatiquement a la validation du run (observer AuditLog) depuis PayrollAccountingExportService::journalLines().
+        Reserve aux managers principal/comptable, isolation tenant (404).
       parameters:
       - name: payrollRun
         in: path
@@ -33357,7 +34695,8 @@ paths:
       tags:
       - Payroll
       summary: Preparer un ordre de virement pour un run valide (comptable)
-      description: Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable (403 sinon).
+      description: Agrege le net par employe (bulletins valides), genere le fichier banque via BankExportGenerator (formats SEPA/CSV/CNEP existants) et cree l'ordre au statut prepared. Reserve au role comptable
+        (403 sinon).
       parameters:
       - name: payrollRun
         in: path
@@ -33400,25 +34739,29 @@ paths:
           $ref: '#/components/responses/Validation422'
   /attendance/day-closures:
     get:
-      tags: ["Attendance"]
-      summary: "Lister les fermetures de journée (manager/RH/principal)"
-      description: "Fermetures de journée du pointage (issue #5265) : verrous quotidiens par employé, filtrables par date et/ou employé. RBAC api.manager:rh,principal."
+      tags:
+      - Attendance
+      summary: Lister les fermetures de journée (manager/RH/principal)
+      description: 'Fermetures de journée du pointage (issue #5265) : verrous quotidiens par employé, filtrables par date et/ou employé. RBAC api.manager:rh,principal.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: date
-          in: query
-          required: false
-          description: "Filtre par date (YYYY-MM-DD)."
-          schema: { type: string, format: date }
-        - name: employee_id
-          in: query
-          required: false
-          description: "Filtre par employé."
-          schema: { type: integer }
+      - name: date
+        in: query
+        required: false
+        description: Filtre par date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: employee_id
+        in: query
+        required: false
+        description: Filtre par employé.
+        schema:
+          type: integer
       responses:
-        "200":
-          description: "Liste des fermetures de journée"
+        '200':
+          description: Liste des fermetures de journée
           content:
             application/json:
               schema:
@@ -33427,60 +34770,71 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
+                      $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
     post:
-      tags: ["Attendance"]
-      summary: "Verrouiller la journée d'un employé (manager/RH/principal)"
-      description: "Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n'est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED. Issue #5265."
+      tags:
+      - Attendance
+      summary: Verrouiller la journée d'un employé (manager/RH/principal)
+      description: 'Crée une fermeture de journée (idempotent) : plus aucun pointage (check-in/check-out, import, approbation géo) n''est accepté pour cet employé ce jour-là → 409 ATTENDANCE_DAY_CLOSED.
+        Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [employee_id, date]
+              required:
+              - employee_id
+              - date
               properties:
-                employee_id: { type: integer, description: "Employé de l'entreprise courante (404 si hors tenant)." }
-                date: { type: string, format: date, description: "Date locale entreprise (YYYY-MM-DD)." }
-                note: { type: string, nullable: true }
+                employee_id:
+                  type: integer
+                  description: Employé de l'entreprise courante (404 si hors tenant).
+                date:
+                  type: string
+                  format: date
+                  description: Date locale entreprise (YYYY-MM-DD).
+                note:
+                  type: string
+                  nullable: true
       responses:
-        "201":
-          description: "Fermeture créée (ou déjà existante — idempotent)"
+        '201':
+          description: Fermeture créée (ou déjà existante — idempotent)
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-        "422":
-          description: "Validation (employé hors entreprise, date invalide)."
-
+                    $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          description: Validation (employé hors entreprise, date invalide).
   /attendance/day-closures/{id}/validate:
     post:
-      tags: ["Attendance"]
-      summary: "Valider une journée verrouillée (manager/RH/principal)"
-      description: "Marque une fermeture comme validée (review manager). Idempotent. Issue #5265."
+      tags:
+      - Attendance
+      summary: Valider une journée verrouillée (manager/RH/principal)
+      description: 'Marque une fermeture comme validée (review manager). Idempotent. Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       requestBody:
         required: false
         content:
@@ -33488,54 +34842,54 @@ paths:
             schema:
               type: object
               properties:
-                note: { type: string, nullable: true }
+                note:
+                  type: string
+                  nullable: true
       responses:
-        "200":
-          description: "Fermeture validée"
+        '200':
+          description: Fermeture validée
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/AttendanceDayClosure"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-
+                    $ref: '#/components/schemas/AttendanceDayClosure'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /attendance/day-closures/{id}:
     delete:
-      tags: ["Attendance"]
-      summary: "Lever une fermeture de journée (manager/RH/principal)"
-      description: "Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265."
+      tags:
+      - Attendance
+      summary: Lever une fermeture de journée (manager/RH/principal)
+      description: 'Supprime le verrou : la journée redevient ouverte aux pointages. Issue #5265.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
       responses:
-        "204":
-          description: "Verrou levé"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-        "404":
-          $ref: "#/components/responses/Error404"
-
-
+        '204':
+          description: Verrou levé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /accounting/activation/complete:
     post:
       tags:
       - Accounting
       summary: Completer l'activation du module Comptabilite (wizard)
-      description: "Marque le wizard d'activation comme termine (RBAC principal/comptable)."
+      description: Marque le wizard d'activation comme termine (RBAC principal/comptable).
       responses:
         '200':
           description: Activation completee
@@ -33547,163 +34901,163 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-
   /auth/2fa/verify:
     post:
-      tags: ["Auth"]
-      summary: "Verifier le challenge 2FA et obtenir le token"
+      tags:
+      - Auth
+      summary: Verifier le challenge 2FA et obtenir le token
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TwoFactorVerifyRequest"
+              $ref: '#/components/schemas/TwoFactorVerifyRequest'
       responses:
-        "200":
-          description: "Token Sanctum delivre"
+        '200':
+          description: Token Sanctum delivre
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorVerifyResponse"
-        "401":
-          description: "TWO_FACTOR_CHALLENGE_EXPIRED"
-        "422":
-          description: "TWO_FACTOR_INVALID ou validation"
-
-
+                $ref: '#/components/schemas/TwoFactorVerifyResponse'
+        '401':
+          description: TWO_FACTOR_CHALLENGE_EXPIRED
+        '422':
+          description: TWO_FACTOR_INVALID ou validation
   /auth/2fa/recovery-codes:
     post:
-      tags: ["Auth"]
-      summary: "Regenerer les codes de recuperation 2FA"
+      tags:
+      - Auth
+      summary: Regenerer les codes de recuperation 2FA
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "201":
-          description: "Nouveaux codes de recuperation"
+        '201':
+          description: Nouveaux codes de recuperation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorConfirmResponse"
-
-
+                $ref: '#/components/schemas/TwoFactorConfirmResponse'
   /auth/2fa/disable:
     post:
-      tags: ["Auth"]
-      summary: "Desactiver la 2FA (re-verification par code)"
+      tags:
+      - Auth
+      summary: Desactiver la 2FA (re-verification par code)
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [code]
+              required:
+              - code
               properties:
                 code:
                   type: string
       responses:
-        "200":
-          description: "2FA desactivee"
+        '200':
+          description: 2FA desactivee
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorStatusResponse"
-        "422":
-          description: "TWO_FACTOR_INVALID"
-
-
+                $ref: '#/components/schemas/TwoFactorStatusResponse'
+        '422':
+          description: TWO_FACTOR_INVALID
   /auth/2fa/confirm:
     post:
-      tags: ["Auth"]
-      summary: "Confirmer l'enrolement 2FA (premier code) et activer"
+      tags:
+      - Auth
+      summary: Confirmer l'enrolement 2FA (premier code) et activer
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [code]
+              required:
+              - code
               properties:
                 code:
                   type: string
-                  description: "Code TOTP a verifier"
+                  description: Code TOTP a verifier
       responses:
-        "201":
-          description: "2FA activee + codes de recuperation"
+        '201':
+          description: 2FA activee + codes de recuperation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorConfirmResponse"
-        "422":
-          description: "TWO_FACTOR_INVALID (code invalide)"
-        "409":
-          description: "TWO_FACTOR_ALREADY_ENABLED"
-
-
+                $ref: '#/components/schemas/TwoFactorConfirmResponse'
+        '422':
+          description: TWO_FACTOR_INVALID (code invalide)
+        '409':
+          description: TWO_FACTOR_ALREADY_ENABLED
   /auth/2fa/enroll:
     post:
-      tags: ["Auth"]
-      summary: "Demarrer l'enrolement 2FA (secret + QR)"
+      tags:
+      - Auth
+      summary: Demarrer l'enrolement 2FA (secret + QR)
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "201":
-          description: "Secret TOTP et URL du QR code"
+        '201':
+          description: Secret TOTP et URL du QR code
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorEnrollResponse"
-        "409":
-          description: "TWO_FACTOR_ALREADY_ENABLED"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
+                $ref: '#/components/schemas/TwoFactorEnrollResponse'
+        '409':
+          description: TWO_FACTOR_ALREADY_ENABLED
+        '401':
+          $ref: '#/components/responses/Error401'
   /auth/2fa/status:
     get:
-      tags: ["Auth"]
-      summary: "Etat 2FA du compte connecte"
+      tags:
+      - Auth
+      summary: Etat 2FA du compte connecte
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "200":
-          description: "Etat 2FA (activee ? politique requise ?)"
+        '200':
+          description: Etat 2FA (activee ? politique requise ?)
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TwoFactorStatusResponse"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
+                $ref: '#/components/schemas/TwoFactorStatusResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
   /accounting/bank-statement-lines/{line}/match:
     post:
-      tags: ["Accounting"]
-      summary: "Rapprochement manuel d'une ligne"
-      description: "Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Rapprochement manuel d'une ligne
+      description: 'Matche une ligne pending avec un paiement recorded explicite (lettrage). 409 si déjà rapproché. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: line
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: line
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [payment_id]
+              required:
+              - payment_id
               properties:
-                payment_id: { type: integer }
+                payment_id:
+                  type: integer
       responses:
-        "200":
-          description: "Ligne rapprochée"
+        '200':
+          description: Ligne rapprochée
           content:
             application/json:
               schema:
@@ -33712,34 +35066,49 @@ paths:
                   data:
                     type: object
                     properties:
-                      line_id: { type: string }
-                      status: { type: string, enum: [pending, matched] }
-                      matched_payment_id: { type: string, nullable: true }
-                      confidence: { type: integer, nullable: true }
-                      payment_status: { type: string }
-                      reconciled_at: { type: string, format: date-time, nullable: true }
-        "404":
-          description: "Ligne ou paiement introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-        "409":
-          description: "Ligne ou paiement déjà rapproché (BANK_STATEMENT_LINE_ALREADY_MATCHED)"
-          $ref: "#/components/responses/Error409"
-
+                      line_id:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                        - pending
+                        - matched
+                      matched_payment_id:
+                        type: string
+                        nullable: true
+                      confidence:
+                        type: integer
+                        nullable: true
+                      payment_status:
+                        type: string
+                      reconciled_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+        '404':
+          description: Ligne ou paiement introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Ligne ou paiement déjà rapproché (BANK_STATEMENT_LINE_ALREADY_MATCHED)
+          $ref: '#/components/responses/Error409'
   /accounting/bank-statements/{statement}/status:
     get:
-      tags: ["Accounting"]
-      summary: "État de rapprochement"
-      description: "Soldes attendus/réels, lignes rapprochées/en attente, écart de clôture. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: État de rapprochement
+      description: 'Soldes attendus/réels, lignes rapprochées/en attente, écart de clôture. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "État de rapprochement"
+        '200':
+          description: État de rapprochement
           content:
             application/json:
               schema:
@@ -33748,28 +35117,47 @@ paths:
                   data:
                     type: object
                     properties:
-                      statement_id: { type: string }
-                      statement_period: { type: string }
-                      status: { type: string, enum: [imported, reconciling, reconciled] }
-                      opening_balance: { type: number, nullable: true }
-                      closing_balance_expected: { type: number, nullable: true }
-                      closing_balance_reported: { type: number, nullable: true }
-                      closing_gap: { type: number, nullable: true }
-                      total_lines: { type: integer }
-                      matched_lines: { type: integer }
-                      pending_lines: { type: integer }
-                      matched_amount: { type: number }
-                      pending_amount: { type: number }
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                      statement_id:
+                        type: string
+                      statement_period:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                        - imported
+                        - reconciling
+                        - reconciled
+                      opening_balance:
+                        type: number
+                        nullable: true
+                      closing_balance_expected:
+                        type: number
+                        nullable: true
+                      closing_balance_reported:
+                        type: number
+                        nullable: true
+                      closing_gap:
+                        type: number
+                        nullable: true
+                      total_lines:
+                        type: integer
+                      matched_lines:
+                        type: integer
+                      pending_lines:
+                        type: integer
+                      matched_amount:
+                        type: number
+                      pending_amount:
+                        type: number
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/export:
     get:
       tags:
       - Accounting
       summary: Export CSV de l'état de rapprochement bancaire
-      description: "Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, ';', anti-injection #4169). RBAC principal/comptable."
+      description: 'Lignes du relevé (statut, paiement rapproché, confiance) + totaux et écart de clôture. Format expert-comptable (UTF-8 BOM, '';'', anti-injection #4169). RBAC principal/comptable.'
       parameters:
       - name: statement
         in: path
@@ -33792,19 +35180,23 @@ paths:
           $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}/reconcile:
     post:
-      tags: ["Accounting"]
-      summary: "Lancer le rapprochement automatique"
-      description: "Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Lancer le rapprochement automatique
+      description: 'Matching heuristique lignes relevé ↔ paiements recorded (montant ± tolérance, date ± N jours, référence). Score 100 → auto ; sinon proposition en file manuelle. RBAC comptable/principal.
+        Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "Résultat du matching (auto_matched, proposed, pending + état)"
+        '200':
+          description: Résultat du matching (auto_matched, proposed, pending + état)
           content:
             application/json:
               schema:
@@ -33813,71 +35205,83 @@ paths:
                   data:
                     type: object
                     properties:
-                      auto_matched: { type: integer }
-                      proposed: { type: integer }
-                      pending: { type: integer }
-                      matched_lines: { type: integer }
-                      pending_lines: { type: integer }
-                      closing_gap: { type: number, nullable: true }
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                      auto_matched:
+                        type: integer
+                      proposed:
+                        type: integer
+                      pending:
+                        type: integer
+                      matched_lines:
+                        type: integer
+                      pending_lines:
+                        type: integer
+                      closing_gap:
+                        type: number
+                        nullable: true
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/{statement}:
     get:
-      tags: ["Accounting"]
-      summary: "Détail d'un relevé (avec lignes)"
-      description: "Relevé du tenant avec ses lignes. 404 cross-tenant (fail-closed). RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Détail d'un relevé (avec lignes)
+      description: 'Relevé du tenant avec ses lignes. 404 cross-tenant (fail-closed). RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       parameters:
-        - name: statement
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      - name: statement
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
       responses:
-        "200":
-          description: "Relevé détaillé"
+        '200':
+          description: Relevé détaillé
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/BankStatement"
-        "404":
-          description: "Relevé introuvable (ou autre tenant)"
-          $ref: "#/components/responses/Error404"
-
+                    $ref: '#/components/schemas/BankStatement'
+        '404':
+          description: Relevé introuvable (ou autre tenant)
+          $ref: '#/components/responses/Error404'
   /accounting/bank-statements/import:
     post:
-      tags: ["Accounting"]
-      summary: "Importer un relevé bancaire CSV"
-      description: "Import CSV paramétrable (mapping par entreprise). Idempotent : ré-import refusé (409). Erreurs de ligne signalées dans errors[]. RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Importer un relevé bancaire CSV
+      description: 'Import CSV paramétrable (mapping par entreprise). Idempotent : ré-import refusé (409). Erreurs de ligne signalées dans errors[]. RBAC comptable/principal. Issue #5435.'
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
-              required: [file, statement_period, import_reference]
+              required:
+              - file
+              - statement_period
+              - import_reference
               properties:
                 file:
                   type: string
                   format: binary
-                  description: "Fichier CSV (séparateur configurable, défaut ';')"
+                  description: Fichier CSV (séparateur configurable, défaut ';')
                 statement_period:
                   type: string
-                  pattern: "^\\d{4}-\\d{2}$"
-                  description: "Période du relevé, ex. 2026-08"
+                  pattern: ^\d{4}-\d{2}$
+                  description: Période du relevé, ex. 2026-08
                 import_reference:
                   type: string
-                  description: "Référence externe d'import (unicité avec la période)"
+                  description: Référence externe d'import (unicité avec la période)
       responses:
-        "201":
-          description: "Relevé importé (imported lignes, skipped, errors par ligne)"
+        '201':
+          description: Relevé importé (imported lignes, skipped, errors par ligne)
           content:
             application/json:
               schema:
@@ -33887,39 +35291,48 @@ paths:
                     type: object
                     properties:
                       statement:
-                        $ref: "#/components/schemas/BankStatement"
-                      imported: { type: integer }
-                      skipped: { type: integer }
+                        $ref: '#/components/schemas/BankStatement'
+                      imported:
+                        type: integer
+                      skipped:
+                        type: integer
                       errors:
                         type: array
                         items:
                           type: object
                           properties:
-                            line: { type: integer }
-                            error: { type: string }
-        "409":
-          description: "Relevé déjà importé pour cette période (BANK_STATEMENT_DUPLICATE_IMPORT)"
-          $ref: "#/components/responses/Error409"
-        "422":
-          description: "En-tête invalide ou validation échouée (BANK_STATEMENT_IMPORT_FORMAT)"
-          $ref: "#/components/responses/Error422"
-
+                            line:
+                              type: integer
+                            error:
+                              type: string
+        '409':
+          description: Relevé déjà importé pour cette période (BANK_STATEMENT_DUPLICATE_IMPORT)
+          $ref: '#/components/responses/Error409'
+        '422':
+          description: En-tête invalide ou validation échouée (BANK_STATEMENT_IMPORT_FORMAT)
+          $ref: '#/components/responses/Error422'
   /accounting/bank-statements:
     get:
-      tags: ["Accounting"]
-      summary: "Lister les relevés bancaires"
-      description: "Relevés du tenant (filtre status). RBAC comptable/principal. Issue #5435."
+      tags:
+      - Accounting
+      summary: Lister les relevés bancaires
+      description: 'Relevés du tenant (filtre status). RBAC comptable/principal. Issue #5435.'
       parameters:
-        - name: status
-          in: query
-          required: false
-          description: "Filtre par statut (imported, reconciling, reconciled)."
-          schema: { type: string, enum: [imported, reconciling, reconciled] }
+      - name: status
+        in: query
+        required: false
+        description: Filtre par statut (imported, reconciling, reconciled).
+        schema:
+          type: string
+          enum:
+          - imported
+          - reconciling
+          - reconciled
       security:
-        - BearerAuth: []
+      - BearerAuth: []
       responses:
-        "200":
-          description: "Liste des relevés"
+        '200':
+          description: Liste des relevés
           content:
             application/json:
               schema:
@@ -33928,18 +35341,16 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/BankStatement"
-        "403":
-          description: "Rôle insuffisant (manager requis)"
-          $ref: "#/components/responses/Error403"
-
-
+                      $ref: '#/components/schemas/BankStatement'
+        '403':
+          description: Rôle insuffisant (manager requis)
+          $ref: '#/components/responses/Error403'
   /hr/candidates/{applicant}/hire:
     post:
       tags:
       - HR
       summary: Embauche d'un candidat (principal/RH)
-      description: "Convertit un candidat en employé (parcours candidat → employé, issue #5261). RBAC principal/RH."
+      description: 'Convertit un candidat en employé (parcours candidat → employé, issue #5261). RBAC principal/RH.'
       parameters:
       - name: applicant
         in: path
@@ -33965,7 +35376,6 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-
   /voice/tts/{filename}:
     get:
       tags:
@@ -34214,6 +35624,162 @@ paths:
         '422':
           description: Payload invalide ou produit introuvable
 
+  /restaurant/delivery-riders:
+      summary: Liste des livreurs
+      - name: per_page
+          minimum: 1
+          maximum: 1000
+          description: Liste paginée
+                  data:
+                      $ref: '#/components/schemas/RestaurantDeliveryRider'
+          description: Contexte tenant absent, feature flag restaurantmanager inactif, ou permission manquante
+      summary: Création des livreurs
+              $ref: '#/components/schemas/RestaurantDeliveryRiderInput'
+          description: Créée
+          description: Validation ou invariant métier non respecté
+  /restaurant/delivery-riders/{restaurantDeliveryRider}:
+    - name: restaurantDeliveryRider
+      summary: Détail des livreurs
+          description: Détail
+          description: Ressource introuvable (ou autre tenant)
+    put:
+      summary: Modification des livreurs
+          description: Modifiée
+    delete:
+      summary: Suppression des livreurs
+        '204':
+          description: Supprimée
+  /restaurant/deliveries:
+      summary: Liste des livraisons
+      - name: status
+      - name: rider_id
+                      $ref: '#/components/schemas/RestaurantDelivery'
+      summary: Création d'une livraison (commande de type delivery)
+              $ref: '#/components/schemas/RestaurantDeliveryInput'
+          description: Livraison créée
+  /restaurant/deliveries/{restaurantDelivery}:
+    - name: restaurantDelivery
+      summary: Détail d'une livraison
+  /restaurant/deliveries/{restaurantDelivery}/assign:
+      summary: Assignation d'un livreur (pending → assigned)
+              - rider_id
+                rider_id:
+          description: Livraison assignée
+  /restaurant/deliveries/{restaurantDelivery}/out-for-delivery:
+      summary: Départ en tournée (assigned → out_for_delivery)
+          description: En tournée
+  /restaurant/deliveries/{restaurantDelivery}/deliver:
+      summary: Livraison effectuée (out_for_delivery → delivered, commande clôturée)
+                delivered_to_contact:
+                  nullable: true
+          description: Livrée
+  /restaurant/deliveries/{restaurantDelivery}/cancel:
+      summary: Annulation de la livraison (commande retourne à ready)
+          description: Annulée
+  /restaurant/loyalty-programs:
+      summary: Liste des programmes de fidélité
+          description: Liste
+                      $ref: '#/components/schemas/RestaurantLoyaltyProgram'
+      summary: Création du programme de fidélité
+              $ref: '#/components/schemas/RestaurantLoyaltyProgramInput'
+          description: Programme créé
+  /restaurant/loyalty-programs/{restaurantLoyaltyProgram}:
+    - name: restaurantLoyaltyProgram
+      summary: Mise à jour du programme de fidélité
+          description: Programme mis à jour
+  /restaurant/loyalty-customers:
+      summary: Liste des clients fidélité (tri par points)
+                      $ref: '#/components/schemas/RestaurantLoyaltyCustomer'
+      summary: Activation d'un client fidélité (opt-in RGPD requis)
+              $ref: '#/components/schemas/RestaurantLoyaltyCustomerInput'
+          description: Client fidélité activé
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/credit:
+    - name: restaurantLoyaltyCustomer
+      summary: Crédit de points d'une commande payée (idempotent)
+              - order_id
+                order_id:
+          description: Points crédités
+                  credited:
+                  already_credited:
+                    type: boolean
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/redeem:
+      summary: Utilisation de points (solde jamais négatif)
+              - points
+                points:
+          description: Points utilisés
+  /restaurant/promotions:
+      summary: Liste des promotions
+                      $ref: '#/components/schemas/RestaurantPromotion'
+      summary: Création des promotions
+              $ref: '#/components/schemas/RestaurantPromotionInput'
+  /restaurant/promotions/{restaurantPromotion}:
+    - name: restaurantPromotion
+      summary: Détail des promotions
+      summary: Modification des promotions
+      summary: Suppression des promotions
+  /restaurant/promotions/validate:
+      summary: Validation serveur d'un code promo (bornes, cumul)
+              - code
+              - order_total_minor
+                code:
+                order_total_minor:
+          description: Promo valide avec remise calculée
+                      title:
+                      discount_type:
+                      discount_minor:
+                      valid:
+  /restaurant/reports/sales:
+      summary: Ventes agrégées (CA, panier moyen, TVA, remises) (RESTO-701)
+      - name: from
+          format: date
+      - name: to
+          description: Agrégat calculé serveur
+                      period:
+                          from:
+                            format: date-time
+                          to:
+                      report:
+  /restaurant/reports/occupancy:
+      summary: Occupation des tables (sessions, durée, rotation) (RESTO-701)
+  /restaurant/reports/products:
+      summary: Top produits (quantité, CA) (RESTO-701)
+  /restaurant/reports/cogs:
+      summary: COGS sur la période (RESTO-701)
+  /restaurant/reports/pos:
+      summary: Clôtures de caisse (totaux, écarts) (RESTO-701)
+  /restaurant/dashboard/kpis:
+      summary: KPIs du jour (CA, panier moyen, rotation, top produits) — RESTO-703
+          description: KPIs cohérents avec les rapports détaillés
+                      date:
+                      revenue_minor:
+                      orders_count:
+                      avg_basket_minor:
+                      table_rotation:
+                      sessions_count:
+                      top_products:
+  /restaurant/reports/export:
+      summary: Génération d'un export CSV idempotent + URL signée (RESTO-702)
+              - report_type
+                report_type:
+                  - sales
+                  - products
+                  - cogs
+                  - pos
+          description: Export prêt (URL signée éphémère)
+                      export_id:
+                      filename:
+                      signed_url:
+                      reused:
+  /restaurant/reports/export/{export}:
+    - name: export
+      summary: Téléchargement de l'export (URL signée, TTL 10 min)
+      security: []
+      - name: signature
+      - name: expires
+          description: Fichier CSV
+            text/csv:
+          description: Signature invalide ou expirée
+          description: Export introuvable
 components:
   securitySchemes:
     RestaurantPublicShopTokenAuth:
@@ -34410,17 +35976,20 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
-
     Error409:
       description: Conflit — état déjà traité (idempotence)
       content:
         application/json:
           schema:
             type: object
-            required: [error, message]
+            required:
+            - error
+            - message
             properties:
-              error: { type: string }
-              message: { type: string }
+              error:
+                type: string
+              message:
+                type: string
     Validation422:
       description: Erreur de validation
       content:
@@ -40432,7 +42001,8 @@ components:
           format: date-time
     Compliance:
       type: object
-      description: 'Issue #1872/#2116 — niveau de confiance des règles pays appliquées à un calcul ou un bulletin. `level` : production | pilot | placeholder | unknown. `warning_key` pointe le catalogue i18n `payroll.compliance_warning_{level}` ; `source` référence la fiche compliance pays ; `verification_date` (nullable) = date de la dernière validation experte (registre docs/payroll/VALIDATION_EXPERTE.md).'
+      description: 'Issue #1872/#2116 — niveau de confiance des règles pays appliquées à un calcul ou un bulletin. `level` : production | pilot | placeholder | unknown. `warning_key` pointe le catalogue
+        i18n `payroll.compliance_warning_{level}` ; `source` référence la fiche compliance pays ; `verification_date` (nullable) = date de la dernière validation experte (registre docs/payroll/VALIDATION_EXPERTE.md).'
       properties:
         level:
           type: string
@@ -40519,7 +42089,8 @@ components:
         compliance:
           type: object
           nullable: true
-          description: 'Issue #2143/#1872 — bloc de conformité paie du pays (niveau, avertissement localisé, source légale, date de vérification experte). Null quand le pays n''est pas supporté par le moteur (rétro-compatible : aucun affichage côté client).'
+          description: 'Issue #2143/#1872 — bloc de conformité paie du pays (niveau, avertissement localisé, source légale, date de vérification experte). Null quand le pays n''est pas supporté par le moteur
+            (rétro-compatible : aucun affichage côté client).'
           properties:
             level:
               type: string
@@ -40850,7 +42421,8 @@ components:
           format: date-time
     PayrollCalculationAudit:
       type: object
-      description: 'Issue #1874 — enregistrement d''audit immuable d''un calcul de paie (run ou simulation) : contexte de règles (pays, période, version), paramètres d''entrée agrégés NON sensibles, résultats agrégés et statut de résolution — de quoi expliquer/reproduire/auditer un résultat sans exposer de données individuelles ni de secrets.'
+      description: 'Issue #1874 — enregistrement d''audit immuable d''un calcul de paie (run ou simulation) : contexte de règles (pays, période, version), paramètres d''entrée agrégés NON sensibles, résultats
+        agrégés et statut de résolution — de quoi expliquer/reproduire/auditer un résultat sans exposer de données individuelles ni de secrets.'
       properties:
         id:
           type: integer
@@ -40970,7 +42542,8 @@ components:
           format: date-time
     TaxRateChangeLog:
       type: object
-      description: 'Entrée de l''audit trail immuable (tax_rate_change_log) retournée par GET /tax-slabs/{id}/history et /social-contributions/{id}/history — aligné sur la réponse réelle des contrôleurs (issue #1926).'
+      description: 'Entrée de l''audit trail immuable (tax_rate_change_log) retournée par GET /tax-slabs/{id}/history et /social-contributions/{id}/history — aligné sur la réponse réelle des contrôleurs
+        (issue #1926).'
       properties:
         id:
           type: integer
@@ -41373,7 +42946,9 @@ components:
           format: date-time
     SocialContribution:
       type: object
-      description: 'ATTENTION (voir issue trackee dans ce depot) : SocialContributionResource expose employee_rate/employer_rate/is_active mais le modele SocialContribution n''a que rate (unique, selon type=employee|employer) et pas de colonne is_active ; ces trois champs sont donc toujours null en pratique tant que la Resource n''est pas corrigee pour refleter les vraies colonnes du modele (rate, type, cap).'
+      description: 'ATTENTION (voir issue trackee dans ce depot) : SocialContributionResource expose employee_rate/employer_rate/is_active mais le modele SocialContribution n''a que rate (unique, selon
+        type=employee|employer) et pas de colonne is_active ; ces trois champs sont donc toujours null en pratique tant que la Resource n''est pas corrigee pour refleter les vraies colonnes du modele (rate,
+        type, cap).'
       properties:
         id:
           type: integer
@@ -42338,62 +43913,135 @@ components:
     ExpenseAccountingEntry:
       type: object
       properties:
-        id: { type: integer }
-        expense_claim_id: { type: integer }
-        employee_id: { type: integer, nullable: true }
-        date: { type: string, format: date }
-        account_code: { type: string }
-        account_label: { type: string }
-        debit: { type: number, format: float }
-        credit: { type: number, format: float }
-        reference: { type: string }
-        created_by: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
+        id:
+          type: integer
+        expense_claim_id:
+          type: integer
+        employee_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        reference:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     PayrollAccountingEntry:
       type: object
       properties:
-        id: { type: integer }
-        payroll_run_id: { type: integer }
-        pay_slip_id: { type: integer, nullable: true }
-        employee_id: { type: integer, nullable: true }
-        date: { type: string, format: date }
-        account_code: { type: string }
-        account_label: { type: string }
-        debit: { type: number, format: float }
-        credit: { type: number, format: float }
-        reference: { type: string }
-        created_by: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
+        id:
+          type: integer
+        payroll_run_id:
+          type: integer
+        pay_slip_id:
+          type: integer
+          nullable: true
+        employee_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+          format: float
+        credit:
+          type: number
+          format: float
+        reference:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     PayrollPaymentOrder:
       type: object
       properties:
-        id: { type: integer }
-        payroll_run_id: { type: integer }
-        status: { type: string, enum: [prepared, executed, reconciled] }
-        format: { type: string }
-        file_path: { type: string, nullable: true }
-        total_amount: { type: number, format: float }
-        transfer_count: { type: integer }
-        bank_reference: { type: string, nullable: true }
-        executed_by: { type: integer, nullable: true }
-        executed_at: { type: string, format: date-time, nullable: true }
-        reconciled_at: { type: string, format: date-time, nullable: true }
-        created_by: { type: integer, nullable: true }
+        id:
+          type: integer
+        payroll_run_id:
+          type: integer
+        status:
+          type: string
+          enum:
+          - prepared
+          - executed
+          - reconciled
+        format:
+          type: string
+        file_path:
+          type: string
+          nullable: true
+        total_amount:
+          type: number
+          format: float
+        transfer_count:
+          type: integer
+        bank_reference:
+          type: string
+          nullable: true
+        executed_by:
+          type: integer
+          nullable: true
+        executed_at:
+          type: string
+          format: date-time
+          nullable: true
+        reconciled_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_by:
+          type: integer
+          nullable: true
         items:
           type: array
           items:
             type: object
             properties:
-              id: { type: integer }
-              payment_order_id: { type: integer }
-              employee_id: { type: integer }
-              net_amount: { type: number, format: float }
-              iban: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-        updated_at: { type: string, format: date-time, nullable: true }
-
+              id:
+                type: integer
+              payment_order_id:
+                type: integer
+              employee_id:
+                type: integer
+              net_amount:
+                type: number
+                format: float
+              iban:
+                type: string
+                nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
     AccountingActivation:
       type: object
       properties:
@@ -42409,37 +44057,65 @@ components:
           nullable: true
     AccountingDashboard:
       type: object
-      description: 'Synthèse de pilotage du dashboard comptable (issue #5230, BC-22). Le bloc snapshot expose la fraîcheur du read model (BC-22-D10, issue #6243).'
       properties:
+        totals:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+        overdue_count:
+          type: integer
+        period_from:
+          type: string
+          format: date
+        period_to:
+          type: string
+          format: date
         period:
           type: object
           properties:
-            from: { type: string, format: date }
-            to: { type: string, format: date }
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
         invoices:
           type: object
           description: 'Factures émises (glossaire BC-22 : documents client émis sur la période).'
           properties:
-            count: { type: integer }
-            total_ttc: { type: number, format: double }
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              format: double
         collections:
           type: object
           description: 'Encaissements (glossaire BC-22 : paiements reçus sur la période).'
           properties:
-            count: { type: integer }
-            total: { type: number, format: double }
+            count:
+              type: integer
+            total:
+              type: number
+              format: double
         expenses:
           type: object
-          description: 'Dépenses fournisseurs (glossaire BC-22).'
+          description: Dépenses fournisseurs (glossaire BC-22).
           properties:
-            count: { type: integer }
-            total_ttc: { type: number, format: double }
+            count:
+              type: integer
+            total_ttc:
+              type: number
+              format: double
         outstanding:
           type: object
           description: 'Impayés (glossaire BC-22 : total_ttc > paid_amount) + aging.'
           properties:
-            count: { type: integer }
-            total_due: { type: number, format: double }
+            count:
+              type: integer
+            total_due:
+              type: number
+              format: double
             aging:
               type: array
               items:
@@ -42447,31 +44123,57 @@ components:
                 properties:
                   bucket:
                     type: string
-                    enum: [0_30, 31_60, 61_90, 90_plus]
-                  count: { type: integer }
-                  total_due: { type: number, format: double }
+                    enum:
+                    - 24
+                    - 3160
+                    - 6190
+                    - 90_plus
+                  count:
+                    type: integer
+                  total_due:
+                    type: number
+                    format: double
             list:
               type: array
               items:
                 type: object
                 properties:
-                  id: { type: integer }
-                  number: { type: string }
-                  contact: { type: string }
-                  issue_date: { type: string, format: date, nullable: true }
-                  due_date: { type: string, format: date, nullable: true }
-                  days_late: { type: integer }
-                  total_ttc: { type: number, format: double }
-                  paid_amount: { type: number, format: double }
-                  due_amount: { type: number, format: double }
-                  status: { type: string }
+                  id:
+                    type: integer
+                  number:
+                    type: string
+                  contact:
+                    type: string
+                  issue_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  due_date:
+                    type: string
+                    format: date
+                    nullable: true
+                  days_late:
+                    type: integer
+                  total_ttc:
+                    type: number
+                    format: double
+                  paid_amount:
+                    type: number
+                    format: double
+                  due_amount:
+                    type: number
+                    format: double
+                  status:
+                    type: string
         snapshot:
           type: object
-          description: 'Fraîcheur du read model — live tant qu aucun snapshot n est activé, sinon source snapshot + version + refreshed_at.'
+          description: Fraîcheur du read model — live tant qu aucun snapshot n est activé, sinon source snapshot + version + refreshed_at.
           properties:
             source:
               type: string
-              enum: [live, snapshot]
+              enum:
+              - live
+              - snapshot
             report:
               type: string
               nullable: true
@@ -42482,33 +44184,53 @@ components:
               type: string
               format: date-time
               nullable: true
-
-
+      description: 'Synthèse de pilotage du dashboard comptable (issue #5230, BC-22). Le bloc snapshot expose la fraîcheur du read model (BC-22-D10, issue #6243).'
     AttendanceDayClosure:
       type: object
       properties:
-        id: { type: integer }
-        employee_id: { type: integer }
+        id:
+          type: integer
+        employee_id:
+          type: integer
         employee:
           type: object
           nullable: true
           properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        date: { type: string, format: date }
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        date:
+          type: string
+          format: date
         status:
           type: string
-          enum: [locked, validated]
-        locked_by: { type: integer, nullable: true }
-        locked_at: { type: string, format: date-time, nullable: true }
-        validated_by: { type: integer, nullable: true }
-        validated_at: { type: string, format: date-time, nullable: true }
-        note: { type: string, nullable: true }
-
+          enum:
+          - locked
+          - validated
+        locked_by:
+          type: integer
+          nullable: true
+        locked_at:
+          type: string
+          format: date-time
+          nullable: true
+        validated_by:
+          type: integer
+          nullable: true
+        validated_at:
+          type: string
+          format: date-time
+          nullable: true
+        note:
+          type: string
+          nullable: true
     TwoFactorStatusResponse:
       type: object
-      required: [enabled]
+      required:
+      - enabled
       properties:
         enabled:
           type: boolean
@@ -42517,7 +44239,9 @@ components:
           nullable: true
     TwoFactorEnrollResponse:
       type: object
-      required: [secret, recovery_codes]
+      required:
+      - secret
+      - recovery_codes
       properties:
         secret:
           type: string
@@ -42529,7 +44253,8 @@ components:
             type: string
     TwoFactorVerifyRequest:
       type: object
-      required: [code]
+      required:
+      - code
       properties:
         code:
           type: string
@@ -42537,25 +44262,29 @@ components:
           type: string
     TwoFactorVerifyResponse:
       type: object
-      required: [verified]
+      required:
+      - verified
       properties:
         verified:
           type: boolean
     TwoFactorConfirmResponse:
       type: object
-      required: [confirmed]
+      required:
+      - confirmed
       properties:
         confirmed:
           type: boolean
     TwoFactorDisableResponse:
       type: object
-      required: [disabled]
+      required:
+      - disabled
       properties:
         disabled:
           type: boolean
     TwoFactorRecoveryCodesResponse:
       type: object
-      required: [recovery_codes]
+      required:
+      - recovery_codes
       properties:
         recovery_codes:
           type: array
@@ -42574,7 +44303,10 @@ components:
           type: string
         status:
           type: string
-          enum: [pending, partially_reconciled, reconciled]
+          enum:
+          - pending
+          - partially_reconciled
+          - reconciled
         opening_balance:
           type: number
           format: double
@@ -42617,7 +44349,10 @@ components:
           nullable: true
         status:
           type: string
-          enum: [pending, matched, manual]
+          enum:
+          - pending
+          - matched
+          - manual
         matched_payment_id:
           type: integer
           nullable: true
@@ -42627,11 +44362,12 @@ components:
         proposed_payment_id:
           type: integer
           nullable: true
-          description: Paiement candidat proposé par le matching auto (issue #5523)
-
+          description: Paiement candidat proposé par le matching auto (issue
     FuelMeterReadingPayload:
       type: object
-      required: [reading_value_minor, idempotency_key]
+      required:
+      - reading_value_minor
+      - idempotency_key
       properties:
         reading_value_minor:
           type: integer
@@ -42639,7 +44375,11 @@ components:
           description: Valeur cumulee en unites mineures entieres (ex. centilitres)
         reading_unit:
           type: string
-          enum: [l, ml, gal, ft3]
+          enum:
+          - l
+          - ml
+          - gal
+          - ft3
           default: l
         captured_at:
           type: string
@@ -42664,22 +44404,283 @@ components:
         reading:
           type: object
           properties:
-            id: {type: integer}
-            meter_id: {type: integer}
-            reading_value_minor: {type: integer}
-            reading_unit: {type: string}
-            captured_at_utc: {type: string, format: date-time}
-            status: {type: string}
-            source_code: {type: string}
+            id:
+              type: integer
+            meter_id:
+              type: integer
+            reading_value_minor:
+              type: integer
+            reading_unit:
+              type: string
+            captured_at_utc:
+              type: string
+              format: date-time
+            status:
+              type: string
+            source_code:
+              type: string
         interval:
           type: object
           nullable: true
           properties:
-            id: {type: integer}
-            delta_minor: {type: integer}
-            calculation_status: {type: string}
-            interval_seconds: {type: integer}
+            id:
+              type: integer
+            delta_minor:
+              type: integer
+            calculation_status:
+              type: string
+            interval_seconds:
+              type: integer
         replayed:
           type: boolean
         correlation_id:
           type: string
+    RestaurantStockLevel:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        branch_id:
+        ingredient_id:
+        ingredient_name:
+          type: string
+          nullable: true
+        quantity:
+          type: number
+        avg_cost_minor:
+        reorder_level:
+        alert_threshold:
+        created_at:
+          format: date-time
+        updated_at:
+    RestaurantStockLevelInput:
+      required:
+      - branch_id
+      - ingredient_id
+          minimum: 0
+    RestaurantInventoryMovement:
+        stock_level_id:
+        quantity_delta:
+        reason_code:
+          enum:
+          - sale
+          - receiving
+          - count
+          - adjustment
+          - waste
+          - transfer
+        reference_type:
+        reference_id:
+        note_redacted:
+        user_id:
+    RestaurantInventoryMovementInput:
+      - quantity_delta
+      - reason_code
+    RestaurantPurchaseOrder:
+        reference:
+        supplier_id:
+        status:
+          - draft
+          - sent
+          - received
+          - cancelled
+        expected_at:
+        received_at:
+        total_minor:
+        currency:
+          maxLength: 3
+        items:
+          type: array
+            $ref: '#/components/schemas/RestaurantPurchaseOrderItem'
+    RestaurantPurchaseOrderInput:
+      - supplier_id
+      - items
+          format: date
+            $ref: '#/components/schemas/RestaurantPurchaseOrderItemInput'
+    RestaurantPurchaseOrderItem:
+        purchase_order_id:
+        unit_price_minor:
+        line_total_minor:
+    RestaurantPurchaseOrderItemInput:
+      - quantity
+      - unit_price_minor
+          exclusiveMinimum: true
+    RestaurantReceiving:
+    RestaurantReceivingInput:
+    RestaurantInventoryCount:
+        counted_at:
+          - submitted
+          - approved
+        counted_by_user_id:
+        approved_by:
+        approved_at:
+            $ref: '#/components/schemas/RestaurantInventoryCountItem'
+    RestaurantInventoryCountItem:
+        count_id:
+        expected_qty:
+        counted_qty:
+        variance_qty:
+    RestaurantReservation:
+        customer_contact_id:
+        contact_name:
+        contact_phone:
+        reserved_at:
+        covers:
+        table_id:
+        zone_id:
+          - pending
+          - confirmed
+          - seated
+          - completed
+          - no_show
+        deposit_minor:
+        notes_redacted:
+        idempotency_key:
+    RestaurantReservationInput:
+      - contact_name
+      - contact_phone
+      - reserved_at
+      - covers
+          minimum: 1
+          maximum: 50
+    RestaurantDeliveryZone:
+        company_id:
+          format: uuid
+        name:
+        fee_minor:
+        min_order_minor:
+    RestaurantDeliveryZoneInput:
+      - name
+      - fee_minor
+          maxLength: 160
+    RestaurantBill:
+            $ref: '#/components/schemas/RestaurantOrderItem'
+        bill:
+            subtotal_minor:
+            tax_minor:
+            discount_minor:
+            promotion_code:
+    RestaurantBranch:
+        code:
+        address:
+        city:
+        phone:
+        timezone:
+    RestaurantCategory:
+        color:
+        sort_order:
+    RestaurantHour:
+        day_of_week:
+        opens_at:
+        closes_at:
+        is_closed:
+          type: boolean
+    RestaurantIngredient:
+        unit_code:
+    RestaurantKitchenOrder:
+        order_type:
+              product_id:
+              line_index:
+    RestaurantMenu:
+        price_minor:
+        starts_at:
+        ends_at:
+    RestaurantMenuItem:
+        menu_id:
+        position:
+        is_optional:
+    RestaurantOrder:
+        pos_session_id:
+        rider_id:
+        source:
+        version:
+        payments:
+            $ref: '#/components/schemas/RestaurantOrderPayment'
+    RestaurantOrderItem:
+        order_id:
+        tax_rate_id:
+    RestaurantOrderPayment:
+        provider_code:
+        amount_minor:
+        paid_at:
+        provider_reference:
+        tip_minor:
+    RestaurantPosSession:
+        opened_at:
+        closed_at:
+        opened_by_user_id:
+        closed_by_user_id:
+        opening_cash_minor:
+        expected_cash_minor:
+        counted_cash_minor:
+        variance_minor:
+        variance_reason:
+    RestaurantProduct:
+        category_id:
+        description_redacted:
+        cost_minor:
+        is_available:
+    RestaurantProductIngredient:
+    RestaurantRefund:
+        payment_id:
+        reason_text:
+        refunded_by_user_id:
+          - processed
+          - rejected
+    RestaurantSupplier:
+        email:
+    RestaurantTable:
+        label:
+        capacity:
+        min_covers:
+        is_mergeable:
+    RestaurantTableSession:
+    RestaurantTaxRate:
+        rate_bps:
+        is_default:
+    RestaurantUnit:
+    RestaurantZone:
+      - code
+      - title
+      - discount_type
+      - value_minor
+        title:
+        discount_type:
+          - percent
+          - amount
+        value_minor:
+        max_uses:
+        is_active:
+    RestaurantDeliveryRider:
+        employee_id:
+        vehicle_code:
+    RestaurantDeliveryRiderInput:
+    RestaurantDelivery:
+          - assigned
+          - out_for_delivery
+          - delivered
+        delivered_at:
+        delivered_to_contact:
+    RestaurantDeliveryInput:
+      - order_id
+    RestaurantLoyaltyProgram:
+        points_per_amount_minor:
+        redeem_rate_minor:
+    RestaurantLoyaltyProgramInput:
+      - points_per_amount_minor
+      - redeem_rate_minor
+    RestaurantLoyaltyCustomer:
+        points:
+        tier_code:
+        opted_in_at:
+    RestaurantLoyaltyCustomerInput:
+      - customer_contact_id
+      - opt_in
+        opt_in:
+          description: Opt-in RGPD obligatoire
+    RestaurantPromotion:
+        used_count:
+    RestaurantPromotionInput:
+          maxLength: 40
+          maxLength: 150

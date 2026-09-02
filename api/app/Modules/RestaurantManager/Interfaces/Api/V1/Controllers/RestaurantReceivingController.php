@@ -82,4 +82,20 @@ class RestaurantReceivingController extends Controller
 
         return (new RestaurantReceivingResource($receiving))->response()->setStatusCode(201);
     }
+
+    public function show(Request $request, RestaurantReceiving $restaurantReceiving): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantReceiving->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('view', $restaurantReceiving)) {
+            abort(403);
+        }
+
+        return (new RestaurantReceivingResource($restaurantReceiving))->response();
+    }
 }

@@ -12,6 +12,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use RuntimeException;
+use Carbon\Carbon;
 
 /**
  * RESTO-601 (#6206) / RESTO-602 (#6207) / RESTO-603 (#6208) — Réservations.
@@ -214,4 +215,6 @@ final class RestaurantReservationService
             ->whereIn('status', self::OCCUPYING_STATUSES)
             ->whereBetween('reserved_at', [$windowStart, $windowEnd]);
     }
+
+
 }

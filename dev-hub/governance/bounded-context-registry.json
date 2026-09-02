@@ -896,6 +896,165 @@
         "BC-20",
         "BC-24"
       ]
+    },
+    {
+      "code": "BC-15",
+      "name": "FUEL",
+      "context": "FuelStation",
+      "responsibility": "Stations, pompes, compteurs, sessions pompistes, photos/OCR, ventes, dépôts et bilans.",
+      "owner": "Agent 15 — BC-FUEL",
+      "priority": "P0",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Solutions/FuelStation",
+          "status": "planned"
+        },
+        {
+          "path": "api/app/Modules/FuelStation",
+          "status": "active"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Solutions\\FuelStation\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05",
+        "BC-14",
+        "BC-20"
+      ]
+    },
+    {
+      "code": "BC-16",
+      "name": "EDU",
+      "context": "EduManager",
+      "responsibility": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions.",
+      "owner": "Agent 16 — BC-EDU",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Solutions/EduManager",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Solutions\\EduManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-05",
+        "BC-14",
+        "BC-20"
+      ]
+    },
+    {
+      "code": "BC-19",
+      "name": "DEVICE",
+      "context": "Devices, Cameras & Edge",
+      "responsibility": "Appareils, kiosques, biométrie, synchronisation edge et politiques device.",
+      "owner": "Agent 19 — BC-DEVICE",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Cameras",
+          "status": "active"
+        },
+        {
+          "path": "api/app/Modules/EdgeSync",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/cameras.php"
+      ],
+      "migrations": [
+        "api/database/migrations/edge"
+      ],
+      "events": [
+        "App\\Modules\\Cameras\\Domain\\Events",
+        "App\\Modules\\EdgeSync\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-14"
+      ]
+    },
+    {
+      "code": "BC-24",
+      "name": "TRAVEL",
+      "context": "TravelAgency",
+      "responsibility": "Agences, compagnies, routes, trajets, réservations, passagers, billets, paiements, locations, hôtels, rapports.",
+      "owner": "Agent 24 — BC-TRAVEL",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/TravelAgency",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\TravelAgency\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-11",
+        "BC-13",
+        "BC-20"
+      ]
+    },
+    {
+      "code": "BC-26",
+      "name": "DELIVERY",
+      "context": "Delivery",
+      "responsibility": "Module de livraison dernier-kilomètre générique : livraisons/colis (sources manual/restaurant/retail/ecommerce/crm/field), tournées, livreurs, preuves (POD), suivi temps réel, règlement COD et rapports — activable par tout tenant (agence, restaurant, retail, e-commerce, pharmacie).",
+      "owner": "Agent 26 — BC-DELIVERY",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/Delivery",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\DeliveryAgency\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-05",
+        "BC-08",
+        "BC-11",
+        "BC-13",
+        "BC-14",
+        "BC-17",
+        "BC-18",
+        "BC-20",
+        "BC-22"
+      ]
     }
   ]
 }

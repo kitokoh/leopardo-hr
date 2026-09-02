@@ -46,7 +46,7 @@ export default function RestaurantDeliveryPage() {
       setLoyalty(l.data ?? []);
       setPromotions(p.data ?? []);
     } catch {
-      setError(t(locale, 'restaurant.del.loadError', 'Impossible de charger les données livraison/fidélité.'));
+      setError(t(locale, 'restaurant.del.loadError'));
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ export default function RestaurantDeliveryPage() {
       setForm({ branch_id: '', order_id: '', fee_minor: '' });
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t(locale, 'restaurant.del.createError', 'Erreur de création de la livraison.'));
+      setError(e instanceof Error ? e.message : t(locale, 'restaurant.del.createError'));
     }
   };
 
@@ -79,7 +79,7 @@ export default function RestaurantDeliveryPage() {
     try {
       let body: string | undefined;
       if (action === 'assign') {
-        const riderId = window.prompt(t(locale, 'restaurant.del.riderPrompt', 'ID du livreur à assigner :'));
+        const riderId = window.prompt(t(locale, 'restaurant.del.riderPrompt'));
         if (!riderId) return;
         body = JSON.stringify({ rider_id: Number(riderId) });
       }
@@ -98,12 +98,12 @@ export default function RestaurantDeliveryPage() {
     { key: 'zones' as const, label: t(locale, 'restaurant.del.tabZones', 'Zones') },
     { key: 'riders' as const, label: t(locale, 'restaurant.del.tabRiders', 'Livreurs') },
     { key: 'deliveries' as const, label: t(locale, 'restaurant.del.tabDeliveries', 'Livraisons') },
-    { key: 'loyalty' as const, label: t(locale, 'restaurant.del.tabLoyalty', 'Fidélité') },
+    { key: 'loyalty' as const, label: t(locale, 'restaurant.del.tabLoyalty') },
     { key: 'promotions' as const, label: t(locale, 'restaurant.del.tabPromos', 'Promotions') },
   ];
 
   return (
-    <ModulePageShell icon={Bike} title={t(locale, 'restaurant.del.title', 'Livraison & fidélité')} description={t(locale, 'restaurant.del.subtitle', 'Zones, livreurs, tournées, points, promotions')}>
+    <ModulePageShell icon={Bike} title={t(locale, 'restaurant.del.title')} description={t(locale, 'restaurant.del.subtitle')}>
       {error ? <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
       <div className="flex flex-wrap gap-2">
@@ -137,7 +137,7 @@ export default function RestaurantDeliveryPage() {
       {tab === 'riders' ? (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPhone', 'Téléphone')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colVehicle', 'Véhicule')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colActive', 'Actif')}</th></tr></thead>
+            <thead className="bg-slate-50"><tr><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colName', 'Nom')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colPhone')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colVehicle')}</th><th className="px-4 py-3 text-left font-semibold text-slate-700">{t(locale, 'restaurant.del.colActive', 'Actif')}</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {riders.map((r) => {
                 const row = r as { id: number; name: string; phone: string | null; vehicle_code: string | null; is_active: boolean };
@@ -163,7 +163,7 @@ export default function RestaurantDeliveryPage() {
               <input className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Commande ID (type delivery)" value={form.order_id} onChange={(e) => setForm({ ...form, order_id: e.target.value })} aria-label="Commande" />
               <input type="number" className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Frais (minor)" value={form.fee_minor} onChange={(e) => setForm({ ...form, fee_minor: e.target.value })} aria-label="Frais" />
               <button type="button" onClick={() => void createDelivery()} className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
-                {t(locale, 'restaurant.del.create', 'Créer')}
+                {t(locale, 'restaurant.del.create')}
               </button>
             </div>
           </div>
@@ -181,8 +181,8 @@ export default function RestaurantDeliveryPage() {
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2 text-xs font-medium">
                         {d.status === 'pending' ? <button className="text-blue-600 hover:underline" onClick={() => void transition(d.id, 'assign')}>{t(locale, 'restaurant.del.assign', 'Assigner')}</button> : null}
-                        {d.status === 'assigned' ? <button className="text-cyan-600 hover:underline" onClick={() => void transition(d.id, 'out-for-delivery')}>{t(locale, 'restaurant.del.out', 'En tournée')}</button> : null}
-                        {d.status === 'out_for_delivery' ? <button className="text-emerald-600 hover:underline" onClick={() => void transition(d.id, 'deliver')}>{t(locale, 'restaurant.del.deliver', 'Livrée')}</button> : null}
+                        {d.status === 'assigned' ? <button className="text-cyan-600 hover:underline" onClick={() => void transition(d.id, 'out-for-delivery')}>{t(locale, 'restaurant.del.out')}</button> : null}
+                        {d.status === 'out_for_delivery' ? <button className="text-emerald-600 hover:underline" onClick={() => void transition(d.id, 'deliver')}>{t(locale, 'restaurant.del.deliver')}</button> : null}
                         {['pending', 'assigned', 'out_for_delivery'].includes(d.status) ? <button className="text-red-600 hover:underline" onClick={() => void transition(d.id, 'cancel')}>{t(locale, 'restaurant.del.cancel', 'Annuler')}</button> : null}
                       </div>
                     </td>

@@ -16,7 +16,7 @@ import { t } from '@/lib/i18n/locale-catalog';
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active' },
-  { value: 'disabled', label: 'Désactivée' },
+  { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
 ];
 
 export default function RestaurantReferentialPage() {
@@ -26,7 +26,7 @@ export default function RestaurantReferentialPage() {
   const configs: Record<string, CrudConfig> = {
     branches: {
       endpoint: '/restaurant/branches',
-      title: t(locale, 'restaurant.ref.branches', 'Branches (établissements)'),
+      title: t(locale, 'restaurant.ref.branches'),
       searchKeys: ['code', 'name', 'city'],
       columns: [
         { key: 'code', label: 'Code' },
@@ -40,7 +40,7 @@ export default function RestaurantReferentialPage() {
         { name: 'name', label: 'Nom', type: 'text', required: true },
         { name: 'address', label: 'Adresse', type: 'text' },
         { name: 'city', label: 'Ville', type: 'text' },
-        { name: 'phone', label: 'Téléphone', type: 'text' },
+        { name: 'phone', label: t(locale, 'restaurant.ref.fieldPhone'), type: 'text' },
         { name: 'currency', label: 'Devise (3 lettres)', type: 'text' },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
@@ -72,20 +72,20 @@ export default function RestaurantReferentialPage() {
         { key: 'label', label: 'Table' },
         { key: 'branch_id', label: 'Branche' },
         { key: 'zone_id', label: 'Zone' },
-        { key: 'capacity', label: 'Capacité' },
+        { key: 'capacity', label: t(locale, 'restaurant.ref.fieldCapacity') },
         { key: 'status', label: 'Statut' },
       ],
       fields: [
         { name: 'branch_id', label: 'Branche ID', type: 'number', required: true },
         { name: 'zone_id', label: 'Zone ID', type: 'number' },
-        { name: 'label', label: 'Libellé', type: 'text', required: true },
-        { name: 'capacity', label: 'Capacité (couverts)', type: 'number', required: true, min: 1 },
+        { name: 'label', label: t(locale, 'restaurant.ref.fieldLabel'), type: 'text', required: true },
+        { name: 'capacity', label: t(locale, 'restaurant.ref.fieldCapacityCovers'), type: 'number', required: true, min: 1 },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
     },
     categories: {
       endpoint: '/restaurant/categories',
-      title: t(locale, 'restaurant.ref.categories', 'Catégories'),
+      title: t(locale, 'restaurant.ref.categories'),
       searchKeys: ['name'],
       columns: [
         { key: 'name', label: 'Nom' },
@@ -105,7 +105,7 @@ export default function RestaurantReferentialPage() {
       columns: [
         { key: 'code', label: 'Code' },
         { key: 'name', label: 'Nom' },
-        { key: 'category_id', label: 'Catégorie' },
+        { key: 'category_id', label: t(locale, 'restaurant.ref.fieldCategory') },
         { key: 'price_minor', label: 'Prix (minor)' },
         { key: 'is_available', label: 'Disponible' },
         { key: 'status', label: 'Statut' },
@@ -113,7 +113,7 @@ export default function RestaurantReferentialPage() {
       fields: [
         { name: 'code', label: 'Code', type: 'text', required: true },
         { name: 'name', label: 'Nom', type: 'text', required: true },
-        { name: 'category_id', label: 'Catégorie ID', type: 'number', required: true },
+        { name: 'category_id', label: t(locale, 'restaurant.ref.fieldCategoryId'), type: 'number', required: true },
         { name: 'price_minor', label: 'Prix (minor units)', type: 'number', required: true, min: 0 },
         { name: 'description_redacted', label: 'Description', type: 'textarea' },
         { name: 'is_available', label: 'Disponible', type: 'select', options: [{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }] },
@@ -122,35 +122,35 @@ export default function RestaurantReferentialPage() {
     },
     ingredients: {
       endpoint: '/restaurant/ingredients',
-      title: t(locale, 'restaurant.ref.ingredients', 'Ingrédients (matières)'),
+      title: t(locale, 'restaurant.ref.ingredients'),
       searchKeys: ['code', 'name'],
       columns: [
         { key: 'code', label: 'Code' },
         { key: 'name', label: 'Nom' },
-        { key: 'unit_code', label: 'Unité' },
-        { key: 'avg_cost_minor', label: 'Coût moyen' },
+        { key: 'unit_code', label: t(locale, 'restaurant.ref.fieldUnit') },
+        { key: 'avg_cost_minor', label: t(locale, 'restaurant.ref.fieldAvgCost') },
         { key: 'status', label: 'Statut' },
       ],
       fields: [
         { name: 'code', label: 'Code', type: 'text', required: true },
         { name: 'name', label: 'Nom', type: 'text', required: true },
-        { name: 'unit_code', label: 'Unité (kg/l/u/pce)', type: 'text', required: true },
-        { name: 'avg_cost_minor', label: 'Coût moyen (minor)', type: 'number', min: 0 },
+        { name: 'unit_code', label: t(locale, 'restaurant.ref.fieldUnitKg'), type: 'text', required: true },
+        { name: 'avg_cost_minor', label: t(locale, 'restaurant.ref.fieldAvgCostMinor'), type: 'number', min: 0 },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
     },
     units: {
       endpoint: '/restaurant/units',
-      title: t(locale, 'restaurant.ref.units', 'Unités'),
+      title: t(locale, 'restaurant.ref.units'),
       searchKeys: ['code', 'label'],
       columns: [
         { key: 'code', label: 'Code' },
-        { key: 'label', label: 'Libellé' },
+        { key: 'label', label: t(locale, 'restaurant.ref.fieldLabel') },
         { key: 'status', label: 'Statut' },
       ],
       fields: [
         { name: 'code', label: 'Code', type: 'text', required: true },
-        { name: 'label', label: 'Libellé', type: 'text', required: true },
+        { name: 'label', label: t(locale, 'restaurant.ref.fieldLabel'), type: 'text', required: true },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
     },
@@ -168,7 +168,7 @@ export default function RestaurantReferentialPage() {
         { name: 'code', label: 'Code', type: 'text', required: true },
         { name: 'name', label: 'Nom', type: 'text', required: true },
         { name: 'price_minor', label: 'Prix (minor)', type: 'number', required: true, min: 0 },
-        { name: 'starts_at', label: 'Début', type: 'datetime' },
+        { name: 'starts_at', label: t(locale, 'restaurant.ref.fieldStartsAt'), type: 'datetime' },
         { name: 'ends_at', label: 'Fin', type: 'datetime' },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
       ],
@@ -179,15 +179,15 @@ export default function RestaurantReferentialPage() {
       searchKeys: ['code', 'label'],
       columns: [
         { key: 'code', label: 'Code' },
-        { key: 'label', label: 'Libellé' },
+        { key: 'label', label: t(locale, 'restaurant.ref.fieldLabel') },
         { key: 'rate_bps', label: 'Taux (bps)' },
-        { key: 'is_default', label: 'Défaut' },
+        { key: 'is_default', label: t(locale, 'restaurant.ref.fieldDefault') },
       ],
       fields: [
         { name: 'code', label: 'Code', type: 'text', required: true },
-        { name: 'label', label: 'Libellé', type: 'text', required: true },
+        { name: 'label', label: t(locale, 'restaurant.ref.fieldLabel'), type: 'text', required: true },
         { name: 'rate_bps', label: 'Taux (points de base)', type: 'number', required: true, min: 0 },
-        { name: 'is_default', label: 'Par défaut', type: 'select', options: [{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }] },
+        { name: 'is_default', label: t(locale, 'restaurant.ref.fieldByDefault'), type: 'select', options: [{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }] },
       ],
     },
     suppliers: {
@@ -196,12 +196,12 @@ export default function RestaurantReferentialPage() {
       searchKeys: ['name', 'contact_phone'],
       columns: [
         { key: 'name', label: 'Nom' },
-        { key: 'contact_phone', label: 'Téléphone' },
+        { key: 'contact_phone', label: t(locale, 'restaurant.ref.fieldPhone') },
         { key: 'status', label: 'Statut' },
       ],
       fields: [
         { name: 'name', label: 'Nom', type: 'text', required: true },
-        { name: 'contact_phone', label: 'Téléphone', type: 'text' },
+        { name: 'contact_phone', label: t(locale, 'restaurant.ref.fieldPhone'), type: 'text' },
         { name: 'email', label: 'Email', type: 'text' },
         { name: 'address', label: 'Adresse', type: 'text' },
         { name: 'status', label: 'Statut', type: 'select', options: STATUS_OPTIONS },
@@ -216,14 +216,14 @@ export default function RestaurantReferentialPage() {
         { key: 'day_of_week', label: 'Jour' },
         { key: 'opens_at', label: 'Ouverture' },
         { key: 'closes_at', label: 'Fermeture' },
-        { key: 'is_closed', label: 'Fermé' },
+        { key: 'is_closed', label: t(locale, 'restaurant.ref.fieldClosed') },
       ],
       fields: [
         { name: 'branch_id', label: 'Branche ID', type: 'number', required: true },
         { name: 'day_of_week', label: 'Jour (0-6)', type: 'number', required: true, min: 0 },
         { name: 'opens_at', label: 'Ouverture (HH:MM)', type: 'text' },
         { name: 'closes_at', label: 'Fermeture (HH:MM)', type: 'text' },
-        { name: 'is_closed', label: 'Fermé', type: 'select', options: [{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }] },
+        { name: 'is_closed', label: t(locale, 'restaurant.ref.fieldClosed'), type: 'select', options: [{ value: 'true', label: 'Oui' }, { value: 'false', label: 'Non' }] },
       ],
     },
   };
@@ -232,10 +232,10 @@ export default function RestaurantReferentialPage() {
     { key: 'branches', label: t(locale, 'restaurant.ref.tabBranches', 'Branches') },
     { key: 'zones', label: t(locale, 'restaurant.ref.tabZones', 'Zones') },
     { key: 'tables', label: t(locale, 'restaurant.ref.tabTables', 'Tables') },
-    { key: 'categories', label: t(locale, 'restaurant.ref.tabCategories', 'Catégories') },
+    { key: 'categories', label: t(locale, 'restaurant.ref.tabCategories') },
     { key: 'products', label: t(locale, 'restaurant.ref.tabProducts', 'Produits') },
-    { key: 'ingredients', label: t(locale, 'restaurant.ref.tabIngredients', 'Ingrédients') },
-    { key: 'units', label: t(locale, 'restaurant.ref.tabUnits', 'Unités') },
+    { key: 'ingredients', label: t(locale, 'restaurant.ref.tabIngredients') },
+    { key: 'units', label: t(locale, 'restaurant.ref.tabUnits') },
     { key: 'menus', label: t(locale, 'restaurant.ref.tabMenus', 'Menus') },
     { key: 'taxRates', label: t(locale, 'restaurant.ref.tabTaxRates', 'TVA') },
     { key: 'suppliers', label: t(locale, 'restaurant.ref.tabSuppliers', 'Fournisseurs') },
@@ -245,8 +245,8 @@ export default function RestaurantReferentialPage() {
   return (
     <ModulePageShell
       icon={BookOpen}
-      title={t(locale, 'restaurant.ref.title', 'Référentiel restaurant')}
-      description={t(locale, 'restaurant.ref.subtitle', 'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs')}
+      title={t(locale, 'restaurant.ref.title')}
+      description={t(locale, 'restaurant.ref.subtitle')}
     >
       <div className="flex flex-wrap gap-2">
         {tabs.map((tb) => (

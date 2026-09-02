@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Application\Actions\TransitionOrderAction;
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantOutboxConsumer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 
 /**
  * RESTO-808 (#6229) — Consommateur `restaurant.order.created.v1` : notifie
@@ -65,4 +66,6 @@ final class KitchenOrderNotificationConsumer implements RestaurantOutboxConsumer
             ], ['app', 'push']);
         }
     }
+
+
 }
