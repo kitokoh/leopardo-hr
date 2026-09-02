@@ -483,6 +483,11 @@ jobs:
 
           dev-hub/tools/check-phpstan-baseline-debt.sh guard "${base_sha}" "${head_sha}" api
 
+      - name: Check layer purity — Domain/Application vs Application/Infrastructure + facades (issue #6568)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        run: |
+          bash dev-hub/tools/check-layer-purity.sh api
+
   frontend-lint:
     needs: detect-changes
     timeout-minutes: 15

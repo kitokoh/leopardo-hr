@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Marketing\Application\DTOs;
+namespace App\Modules\Marketing\Domain\DTOs;
 
 final class CreateMarketingLeadDTO
 {
