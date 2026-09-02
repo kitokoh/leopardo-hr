@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-902 (#6105) — Représentation API d'un commentaire.
@@ -32,4 +33,6 @@ class TravelCommentResource extends JsonResource
             'updated_at' => $this->updated_at,
         ];
     }
+
+
 }

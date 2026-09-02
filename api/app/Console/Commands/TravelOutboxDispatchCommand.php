@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Throwable;
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;use Illuminate\Database\Query\Builder;use Illuminate\Support\Facades\DB;
 
 /**
  * travel:outbox-dispatch — Consomme l'outbox des événements TravelAgency
@@ -138,5 +139,103 @@ class TravelOutboxDispatchCommand extends Command
             'last_error' => $e->getMessage(),
             'available_at' => now()->addMinutes($backoffMinutes),
         ])->save();
+    }
+
+    private function claimBatch(int $limit): array
+    {
+        $ids = DB::table('travel_outbox_events')
+            ->where(function (Builder $query): void {
+                $query->where('status', TravelOutboxEvent::STATUS_PENDING)
+                    ->where('available_at', '<=', now())
+                    ->orWhere(function (Builder $query): void {
+                        $query->where('status', TravelOutboxEvent::STATUS_PROCESSING)
+                            ->where('updated_at', '<', now()->subMinutes(self::PROCESSING_LEASE_MINUTES));
+                    });
+            })
+            ->orderBy('id')
+            ->limit($limit)
+            ->pluck('id')
+            ->all();
+
+        $claimed = [];
+        foreach ($ids as $id) {
+            $updated = DB::table('travel_outbox_events')
+                ->where('id', $id)
+                ->whereIn('status', [TravelOutboxEvent::STATUS_PENDING, TravelOutboxEvent::STATUS_PROCESSING])
+                ->update(['status' => TravelOutboxEvent::STATUS_PROCESSING, 'updated_at' => now()]);
+
+            if ($updated === 1) {
+                $claimed[] = $id;
+            }
+        }
+
+        return array_map('intval', $claimed);
+    }
+
+
+    private function processEvent(int $eventId): void
+    {
+        /** @var TravelOutboxEvent|null $event */
+        $event = TravelOutboxEvent::query()->find($eventId);
+
+        if (! $event instanceof TravelOutboxEvent) {
+            return;
+        }
+
+        $consumer = $this->registry->consumerFor($event->event_type);
+
+        if ($consumer === null) {
+            $this->deadLetter($event, 'no_consumer');
+
+            return;
+        }
+
+        try {
+            /** @var Company $company */
+            $company = Company::query()->findOrFail($event->company_id);
+
+            // Contexte tenant obligatoire : le consommateur ne voit JAMAIS un
+            // autre tenant (cross-tenant structurellement refusé).
+            $this->tenants->withinTenant(
+                $company,
+                fn () => $consumer->handle($event->event_type, $event->payload_redacted)
+            );
+
+            $event->forceFill([
+                'status' => TravelOutboxEvent::STATUS_PUBLISHED,
+                'attempts' => $event->attempts + 1,
+                'processed_at' => now(),
+                'last_error' => null,
+            ])->save();
+        } catch (PermanentTravelOutboxException $e) {
+            $this->deadLetter($event, 'permanent: '.$e->getMessage());
+        } catch (Throwable $e) {
+            // Transitoire par défaut : retry avec backoff (borné par MAX_ATTEMPTS).
+            $this->retry($event, $e->getMessage());
+        }
+    }
+
+
+    private function retry(TravelOutboxEvent $event, string $error): void
+    {
+        $attempts = $event->attempts + 1;
+
+        if ($attempts >= TravelOutboxEvent::MAX_ATTEMPTS) {
+            $this->deadLetter($event, $error);
+
+            return;
+        }
+
+        // Backoff exponentiel + jitter borné : 10s, ~20s, ~40s, ~80s…
+        $backoffSeconds = min(300, (10 * (2 ** ($attempts - 1))) + random_int(0, 5));
+
+        $event->forceFill([
+            'status' => TravelOutboxEvent::STATUS_PENDING,
+            'attempts' => $attempts,
+            'available_at' => now()->addSeconds($backoffSeconds),
+            'last_error' => $error,
+        ])->save();
+
+        $this->warn("[travel:outbox-dispatch] #{$event->id} transitoire (tentative {$attempts}) : {$error}");
     }
 }

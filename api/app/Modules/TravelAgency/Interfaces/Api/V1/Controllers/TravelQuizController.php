@@ -17,6 +17,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestion
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\TravelAgency\Application\Actions\ParticipateInTravelQuizAction;use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
 
 /**
  * TRAVEL-904 (#6107) — Quiz & jeu-concours.
@@ -276,5 +277,47 @@ class TravelQuizController extends Controller
             ]);
 
         return response()->json(['data' => $participations]);
+    }
+
+
+    public function destroy(Request $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelQuiz->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('delete', $travelQuiz)) {
+            abort(403);
+        }
+
+        $travelQuiz->delete();
+
+        return new JsonResponse(null, 204);
+    }
+
+
+    public function participations(Request $request, TravelQuiz $travelQuiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelQuiz->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('manage', $travelQuiz)) {
+            abort(403);
+        }
+
+        $rows = TravelQuizParticipation::query()
+            ->where('company_id', $actor->company_id)
+            ->where('quiz_id', $travelQuiz->id)
+            ->orderByDesc('score')
+            ->get(['id', 'quiz_id', 'participant_type', 'participant_id', 'score', 'status', 'completed_at']);
+
+        return new JsonResponse(['data' => $rows]);
     }
 }

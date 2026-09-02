@@ -10,6 +10,7 @@ use Database\Factories\TravelOfficeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Bureau de vente de l'agence (TRAVEL-203, issue #6016).
@@ -44,4 +45,6 @@ class TravelOffice extends Model
     {
         return $this->belongsTo(TravelCity::class, 'city_id');
     }
+
+
 }

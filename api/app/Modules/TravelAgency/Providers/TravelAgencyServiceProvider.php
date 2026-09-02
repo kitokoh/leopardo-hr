@@ -109,3 +109,51 @@ class TravelAgencyServiceProvider extends ServiceProvider
         Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
     }
 }
+use App\Console\Commands\TravelExpireAdvertsCommand;
+use App\Console\Commands\TravelOutboxDispatchCommand;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
+use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
+use App\Modules\TravelAgency\Domain\Models\TravelArticle;
+use App\Modules\TravelAgency\Domain\Models\TravelComment;
+use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
+use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelEventPublisherConsumer;
+use App\Modules\TravelAgency\Policies\TravelAdvertPolicy;
+use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
+use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
+use App\Modules\TravelAgency\Policies\TravelQuizPolicy;
+use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use App\Modules\TravelAgency\Policies\TravelTouristSitePolicy;
+        // TRAVEL-506 (#6076) — recalcul des read models de reporting.
+        // TRAVEL-414 (#6066) — consommation de l'outbox événementielle.
+        $this->commands([
+            RecalculateTravelReadModelsCommand::class,
+            TravelOutboxDispatchCommand::class,
+            TravelExpireAdvertsCommand::class,
+        $this->app->singleton(TravelOutboxConsumerRegistry::class);
+        // Contenu éditorial (TRAVEL-901/902, #6104/#6105) + rapports
+        // (TRAVEL-501..507, #6071..#6077) — ability `travel.reports`
+        // ouverte aux rôles opérationnels de l'agence.
+        Gate::policy(TravelArticle::class, TravelArticlePolicy::class);
+        // Annonces payantes (TRAVEL-905..908, #6108..#6111).
+        Gate::policy(TravelAdvertType::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvertPosition::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvertPrice::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
+        Gate::policy(TravelQuiz::class, TravelQuizPolicy::class);
+        Gate::policy(TravelTouristSite::class, TravelTouristSitePolicy::class);
+        // TRAVEL-414 (#6066) — publication des événements travel.*.v1 sur le
+        // bus tenant-scopé (BC consommateurs sans import inter-modules).
+        $this->app->booted(function (): void {
+            /** @var TravelOutboxConsumerRegistry $registry */
+            $registry = $this->app->make(TravelOutboxConsumerRegistry::class);
+            /** @var TravelOutboxConsumer $consumer */
+            $consumer = $this->app->make(TravelEventPublisherConsumer::class);
+            $registry->register($consumer);
+        Gate::policy(TravelComment::class, TravelCommentPolicy::class);
+        Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));

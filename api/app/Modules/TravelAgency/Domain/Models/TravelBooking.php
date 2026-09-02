@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Réservation multi-passagers (TRAVEL-209, issue #6022).
@@ -124,4 +125,6 @@ class TravelBooking extends Model
     {
         return $this->hasMany(TravelPayment::class, 'booking_id');
     }
+
+
 }

@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-901 (#6104) — Représentation API d'un article.
@@ -35,4 +36,6 @@ class TravelArticleResource extends JsonResource
             'updated_at' => $this->updated_at,
         ];
     }
+
+
 }

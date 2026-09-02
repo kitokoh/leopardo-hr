@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — Share (contenu éditorial).
@@ -25,4 +26,6 @@ class TravelShare extends Model
     protected $table = 'travel_shares';
 
     protected $fillable = ['company_id', 'article_id', 'channel', 'actor_type', 'actor_id'];
+
+
 }

@@ -165,18 +165,8 @@
     {
       "code": "BC-23",
       "name": "AI",
-      "runbooks": [
-        "docs/ops/RUNBOOK_AI.md"
-      ],
-      "notes": "Services IA assistifs : runbook dédié (supervision, incidents provider/budget, file AI + DLQ + replay, purge RGPD, kill switch) + couverture backup/restore plateforme."
-    },
-    {
-      "code": "BC-24",
-      "name": "TRAVEL",
-      "runbooks": [
-        "docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md"
-      ],
-      "notes": "Pilote TravelAgency : runbook dédié (tenant pilote, kill switch, backup/restore, incidents, rollback) + runbooks plateforme (backup/restore/rollback/incident) + recette UAT docs/ops/RECETTE_UAT_TRAVELAGENCY.md (TRAVEL-050/#5998)."
+      "runbooks": [],
+      "notes": "Services IA assistifs couverts par backup/restore plateforme + incident P1."
     },
     {
       "code": "BC-25",

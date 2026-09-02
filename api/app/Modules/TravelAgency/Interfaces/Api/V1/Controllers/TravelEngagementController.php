@@ -178,4 +178,35 @@ class TravelEngagementController extends Controller
             'average_rating' => $average,
         ];
     }
+
+    private function engagementAggregates(Employee $actor, TravelArticle $article): array
+    {
+        $likes = TravelLike::query()
+            ->where('company_id', $actor->company_id)
+            ->where('article_id', $article->id)
+            ->count();
+
+        $shares = TravelShare::query()
+            ->where('company_id', $actor->company_id)
+            ->where('article_id', $article->id)
+            ->count();
+
+        $ratings = TravelRating::query()
+            ->where('company_id', $actor->company_id)
+            ->where('article_id', $article->id)
+            ->get(['rating']);
+
+        $ratingsCount = $ratings->count();
+        $average = $ratingsCount > 0
+            ? round($ratings->sum('rating') / $ratingsCount, 2)
+            : 0.0;
+
+        return [
+            'article_id' => $article->id,
+            'likes_count' => $likes,
+            'shares_count' => $shares,
+            'ratings_count' => $ratingsCount,
+            'average_rating' => $average,
+        ];
+    }
 }

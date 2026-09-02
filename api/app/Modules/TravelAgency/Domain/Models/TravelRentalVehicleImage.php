@@ -9,6 +9,7 @@ use Database\Factories\TravelRentalVehicleImageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Image d'un véhicule en location (TRAVEL-212, issue #6025).
@@ -40,4 +41,6 @@ class TravelRentalVehicleImage extends Model
     {
         return $this->belongsTo(TravelRentalVehicle::class, 'vehicle_id');
     }
+
+
 }

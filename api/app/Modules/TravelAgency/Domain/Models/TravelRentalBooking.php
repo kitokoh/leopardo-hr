@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 /**
  * Réservation de location (TRAVEL-213, issue #6026).
@@ -103,4 +104,6 @@ class TravelRentalBooking extends Model
     {
         return $this->belongsTo(TravelRentalVehicle::class, 'vehicle_id');
     }
+
+
 }

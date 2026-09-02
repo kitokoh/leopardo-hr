@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * TRAVEL-907/908 (#6110/#6111) — Policy des annonces payantes.
@@ -45,5 +46,28 @@ class TravelAdvertPolicy
     public function renew(Employee $actor, TravelAdvert $advert): bool
     {
         return $this->pay($actor, $advert);
+    }
+
+
+    public function update(Employee $actor, Model $resource): bool
+    {
+        return $this->create($actor) && $this->belongsToTenant($resource, $actor);
+    }
+
+
+    public function delete(Employee $actor, Model $resource): bool
+    {
+        return $this->update($actor, $resource);
+    }
+
+    public function manage(Employee $actor, Model $resource): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh') && $this->belongsToTenant($resource, $actor);
+    }
+
+
+    private function belongsToTenant(Model $resource, Employee $actor): bool
+    {
+        return (string) $resource->getAttribute('company_id') === (string) $actor->company_id;
     }
 }

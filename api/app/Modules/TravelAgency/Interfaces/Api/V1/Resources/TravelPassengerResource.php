@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\TravelAgency\Domain\Enums\DocumentType;use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-312..316 — Représentation API d'un passager.
@@ -37,4 +38,6 @@ class TravelPassengerResource extends JsonResource
             'unit_price_minor' => $this->unit_price_minor,
         ];
     }
+
+
 }

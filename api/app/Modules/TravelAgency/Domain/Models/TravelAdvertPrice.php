@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Grille tarifaire des annonces (TRAVEL-906, issue #6109).
@@ -62,6 +63,16 @@ class TravelAdvertPrice extends Model
      * @return BelongsTo<TravelAdvertPosition, $this>
      */
     public function advertPosition(): BelongsTo
+    {
+        return $this->belongsTo(TravelAdvertPosition::class, 'advert_position_id');
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(TravelAdvertType::class, 'advert_type_id');
+    }
+
+    public function position(): BelongsTo
     {
         return $this->belongsTo(TravelAdvertPosition::class, 'advert_position_id');
     }

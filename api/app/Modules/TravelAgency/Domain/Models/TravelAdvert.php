@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * Annonce payante (TRAVEL-907/908, issues #6110/#6111).
@@ -102,5 +103,20 @@ class TravelAdvert extends Model
     public function advertPosition(): BelongsTo
     {
         return $this->belongsTo(TravelAdvertPosition::class, 'advert_position_id');
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(TravelAdvertType::class, 'advert_type_id');
+    }
+
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(TravelAdvertPosition::class, 'advert_position_id');
+    }
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(TravelPayment::class, 'payment_id');
     }
 }

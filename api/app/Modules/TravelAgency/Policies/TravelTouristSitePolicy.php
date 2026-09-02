@@ -32,4 +32,10 @@ class TravelTouristSitePolicy
     {
         return $this->create($actor) && $site->company_id === $actor->company_id;
     }
+
+
+    public function delete(Employee $actor, TravelTouristSite $site): bool
+    {
+        return $this->update($actor, $site);
+    }
 }

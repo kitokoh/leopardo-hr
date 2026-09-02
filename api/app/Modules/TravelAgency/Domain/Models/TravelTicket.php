@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Billet nominatif (TRAVEL-210, issue #6023).
@@ -105,4 +106,6 @@ class TravelTicket extends Model
     {
         return $this->belongsTo(TravelPassenger::class, 'passenger_id');
     }
+
+
 }

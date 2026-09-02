@@ -10,6 +10,7 @@ use Database\Factories\TravelVehicleFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Véhicule de la flotte propre de l'agence (TRAVEL-205, issue #6018).
@@ -46,4 +47,6 @@ class TravelVehicle extends Model
     {
         return $this->belongsTo(TravelCarrier::class, 'carrier_id');
     }
+
+
 }

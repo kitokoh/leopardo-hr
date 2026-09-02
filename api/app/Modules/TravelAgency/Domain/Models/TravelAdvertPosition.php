@@ -9,6 +9,7 @@ use Database\Factories\TravelAdvertPositionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Position de publication d'annonce (TRAVEL-905, issue #6108).
@@ -36,4 +37,6 @@ class TravelAdvertPosition extends Model
     ];
 
     protected $casts = [];
+
+
 }

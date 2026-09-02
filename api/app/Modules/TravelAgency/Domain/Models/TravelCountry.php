@@ -10,6 +10,7 @@ use Database\Factories\TravelCountryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Pays du référentiel TravelAgency (TRAVEL-201, issue #6014).
@@ -44,4 +45,6 @@ class TravelCountry extends Model
     {
         return $this->hasMany(TravelCity::class, 'country_iso2', 'iso2');
     }
+
+
 }

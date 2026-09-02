@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * TRAVEL-506 (#6076) — Read model : ventes journalières par trajet.
@@ -35,4 +36,6 @@ class TravelDailySale extends Model
         'passengers_count' => 'integer',
         'revenue_minor' => 'integer',
     ];
+
+
 }

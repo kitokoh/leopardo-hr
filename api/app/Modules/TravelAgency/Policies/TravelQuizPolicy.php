@@ -45,4 +45,15 @@ class TravelQuizPolicy
     {
         return $this->update($actor, $quiz);
     }
+
+
+    public function delete(Employee $actor, TravelQuiz $quiz): bool
+    {
+        return $this->update($actor, $quiz);
+    }
+
+    public function manage(Employee $actor, TravelQuiz $quiz): bool
+    {
+        return $actor->hasManagerRole('principal', 'rh') && $quiz->company_id === $actor->company_id;
+    }
 }
