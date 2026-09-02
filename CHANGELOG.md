@@ -1,4 +1,5 @@
 ## [Unreleased]
+- **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 - **fix(gouvernance): Gate::policy CRM au point unique (PA2-ARCH-008) + BC-25 RESTAURANT au registre canonique (Closes #6575, #6602).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via
 > les PRs de merge en cours). Pour l'état réel par bounded context, se référer au registre
