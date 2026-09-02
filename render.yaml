@@ -29,6 +29,10 @@ services:
     # filtre api/**). autoDeploy:true redéployait à CHAQUE push main (même
     # web/mobile/docs only) → gaspillage des build hours gratuits (~500 h/mois).
     autoDeploy: false
+    # #6700 : autoDeploy désactivé — les déploiements sont pilotés UNIQUEMENT
+    # par RENDER_DEPLOY_HOOK_URL (workflow deploy-main.yml, gate tests + filtre
+    # api/**). autoDeploy:true redéployait à CHAQUE push main (même
+    # web/mobile/docs only) → gaspillage des build hours gratuits.
     envVars:
       - key: APP_ENV
         value: production
@@ -189,6 +193,7 @@ services:
     # #6700 : PAS de hook Render dédié pour les workers → autoDeploy:true
     # conservé volontairement (ils suivent main ; l'API, elle, est hook-pilotée).
     autoDeploy: true
+    autoDeploy: false
     # Issue #5578 : la queue est sur database — le worker consomme la
     # connexion par défaut (aligné sur le probe et le drain GH Actions).
     dockerCommand: >-
@@ -318,7 +323,7 @@ services:
     dockerContext: .
     region: frankfurt
     plan: starter
-    autoDeploy: true
+    autoDeploy: false
     dockerCommand: >-
       sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
     envVars:
