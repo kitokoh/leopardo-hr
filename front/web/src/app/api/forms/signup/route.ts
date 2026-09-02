@@ -55,7 +55,11 @@ export async function POST(request: NextRequest) {
     // collecte pas → détection géo côté serveur (Vercel `request.geo`), sinon
     // la demande sera rejetée en 422 et le prospect verra une erreur honnête
     // (jamais un faux succès).
-    const geoCountry = request.geo?.country?.toUpperCase() ?? '';
+    //
+    // `geo` n'est pas typé sur NextRequest (augmentation Vercel runtime) —
+    // accès typé pour satisfaire ESLint/TS sans `any`.
+    const geo = (request as unknown as { geo?: { country?: string } }).geo;
+    const geoCountry = geo?.country?.toUpperCase() ?? '';
     const effectiveCountry = validatedData.country || geoCountry || undefined;
 
     // Step 1: Capture the marketing lead (CRM tracking)
