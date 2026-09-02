@@ -11,11 +11,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Issue #2626 — réinitialisation de mot de passe.
@@ -37,6 +37,7 @@ class PasswordResetController
 
     public function forgot(Request $request): JsonResponse
     {
+        /** @var array{email: string} $validated */
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
         ]);
@@ -60,7 +61,20 @@ class PasswordResetController
                 'updated_at' => now(),
             ]);
 
-            Mail::to($email)->send(new PasswordResetMail($token, $email));
+            // Issue #6751 (P1) : un échec de transport SMTP ne doit NI faire
+            // 500 NI différencier la réponse publique (anti-énumération #2626 :
+            // 200 identique que l'email existe ou non). Le jeton est déjà en
+            // base ; l'email sera retenté par l'équipe ops (log) — le parcours
+            // « mot de passe oublié » reste fonctionnel côté utilisateur.
+            try {
+                Mail::to($email)->send(new PasswordResetMail($token, $email));
+            } catch (\Throwable $exception) {
+                Log::error('auth.forgot_password_mail_failed', [
+                    'email' => $email,
+                    'employee_id' => $employee->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
         }
 
         return new JsonResponse([
@@ -74,6 +88,7 @@ class PasswordResetController
     {
         // #5620 — Password::min(8)->numbers() : au moins un chiffre,
         // cohérent avec l'indicateur de force du frontend.
+        /** @var array{email: string, token: string, password: string, password_confirmation: string} $validated */
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string', 'max:64'],
@@ -84,6 +99,7 @@ class PasswordResetController
         $email = strtolower(trim($validated['email']));
         $tokenHash = hash('sha256', $validated['token']);
 
+        /** @var object{used_at: string|null, expires_at: string}|null $row */
         $row = DB::table('public.password_reset_tokens')
             ->where('email', $email)
             ->where('token_hash', $tokenHash)
@@ -246,6 +262,7 @@ class PasswordResetController
             return Schema::hasTable('user_lookups');
         }
 
+        /** @var object{table_name: string|null}|null $table */
         $table = DB::selectOne("select to_regclass('public.user_lookups') as table_name");
 
         return $table?->table_name !== null;
@@ -253,6 +270,7 @@ class PasswordResetController
 
     private function tenantEmployeesTableExists(string $schema): bool
     {
+        /** @var object{table_name: string|null}|null $table */
         $table = DB::selectOne('select to_regclass(?) as table_name', [$schema.'.employees']);
 
         return $table?->table_name !== null;
@@ -265,9 +283,12 @@ class PasswordResetController
 
     private function currentSearchPath(): ?string
     {
+        /** @var array{search_path?: mixed} $result */
         $result = (array) DB::selectOne('SHOW search_path');
 
-        return isset($result['search_path']) ? (string) $result['search_path'] : null;
+        $path = $result['search_path'] ?? null;
+
+        return \is_string($path) ? $path : null;
     }
 
     private function setTenantSearchPath(string $schema): void

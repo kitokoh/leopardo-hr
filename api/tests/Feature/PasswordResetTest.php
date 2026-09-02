@@ -7,9 +7,13 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Symfony\Component\Mailer\SentMessage;
+use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -42,7 +46,7 @@ class PasswordResetTest extends TestCase
 
     private function issueToken(string $email, ?string $expiresAt = null): string
     {
-        $token = 'reset-token-'.str()->random(20);
+        $token = 'reset-token-'.Str::random(20);
         DB::table('public.password_reset_tokens')->insert([
             'email' => $email,
             'token_hash' => hash('sha256', $token),
@@ -61,7 +65,36 @@ class PasswordResetTest extends TestCase
         $this->postJson('/api/v1/auth/forgot-password', ['email' => 'reset-me@example.com'])
             ->assertOk();
 
-        Mail::assertSent(PasswordResetMail::class, fn ($mail) => $mail->hasTo('reset-me@example.com'));
+        Mail::assertSent(PasswordResetMail::class, fn (PasswordResetMail $mail) => $mail->hasTo('reset-me@example.com'));
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => 'reset-me@example.com']);
+    }
+
+    public function test_forgot_password_returns_200_even_when_mail_transport_fails(): void
+    {
+        // Issue #6751 (P1) : un échec d'envoi (SMTP injoignable) ne doit ni
+        // faire 500 ni fuiter l'existence du compte — réponse 200 générique
+        // identique, jeton persisté, échec loggé.
+        Mail::extend('smtp-down', function () {
+            return new class extends AbstractTransport
+            {
+                protected function doSend(SentMessage $message): void
+                {
+                    throw new \RuntimeException('SMTP unreachable (test #6751)');
+                }
+
+                public function __toString(): string
+                {
+                    return 'smtp-down';
+                }
+            };
+        });
+        config(['mail.default' => 'smtp-down']);
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => 'reset-me@example.com'])
+            ->assertOk()
+            ->assertJson(['success' => true, 'message' => 'PASSWORD_RESET_SENT']);
+
+        // Le jeton est bien créé (le parcours pourra être retenté).
         $this->assertDatabaseHas('password_reset_tokens', ['email' => 'reset-me@example.com']);
     }
 
@@ -107,7 +140,7 @@ class PasswordResetTest extends TestCase
         ]);
 
         $searchPathStatements = [];
-        DB::listen(static function ($query) use (&$searchPathStatements): void {
+        DB::listen(static function (QueryExecuted $query) use (&$searchPathStatements): void {
             if (str_starts_with(strtolower(trim((string) $query->sql)), 'set search_path')) {
                 $searchPathStatements[] = $query->sql;
             }
@@ -299,7 +332,7 @@ class PasswordResetTest extends TestCase
             ->assertOk();
 
         $rawToken = null;
-        Mail::assertSent(PasswordResetMail::class, function ($mail) use (&$rawToken) {
+        Mail::assertSent(PasswordResetMail::class, function (PasswordResetMail $mail) use (&$rawToken) {
             $rawToken = $mail->token;
 
             return $mail->hasTo('schema-tenant@example.com');
@@ -324,7 +357,7 @@ class PasswordResetTest extends TestCase
         $this->assertTrue(
             Hash::check(
                 'new-password-123',
-                (string) DB::table($schema.'.employees')->where('id', $employeeId)->value('password_hash')
+                \is_string(DB::table($schema.'.employees')->where('id', $employeeId)->value('password_hash')) ? (string) DB::table($schema.'.employees')->where('id', $employeeId)->value('password_hash') : ''
             ),
             'Le mot de passe doit être mis à jour dans le schéma tenant.'
         );
