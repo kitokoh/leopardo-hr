@@ -46,11 +46,22 @@ use App\Modules\EduManager\Policies\EduSubjectPolicy;
 use App\Modules\EduManager\Policies\EduTeacherSubjectPolicy;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelAccountVisit;
+use App\Modules\FuelStation\Domain\Models\FuelAlert;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelCustomer;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelImport;
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
+use App\Modules\FuelStation\Domain\Models\FuelReportExport;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelDelivery;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
 use App\Modules\FuelStation\Domain\Models\FuelProduct;
@@ -67,6 +78,9 @@ use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelStockEntry;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelStockMovement;
+use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;
+use App\Modules\FuelStation\Domain\Policies\FuelAlertPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelCustomerPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelEquipmentPolicy;
@@ -75,6 +89,12 @@ use App\Modules\FuelStation\Domain\Policies\FuelMaintenanceTaskPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelProductPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelCrmPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelReferencePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelStationPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelImportPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelMaintenancePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelMetricsPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelOutboxPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelReportPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\FuelStation\Domain\Policies\FuelSitePolicy;
@@ -203,6 +223,29 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(FuelReportSnapshot::class, FuelReferencePolicy::class);
         // — FuelStation import/export (FUEL-018 #5812)
         Gate::policy(FuelImport::class, FuelReferencePolicy::class);
+        // — FuelStation (FUEL-009 #5803 : stocks, livraisons, rapprochements)
+        Gate::policy(FuelStockMovement::class, FuelStockPolicy::class);
+        Gate::policy(FuelDelivery::class, FuelStockPolicy::class);
+        Gate::policy(FuelStockReconciliation::class, FuelStockPolicy::class);
+        // — FuelStation (FUEL-010 #5804 : incidents, maintenance, tâches)
+        Gate::policy(FuelIncident::class, FuelMaintenancePolicy::class);
+        Gate::policy(FuelMaintenanceTask::class, FuelMaintenancePolicy::class);
+        // — FuelStation (FUEL-018 #5812 : imports CSV)
+        Gate::policy(FuelImport::class, FuelImportPolicy::class);
+        // — FuelStation (FUEL-011 #5805 : référentiel manager)
+        Gate::policy(FuelSite::class, FuelStationPolicy::class);
+        Gate::policy(FuelTank::class, FuelEquipmentPolicy::class);
+        Gate::policy(FuelMeterRegister::class, FuelEquipmentPolicy::class);
+        // — FuelStation (FUEL-015 #5809 : outbox contrat Accounting)
+        Gate::policy(FuelOutboxEvent::class, FuelOutboxPolicy::class);
+        // — FuelStation (FUEL-019 #5813 : alertes & préférences)
+        Gate::policy(FuelAlert::class, FuelAlertPolicy::class);
+        Gate::policy(FuelNotificationPreference::class, FuelAlertPolicy::class);
+        // — FuelStation (FUEL-020 #5814 : métriques d'observabilité, sans modèle)
+        Gate::define('fuel.metrics', [FuelMetricsPolicy::class, 'viewAny']);
+        // — FuelStation (FUEL-017 #5811 : reporting opérationnel)
+        Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
+        Gate::policy(FuelReportExport::class, FuelReportPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

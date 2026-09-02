@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Core\Notifications\Contracts\InAppNotifier;
+use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
+
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
@@ -32,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Contrat transversal de notification in-app (garde cross-module #5584) :
+        // les modules métier type-hintent le contrat Core, l'implémentation vit
+        // dans le module Notification (BC-13).
+        $this->app->bind(InAppNotifier::class, InAppNotifierAdapter::class);
+
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
 
@@ -117,6 +125,19 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Limit::perMinute($limit)->by('plan:'.$normalizedPlan.':company:'.$user->company_id);
+        });
+
+        // FUEL-020 (#5814) : bornes dédiées aux écritures FuelStation
+        // (relevés, ventes, livraisons, ajustements, imports, transitions)
+        // — anti-abus par tenant, distinct du quota API global.
+        RateLimiter::for('fuel-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.fuel_per_minute', 120))
+                ->by('fuel:'.$key);
         });
 
         RateLimiter::for('auth-sensitive', function (Request $request) {

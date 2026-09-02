@@ -37,6 +37,9 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMetricsController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // FUEL-004 — relevés de compteur par pompe (spec §13.4).
@@ -170,4 +173,45 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
                     ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
                     ->whereNumber('id');
+Route::get('/fuel-station/stocks/movements', [FuelStockController::class, 'movements']);
+Route::post('/fuel-station/stocks/adjustments', [FuelStockController::class, 'storeAdjustment'])->middleware('throttle:fuel-sensitive');
+Route::post('/fuel-station/deliveries', [FuelStockController::class, 'storeDelivery'])->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/deliveries', [FuelStockController::class, 'deliveries']);
+Route::post('/fuel-station/deliveries/{delivery}/verify', [FuelStockController::class, 'verifyDelivery'])->whereNumber('delivery')->middleware('throttle:fuel-sensitive');
+Route::post('/fuel-station/reconciliations', [FuelStockController::class, 'runReconciliation'])->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
+Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
+Route::post('/fuel-station/incidents/{incident}/attachments', [FuelIncidentController::class, 'attach'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
+Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelIncidentController::class, 'updateTask'])->whereNumber('task')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesIndex'])->whereNumber('station');
+Route::post('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsIndex'])->whereNumber('station');
+Route::post('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+Route::put('/fuel-station/pumps/{pump}', [FuelEquipmentController::class, 'pumpsUpdate'])->whereNumber('pump')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksIndex'])->whereNumber('station');
+Route::post('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+Route::put('/fuel-station/tanks/{tank}', [FuelEquipmentController::class, 'tanksUpdate'])->whereNumber('tank')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersIndex'])->whereNumber('station');
+Route::post('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+Route::put('/fuel-station/meters/{meter}', [FuelEquipmentController::class, 'metersUpdate'])->whereNumber('meter')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
+Route::get('/fuel-station/outbox/events', [FuelOutboxController::class, 'index']);
+Route::post('/fuel-station/outbox/events/{event}/retry', [FuelOutboxController::class, 'retry'])->whereNumber('event')->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/reports/daily-volumes', [FuelReportController::class, 'dailyVolumes']);
+Route::get('/fuel-station/reports/sales', [FuelReportController::class, 'sales']);
+Route::get('/fuel-station/reports/stock', [FuelReportController::class, 'stock']);
+Route::get('/fuel-station/reports/variances', [FuelReportController::class, 'variances']);
+Route::get('/fuel-station/reports/shifts', [FuelReportController::class, 'shifts']);
+Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport'])->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
+Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
+Route::post('/fuel-station/imports', [FuelImportController::class, 'store'])->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
+Route::get('/fuel-station/health/metrics', [FuelMetricsController::class, 'metrics'])
+            ->middleware('throttle:metrics');
+Route::get('/fuel-station/notifications/preferences', [FuelAlertController::class, 'preferences']);
+Route::put('/fuel-station/notifications/preferences', [FuelAlertController::class, 'updatePreferences'])->middleware('throttle:fuel-sensitive');
+Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
+Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
+Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
 });
