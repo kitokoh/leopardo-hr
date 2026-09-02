@@ -31,6 +31,11 @@
             {{ t('adminChat.retry', 'Réessayer') }}
           </button>
         </div>
+        <div v-else-if="conversationsUnavailable" class="p-4 text-center" role="status">
+          <!-- #6690 : IA non activée au niveau plateforme → 403 AI_CONVERSATIONS_UNAVAILABLE
+               (état normal, pas une erreur serveur) — message informatif, pas d'erreur. -->
+          <p class="text-xs text-amber-600">{{ t('adminChat.unavailableTitle', 'Assistant IA indisponible au niveau plateforme') }}</p>
+        </div>
         <div v-else-if="conversations.length === 0" class="p-4 text-center text-xs text-gray-400">
           {{ t('adminChat.historyEmpty', 'Aucune conversation.') }}
         </div>
@@ -130,6 +135,9 @@ const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 // #4564 : refs d'état d'erreur manquants (utilisés par le template + fetch, #4333).
 const conversationsError = ref(false)
+// #6690 : IA non activée au niveau plateforme (403 AI_CONVERSATIONS_UNAVAILABLE)
+// = état normal — affiché en info, pas en erreur.
+const conversationsUnavailable = ref(false)
 const messagesError = ref(false)
 const conversations = ref([])
 const activeConversation = ref(null)
@@ -163,10 +171,17 @@ function scrollToBottom() {
 
 async function fetchConversations() {
   conversationsError.value = false
+  conversationsUnavailable.value = false
   try {
     const res = await api.get('/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
+    // #6690 : IA non activée → 403 AI_CONVERSATIONS_UNAVAILABLE (état de
+    // configuration normal) — pas d'erreur rouge, message informatif.
+    if (err.response?.data?.error === 'AI_CONVERSATIONS_UNAVAILABLE') {
+      conversationsUnavailable.value = true
+      return
+    }
     // #4333 : état d'erreur visible + retry (l'intercepteur global toast déjà).
     conversationsError.value = true
     console.warn('Failed to load AI conversations', err)

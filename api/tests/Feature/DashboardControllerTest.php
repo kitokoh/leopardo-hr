@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -35,8 +35,8 @@ class DashboardControllerTest extends TestCase
         Employee::factory()->create(['company_id' => $otherCompany->id, 'status' => 'active']);
 
         DB::table('departments')->insert([
-            ['company_id' => $company->id, 'name' => 'RH', 'created_at' => now(), 'updated_at' => now()],
-            ['company_id' => $otherCompany->id, 'name' => 'Other', 'created_at' => now(), 'updated_at' => now()],
+            ['company_id' => $company->id, 'name' => 'RH', 'created_at' => now()],
+            ['company_id' => $otherCompany->id, 'name' => 'Other', 'created_at' => now()],
         ]);
         DB::table('attendance_logs')->insert([
             [
@@ -299,4 +299,3 @@ class DashboardControllerTest extends TestCase
         ]);
     }
 }
-

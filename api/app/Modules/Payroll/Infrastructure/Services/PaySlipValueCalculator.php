@@ -96,6 +96,13 @@ class PaySlipValueCalculator
      * calculé par le moteur (`calculateIncomeTax()`). La somme des tranches
      * converge ainsi vers l'impôt affiché (simulateur = bulletin).
      *
+     * Issue #6727 — pays à abattement frais professionnels (SN 30 % plafonné
+     * 75 000 FCFA/mois, CEMAC/CEDEAO, MA 25-35 % annuel) : aucun des 4
+     * candidats n'appliquait l'abattement → le détail par tranche ne sommait
+     * jamais vers l'impôt réel (SN Δ 22 500, DZ Δ 1 500, MA Δ 950). On ajoute
+     * des candidats post-abattement (même déduction que le pipeline réel) et
+     * un ajustement résiduel final garantit Σ tax == income_tax à 0,01 près.
+     *
      * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
      */
     public function slabTaxBreakdown(CountryRulesContract $rules, float $gross, float $taxBase, float $expectedTax): array
@@ -107,6 +114,26 @@ class PaySlipValueCalculator
             $this->progressiveSlabs($rules, $taxBase, 12.0),
         ];
 
+        // #6727 — abattement de base (SN/CEMAC/CEDEAO) : le pipeline réel
+        // soustrait min(brut × taux, cap) de l'assiette AVANT le barème.
+        $deduction = $rules->professionalExpensesDeduction();
+        if ((float) ($deduction['rate'] ?? 0.0) > 0.0) {
+            $monthlyDeduction = min(
+                $gross * (float) $deduction['rate'],
+                (float) ($deduction['cap'] ?? PHP_FLOAT_MAX),
+            );
+            $abated = max(0.0, $taxBase - $monthlyDeduction);
+            $candidates[] = $this->progressiveSlabs($rules, $abated, 1.0);
+            $candidates[] = $this->progressiveSlabs($rules, $abated, 12.0);
+        }
+
+        // #6727 — MA : abattement ANNUEL dédié (25-35 %, plancher 2 500,
+        // plafond 35 000 MAD) appliqué avant le barème (CGI art. 73-I).
+        if (method_exists($rules, 'moroccoProfessionalExpensesAbatement')) {
+            $annualAbated = max(0.0, $taxBase * 12.0 - $rules->moroccoProfessionalExpensesAbatement($taxBase * 12.0));
+            $candidates[] = $this->progressiveSlabs($rules, $annualAbated / 12.0, 12.0);
+        }
+
         $best = $candidates[0];
         $bestDelta = PHP_FLOAT_MAX;
         foreach ($candidates as $candidate) {
@@ -115,6 +142,21 @@ class PaySlipValueCalculator
                 $best = $candidate;
                 $bestDelta = $delta;
             }
+        }
+
+        if ($best === []) {
+            return [];
+        }
+
+        // #6727 — ajustement résiduel : le total affiché doit converger vers
+        // l'impôt réel (DZ : réduction d'impôt post-calcul min(max(tax×40 %,
+        // 12 000), 18 000)/an ; arrondis par tranche). La dernière tranche
+        // porte le résidu pour garantir Σ tax == income_tax.
+        $currentTotal = array_sum(array_column($best, 'tax'));
+        if (abs($currentTotal - $expectedTax) > 0.001) {
+            $lastIndex = array_key_last($best);
+            $otherTotal = $currentTotal - $best[$lastIndex]['tax'];
+            $best[$lastIndex]['tax'] = round($expectedTax - $otherTotal, 2);
         }
 
         return $best;

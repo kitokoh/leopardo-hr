@@ -31,7 +31,10 @@ class PlatformAdminAiConversationController extends Controller
                     'token_count',
                     'created_at',
                     'updated_at',
-                    DB::raw('json_array_length(messages) as message_count'),
+                    // #6690 : jsonb_array_length (la colonne `messages` est
+                    // jsonb) — json_array_length n'existe pas pour jsonb en
+                    // PostgreSQL (SQLSTATE 42883) → 500 sur chaque requête.
+                    DB::raw('jsonb_array_length(messages) as message_count'),
                 ])
                 ->orderByDesc('updated_at')
                 ->limit(50)
@@ -39,15 +42,48 @@ class PlatformAdminAiConversationController extends Controller
 
             return response()->json(['data' => $conversations]);
         } catch (\Throwable $exception) {
+            // #6690 : table `ai_conversations` absente (IA non activée au
+            // niveau plateforme) = état de configuration attendu, PAS un
+            // incident serveur. 403 + code stable, conforme au contrat
+            // « stable error responses » ; le dashboard traite ce cas comme
+            // « feature non disponible » (pas de toast d'erreur serveur).
+            if ($this->isFeatureUnavailable($exception)) {
+                return response()->json([
+                    'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
+                    'message' => 'AI_CONVERSATIONS_UNAVAILABLE',
+                    'localized_message' => __('platform.conversations_unavailable'),
+                ], 403);
+            }
+
             Log::error('admin.ai.conversations.list_failed', [
                 'exception' => $exception->getMessage(),
             ]);
 
             return response()->json([
-                'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
-                'message' => __('platform.conversations_unavailable'),
+                'error' => 'INTERNAL_ERROR',
+                'message' => 'INTERNAL_ERROR',
+                'localized_message' => __('errors.SERVER_ERROR'),
             ], 500);
         }
+    }
+
+    /**
+     * Détecte le « feature indisponible » (table absente du schéma tenant)
+     * vs une vraie erreur serveur. #6690
+     *
+     * Public : classifieur pur, testé en unitaire
+     * (PlatformAdminAiConversationErrorMappingTest).
+     */
+    public function isFeatureUnavailable(\Throwable $exception): bool
+    {
+        $previous = $exception->getPrevious();
+        $sqlState = (string) ($previous?->getCode() ?: $exception->getCode());
+        $message = $exception->getMessage().' '.($previous?->getMessage() ?? '');
+
+        return in_array($sqlState, ['42P01', '42S02', '1146'], true)
+            || str_contains($message, 'no such table')
+            || (str_contains($message, 'relation') && str_contains($message, 'does not exist'))
+            || str_contains($message, 'doesn\'t exist');
     }
 
     /**

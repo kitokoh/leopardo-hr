@@ -1488,18 +1488,26 @@ paths:
       tags:
       - User
       summary: Profil de l'utilisateur connecté
+      description: >-
+        ⚠️ Guard distinct (`auth:user_api`) : les routes `/user/*` concernent les
+        COMPTES ORDINAIRES (personnes sans entreprise, créées via `/user/register`),
+        pas les comptes employés. Un token Sanctum d'employé (valide sur `/auth/me`,
+        `/employees`, etc.) reçoit `401 UNAUTHENTICATED` ici. #6677
       security:
       - BearerAuth: []
       responses:
         '200':
           description: Profil utilisateur
         '401':
-          description: Non authentifié
+          description: Non authentifié (token employé non accepté sur ce guard)
   /user/profile:
     patch:
       tags:
       - User
       summary: Met à jour le profil de l'utilisateur connecté
+      description: >-
+        ⚠️ Guard distinct (`auth:user_api`) : comptes ordinaires uniquement —
+        un token employé reçoit `401 UNAUTHENTICATED`. #6677
       security:
       - BearerAuth: []
       requestBody:

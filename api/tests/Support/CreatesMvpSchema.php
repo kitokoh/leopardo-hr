@@ -825,7 +825,8 @@ trait CreatesMvpSchema
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
-            $table->timestamps();
+            // Parité migration tenant 000100 : created_at seul (pas d'updated_at). #6684
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         Schema::create($this->tenantTable('positions'), function (Blueprint $table): void {
@@ -833,14 +834,16 @@ trait CreatesMvpSchema
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
             $table->unsignedInteger('department_id');
-            $table->timestamps();
+            // Parité migration tenant 000100 : created_at seul. #6684
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         Schema::create($this->tenantTable('sites'), function (Blueprint $table): void {
             $table->increments('id');
             $table->uuid('company_id')->nullable()->index();
             $table->string('name', 150);
-            $table->timestamps();
+            // Parité migration tenant 000100 : created_at seul (pas d'updated_at). #6684
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         if (DB::getDriverName() === 'pgsql') {

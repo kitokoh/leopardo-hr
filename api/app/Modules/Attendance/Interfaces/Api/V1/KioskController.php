@@ -71,12 +71,53 @@ class KioskController extends Controller
             'status' => 'active',
         ]);
 
+        // #6678 : garde anti-provisioning mort. Le lookup des routes publiques
+        // (roster/punch/sync, auth X-Kiosk-Token) force le schéma canonique
+        // (shared_tenants en mode shared). Si la ligne vient d'être écrite
+        // ailleurs (fuite de search_path sur connexion poolée — famille
+        // #4787/#4798/#4852), le 201 retournerait des credentials définitivement
+        // 404 : on échoue bruyamment (500 + trace) au lieu de livrer un kiosque
+        // inutilisable.
+        $this->assertKioskVisibleToPublicLookup($kiosk->id, $company);
+
         return new JsonResponse([
             'data' => array_replace($this->serializeKiosk($kiosk), [
                 'device_code' => $plainDeviceCode,
                 'sync_token' => $plainToken,
             ]),
         ], 201);
+    }
+
+    /**
+     * Vérifie que la ligne kiosk est lisible depuis le schéma utilisé par le
+     * lookup public des routes kiosque. #6678
+     *
+     * NB : le lookup public (roster/punch/sync, auth X-Kiosk-Token) force
+     * `shared_tenants` (résolution par device_code sans contexte tenant) —
+     * c'est le contrat actuel pour tous les types de tenancy. Si un jour le
+     * mode schema doit supporter les kiosques, c'est CE lookup qu'il faudra
+     * rendre schema-aware ; en attendant, on échoue bruyamment ici plutôt que
+     * de livrer un kiosque dont les credentials sont définitivement 404.
+     */
+    private function assertKioskVisibleToPublicLookup(int $kioskId, Company $company): void
+    {
+        $found = DB::table('shared_tenants.attendance_kiosks')
+            ->where('id', $kioskId)
+            ->where('company_id', $company->id)
+            ->exists();
+
+        if (! $found) {
+            Log::critical('kiosk.provisioning.schema_mismatch', [
+                'kiosk_id' => $kioskId,
+                'company_id' => $company->id,
+                'tenancy_type' => $company->tenancy_type,
+                'search_path' => optional(DB::selectOne('SHOW search_path'))->search_path ?? 'unknown',
+            ]);
+
+            throw new RuntimeException(
+                'Kiosk provisioning aborted: row not visible from canonical lookup schema (search_path leak family #4787/#4798/#4852).'
+            );
+        }
     }
 
     public function punch(Request $request, string $deviceCode): JsonResponse

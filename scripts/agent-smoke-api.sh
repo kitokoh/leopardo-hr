@@ -62,10 +62,25 @@ note "== WORKFLOW MANAGER (paie, employés, présence) =="
 c=$(http_code GET /employees "$MT");   [ "$c" = "200" ] && ok "GET /employees 200" || ko "GET /employees $c"
 c=$(http_code GET /attendance "$MT");  [ "$c" = "200" ] && ok "GET /attendance 200" || ko "GET /attendance $c"
 c=$(http_code GET /schedules "$MT");   [ "$c" = "200" ] && ok "GET /schedules 200" || ko "GET /schedules $c"
-c=$(http_code GET /payroll/runs "$MT"); [ "$c" = "200" ] && ok "GET /payroll/runs 200" || ko "GET /payroll/runs $c"
+# #6682 : la route réelle est /payroll-runs (avec tiret) ; /payroll/runs n'existe pas (404).
+# RBAC : les runs de paie sont réservés principal/comptable — un manager rh reçoit
+# volontairement 403 INSUFFICIENT_ROLE (c'est le comportement attendu, pas un échec).
+c=$(http_code GET /payroll-runs "$MT"); [ "$c" = "403" ] && ok "GET /payroll-runs (rh) → 403 INSUFFICIENT_ROLE (RBAC attendu)" || ko "GET /payroll-runs (rh) → $c (attendu 403)"
+# Si un compte principal/comptable est fourni, on vérifie le chemin nominal 200.
+if [ -n "${LEOPARDO_DEMO_PRINCIPAL_PASSWORD:-}" ]; then
+  CT=$(login "${LEOPARDO_DEMO_PRINCIPAL_EMAIL:-ahmed.benali@techcorp-algerie.dz}" "$LEOPARDO_DEMO_PRINCIPAL_PASSWORD")
+  if [ -n "$CT" ]; then
+    ok "login principal/comptable"
+    c=$(http_code GET /payroll-runs "$CT"); [ "$c" = "200" ] && ok "GET /payroll-runs (principal) 200" || ko "GET /payroll-runs (principal) $c"
+  else
+    ko "login principal/comptable (LEOPARDO_DEMO_PRINCIPAL_PASSWORD non fourni ou invalide)"
+  fi
+fi
 
 note "== WORKFLOW EMPLOYEE =="
-c=$(http_code GET /me/attendance "$ET"); [ "$c" = "200" ] && ok "GET /me/attendance 200" || ko "GET /me/attendance $c"
+# #6682 : /me/attendance n'existe pas — les routes self-service réelles sont
+# /me/attendance-anomalies (rh.php) et /attendance/today.
+c=$(http_code GET /me/attendance-anomalies "$ET"); [ "$c" = "200" ] && ok "GET /me/attendance-anomalies 200" || ko "GET /me/attendance-anomalies $c"
 c=$(http_code GET /me/pay-slips "$ET");  [ "$c" = "200" ] && ok "GET /me/pay-slips 200" || ko "GET /me/pay-slips $c"
 
 note "== WORKFLOW PLATFORM =="

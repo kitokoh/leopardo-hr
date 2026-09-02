@@ -38,6 +38,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Sentry\Laravel\Integration;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -273,6 +274,24 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'RESOURCE_NOT_FOUND',
                 'localized_message' => __('errors.NOT_FOUND'),
             ], 404);
+        });
+
+        // #6689 : en Laravel 12, `prepareException()` convertit
+        // AuthorizationException → Symfony AccessDeniedHttpException AVANT
+        // l'invocation des callbacks de rendu — le renderer AuthorizationException
+        // ci-dessous n'est donc JAMAIS atteint via $this->authorize()/Gate::denies().
+        // Sans ce renderer dédié, le 403 sortait avec le message brut
+        // « This action is unauthorized. » comme code machine.
+        $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'FORBIDDEN',
+                'message' => 'FORBIDDEN',
+                'localized_message' => __('errors.FORBIDDEN'),
+            ], 403);
         });
 
         $exceptions->render(function (AuthorizationException $exception, Request $request) {
