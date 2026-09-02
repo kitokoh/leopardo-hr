@@ -190,6 +190,10 @@ class SectorTemplateService
 
         $payload = [
             'name' => 'Operations',
+            // Issue #6684 : la table departments n'a PAS de colonne updated_at
+            // (migration 2026_04_01_000100, table minimale volontaire) —
+            // l'insérer faisait 500 sur POST /platform/companies (le schéma
+            // MVP de test masquait le bug : timestamps() vs created_at seul).
             'created_at' => now(),
         ];
 
