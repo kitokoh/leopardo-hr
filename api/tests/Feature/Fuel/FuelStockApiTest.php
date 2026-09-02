@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
-use App\Modules\FuelStation\Domain\Models\FuelStockMovement;use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelTank
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelStockMovement
+use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation
 
 /**
  * Stocks, cuves et rapprochement — FUEL-009 (issue #5803).

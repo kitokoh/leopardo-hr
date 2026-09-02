@@ -10,7 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCancellationPolicyRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelCancellationPolicyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCancellationPolicyResource;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelCancellationPolicyRequest
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCancellationPolicyResource;
 
 /**

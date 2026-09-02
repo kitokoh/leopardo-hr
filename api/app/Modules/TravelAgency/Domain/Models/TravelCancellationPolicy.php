@@ -9,7 +9,8 @@ use Database\Factories\TravelCancellationPolicyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder
+use Illuminate\Support\Carbon;
 
 /**
  * Politique d'annulation configurable (TRAVEL-813, issue #6103).

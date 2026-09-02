@@ -8,7 +8,8 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelCurrencyRateFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder
+use Illuminate\Support\Carbon;
 
 /**
  * Taux de conversion par tenant (TRAVEL-805, issue #6096).

@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Core\Auth\Domain\Models\AuditLog;use Illuminate\Support\Facades\DB;
+use App\Core\Auth\Domain\Models\AuditLog
 use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller

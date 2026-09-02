@@ -12,7 +12,10 @@
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeeType;
-use App\Core\Auth\Domain\Models\Employee;use App\Modules\EduManager\Domain\Access\EduAccess;use App\Modules\EduManager\Domain\Models\EduFee;use App\Modules\EduManager\Domain\Models\EduFeeCharge;use App\Modules\EduManager\Domain\Models\EduFeeType;
+use App\Core\Auth\Domain\Models\Employee
+use App\Modules\EduManager\Domain\Access\EduAccess
+use App\Modules\EduManager\Domain\Models\EduFee
+use App\Modules\EduManager\Domain\Models\EduFeeCharge
 
 /**
  * #5832 (EDU-016) — frais scolaires : direction uniquement.

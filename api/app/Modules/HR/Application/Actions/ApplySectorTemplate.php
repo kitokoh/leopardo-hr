@@ -1,5 +1,6 @@
 
-use App\Core\Tenant\Domain\Models\Company;use Illuminate\Support\Facades\DB;
+use App\Core\Tenant\Domain\Models\Company
+use Illuminate\Support\Facades\DB;
     public function execute(Company $company, string $sector): void
     {
         if ($sector === 'btp') {

@@ -7,8 +7,29 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\FuelStationAlert;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\DispatchCommunicationJob;use App\Modules\FuelStation\Domain\Models\FuelAlertLog;use App\Modules\FuelStation\Domain\Models\FuelCashSession;use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Carbon;use Illuminate\Support\Facades\DB;
-use App\Core\Notifications\Contracts\InAppNotifier;use App\Modules\FuelStation\Domain\Models\FuelAlert;use App\Modules\FuelStation\Domain\Models\FuelAlertLog;use App\Modules\FuelStation\Domain\Models\FuelCashSession;use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;use App\Modules\Notification\Infrastructure\Services\CommunicationService;use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Carbon;use Illuminate\Support\Facades\DB;use Throwable;
+use App\Jobs\DispatchCommunicationJob
+use App\Modules\FuelStation\Domain\Models\FuelAlertLog
+use App\Modules\FuelStation\Domain\Models\FuelCashSession
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
+use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun
+use Illuminate\Database\UniqueConstraintViolationException
+use Illuminate\Support\Carbon
+use Illuminate\Support\Facades\DB;
+use App\Core\Notifications\Contracts\InAppNotifier
+use App\Modules\FuelStation\Domain\Models\FuelAlert
+use App\Modules\FuelStation\Domain\Models\FuelAlertLog
+use App\Modules\FuelStation\Domain\Models\FuelCashSession
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference
+use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun
+use App\Modules\Notification\Infrastructure\Services\CommunicationService
+use Illuminate\Database\Eloquent\Builder
+use Illuminate\Database\UniqueConstraintViolationException
+use Illuminate\Support\Carbon
+use Illuminate\Support\Facades\DB
+use Throwable;
 
 /**
  * Notifications & alertes FuelStation — FUEL-019 (issue #5813).

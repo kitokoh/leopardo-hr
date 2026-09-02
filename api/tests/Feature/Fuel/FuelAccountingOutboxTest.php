@@ -12,8 +12,20 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Core\Auth\Domain\Models\AuditLog;use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer;use App\Modules\FuelStation\Domain\Exceptions\PermanentFuelOutboxException;use App\Modules\FuelStation\Domain\Exceptions\TransientFuelOutboxException;use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;use Illuminate\Foundation\Testing\WithFaker;use Illuminate\Support\Facades\Artisan;
-use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer;use App\Modules\FuelStation\Domain\Exceptions\PermanentFuelOutboxException;use App\Modules\FuelStation\Domain\Exceptions\TransientFuelOutboxException;use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher;use Illuminate\Foundation\Testing\WithFaker;use Illuminate\Support\Facades\Artisan;
+use App\Core\Auth\Domain\Models\AuditLog
+use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer
+use App\Modules\FuelStation\Domain\Exceptions\PermanentFuelOutboxException
+use App\Modules\FuelStation\Domain\Exceptions\TransientFuelOutboxException
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher
+use Illuminate\Foundation\Testing\WithFaker
+use Illuminate\Support\Facades\Artisan;
+use App\Modules\FuelStation\Domain\Contracts\FuelOutboxConsumer
+use App\Modules\FuelStation\Domain\Exceptions\PermanentFuelOutboxException
+use App\Modules\FuelStation\Domain\Exceptions\TransientFuelOutboxException
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry
+use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxPublisher
+use Illuminate\Foundation\Testing\WithFaker
 
 /**
  * Contrat Accounting — FUEL-015 (issue #5809).

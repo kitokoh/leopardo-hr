@@ -13,7 +13,9 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelStationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Domain\Models\FuelSite;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelStationRequest;
+use App\Modules\FuelStation\Domain\Models\FuelSite
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelStationRequest;
 
 /**
  * CRUD des stations FuelStation (FUEL-011, issue #5805).

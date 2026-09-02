@@ -13,8 +13,16 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;
-use App\Jobs\GenerateFuelReportExportJob;use App\Modules\FuelStation\Domain\Models\FuelReportExport;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\CreateFuelReportExportRequest;use Illuminate\Support\Facades\Storage;use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot
+use App\Modules\FuelStation\Domain\Models\FuelStation
+use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;
+use App\Jobs\GenerateFuelReportExportJob
+use App\Modules\FuelStation\Domain\Models\FuelReportExport
+use App\Modules\FuelStation\Domain\Models\FuelStation
+use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\CreateFuelReportExportRequest
+use Illuminate\Support\Facades\Storage
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Reporting opérationnel (FUEL-017, issue #5811). deny-by-default

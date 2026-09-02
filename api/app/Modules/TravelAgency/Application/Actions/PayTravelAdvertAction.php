@@ -7,8 +7,14 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Modules\TravelAgency\Domain\Enums\AdvertStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use Illuminate\Support\Str;
-use App\Core\Auth\Domain\Models\Employee;use App\Modules\TravelAgency\Domain\Enums\PaymentProvider;use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;use App\Modules\TravelAgency\Domain\Models\TravelPayment;use Illuminate\Support\Facades\DB;
-use App\Modules\TravelAgency\Domain\Enums\PaymentProvider;use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;use App\Modules\TravelAgency\Domain\Models\TravelPayment;use Illuminate\Support\Facades\DB;
+use App\Core\Auth\Domain\Models\Employee
+use App\Modules\TravelAgency\Domain\Enums\PaymentProvider
+use App\Modules\TravelAgency\Domain\Enums\PaymentStatus
+use App\Modules\TravelAgency\Domain\Models\TravelPayment
+use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Domain\Enums\PaymentProvider
+use App\Modules\TravelAgency\Domain\Enums\PaymentStatus
+use App\Modules\TravelAgency\Domain\Models\TravelPayment
 
 /**
  * TRAVEL-907 (#6110) — Paiement d'une annonce.

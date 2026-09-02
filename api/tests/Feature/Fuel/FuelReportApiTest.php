@@ -11,8 +11,12 @@ use App\Modules\FuelStation\Domain\Models\FuelShift;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;use App\Modules\FuelStation\Domain\Models\FuelStation;
-use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;use App\Modules\FuelStation\Domain\Models\FuelPump;use App\Modules\FuelStation\Domain\Models\FuelReportExport;use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot
+use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister
+use App\Modules\FuelStation\Domain\Models\FuelPump
+use App\Modules\FuelStation\Domain\Models\FuelReportExport
 
 /**
  * Reporting opérationnel — FUEL-017 (issue #5811).

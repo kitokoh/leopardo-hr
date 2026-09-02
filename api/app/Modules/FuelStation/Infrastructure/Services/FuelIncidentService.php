@@ -9,8 +9,12 @@ use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
-use App\Core\Auth\Domain\Models\AuditLog;use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException;use Illuminate\Database\Eloquent\Model;use Illuminate\Support\Carbon;
-use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException;use Illuminate\Database\Eloquent\Model;use Illuminate\Support\Carbon;
+use App\Core\Auth\Domain\Models\AuditLog
+use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException
+use Illuminate\Database\Eloquent\Model
+use Illuminate\Support\Carbon;
+use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException
+use Illuminate\Database\Eloquent\Model
 
 /**
  * Incidents, maintenance et tâches FuelStation — FUEL-010 (issue #5804).

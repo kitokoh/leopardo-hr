@@ -8,7 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee;use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Core\Auth\Domain\Models\Employee
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

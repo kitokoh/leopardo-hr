@@ -12,8 +12,14 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemTravelLoyaltyReque
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelLoyaltyOptInRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward;use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
+use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward
+use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest
 
 /**
  * TRAVEL-811 (#6101) — Fidélité voyageur.

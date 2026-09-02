@@ -13,7 +13,13 @@ use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\EduManager\Domain\Models\EduAccountingEntry;use App\Modules\EduManager\Domain\Models\EduFeeCharge;use App\Modules\EduManager\Domain\Models\EduFeePayment;use App\Modules\EduManager\Domain\Models\EduFeeType;use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest;use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest;use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeTypeRequest;
+use App\Modules\EduManager\Domain\Models\EduAccountingEntry
+use App\Modules\EduManager\Domain\Models\EduFeeCharge
+use App\Modules\EduManager\Domain\Models\EduFeePayment
+use App\Modules\EduManager\Domain\Models\EduFeeType
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeTypeRequest;
 
 /**
  * API des frais scolaires — EDU-016 (issue #5832).

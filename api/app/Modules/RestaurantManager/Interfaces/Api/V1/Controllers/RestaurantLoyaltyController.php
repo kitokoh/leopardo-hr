@@ -18,8 +18,10 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyP
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
-use App\Modules\RestaurantManager\Application\Actions\RedeemLoyaltyPointsAction;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
+use App\Modules\RestaurantManager\Application\Actions\RedeemLoyaltyPointsAction
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest
 
 /**
  * RESTO-606 (#6211) — Programme fidélité : programme, clients, points.

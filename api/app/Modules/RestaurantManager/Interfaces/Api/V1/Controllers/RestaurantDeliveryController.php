@@ -14,8 +14,14 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDelivery
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
-use App\Modules\RestaurantManager\Application\Actions\CreateDeliveryAction;use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction;use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\TransitionRestaurantDeliveryRequest;
-use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction;use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\TransitionRestaurantDeliveryRequest;
+use App\Modules\RestaurantManager\Application\Actions\CreateDeliveryAction
+use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction
+use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\TransitionRestaurantDeliveryRequest;
+use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction
+use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder
 
 /**
  * RESTO-605 (#6210) — Cycle de livraison (assign/out/deliver/cancel).

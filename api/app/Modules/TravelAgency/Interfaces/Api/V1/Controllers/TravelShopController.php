@@ -20,7 +20,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 
 /**
  * TRAVEL-401..404 (#6053..#6056) — Boutique en ligne (v1 : auth tenant).

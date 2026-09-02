@@ -10,8 +10,16 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantReportServic
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\RestaurantManager\Application\Actions\ExportRestaurantReportAction;use App\Modules\RestaurantManager\Application\Services\RestaurantReportService;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest;use Illuminate\Support\Facades\Storage;use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use App\Modules\RestaurantManager\Application\Services\RestaurantReportService;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest;use Illuminate\Support\Facades\Storage;use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Modules\RestaurantManager\Application\Actions\ExportRestaurantReportAction
+use App\Modules\RestaurantManager\Application\Services\RestaurantReportService
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest
+use Illuminate\Support\Facades\Storage
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Modules\RestaurantManager\Application\Services\RestaurantReportService
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest
+use Illuminate\Support\Facades\Storage
 
 /**
  * RESTO-701 (#6214) — Rapports agrégés (ventes, occupation, produits, COGS,

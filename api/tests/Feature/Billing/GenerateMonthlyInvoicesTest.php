@@ -11,7 +11,8 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;use Illuminate\Testing\PendingCommand;
+use Illuminate\Support\Facades\DB
+use Illuminate\Testing\PendingCommand;
 
 /**
  * #6549 — GenerateMonthlyInvoices : anti-doublon par période et

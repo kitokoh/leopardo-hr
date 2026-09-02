@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
+use App\Modules\Notification\Domain\Models\CommunicationEvent
+use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
 
 /**
  * TRAVEL-415 (#6067) — Envoi des notifications voyageur.

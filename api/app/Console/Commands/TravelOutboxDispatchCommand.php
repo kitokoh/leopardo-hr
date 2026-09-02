@@ -10,7 +10,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Throwable;
-use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;use Illuminate\Database\Query\Builder;use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException
+use Illuminate\Database\Query\Builder
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
 

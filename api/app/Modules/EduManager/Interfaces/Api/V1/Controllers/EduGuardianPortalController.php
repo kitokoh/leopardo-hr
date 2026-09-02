@@ -20,7 +20,9 @@ use App\Modules\EduManager\Policies\EduGuardianPortalPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Modules\EduManager\Infrastructure\Services\EduGuardianPortalService;use App\Modules\EduManager\Interfaces\Api\V1\Requests\CreateEduGuardianPortalLinkRequest;use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduGuardianAccessLinkRequest;
+use App\Modules\EduManager\Infrastructure\Services\EduGuardianPortalService
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\CreateEduGuardianPortalLinkRequest
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduGuardianAccessLinkRequest;
 
 /**
  * Portail guardian — EDU-013 (issue #5829).

@@ -15,8 +15,10 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier;use App\Modules\TravelAgency\Domain\Models\TravelCity;use App\Modules\TravelAgency\Domain\Models\TravelRoute;
-use App\Modules\TravelAgency\Domain\Models\TravelCity;use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelCarrier
+use App\Modules\TravelAgency\Domain\Models\TravelCity
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
+use App\Modules\TravelAgency\Domain\Models\TravelCity
 
 /**
  * TRAVEL-1007 (#6120) — Golden journey GJ-TRAVEL-01.

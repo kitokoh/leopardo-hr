@@ -6,7 +6,8 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Builder
+use Illuminate\Support\Carbon;
 
 /**
  * Session de caisse du PDV tablette (TRAVEL-810, issue #6100).

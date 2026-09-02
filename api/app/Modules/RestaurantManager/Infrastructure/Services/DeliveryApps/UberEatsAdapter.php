@@ -8,7 +8,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceOrderItem;
-use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
+use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
 
 /**

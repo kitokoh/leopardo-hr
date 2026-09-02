@@ -6,8 +6,10 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use Illuminate\Support\Str;
-use DateTimeInterface;use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Facades\DB;
-use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Facades\DB;
+use DateTimeInterface
+use Illuminate\Database\UniqueConstraintViolationException
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\UniqueConstraintViolationException
 
 /**
  * Publication d'événements FuelStation dans l'outbox (FUEL-015/019).

@@ -16,7 +16,9 @@ use Database\Seeders\AIToolRegistrySeeder;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use App\AI\ToolPermissionPolicy;use App\AI\WriteActionRunner;use App\Modules\Planning\Domain\Models\Absence;
+use App\AI\ToolPermissionPolicy
+use App\AI\WriteActionRunner
+use App\Modules\Planning\Domain\Models\Absence;
 
 /**
  * BC-23-D05 (issue #6237) — matrice de permissions par outil AI versionnée.

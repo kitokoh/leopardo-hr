@@ -11,8 +11,22 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\TravelReportRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;use App\Modules\TravelAgency\Application\Queries\DashboardKpisQuery;use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\Bus;
-use App\Modules\TravelAgency\Application\Queries\DashboardKpisQuery;use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\Bus;
+use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery
+use App\Modules\TravelAgency\Application\Queries\DashboardKpisQuery
+use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery
+use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery
+use App\Modules\TravelAgency\Application\Queries\SalesReportQuery
+use App\Modules\TravelAgency\Domain\Models\TravelReportExport
+use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob
+use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage
+use Illuminate\Support\Facades\Bus;
+use App\Modules\TravelAgency\Application\Queries\DashboardKpisQuery
+use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery
+use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery
+use App\Modules\TravelAgency\Application\Queries\SalesReportQuery
+use App\Modules\TravelAgency\Domain\Models\TravelReportExport
+use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob
+use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage
 
 /**
  * TRAVEL-501..504 / 507 (#6071..#6074, #6077) — Rapports & dashboard travel.

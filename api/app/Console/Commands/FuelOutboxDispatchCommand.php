@@ -12,7 +12,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Throwable;
-use Illuminate\Database\Query\Builder;use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Query\Builder
 use Illuminate\Support\Facades\Log;
 
 /**

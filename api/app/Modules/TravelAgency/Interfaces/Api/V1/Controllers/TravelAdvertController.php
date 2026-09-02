@@ -15,9 +15,22 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ModerateTravelAdvertRequ
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Core\Tenant\Domain\Models\Company;use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction;use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService;use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;use Illuminate\Support\Facades\DB;
-use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;use App\Modules\TravelAgency\Infrastructure\Services\TravelAdvertPricingService;
-use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction;use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService;use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;use App\Modules\TravelAgency\Infrastructure\Services\TravelAdvertPricingService;use Illuminate\Support\Facades\DB;
+use App\Core\Tenant\Domain\Models\Company
+use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction
+use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType
+use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType
+use App\Modules\TravelAgency\Infrastructure\Services\TravelAdvertPricingService;
+use App\Modules\TravelAgency\Application\Actions\ValidateTravelAdvertAction
+use App\Modules\TravelAgency\Application\Services\TravelAdvertPricingService
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice
+use App\Modules\TravelAgency\Domain\Models\TravelAdvertType
+use App\Modules\TravelAgency\Infrastructure\Services\TravelAdvertPricingService
 
 /**
  * TRAVEL-907/908 (#6110/#6111) — Annonces payantes.

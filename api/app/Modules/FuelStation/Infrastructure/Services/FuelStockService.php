@@ -13,8 +13,18 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
-use App\Modules\FuelStation\Domain\Events\FuelDeliveryReceived;use App\Modules\FuelStation\Domain\Events\FuelStockReconciliationCompleted;use App\Modules\FuelStation\Domain\Events\FuelStockVarianceDetected;use App\Modules\FuelStation\Domain\Models\FuelDelivery;use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;use App\Modules\FuelStation\Domain\Models\FuelStockMovement;use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use App\Modules\FuelStation\Domain\Models\FuelStation
+use App\Modules\FuelStation\Domain\Models\FuelTank
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
+use App\Modules\FuelStation\Domain\Events\FuelDeliveryReceived
+use App\Modules\FuelStation\Domain\Events\FuelStockReconciliationCompleted
+use App\Modules\FuelStation\Domain\Events\FuelStockVarianceDetected
+use App\Modules\FuelStation\Domain\Models\FuelDelivery
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister
+use App\Modules\FuelStation\Domain\Models\FuelStockMovement
+use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation
+use App\Modules\FuelStation\Domain\Models\FuelTank
 
 /**
  * Stocks, cuves et rapprochement FuelStation — FUEL-009 (issue #5803).

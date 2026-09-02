@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\FuelStation\Domain\Models\FuelReportExport;use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
+use App\Modules\FuelStation\Domain\Models\FuelReportExport
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
 
 /**
  * RBAC du reporting opérationnel (FUEL-017, #5811). deny-by-default :

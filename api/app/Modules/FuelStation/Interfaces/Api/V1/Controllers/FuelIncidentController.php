@@ -14,8 +14,15 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelIncidentRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelIncidentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;use Illuminate\Database\Eloquent\Model;
-use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelMaintenanceService;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\TransitionFuelIncidentRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelMaintenanceTaskRequest;use Illuminate\Database\Eloquent\Model;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest
+use Illuminate\Database\Eloquent\Model;
+use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment
+use App\Modules\FuelStation\Domain\Models\FuelStation
+use App\Modules\FuelStation\Infrastructure\Services\FuelMaintenanceService
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\TransitionFuelIncidentRequest
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelMaintenanceTaskRequest
 
 /**
  * Incidents équipements (FUEL-010, issue #5804).

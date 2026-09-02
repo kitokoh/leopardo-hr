@@ -15,7 +15,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use App\Core\Auth\Domain\Exceptions\TwoFactorException;use App\Core\Auth\Infrastructure\Services\AuthService;use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService;use Carbon\Carbon;use Throwable;
+use App\Core\Auth\Domain\Exceptions\TwoFactorException
+use App\Core\Auth\Infrastructure\Services\AuthService
+use App\Core\Auth\Infrastructure\Services\TwoFactorAuthService
+use Carbon\Carbon
+use Throwable;
 
 class WebAuthController extends Controller
 {
