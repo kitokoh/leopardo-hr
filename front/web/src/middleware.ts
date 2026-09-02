@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
+import { isValidSessionTokenShape } from '@/lib/session-token';
 
 /**
  * Middleware de protection serveur de la zone dashboard (QA wave 2026-08-14,
@@ -46,8 +47,9 @@ export function middleware(request: NextRequest) {
     // the client-side app mounts. It is NOT a security boundary: a valid
     // shape here does not mean a valid session. Real authentication and
     // authorization are enforced server-side by the API on every request.
-    const isValidToken =
-      !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+    // #6726 : la garde accepte désormais les tokens Sanctum `{id}|{plain}`
+    // (le `|` était exclu du regex → boucle de redirection en prod).
+    const isValidToken = isValidSessionTokenShape(token);
 
     if (!isValidToken) {
       const loginUrl = new URL('/auth/login', request.url);

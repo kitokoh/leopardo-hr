@@ -319,7 +319,12 @@ const bankingForm = reactive({ company_iban: '', company_bic: '' })
 async function loadBanking() {
   isBankingLoading.value = true
   try {
-    const res = await api.get('/company/banking')
+    // #6714 : /company/banking est une route TENANT — le super admin reçoit
+    // 401 attendu. Sans _skipAuthRedirect, l'intercepteur détruisait la
+    // session admin (removeAuthToken + redirect /login) au simple clic sur
+    // « Paramètres ». Le code gère déjà l'échec proprement (console.warn +
+    // section désactivée).
+    const res = await api.get('/company/banking', { _skipAuthRedirect: true })
     const data = res.data?.data || {}
     bankingData.company_iban = data.company_iban ?? null
     bankingData.company_bic = data.company_bic ?? null

@@ -130,6 +130,11 @@ function selectTab(tab) {
  * signifie que le flag « travelagency » est désactivé pour le tenant connecté.
  * _skipAuthRedirect (#4170) : un 401 (super-admin hors contexte tenant) ne
  * doit pas détruire la session admin.
+ *
+ * #6713 : le backend BC-24 n'est pas encore livré (#6127) — /travel/ping
+ * répond 404. On traite 404 comme « module non activé » (état propre,
+ * pas une fausse panne avec Retry permanent). Le 403 du middleware
+ * module.travelagency prendra le relais quand #6127 sera livré.
  */
 async function checkGate() {
   gateStatus.value = 'checking'
@@ -139,7 +144,9 @@ async function checkGate() {
     gateStatus.value = 'ready'
   } catch (err) {
     const status = err.response?.status
-    if (status === 403) {
+    if (status === 403 || status === 404) {
+      // 403 = flag désactivé ; 404 = backend pas encore livré (#6127) :
+      // dans les deux cas le module n'est pas disponible → état « disabled ».
       gateStatus.value = 'disabled'
     } else {
       gateStatus.value = 'error'
