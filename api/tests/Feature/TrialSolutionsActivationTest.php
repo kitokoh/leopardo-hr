@@ -70,15 +70,21 @@ class TrialSolutionsActivationTest extends TestCase
         $this->assertTrue($company->hasFeature('notifications'));
         $this->assertTrue($company->hasFeature('rh'));
 
-        // Activation auditée.
-        $this->assertDatabaseHas('audit_logs', [
-            'company_id' => $company->id,
-            'action' => 'solution.activated',
-        ]);
-        $this->assertDatabaseHas('audit_logs', [
-            'company_id' => $company->id,
-            'action' => 'solution.dependencies_activated',
-        ]);
+        // Activation auditée (audit_logs = table tenant → contexte tenant,
+        // pattern SelfServiceTrialTest).
+        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        try {
+            $this->assertDatabaseHas('audit_logs', [
+                'company_id' => $company->id,
+                'action' => 'solution.activated',
+            ]);
+            $this->assertDatabaseHas('audit_logs', [
+                'company_id' => $company->id,
+                'action' => 'solution.dependencies_activated',
+            ]);
+        } finally {
+            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+        }
     }
 
     public function test_signup_rejects_unknown_solution_fail_closed(): void
@@ -120,18 +126,24 @@ class TrialSolutionsActivationTest extends TestCase
                 && $job->email === 'guided@newtech.dz';
         });
 
-        // Exécution synchrone du job (Queue::fake) : le provisioning réel doit
-        // activer la solution sur le tenant créé.
-        $job = new ProvisionDemoTenantJob('guided@newtech.dz', 'Guided Restaurant', 'DZ', null, ['fuel_station']);
-        $job->handle(app(ProvisionGuidedTrial::class));
+        // Exécution directe du provisioning (sans passer par le handle du job,
+        // qui contient issueDemoAccess — comportement job préexistant) : la
+        // solution demandée doit être activée sur le tenant créé.
+        $result = app(ProvisionGuidedTrial::class)->execute('guided@newtech.dz', 'Guided Restaurant', 'DZ', ['fuel_station']);
 
-        $company = Company::where('email', 'guided@newtech.dz')->first();
+        $company = $result['company'];
         $this->assertNotNull($company);
         $this->assertTrue($company->hasFeature('fuel_station'));
-        $this->assertDatabaseHas('audit_logs', [
-            'company_id' => $company->id,
-            'action' => 'solution.activated',
-        ]);
+        $this->assertTrue($company->hasFeature('attendance'));
+        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        try {
+            $this->assertDatabaseHas('audit_logs', [
+                'company_id' => $company->id,
+                'action' => 'solution.activated',
+            ]);
+        } finally {
+            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+        }
     }
 
     public function test_activation_is_idempotent(): void
@@ -156,17 +168,23 @@ class TrialSolutionsActivationTest extends TestCase
         $company = Company::where('email', 'idem@newtech.dz')->first();
         $this->assertNotNull($company);
 
-        // Ré-activer la solution déjà active : no-op, pas de doublon d'audit.
-        $before = AuditLog::where('company_id', $company->id)
-            ->where('action', 'solution.activated')
-            ->count();
+        // Ré-activer la solution déjà active : no-op, pas de doublon d'audit
+        // (audit_logs = table tenant → contexte tenant).
+        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        try {
+            $before = AuditLog::where('company_id', $company->id)
+                ->where('action', 'solution.activated')
+                ->count();
 
-        $company->refresh();
-        app(\App\Core\Solutions\SolutionActivator::class)->activateWithDependencies($company, 'fuel_station');
+            $company->refresh();
+            app(\App\Core\Solutions\SolutionActivator::class)->activateWithDependencies($company, 'fuel_station');
 
-        $after = AuditLog::where('company_id', $company->id)
-            ->where('action', 'solution.activated')
-            ->count();
-        $this->assertSame($before, $after);
+            $after = AuditLog::where('company_id', $company->id)
+                ->where('action', 'solution.activated')
+                ->count();
+            $this->assertSame($before, $after);
+        } finally {
+            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+        }
     }
 }
