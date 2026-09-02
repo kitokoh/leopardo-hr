@@ -62,7 +62,7 @@ export default function RestaurantHomePage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">{t(locale, 'restaurant.home.kpiRevenue', "Chiffre d'affaires du jour")}</p>
+          <p className="text-sm text-slate-500">{t(locale, 'restaurant.home.kpiRevenue')}</p>
           <p className="mt-1 text-2xl font-black text-slate-900">{(kpis?.revenue_minor ?? 0).toLocaleString(locale)}</p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

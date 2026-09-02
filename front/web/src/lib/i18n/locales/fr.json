@@ -3759,7 +3759,8 @@
       "kpiRotation": "Rotation des tables",
       "alerts": "Alertes de stock",
       "alertLine": "Ingrédient",
-      "open": "Ouvrir"
+      "open": "Ouvrir",
+      "kpiRevenue": "Chiffre d'affaires du jour"
     },
     "del": {
       "loadError": "Impossible de charger les données livraison/fidélité.",

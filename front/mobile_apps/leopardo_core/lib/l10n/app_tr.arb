@@ -2697,6 +2697,7 @@
   "restaurantHomeAlerts": "Alertes de stock",
   "restaurantHomeAlertline": "Ingrédient",
   "restaurantHomeOpen": "Ouvrir",
+  "restaurantHomeKpirevenue": "Günlük ciro",
   "restaurantDelLoaderror": "Impossible de charger les données livraison/fidélité.",
   "restaurantDelCreateerror": "Erreur de création de la livraison.",
   "restaurantDelRiderprompt": "ID du livreur à assigner :",
