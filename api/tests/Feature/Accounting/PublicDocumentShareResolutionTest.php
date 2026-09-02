@@ -95,4 +95,27 @@ class PublicDocumentShareResolutionTest extends TestCase
         $this->getJson('/api/v1/accounting/documents/shared/'.str_repeat('y', 64))->assertStatus(404);
         $this->get('/api/v1/accounting/documents/shared/'.str_repeat('y', 64).'/download')->assertStatus(404);
     }
+
+    public function test_invalid_token_error_is_localized_with_accept_language(): void
+    {
+        Storage::fake('private');
+        Mail::fake();
+
+        // Issue #6676 : les routes publiques Accounting doivent servir un
+        // localized_message dans la langue demandée (Accept-Language), comme
+        // le reste de l'API — jamais le défaut anglais.
+        $this->getJson(
+            '/api/v1/accounting/documents/shared/'.str_repeat('y', 64),
+            ['Accept-Language' => 'fr']
+        )->assertStatus(404)
+            ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
+            ->assertJsonPath('localized_message', 'Partage de document introuvable ou expiré.');
+
+        $this->getJson(
+            '/api/v1/accounting/documents/shared/'.str_repeat('y', 64),
+            ['Accept-Language' => 'en']
+        )->assertStatus(404)
+            ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
+            ->assertJsonPath('localized_message', 'Document share not found or expired.');
+    }
 }

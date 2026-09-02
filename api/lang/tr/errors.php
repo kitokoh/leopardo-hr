@@ -42,6 +42,7 @@ return [
     'NOT_FOUND' => 'Kaynak bulunamadı.',
     'FORBIDDEN' => 'Bu işlem için yetkiniz yok.',
     'ACCOUNT_LOCKED' => 'Hesap :date tarihine kadar kilitlendi. Lütfen daha sonra tekrar deneyin.',
+    'RESOURCE_NOT_FOUND' => 'Kaynak bulunamadı.',
     'SERVER_ERROR' => 'Bir hata oluştu. Lütfen tekrar deneyin.',
     'VALIDATION_ERROR' => 'Bazı alanlar hatalı.',
     'BAD_REQUEST' => 'Gecersiz istek.',

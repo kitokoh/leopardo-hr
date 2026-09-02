@@ -42,6 +42,7 @@ return [
     'NOT_FOUND' => 'Resource not found.',
     'FORBIDDEN' => 'You do not have permission for this action.',
     'ACCOUNT_LOCKED' => 'Account locked until :date. Please try again later.',
+    'RESOURCE_NOT_FOUND' => 'Resource not found.',
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
     'BAD_REQUEST' => 'Bad request.',

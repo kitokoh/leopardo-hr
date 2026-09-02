@@ -13,6 +13,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -32,7 +33,12 @@ final class PublicDocumentShareController
         $share = $this->resolveShare($token);
 
         if ($share === null) {
-            abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
+            // Issue #6676 : réponse localisée explicite (pattern Onboarding
+            // errorResponse) — abort() passait par le renderer HttpException
+            // dont la localisation dépendait de $request->getLocale() (en par
+            // défaut), produisant un localized_message anglais même avec
+            // Accept-Language: fr.
+            return $this->errorResponse('DOCUMENT_SHARE_NOT_FOUND', 404);
         }
 
         $this->auditAccess($share, 'accounting.share.info');
@@ -54,12 +60,21 @@ final class PublicDocumentShareController
         ])->header('Referrer-Policy', 'no-referrer');
     }
 
-    public function download(string $token): StreamedResponse
+    /**
+     * @return Response (StreamedResponse en succès, JsonResponse localisée sur
+     *                  erreur #6676 — type commun Symfony)
+     */
+    public function download(string $token): Response
     {
         $share = $this->resolveShare($token);
 
         if ($share === null) {
-            abort(404, 'DOCUMENT_SHARE_NOT_FOUND');
+            // Issue #6676 : réponse localisée explicite (pattern Onboarding
+            // errorResponse) — abort() passait par le renderer HttpException
+            // dont la localisation dépendait de $request->getLocale() (en par
+            // défaut), produisant un localized_message anglais même avec
+            // Accept-Language: fr.
+            return $this->errorResponse('DOCUMENT_SHARE_NOT_FOUND', 404);
         }
 
         $this->auditAccess($share, 'accounting.share.download');
@@ -68,7 +83,7 @@ final class PublicDocumentShareController
         $document = $share->document;
 
         if ($document->pdf_path === null || ! Storage::disk(GenerateDocumentPdf::DISK)->exists($document->pdf_path)) {
-            abort(404, 'DOCUMENT_PDF_NOT_READY');
+            return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
         }
 
         $filename = $document->type.'-'.$document->number.'.pdf';
@@ -99,6 +114,22 @@ final class PublicDocumentShareController
      * depuis le search_path par défaut — on ne les itère QUE sur échec du
      * lookup direct (rare : token invalide ou partage d'un tenant à schéma).
      */
+    /**
+     * Réponse d'erreur localisée (issue #6676) — même pattern que le module
+     * Onboarding : le code est catalogué dans les 4 locales et le message est
+     * traduit selon la locale de la requête (Accept-Language / préférence).
+     */
+    private function errorResponse(string $code, int $status): JsonResponse
+    {
+        $translated = __("errors.{$code}");
+
+        return new JsonResponse([
+            'error' => $code,
+            'message' => $code,
+            'localized_message' => $translated !== "errors.{$code}" ? $translated : $code,
+        ], $status);
+    }
+
     private function resolveShare(string $token): ?AccountingDocumentShare
     {
         $share = AccountingDocumentShare::query()

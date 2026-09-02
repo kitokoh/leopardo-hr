@@ -42,6 +42,7 @@ return [
     'NOT_FOUND' => 'Ressource introuvable.',
     'FORBIDDEN' => 'Vous n\'avez pas les droits pour cette action.',
     'ACCOUNT_LOCKED' => 'Compte verrouillé jusqu\'au :date. Réessayez plus tard.',
+    'RESOURCE_NOT_FOUND' => 'Ressource introuvable.',
     'SERVER_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'VALIDATION_ERROR' => 'Certains champs sont incorrects.',
     'BAD_REQUEST' => 'Requête invalide.',
