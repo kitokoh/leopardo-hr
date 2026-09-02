@@ -112,8 +112,10 @@ app/Core/Tenant/
 ### Migration class aliases — état au 2026-07-19
 
 `app/Models/` et `app/DTOs/` sont maintenant vides/supprimés (migration DDD terminée pour ces deux dossiers).
-Il reste des shims backward-compat dans `app/Traits/` (3 shims), `app/Attributes/` (3 shims) et `app/Enums/` (1 shim),
-pointant vers leur équivalent canonique sous `app/Shared/`.
+Shims backward-compat : `app/Traits/` ne conserve plus que `BelongsToCompany`
+(les shims `Approvable`/`Auditable` ont été supprimés — #6565) ;
+`app/Attributes/` et `app/Enums/ApiError` ont été supprimés (#6565). Tous
+pointent/utilisaient leur équivalent canonique sous `app/Shared/`.
 
 Pour supprimer un alias restant :
 1. `grep -r "App\\Traits\\NomDuTrait" app/` (ou `Attributes`/`Enums`) → remplacer par le namespace canonique `App\Shared\...`
