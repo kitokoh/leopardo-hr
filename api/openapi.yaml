@@ -40633,6 +40633,8 @@ components:
           nullable: true
     PayrollSimulationInput:
       type: object
+      additionalProperties: false
+      description: 'Contrat fermé de la simulation (issue #6686) : month/employee_id ne sont pas acceptés (422) — le calcul mensuel réel passe par /payroll-runs.'
       required:
       - country_code
       - gross_salary

@@ -15,8 +15,8 @@ use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentCont
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureNoticeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
