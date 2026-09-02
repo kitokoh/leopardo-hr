@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Cabinet\Interfaces\Api\V1\Controllers;
+namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controller;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreFolderRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateFolderRequest;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;

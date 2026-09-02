@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Cabinet\Interfaces\Api\V1\Controllers;
+namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Http\Controllers\Controller;
+use App\Http\Controller;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
 use App\Modules\Cabinet\Domain\Models\CabinetShare;
