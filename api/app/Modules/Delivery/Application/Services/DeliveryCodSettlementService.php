@@ -100,7 +100,7 @@ final class DeliveryCodSettlementService
                 'collected_at' => now(),
             ])->save();
 
-            return $settlement->fresh();
+            return $this->freshSettlement($settlement);
         });
     }
 
@@ -133,7 +133,7 @@ final class DeliveryCodSettlementService
                 'settled_at' => now(),
             ])->save();
 
-            return $settlement->fresh();
+            return $this->freshSettlement($settlement);
         });
     }
 
@@ -155,8 +155,19 @@ final class DeliveryCodSettlementService
 
             $settlement->forceFill(['status' => 'reconciled'])->save();
 
-            return $settlement->fresh();
+            return $this->freshSettlement($settlement);
         });
+    }
+
+    private function freshSettlement(DeliveryCodSettlement $settlement): DeliveryCodSettlement
+    {
+        $fresh = $settlement->fresh();
+
+        if ($fresh === null) {
+            abort(500, 'SETTLEMENT_RELOAD_FAILED');
+        }
+
+        return $fresh;
     }
 
     private function lockSettlement(int $settlementId, string $companyId): DeliveryCodSettlement
