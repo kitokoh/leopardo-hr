@@ -127,6 +127,3 @@ export function solutionLabel(
 export const localeFromAppLocale = (locale: string): VitrineLocale =>
   locale === 'fr' ? 'fr' : locale === 'tr' ? 'tr' : locale === 'ar' ? 'ar' : 'en';
 
-
-export const localeFromAppLocale = (locale: string): VitrineLocale =>
-  locale === 'fr' ? 'fr' : locale === 'tr' ? 'tr' : locale === 'ar' ? 'ar' : 'en';

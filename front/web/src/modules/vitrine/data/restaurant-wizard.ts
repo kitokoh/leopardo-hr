@@ -86,7 +86,7 @@ export const WIZARD_COPY: Record<VitrineLocale, WizardCopy> = {
     errorRetry: 'تعذر حساب الحزمة. حاولوا مرة أخرى.', restart: 'إعادة البدء' },
 };
 
-const LEAD_COPY: Record<
+export const LEAD_COPY: Record<
   VitrineLocale,
   { title: string; emailPlaceholder: string; consent: string; submit: string; sending: string; sent: string; error: string; skip: string }
 > = {
