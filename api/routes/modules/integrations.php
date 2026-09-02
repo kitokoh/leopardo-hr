@@ -50,7 +50,9 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::post('/kiosks/{deviceCode}/qr-punch', [KioskController::class, 'qrPunch']);
 });
 
-Route::middleware(['throttle:api'])->group(function (): void {
+Route::middleware(['throttle:zkteco-device'])->group(function (): void {
+    // Issue #6555 : bucket dedie par serial_number (au lieu de 'api' par IP) —
+    // plusieurs devices derriere un NAT partagent la meme IP.
     Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat'])
         ->middleware('zkteco.device');
     Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance'])

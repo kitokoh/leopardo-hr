@@ -70,6 +70,13 @@ Route::middleware('guest:super_admin_web')->group(function (): void {
     Route::post('/platform/login', [PlatformAuthController::class, 'login'])
         ->middleware('throttle:web-login')
         ->name('platform.login.store');
+    // Issue #6530 — challenge TOTP de la surface web super-admin (alignement
+    // sur le login API) : l'etat « en attente de 2FA » est porte par la
+    // session, le code est verifie avant toute ouverture de session.
+    Route::get('/platform/login/2fa', [PlatformAuthController::class, 'show2fa'])->name('platform.login.2fa');
+    Route::post('/platform/login/2fa', [PlatformAuthController::class, 'verify2fa'])
+        ->middleware('throttle:web-login')
+        ->name('platform.login.2fa.verify');
 });
 
 Route::post('/platform/logout', [PlatformAuthController::class, 'logout'])

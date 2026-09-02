@@ -225,13 +225,17 @@ final class OidcFlowService
     private function exchangeCodeForIdToken(SSOProviderConfig $config, string $code): string
     {
         try {
-            $response = Http::asForm()->timeout(15)->acceptJson()->post((string) $config->tokenUrl, [
-                'grant_type' => 'authorization_code',
-                'code' => $code,
-                'redirect_uri' => (string) $config->redirectUri,
-                'client_id' => (string) $config->clientId,
-                'client_secret' => (string) ($config->clientSecret ?? ''),
-            ]);
+            // Issue #6539 : withoutRedirecting() — un IdP compromis/malveillant
+            // ne peut pas rediriger l'echange vers une autre hote (SSRF) et un
+            // 307/308 ne rejoue jamais le corps POST (fuite de client_secret).
+            $response = Http::asForm()->timeout(15)->acceptJson()->withoutRedirecting()
+                ->post((string) $config->tokenUrl, [
+                    'grant_type' => 'authorization_code',
+                    'code' => $code,
+                    'redirect_uri' => (string) $config->redirectUri,
+                    'client_id' => (string) $config->clientId,
+                    'client_secret' => (string) ($config->clientSecret ?? ''),
+                ]);
         } catch (\Throwable $e) {
             throw new \RuntimeException('SSO_TOKEN_EXCHANGE_FAILED: '.$e->getMessage());
         }
