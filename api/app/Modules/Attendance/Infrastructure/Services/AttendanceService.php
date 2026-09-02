@@ -9,17 +9,20 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
+use App\Events\AttendanceRecorded;
 use App\Exceptions\AlreadyCheckedInException;
 use App\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Modules\Attendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class AttendanceService
 {
@@ -109,6 +112,7 @@ class AttendanceService
             ]);
 
             AttendanceCheckedIn::dispatch($log);
+            $this->dispatchAttendanceRecorded($log, 'check_in');
             $this->alertManagersIfOutsideGeofence($employee, $log, 'check_in');
 
             return $log;
@@ -197,6 +201,7 @@ class AttendanceService
         $log->save();
 
         AttendanceCheckedOut::dispatch($log);
+        $this->dispatchAttendanceRecorded($log, 'check_out');
         $this->alertManagersIfOutsideGeofence($employee, $log, 'check_out');
 
         return $log;
@@ -274,6 +279,7 @@ class AttendanceService
             // records who/when an external punch closed a session, instead
             // of this path silently bypassing the audit trail.
             AttendanceCheckedOut::dispatch($log);
+            $this->dispatchAttendanceRecorded($log, 'check_out', occurredAt: $occurredAt);
 
             return $log;
         }
@@ -330,8 +336,58 @@ class AttendanceService
         // offline-synced external check-in must leave the same audit trail
         // as a direct mobile check-in.
         AttendanceCheckedIn::dispatch($log);
+        $this->dispatchAttendanceRecorded($log, 'check_in', occurredAt: $occurredAt);
 
         return $log;
+    }
+
+    /**
+     * ATT-003 (#6768) — publie l'événement versionné AttendanceRecorded.v1
+     * après chaque événement de présence enregistré.
+     *
+     * @param  Carbon|null  $occurredAt  surcharge UTC (flux import)
+     */
+    private function dispatchAttendanceRecorded(AttendanceLog $log, string $eventType, ?Carbon $occurredAt = null): void
+    {
+        $kioskId = $this->resolveKioskId($log);
+
+        event(new AttendanceRecorded(
+            companyId: (string) $log->company_id,
+            employeeId: (int) $log->employee_id,
+            workplaceId: null,
+            eventType: $eventType,
+            occurredAtUtc: ($occurredAt ?? $this->occurredAtFor($log, $eventType))->toIso8601String(),
+            verificationMethod: (string) ($log->method ?? 'unknown'),
+            verificationResult: null,
+            kioskId: $kioskId,
+            correlationId: (string) ($log->external_event_id ?? Str::uuid()),
+            attendanceLogId: (int) $log->id,
+        ));
+    }
+
+    private function occurredAtFor(AttendanceLog $log, string $eventType): Carbon
+    {
+        $value = $eventType === 'check_out' ? $log->check_out : $log->check_in;
+
+        return Carbon::parse($value ?? now('UTC'))->utc();
+    }
+
+    /**
+     * Résout le kiosque émetteur à partir du device_code (haché en base)
+     * porté par le log — uniquement sur le flux kiosque.
+     */
+    private function resolveKioskId(AttendanceLog $log): ?int
+    {
+        $deviceCode = $log->source_device_code;
+        if ($deviceCode === null || $deviceCode === '') {
+            return null;
+        }
+
+        $kiosk = AttendanceKiosk::query()
+            ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
+            ->first(['id']);
+
+        return $kiosk !== null ? (int) $kiosk->id : null;
     }
 
     public function recalculateLog(AttendanceLog $log): AttendanceLog
