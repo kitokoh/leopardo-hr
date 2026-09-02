@@ -23,11 +23,12 @@ class PlatformAdminAiConversationController extends Controller
 
     public function index(): JsonResponse
     {
-        // Issue #6690 : l'IA non provisionnée au niveau plateforme est un
-        // ÉTAT MÉTIER ATTENDU (table ai_conversations absente du schéma),
-        // pas une erreur serveur → 404 avec code stable, jamais 500. Le
-        // guard hasTable évite aussi d'empoisonner la transaction courante
-        // (SQLSTATE 25P02 après une requête sur table manquante).
+        // Issue #6690 : deux causes de 500 INTERNAL_ERROR en prod —
+        // 1) table ai_conversations absente (IA jamais provisionnée) : état
+        //    MÉTIER ATTENDU → 404 avec code stable, jamais 500 (le guard
+        //    hasTable évite aussi le SQLSTATE 25P02 transaction empoisonnée) ;
+        // 2) `json_array_length()` invalide sur colonne jsonb → 500 à CHAQUE
+        //    requête même table présente (corrigé en jsonb_array_length).
         if (! Schema::hasTable(self::TENANT_SCHEMA.'.ai_conversations')) {
             return response()->json([
                 'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
@@ -45,7 +46,7 @@ class PlatformAdminAiConversationController extends Controller
                     'token_count',
                     'created_at',
                     'updated_at',
-                    DB::raw('json_array_length(messages) as message_count'),
+                    DB::raw('jsonb_array_length(messages) as message_count'),
                 ])
                 ->orderByDesc('updated_at')
                 ->limit(50)
