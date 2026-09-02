@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\SolutionActivator;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
@@ -30,6 +32,8 @@ class VerifyTrialSignup
         private readonly TenantManager $tenantManager,
         private readonly PartnerService $partnerService,
         private readonly RequestTrialSignup $requestTrialSignup,
+        private readonly SolutionCatalogue $solutionCatalogue,
+        private readonly SolutionActivator $solutionActivator,
     ) {}
 
     /**
@@ -311,6 +315,16 @@ class VerifyTrialSignup
                             'status' => 'active',
                             'salary_base' => 0,
                         ])->save();
+
+                        // #6693 (BC-25) — activation de la solution sectorielle
+                        // demandée au signup (ex. `restaurant` depuis le wizard
+                        // vitrine) : les modules transversaux requis par le
+                        // manifest sont activés puis la solution est activée
+                        // (SolutionActivator, feature flags + audit
+                        // `solution.activated`). L'activation est fail-closed
+                        // et n'échoue jamais le provisioning du tenant : un
+                        // échec est loggé + audité, le compte reste créé.
+                        $this->activateRequestedSolution($company, $manager, $payload['solution'] ?? null);
                     } finally {
                         $this->tenantManager->resetToPrevious();
                     }
@@ -348,6 +362,45 @@ class VerifyTrialSignup
         }
 
         return $this->createFallbackTrialPlan();
+    }
+
+    /**
+     * #6693 (BC-25) — active la solution sectorielle demandée au signup.
+     *
+     * Le manifest est résolu via le catalogue (allowlist serveur, fail-closed :
+     * code inconnu → 404 côté catalogue, jamais de résolution dynamique). Les
+     * modules transversaux requis par le manifest sont activés d'abord (ex.
+     * `attendance`, `documents`, `notifications` — le tenant ne les a pas par
+     * défaut), puis `SolutionActivator::activate()` pose le feature flag et
+     * trace `solution.activated` (audit). Un échec d'activation ne fait JAMAIS
+     * échouer le provisioning du tenant : il est loggé (ops peut ré-activer
+     * via `leopardo:solution:activate` ou le dashboard super-admin).
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    private function activateRequestedSolution(Company $company, Employee $manager, ?string $solutionCode): void
+    {
+        if ($solutionCode === null || $solutionCode === '') {
+            return;
+        }
+
+        try {
+            $manifest = $this->solutionCatalogue->resolve($solutionCode);
+
+            foreach ($manifest->requiredModules() as $module) {
+                $company->setFeature($module, true);
+            }
+            $company->save();
+
+            $this->solutionActivator->activate($company, $solutionCode, (int) $manager->id);
+        } catch (\Throwable $exception) {
+            Log::error('trial.signup.solution_activation_failed', [
+                'solution' => $solutionCode,
+                'company_id' => $company->id,
+                'manager_id' => $manager->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function createFallbackTrialPlan(): ?object

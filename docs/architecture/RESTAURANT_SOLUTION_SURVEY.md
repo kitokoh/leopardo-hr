@@ -61,6 +61,35 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 - **Label_i18n clés** : `label_key`/`reason_key` résolus par `SOLUTION_LABELS` côté front (fr/en complets, tr/ar → en). Chemin production : catalogue central `/i18n/catalog`.
 - **Sans inscription** : endpoints publics (pré-qualification). L'activation réelle d'une solution par tenant passe par l'existant `SolutionActivator` (feature flags) au moment du provisioning.
 
+## Activation de la solution sur un tenant (#6693)
+
+### Activation automatique à l'inscription
+
+Le signup self-service (`POST /api/v1/trial/signup`) accepte un champ optionnel
+`solution` (ex. `restaurant`), validé **fail-closed** contre l'allowlist du
+`SolutionCatalogue` (code inconnu → 422, jamais de résolution dynamique).
+
+Au moment du provisioning (vérification OTP, `VerifyTrialSignup`), la solution
+demandée est activée dans la transaction du tenant :
+
+1. les **modules transversaux requis** par le manifest sont activés
+   (`Company::setFeature`, ex. `attendance`, `documents`, `notifications`) ;
+2. `SolutionActivator::activate()` pose le feature flag `restaurant` et trace
+   `solution.activated` (audit).
+
+Un échec d'activation est loggé (`trial.signup.solution_activation_failed`) et
+**ne fait jamais échouer** la création du compte : l'ops peut ré-activer via la
+commande console ou le dashboard (voir ci-dessous).
+
+### Activation manuelle (ops / super-admin)
+
+- **Console** : `php artisan leopardo:solution:activate {company} restaurant`
+  (idempotente ; refuse un code inconnu ou un tenant dont les modules requis
+  sont inactifs — `SolutionMissingDependencyException`).
+- **Dashboard super-admin** : édition de la société (`/platform/companies/{id}/edit`),
+  toggles `features` par module connu (`Company::KNOWN_MODULES` — `restaurant`
+  y est déclaré), puis sauvegarde.
+
 ## Budget zéro — dépendances
 
 - Backend : aucune nouvelle dépendance (PHP pur).
@@ -71,7 +100,7 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 ## À faire (prochaines étapes)
 
 - [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
-- [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
-- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
-- [ ] Activation tenant post-inscription via `SolutionActivator`
-- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
+- [x] Traductions tr/ar des labels (ou branchement `/i18n/catalog`) — #6691
+- [x] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant — #6692
+- [x] Activation tenant post-inscription via `SolutionActivator` — #6693
+- [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694

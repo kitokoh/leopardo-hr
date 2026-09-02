@@ -1295,6 +1295,10 @@ paths:
                   enum:
                   - guided_trial
                   - self_service
+                solution:
+                  type: string
+                  maxLength: 60
+                  description: 'Solution sectorielle demandée (allowlist SolutionCatalogue, ex. restaurant) — activée au provisioning tenant (#6693).'
       responses:
         '200':
           description: 'Demande reçue (guided_trial : provisioning lancé)'
