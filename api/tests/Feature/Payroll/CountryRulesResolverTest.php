@@ -136,6 +136,21 @@ class CountryRulesResolverTest extends TestCase
             {
                 return 0.0;
             }
+            public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+            {
+                return $grossTaxable * $annualBasis;
+            }
+
+            public function annualTaxReduction(float $annualProgressiveTax): float
+            {
+                return 0.0;
+            }
+
+            public function taxSurchargeFactor(): float
+            {
+                return 1.0;
+            }
+
 
             public function calculateSocialCharges(float $grossSalary): array
             {
@@ -347,6 +362,21 @@ class CountryRulesResolverTest extends TestCase
             {
                 return 0.0;
             }
+            public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+            {
+                return $grossTaxable * $annualBasis;
+            }
+
+            public function annualTaxReduction(float $annualProgressiveTax): float
+            {
+                return 0.0;
+            }
+
+            public function taxSurchargeFactor(): float
+            {
+                return 1.0;
+            }
+
 
             public function calculateSocialCharges(float $grossSalary): array
             {
