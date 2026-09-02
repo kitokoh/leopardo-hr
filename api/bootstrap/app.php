@@ -47,6 +47,7 @@ use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;use App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
@@ -491,5 +492,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 500);
         });
     
+
+
 
 })->create();

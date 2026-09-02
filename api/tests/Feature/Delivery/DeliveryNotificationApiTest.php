@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Jobs\DispatchDeliveryNotificationJob;use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
 
 /**
  * DELIVERY-206 (#6290) — Notifications destinataire (contrat BC-13).
@@ -201,4 +202,6 @@ class DeliveryNotificationApiTest extends TestCase
             ->assertOk()
             ->assertJsonCount(0, 'data');
     }
+
+
 }

@@ -14,6 +14,7 @@ use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Modules\Delivery\Domain\Models\DeliveryTrackingShare;
 
 /**
  * BC-26-D03 (#6293) — Isolation tenant & tests cross-tenant DeliveryAgency.
@@ -204,4 +205,6 @@ class DeliveryTenantIsolationMatrixTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.reference', 'DLV-2026-333001');
     }
+
+
 }

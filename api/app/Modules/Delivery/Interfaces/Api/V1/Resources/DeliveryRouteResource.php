@@ -6,6 +6,7 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 
 /**
  * Tournée (DELIVERY-202, issue #6286) — totaux dénormalisés + stops ordonnés.
@@ -35,4 +36,6 @@ final class DeliveryRouteResource extends JsonResource
             'stops' => DeliveryRouteStopResource::collection($this->whenLoaded('stops')),
         ];
     }
+
+
 }

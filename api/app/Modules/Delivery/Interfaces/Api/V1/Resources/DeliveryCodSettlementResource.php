@@ -6,6 +6,7 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 
 /**
  * Règlement COD (DELIVERY-205, issue #6289) — allowlisté.
@@ -32,4 +33,6 @@ final class DeliveryCodSettlementResource extends JsonResource
             'settled_at' => $this->settled_at?->toIso8601String(),
         ];
     }
+
+
 }

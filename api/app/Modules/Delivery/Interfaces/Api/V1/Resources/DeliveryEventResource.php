@@ -6,6 +6,7 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\Delivery\Domain\Models\DeliveryEvent;
 
 /**
  * Événement de tracking (DELIVERY-204, issue #6288) — allowlisté, payload
@@ -31,4 +32,6 @@ final class DeliveryEventResource extends JsonResource
             'payload' => $this->payload,
         ];
     }
+
+
 }

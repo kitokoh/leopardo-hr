@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Livraison (agrégat racine du module Delivery, BC-26 DELIVERY).
@@ -131,4 +132,6 @@ class Delivery extends Model
             $this->returned_at = now();
         }
     }
+
+
 }

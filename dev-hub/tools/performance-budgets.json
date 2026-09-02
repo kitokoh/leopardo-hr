@@ -134,6 +134,54 @@
       "p95_ms": 800,
       "pagination": false,
       "notes": "BC-22/BC-08 export FEC DGFiP — volumétrie écritures, génération bornée."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Liste colis/livraisons tenant — pagination obligatoire, filtres statut/source/date (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/routes/today",
+      "max_queries": 10,
+      "p95_ms": 300,
+      "pagination": true,
+      "notes": "Tournée du jour livreur mobile (DELIVERY-203) — scope par employé, pagination (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/routes/{route}",
+      "max_queries": 8,
+      "p95_ms": 300,
+      "pagination": false,
+      "notes": "Détail tournée + stops ordonnés (DELIVERY-202) — pas de N+1, load stops (BC-26-D10/#6296)."
+    },
+    {
+      "method": "POST",
+      "route": "/api/v1/delivery/deliveries/events",
+      "max_queries": 8,
+      "p95_ms": 200,
+      "pagination": false,
+      "notes": "Événement tracking idempotent (DELIVERY-204) — lock FOR UPDATE + unique (company,delivery,type,event_at) (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/deliveries/tracking/{token}",
+      "max_queries": 6,
+      "p95_ms": 200,
+      "pagination": false,
+      "notes": "Suivi public par lien borné (DELIVERY-204) — lookup token indexé (BC-26-D10/#6296)."
+    },
+    {
+      "method": "GET",
+      "route": "/api/v1/delivery/deliveries/reports/export",
+      "max_queries": 10,
+      "p95_ms": 400,
+      "pagination": false,
+      "notes": "Export CSV streamé (DELIVERY-207) — read model agrégé, export async BC-26-D07 (BC-26-D10/#6296)."
     }
   ],
   "required_indexes": [
@@ -191,6 +239,16 @@
       "table": "accounting_payments",
       "index": "accounting_payments_company_document_status_index",
       "notes": "BC-22 reporting — encaissements par document/statut (migration 000005)."
+    },
+    {
+      "table": "delivery_events",
+      "index": "delivery_events_company_delivery_idx",
+      "notes": "Événements par livraison (tracking/timeline) — requête delivery_id scopée company_id (BC-26-D10/#6296)."
+    },
+    {
+      "table": "delivery_stops",
+      "index": "delivery_stops_route_sort_idx",
+      "notes": "Stops ordonnés d'une tournée (route_id, sort_order) — liste du mobile livreur (BC-26-D10/#6296)."
     }
   ]
 }
