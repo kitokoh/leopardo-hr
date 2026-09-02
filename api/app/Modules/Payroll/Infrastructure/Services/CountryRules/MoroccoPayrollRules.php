@@ -123,6 +123,19 @@ class MoroccoPayrollRules extends AbstractCountryRules
         return min(max($annualGross * $rate, 2500.0), 35000.0);
     }
 
+    /**
+     * Issue #6727 — miroir de calculateIncomeTax() : abattement frais pro
+     * marocain (CGI art. 73-I) appliqué AVANT le barème IR, base annuelle
+     * calculée sur le brut réel (grossForAbatement).
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        $abatementBase = $grossForAbatement ?? $grossTaxable;
+        $abatement = $this->moroccoProfessionalExpensesAbatement($abatementBase * $annualBasis);
+
+        return max(0.0, $grossTaxable * $annualBasis - $abatement);
+    }
+
     public function calculateSocialCharges(float $grossSalary): array
     {
         // ZONE-INFRA (#1820) : chaque cotisation passe par
