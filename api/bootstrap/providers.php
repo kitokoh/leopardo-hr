@@ -76,6 +76,7 @@ return [
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
 =======
@@ -92,4 +93,6 @@ return [
 >>>>>>> origin/feat/delivery-d07-async-export
 =======
 >>>>>>> origin/feat/delivery-d10-budgets
+=======
+>>>>>>> origin/feat/delivery-d12-golden-journey
 ];
