@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
+namespace App\Modules\Planning\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AbsenceResource;
-use App\Modules\Absence\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
-use App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
-use App\Modules\Absence\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
+use App\Modules\Planning\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
+use App\Modules\Planning\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
+use App\Modules\Planning\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Infrastructure\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;

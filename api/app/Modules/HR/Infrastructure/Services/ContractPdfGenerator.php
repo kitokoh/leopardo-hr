@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Cabinet\Infrastructure\Services;
+namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Models\Contract;
