@@ -1,5 +1,5 @@
 ## [Unreleased]
-> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
+- **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via
 > les PRs de merge en cours). Pour l'état réel par bounded context, se référer au registre
 > canonique `dev-hub/governance/bounded-context-registry.json` (MAT-001, #6602).
