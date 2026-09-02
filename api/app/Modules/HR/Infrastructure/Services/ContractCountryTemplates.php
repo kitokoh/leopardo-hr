@@ -39,6 +39,11 @@ class ContractCountryTemplates
     {
         $country = strtoupper($country);
         $bundle = $this->bundles()[$country] ?? $this->genericBundle();
+        // Issue #6671 — garde anti-500 : un bundle incomplet (clauses ou
+        // clé de type absente, ex. déploiement partiel) retombe sur des
+        // clauses vides plutôt que de lever une erreur PHP (INTERNAL_ERROR).
+        $clauses = $bundle['clauses'] ?? [];
+        $clauseSet = $clauses[$contractType] ?? $clauses['cdi'] ?? [];
 
         return [
             'country' => $country,
@@ -50,7 +55,7 @@ class ContractCountryTemplates
             'overtime' => $bundle['overtime'],
             'minimum_wage' => $bundle['minimum_wage'],
             'social_security' => $bundle['social_security'],
-            'clauses' => $bundle['clauses'][$contractType] ?? $bundle['clauses']['cdi'],
+            'clauses' => $clauseSet,
         ];
     }
 
