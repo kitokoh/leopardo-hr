@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryCodSettlementService;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliverySettlementCollectRequest;
@@ -111,7 +112,7 @@ final class DeliveryCodSettlementController
                 ],
                 'by_status' => $rows->map(fn ($row): array => [
                     'status' => (string) $row->status,
-                    'settlements' => (int) $row->settlements,
+                    'settlements' => (int) $row->getAttribute('settlements'),
                     'expected_minor' => (int) $row->expected_minor,
                     'collected_minor' => (int) $row->collected_minor,
                     'commission_minor' => (int) $row->commission_minor,
@@ -128,7 +129,7 @@ final class DeliveryCodSettlementController
     {
         $employee = $request->user();
 
-        if (! $employee->isManager() || ! $employee->hasManagerRole('principal')) {
+        if (! $employee instanceof Employee || ! $employee->isManager() || ! $employee->hasManagerRole('principal')) {
             abort(403, 'DELIVERY_ROLE_REQUIRED');
         }
     }
