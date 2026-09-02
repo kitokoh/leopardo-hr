@@ -45,10 +45,10 @@ export default function RestaurantHomePage() {
   }, [load]);
 
   const tiles = [
-    { href: '/restaurant/referential', icon: BookOpen, title: t(locale, 'restaurant.home.referential', 'Référentiel'), description: t(locale, 'restaurant.home.referentialDesc', 'Branches, plan de salle, catalogue, matières, menus, fournisseurs'), accent: 'from-emerald-500 to-teal-600' },
-    { href: '/restaurant/reservations', icon: CalendarCheck, title: t(locale, 'restaurant.home.reservations', 'Réservations'), description: t(locale, 'restaurant.home.reservationsDesc', 'Créneaux, check-in, dépôts'), accent: 'from-cyan-500 to-blue-600' },
-    { href: '/restaurant/stock', icon: PackageSearch, title: t(locale, 'restaurant.home.stock', 'Stock & achats'), description: t(locale, 'restaurant.home.stockDesc', 'Niveaux, bons de commande, réceptions, inventaires'), accent: 'from-amber-500 to-orange-600' },
-    { href: '/restaurant/delivery', icon: Bike, title: t(locale, 'restaurant.home.delivery', 'Livraison & fidélité'), description: t(locale, 'restaurant.home.deliveryDesc', 'Zones, livreurs, tournées, points, promotions'), accent: 'from-violet-500 to-purple-600' },
+    { href: '/restaurant/referential', icon: BookOpen, title: t(locale, 'restaurant.home.referential'), description: t(locale, 'restaurant.home.referentialDesc'), accent: 'from-emerald-500 to-teal-600' },
+    { href: '/restaurant/reservations', icon: CalendarCheck, title: t(locale, 'restaurant.home.reservations'), description: t(locale, 'restaurant.home.reservationsDesc'), accent: 'from-cyan-500 to-blue-600' },
+    { href: '/restaurant/stock', icon: PackageSearch, title: t(locale, 'restaurant.home.stock', 'Stock & achats'), description: t(locale, 'restaurant.home.stockDesc'), accent: 'from-amber-500 to-orange-600' },
+    { href: '/restaurant/delivery', icon: Bike, title: t(locale, 'restaurant.home.delivery'), description: t(locale, 'restaurant.home.deliveryDesc'), accent: 'from-violet-500 to-purple-600' },
     { href: '/restaurant/reports', icon: ChartColumn, title: t(locale, 'restaurant.home.reports', 'Rapports'), description: t(locale, 'restaurant.home.reportsDesc', 'Ventes, occupation, produits, COGS, export CSV'), accent: 'from-rose-500 to-pink-600' },
   ];
 
@@ -56,7 +56,7 @@ export default function RestaurantHomePage() {
     <ModulePageShell
       icon={UtensilsCrossed}
       title={t(locale, 'restaurant.home.title', 'Restaurant Manager')}
-      description={t(locale, 'restaurant.home.subtitle', 'Point de vente, réservations, stock et livraison')}
+      description={t(locale, 'restaurant.home.subtitle')}
     >
       {error ? <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p> : null}
 
@@ -87,7 +87,7 @@ export default function RestaurantHomePage() {
               const a = alert as { id?: number; ingredient_id?: number; quantity?: string; alert_threshold?: string };
               return (
                 <li key={a.id}>
-                  {t(locale, 'restaurant.home.alertLine', 'Ingrédient')} #{a.ingredient_id} — {a.quantity} ≤ {a.alert_threshold}
+                  {t(locale, 'restaurant.home.alertLine')} #{a.ingredient_id} — {a.quantity} ≤ {a.alert_threshold}
                 </li>
               );
             })}
