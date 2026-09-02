@@ -827,6 +827,34 @@
         "BC-13",
         "BC-20"
       ]
+    },
+    {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "Restaurant",
+      "responsibility": "Solution sectorielle restaurant : questionnaire de pré-qualification public, pack suggéré, activation tenant (manifest Core/Solutions).",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "active",
+      "paths": [
+        {
+          "path": "api/app/Modules/Restaurant",
+          "status": "active"
+        }
+      ],
+      "routes": [
+        "api/routes/modules/solutions.php"
+      ],
+      "migrations": [
+        "api/database/migrations/public"
+      ],
+      "events": [],
+      "dependencies": [
+        "BC-01",
+        "BC-02",
+        "BC-04",
+        "BC-05"
+      ]
     }
   ]
 }

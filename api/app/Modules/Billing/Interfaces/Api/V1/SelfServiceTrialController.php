@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -32,6 +33,7 @@ class SelfServiceTrialController extends Controller
     public function __construct(
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
+        private readonly SolutionCatalogue $solutionCatalogue,
     ) {}
 
     /**
@@ -74,9 +76,15 @@ class SelfServiceTrialController extends Controller
                     }
                 },
             ],
+            // #6693 (BC-25) — solution sectorielle demandée au signup (ex.
+            // `restaurant` depuis le wizard vitrine). Fail-closed : un code
+            // hors allowlist du catalogue (SolutionCatalogue) est refusé en
+            // 422 — jamais de résolution dynamique côté provisioning.
+            'solution' => ['nullable', 'string', 'max:60', Rule::in($this->solutionCatalogue->codes())],
         ]);
 
         /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null} $validated */
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solution?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que

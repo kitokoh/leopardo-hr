@@ -40,6 +40,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Recruitment` | Offres, candidats, entretiens |
 | `RestaurantManager` | Verticale restauration (BC-25) : référentiel (branches/tables/produits), POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports |
 | `RestaurantManager` | Verticale restaurant — livraison, fidélité, promotions, rapports, réservations, notifications (BC-25, RESTO-*) |
+| `Restaurant` | Solution sectorielle restaurant : questionnaire de pré-qualification public, pack suggéré (manifest Core/Solutions) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
 | `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
 

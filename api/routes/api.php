@@ -42,6 +42,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
@@ -297,6 +298,7 @@ Route::prefix('v1')->group(function (): void {
 
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
+    require __DIR__.'/modules/solutions.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
@@ -414,6 +416,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
         Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat']);
+
+        // BC-25 #6694 — pilotage des surveys de solutions (stats de conversion
+        // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
+        Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

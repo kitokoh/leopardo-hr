@@ -48,6 +48,8 @@ class MarketingLead extends Model
 
     public const TYPE_CONTACT = 'contact';
 
+    public const TYPE_SOLUTION_SURVEY = 'solution_survey';
+
     public const STATUS_NEW = 'new';
 
     public const STATUS_CONTACTED = 'contacted';

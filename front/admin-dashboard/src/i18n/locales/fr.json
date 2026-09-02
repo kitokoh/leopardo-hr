@@ -4604,7 +4604,8 @@
     "accountingDashboard": "Comptabilité — Tableau de bord",
     "accountingSettings": "Comptabilité — Paramétrage",
     "fuelStation": "Stations-service",
-    "travelAgency": "Agence de voyage"
+    "travelAgency": "Agence de voyage",
+    "surveyStats": "Surveys de solutions"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -5283,5 +5284,26 @@
       "back": "Retour",
       "deleteConfirm": "Supprimer cet élément ?"
     }
+  },
+  "surveyStats": {
+    "title": "Surveys de solutions",
+    "subtitle": "Pilotage de la conversion du wizard vitrine (réponses, packs suggérés, inscriptions).",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "loading": "Chargement…",
+    "empty": "Aucune réponse de survey pour le moment.",
+    "metricResponses": "Réponses",
+    "metricConverted": "Inscriptions",
+    "metricConversionRate": "Taux de conversion",
+    "metricPackagesSuggested": "Packs suggérés",
+    "bySolutionTitle": "Volume par solution",
+    "bySolutionHint": "Répartition des réponses par solution sectorielle.",
+    "packagesTitle": "Packs les plus suggérés",
+    "packagesHint": "Fréquence des packs proposés par le moteur.",
+    "answersTitle": "Distribution des réponses",
+    "answersHint": "Valeurs de réponse par question (échantillon borné).",
+    "solutionColumn": "Solution",
+    "responsesColumn": "Réponses",
+    "shareColumn": "Part"
   }
 }

@@ -271,6 +271,12 @@ const navigation = computed(() => [
     icon: BoltIcon
   },
   {
+    name: 'solutionSurveyStats',
+    title: t('navigation.surveyStats', 'Surveys de solutions'),
+    path: '/solutions/survey-stats',
+    icon: ChatBubbleLeftRightIcon
+  },
+  {
     title: t('navigation.chat', 'Chat IA'),
     path: '/chat',
     icon: SparklesIcon

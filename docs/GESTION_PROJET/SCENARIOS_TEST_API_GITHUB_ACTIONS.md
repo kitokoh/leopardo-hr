@@ -1,4 +1,12 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
+
+Note 2026-09-01 (issue #6662, PR #6663) : nouvelle surface publique « solutions sectorielles » —
+- `GET /api/v1/solutions` : catalogue des solutions (allowlist serveur, fail-closed).
+- `GET /api/v1/solutions/{code}/survey` : questions + catalogue de packages.
+- `POST /api/v1/solutions/{code}/survey` : reponses → pack suggere (moteur de regles deterministe, aucune IA, aucune donnee tenant).
+- `GET /api/v1/solutions/{code}/pack?packages=k1,k2` : guide PDF du pack (dompdf, i18n serveur `solutions.*`).
+Public sans auth (pre-qualification vitrine), throttle 10/min. Couverture : `api/tests/Feature/Solutions/SolutionSurveyEndpointTest.php` (8 tests) + `api/tests/Unit/Core/Solutions/SolutionSurveyEngineTest.php` (4 tests).
+
   
 ## Objectif   
 

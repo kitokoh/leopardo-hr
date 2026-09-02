@@ -90,6 +90,7 @@ consommateurs).
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | ✅ complet | `RestaurantManagerServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | ✅ DDD complet (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
+| `Modules/Restaurant` | 🔶 routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |

@@ -595,6 +595,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/admin/social-contributions/{socialContribution}", options);
     },
 
+    /** Statistiques des surveys de solutions (super-admin) */
+    getAdminSolutionsSurveyStats(options = {}) {
+      return request("GET", "/admin/solutions/survey-stats", options);
+    },
+
     /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
     listAdminTaxSlabs(options = {}) {
       return request("GET", "/admin/tax-slabs", options);
@@ -4673,6 +4678,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne */
     generateDsnFrDeclaration(options = {}) {
       return request("POST", "/social-declarations/dsn-fr", options);
+    },
+
+    /** Liste des solutions sectorielles disponibles */
+    getSolutions(options = {}) {
+      return request("GET", "/solutions", options);
+    },
+
+    /** Guide PDF personnalise du pack d'une solution */
+    getSolutionsByCodePack(options = {}) {
+      return request("GET", "/solutions/{code}/pack", options);
+    },
+
+    /** Questions du questionnaire de pre-qualification d'une solution */
+    getSolutionsByCodeSurvey(options = {}) {
+      return request("GET", "/solutions/{code}/survey", options);
+    },
+
+    /** Evaluer les reponses et retourner le pack suggere */
+    postSolutionsByCodeSurvey(options = {}) {
+      return request("POST", "/solutions/{code}/survey", options);
     },
 
     /** Configurer le SSO de l'entreprise */

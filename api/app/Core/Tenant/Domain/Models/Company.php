@@ -103,6 +103,7 @@ class Company extends Model
         'leo_ai',
         'fuel_station',
         'edumanager',
+        'restaurant',
     ];
 
     /**

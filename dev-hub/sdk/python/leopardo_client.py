@@ -496,6 +496,10 @@ class LeopardoClient:
         """Modifier une règle de cotisation nationale (platform_admin) — issue #1815"""
         return self.request("PUT", "/admin/social-contributions/{socialContribution}", **kwargs)
 
+    def get_admin_solutions_survey_stats(self, **kwargs):
+        """Statistiques des surveys de solutions (super-admin)"""
+        return self.request("GET", "/admin/solutions/survey-stats", **kwargs)
+
     def listadmintaxslabs(self, **kwargs):
         """Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"""
         return self.request("GET", "/admin/tax-slabs", **kwargs)
@@ -3759,6 +3763,22 @@ class LeopardoClient:
     def generatedsnfrdeclaration(self, **kwargs):
         """Generer la DSN (Declaration Sociale Nominative, France) pour un mois donne"""
         return self.request("POST", "/social-declarations/dsn-fr", **kwargs)
+
+    def get_solutions(self, **kwargs):
+        """Liste des solutions sectorielles disponibles"""
+        return self.request("GET", "/solutions", **kwargs)
+
+    def get_solutions_by_code_pack(self, **kwargs):
+        """Guide PDF personnalise du pack d'une solution"""
+        return self.request("GET", "/solutions/{code}/pack", **kwargs)
+
+    def get_solutions_by_code_survey(self, **kwargs):
+        """Questions du questionnaire de pre-qualification d'une solution"""
+        return self.request("GET", "/solutions/{code}/survey", **kwargs)
+
+    def post_solutions_by_code_survey(self, **kwargs):
+        """Evaluer les reponses et retourner le pack suggere"""
+        return self.request("POST", "/solutions/{code}/survey", **kwargs)
 
     def post_sso_configure(self, **kwargs):
         """Configurer le SSO de l'entreprise"""
