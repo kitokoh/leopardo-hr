@@ -3300,7 +3300,6 @@ trait CreatesMvpSchema
             });
         }
 
-<<<<<<< HEAD
         // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
@@ -4915,12 +4914,6 @@ if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
             });
         }
 }
-||||||| 5d41e8337
-    }
-=======
-
-    }
->>>>>>> origin/bc/bc24-travel-portail
 
     private function dropMvpTables(): void
     {
@@ -4996,7 +4989,6 @@ if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
         DB::statement('DROP TABLE IF EXISTS "payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
-<<<<<<< HEAD
         // BC-24 TRAVEL (verticale TravelAgency)
         DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_loyalty_transactions"'.$cascade);
@@ -5037,59 +5029,6 @@ if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
         DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
-||||||| 5d41e8337
-=======
-        // BC-24 TRAVEL (verticale TravelAgency)
-        DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_notification_logs"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_notification_consents"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_sales_settlements"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_carrier_tokens"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_rewards"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_entries"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_types"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_ratings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_shares"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_likes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_comments"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_articles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_article_categories"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_public_shop_tokens"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cash_sessions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_corporate_accounts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_bookings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trip_seats"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trip_prices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trips"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_route_stops"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_routes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_vehicles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_classes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_carriers"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
->>>>>>> origin/bc/bc24-travel-portail
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
