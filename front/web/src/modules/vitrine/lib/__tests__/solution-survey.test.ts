@@ -7,7 +7,10 @@
 import {
   buildDefaultAnswers,
   solutionLabel,
+<<<<<<< HEAD
   SOLUTION_LABELS,
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
   type SolutionSurveyQuestion,
 } from '../solution-survey';
 
@@ -43,19 +46,26 @@ describe('solution-survey lib', () => {
     expect(defaults.payroll).toBeUndefined();
   });
 
+<<<<<<< HEAD
   it('solutionLabel résout les clés backend dans les 4 locales (fr/en/tr/ar)', () => {
+=======
+  it('solutionLabel résout les clés backend en fr et en', () => {
+>>>>>>> origin/feat/restaurant-solution-survey
     expect(solutionLabel('solutions.restaurant.question.service_type', 'fr')).toBe(
       'Comment proposez-vous vos plats ?',
     );
     expect(solutionLabel('solutions.restaurant.question.service_type', 'en')).toBe(
       'How do you serve your dishes?',
     );
+<<<<<<< HEAD
     expect(solutionLabel('solutions.restaurant.question.service_type', 'tr')).toBe(
       'Yemeklerinizi nasıl sunuyorsunuz?',
     );
     expect(solutionLabel('solutions.restaurant.question.service_type', 'ar')).toBe(
       'كيف تقدمون أطباقكم؟',
     );
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
   });
 
   it('solutionLabel retombe sur la clé brute si inconnue', () => {
@@ -66,6 +76,7 @@ describe('solution-survey lib', () => {
     expect(solutionLabel('solutions.restaurant.package.kiosk', 'ar')).toBe('كشك تسجيل الحضور');
     expect(solutionLabel('solutions.restaurant.package.edge', 'tr')).toBe('Yerel Edge düğümü (çevrimdışı)');
   });
+<<<<<<< HEAD
 
   it('chaque clé du catalogue SOLUTION_LABELS est traduite dans les 4 locales (#6691)', () => {
     const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -87,4 +98,6 @@ describe('solution-survey lib', () => {
       }
     }
   });
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
 });

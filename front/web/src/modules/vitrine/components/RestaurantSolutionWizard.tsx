@@ -24,7 +24,10 @@ import {
   Fingerprint,
   HardDrive,
   Loader2,
+<<<<<<< HEAD
   Mail,
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
   QrCode,
   Smartphone,
   Store,
@@ -33,7 +36,11 @@ import {
 import QRCode from 'qrcode';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { mobileDownloadTarget, type MobileAppSlug } from '@/modules/vitrine/lib/mobile-download';
+<<<<<<< HEAD
 import { EDGE_INSTALL_CMD, LEAD_COPY, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
+=======
+import { EDGE_INSTALL_CMD, WIZARD_COPY } from '@/modules/vitrine/data/restaurant-wizard';
+>>>>>>> origin/feat/restaurant-solution-survey
 import {
   buildDefaultAnswers,
   fetchSurvey,
@@ -55,7 +62,10 @@ export function RestaurantSolutionWizard() {
   const { locale, direction } = useVitrineLocale();
   const vLocale = localeFromAppLocale(locale);
   const c = WIZARD_COPY[vLocale] ?? WIZARD_COPY.en;
+<<<<<<< HEAD
   const lc = LEAD_COPY[vLocale] ?? LEAD_COPY.en;
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
 
   const [step, setStep] = useState<Step>('intro');
   const [questions, setQuestions] = useState<SolutionSurveyQuestion[]>([]);
@@ -66,6 +76,7 @@ export function RestaurantSolutionWizard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+<<<<<<< HEAD
   // Capture du lead (#6692) — email + consentement marketing explicite.
   const [leadEmail, setLeadEmail] = useState('');
   const [leadConsent, setLeadConsent] = useState(false);
@@ -101,6 +112,8 @@ export function RestaurantSolutionWizard() {
     }
   }, [leadEmail, leadConsent, leadStatus, locale, answers, selected]);
 
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
   // Chargement du questionnaire (source de vérité = backend).
   useEffect(() => {
     let cancelled = false;
@@ -512,6 +525,7 @@ export function RestaurantSolutionWizard() {
               })}
             </div>
 
+<<<<<<< HEAD
             {/* Capture du lead (#6692) — email + consentement marketing, facultatif */}
             <div className="mt-10 rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/30 p-6">
               {leadStatus === 'sent' ? (
@@ -564,6 +578,8 @@ export function RestaurantSolutionWizard() {
               )}
             </div>
 
+=======
+>>>>>>> origin/feat/restaurant-solution-survey
             <div className="mt-8 flex justify-between">
               <button
                 type="button"
