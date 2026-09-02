@@ -1338,7 +1338,7 @@ trait CreatesMvpSchema
                 $table->jsonb('payload');
                 $table->string('status', 20)->default('pending');
                 $table->unsignedSmallInteger('attempts')->default(0);
-                $table->timestampTz('available_at', 6)->useCurrent();
+                $table->timestampTz('available_at')->useCurrent();
                 $table->text('last_error')->nullable();
                 $table->timestampTz('processed_at')->nullable();
                 $table->string('idempotency_key', 255);
@@ -2276,831 +2276,7 @@ trait CreatesMvpSchema
                     ->cascadeOnDelete();
             });
         }
-        // EduManager (issue #5818) — parité fixture ↔ migrations tenant #5443.
-        if (! Schema::hasTable($this->moduleTable('edu_campuses'))) {
-            Schema::create($this->moduleTable('edu_campuses'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->string('code', 50);
-                $table->string('name', 191);
-                $table->string('address', 255)->nullable();
-                $table->string('timezone', 100)->default('UTC');
-                $table->string('status', 20)->default('active');
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'edu_campuses_company_code_unique');
-                $table->unique(['id', 'company_id'], 'edu_campuses_id_company_unique');
-                $table->index(['company_id', 'status'], 'edu_campuses_company_status_idx');
-                $table->index(['company_id', 'name'], 'edu_campuses_company_name_idx');
-            });
-        }
 
-        if (! Schema::hasTable($this->moduleTable('edu_students'))) {
-            Schema::create($this->moduleTable('edu_students'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->string('student_number', 50);
-                $table->string('display_name', 191);
-                $table->string('birth_date_encrypted', 255)->nullable();
-                $table->string('status', 20)->default('active');
-                $table->jsonb('metadata')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'student_number'], 'edu_students_company_number_unique');
-                $table->unique(['id', 'company_id'], 'edu_students_id_company_unique');
-                $table->index(['company_id', 'status'], 'edu_students_company_status_idx');
-                $table->index(['company_id', 'display_name'], 'edu_students_company_name_idx');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('edu_guardians'))) {
-            Schema::create($this->moduleTable('edu_guardians'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('employee_id')->nullable();
-                $table->string('first_name', 80)->nullable();
-                $table->string('last_name', 80)->nullable();
-                $table->string('contact_reference', 255)->nullable();
-                $table->string('relationship_code', 30)->default('parent');
-                $table->timestampTz('verified_at')->nullable();
-                $table->timestamps();
-                $table->unique(['id', 'company_id'], 'edu_guardians_id_company_unique');
-                $table->index(['company_id', 'employee_id'], 'edu_guardians_company_employee_idx');
-                $table->index(['company_id', 'last_name'], 'edu_guardians_company_last_name_idx');
-            });
-        }
-
-        if (! Schema::hasTable($this->moduleTable('edu_student_guardians'))) {
-            Schema::create($this->moduleTable('edu_student_guardians'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('student_id');
-                $table->unsignedBigInteger('guardian_id');
-                $table->string('relationship_code', 30)->default('parent');
-                $table->boolean('can_view_grades')->default(false);
-                $table->boolean('can_receive_notifications')->default(true);
-                $table->timestamps();
-                $table->unique(['company_id', 'student_id', 'guardian_id'], 'edu_student_guardians_company_student_guardian_unique');
-                $table->index(['company_id', 'student_id'], 'edu_student_guardians_company_student_idx');
-                $table->index(['company_id', 'guardian_id'], 'edu_student_guardians_company_guardian_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
-            Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->string('address', 255)->nullable();
-                $table->string('city', 120)->nullable();
-                $table->string('phone', 40)->nullable();
-                $table->string('timezone', 50)->default('UTC');
-                $table->char('currency', 3)->default('DZD');
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_branches_company_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_zones) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
-            Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->string('name', 120);
-                $table->string('color', 7)->nullable();
-                $table->smallInteger('sort_order')->default(0);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_zones_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_zones_company_branch_name_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_tables) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
-            Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->string('label', 80);
-                $table->unsignedSmallInteger('capacity')->default(2);
-                $table->unsignedSmallInteger('min_covers')->nullable();
-                $table->boolean('is_mergeable')->default(false);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_tables_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'label'], 'restaurant_tables_company_branch_label_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_categories) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
-            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('name', 120);
-                $table->string('color', 7)->nullable();
-                $table->smallInteger('sort_order')->default(0);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_categories_company_branch_name_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_products) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
-            Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->unsignedBigInteger('category_id');
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->text('description_redacted')->nullable();
-                $table->unsignedInteger('price_minor')->default(0);
-                $table->char('currency', 3)->default('DZD');
-                $table->unsignedInteger('cost_minor')->nullable();
-                $table->unsignedBigInteger('tax_rate_id')->nullable();
-                $table->boolean('is_available')->default(true);
-                $table->unsignedBigInteger('image_asset_id')->nullable();
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_products_company_code_unique');
-                $table->index(['company_id', 'category_id'], 'restaurant_products_company_category_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_product_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3);
-                $table->string('unit_code', 20);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'product_id', 'ingredient_id'], 'restaurant_product_ingredients_company_product_ingredient_unique');
-                $table->index(['company_id', 'product_id'], 'restaurant_product_ingredients_company_product_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->string('unit_code', 20);
-                $table->unsignedInteger('avg_cost_minor')->nullable();
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'code'], 'restaurant_ingredients_company_branch_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_units) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
-            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 20);
-                $table->string('label', 80);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_units_company_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_tax_rates) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
-            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 20);
-                $table->string('label', 80);
-                $table->unsignedInteger('rate_bps')->default(0);
-                $table->boolean('is_default')->default(false);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_tax_rates_company_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_menus) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
-            Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->unsignedInteger('price_minor')->default(0);
-                $table->char('currency', 3)->default('DZD');
-                $table->timestamp('starts_at')->nullable();
-                $table->timestamp('ends_at')->nullable();
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_menus_company_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_menu_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
-            Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('menu_id');
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedSmallInteger('position')->default(0);
-                $table->boolean('is_optional')->default(false);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'menu_id', 'product_id'], 'restaurant_menu_items_company_menu_product_unique');
-                $table->index(['company_id', 'menu_id'], 'restaurant_menu_items_company_menu_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_hours) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
-            Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedSmallInteger('day_of_week');
-                $table->time('opens_at')->nullable();
-                $table->time('closes_at')->nullable();
-                $table->boolean('is_closed')->default(false);
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_hours_company_branch_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_suppliers) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
-            Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('name', 150);
-                $table->string('contact_phone', 40)->nullable();
-                $table->string('email', 150)->nullable();
-                $table->string('address', 255)->nullable();
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'name'], 'restaurant_suppliers_company_name_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_stock_levels) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
-            Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3)->default(0);
-                $table->unsignedInteger('avg_cost_minor')->nullable();
-                $table->decimal('reorder_level', 12, 3)->nullable();
-                $table->decimal('alert_threshold', 12, 3)->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_stock_levels_company_branch_ingredient_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_inventory_movements) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->unsignedBigInteger('stock_level_id')->nullable();
-                $table->decimal('quantity_delta', 12, 3);
-                $table->string('reason_code', 30);
-                $table->string('reference_type', 80)->nullable();
-                $table->unsignedBigInteger('reference_id')->nullable();
-                $table->text('note_redacted')->nullable();
-                $table->unsignedBigInteger('user_id')->nullable();
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_inventory_movements_company_branch_ingredient_idx');
-                $table->index(['company_id', 'reference_type', 'reference_id'], 'restaurant_inventory_movements_company_reference_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_purchase_orders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('supplier_id');
-                $table->string('reference', 40);
-                $table->string('status', 20)->default('draft');
-                $table->timestamp('expected_at')->nullable();
-                $table->timestamp('received_at')->nullable();
-                $table->unsignedInteger('total_minor')->nullable();
-                $table->char('currency', 3)->default('DZD');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'reference'], 'restaurant_purchase_orders_company_reference_unique');
-                $table->index(['company_id', 'supplier_id'], 'restaurant_purchase_orders_company_supplier_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_purchase_order_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('purchase_order_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3);
-                $table->unsignedInteger('unit_price_minor');
-                $table->unsignedInteger('line_total_minor');
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'purchase_order_id'], 'restaurant_purchase_order_items_company_order_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_receivings) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
-            Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('purchase_order_id')->nullable();
-                $table->unsignedBigInteger('supplier_id')->nullable();
-                $table->string('reference', 40);
-                $table->timestamp('received_at')->useCurrent();
-                $table->text('note_redacted')->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'reference'], 'restaurant_receivings_company_reference_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_inventory_counts) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->timestamp('counted_at')->useCurrent();
-                $table->string('status', 20)->default('draft');
-                $table->unsignedBigInteger('counted_by_user_id')->nullable();
-                $table->unsignedBigInteger('approved_by')->nullable();
-                $table->timestamp('approved_at')->nullable();
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_inventory_counts_company_branch_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_inventory_count_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('count_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('expected_qty', 12, 3)->nullable();
-                $table->decimal('counted_qty', 12, 3)->nullable();
-                $table->decimal('variance_qty', 12, 3)->nullable();
-                $table->string('reason_code', 30)->nullable();
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'count_id'], 'restaurant_inventory_count_items_company_count_idx');
-                $table->unique(['company_id', 'count_id', 'ingredient_id'], 'restaurant_inventory_count_items_company_count_ingredient_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_pos_sessions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->timestamp('opened_at')->useCurrent();
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedBigInteger('opened_by_user_id');
-                $table->unsignedBigInteger('closed_by_user_id')->nullable();
-                $table->unsignedInteger('opening_cash_minor')->default(0);
-                $table->unsignedInteger('expected_cash_minor')->nullable();
-                $table->unsignedInteger('counted_cash_minor')->nullable();
-                $table->integer('variance_minor')->nullable();
-                $table->string('variance_reason', 255)->nullable();
-                $table->string('status', 20)->default('open');
-                $table->unsignedInteger('version')->default(1);
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_pos_sessions_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'status'], 'restaurant_pos_sessions_company_branch_status_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_orders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
-            Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('pos_session_id')->nullable();
-                $table->string('reference', 40);
-                $table->string('order_type', 20)->default('dine_in');
-                $table->unsignedBigInteger('table_id')->nullable();
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->unsignedSmallInteger('covers')->nullable();
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->unsignedBigInteger('rider_id')->nullable();
-                $table->string('status', 20)->default('draft');
-                $table->unsignedInteger('subtotal_minor')->default(0);
-                $table->unsignedInteger('tax_minor')->default(0);
-                $table->unsignedInteger('discount_minor')->default(0);
-                $table->unsignedInteger('total_minor')->default(0);
-                $table->char('currency', 3)->default('DZD');
-                $table->string('source', 20)->default('pos');
-                $table->text('note_redacted')->nullable();
-                $table->string('idempotency_key', 64)->nullable();
-                $table->unsignedInteger('version')->default(1);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'reference'], 'restaurant_orders_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_orders_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_orders_company_branch_status_idx');
-                $table->index(['company_id', 'table_id'], 'restaurant_orders_company_table_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_order_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedBigInteger('menu_id')->nullable();
-                $table->decimal('quantity', 12, 3);
-                $table->unsignedInteger('unit_price_minor');
-                $table->unsignedInteger('line_total_minor');
-                $table->unsignedBigInteger('tax_rate_id')->nullable();
-                $table->unsignedInteger('tax_minor')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->unsignedSmallInteger('line_index')->default(0);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'restaurant_order_items_company_order_product_line_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_order_items_company_order_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_order_payments) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
-            Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('pos_session_id')->nullable();
-                $table->string('provider_code', 20);
-                $table->unsignedInteger('amount_minor');
-                $table->char('currency', 3)->default('DZD');
-                $table->string('status', 20)->default('pending');
-                $table->timestamp('paid_at')->nullable();
-                $table->string('provider_reference', 120)->nullable();
-                $table->unsignedInteger('tip_minor')->nullable();
-                $table->json('callback_payload_redacted')->nullable();
-                $table->string('idempotency_key', 64)->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_order_payments_company_idempotency_key_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_order_payments_company_order_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_refunds) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
-            Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('payment_id')->nullable();
-                $table->unsignedInteger('amount_minor');
-                $table->string('reason_code', 30);
-                $table->text('reason_text_redacted')->nullable();
-                $table->unsignedBigInteger('refunded_by_user_id')->nullable();
-                $table->string('status', 20)->default('pending');
-                $table->string('idempotency_key', 64)->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_refunds_company_idempotency_key_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_refunds_company_order_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_table_sessions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('table_id');
-                $table->unsignedBigInteger('order_id')->nullable();
-                $table->timestamp('opened_at')->useCurrent();
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedSmallInteger('covers')->nullable();
-                $table->string('status', 20)->default('open');
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'table_id'], 'restaurant_table_sessions_company_table_idx');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_table_sessions_company_branch_status_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_reservations) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
-            Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->string('reference', 40);
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->string('contact_name', 150);
-                $table->string('contact_phone', 40);
-                $table->timestamp('reserved_at');
-                $table->unsignedSmallInteger('covers')->default(1);
-                $table->unsignedBigInteger('table_id')->nullable();
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->string('status', 20)->default('pending');
-                $table->unsignedInteger('deposit_minor')->nullable();
-                $table->text('notes_redacted')->nullable();
-                $table->string('idempotency_key', 64)->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'reference'], 'restaurant_reservations_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_reservations_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'reserved_at'], 'restaurant_reservations_company_branch_reserved_at_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_delivery_zones) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->string('name', 120);
-                $table->unsignedInteger('fee_minor')->default(0);
-                $table->unsignedInteger('min_order_minor')->nullable();
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_delivery_zones_company_branch_name_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_delivery_riders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('employee_id')->nullable();
-                $table->string('name', 150);
-                $table->string('phone', 40)->nullable();
-                $table->string('vehicle_code', 40)->nullable();
-                $table->boolean('is_active')->default(true);
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_delivery_riders_company_branch_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_deliveries) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
-            Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->unsignedBigInteger('rider_id')->nullable();
-                $table->string('status', 20)->default('pending');
-                $table->unsignedInteger('fee_minor')->default(0);
-                $table->timestamp('delivered_at')->nullable();
-                $table->string('delivered_to_contact', 150)->nullable();
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'order_id'], 'restaurant_deliveries_company_order_idx');
-                $table->index(['company_id', 'rider_id'], 'restaurant_deliveries_company_rider_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_loyalty_programs) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedInteger('points_per_amount_minor')->default(100);
-                $table->unsignedInteger('redeem_rate_minor')->default(100);
-                $table->boolean('is_active')->default(true);
-                
-                $table->timestamps();
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_loyalty_customers) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('customer_contact_id');
-                $table->integer('points')->default(0);
-                $table->string('tier_code', 20)->nullable();
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_loyalty_points_movements) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('customer_id');
-                $table->integer('delta');
-                $table->string('reason_code', 30);
-                $table->unsignedBigInteger('order_id')->nullable();
-                $table->unsignedBigInteger('reference_id')->nullable();
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_promotions) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
-            Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('title', 150);
-                $table->string('discount_type', 20)->default('percent');
-                $table->unsignedInteger('value_minor')->default(0);
-                $table->unsignedInteger('min_order_minor')->nullable();
-                $table->timestamp('starts_at')->nullable();
-                $table->timestamp('ends_at')->nullable();
-                $table->unsignedInteger('max_uses')->nullable();
-                $table->unsignedInteger('used_count')->default(0);
-                $table->boolean('is_active')->default(true);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
-            });
-        }
-
-        // ── BC-25 RESTAURANT (restaurant_outbox_events) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
-            Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('event_type', 120);
-                $table->json('payload_redacted')->nullable();
-                $table->string('status', 20)->default('pending');
-                $table->timestamp('available_at')->nullable();
-                $table->unsignedSmallInteger('attempts')->default(0);
-                $table->text('last_error')->nullable();
-                $table->string('idempotency_key', 64);
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_outbox_events_company_idempotency_key_unique');
-                $table->index(['company_id', 'status', 'available_at'], 'restaurant_outbox_events_company_status_available_idx');
-            });
-        }
         // — FuelStation (solution verticale, FUEL-002..008, issues #5795..#5802) :
         // parité fixture ↔ migrations tenant récentes (garde #5443) — mêmes
         // colonnes que les migrations (PK bigint, company_id uuid indexé),
@@ -3328,7 +2504,6 @@ trait CreatesMvpSchema
                 $table->timestamps();
 
                 $table->unique(['company_id', 'external_id'], 'fuel_sales_external_unique');
-
             });
         }
 
@@ -3337,461 +2512,6 @@ trait CreatesMvpSchema
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
-        if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
-            Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-    
-        // ── BC-25 RESTAURANT (restaurant_branches) ─────────────────────────────────────
-    
-        if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
-            Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->string('address', 255)->nullable();
-                $table->string('city', 120)->nullable();
-                $table->string('phone', 40)->nullable();
-                $table->string('timezone', 50)->default('UTC');
-                $table->char('currency', 3)->default('DZD');
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_branches_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
-            Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_zones) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
-            Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->string('name', 120);
-                $table->string('color', 7)->nullable();
-                $table->smallInteger('sort_order')->default(0);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_zones_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_zones_company_branch_name_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
-            Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_tables) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
-            Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->string('label', 80);
-                $table->unsignedSmallInteger('capacity')->default(2);
-                $table->unsignedSmallInteger('min_covers')->nullable();
-                $table->boolean('is_mergeable')->default(false);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_tables_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'label'], 'restaurant_tables_company_branch_label_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
-            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_categories) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
-            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('name', 120);
-                $table->string('color', 7)->nullable();
-                $table->smallInteger('sort_order')->default(0);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_categories_company_branch_name_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
-            Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_products) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
-            Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->unsignedBigInteger('category_id');
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->text('description_redacted')->nullable();
-                $table->unsignedInteger('price_minor')->default(0);
-                $table->char('currency', 3)->default('DZD');
-                $table->unsignedInteger('cost_minor')->nullable();
-                $table->unsignedBigInteger('tax_rate_id')->nullable();
-                $table->boolean('is_available')->default(true);
-                $table->unsignedBigInteger('image_asset_id')->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_products_company_code_unique');
-                $table->index(['company_id', 'category_id'], 'restaurant_products_company_category_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_product_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3);
-                $table->string('unit_code', 20);
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'product_id', 'ingredient_id'], 'restaurant_product_ingredients_company_product_ingredient_unique');
-                $table->index(['company_id', 'product_id'], 'restaurant_product_ingredients_company_product_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_ingredients) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
-            Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->string('unit_code', 20);
-                $table->unsignedInteger('avg_cost_minor')->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'code'], 'restaurant_ingredients_company_branch_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
-            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->string('code', 20);
-                $table->string('label', 80);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-
-        // ── BC-25 RESTAURANT (restaurant_units) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
-            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 20);
-                $table->string('label', 80);
-                $table->string('status', 20)->default('active');
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_units_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
-            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_tax_rates) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
-            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('code', 20);
-                $table->string('label', 80);
-                $table->unsignedInteger('rate_bps')->default(0);
-                $table->boolean('is_default')->default(false);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_tax_rates_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
-            Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_menus) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
-            Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('name', 150);
-                $table->unsignedInteger('price_minor')->default(0);
-                $table->char('currency', 3)->default('DZD');
-                $table->timestamp('starts_at')->nullable();
-                $table->timestamp('ends_at')->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'code'], 'restaurant_menus_company_code_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
-            Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_menu_items) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
-            Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('menu_id');
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedSmallInteger('position')->default(0);
-                $table->boolean('is_optional')->default(false);
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'menu_id', 'product_id'], 'restaurant_menu_items_company_menu_product_unique');
-                $table->index(['company_id', 'menu_id'], 'restaurant_menu_items_company_menu_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
-            Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_hours) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
-            Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedSmallInteger('day_of_week');
-                $table->time('opens_at')->nullable();
-                $table->time('closes_at')->nullable();
-                $table->boolean('is_closed')->default(false);
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id'], 'restaurant_hours_company_branch_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
-            Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_suppliers) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
-            Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->string('name', 150);
-                $table->string('contact_phone', 40)->nullable();
-                $table->string('email', 150)->nullable();
-                $table->string('address', 255)->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'name'], 'restaurant_suppliers_company_name_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
-            Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_stock_levels) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
-            Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3)->default(0);
-                $table->unsignedInteger('avg_cost_minor')->nullable();
-                $table->decimal('reorder_level', 12, 3)->nullable();
-                $table->decimal('alert_threshold', 12, 3)->nullable();
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->unique(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_stock_levels_company_branch_ingredient_unique');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-
-        // ── BC-25 RESTAURANT (restaurant_inventory_movements) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
-                
-                $table->id();
-                $table->uuid('company_id')->index();
-                
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->unsignedBigInteger('stock_level_id')->nullable();
-                $table->decimal('quantity_delta', 12, 3);
-                $table->string('reason_code', 30);
-                $table->string('reference_type', 80)->nullable();
-                $table->unsignedBigInteger('reference_id')->nullable();
-                $table->text('note_redacted')->nullable();
-                $table->unsignedBigInteger('user_id')->nullable();
-
-                $table->timestamps();
-
-                
-                $table->timestamps();
-                
-                $table->index(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_inventory_movements_company_branch_ingredient_idx');
-                $table->index(['company_id', 'reference_type', 'reference_id'], 'restaurant_inventory_movements_company_reference_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
-
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('supplier_id');
                 $table->string('reference', 40);
                 $table->string('source', 20);
                 $table->string('source_reference', 120)->nullable();
@@ -3898,9 +2618,799 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
+    
 
-        // ── BC-24 TRAVEL (verticale TravelAgency, TRAVEL-201/202/203) ──────
-        if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
+if (! Schema::hasTable($this->moduleTable('edu_campuses'))) {
+            Schema::create($this->moduleTable('edu_campuses'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('code', 50);
+                $table->string('name', 191);
+                $table->string('address', 255)->nullable();
+                $table->string('timezone', 100)->default('UTC');
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+                $table->unique(['company_id', 'code'], 'edu_campuses_company_code_unique');
+                $table->unique(['id', 'company_id'], 'edu_campuses_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_campuses_company_status_idx');
+                $table->index(['company_id', 'name'], 'edu_campuses_company_name_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('edu_students'))) {
+            Schema::create($this->moduleTable('edu_students'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->string('student_number', 50);
+                $table->string('display_name', 191);
+                $table->string('birth_date_encrypted', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                $table->jsonb('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['company_id', 'student_number'], 'edu_students_company_number_unique');
+                $table->unique(['id', 'company_id'], 'edu_students_id_company_unique');
+                $table->index(['company_id', 'status'], 'edu_students_company_status_idx');
+                $table->index(['company_id', 'display_name'], 'edu_students_company_name_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('edu_guardians'))) {
+            Schema::create($this->moduleTable('edu_guardians'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('first_name', 80)->nullable();
+                $table->string('last_name', 80)->nullable();
+                $table->string('contact_reference', 255)->nullable();
+                $table->string('relationship_code', 30)->default('parent');
+                $table->timestampTz('verified_at')->nullable();
+                $table->timestamps();
+                $table->unique(['id', 'company_id'], 'edu_guardians_id_company_unique');
+                $table->index(['company_id', 'employee_id'], 'edu_guardians_company_employee_idx');
+                $table->index(['company_id', 'last_name'], 'edu_guardians_company_last_name_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('edu_student_guardians'))) {
+            Schema::create($this->moduleTable('edu_student_guardians'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('student_id');
+                $table->unsignedBigInteger('guardian_id');
+                $table->string('relationship_code', 30)->default('parent');
+                $table->boolean('can_view_grades')->default(false);
+                $table->boolean('can_receive_notifications')->default(true);
+                $table->timestamps();
+                $table->unique(['company_id', 'student_id', 'guardian_id'], 'edu_student_guardians_company_student_guardian_unique');
+                $table->index(['company_id', 'student_id'], 'edu_student_guardians_company_student_idx');
+                $table->index(['company_id', 'guardian_id'], 'edu_student_guardians_company_guardian_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
+            Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('address', 255)->nullable();
+                $table->string('city', 120)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->string('timezone', 50)->default('UTC');
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_branches_company_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_zones'))) {
+            Schema::create($this->moduleTable('restaurant_zones'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->string('name', 120);
+                $table->string('color', 7)->nullable();
+                $table->smallInteger('sort_order')->default(0);
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_zones_company_branch_idx');
+                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_zones_company_branch_name_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_tables'))) {
+            Schema::create($this->moduleTable('restaurant_tables'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('zone_id')->nullable();
+                $table->string('label', 80);
+                $table->unsignedSmallInteger('capacity')->default(2);
+                $table->unsignedSmallInteger('min_covers')->nullable();
+                $table->boolean('is_mergeable')->default(false);
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_tables_company_branch_idx');
+                $table->unique(['company_id', 'branch_id', 'label'], 'restaurant_tables_company_branch_label_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
+            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->string('name', 120);
+                $table->string('color', 7)->nullable();
+                $table->smallInteger('sort_order')->default(0);
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_categories_company_branch_name_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_products'))) {
+            Schema::create($this->moduleTable('restaurant_products'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->unsignedBigInteger('category_id');
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->text('description_redacted')->nullable();
+                $table->unsignedInteger('price_minor')->default(0);
+                $table->char('currency', 3)->default('DZD');
+                $table->unsignedInteger('cost_minor')->nullable();
+                $table->unsignedBigInteger('tax_rate_id')->nullable();
+                $table->boolean('is_available')->default(true);
+                $table->unsignedBigInteger('image_asset_id')->nullable();
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_products_company_code_unique');
+                $table->index(['company_id', 'category_id'], 'restaurant_products_company_category_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_product_ingredients'))) {
+            Schema::create($this->moduleTable('restaurant_product_ingredients'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('ingredient_id');
+                $table->decimal('quantity', 12, 3);
+                $table->string('unit_code', 20);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'product_id', 'ingredient_id'], 'restaurant_product_ingredients_company_product_ingredient_unique');
+                $table->index(['company_id', 'product_id'], 'restaurant_product_ingredients_company_product_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_ingredients'))) {
+            Schema::create($this->moduleTable('restaurant_ingredients'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('unit_code', 20);
+                $table->unsignedInteger('avg_cost_minor')->nullable();
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'branch_id', 'code'], 'restaurant_ingredients_company_branch_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
+            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->string('code', 20);
+                $table->string('label', 80);
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_units_company_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
+            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->string('code', 20);
+                $table->string('label', 80);
+                $table->unsignedInteger('rate_bps')->default(0);
+                $table->boolean('is_default')->default(false);
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_tax_rates_company_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_menus'))) {
+            Schema::create($this->moduleTable('restaurant_menus'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->unsignedInteger('price_minor')->default(0);
+                $table->char('currency', 3)->default('DZD');
+                $table->timestamp('starts_at')->nullable();
+                $table->timestamp('ends_at')->nullable();
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_menus_company_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_menu_items'))) {
+            Schema::create($this->moduleTable('restaurant_menu_items'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('menu_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedSmallInteger('position')->default(0);
+                $table->boolean('is_optional')->default(false);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'menu_id', 'product_id'], 'restaurant_menu_items_company_menu_product_unique');
+                $table->index(['company_id', 'menu_id'], 'restaurant_menu_items_company_menu_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_hours'))) {
+            Schema::create($this->moduleTable('restaurant_hours'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedSmallInteger('day_of_week');
+                $table->time('opens_at')->nullable();
+                $table->time('closes_at')->nullable();
+                $table->boolean('is_closed')->default(false);
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_hours_company_branch_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_suppliers'))) {
+            Schema::create($this->moduleTable('restaurant_suppliers'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->string('name', 150);
+                $table->string('contact_phone', 40)->nullable();
+                $table->string('email', 150)->nullable();
+                $table->string('address', 255)->nullable();
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'name'], 'restaurant_suppliers_company_name_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_stock_levels'))) {
+            Schema::create($this->moduleTable('restaurant_stock_levels'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('ingredient_id');
+                $table->decimal('quantity', 12, 3)->default(0);
+                $table->unsignedInteger('avg_cost_minor')->nullable();
+                $table->decimal('reorder_level', 12, 3)->nullable();
+                $table->decimal('alert_threshold', 12, 3)->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_stock_levels_company_branch_ingredient_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_inventory_movements'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_movements'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('ingredient_id');
+                $table->unsignedBigInteger('stock_level_id')->nullable();
+                $table->decimal('quantity_delta', 12, 3);
+                $table->string('reason_code', 30);
+                $table->string('reference_type', 80)->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                $table->text('note_redacted')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id', 'ingredient_id'], 'restaurant_inventory_movements_company_branch_ingredient_idx');
+                $table->index(['company_id', 'reference_type', 'reference_id'], 'restaurant_inventory_movements_company_reference_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
+            Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('supplier_id');
+                $table->string('reference', 40);
+                $table->string('status', 20)->default('draft');
+                $table->timestamp('expected_at')->nullable();
+                $table->timestamp('received_at')->nullable();
+                $table->unsignedInteger('total_minor')->nullable();
+                $table->char('currency', 3)->default('DZD');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'reference'], 'restaurant_purchase_orders_company_reference_unique');
+                $table->index(['company_id', 'supplier_id'], 'restaurant_purchase_orders_company_supplier_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
+            Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('purchase_order_id');
+                $table->unsignedBigInteger('ingredient_id');
+                $table->decimal('quantity', 12, 3);
+                $table->unsignedInteger('unit_price_minor');
+                $table->unsignedInteger('line_total_minor');
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'purchase_order_id'], 'restaurant_purchase_order_items_company_order_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
+            Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('purchase_order_id')->nullable();
+                $table->unsignedBigInteger('supplier_id')->nullable();
+                $table->string('reference', 40);
+                $table->timestamp('received_at')->useCurrent();
+                $table->text('note_redacted')->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'reference'], 'restaurant_receivings_company_reference_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->timestamp('counted_at')->useCurrent();
+                $table->string('status', 20)->default('draft');
+                $table->unsignedBigInteger('counted_by_user_id')->nullable();
+                $table->unsignedBigInteger('approved_by')->nullable();
+                $table->timestamp('approved_at')->nullable();
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_inventory_counts_company_branch_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
+            Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('count_id');
+                $table->unsignedBigInteger('ingredient_id');
+                $table->decimal('expected_qty', 12, 3)->nullable();
+                $table->decimal('counted_qty', 12, 3)->nullable();
+                $table->decimal('variance_qty', 12, 3)->nullable();
+                $table->string('reason_code', 30)->nullable();
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'count_id'], 'restaurant_inventory_count_items_company_count_idx');
+                $table->unique(['company_id', 'count_id', 'ingredient_id'], 'restaurant_inventory_count_items_company_count_ingredient_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
+            Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->timestamp('opened_at')->useCurrent();
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedBigInteger('opened_by_user_id');
+                $table->unsignedBigInteger('closed_by_user_id')->nullable();
+                $table->unsignedInteger('opening_cash_minor')->default(0);
+                $table->unsignedInteger('expected_cash_minor')->nullable();
+                $table->unsignedInteger('counted_cash_minor')->nullable();
+                $table->integer('variance_minor')->nullable();
+                $table->string('variance_reason', 255)->nullable();
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('version')->default(1);
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_pos_sessions_company_branch_idx');
+                $table->unique(['company_id', 'branch_id', 'status'], 'restaurant_pos_sessions_company_branch_status_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
+            Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('reference', 40);
+                $table->string('order_type', 20)->default('dine_in');
+                $table->unsignedBigInteger('table_id')->nullable();
+                $table->unsignedBigInteger('zone_id')->nullable();
+                $table->unsignedSmallInteger('covers')->nullable();
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->unsignedBigInteger('rider_id')->nullable();
+                $table->string('status', 20)->default('draft');
+                $table->unsignedInteger('subtotal_minor')->default(0);
+                $table->unsignedInteger('tax_minor')->default(0);
+                $table->unsignedInteger('discount_minor')->default(0);
+                $table->unsignedInteger('total_minor')->default(0);
+                $table->char('currency', 3)->default('DZD');
+                $table->string('source', 20)->default('pos');
+                $table->text('note_redacted')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                $table->unsignedInteger('version')->default(1);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'reference'], 'restaurant_orders_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'restaurant_orders_company_idempotency_key_unique');
+                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_orders_company_branch_status_idx');
+                $table->index(['company_id', 'table_id'], 'restaurant_orders_company_table_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
+            Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('product_id');
+                $table->unsignedBigInteger('menu_id')->nullable();
+                $table->decimal('quantity', 12, 3);
+                $table->unsignedInteger('unit_price_minor');
+                $table->unsignedInteger('line_total_minor');
+                $table->unsignedBigInteger('tax_rate_id')->nullable();
+                $table->unsignedInteger('tax_minor')->nullable();
+                $table->string('status', 20)->default('active');
+                $table->unsignedSmallInteger('line_index')->default(0);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'restaurant_order_items_company_order_product_line_unique');
+                $table->index(['company_id', 'order_id'], 'restaurant_order_items_company_order_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
+            Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('pos_session_id')->nullable();
+                $table->string('provider_code', 20);
+                $table->unsignedInteger('amount_minor');
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('pending');
+                $table->timestamp('paid_at')->nullable();
+                $table->string('provider_reference', 120)->nullable();
+                $table->unsignedInteger('tip_minor')->nullable();
+                $table->json('callback_payload_redacted')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'idempotency_key'], 'restaurant_order_payments_company_idempotency_key_unique');
+                $table->index(['company_id', 'order_id'], 'restaurant_order_payments_company_order_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
+            Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('payment_id')->nullable();
+                $table->unsignedInteger('amount_minor');
+                $table->string('reason_code', 30);
+                $table->text('reason_text_redacted')->nullable();
+                $table->unsignedBigInteger('refunded_by_user_id')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->string('idempotency_key', 64)->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'idempotency_key'], 'restaurant_refunds_company_idempotency_key_unique');
+                $table->index(['company_id', 'order_id'], 'restaurant_refunds_company_order_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
+            Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('table_id');
+                $table->unsignedBigInteger('order_id')->nullable();
+                $table->timestamp('opened_at')->useCurrent();
+                $table->timestamp('closed_at')->nullable();
+                $table->unsignedSmallInteger('covers')->nullable();
+                $table->string('status', 20)->default('open');
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'table_id'], 'restaurant_table_sessions_company_table_idx');
+                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_table_sessions_company_branch_status_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
+            Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('customer_contact_id')->nullable();
+                $table->string('contact_name', 150);
+                $table->string('contact_phone', 40);
+                $table->timestamp('reserved_at');
+                $table->unsignedSmallInteger('covers')->default(1);
+                $table->unsignedBigInteger('table_id')->nullable();
+                $table->unsignedBigInteger('zone_id')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('deposit_minor')->nullable();
+                $table->text('notes_redacted')->nullable();
+                $table->string('idempotency_key', 64)->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'reference'], 'restaurant_reservations_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'restaurant_reservations_company_idempotency_key_unique');
+                $table->index(['company_id', 'branch_id', 'reserved_at'], 'restaurant_reservations_company_branch_reserved_at_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->string('name', 120);
+                $table->unsignedInteger('fee_minor')->default(0);
+                $table->unsignedInteger('min_order_minor')->nullable();
+                $table->string('status', 20)->default('active');
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_delivery_zones_company_branch_name_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id');
+                $table->unsignedBigInteger('employee_id')->nullable();
+                $table->string('name', 150);
+                $table->string('phone', 40)->nullable();
+                $table->string('vehicle_code', 40)->nullable();
+                $table->boolean('is_active')->default(true);
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'branch_id'], 'restaurant_delivery_riders_company_branch_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
+            Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('order_id');
+                $table->unsignedBigInteger('zone_id')->nullable();
+                $table->unsignedBigInteger('rider_id')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->unsignedInteger('fee_minor')->default(0);
+                $table->timestamp('delivered_at')->nullable();
+                $table->string('delivered_to_contact', 150)->nullable();
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'order_id'], 'restaurant_deliveries_company_order_idx');
+                $table->index(['company_id', 'rider_id'], 'restaurant_deliveries_company_rider_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
+            Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedInteger('points_per_amount_minor')->default(100);
+                $table->unsignedInteger('redeem_rate_minor')->default(100);
+                $table->boolean('is_active')->default(true);
+                
+                $table->timestamps();
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
+            Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('customer_contact_id');
+                $table->integer('points')->default(0);
+                $table->string('tier_code', 20)->nullable();
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
+            Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('customer_id');
+                $table->integer('delta');
+                $table->string('reason_code', 30);
+                $table->unsignedBigInteger('order_id')->nullable();
+                $table->unsignedBigInteger('reference_id')->nullable();
+                
+                $table->timestamps();
+                
+                $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
+            Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->string('code', 40);
+                $table->string('title', 150);
+                $table->string('discount_type', 20)->default('percent');
+                $table->unsignedInteger('value_minor')->default(0);
+                $table->unsignedInteger('min_order_minor')->nullable();
+                $table->timestamp('starts_at')->nullable();
+                $table->timestamp('ends_at')->nullable();
+                $table->unsignedInteger('max_uses')->nullable();
+                $table->unsignedInteger('used_count')->default(0);
+                $table->boolean('is_active')->default(true);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
+            Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
+                
+                $table->id();
+                $table->uuid('company_id')->index();
+                
+                $table->string('event_type', 120);
+                $table->json('payload_redacted')->nullable();
+                $table->string('status', 20)->default('pending');
+                $table->timestamp('available_at')->nullable();
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->text('last_error')->nullable();
+                $table->string('idempotency_key', 64);
+                
+                $table->timestamps();
+                
+                $table->unique(['company_id', 'idempotency_key'], 'restaurant_outbox_events_company_idempotency_key_unique');
+                $table->index(['company_id', 'status', 'available_at'], 'restaurant_outbox_events_company_status_available_idx');
+            });
+        }
+
+if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
             Schema::create($this->moduleTable('travel_countries'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3914,7 +3424,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
+if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
             Schema::create($this->moduleTable('travel_cities'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3929,7 +3439,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
+if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
             Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3946,7 +3456,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
+if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
             Schema::create($this->moduleTable('travel_offices'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3959,8 +3469,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-204 (issue #6017) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_carriers'))) {
+if (! Schema::hasTable($this->moduleTable('travel_carriers'))) {
             Schema::create($this->moduleTable('travel_carriers'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3975,7 +3484,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_classes'))) {
+if (! Schema::hasTable($this->moduleTable('travel_classes'))) {
             Schema::create($this->moduleTable('travel_classes'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -3989,8 +3498,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-205 (issue #6018) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_vehicles'))) {
+if (! Schema::hasTable($this->moduleTable('travel_vehicles'))) {
             Schema::create($this->moduleTable('travel_vehicles'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4005,8 +3513,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-206 (issue #6019) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_routes'))) {
+if (! Schema::hasTable($this->moduleTable('travel_routes'))) {
             Schema::create($this->moduleTable('travel_routes'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4027,7 +3534,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_route_stops'))) {
+if (! Schema::hasTable($this->moduleTable('travel_route_stops'))) {
             Schema::create($this->moduleTable('travel_route_stops'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4042,8 +3549,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-207 (issue #6020) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_trips'))) {
+if (! Schema::hasTable($this->moduleTable('travel_trips'))) {
             Schema::create($this->moduleTable('travel_trips'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4067,7 +3573,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_trip_prices'))) {
+if (! Schema::hasTable($this->moduleTable('travel_trip_prices'))) {
             Schema::create($this->moduleTable('travel_trip_prices'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4081,8 +3587,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-208 (issue #6021) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_trip_seats'))) {
+if (! Schema::hasTable($this->moduleTable('travel_trip_seats'))) {
             Schema::create($this->moduleTable('travel_trip_seats'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4097,8 +3602,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-209 (issue #6022) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
+if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
             Schema::create($this->moduleTable('travel_bookings'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4121,7 +3625,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_passengers'))) {
+if (! Schema::hasTable($this->moduleTable('travel_passengers'))) {
             Schema::create($this->moduleTable('travel_passengers'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4139,8 +3643,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-210 (issue #6023) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_tickets'))) {
+if (! Schema::hasTable($this->moduleTable('travel_tickets'))) {
             Schema::create($this->moduleTable('travel_tickets'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4160,131 +3663,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
-            Schema::create($this->moduleTable('travel_payments'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('reference', 40);
-                $table->unsignedBigInteger('booking_id');
-        // ── BC-25 RESTAURANT (restaurant_purchase_orders) ─────────────────────────────────────
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_orders'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_orders'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('supplier_id');
-                $table->string('reference', 40);
-                $table->string('status', 20)->default('draft');
-                $table->timestamp('expected_at')->nullable();
-                $table->timestamp('received_at')->nullable();
-                $table->unsignedInteger('total_minor')->nullable();
-                $table->char('currency', 3)->default('DZD');
-                $table->timestamps();
-                $table->unique(['company_id', 'reference'], 'restaurant_purchase_orders_company_reference_unique');
-                $table->index(['company_id', 'supplier_id'], 'restaurant_purchase_orders_company_supplier_idx');
-            });
-        }
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_purchase_order_items) ─────────────────────────────────────
-                $table->unsignedBigInteger('purchase_order_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3);
-                $table->unsignedInteger('unit_price_minor');
-                $table->unsignedInteger('line_total_minor');
-                $table->index(['company_id', 'purchase_order_id'], 'restaurant_purchase_order_items_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
-            Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_receivings) ─────────────────────────────────────
-                $table->unsignedBigInteger('purchase_order_id')->nullable();
-                $table->unsignedBigInteger('supplier_id')->nullable();
-                $table->timestamp('received_at')->useCurrent();
-                $table->text('note_redacted')->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_receivings_company_reference_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_inventory_counts) ─────────────────────────────────────
-                $table->timestamp('counted_at')->useCurrent();
-                $table->unsignedBigInteger('counted_by_user_id')->nullable();
-                $table->unsignedBigInteger('approved_by')->nullable();
-                $table->timestamp('approved_at')->nullable();
-                $table->index(['company_id', 'branch_id'], 'restaurant_inventory_counts_company_branch_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_inventory_count_items) ─────────────────────────────────────
-                $table->unsignedBigInteger('count_id');
-                $table->decimal('expected_qty', 12, 3)->nullable();
-                $table->decimal('counted_qty', 12, 3)->nullable();
-                $table->decimal('variance_qty', 12, 3)->nullable();
-                $table->string('reason_code', 30)->nullable();
-                $table->index(['company_id', 'count_id'], 'restaurant_inventory_count_items_company_count_idx');
-                $table->unique(['company_id', 'count_id', 'ingredient_id'], 'restaurant_inventory_count_items_company_count_ingredient_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_pos_sessions) ─────────────────────────────────────
-                $table->timestamp('opened_at')->useCurrent();
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedBigInteger('opened_by_user_id');
-                $table->unsignedBigInteger('closed_by_user_id')->nullable();
-                $table->unsignedInteger('opening_cash_minor')->default(0);
-                $table->unsignedInteger('expected_cash_minor')->nullable();
-                $table->unsignedInteger('counted_cash_minor')->nullable();
-                $table->integer('variance_minor')->nullable();
-                $table->string('variance_reason', 255)->nullable();
-                $table->string('status', 20)->default('open');
-                $table->unsignedInteger('version')->default(1);
-                $table->index(['company_id', 'branch_id'], 'restaurant_pos_sessions_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'status'], 'restaurant_pos_sessions_company_branch_status_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
-            Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_orders) ─────────────────────────────────────
-                $table->unsignedBigInteger('pos_session_id')->nullable();
-                $table->string('order_type', 20)->default('dine_in');
-                $table->unsignedBigInteger('table_id')->nullable();
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->unsignedSmallInteger('covers')->nullable();
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->unsignedBigInteger('rider_id')->nullable();
-                $table->unsignedInteger('subtotal_minor')->default(0);
-                $table->unsignedInteger('tax_minor')->default(0);
-                $table->unsignedInteger('discount_minor')->default(0);
-                $table->unsignedInteger('total_minor')->default(0);
-                $table->string('source', 20)->default('pos');
-                $table->string('idempotency_key', 64)->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_orders_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_orders_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_orders_company_branch_status_idx');
-                $table->index(['company_id', 'table_id'], 'restaurant_orders_company_table_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_order_items) ─────────────────────────────────────
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedBigInteger('menu_id')->nullable();
-                $table->unsignedBigInteger('tax_rate_id')->nullable();
-                $table->unsignedInteger('tax_minor')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->unsignedSmallInteger('line_index')->default(0);
-                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'restaurant_order_items_company_order_product_line_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_order_items_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
-            Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_order_payments) ─────────────────────────────────────
-                $table->string('provider_code', 20);
-                $table->unsignedInteger('amount_minor');
-                $table->char('currency', 3);
-                $table->string('status', 20)->default('pending');
-                $table->string('provider_reference', 120)->nullable();
-                $table->jsonb('callback_payload_redacted')->nullable();
-                $table->string('idempotency_key', 255);
-                $table->timestamps();
-                $table->unique(['company_id', 'reference'], 'travel_payments_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'travel_payments_company_idempotency_unique');
-            });
-        }
-
-        // ── BC-24 TRAVEL — TRAVEL-211 (issue #6024) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_outbox_events'))) {
+if (! Schema::hasTable($this->moduleTable('travel_outbox_events'))) {
             Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4303,120 +3682,8 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'order_id'], 'restaurant_order_payments_company_order_idx');
             });
         }
-        if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
-            Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-        // ── BC-25 RESTAURANT (restaurant_refunds) ─────────────────────────────────────
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('payment_id')->nullable();
-                $table->unsignedInteger('amount_minor');
-                $table->string('reason_code', 30);
-                $table->text('reason_text_redacted')->nullable();
-                $table->unsignedBigInteger('refunded_by_user_id')->nullable();
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_refunds_company_idempotency_key_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_refunds_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_table_sessions) ─────────────────────────────────────
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('table_id');
-                $table->unsignedBigInteger('order_id')->nullable();
-                $table->timestamp('opened_at')->useCurrent();
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedSmallInteger('covers')->nullable();
-                $table->string('status', 20)->default('open');
-                $table->index(['company_id', 'table_id'], 'restaurant_table_sessions_company_table_idx');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_table_sessions_company_branch_status_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
-            Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_reservations) ─────────────────────────────────────
-                $table->string('reference', 40);
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->string('contact_name', 150);
-                $table->string('contact_phone', 40);
-                $table->timestamp('reserved_at');
-                $table->unsignedSmallInteger('covers')->default(1);
-                $table->unsignedBigInteger('table_id')->nullable();
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->unsignedInteger('deposit_minor')->nullable();
-                $table->text('notes_redacted')->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_reservations_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_reservations_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'reserved_at'], 'restaurant_reservations_company_branch_reserved_at_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_delivery_zones) ─────────────────────────────────────
-                $table->string('name', 120);
-                $table->unsignedInteger('fee_minor')->default(0);
-                $table->unsignedInteger('min_order_minor')->nullable();
-                $table->string('status', 20)->default('active');
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_delivery_zones_company_branch_name_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_delivery_riders) ─────────────────────────────────────
-                $table->unsignedBigInteger('employee_id')->nullable();
-                $table->string('name', 150);
-                $table->string('phone', 40)->nullable();
-                $table->string('vehicle_code', 40)->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->index(['company_id', 'branch_id'], 'restaurant_delivery_riders_company_branch_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
-            Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_deliveries) ─────────────────────────────────────
-                $table->unsignedBigInteger('rider_id')->nullable();
-                $table->timestamp('delivered_at')->nullable();
-                $table->string('delivered_to_contact', 150)->nullable();
-                $table->index(['company_id', 'order_id'], 'restaurant_deliveries_company_order_idx');
-                $table->index(['company_id', 'rider_id'], 'restaurant_deliveries_company_rider_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
-                $table->unsignedInteger('points_per_amount_minor')->default(100);
-                $table->unsignedInteger('redeem_rate_minor')->default(100);
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('customer_contact_id');
-                $table->integer('points')->default(0);
-                $table->string('tier_code', 20)->nullable();
-                $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
-        // ── BC-25 RESTAURANT (restaurant_loyalty_customers) ─────────────────────────────────────
-        // ── BC-25 RESTAURANT (restaurant_loyalty_programs) ─────────────────────────────────────
-                $table->unsignedBigInteger('customer_id');
-                $table->integer('delta');
-                $table->unsignedBigInteger('reference_id')->nullable();
-                $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
-            Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('code', 40);
-                $table->string('title', 150);
-                $table->string('discount_type', 20)->default('percent');
-                $table->unsignedInteger('value_minor')->default(0);
-                $table->timestamp('starts_at')->nullable();
-                $table->timestamp('ends_at')->nullable();
-                $table->unsignedInteger('max_uses')->nullable();
-                $table->unsignedInteger('used_count')->default(0);
-                $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
-            Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
-                $table->string('event_type', 120);
-                $table->json('payload_redacted')->nullable();
-                $table->timestamp('available_at')->nullable();
-                $table->unsignedSmallInteger('attempts')->default(0);
-                $table->timestampTz('available_at')->useCurrent();
-                $table->text('last_error')->nullable();
-                $table->string('idempotency_key', 255);
-                $table->timestamps();
-                $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
-            });
-        }
 
-        // ── BC-24 TRAVEL — TRAVEL-415 (issue #6067) ────────────────────────
-        // Contacts voyageurs + registre de consentement par canal : aucun
-        // envoi sans opt-in explicite (spéc §8.5, RGPD).
-        if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
+if (! Schema::hasTable($this->moduleTable('travel_customer_contacts'))) {
             Schema::create($this->moduleTable('travel_customer_contacts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4437,8 +3704,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-904 (issue #6107) — quiz ────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
+if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
             Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4452,7 +3718,8 @@ trait CreatesMvpSchema
                 $table->index(['company_id', 'status'], 'travel_quizzes_company_status_idx');
             });
         }
-        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
+
+if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
             Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4466,7 +3733,8 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'quiz_id', 'position'], 'travel_quiz_questions_company_quiz_position_unique');
             });
         }
-        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
+
+if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
             Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4483,8 +3751,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-905 (issue #6108) — annonces référentiels ─
-        if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
+if (! Schema::hasTable($this->moduleTable('travel_advert_types'))) {
             Schema::create($this->moduleTable('travel_advert_types'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4494,7 +3761,8 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
             });
         }
-        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
+
+if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
             Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4505,8 +3773,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-906 (issue #6109) — grille tarifaire ─────
-        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
+if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
             Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4520,8 +3787,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-907/908 (issues #6110/#6111) — annonces ──
-        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
+if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
             Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4547,8 +3813,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-909 (issue #6112) — sites touristiques ───
-        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
             Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4564,8 +3829,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-806 (issue #6097) — webhooks transporteurs ──
-        if (! Schema::hasTable($this->moduleTable('travel_webhook_subscriptions'))) {
+if (! Schema::hasTable($this->moduleTable('travel_webhook_subscriptions'))) {
             Schema::create($this->moduleTable('travel_webhook_subscriptions'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
@@ -4580,7 +3844,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_webhook_deliveries'))) {
+if (! Schema::hasTable($this->moduleTable('travel_webhook_deliveries'))) {
             Schema::create($this->moduleTable('travel_webhook_deliveries'), function (Blueprint $table): void {
                 $table->uuid('id')->primary();
                 $table->uuid('company_id')->index();
@@ -4599,8 +3863,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-212 (issue #6025) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
+if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
             Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4619,7 +3882,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicle_images'))) {
+if (! Schema::hasTable($this->moduleTable('travel_rental_vehicle_images'))) {
             Schema::create($this->moduleTable('travel_rental_vehicle_images'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4631,8 +3894,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-213 (issue #6026) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_rental_bookings'))) {
+if (! Schema::hasTable($this->moduleTable('travel_rental_bookings'))) {
             Schema::create($this->moduleTable('travel_rental_bookings'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4653,8 +3915,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-214 (issue #6027) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_round_trips'))) {
+if (! Schema::hasTable($this->moduleTable('travel_round_trips'))) {
             Schema::create($this->moduleTable('travel_round_trips'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4671,8 +3932,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-802 (issue #6093) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
+if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
             Schema::create($this->moduleTable('travel_quotes'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4694,8 +3954,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-803 (issue #6094) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
+if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
             Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4712,8 +3971,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-805 (issue #6096) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_carrier_api_keys'))) {
+if (! Schema::hasTable($this->moduleTable('travel_carrier_api_keys'))) {
             Schema::create($this->moduleTable('travel_carrier_api_keys'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4728,8 +3986,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-807 (issue #6086) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_refunds'))) {
+if (! Schema::hasTable($this->moduleTable('travel_refunds'))) {
             Schema::create($this->moduleTable('travel_refunds'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4746,7 +4003,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
+if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
             Schema::create($this->moduleTable('travel_cancellation_policies'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4760,8 +4017,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-808/813 (issues #6098/#6103) ─────────────
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
+if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
             Schema::create($this->moduleTable('travel_loyalty_accounts'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4774,7 +4030,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
+if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
             Schema::create($this->moduleTable('travel_loyalty_transactions'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4789,8 +4045,7 @@ trait CreatesMvpSchema
             });
         }
 
-        // ── BC-24 TRAVEL — TRAVEL-811 (issue #6101) ────────────────────────
-        if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
+if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
             Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4805,7 +4060,7 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_hotel_rooms'))) {
+if (! Schema::hasTable($this->moduleTable('travel_hotel_rooms'))) {
             Schema::create($this->moduleTable('travel_hotel_rooms'), function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -4820,262 +4075,7 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'hotel_id', 'room_number'], 'travel_hotel_rooms_company_hotel_room_unique');
             });
         }
-        // — FuelStation batch A (FUEL-009/010/014/015/016/018, #5803..#5814) :
-        // parité fixture ↔ migrations tenant 2026_08_30_0004xx (garde #5443).
-        if (! Schema::hasTable($this->moduleTable('fuel_stock_entries'))) {
-            Schema::create($this->moduleTable('fuel_stock_entries'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('station_id')->nullable()->index();
-                $table->string('product_code', 40);
-                $table->decimal('quantity', 14, 3);
-                $table->decimal('unit_cost', 14, 2)->default(0);
-                $table->string('entry_type', 20)->default('delivery');
-                $table->string('reason', 255)->nullable();
-                $table->string('reference', 120)->nullable();
-                $table->date('entry_date');
-                $table->string('idempotency_key', 191);
-                $table->unsignedInteger('created_by')->nullable();
-                $table->unique(['company_id', 'idempotency_key'], 'fuel_stock_entries_key_unique');
-        if (! Schema::hasTable($this->moduleTable('fuel_reconciliation_runs'))) {
-            Schema::create($this->moduleTable('fuel_reconciliation_runs'), function (Blueprint $table): void {
-                $table->date('run_date');
-                $table->timestampTz('started_at')->nullable();
-                $table->timestampTz('finished_at')->nullable();
-                $table->jsonb('summary')->nullable();
-                $table->unique(['company_id', 'station_id', 'run_date'], 'fuel_reconciliation_run_unique');
-        if (! Schema::hasTable($this->moduleTable('fuel_incidents'))) {
-            Schema::create($this->moduleTable('fuel_incidents'), function (Blueprint $table): void {
-                $table->string('equipment_type', 20)->default('other');
-                $table->unsignedBigInteger('equipment_id')->nullable();
-                $table->string('severity', 20)->default('medium');
-                $table->string('status', 20)->default('open');
-                $table->string('title', 200);
-                $table->text('description')->nullable();
-                $table->unsignedInteger('reported_by')->nullable();
-                $table->unsignedInteger('assigned_to')->nullable();
-                $table->timestampTz('occurred_at')->useCurrent();
-                $table->timestampTz('resolved_at')->nullable();
-                $table->unsignedInteger('resolved_by')->nullable();
-                $table->text('resolution_notes')->nullable();
-                $table->timestampTz('closed_at')->nullable();
-                $table->unsignedInteger('closed_by')->nullable();
-                $table->text('closure_notes')->nullable();
-        if (! Schema::hasTable($this->moduleTable('fuel_incident_attachments'))) {
-            Schema::create($this->moduleTable('fuel_incident_attachments'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('incident_id')->index();
-                $table->string('file_name', 200);
-                $table->string('mime_type', 120);
-                $table->unsignedBigInteger('size_bytes')->default(0);
-                $table->unsignedInteger('uploaded_by')->nullable();
-        if (! Schema::hasTable($this->moduleTable('fuel_maintenance_tasks'))) {
-            Schema::create($this->moduleTable('fuel_maintenance_tasks'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('incident_id')->nullable()->index();
-                $table->string('task_type', 20)->default('preventive');
-                $table->string('priority', 20)->default('medium');
-                $table->string('status', 20)->default('todo');
-                $table->date('scheduled_for')->nullable();
-                $table->date('completed_at')->nullable();
-                $table->unsignedInteger('completed_by')->nullable();
-                $table->text('completion_notes')->nullable();
-        if (! Schema::hasTable($this->moduleTable('fuel_outbox_events'))) {
-            Schema::create($this->moduleTable('fuel_outbox_events'), function (Blueprint $table): void {
-                $table->string('aggregate_type', 120)->nullable();
-                $table->string('aggregate_id', 120)->nullable();
-                $table->jsonb('payload');
-                $table->timestampTz('available_at', 6)->useCurrent();
-                $table->timestampTz('processed_at')->nullable();
-                $table->timestampTz('created_at')->useCurrent();
-                $table->timestampTz('updated_at')->useCurrent();
-                $table->unique(['company_id', 'idempotency_key'], 'fuel_outbox_company_key_unique');
-        if (! Schema::hasTable($this->moduleTable('fuel_customers'))) {
-            Schema::create($this->moduleTable('fuel_customers'), function (Blueprint $table): void {
-                $table->string('external_id', 120);
-                $table->string('full_name', 200);
-                $table->text('phone')->nullable();
-                $table->text('email')->nullable();
-                $table->boolean('marketing_consent')->default(false);
-                $table->bigInteger('loyalty_points')->default(0);
-                $table->text('metadata')->nullable();
-                $table->unique(['company_id', 'external_id'], 'fuel_customers_company_external_unique');
-        if (! Schema::hasTable($this->moduleTable('fuel_imports'))) {
-            Schema::create($this->moduleTable('fuel_imports'), function (Blueprint $table): void {
-                $table->string('kind', 40);
-                $table->string('status', 20)->default('uploaded');
-                $table->unsignedInteger('total_rows')->default(0);
-                $table->unsignedInteger('processed_rows')->default(0);
-                $table->unsignedInteger('failed_rows')->default(0);
-                $table->jsonb('error_summary')->nullable();
-        // fuel_sales.customer_id (FUEL-016) — parité avec la migration additive.
-        $fuelSales = $this->moduleTable('fuel_sales');
-        if (Schema::hasTable($fuelSales) && ! Schema::hasColumn($fuelSales, 'customer_id')) {
-            Schema::table($fuelSales, function (Blueprint $table): void {
-                $table->unsignedBigInteger('customer_id')->nullable()->index()->after('cash_session_id');
-                $table->timestamp('expected_at')->nullable();
-                $table->timestamp('received_at')->nullable();
-                $table->unsignedInteger('total_minor')->nullable();
-                $table->char('currency', 3)->default('DZD');
-                $table->unique(['company_id', 'reference'], 'restaurant_purchase_orders_company_reference_unique');
-                $table->index(['company_id', 'supplier_id'], 'restaurant_purchase_orders_company_supplier_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_purchase_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_purchase_order_items'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('purchase_order_id');
-                $table->unsignedBigInteger('ingredient_id');
-                $table->decimal('quantity', 12, 3);
-                $table->unsignedInteger('line_total_minor');
-                $table->index(['company_id', 'purchase_order_id'], 'restaurant_purchase_order_items_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_receivings'))) {
-            Schema::create($this->moduleTable('restaurant_receivings'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('branch_id');
-                $table->unsignedBigInteger('purchase_order_id')->nullable();
-                $table->unsignedBigInteger('supplier_id')->nullable();
-                $table->timestamp('received_at')->useCurrent();
-                $table->text('note_redacted')->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_receivings_company_reference_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_counts'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_counts'), function (Blueprint $table): void {
-                $table->timestamp('counted_at')->useCurrent();
-                $table->unsignedBigInteger('counted_by_user_id')->nullable();
-                $table->unsignedBigInteger('approved_by')->nullable();
-                $table->timestamp('approved_at')->nullable();
-                $table->index(['company_id', 'branch_id'], 'restaurant_inventory_counts_company_branch_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_inventory_count_items'))) {
-            Schema::create($this->moduleTable('restaurant_inventory_count_items'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('count_id');
-                $table->decimal('expected_qty', 12, 3)->nullable();
-                $table->decimal('counted_qty', 12, 3)->nullable();
-                $table->decimal('variance_qty', 12, 3)->nullable();
-                $table->string('reason_code', 30)->nullable();
-                $table->index(['company_id', 'count_id'], 'restaurant_inventory_count_items_company_count_idx');
-                $table->unique(['company_id', 'count_id', 'ingredient_id'], 'restaurant_inventory_count_items_company_count_ingredient_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_pos_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_pos_sessions'), function (Blueprint $table): void {
-                $table->timestamp('opened_at')->useCurrent();
-                $table->timestamp('closed_at')->nullable();
-                $table->unsignedBigInteger('opened_by_user_id');
-                $table->unsignedBigInteger('closed_by_user_id')->nullable();
-                $table->unsignedInteger('opening_cash_minor')->default(0);
-                $table->unsignedInteger('expected_cash_minor')->nullable();
-                $table->unsignedInteger('counted_cash_minor')->nullable();
-                $table->integer('variance_minor')->nullable();
-                $table->string('variance_reason', 255)->nullable();
-                $table->index(['company_id', 'branch_id'], 'restaurant_pos_sessions_company_branch_idx');
-                $table->unique(['company_id', 'branch_id', 'status'], 'restaurant_pos_sessions_company_branch_status_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_orders'))) {
-            Schema::create($this->moduleTable('restaurant_orders'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('pos_session_id')->nullable();
-                $table->string('order_type', 20)->default('dine_in');
-                $table->unsignedBigInteger('table_id')->nullable();
-                $table->unsignedBigInteger('zone_id')->nullable();
-                $table->unsignedSmallInteger('covers')->nullable();
-                $table->unsignedBigInteger('rider_id')->nullable();
-                $table->unsignedInteger('subtotal_minor')->default(0);
-                $table->unsignedInteger('tax_minor')->default(0);
-                $table->unsignedInteger('discount_minor')->default(0);
-                $table->unsignedInteger('total_minor')->default(0);
-                $table->string('source', 20)->default('pos');
-                $table->string('idempotency_key', 64)->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_orders_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_orders_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_orders_company_branch_status_idx');
-                $table->index(['company_id', 'table_id'], 'restaurant_orders_company_table_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_items'))) {
-            Schema::create($this->moduleTable('restaurant_order_items'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('order_id');
-                $table->unsignedBigInteger('product_id');
-                $table->unsignedBigInteger('menu_id')->nullable();
-                $table->unsignedBigInteger('tax_rate_id')->nullable();
-                $table->unsignedInteger('tax_minor')->nullable();
-                $table->unsignedSmallInteger('line_index')->default(0);
-                $table->unique(['company_id', 'order_id', 'product_id', 'line_index'], 'restaurant_order_items_company_order_product_line_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_order_items_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_order_payments'))) {
-            Schema::create($this->moduleTable('restaurant_order_payments'), function (Blueprint $table): void {
-                $table->unsignedInteger('tip_minor')->nullable();
-                $table->json('callback_payload_redacted')->nullable();
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_order_payments_company_idempotency_key_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_order_payments_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_refunds'))) {
-            Schema::create($this->moduleTable('restaurant_refunds'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('payment_id')->nullable();
-                $table->string('reason_code', 30);
-                $table->text('reason_text_redacted')->nullable();
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_refunds_company_idempotency_key_unique');
-                $table->index(['company_id', 'order_id'], 'restaurant_refunds_company_order_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_table_sessions'))) {
-            Schema::create($this->moduleTable('restaurant_table_sessions'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('table_id');
-                $table->unsignedBigInteger('order_id')->nullable();
-                $table->index(['company_id', 'table_id'], 'restaurant_table_sessions_company_table_idx');
-                $table->index(['company_id', 'branch_id', 'status'], 'restaurant_table_sessions_company_branch_status_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_reservations'))) {
-            Schema::create($this->moduleTable('restaurant_reservations'), function (Blueprint $table): void {
-                $table->string('contact_name', 150);
-                $table->string('contact_phone', 40);
-                $table->timestamp('reserved_at');
-                $table->unsignedSmallInteger('covers')->default(1);
-                $table->unsignedInteger('deposit_minor')->nullable();
-                $table->text('notes_redacted')->nullable();
-                $table->unique(['company_id', 'reference'], 'restaurant_reservations_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_reservations_company_idempotency_key_unique');
-                $table->index(['company_id', 'branch_id', 'reserved_at'], 'restaurant_reservations_company_branch_reserved_at_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_zones'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_zones'), function (Blueprint $table): void {
-                $table->unsignedInteger('fee_minor')->default(0);
-                $table->unsignedInteger('min_order_minor')->nullable();
-                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_delivery_zones_company_branch_name_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_riders'))) {
-            Schema::create($this->moduleTable('restaurant_delivery_riders'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('employee_id')->nullable();
-                $table->string('name', 150);
-                $table->string('vehicle_code', 40)->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->index(['company_id', 'branch_id'], 'restaurant_delivery_riders_company_branch_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_deliveries'))) {
-            Schema::create($this->moduleTable('restaurant_deliveries'), function (Blueprint $table): void {
-                $table->timestamp('delivered_at')->nullable();
-                $table->string('delivered_to_contact', 150)->nullable();
-                $table->index(['company_id', 'order_id'], 'restaurant_deliveries_company_order_idx');
-                $table->index(['company_id', 'rider_id'], 'restaurant_deliveries_company_rider_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_programs'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_programs'), function (Blueprint $table): void {
-                $table->unsignedInteger('points_per_amount_minor')->default(100);
-                $table->unsignedInteger('redeem_rate_minor')->default(100);
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_customers'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_customers'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('customer_contact_id');
-                $table->integer('points')->default(0);
-                $table->string('tier_code', 20)->nullable();
-                $table->unique(['company_id', 'customer_contact_id'], 'restaurant_loyalty_customers_company_customer_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_loyalty_points_movements'))) {
-            Schema::create($this->moduleTable('restaurant_loyalty_points_movements'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('customer_id');
-                $table->integer('delta');
-                $table->unsignedBigInteger('reference_id')->nullable();
-                $table->index(['company_id', 'customer_id'], 'restaurant_loyalty_points_movements_company_customer_idx');
-        if (! Schema::hasTable($this->moduleTable('restaurant_promotions'))) {
-            Schema::create($this->moduleTable('restaurant_promotions'), function (Blueprint $table): void {
-                $table->unsignedBigInteger('branch_id')->nullable();
-                $table->string('title', 150);
-                $table->string('discount_type', 20)->default('percent');
-                $table->unsignedInteger('value_minor')->default(0);
-                $table->timestamp('starts_at')->nullable();
-                $table->timestamp('ends_at')->nullable();
-                $table->unsignedInteger('max_uses')->nullable();
-                $table->unsignedInteger('used_count')->default(0);
-                $table->unique(['company_id', 'code'], 'restaurant_promotions_company_code_unique');
-        if (! Schema::hasTable($this->moduleTable('restaurant_outbox_events'))) {
-            Schema::create($this->moduleTable('restaurant_outbox_events'), function (Blueprint $table): void {
-                $table->string('event_type', 120);
-                $table->json('payload_redacted')->nullable();
-                $table->timestamp('available_at')->nullable();
-                $table->string('idempotency_key', 64);
-                $table->timestamps();
-                $table->text('last_error')->nullable();
-                $table->string('idempotency_key', 64);
-                $table->unique(['company_id', 'idempotency_key'], 'restaurant_outbox_events_company_idempotency_key_unique');
-                $table->index(['company_id', 'status', 'available_at'], 'restaurant_outbox_events_company_status_available_idx');
-            });
-        }
-    }
+}
 
     private function dropMvpTables(): void
     {
@@ -5151,46 +4151,6 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS "payments"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "invoices"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "subscriptions"'.$cascade);
-        // BC-24 TRAVEL (verticale TravelAgency)
-        DB::statement('DROP TABLE IF EXISTS "travel_hotel_rooms"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_transactions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_loyalty_accounts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cancellation_policies"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_refunds"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_carrier_api_keys"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_currency_rates"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quotes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_round_trips"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_hotels"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_bookings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicle_images"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_rental_vehicles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_outbox_events"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_customer_contacts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_payments"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_tickets"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_passengers"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_bookings"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trip_seats"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trip_prices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_trips"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_route_stops"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_routes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_vehicles"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_classes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_carriers"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_offices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_stations"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_cities"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_tourist_sites"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_adverts"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_prices"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_positions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_advert_types"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_participations"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quiz_questions"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_quizzes"'.$cascade);
-        DB::statement('DROP TABLE IF EXISTS "travel_countries"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "user_lookups"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_correction_requests"'.$cascade);
         DB::statement('DROP TABLE IF EXISTS "attendance_period_closures"'.$cascade);
