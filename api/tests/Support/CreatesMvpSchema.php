@@ -1085,6 +1085,11 @@ trait CreatesMvpSchema
      * Purge les types composites/enum/domain ORPHELINS du schéma `public`
      * (issue #6754) — PAS les tables.
      *
+     * Un type n'est droppé que s'il n'est référencé par AUCUNE colonne
+     * (tous schémas confondus) : les enums encore utilisés par des tables
+     * publiques réelles conservées (ex. company_requests.status) ne sont
+     * jamais supprimés (DROP TYPE ... CASCADE supprimerait la colonne).
+     *
      * Les tables publiques issues de vraies migrations (bootstrap CI ou
      * fichier RefreshTenantDatabase précédent) sont volontairement
      * CONSERVÉES : la fixture ne recrée pas toutes les tables publiques que
@@ -1110,6 +1115,24 @@ trait CreatesMvpSchema
                     WHERE n.nspname = 'public'
                       AND t.typtype IN ('c', 'e', 'd')
                       AND t.typname NOT LIKE '\_%'
+                      -- Exclut tout type encore référencé par une colonne
+                      -- (attisdropped = false), directement ou via son type
+                      -- tableau (typelem) : garde anti DROP CASCADE sur les
+                      -- tables réelles conservées (ex. company_requests et
+                      -- son enum de statut).
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM pg_catalog.pg_attribute a
+                          WHERE NOT a.attisdropped
+                            AND (
+                                a.atttypid = t.oid
+                                OR a.atttypid IN (
+                                    SELECT at.oid
+                                    FROM pg_catalog.pg_type at
+                                    WHERE at.typelem = t.oid
+                                )
+                            )
+                      )
                 LOOP
                     EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
                 END LOOP;
