@@ -95,6 +95,7 @@ class VerifyTrialSignup
         }
 
         $companyRequest = $claimed;
+        /** @var array<string, mixed> $payload */
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
@@ -119,7 +120,8 @@ class VerifyTrialSignup
         // MULTI-PAYS (#1867/#1950) : le pays vient du signup validé (règle
         // SupportedCountry) — résolution STRICTE, aucun fallback silencieux
         // vers DZ (invariant 10). Un payload hérité sans pays valide → 422.
-        $country = strtoupper(trim((string) ($payload['country'] ?? '')));
+        $rawCountry = $payload['country'] ?? '';
+        $country = strtoupper(trim(\is_string($rawCountry) ? $rawCountry : ''));
         $countryDefaults = CountryDefaults::find($country);
         if ($countryDefaults === null) {
             return [
@@ -145,12 +147,14 @@ class VerifyTrialSignup
         [$firstName, $lastName] = $this->requestTrialSignup->managerNameParts($payload, $email);
         $tempPassword = $this->generateReadablePassword();
 
+        $rawRole = $payload['role'] ?? null;
+
         try {
             /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
                 'name' => $companyName,
                 'slug' => Str::slug($companyName),
-                'sector' => $this->mapRoleToSector($payload['role'] ?? null),
+                'sector' => $this->mapRoleToSector(\is_string($rawRole) ? $rawRole : null),
                 'country' => $country,
                 'city' => 'Non précisé',
                 'email' => $email,
@@ -198,10 +202,13 @@ class VerifyTrialSignup
         // BC-25 (#6693) : activation des solutions sectorielles demandées au
         // signup (fail-closed — un code inconnu ou une dépendance manquante
         // annule la demande, status reverté pour retry propre).
-        $solutions = array_values(array_unique(array_map(
-            static fn (mixed $code): string => strtolower(trim((string) $code)),
-            $payload['solutions'] ?? [],
-        )));
+        $solutions = [];
+        foreach ((array) ($payload['solutions'] ?? []) as $solutionCode) {
+            if (\is_string($solutionCode)) {
+                $solutions[] = strtolower(trim($solutionCode));
+            }
+        }
+        $solutions = array_values(array_unique($solutions));
 
         // L'activation écrit dans audit_logs (table tenant) → contexte tenant.
         $this->tenantManager->setTenant($result['company']);
@@ -287,7 +294,8 @@ class VerifyTrialSignup
 
             try {
                 return DB::transaction(function () use ($payload): array {
-                    $slug = $this->resolveUniqueSlug($payload['slug']);
+                    $rawSlug = $payload['slug'];
+                    $slug = $this->resolveUniqueSlug(\is_string($rawSlug) ? $rawSlug : 'company');
 
                     $company = Company::query()->create([
                         'name' => $payload['name'],
@@ -302,7 +310,7 @@ class VerifyTrialSignup
                         'tenancy_type' => 'shared',
                         'status' => 'trial',
                         'subscription_start' => now()->toDateString(),
-                        'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
+                        'subscription_end' => now()->addDays($this->trialDays())->toDateString(),
                         'language' => $payload['language'],
                         'timezone' => $payload['timezone'],
                         'currency' => $payload['currency'],
@@ -312,8 +320,9 @@ class VerifyTrialSignup
                         ],
                     ]);
 
-                    if (! empty($payload['referral_code'])) {
-                        $this->partnerService->attributeCompanyToPartner($company, $payload['referral_code']);
+                    $referralCode = $payload['referral_code'] ?? null;
+                    if (\is_string($referralCode) && $referralCode !== '') {
+                        $this->partnerService->attributeCompanyToPartner($company, $referralCode);
                     }
 
                     if (DB::getDriverName() === 'pgsql') {
@@ -338,10 +347,11 @@ class VerifyTrialSignup
                                 'self_service_trial' => true,
                             ],
                         ]);
+                        $tempPassword = $payload['temp_password'];
                         $manager->forceFill([
                             'company_id' => $company->id,
                             // Issue #4496 : password_hash non mass-assignable.
-                            'password_hash' => Hash::make($payload['temp_password']),
+                            'password_hash' => Hash::make(\is_string($tempPassword) ? $tempPassword : Str::random(16)),
                             'role' => 'manager',
                             'manager_role' => 'principal',
                             'status' => 'active',
@@ -400,7 +410,7 @@ class VerifyTrialSignup
                     'attendance' => true,
                     'mobile_apps' => true,
                 ], JSON_THROW_ON_ERROR),
-                'trial_days' => (int) config('billing.trial_days'),
+                'trial_days' => $this->trialDays(),
                 'is_active' => true,
             ]);
 
@@ -457,5 +467,12 @@ class VerifyTrialSignup
             'operations' => 'Opérations',
             default => 'Non précisé',
         };
+    }
+
+    private function trialDays(): int
+    {
+        $days = config('billing.trial_days');
+
+        return \is_int($days) ? $days : 14;
     }
 }

@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\AuditLog;
+use App\Core\Solutions\SolutionActivator;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Core\Tenant\TenantManager;
 use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use Illuminate\Support\Facades\Mail;
@@ -60,6 +62,7 @@ class TrialSolutionsActivationTest extends TestCase
 
         $response->assertStatus(201)->assertJson(['success' => true]);
 
+        /** @var Company|null $company */
         $company = Company::find($response->json('data.company.id'));
         $this->assertNotNull($company);
 
@@ -72,7 +75,7 @@ class TrialSolutionsActivationTest extends TestCase
 
         // Activation auditée (audit_logs = table tenant → contexte tenant,
         // pattern SelfServiceTrialTest).
-        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        app(TenantManager::class)->setTenant($company);
         try {
             $this->assertDatabaseHas('audit_logs', [
                 'company_id' => $company->id,
@@ -83,7 +86,7 @@ class TrialSolutionsActivationTest extends TestCase
                 'action' => 'solution.dependencies_activated',
             ]);
         } finally {
-            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+            app(TenantManager::class)->resetToPrevious();
         }
     }
 
@@ -131,18 +134,19 @@ class TrialSolutionsActivationTest extends TestCase
         // solution demandée doit être activée sur le tenant créé.
         $result = app(ProvisionGuidedTrial::class)->execute('guided@newtech.dz', 'Guided Restaurant', 'DZ', ['fuel_station']);
 
+        /** @var Company|null $company */
         $company = $result['company'];
         $this->assertNotNull($company);
         $this->assertTrue($company->hasFeature('fuel_station'));
         $this->assertTrue($company->hasFeature('attendance'));
-        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        app(TenantManager::class)->setTenant($company);
         try {
             $this->assertDatabaseHas('audit_logs', [
                 'company_id' => $company->id,
                 'action' => 'solution.activated',
             ]);
         } finally {
-            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+            app(TenantManager::class)->resetToPrevious();
         }
     }
 
@@ -159,32 +163,35 @@ class TrialSolutionsActivationTest extends TestCase
             'solutions' => ['fuel_station'],
         ])->assertStatus(200);
 
+        /** @var CompanyRequest|null $companyRequest */
         $companyRequest = CompanyRequest::where('email', 'idem@newtech.dz')->first();
+        $this->assertNotNull($companyRequest);
         $this->postJson('/api/v1/trial/verify', [
             'email' => 'idem@newtech.dz',
             'code' => $companyRequest->verification_token,
         ])->assertStatus(201);
 
+        /** @var Company|null $company */
         $company = Company::where('email', 'idem@newtech.dz')->first();
         $this->assertNotNull($company);
 
         // Ré-activer la solution déjà active : no-op, pas de doublon d'audit
         // (audit_logs = table tenant → contexte tenant).
-        app(\App\Core\Tenant\TenantManager::class)->setTenant($company);
+        app(TenantManager::class)->setTenant($company);
         try {
             $before = AuditLog::where('company_id', $company->id)
                 ->where('action', 'solution.activated')
                 ->count();
 
             $company->refresh();
-            app(\App\Core\Solutions\SolutionActivator::class)->activateWithDependencies($company, 'fuel_station');
+            app(SolutionActivator::class)->activateWithDependencies($company, 'fuel_station');
 
             $after = AuditLog::where('company_id', $company->id)
                 ->where('action', 'solution.activated')
                 ->count();
             $this->assertSame($before, $after);
         } finally {
-            app(\App\Core\Tenant\TenantManager::class)->resetToPrevious();
+            app(TenantManager::class)->resetToPrevious();
         }
     }
 }

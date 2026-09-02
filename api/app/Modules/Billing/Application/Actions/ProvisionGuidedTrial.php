@@ -28,6 +28,7 @@ class ProvisionGuidedTrial
      * (invariant 10 de la spec MULTI_PAYS_RULES_ENGINE). La langue, la
      * devise et le fuseau sont dérivés du pays validé.
      *
+     * @param  list<string>  $solutions  Codes de solutions sectorielles demandées (#6693)
      * @return array<string, mixed>
      */
     public function execute(string $email, string $companyName, ?string $country = null, array $solutions = []): array
@@ -96,7 +97,7 @@ class ProvisionGuidedTrial
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
+                'subscription_end' => now()->addDays($this->trialDays())->toDateString(),
                 'language' => strtolower($countryDefaults['language']),
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
@@ -171,6 +172,7 @@ class ProvisionGuidedTrial
 
     private function resolveTrialPlanId(): int
     {
+        /** @var object{id: int}|null $plan */
         $plan = DB::table('plans')->where('is_active', true)->first();
         if ($plan) {
             return $plan->id;
@@ -182,7 +184,7 @@ class ProvisionGuidedTrial
             'price_yearly' => 0,
             'max_employees' => 50,
             'features' => json_encode(['rh' => true, 'tasks' => true, 'attendance' => true, 'mobile_apps' => true]),
-            'trial_days' => (int) config('billing.trial_days'),
+            'trial_days' => $this->trialDays(),
             'is_active' => true,
         ]);
     }
@@ -252,5 +254,12 @@ class ProvisionGuidedTrial
                 'updated_at' => now(),
             ]);
         }
+    }
+
+    private function trialDays(): int
+    {
+        $days = config('billing.trial_days');
+
+        return \is_int($days) ? $days : 14;
     }
 }
