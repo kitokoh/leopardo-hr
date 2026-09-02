@@ -61,6 +61,13 @@ Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::cl
         Route::middleware('api.manager')->group(function (): void {
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
             // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
+            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
+            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
+            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
+            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
             // pending→collected→settled→reconciled, idempotent. settle/reconcile
             // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
