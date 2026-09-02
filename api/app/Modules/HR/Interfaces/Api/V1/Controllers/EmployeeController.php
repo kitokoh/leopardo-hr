@@ -168,7 +168,8 @@ class EmployeeController extends Controller
             'salary_base',
             'hourly_rate',
             'preferred_language',
-            'extra_data',
+            // #6546 — extra_data n'est plus exposé sur la liste /employees
+            // (clés RGPD sensibles : national_id, tax_identifier, blood_group).
         ];
 
         return array_values(array_filter(
