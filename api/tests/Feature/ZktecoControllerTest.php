@@ -534,4 +534,99 @@ class ZktecoControllerTest extends TestCase
 
         $this->assertSame($expectedSchemas, $normalize($searchPath));
     }
+    // ── #6672 — non-régression index/show/sync-logs (prod 500 INTERNAL_ERROR) ──
+
+    public function test_show_returns_device_with_sync_history(): void
+    {
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SHOW-001',
+            'name' => 'Porte SHOW',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices/'.$device->id)
+            ->assertOk()
+            ->assertJsonPath('data.id', $device->id)
+            ->assertJsonPath('data.serial_number', 'SN-SHOW-001')
+            // Le token de sync ne sort jamais (hidden) — contrat #2216.
+            ->assertJsonMissingPath('data.sync_token_hash')
+            // sync_history est un tableau (vide ici — aucun sync).
+            ->assertJsonPath('sync_history', []);
+    }
+
+    public function test_show_is_scoped_to_current_company(): void
+    {
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        $otherDevice = ZktecoDevice::query()->create([
+            'company_id' => $otherCompany->id,
+            'serial_number' => 'SN-SHOW-OTHER-001',
+            'name' => 'Porte tenant B',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices/'.$otherDevice->id)
+            ->assertNotFound();
+    }
+
+    public function test_sync_logs_returns_list_for_device(): void
+    {
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-LOGS-001',
+            'name' => 'Porte LOGS',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices/'.$device->id.'/sync-logs?limit=5')
+            ->assertOk()
+            ->assertJsonPath('data', []);
+    }
+
+    public function test_sync_logs_is_scoped_to_current_company(): void
+    {
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        $otherDevice = ZktecoDevice::query()->create([
+            'company_id' => $otherCompany->id,
+            'serial_number' => 'SN-LOGS-OTHER-001',
+            'name' => 'Porte tenant B',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices/'.$otherDevice->id.'/sync-logs')
+            ->assertNotFound();
+    }
+
+    public function test_index_returns_503_with_actionable_code_on_schema_drift(): void
+    {
+        // #6672 — repro prod : le schéma du tenant n'a pas rejoué les
+        // migrations `zkteco_devices_company_id_uuid` (2026-08-19) ;
+        // company_id resté `bigint` alors que le code compare avec un UUID
+        // (companies.id) → SQLSTATE 22P02 → 500 INTERNAL_ERROR avant le fix.
+        DB::statement('ALTER TABLE zkteco_devices ALTER COLUMN company_id TYPE bigint USING 1');
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices')
+            ->assertStatus(503)
+            ->assertJsonPath('error', 'ZKTECO_SCHEMA_DRIFT')
+            ->assertJsonPath('message', 'ZKTECO_SCHEMA_DRIFT');
+    }
+
+    public function test_show_returns_503_with_actionable_code_on_schema_drift(): void
+    {
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-DRIFT-001',
+            'name' => 'Porte drift',
+        ]);
+
+        DB::statement('ALTER TABLE zkteco_devices ALTER COLUMN company_id TYPE bigint USING 1');
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices/'.$device->id)
+            ->assertStatus(503)
+            ->assertJsonPath('error', 'ZKTECO_SCHEMA_DRIFT');
+    }
 }
