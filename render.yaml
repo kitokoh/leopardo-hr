@@ -24,11 +24,11 @@ services:
     region: frankfurt
     plan: starter
     healthCheckPath: /api/v1/health
-    # #5xxx : autoDeploy:true redéploie à CHAQUE push main (même web/mobile/docs
-    # only) → gaspillage des build hours gratuits (quota ~500 h/mois). Recommandé :
-    # passer à `false` (push blueprint) et piloter uniquement via
-    # RENDER_DEPLOY_HOOK_URL (workflow deploy-main.yml, gate tests + filtre api/**).
-    autoDeploy: true
+    # #6700 : autoDeploy:false — le déploiement de l'API est piloté
+    # par le workflow deploy-main.yml via RENDER_DEPLOY_HOOK_URL (gate tests +
+    # filtre api/**). autoDeploy:true redéployait à CHAQUE push main (même
+    # web/mobile/docs only) → gaspillage des build hours gratuits (~500 h/mois).
+    autoDeploy: false
     envVars:
       - key: APP_ENV
         value: production
@@ -186,6 +186,8 @@ services:
     dockerContext: .
     region: frankfurt
     plan: starter
+    # #6700 : PAS de hook Render dédié pour les workers → autoDeploy:true
+    # conservé volontairement (ils suivent main ; l'API, elle, est hook-pilotée).
     autoDeploy: true
     # Issue #5578 : la queue est sur database — le worker consomme la
     # connexion par défaut (aligné sur le probe et le drain GH Actions).

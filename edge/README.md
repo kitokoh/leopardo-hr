@@ -101,3 +101,13 @@ This directory has three Dockerfiles with distinct roles — do not assume they 
 - Expiration automatique (30 jours par défaut)
 - Renouvellement automatique si Internet disponible
 - Token Edge unique par node (révocable depuis le Cloud)
+
+## Stack Edge — référence unique (issue #6700)
+
+- Le stack Edge s'exploite via **`edge/docker-compose.yml`** (canonique) — pas de
+  duplication avec le compose racine (dev full-stack) ni `api/docker-compose.yml`
+  (Sail legacy).
+- Clé publique de licence : **`edge/keys/edge_license_public.pem`** (source
+  unique ; `edge/license.pub` supprimé en #6698). Le mount compose pointe dessus.
+- Build des images : `edge/publish.sh` (edge-api) ; l'UI offline vit dans
+  `front/web-offline` (surface edge-ui — voir `docs/architecture/OFFLINE_SURFACES.md`).
