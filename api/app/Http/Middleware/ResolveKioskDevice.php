@@ -22,10 +22,12 @@ use Throwable;
  *   - lookup par hash déterministe du device_code (#5588) ;
  *   - appareil révoqué → 403 DEVICE_REVOKED (jamais un 404 ambigu) ;
  *   - token invalide → 401 INVALID_KIOSK_TOKEN (audité canal `audit`) ;
- *   - le search_path PostgreSQL est restauré dans tous les cas (try/finally,
- *     pattern #2689/#3368) ;
  *   - le kiosque résolu (relation `company` chargée) est posé en attribut
- *     `kiosk_device` pour les contrôleurs.
+ *     `kiosk_device` ;
+ *   - le search_path PostgreSQL est restauré AVANT `$next()` (pattern
+ *     #2689/#2973/#3368) : le contrôleur en aval retrouve le search_path
+ *     d'origine — jamais `public` (PlatformCompanyLookup bascule dessus) —
+ *     et les services ouvrent leur propre contexte tenant (withinTenant).
  */
 final class ResolveKioskDevice
 {
@@ -43,12 +45,12 @@ final class ResolveKioskDevice
             // défaut conservé
         }
 
-        DB::statement('SET search_path TO shared_tenants,public');
-
         try {
             if ($deviceCode === '') {
                 abort(401, 'INVALID_KIOSK_TOKEN');
             }
+
+            DB::statement('SET search_path TO shared_tenants,public');
 
             $kiosk = AttendanceKiosk::query()
                 ->where('device_code', AttendanceKiosk::hashDeviceCode($deviceCode))
@@ -73,10 +75,6 @@ final class ResolveKioskDevice
                 abort(403, 'DEVICE_REVOKED');
             }
 
-            if ($kiosk->company_id !== null) {
-                $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
-            }
-
             $token = (string) $request->header('X-Kiosk-Token', '');
             if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
                 Log::channel('audit')->warning('kiosk_auth.failed', [
@@ -88,11 +86,20 @@ final class ResolveKioskDevice
                 abort(401, 'INVALID_KIOSK_TOKEN');
             }
 
-            $request->attributes->set('kiosk_device', $kiosk);
+            if ($kiosk->company_id !== null) {
+                // PlatformCompanyLookup bascule sur `public` pour lire
+                // companies : on rétablit aussitôt le contexte kiosque.
+                $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
+                DB::statement('SET search_path TO shared_tenants,public');
+            }
 
-            return $next($request);
+            $request->attributes->set('kiosk_device', $kiosk);
         } finally {
+            // Restauré AVANT $next : le contrôleur et les services ouvrent
+            // leur propre contexte tenant (TenantManager::withinTenant).
             DB::statement('SET search_path TO '.$previous);
         }
+
+        return $next($request);
     }
 }

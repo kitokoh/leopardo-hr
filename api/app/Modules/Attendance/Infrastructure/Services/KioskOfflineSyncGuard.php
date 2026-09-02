@@ -70,6 +70,14 @@ final class KioskOfflineSyncGuard
             abort(422, 'SYNC_CLOCK_SKEW');
         }
 
+        // Défense en profondeur : une signature plus vieille que la fenêtre
+        // offline autorisée est un rejeu (un batch légitime est signé à
+        // l'instant de la synchronisation, jamais des semaines avant).
+        $maxAgeDays = (int) config('attendance.kiosk.offline.max_age_days', 14);
+        if ($signedAtCarbon->lessThan(Carbon::now('UTC')->subDays($maxAgeDays))) {
+            abort(422, 'SYNC_EXPIRED');
+        }
+
         $expected = hash_hmac(
             'sha256',
             $this->canonicalMessage($plainDeviceCode, $counter, $nonce, $signedAtCarbon),

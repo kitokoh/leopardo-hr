@@ -7,7 +7,7 @@ namespace Tests\Unit\Attendance;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Infrastructure\Services\KioskOfflineSyncGuard;
 use Illuminate\Support\Carbon;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**

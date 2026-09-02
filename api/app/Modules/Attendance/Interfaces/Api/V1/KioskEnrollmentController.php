@@ -11,8 +11,6 @@ use App\Modules\Attendance\Infrastructure\Services\KioskEnrollmentService;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskEnrollmentDecisionRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskEnrollmentStartRequest;
 use App\Modules\Attendance\Interfaces\Api\V1\Requests\KioskEnrollmentStatusRequest;
-use App\Support\PlatformCompanyLookup;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -58,11 +56,10 @@ final class KioskEnrollmentController extends Controller
     public function activate(KioskEnrollmentDecisionRequest $request, string $deviceCode, int $enrollment): JsonResponse
     {
         $kiosk = $this->kioskFromRequest($request, $deviceCode);
-        $model = $this->resolveEnrollment($request, $enrollment);
 
         $activated = $this->enrollmentService->activate(
             kiosk: $kiosk,
-            enrollment: $model,
+            enrollmentId: $enrollment,
             managerEmployeeId: (int) $request->validated('manager_employee_id'),
         );
 
@@ -74,11 +71,10 @@ final class KioskEnrollmentController extends Controller
     public function revoke(KioskEnrollmentDecisionRequest $request, string $deviceCode, int $enrollment): JsonResponse
     {
         $kiosk = $this->kioskFromRequest($request, $deviceCode);
-        $model = $this->resolveEnrollment($request, $enrollment);
 
         $revoked = $this->enrollmentService->revoke(
             kiosk: $kiosk,
-            enrollment: $model,
+            enrollmentId: $enrollment,
             managerEmployeeId: (int) $request->validated('manager_employee_id'),
         );
 
@@ -103,7 +99,8 @@ final class KioskEnrollmentController extends Controller
 
     /**
      * Résolution appareil : le middleware `kiosk.device` a déjà authentifié
-     * le kiosque (X-Kiosk-Token) et posé le modèle en attribut.
+     * le kiosque (X-Kiosk-Token), chargé la relation `company` et posé le
+     * modèle en attribut (search_path restauré avant le contrôleur).
      */
     private function kioskFromRequest(Request $request, string $deviceCode): AttendanceKiosk
     {
@@ -114,32 +111,7 @@ final class KioskEnrollmentController extends Controller
             abort(401, 'INVALID_KIOSK_TOKEN');
         }
 
-        if ($kiosk->company_id !== null) {
-            $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
-        }
-
         return $kiosk;
-    }
-
-    /**
-     * Résolution d'un enrôlement dans le tenant du kiosque (fail-closed :
-     * jamais de lecture cross-tenant — QLT-001 #6775).
-     */
-    private function resolveEnrollment(Request $request, int $enrollmentId): BiometricEnrollment
-    {
-        /** @var AttendanceKiosk $kiosk */
-        $kiosk = $request->attributes->get('kiosk_device');
-
-        $enrollment = BiometricEnrollment::query()
-            ->where('company_id', $kiosk->company_id)
-            ->whereKey($enrollmentId)
-            ->first();
-
-        if (! $enrollment) {
-            throw (new ModelNotFoundException)->setModel(BiometricEnrollment::class);
-        }
-
-        return $enrollment;
     }
 
     /**
@@ -159,7 +131,8 @@ final class KioskEnrollmentController extends Controller
             'enrolled_via' => $enrollment->enrolled_via,
             'correlation_id' => $enrollment->correlation_id,
             'created_at' => $enrollment->created_at?->toIso8601String(),
-            'activated_at' => $enrollment->enrolled_at?->toIso8601String(),
+            // Aligné sur la colonne réelle : posée à l'ACTIVATION.
+            'enrolled_at' => $enrollment->enrolled_at?->toIso8601String(),
             'revoked_at' => $enrollment->revoked_at?->toIso8601String(),
         ];
     }

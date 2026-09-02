@@ -133,6 +133,10 @@ final class KioskFaceVerificationService
                     action: $action,
                     workType: $workType,
                     method: 'face',
+                    // BIO-007 (#6772) : rejeu idempotent — une retentative après
+                    // perte de réponse retourne le log existant au lieu de
+                    // re-créer une présence (corrélation identique).
+                    deviceEventId: $deviceEventId !== null && $deviceEventId !== '' ? $deviceEventId : null,
                 );
 
                 return $this->outcome(FaceVerificationStatus::Verified, $log, $correlationId);

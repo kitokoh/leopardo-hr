@@ -642,6 +642,12 @@ final class MeterOcrService
             return null;
         }
 
+        // Borne de sécurité sur l'échelle du compteur (0..6) : au-delà,
+        // `10 ** $scale` déborde l'entier PHP (silencieusement en float).
+        if ($scale < 0 || $scale > 6) {
+            return null;
+        }
+
         $factor = 10 ** $scale;
 
         $integer = (int) $intPart;

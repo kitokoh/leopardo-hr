@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * BIO-005 (#6766) + BIO-006 (#6767) — cycle de vie & matrice de méthodes des
@@ -20,17 +19,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (resolveTableSchema('attendance_kiosks') === null) {
-            return;
-        }
-
         $schema = resolveTableSchema('attendance_kiosks');
 
         if ($schema === null) {
             return;
         }
 
-        // Convention #1613 : pas d_appel Schéma-table au nom nu (piège F-17) —
+        // Convention #1613 : pas d'appel Schéma-table au nom nu (piège F-17) —
         // ALTER résolu via le search_path.
         if (! schemaHasColumn('attendance_kiosks', 'site_id')) {
             DB::statement("ALTER TABLE {$schema}.attendance_kiosks ADD COLUMN site_id INTEGER NULL");

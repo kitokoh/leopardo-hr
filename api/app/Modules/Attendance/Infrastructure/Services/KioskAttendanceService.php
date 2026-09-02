@@ -49,9 +49,12 @@ class KioskAttendanceService
     ): AttendanceLog {
         return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId): AttendanceLog {
             // BIO-007 (#6772) : rejeu d'un événement appareil déjà traité →
-            // retour du log existant (aucune présence dupliquée).
+            // retour du log existant (aucune présence dupliquée). Recherche
+            // scopée au TENANT du kiosque : deux kiosques de tenants
+            // différents ne partagent jamais leurs device_event_id (QLT-001).
             if ($deviceEventId !== null && $deviceEventId !== '') {
                 $existing = AttendanceLog::query()
+                    ->where('company_id', $kiosk->company_id)
                     ->where('external_event_id', $deviceEventId)
                     ->first();
 
@@ -116,6 +119,7 @@ class KioskAttendanceService
                 } catch (QueryException $exception) {
                     if (str_contains($exception->getMessage(), '23505')) {
                         $concurrent = AttendanceLog::query()
+                            ->where('company_id', $kiosk->company_id)
                             ->where('external_event_id', $deviceEventId)
                             ->first();
 

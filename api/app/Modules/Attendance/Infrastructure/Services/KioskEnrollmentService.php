@@ -69,12 +69,16 @@ final class KioskEnrollmentService
 
     /**
      * Active un enrôlement `pending` après validation manager.
+     *
+     * L'enrôlement est résolu DANS le contexte tenant du kiosque (fail-closed
+     * cross-tenant — QLT-001 #6775 : un kiosque du tenant A ne peut jamais
+     * agir sur un enrôlement du tenant B).
      */
-    public function activate(AttendanceKiosk $kiosk, BiometricEnrollment $enrollment, int $managerEmployeeId): BiometricEnrollment
+    public function activate(AttendanceKiosk $kiosk, int $enrollmentId, int $managerEmployeeId): BiometricEnrollment
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $enrollment, $managerEmployeeId): BiometricEnrollment {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $enrollmentId, $managerEmployeeId): BiometricEnrollment {
             $manager = $this->managerGuard->assertManager($kiosk, $managerEmployeeId);
-            $this->assertEnrollmentInKioskTenant($kiosk, $enrollment);
+            $enrollment = $this->resolveEnrollment($kiosk, $enrollmentId);
 
             $activated = $this->lifecycle->activate($enrollment, (int) $manager->id);
 
@@ -90,11 +94,11 @@ final class KioskEnrollmentService
      * Révoque un enrôlement (RGPD, départ, compromission, remplacement)
      * après validation manager.
      */
-    public function revoke(AttendanceKiosk $kiosk, BiometricEnrollment $enrollment, int $managerEmployeeId): BiometricEnrollment
+    public function revoke(AttendanceKiosk $kiosk, int $enrollmentId, int $managerEmployeeId): BiometricEnrollment
     {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $enrollment, $managerEmployeeId): BiometricEnrollment {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $enrollmentId, $managerEmployeeId): BiometricEnrollment {
             $manager = $this->managerGuard->assertManager($kiosk, $managerEmployeeId);
-            $this->assertEnrollmentInKioskTenant($kiosk, $enrollment);
+            $enrollment = $this->resolveEnrollment($kiosk, $enrollmentId);
 
             $revoked = $this->lifecycle->revoke($enrollment, (int) $manager->id);
 
@@ -128,7 +132,9 @@ final class KioskEnrollmentService
             $enrollments = BiometricEnrollment::query()
                 ->where('company_id', $kiosk->company_id)
                 ->where('employee_id', $employee->id)
-                ->orderByDesc('version')
+                // Tri ASC : keyBy garde la DERNIÈRE occurrence → la version la
+                // plus récente par méthode (jamais un ancien statut périmé).
+                ->orderBy('version')
                 ->get()
                 ->keyBy('method');
 
@@ -194,13 +200,18 @@ final class KioskEnrollmentService
         return $verificationMethod;
     }
 
-    private function assertEnrollmentInKioskTenant(AttendanceKiosk $kiosk, BiometricEnrollment $enrollment): void
+    private function resolveEnrollment(AttendanceKiosk $kiosk, int $enrollmentId): BiometricEnrollment
     {
-        // QLT-001 (#6775) : un kiosque du tenant A ne peut jamais agir sur un
-        // enrôlement du tenant B (scope global BelongsToCompany).
-        if ((string) $enrollment->company_id !== (string) $kiosk->company_id) {
+        $enrollment = BiometricEnrollment::query()
+            ->where('company_id', $kiosk->company_id)
+            ->whereKey($enrollmentId)
+            ->first();
+
+        if (! $enrollment) {
             abort(404, 'ENROLLMENT_NOT_FOUND');
         }
+
+        return $enrollment;
     }
 
     private function setEmployeeBiometricFlag(BiometricEnrollment $enrollment, bool $enabled): void

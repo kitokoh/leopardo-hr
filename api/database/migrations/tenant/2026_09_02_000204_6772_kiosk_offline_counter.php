@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * mode offline borné (fenêtre d'ancienneté configurée côté serveur).
  *
  * Convention #1613 : ALTER résolu via `resolveTableSchema()` (jamais de
- * appel Schéma-table au nom nu — piège F-17 du search_path).
+ * jamais d'appel Schéma-table au nom nu — piège F-17 du search_path).
  */
 return new class extends Migration
 {
