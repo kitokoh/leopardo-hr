@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Support\CsvCellSanitizer;
+
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
@@ -116,7 +118,7 @@ class CnasDeclarationGenerator
     {
         $lines = array_map(static function (array $row): string {
             return implode(',', array_map(static function ($cell): string {
-                $cell = (string) $cell;
+                $cell = CsvCellSanitizer::neutralize((string) $cell);
 
                 return '"'.str_replace('"', '""', $cell).'"';
             }, $row));

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Support\CsvCellSanitizer;
+
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 
@@ -174,7 +176,7 @@ class CnpsDeclarationGenerator
     {
         $lines = array_map(static function (array $row): string {
             return implode(',', array_map(static function ($cell): string {
-                $cell = (string) $cell;
+                $cell = CsvCellSanitizer::neutralize((string) $cell);
 
                 return '"'.str_replace('"', '""', $cell).'"';
             }, $row));
