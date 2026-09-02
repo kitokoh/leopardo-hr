@@ -20,6 +20,8 @@
  * Référence : docs/specifications/SOLUTION_DELIVERY.md (§4 API v1).
  */
 
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
+use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
 use Illuminate\Support\Facades\Route;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
@@ -49,6 +51,28 @@ Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, '
 Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
 Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
 Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
+        // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
+        // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
+        // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
+        // manager — la matrice RBAC fine (delivery.role) est BC-26-D05.
+        // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
+        // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
+        Route::middleware('api.manager')->group(function (): void {
+            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
+            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
+            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
+            // pending→collected→settled→reconciled, idempotent. settle/reconcile
+            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
+            // (delivery.role) est portée par BC-26-D05/#6312.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
+        });
+    // Suivi public par lien borné (DELIVERY-204/#6288) — PAS d'auth : le
+    // token 64 chars expirant EST la credential (pattern AccountingDocumentShare).
         ->middleware('throttle:60,1')
         ->where('token', '[A-Za-z0-9]{64}');
     });

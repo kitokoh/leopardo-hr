@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Providers;
 
+use App\Modules\Delivery\Domain\Contracts\DeliveryAccountingContract;
+use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Contracts\SolutionManifest;
 use App\Modules\Delivery\Domain\Manifests\DeliveryManifest;
+use App\Modules\Delivery\Infrastructure\Repositories\DeliveryRepository;
+use App\Modules\Delivery\Infrastructure\Services\LoggingDeliveryAccountingAdapter;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -35,6 +39,15 @@ class DeliveryServiceProvider extends ServiceProvider
         // Ports & adapters de persistance (DELIVERY-2xx) : les implémentations
         // Eloquent seront résolues en singleton derrière leur contrat,
         // conformément au pattern CrmLeadRepository / RestaurantOrderRepository.
+        // Ports & adapters de persistance (DELIVERY-201/#6285) : les
+        // implémentations Eloquent sont résolues en singleton derrière leur
+        // contrat, conformément au pattern CrmLeadRepository /
+        // RestaurantOrderRepository.
+        $this->app->singleton(DeliveryRepositoryInterface::class, DeliveryRepository::class);
+        // Contrat BC-08 (DELIVERY-205/#6289) : posting comptable des
+        // encaissements COD — seam journalisé tant que les écritures
+        // source-référencées ne sont pas branchées.
+        $this->app->singleton(DeliveryAccountingContract::class, LoggingDeliveryAccountingAdapter::class);
     }
 
     public function boot(): void
