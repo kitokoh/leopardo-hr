@@ -164,7 +164,7 @@ final class BiometricEnrollmentLifecycleService
             ->where('method', $method->value)
             ->max('version');
 
-        return (int) $max + 1;
+        return is_numeric($max) ? (int) $max + 1 : 1;
     }
 
     /**

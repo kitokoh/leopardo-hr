@@ -165,7 +165,8 @@ final class BiometricEnrollmentLifecycleTest extends TestCase
                 actorEmployeeId: (int) $this->manager->id,
             );
             $this->service->activate($first, (int) $this->manager->id);
-            $this->assertSame(BiometricEnrollmentStatus::Active, $first->fresh()?->status);
+            $first->refresh();
+            $this->assertSame(BiometricEnrollmentStatus::Active, $first->status);
 
             // Remplacement : le nouveau gabarit devient actif, l'ancien est
             // révoqué, la version est incrémentée.
@@ -180,8 +181,9 @@ final class BiometricEnrollmentLifecycleTest extends TestCase
 
             $this->service->activate($second, (int) $this->manager->id);
 
-            $this->assertSame(BiometricEnrollmentStatus::Revoked, $first->fresh()?->status);
-            $this->assertNotNull($first->fresh()?->revoked_at);
+            $first->refresh();
+            $this->assertSame(BiometricEnrollmentStatus::Revoked, $first->status);
+            $this->assertNotNull($first->revoked_at);
 
             $active = BiometricEnrollment::query()
                 ->where('company_id', $this->company->id)
@@ -359,6 +361,9 @@ final class BiometricEnrollmentLifecycleTest extends TestCase
         return $employee;
     }
 
+    /**
+     * @param  \Closure(): void  $callback
+     */
     private function withinTenant(\Closure $callback): void
     {
         $this->tenantManager->withinTenant($this->company, $callback);
