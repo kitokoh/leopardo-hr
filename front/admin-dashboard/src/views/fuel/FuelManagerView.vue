@@ -1,12 +1,32 @@
 <template>
   <div class="space-y-6">
-    <!-- FUEL-012 (#5806) : interface manager multi-stations — KPIs tenant -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard :title="t('fuel.statStations', 'Stations')" :value="stats.stations" icon="BoltIcon" color="blue" />
-      <StatsCard :title="t('fuel.statOpenIncidents', 'Incidents ouverts')" :value="stats.openIncidents" icon="ExclamationTriangleIcon" color="red" />
-      <StatsCard :title="t('fuel.statPendingReconciliations', 'Rapprochements à revoir')" :value="stats.pendingReconciliations" icon="ClipboardDocumentListIcon" color="yellow" />
-      <StatsCard :title="t('fuel.statVariance', 'Écarts à expliquer')" :value="stats.varianceMinor" icon="ArrowDownTrayIcon" color="green" />
+    <!-- Issue #6712 : API référentiel BC-15 non livrée (#6391/#6373) — état
+         explicite « module en préparation » au lieu de 3 toasts d'erreur. -->
+    <div
+      v-if="moduleState === 'unavailable'"
+      class="mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 px-8 py-10 text-center dark:border-amber-800 dark:bg-amber-900/20"
+      role="alert"
+    >
+      <ExclamationTriangleIcon class="mx-auto h-12 w-12 text-amber-500" />
+      <h2 class="mt-4 text-xl font-bold text-slate-900 dark:text-white">
+        {{ t('fuel.modulePreparingTitle', 'Module Fuel en préparation') }}
+      </h2>
+      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        {{ t('fuel.modulePreparingBody', "Le référentiel multi-stations (stations, incidents, rapprochements) n'est pas encore disponible. L'API correspondante est en cours de livraison — revenez plus tard.") }}
+      </p>
+      <button class="btn-secondary mt-6" type="button" @click="fetchData">
+        {{ t('fuel.retry', 'Réessayer') }}
+      </button>
     </div>
+
+    <template v-else>
+      <!-- FUEL-012 (#5806) : interface manager multi-stations — KPIs tenant -->
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <StatsCard :title="t('fuel.statStations', 'Stations')" :value="stats.stations" icon="BoltIcon" color="blue" />
+        <StatsCard :title="t('fuel.statOpenIncidents', 'Incidents ouverts')" :value="stats.openIncidents" icon="ExclamationTriangleIcon" color="red" />
+        <StatsCard :title="t('fuel.statPendingReconciliations', 'Rapprochements à revoir')" :value="stats.pendingReconciliations" icon="ClipboardDocumentListIcon" color="yellow" />
+        <StatsCard :title="t('fuel.statVariance', 'Écarts à expliquer')" :value="stats.varianceMinor" icon="ArrowDownTrayIcon" color="green" />
+      </div>
 
     <div v-if="globalError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
       {{ globalError }}
@@ -80,7 +100,8 @@
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="reconciliationStatusMap" />
       </template>
-    </DataTable>
+      </DataTable>
+    </template>
   </div>
 </template>
 
@@ -90,6 +111,7 @@ import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 
@@ -103,6 +125,10 @@ const stations = ref([])
 const incidents = ref([])
 const reconciliations = ref([])
 const activeTab = ref('stations')
+
+// Issue #6712 : « unavailable » = API référentiel BC-15 pas encore livrée
+// (3×404) → panneau « module en préparation » au lieu de toasts d'erreur.
+const moduleState = ref('loading')
 
 const stats = ref({ stations: 0, openIncidents: 0, pendingReconciliations: 0, varianceMinor: 0 })
 
@@ -173,25 +199,44 @@ async function fetchData() {
   loading.value = true
   globalError.value = ''
   errors.value = { stations: '', incidents: '', reconciliations: '' }
+  const outcomes = []
   try {
     // Routes tenant (auth:sanctum + api.manager) : 401 attendu en super-admin
-    // — _skipAuthRedirect (#4170) évite la déconnexion de session.
-    const sRes = await api.get('/fuel-station/stations?per_page=100', { _skipAuthRedirect: true })
+    // — _skipAuthRedirect (#4170) évite la déconnexion de session ;
+    // _skipToast (#4713) : les erreurs sont gérées localement ci-dessous.
+    const sRes = await api.get('/fuel-station/stations?per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     stations.value = sRes.data.data || []
-  } catch {
+    outcomes.push('ok')
+  } catch (e) {
     errors.value.stations = t('fuel.errStations', 'Impossible de charger les stations.')
+    outcomes.push(e.response?.status ?? 'error')
   }
   try {
-    const iRes = await api.get('/fuel-station/incidents?per_page=100', { _skipAuthRedirect: true })
+    const iRes = await api.get('/fuel-station/incidents?per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     incidents.value = iRes.data.data || []
-  } catch {
+    outcomes.push('ok')
+  } catch (e) {
     errors.value.incidents = t('fuel.errIncidents', 'Impossible de charger les incidents.')
+    outcomes.push(e.response?.status ?? 'error')
   }
   try {
-    const rRes = await api.get('/fuel-station/reconciliations?status=pending_review&per_page=100', { _skipAuthRedirect: true })
+    const rRes = await api.get('/fuel-station/reconciliations?status=pending_review&per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     reconciliations.value = rRes.data.data || []
-  } catch {
+    outcomes.push('ok')
+  } catch (e) {
     errors.value.reconciliations = t('fuel.errReconciliations', 'Impossible de charger les rapprochements.')
+    outcomes.push(e.response?.status ?? 'error')
+  }
+  // Issue #6712 : l'API référentiel (stations / incidents / rapprochements)
+  // est planifiée (#6391/#6373) mais pas encore livrée — les 3 endpoints
+  // répondent 404 pour tout le monde. On affiche alors un état explicite
+  // « module en préparation » au lieu de 3 toasts d'erreur permanents et de
+  // tableaux vides. Dès que l'API sera livrée, la page repassera en mode
+  // normal sans autre changement.
+  if (outcomes.every((o) => o === 404)) {
+    moduleState.value = 'unavailable'
+  } else {
+    moduleState.value = 'ready'
   }
   stats.value = {
     stations: stations.value.length,
