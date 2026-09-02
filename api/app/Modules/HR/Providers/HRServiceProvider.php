@@ -17,6 +17,7 @@ class HRServiceProvider extends ServiceProvider
         // directly in its controllers. Bindings below wire the existing
         // implementations from those modules (reused, not duplicated).
         $this->app->bind(ApplicantPipelineReaderInterface::class, ApplicantPipelineReader::class);
+        $this->app->bind(ContractDocumentGeneratorInterface::class, ContractPdfGenerator::class);
     }
 
     public function boot(): void

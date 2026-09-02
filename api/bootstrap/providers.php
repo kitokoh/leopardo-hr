@@ -4,7 +4,6 @@ use App\Modules\Accounting\Providers\AccountingServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
-use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
@@ -39,7 +38,6 @@ return [
     AttendanceServiceProvider::class,
     PlanningServiceProvider::class,
     RecruitmentServiceProvider::class,
-    CabinetServiceProvider::class,
     FleetServiceProvider::class,
     BillingServiceProvider::class,
     CamerasServiceProvider::class,
