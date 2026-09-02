@@ -6,6 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 
 trait CreatesMvpSchema
 {
@@ -1057,10 +1058,52 @@ trait CreatesMvpSchema
         }
 
         $this->setPostgresSearchPath('public');
+
+        // Issue #6754 — pollution croisée : après une classe
+        // `RefreshTenantDatabase` (migration COMPLÈTE), le schéma `public`
+        // contient ~100 tables canoniques alors que `dropPostgresPublicTables`
+        // n'en couvre qu'une vingtaine → la fixture re-crée des tables déjà
+        // présentes (42P07 « relation ... already exists », ex.
+        // user_employee_links / personal_access_tokens) et des types orphelins
+        // survivent. Purge complète table + type pour un état de départ vierge.
+        $this->purgePublicSchema();
+
         $this->dropPostgresPublicTables();
 
         DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+    }
+
+    /**
+     * Purge les tables ET les types du schéma `public` (issue #6754).
+     *
+     * @see RefreshTenantDatabase::purgePublicSchema()
+     */
+    private function purgePublicSchema(): void
+    {
+        DB::statement(<<<'SQL'
+            DO $do$
+            DECLARE
+                r record;
+            BEGIN
+                FOR r IN
+                    SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'
+                LOOP
+                    EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+                END LOOP;
+
+                FOR r IN
+                    SELECT t.typname
+                    FROM pg_catalog.pg_type t
+                    JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+                    WHERE n.nspname = 'public'
+                      AND t.typtype IN ('c', 'e', 'd')
+                      AND t.typname NOT LIKE '\_%'
+                LOOP
+                    EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                END LOOP;
+            END $do$;
+            SQL);
     }
 
     private function loadPostgresFixtureSchema(): void
