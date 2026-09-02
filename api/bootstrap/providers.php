@@ -8,6 +8,7 @@ use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
+use App\Modules\EduManager\Providers\EduManagerServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
 use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
@@ -50,6 +51,8 @@ return [
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
+    // — EduManager module (solution verticale, EDU-001)
+    EduManagerServiceProvider::class,
     NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)
     PlatformServiceProvider::class,

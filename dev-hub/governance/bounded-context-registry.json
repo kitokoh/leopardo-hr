@@ -478,11 +478,15 @@
       "responsibility": "Campus, élèves, guardians, classes, présences, notes, bulletins et admissions.",
       "owner": "Agent 16 — BC-EDU",
       "priority": "P1",
-      "status": "planned",
+      "status": "active",
       "paths": [
         {
           "path": "api/app/Solutions/EduManager",
           "status": "planned"
+        },
+        {
+          "path": "api/app/Modules/EduManager",
+          "status": "active"
         }
       ],
       "routes": [],
@@ -490,7 +494,7 @@
         "api/database/migrations/tenant"
       ],
       "events": [
-        "App\\Solutions\\EduManager\\Domain\\Events"
+        "App\\Modules\\EduManager\\Domain\\Events"
       ],
       "dependencies": [
         "BC-02",

@@ -25,6 +25,7 @@
 /api/app/Modules/Accounting/ @kitokoh
 /api/app/Modules/Expense/   @kitokoh
 /api/app/Modules/Recruitment/ @kitokoh
+/api/app/Modules/EduManager/ @kitokoh
 /api/app/Modules/CRM/       @kitokoh
 /api/app/Modules/Marketing/ @kitokoh
 /api/app/Modules/Growth/    @kitokoh
