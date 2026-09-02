@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Mail\UserInvitationMail;
 use Illuminate\Support\Facades\DB;
@@ -94,6 +95,102 @@ class PlatformCompanyProvisioningTest extends TestCase
                 && $mail->employee->manager_role === 'principal'
                 && str_contains($mail->activationUrl, '/activate/');
         });
+    }
+
+    public function test_provisioning_with_restaurant_solution_activates_feature_flag(): void
+    {
+        // #6693 — le wizard vitrine « Je suis restaurateur » demande le pack
+        // au provisioning : POST /platform/companies avec `solutions:
+        // ["restaurant"]` doit activer le feature flag + tracer l'audit.
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 9,
+            'name' => 'Restaurant',
+            'price_monthly' => 99,
+            'price_yearly' => 990,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-resto@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
+        $response = $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Resto Chez Ali',
+                'sector' => 'restaurant',
+                'country' => 'DZ',
+                'city' => 'Alger',
+                'email' => 'contact@resto-chez-ali.dz',
+                'plan_id' => 9,
+                'manager_first_name' => 'Ali',
+                'manager_last_name' => 'Benali',
+                'manager_email' => 'ali.benali@resto-chez-ali.dz',
+                'solutions' => ['restaurant'],
+            ]);
+
+        $response->assertCreated();
+        $response->assertJsonPath('data.solutions.0.code', 'restaurant');
+        $response->assertJsonPath('data.solutions.0.status', 'activated');
+
+        $companyId = $response->json('data.company.id');
+        $company = Company::query()->find($companyId);
+
+        $this->assertNotNull($company);
+        $this->assertTrue($company->hasFeature('restaurant'), 'Le flag restaurant doit être actif.');
+
+        // Modules transversaux requis par le manifest : actifs par défaut.
+        foreach (['rh', 'attendance', 'documents', 'notifications'] as $module) {
+            $this->assertTrue($company->hasFeature($module), "{$module} doit être actif par défaut.");
+        }
+
+        $this->assertDatabaseHas('shared_tenants.audit_logs', [
+            'company_id' => $companyId,
+            'action' => 'solution.activated',
+        ]);
+    }
+
+    public function test_provisioning_rejects_unknown_solution_code(): void
+    {
+        // #6693 — fail-closed : un code hors allowlist → 422, aucun tenant créé.
+        Mail::fake();
+
+        DB::table('plans')->insert([
+            'id' => 10,
+            'name' => 'Starter',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-unknown@leopardo-rh.com',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
+        $this
+            ->actingAs($superAdmin, 'super_admin_api')
+            ->postJson('/api/v1/platform/companies', [
+                'name' => 'Bad Solution Co',
+                'sector' => 'services',
+                'country' => 'DZ',
+                'city' => 'Alger',
+                'email' => 'contact@bad-solution.dz',
+                'plan_id' => 10,
+                'manager_first_name' => 'Test',
+                'manager_last_name' => 'Test',
+                'manager_email' => 'test@bad-solution.dz',
+                'solutions' => ['does-not-exist'],
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('errors.solutions.0', 'Solution sectorielle inconnue : does-not-exist (allowlist SolutionCatalogue).');
     }
 
     public function test_platform_mobile_can_create_company_with_minimal_payload(): void

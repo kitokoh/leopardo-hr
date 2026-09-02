@@ -258,6 +258,13 @@ const navigation = computed(() => [
     icon: BoltIcon
   },
   {
+    // #6694 : stats des surveys de solutions (wizard vitrine).
+    name: 'solutionSurveys',
+    title: t('navigation.solutionSurveys', 'Surveys de solutions'),
+    path: '/solutions/surveys',
+    icon: ChartBarIcon
+  },
+  {
     title: t('navigation.chat', 'Chat IA'),
     path: '/chat',
     icon: SparklesIcon

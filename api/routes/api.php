@@ -5,6 +5,7 @@ use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
+use App\Core\Solutions\Interfaces\Api\V1\PlatformSolutionSurveyStatsController;
 use App\Http\Controllers\AI\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
@@ -382,6 +383,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
         Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat']);
+
+        // #6694 — stats des surveys de solutions (wizard vitrine) :
+        // volume par solution, packs suggérés, conversion survey → inscription.
+        Route::get('/solutions/surveys', PlatformSolutionSurveyStatsController::class);
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

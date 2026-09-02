@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\DB;
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin Builder<static>
  */
 class Company extends Model
@@ -102,18 +103,36 @@ class Company extends Model
         'muhasebe',
         'leo_ai',
         'fuel_station',
+        // REST-001 (#6662/#6693) : solution sectorielle Restaurant (survey
+        // vitrine, manifest, activation par tenant).
+        'restaurant',
+    ];
+
+    /**
+     * Modules transversaux actifs par défaut sur tout tenant (vocabulaire des
+     * manifests de solutions — même rôle que `rh`) : ils ne sont pas des
+     * « options » à toggler, ils constituent la base de l'app. #6693
+     *
+     * @var list<string>
+     */
+    public const TRANSVERSAL_MODULES = [
+        'rh',
+        'attendance',
+        'documents',
+        'notifications',
     ];
 
     /**
      * Indique si un module (ou une sous-feature) est actif pour cette company.
-     * Le module RH est actif par defaut (base de l app).
+     * Les modules transversaux (rh, attendance, documents, notifications)
+     * sont actifs par defaut (base de l app).
      */
     public function hasFeature(string $key): bool
     {
         $features = $this->features ?? [];
 
-        if ($key === 'rh') {
-            return (bool) ($features['rh'] ?? true);
+        if (in_array($key, self::TRANSVERSAL_MODULES, true)) {
+            return (bool) ($features[$key] ?? true);
         }
 
         return (bool) ($features[$key] ?? false);

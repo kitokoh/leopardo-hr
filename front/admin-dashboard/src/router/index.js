@@ -5,6 +5,7 @@ import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import FuelManagerView from '@/views/fuel/FuelManagerView.vue'
+import SurveyStatsView from '@/views/solutions/SurveyStatsView.vue'
 
 // Configuration NProgress
 NProgress.configure({
@@ -218,6 +219,16 @@ const routes = [
         meta: {
           title: 'navigation.fuelStation',
           icon: 'BoltIcon'
+        }
+      },
+      {
+        // #6694 : stats des surveys de solutions (wizard vitrine).
+        path: '/solutions/surveys',
+        name: 'solutionSurveys',
+        component: SurveyStatsView,
+        meta: {
+          title: 'navigation.solutionSurveys',
+          icon: 'ChartBarIcon'
         }
       },
       {

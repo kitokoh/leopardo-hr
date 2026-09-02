@@ -4410,6 +4410,75 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /admin/solutions/surveys:
+    get:
+      tags:
+      - Platform
+      summary: Stats des surveys de solutions sectorielles (wizard vitrine)
+      description: >-
+        #6694 — Vue super-admin cross-tenant des réponses au questionnaire de
+        pré-qualification « Je suis restaurateur » (GET/POST /solutions/{code}/survey) :
+        volume par solution, packs les plus suggérés, distribution et conversion
+        survey → inscription (companies avec la solution activée). Fenêtre
+        configurable via `?days=` (défaut 30, max 365). Réponses anonymes (RGPD).
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 30
+          maximum: 365
+        description: Fenêtre d'analyse en jours
+      responses:
+        '200':
+          description: Statistiques des surveys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      window_days:
+                        type: integer
+                      total_responses:
+                        type: integer
+                      per_solution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            responses:
+                              type: integer
+                      top_packages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            suggestions:
+                              type: integer
+                      conversion:
+                        type: object
+                        properties:
+                          survey_responses:
+                            type: integer
+                          companies_with_solution:
+                            type: integer
+                          rate:
+                            type: number
+        '401':
+          description: Non authentifié (super-admin requis)
+        '403':
+          description: FORBIDDEN
+
   /admin/dashboard/stats:
     get:
       tags:

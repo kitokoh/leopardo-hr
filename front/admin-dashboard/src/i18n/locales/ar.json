@@ -4340,7 +4340,8 @@
     "accountingDashboard": "المحاسبة — لوحة القيادة",
     "accountingSettings": "المحاسبة — الإعدادات",
     "fuelStation": "محطات الوقود",
-    "travelAgency": "وكالة السفر"
+    "travelAgency": "وكالة السفر",
+    "solutionSurveys": "استبيانات الحلول"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -4829,5 +4830,39 @@
       "expired": "منتهية",
       "archived": "مؤرشفة"
     }
+  },
+  "survey": {
+    "title": "استبيانات الحلول",
+    "subtitle": "تحويل معالج « أنا صاحب مطعم » والحلول القطاعية",
+    "last7": "آخر 7 أيام",
+    "last30": "آخر 30 يومًا",
+    "last90": "آخر 90 يومًا",
+    "totalResponses": "ردود الاستبيان",
+    "converted": "تسجيلات مع الحل",
+    "conversionRate": "معدل التحويل",
+    "topPackages": "الباقات الأكثر اقتراحًا",
+    "topPackagesCaption": "اقتراحات محرك القواعد",
+    "bySolution": "الردود حسب الحل",
+    "bySolutionCaption": "حجم الردود لكل حل",
+    "colPackage": "الباقة",
+    "colSuggestions": "الاقتراحات",
+    "colSolution": "الحل",
+    "colResponses": "الردود",
+    "solutionRestaurant": "مطعم",
+    "solutionFuelStation": "محطة وقود",
+    "pkgMobileEmployee": "تطبيق الموظف للجوال",
+    "pkgMobileManager": "تطبيق المدير للجوال",
+    "pkgAttendanceMobile": "تسجيل حضور عبر الجوال",
+    "pkgKiosk": "كشك تسجيل الحضور",
+    "pkgEdge": "عقدة Edge محلية",
+    "pkgPlanning": "جدولة الفرق",
+    "pkgPayroll": "الرواتب",
+    "pkgAccounting": "المحاسبة",
+    "pkgDelivery": "التوصيل",
+    "pkgReservations": "الحجوزات",
+    "pkgInventory": "المخزون",
+    "pkgLoyalty": "الولاء",
+    "pkgPos": "نقطة بيع (POS)",
+    "loadError": "تعذّر تحميل إحصائيات استبيانات الحلول."
   }
 }

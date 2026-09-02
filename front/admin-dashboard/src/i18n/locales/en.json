@@ -4340,7 +4340,8 @@
     "accountingDashboard": "Accounting — Dashboard",
     "accountingSettings": "Accounting — Settings",
     "fuelStation": "Fuel stations",
-    "travelAgency": "Travel agency"
+    "travelAgency": "Travel agency",
+    "solutionSurveys": "Solution surveys"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -4829,5 +4830,39 @@
       "expired": "Expired",
       "archived": "Archived"
     }
+  },
+  "survey": {
+    "title": "Solution surveys",
+    "subtitle": "Conversion of the « I am a restaurateur » wizard and vertical solutions",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "totalResponses": "Survey responses",
+    "converted": "Signups with solution",
+    "conversionRate": "Conversion rate",
+    "topPackages": "Most suggested packages",
+    "topPackagesCaption": "Rule engine suggestions",
+    "bySolution": "Responses per solution",
+    "bySolutionCaption": "Response volume per solution",
+    "colPackage": "Package",
+    "colSuggestions": "Suggestions",
+    "colSolution": "Solution",
+    "colResponses": "Responses",
+    "solutionRestaurant": "Restaurant",
+    "solutionFuelStation": "Fuel station",
+    "pkgMobileEmployee": "Employee mobile app",
+    "pkgMobileManager": "Manager mobile app",
+    "pkgAttendanceMobile": "Mobile attendance",
+    "pkgKiosk": "Attendance kiosk",
+    "pkgEdge": "Local Edge node",
+    "pkgPlanning": "Team scheduling",
+    "pkgPayroll": "Payroll",
+    "pkgAccounting": "Accounting",
+    "pkgDelivery": "Delivery",
+    "pkgReservations": "Reservations",
+    "pkgInventory": "Inventory",
+    "pkgLoyalty": "Loyalty",
+    "pkgPos": "Connected POS",
+    "loadError": "Unable to load solution survey stats."
   }
 }
