@@ -209,4 +209,54 @@ class TravelEngagementController extends Controller
             'average_rating' => $average,
         ];
     }
+
+
+    public function summary(Request $request, TravelArticle $article): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($article->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        return response()->json(['data' => [
+            'likes_count' => $this->likesCount($article),
+            'shares_count' => TravelShare::query()
+                ->where('company_id', $article->company_id)
+                ->where('article_id', $article->id)
+                ->count(),
+            'rating_avg' => $this->ratingAverage($article),
+            'ratings_count' => $this->ratingsCount($article),
+        ]]);
+    }
+
+
+    private function likesCount(TravelArticle $article): int
+    {
+        return TravelLike::query()
+            ->where('company_id', $article->company_id)
+            ->where('article_id', $article->id)
+            ->count();
+    }
+
+
+    private function ratingAverage(TravelArticle $article): ?float
+    {
+        $avg = TravelRating::query()
+            ->where('company_id', $article->company_id)
+            ->where('article_id', $article->id)
+            ->avg('stars');
+
+        return $avg === null ? null : round((float) $avg, 2);
+    }
+
+
+    private function ratingsCount(TravelArticle $article): int
+    {
+        return TravelRating::query()
+            ->where('company_id', $article->company_id)
+            ->where('article_id', $article->id)
+            ->count();
+    }
 }

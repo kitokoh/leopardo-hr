@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemTravelLoyaltyReque
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelLoyaltyOptInRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward;use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
 
 /**
  * TRAVEL-811 (#6101) — Fidélité voyageur.
@@ -90,5 +91,98 @@ class TravelLoyaltyController extends Controller
         );
 
         return response()->json(['data' => $result]);
+    }
+
+    public function account(Request $request, TravelLoyaltyService $service): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $contact = (string) $request->query('contact_identifier', '');
+
+        if ($contact === '') {
+            abort(422, 'contact_identifier requis.');
+        }
+
+        $account = TravelLoyaltyAccount::query()
+            ->where('company_id', $actor->company_id)
+            ->where('contact_identifier', $contact)
+            ->first();
+
+        return response()->json([
+            'data' => [
+                'contact_identifier' => $contact,
+                'opt_in' => $account->opt_in ?? false,
+                'points_balance' => $service->balance((string) $actor->company_id, $contact),
+            ],
+        ]);
+    }
+
+
+    public function entries(Request $request, TravelLoyaltyService $service): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $contact = (string) $request->query('contact_identifier', '');
+
+        if ($contact === '') {
+            abort(422, 'contact_identifier requis.');
+        }
+
+        $entries = $service->entries((string) $actor->company_id, $contact);
+
+        return response()->json([
+            'data' => array_map(fn ($entry): array => [
+                'id' => $entry->id,
+                'points' => $entry->points,
+                'type' => $entry->type,
+                'reason' => $entry->reason,
+                'created_at' => $entry->created_at?->toIso8601String(),
+            ], $entries),
+        ]);
+    }
+
+
+    public function rewards(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $rewards = TravelLoyaltyReward::query()
+            ->where('company_id', $actor->company_id)
+            ->where('active', true)
+            ->orderBy('points_cost')
+            ->get();
+
+        return response()->json([
+            'data' => $rewards->map(fn (TravelLoyaltyReward $reward): array => [
+                'id' => $reward->id,
+                'name' => $reward->name,
+                'description' => $reward->description,
+                'points_cost' => $reward->points_cost,
+            ]),
+        ]);
+    }
+
+
+    public function storeReward(StoreLoyaltyRewardRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+
+        $reward = TravelLoyaltyReward::query()->create(
+            array_merge($request->validated(), ['company_id' => $actor->company_id]),
+        );
+
+        return response()->json(['data' => [
+            'id' => $reward->id,
+            'name' => $reward->name,
+            'points_cost' => $reward->points_cost,
+        ]])->setStatusCode(201);
     }
 }

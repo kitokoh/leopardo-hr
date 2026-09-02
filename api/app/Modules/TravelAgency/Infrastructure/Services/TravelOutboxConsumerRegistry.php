@@ -35,4 +35,17 @@ final class TravelOutboxConsumerRegistry
 
         return null;
     }
+
+    public function consumersFor(string $eventType): array
+    {
+        $matched = [];
+
+        foreach ($this->consumers as $consumer) {
+            if ($consumer->supports($eventType)) {
+                $matched[] = $consumer;
+            }
+        }
+
+        return $matched;
+    }
 }

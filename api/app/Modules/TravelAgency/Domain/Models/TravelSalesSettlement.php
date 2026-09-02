@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelSalesSettlementFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Synthèse périodique des ventes TravelAgency pour Accounting
@@ -51,4 +52,6 @@ class TravelSalesSettlement extends Model
         'net_amount_minor' => 'integer',
         'settled_at' => 'datetime',
     ];
+
+
 }

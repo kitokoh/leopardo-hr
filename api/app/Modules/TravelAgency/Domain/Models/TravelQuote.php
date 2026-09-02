@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Devis de groupe / corporate (TRAVEL-803, issue #6094).
@@ -81,4 +82,6 @@ class TravelQuote extends Model
     {
         return $this->belongsTo(TravelBooking::class, 'booking_id');
     }
+
+
 }

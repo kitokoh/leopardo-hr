@@ -11,6 +11,7 @@ use Database\Factories\TravelWebhookSubscriptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Database\Eloquent\Relations\BelongsTo;use Illuminate\Support\Carbon;use Illuminate\Support\Facades\Crypt;
 
 /**
  * TRAVEL-806 (#6097) — Abonnement webhook d'un transporteur.
@@ -85,5 +86,21 @@ class TravelWebhookSubscription extends Model
     public static function supportedEvents(): array
     {
         return TravelWebhookEvent::values();
+    }
+
+    public function secretPrefix(): string
+    {
+        return substr(hash('sha256', $this->secret()), 0, 8);
+    }
+
+    public function carrier(): BelongsTo
+    {
+        return $this->belongsTo(TravelCarrier::class, 'carrier_id');
+    }
+
+
+    public function subscribesTo(string $eventType): bool
+    {
+        return $this->active && in_array($eventType, $this->events ?? [], true);
     }
 }

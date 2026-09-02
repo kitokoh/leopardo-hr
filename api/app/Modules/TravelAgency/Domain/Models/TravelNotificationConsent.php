@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Consentement de notification voyageur (TRAVEL-415, issue #6067).
@@ -42,4 +43,6 @@ class TravelNotificationConsent extends Model
     {
         return $this->revoked_at === null;
     }
+
+
 }

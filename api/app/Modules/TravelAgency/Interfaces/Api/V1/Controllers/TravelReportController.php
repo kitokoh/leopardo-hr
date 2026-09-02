@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\TravelReportRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;use App\Modules\TravelAgency\Application\Queries\DashboardKpisQuery;use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Jobs\ExportTravelReportJob;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\Bus;
 
 /**
  * TRAVEL-501..504 / 507 (#6071..#6074, #6077) — Rapports & dashboard travel.
@@ -102,5 +103,63 @@ class TravelReportController extends Controller
         );
 
         return new JsonResponse(['data' => $payload]);
+    }
+
+    public function export(Request $request, TravelReportExportStorage $storage): JsonResponse
+    {
+        $this->authorizeReports($request);
+
+        $type = (string) $request->query('type', 'sales');
+
+        if (! in_array($type, ExportTravelReportJob::TYPES, true)) {
+            abort(422, "Type d'export inconnu (attendu : ".implode(', ', ExportTravelReportJob::TYPES).').');
+        }
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $job = new ExportTravelReportJob(
+            companyId: (string) $actor->company_id,
+            reportType: $type,
+            filters: $this->filters($request),
+            generatedByUserId: (int) $actor->id,
+        );
+
+        /** @var TravelReportExport $export */
+        $export = Bus::dispatchSync($job);
+
+        return response()->json([
+            'data' => [
+                'request_hash' => $export->request_hash,
+                'row_count' => $export->row_count,
+                'mime_type' => $export->mime_type,
+                'signed_url' => $storage->signedUrl($export->storage_path),
+                'expires_at' => $export->expires_at?->toIso8601String(),
+            ],
+        ]);
+    }
+
+
+    private function authorizeReports(Request $request): void
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('viewAny', TravelReportExport::class)) {
+            abort(403);
+        }
+    }
+
+    private function filters(Request $request): array
+    {
+        return array_filter([
+            'from' => $request->query('from') ? (string) $request->query('from') : null,
+            'to' => $request->query('to') ? (string) $request->query('to') : null,
+            'trip_id' => $request->query('trip_id') ? (int) $request->query('trip_id') : null,
+            'route_id' => $request->query('route_id') ? (int) $request->query('route_id') : null,
+            'source' => $request->query('source') ? (string) $request->query('source') : null,
+            'status' => $request->query('status') ? (string) $request->query('status') : null,
+            'per_page' => (int) $request->query('per_page', 50),
+        ], fn ($v) => $v !== null);
     }
 }

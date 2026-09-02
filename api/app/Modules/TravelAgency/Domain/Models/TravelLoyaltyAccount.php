@@ -9,6 +9,7 @@ use Database\Factories\TravelLoyaltyAccountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Compte fidélité voyageur (TRAVEL-811, issue #6101).
@@ -47,5 +48,10 @@ class TravelLoyaltyAccount extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(TravelLoyaltyTransaction::class, 'account_id');
+    }
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(TravelLoyaltyEntry::class, 'account_id');
     }
 }

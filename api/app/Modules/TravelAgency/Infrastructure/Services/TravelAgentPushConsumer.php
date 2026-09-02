@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier;
 
 /**
  * TRAVEL-703 (#6090) — Notifications push agents (FCM).
@@ -69,4 +70,6 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
             ]);
         }
     }
+
+
 }

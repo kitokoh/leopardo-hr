@@ -18,6 +18,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Modules\TravelAgency\Application\Actions\ParticipateInTravelQuizAction;use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
+use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;use App\Modules\TravelAgency\Infrastructure\Services\TravelQuizService;
 
 /**
  * TRAVEL-904 (#6107) — Quiz & jeu-concours.
@@ -319,5 +320,65 @@ class TravelQuizController extends Controller
             ->get(['id', 'quiz_id', 'participant_type', 'participant_id', 'score', 'status', 'completed_at']);
 
         return new JsonResponse(['data' => $rows]);
+    }
+
+
+    public function publish(Request $request, TravelQuiz $quiz): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($quiz->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->denyUnlessManager($actor);
+
+        if ($quiz->questions()->count() === 0) {
+            abort(422, 'Un quiz doit contenir au moins une question pour être publié.');
+        }
+
+        $quiz->forceFill(['status' => 'published'])->save();
+
+        return response()->json(['data' => $this->quizPayload($quiz->refresh())]);
+    }
+
+    private function quizPayload(TravelQuiz $quiz, bool $withQuestions = false): array
+    {
+        return [
+            'id' => $quiz->id,
+            'title' => $quiz->title,
+            'description' => $quiz->description_redacted,
+            'status' => $quiz->status,
+            'max_participations_per_contact' => $quiz->max_participations_per_contact,
+            'bonus_points' => $quiz->bonus_points,
+            'questions_count' => $quiz->questions_count ?? $quiz->questions()->count(),
+            'questions' => $withQuestions
+                ? $quiz->questions->map(fn (TravelQuizQuestion $q): array => $this->questionPayload($q))
+                : null,
+            'created_at' => $quiz->created_at?->toIso8601String(),
+        ];
+    }
+
+    private function questionPayload(TravelQuizQuestion $question): array
+    {
+        return [
+            'id' => $question->id,
+            'quiz_id' => $question->quiz_id,
+            'rank' => $question->rank,
+            'label' => $question->label,
+            'choices' => $question->choices,
+            'points' => $question->points,
+            // Jamais la bonne réponse en clair : seule la présence d'un hash.
+            'has_correct_answer' => $question->correct_answer_hash !== '',
+        ];
+    }
+
+
+    private function denyUnlessManager(Employee $actor): void
+    {
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
     }
 }

@@ -302,38 +302,87 @@
       ]
     },
     {
-      "id": "GJ-08",
-      "name": "Assistant IA : chat → action confirmée → audit",
-      "solution": "bc23_ai",
-      "acceptance": "Une demande faite à l'assistant IA crée une action en attente de confirmation humaine ; la confirmation applique l'effet métier (jamais sans confirmation) et l'échange complet est tracé dans ai_audit_logs (traçabilité).",
+      "id": "GJ-TRAVEL-01",
+      "name": "Vente de billets de voyage complète",
+      "solution": "travelagency",
+      "acceptance": "De la constitution du référentiel à l'embarquement : recherche, réservation multi-passagers, confirmation, billets émis, check-in et rapport des ventes — sans fuite cross-tenant.",
       "steps": [
         {
           "order": 1,
-          "action": "Envoyer un message à l'assistant IA",
+          "action": "Créer la compagnie de transport",
           "method": "POST",
-          "route": "/api/v1/ai/chat",
-          "role": "employee"
+          "route": "/api/v1/travel/carriers",
+          "role": "manager:principal"
         },
         {
           "order": 2,
-          "action": "Confirmer l'action d'écriture proposée",
+          "action": "Créer la route ville→ville",
           "method": "POST",
-          "route": "/api/v1/ai/actions/{pendingActionId}/confirm",
-          "role": "employee"
+          "route": "/api/v1/travel/routes",
+          "role": "manager:principal"
         },
         {
           "order": 3,
-          "action": "Consulter l'historique des conversations",
-          "method": "GET",
-          "route": "/api/v1/ai/chat/history",
-          "role": "employee"
+          "action": "Créer le trajet daté avec sièges",
+          "method": "POST",
+          "route": "/api/v1/travel/trips",
+          "role": "manager:principal"
         },
         {
           "order": 4,
-          "action": "Vérifier l'usage (tokens, p95, coûts)",
+          "action": "Publier le trajet",
+          "method": "POST",
+          "route": "/api/v1/travel/trips/{travelTrip}/publish",
+          "role": "manager:principal"
+        },
+        {
+          "order": 5,
+          "action": "Rechercher les trajets en boutique",
           "method": "GET",
-          "route": "/api/v1/ai/analytics/usage",
-          "role": "manager:rh"
+          "route": "/api/v1/travel/shop/trips",
+          "role": "public"
+        },
+        {
+          "order": 6,
+          "action": "Réserver au guichet (multi-passagers)",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings",
+          "role": "manager:principal"
+        },
+        {
+          "order": 7,
+          "action": "Confirmer la réservation",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings/{travelBooking}/confirm",
+          "role": "manager:principal"
+        },
+        {
+          "order": 8,
+          "action": "Émettre les billets",
+          "method": "POST",
+          "route": "/api/v1/travel/bookings/{travelBooking}/issue-ticket",
+          "role": "manager:principal"
+        },
+        {
+          "order": 9,
+          "action": "Check-in / embarquement",
+          "method": "POST",
+          "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
+          "role": "manager:principal"
+        },
+        {
+          "order": 10,
+          "action": "Consulter le manifeste du trajet",
+          "method": "GET",
+          "route": "/api/v1/travel/trips/{travelTrip}/manifest",
+          "role": "manager:principal"
+        },
+        {
+          "order": 11,
+          "action": "Consulter le rapport des ventes",
+          "method": "GET",
+          "route": "/api/v1/travel/reports/sales",
+          "role": "manager:principal"
         }
       ]
     },
@@ -491,6 +540,42 @@
           "method": "POST",
           "route": "/api/v1/travel/tickets/{travelTicket}/check-in",
           "role": "manager:principal"
+        }
+      ]
+    },
+    {
+      "id": "GJ-08",
+      "name": "Assistant IA : chat → action confirmée → audit",
+      "solution": "bc23_ai",
+      "acceptance": "Une demande faite à l'assistant IA crée une action en attente de confirmation humaine ; la confirmation applique l'effet métier (jamais sans confirmation) et l'échange complet est tracé dans ai_audit_logs (traçabilité).",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Envoyer un message à l'assistant IA",
+          "method": "POST",
+          "route": "/api/v1/ai/chat",
+          "role": "employee"
+        },
+        {
+          "order": 2,
+          "action": "Confirmer l'action d'écriture proposée",
+          "method": "POST",
+          "route": "/api/v1/ai/actions/{pendingActionId}/confirm",
+          "role": "employee"
+        },
+        {
+          "order": 3,
+          "action": "Consulter l'historique des conversations",
+          "method": "GET",
+          "route": "/api/v1/ai/chat/history",
+          "role": "employee"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier l'usage (tokens, p95, coûts)",
+          "method": "GET",
+          "route": "/api/v1/ai/analytics/usage",
+          "role": "manager:rh"
         }
       ]
     }

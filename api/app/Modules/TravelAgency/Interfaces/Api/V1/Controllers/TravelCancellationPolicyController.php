@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCancellationPolicyRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelCancellationPolicyRequest;use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCancellationPolicyResource;
 
 /**
  * TRAVEL-813 (#6103) — Politiques d'annulation configurables.
@@ -101,5 +102,18 @@ class TravelCancellationPolicyController extends Controller
         $travelCancellationPolicy->delete();
 
         return new JsonResponse(null, 204);
+    }
+
+
+    public function show(Request $request, TravelCancellationPolicy $travelCancellationPolicy): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelCancellationPolicy->company_id) {
+            abort(404);
+        }
+
+        return (new TravelCancellationPolicyResource($travelCancellationPolicy))->response();
     }
 }

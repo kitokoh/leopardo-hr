@@ -23,6 +23,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Application\Actions\CancelTripWithRefundsAction;
 
 /**
  * TRAVEL-308 (#6038) — CRUD des trajets dates (+ generation des sieges).
@@ -354,4 +355,6 @@ class TravelTripController extends Controller
 
         return TravelPassengerResource::collection($passengers)->response();
     }
+
+
 }

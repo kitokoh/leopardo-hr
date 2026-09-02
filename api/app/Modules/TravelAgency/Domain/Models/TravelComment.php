@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Database\Factories\TravelCommentFactory;
 
 /**
  * TRAVEL-901/902/903 (#6104/#6105/#6106) — Comment (contenu éditorial).
@@ -26,6 +27,8 @@ class TravelComment extends Model
     protected $table = 'travel_comments';
 
     protected $fillable = ['company_id', 'article_id', 'author_type', 'author_id', 'content_redacted', 'status', 'moderated_by_user_id', 'moderated_at'];
+
+
 
 
 }

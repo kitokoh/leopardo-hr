@@ -13,6 +13,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelArticleReque
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelArticleResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * TRAVEL-901 (#6104) — Articles & catégories (CRUD, statuts, modération).
@@ -202,5 +203,90 @@ class TravelArticleController extends Controller
         ]);
 
         return new JsonResponse(['data' => $category], 201);
+    }
+
+
+    public function updateCategory(Request $request, TravelArticleCategory $category): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($category->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->denyUnlessManager($actor);
+
+        $category->update($request->validate([
+            'code' => ['sometimes', 'string', 'max:60'],
+            'name' => ['sometimes', 'string', 'max:160'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]));
+
+        return response()->json(['data' => $category->refresh()]);
+    }
+
+
+    public function destroyCategory(Request $request, TravelArticleCategory $category): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($category->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->denyUnlessManager($actor);
+
+        $category->delete();
+
+        return new JsonResponse(null, 204);
+    }
+
+    public function publish(Request $request, TravelArticle $article): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($article->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $this->denyUnlessManager($actor);
+
+        if ($article->status === 'draft' || $article->status === 'reported') {
+            $article->forceFill([
+                'status' => 'published',
+                'published_at' => now(),
+                'moderation_note' => null,
+            ])->save();
+        }
+
+        return response()->json(['data' => $this->articlePayload($article->refresh())]);
+    }
+
+    private function articlePayload(TravelArticle $article): array
+    {
+        return [
+            'id' => $article->id,
+            'category_id' => $article->category_id,
+            'title' => $article->title,
+            'body' => $article->body_redacted,
+            'status' => $article->status,
+            'published_at' => $article->published_at?->toIso8601String(),
+            'moderation_note' => $article->moderation_note,
+            'created_at' => $article->created_at?->toIso8601String(),
+            'likes_count' => $article->likes_count ?? 0,
+            'comments_count' => $article->comments_count ?? 0,
+            'rating_avg' => $article->rating_avg ?? null,
+        ];
+    }
+
+
+    private function denyUnlessManager(Employee $actor): void
+    {
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
     }
 }

@@ -124,4 +124,49 @@ class TravelTouristSiteController extends Controller
     }
 
 
+
+
+    public function search(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $cityId = (int) $request->query('city_id', 0);
+
+        if ($cityId <= 0) {
+            abort(422, 'city_id requis.');
+        }
+
+        $sites = TravelTouristSite::query()
+            ->where('company_id', $actor->company_id)
+            ->where('city_id', $cityId)
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['data' => $sites->map(fn (TravelTouristSite $site): array => $this->payload($site))]);
+    }
+
+    private function payload(TravelTouristSite $site): array
+    {
+        return [
+            'id' => $site->id,
+            'name' => $site->name,
+            'description' => $site->description_redacted,
+            'city_id' => $site->city_id,
+            'latitude' => $site->latitude,
+            'longitude' => $site->longitude,
+            'images' => $site->images ?? [],
+            'status' => $site->status,
+            'created_at' => $site->created_at?->toIso8601String(),
+        ];
+    }
+
+
+    private function denyUnlessManager(Employee $actor): void
+    {
+        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
+            abort(403);
+        }
+    }
 }

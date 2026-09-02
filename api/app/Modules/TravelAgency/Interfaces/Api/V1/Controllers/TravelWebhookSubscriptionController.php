@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelWebhookSubsc
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * TRAVEL-806 (#6097) — Abonnements webhook transporteurs (CRUD tenant-scoped).
@@ -120,6 +121,20 @@ class TravelWebhookSubscriptionController extends Controller
             'has_secret' => $subscription->secret_encrypted !== '',
             'created_at' => $subscription->created_at?->toIso8601String(),
             'updated_at' => $subscription->updated_at?->toIso8601String(),
+        ];
+    }
+
+    private function present(TravelWebhookSubscription $subscription): array
+    {
+        return [
+            'id' => $subscription->id,
+            'carrier_id' => $subscription->carrier_id,
+            'carrier_code' => $subscription->carrier?->code,
+            'url' => $subscription->url,
+            'secret_prefix' => $subscription->secretPrefix(),
+            'events' => $subscription->events,
+            'active' => $subscription->active,
+            'created_at' => $subscription->created_at?->toIso8601String(),
         ];
     }
 }

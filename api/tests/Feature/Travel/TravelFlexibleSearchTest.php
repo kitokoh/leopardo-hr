@@ -15,6 +15,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 
 /**
  * TRAVEL-804 (#6095) — Recherche flexible (dates ± N jours).
@@ -138,5 +139,77 @@ class TravelFlexibleSearchTest extends TestCase
             ->json('data'))->pluck('code')->all();
 
         $this->assertSame(['T-201'], $codes);
+    }
+
+    private function seedPublishedTrips(Company $company, array $trips): void
+    {
+        app(TenantManager::class)->withinTenant($company, function () use ($trips): void {
+            $class = TravelClass::factory()->create();
+
+            foreach ($trips as $trip) {
+                $model = TravelTrip::factory()->create([
+                    'status' => 'published',
+                    'departure_date' => $trip['date'],
+                    'departure_time' => '08:00:00',
+                    'total_seats' => 20,
+                ]);
+                app(GenerateTripSeatsAction::class)->execute($model);
+
+                TravelTripPrice::factory()->create([
+                    'trip_id' => $model->id,
+                    'class_id' => $class->id,
+                    'adult_price_minor' => $trip['price'],
+                ]);
+            }
+        });
+    }
+
+
+    public function test_flexible_search_groups_results_by_date(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        $anchor = now()->toDateString();
+
+        $this->seedPublishedTrips($company, [
+            ['date' => $anchor, 'price' => 12000],
+            ['date' => now()->addDay()->toDateString(), 'price' => 9000],
+            ['date' => now()->addDays(3)->toDateString(), 'price' => 15000],
+        ]);
+
+        $response = $this->getJson("/api/v1/travel/shop/trips?departure_date={$anchor}&flexible_days=2")
+            ->assertOk();
+
+        $data = $response->json('data');
+
+        $this->assertCount(2, $data);
+        $this->assertSame($anchor, $data[0]['date']);
+        $this->assertSame(now()->addDay()->toDateString(), $data[1]['date']);
+        $this->assertSame(9000, $data[1]['trips'][0]['prices'][0]['adult_price_minor'] ?? null);
+    }
+
+
+    public function test_flexible_search_excludes_out_of_window_dates(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        $anchor = now()->toDateString();
+
+        $this->seedPublishedTrips($company, [
+            ['date' => $anchor, 'price' => 10000],
+            // Hors fenêtre ±1 jour : doit être exclue.
+            ['date' => now()->addDays(5)->toDateString(), 'price' => 10000],
+        ]);
+
+        $response = $this->getJson("/api/v1/travel/shop/trips?departure_date={$anchor}&flexible_days=1")
+            ->assertOk();
+
+        $this->assertCount(1, $response->json('data'));
     }
 }

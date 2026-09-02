@@ -591,6 +591,35 @@ export type CopyTree = {
     statusEnabled: string;
     statusDisabled: string;
   };
+  travelPortal: {
+    title: string;
+    subtitle: string;
+    referenceLabel: string;
+    referencePlaceholder: string;
+    codeLabel: string;
+    codePlaceholder: string;
+    track: string;
+    tracking: string;
+    status: string;
+    trip: string;
+    tickets: string;
+    passengers: string;
+    total: string;
+    downloadTicket: string;
+    cancel: string;
+    cancelConfirm: string;
+    cancelling: string;
+    cancelReasonPlaceholder: string;
+    cancelled: string;
+    statusPending: string;
+    statusConfirmed: string;
+    statusRefunded: string;
+    statusCompleted: string;
+    notFound: string;
+    invalidCode: string;
+    departurePast: string;
+    error: string;
+  };
 };
 
 const copy: Record<AppLocale, CopyTree> = {
@@ -1197,6 +1226,35 @@ const copy: Record<AppLocale, CopyTree> = {
     statusEnabled: 'Activé',
     statusDisabled: 'Désactivé',
   },
+  travelPortal: {
+    title: "Espace voyageur",
+    subtitle: "Suivez votre réservation, téléchargez vos e-billets et gérez votre voyage.",
+    referenceLabel: "Référence de réservation",
+    referencePlaceholder: "Ex. GV-2026-0001",
+    codeLabel: "Code de validation",
+    codePlaceholder: "Code de validation (sur votre e-billet)",
+    track: "Suivre ma réservation",
+    tracking: "Suivi…",
+    status: "Statut",
+    trip: "Trajet",
+    tickets: "Billets",
+    passengers: "Passagers",
+    total: "Total",
+    downloadTicket: "Télécharger l'e-billet",
+    cancel: "Annuler la réservation",
+    cancelConfirm: "Confirmer l'annulation",
+    cancelling: "Annulation…",
+    cancelReasonPlaceholder: "Expliquez le motif de l'annulation",
+    cancelled: "Annulée",
+    statusPending: "En attente",
+    statusConfirmed: "Confirmée",
+    statusRefunded: "Remboursée",
+    statusCompleted: "Terminée",
+    notFound: "Réservation introuvable. Vérifiez la référence et le code.",
+    invalidCode: "Code de validation invalide.",
+    departurePast: "L'annulation n'est plus possible : le départ est passé.",
+    error: "Une erreur est survenue. Réessayez.",
+  },
 
   },
   ar: {
@@ -1794,6 +1852,35 @@ const copy: Record<AppLocale, CopyTree> = {
   notificationsPage: {
     statusEnabled: 'مفعل',
     statusDisabled: 'معطل',
+  },
+  travelPortal: {
+    title: "فضاء المسافر",
+    subtitle: "تابع حجزك وحمّل تذاكرك الإلكترونية وأدر رحلتك.",
+    referenceLabel: "مرجع الحجز",
+    referencePlaceholder: "مثال GV-2026-0001",
+    codeLabel: "رمز التحقق",
+    codePlaceholder: "الرمز المستلم عبر البريد",
+    track: "تتبع حجزي",
+    tracking: "جارٍ التتبع…",
+    status: "الحالة",
+    trip: "الرحلة",
+    tickets: "التذاكر",
+    passengers: "المسافرون",
+    total: "الإجمالي",
+    downloadTicket: "تنزيل التذكرة الإلكترونية",
+    cancel: "إلغاء الحجز",
+    cancelConfirm: "تأكيد الإلغاء",
+    cancelling: "جارٍ الإلغاء…",
+    cancelReasonPlaceholder: "سبب الإلغاء",
+    cancelled: "ملغاة",
+    statusPending: "قيد الانتظار",
+    statusConfirmed: "مؤكدة",
+    statusRefunded: "مستردة",
+    statusCompleted: "مكتملة",
+    notFound: "الحجز غير موجود. تحقق من المرجع والرمز.",
+    invalidCode: "رمز تحقق غير صالح.",
+    departurePast: "لم يعد الإلغاء ممكنًا: فات موعد الانطلاق.",
+    error: "حدث خطأ. حاول مرة أخرى.",
   },
 
   },
@@ -2393,6 +2480,35 @@ const copy: Record<AppLocale, CopyTree> = {
     statusEnabled: 'Etkin',
     statusDisabled: 'Devre dışı',
   },
+  travelPortal: {
+    title: "Yolcu alanı",
+    subtitle: "Rezervasyonunuzu takip edin, e-biletlerinizi indirin ve seyahatinizi yönetin.",
+    referenceLabel: "Rezervasyon referansı",
+    referencePlaceholder: "Örn. GV-2026-0001",
+    codeLabel: "Doğrulama kodu",
+    codePlaceholder: "E-posta ile alınan kod",
+    track: "Rezervasyonumu takip et",
+    tracking: "Takip ediliyor…",
+    status: "Durum",
+    trip: "Sefer",
+    tickets: "Biletler",
+    passengers: "Yolcular",
+    total: "Toplam",
+    downloadTicket: "E-bileti indir",
+    cancel: "Rezervasyonu iptal et",
+    cancelConfirm: "İptali onayla",
+    cancelling: "İptal ediliyor…",
+    cancelReasonPlaceholder: "İptal nedeni",
+    cancelled: "İptal edildi",
+    statusPending: "Beklemede",
+    statusConfirmed: "Onaylandı",
+    statusRefunded: "İade edildi",
+    statusCompleted: "Tamamlandı",
+    notFound: "Rezervasyon bulunamadı. Referansı ve kodu kontrol edin.",
+    invalidCode: "Geçersiz doğrulama kodu.",
+    departurePast: "İptal artık mümkün değil: kalkış geçti.",
+    error: "Bir hata oluştu. Tekrar deneyin.",
+  },
 
   },
   en: {
@@ -2990,6 +3106,35 @@ const copy: Record<AppLocale, CopyTree> = {
   notificationsPage: {
     statusEnabled: 'Enabled',
     statusDisabled: 'Disabled',
+  },
+  travelPortal: {
+    title: "Traveler space",
+    subtitle: "Track your booking, download your e-tickets and manage your trip.",
+    referenceLabel: "Booking reference",
+    referencePlaceholder: "E.g. GV-2026-0001",
+    codeLabel: "Validation code",
+    codePlaceholder: "Code received by email",
+    track: "Track my booking",
+    tracking: "Tracking…",
+    status: "Status",
+    trip: "Trip",
+    tickets: "Tickets",
+    passengers: "Passengers",
+    total: "Total",
+    downloadTicket: "Download e-ticket",
+    cancel: "Cancel booking",
+    cancelConfirm: "Confirm cancellation",
+    cancelling: "Cancelling…",
+    cancelReasonPlaceholder: "Cancellation reason",
+    cancelled: "Cancelled",
+    statusPending: "Pending",
+    statusConfirmed: "Confirmed",
+    statusRefunded: "Refunded",
+    statusCompleted: "Completed",
+    notFound: "Booking not found. Check the reference and code.",
+    invalidCode: "Invalid validation code.",
+    departurePast: "Cancellation is no longer possible: departure has passed.",
+    error: "Something went wrong. Try again.",
   },
 
   },

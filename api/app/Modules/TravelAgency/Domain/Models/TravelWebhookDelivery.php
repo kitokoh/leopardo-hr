@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * TRAVEL-806 (#6097) — Livraison de webhook (journal idempotent).
@@ -100,4 +101,6 @@ class TravelWebhookDelivery extends Model
         $delayMinutes = min(30, 2 ** max(0, $this->attempts - 1));
         $this->next_attempt_at = now()->addMinutes($delayMinutes);
     }
+
+
 }

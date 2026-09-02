@@ -9,6 +9,7 @@ use Database\Factories\TravelCancellationPolicyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Politique d'annulation configurable (TRAVEL-813, issue #6103).
@@ -50,6 +51,11 @@ class TravelCancellationPolicy extends Model
      * @return BelongsTo<TravelClass, $this>
      */
     public function class(): BelongsTo
+    {
+        return $this->belongsTo(TravelClass::class, 'class_id');
+    }
+
+    public function travelClass(): BelongsTo
     {
         return $this->belongsTo(TravelClass::class, 'class_id');
     }

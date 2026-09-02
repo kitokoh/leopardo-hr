@@ -173,3 +173,23 @@ use App\Modules\TravelAgency\Policies\TravelTouristSitePolicy;
         });
         Gate::policy(TravelComment::class, TravelCommentPolicy::class);
         Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier;
+use App\Modules\TravelAgency\Domain\Models\TravelReportExport;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelAgentPushConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelNotificationConsumer;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
+        // Port push (TRAVEL-703/#6090) — isolation inter-contextes (#5584) :
+        // le module TravelAgency ne déclare AUCUN `use App\Modules\Notification`,
+        // l'adaptateur BC-13 est branché ici (composition root) par FQCN.
+        $this->app->bind(
+            CompanyPushNotifier::class,
+            PushNotificationService::class
+        );
+            $registry = new TravelOutboxConsumerRegistry;
+            $registry->register(app(TravelWebhookConsumer::class));
+            $registry->register(app(TravelNotificationConsumer::class));
+            // TRAVEL-703 (#6090) — push agents (FCM) sur réservation.
+            $registry->register(app(TravelAgentPushConsumer::class));
+            return $registry;
+        Gate::policy(TravelReportExport::class, TravelReportPolicy::class);

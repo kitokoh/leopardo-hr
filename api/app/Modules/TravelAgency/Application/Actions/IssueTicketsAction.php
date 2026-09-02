@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Infrastructure\Services\LoyaltyPointsService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;
 
 /**
  * TRAVEL-316 (#6046) — Emission des billets d'une reservation confirmee.
@@ -88,4 +89,6 @@ final class IssueTicketsAction
 
         return $tickets;
     }
+
+
 }

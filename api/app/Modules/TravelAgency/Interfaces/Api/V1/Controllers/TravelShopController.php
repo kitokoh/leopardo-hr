@@ -20,6 +20,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 
 /**
  * TRAVEL-401..404 (#6053..#6056) — Boutique en ligne (v1 : auth tenant).
@@ -275,5 +276,43 @@ class TravelShopController extends Controller
         $data['ticket_numbers'] = $booking->tickets->map(fn (TravelTicket $t): string => $t->ticket_number);
 
         return response()->json(['data' => $data]);
+    }
+
+    public function cancel(CancelTravelShopBookingRequest $request, string $reference): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $booking = TravelBooking::query()
+            ->where('reference', $reference)
+            ->first();
+
+        if (! $booking instanceof TravelBooking || $booking->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        $booking->load('tickets', 'trip');
+
+        // Preuve de possession : le code fourni doit matcher le hash d'un billet.
+        $codeHash = hash('sha256', (string) $request->input('code'));
+        $owned = $booking->tickets->contains(
+            fn (TravelTicket $ticket): bool => hash_equals((string) $ticket->validation_code, $codeHash)
+        );
+
+        abort_if(! $owned, 422, 'TRAVEL_BOOKING_CODE_INVALID');
+
+        // Annulation bornée : départ dans le futur uniquement.
+        $departure = $booking->trip?->departure_date;
+        abort_if($departure !== null && ! $departure->isFuture(), 422, 'TRAVEL_BOOKING_DEPARTURE_PAST');
+
+        $cancelled = app(CancelBookingAction::class)->execute(
+            $booking,
+            $actor,
+            (string) $request->input('reason')
+        );
+
+        return response()->json([
+            'data' => (new TravelBookingResource($cancelled))->resolve($request),
+        ]);
     }
 }

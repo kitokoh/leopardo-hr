@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
 
 /**
  * Jeton de la boutique publique (TRAVEL-1001, issue #6114).
@@ -34,4 +35,6 @@ class TravelPublicShopToken extends Model
     {
         return hash('sha256', $plainToken);
     }
+
+
 }
