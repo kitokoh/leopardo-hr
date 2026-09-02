@@ -202,22 +202,29 @@ class VerifyTrialSignup
             static fn (mixed $code): string => strtolower(trim((string) $code)),
             $payload['solutions'] ?? [],
         )));
-        foreach ($solutions as $solutionCode) {
-            if (! $this->solutionCatalogue->has($solutionCode)) {
-                Log::warning('SelfServiceTrial: unknown solution requested at verify', [
-                    'email' => $email,
-                    'solution' => $solutionCode,
-                ]);
-                $companyRequest->update(['status' => 'pending']);
 
-                return [
-                    'success' => false,
-                    'error' => 'INVALID_SOLUTION',
-                    'message' => __('errors.INVALID_SOLUTION', ['solution' => $solutionCode]),
-                    'status' => 422,
-                ];
+        // L'activation écrit dans audit_logs (table tenant) → contexte tenant.
+        $this->tenantManager->setTenant($result['company']);
+        try {
+            foreach ($solutions as $solutionCode) {
+                if (! $this->solutionCatalogue->has($solutionCode)) {
+                    Log::warning('SelfServiceTrial: unknown solution requested at verify', [
+                        'email' => $email,
+                        'solution' => $solutionCode,
+                    ]);
+                    $companyRequest->update(['status' => 'pending']);
+
+                    return [
+                        'success' => false,
+                        'error' => 'INVALID_SOLUTION',
+                        'message' => __('errors.INVALID_SOLUTION', ['solution' => $solutionCode]),
+                        'status' => 422,
+                    ];
+                }
+                $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
             }
-            $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
+        } finally {
+            $this->tenantManager->resetToPrevious();
         }
 
         $companyRequest->update([
