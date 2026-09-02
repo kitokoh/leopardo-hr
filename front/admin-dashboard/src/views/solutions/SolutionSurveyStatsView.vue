@@ -160,14 +160,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import {
-  ArrowPathIcon,
-  ArrowTrendingUpIcon,
-  ChatBubbleLeftRightIcon,
-  GiftIcon,
-  InformationCircleIcon,
-  UserPlusIcon,
-} from '@heroicons/vue/24/outline'
+import { ArrowPathIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import MetricCard from '@/components/analytics/MetricCard.vue'
 import api from '@/services/api'
 

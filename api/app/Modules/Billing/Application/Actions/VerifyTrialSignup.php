@@ -166,6 +166,9 @@ class VerifyTrialSignup
                 'temp_password' => $tempPassword,
                 'employees_range' => $payload['employees'] ?? null,
                 'referral_code' => $payload['referral_code'] ?? null,
+                // #6693 (BC-25) : solution sectorielle demandée au signup
+                // (ex. `restaurant` depuis le wizard vitrine).
+                'solution' => $payload['solution'] ?? null,
             ]);
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Provisioning failed', [
@@ -375,8 +378,6 @@ class VerifyTrialSignup
      * trace `solution.activated` (audit). Un échec d'activation ne fait JAMAIS
      * échouer le provisioning du tenant : il est loggé (ops peut ré-activer
      * via `leopardo:solution:activate` ou le dashboard super-admin).
-     *
-     * @param  array<string, mixed>  $payload
      */
     private function activateRequestedSolution(Company $company, Employee $manager, ?string $solutionCode): void
     {
