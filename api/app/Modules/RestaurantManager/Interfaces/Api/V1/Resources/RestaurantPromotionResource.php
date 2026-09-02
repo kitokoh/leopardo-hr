@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 
 /**
  * RESTO-607 (#6212) — Ressource API d'une promotion.
@@ -34,4 +35,6 @@ class RestaurantPromotionResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
+
+
 }

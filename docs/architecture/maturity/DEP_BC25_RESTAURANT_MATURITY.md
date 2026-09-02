@@ -28,6 +28,9 @@
 | Stock, achats & inventaire (5xx) | RESTO-501..506 | ✅ Livré (branche `bc/bc25-restaurant-stock`, lot du 2026-08-30) |
 | Réservations, livraison & fidélité (6xx) | RESTO-601..602 livrés ; RESTO-603..608 à livrer | 🚧 En cours |
 | Rapports & UI (7xx) | RESTO-701..708 | ⏳ À livrer |
+| POS — restant (4xx) | RESTO-411 (stock à la vente), RESTO-412 (événement pos.closed) | ⏳ À livrer |
+| Stock, achats & inventaire (5xx) | RESTO-501..506 | ⏳ À livrer |
+| Réservations, livraison & fidélité (6xx) | RESTO-601..608 | ⏳ À livrer |
 | Mobile & extensions (8xx) | RESTO-801..808 | ⏳ À livrer |
 | Qualité, docs & pilote (9xx) | RESTO-901..906 | ⏳ À livrer |
 

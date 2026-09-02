@@ -14,6 +14,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantDelivery
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
+use App\Modules\RestaurantManager\Application\Actions\CreateDeliveryAction;use App\Modules\RestaurantManager\Application\Actions\TransitionDeliveryAction;use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\TransitionRestaurantDeliveryRequest;
 
 /**
  * RESTO-605 (#6210) — Cycle de livraison (assign/out/deliver/cancel).
@@ -182,5 +183,19 @@ class RestaurantDeliveryController extends Controller
         }
 
         return (new RestaurantDeliveryResource($updated))->response();
+    }
+
+
+    private function targetStatus(Request $request): DeliveryStatus
+    {
+        $action = (string) last(explode('/', $request->path()));
+
+        return match ($action) {
+            'assign' => DeliveryStatus::ASSIGNED,
+            'out-for-delivery' => DeliveryStatus::OUT_FOR_DELIVERY,
+            'deliver' => DeliveryStatus::DELIVERED,
+            'cancel' => DeliveryStatus::CANCELLED,
+            default => abort(422, 'Unknown delivery action.'),
+        };
     }
 }

@@ -18,6 +18,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyP
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
+use App\Modules\RestaurantManager\Application\Actions\RedeemLoyaltyPointsAction;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
 
 /**
  * RESTO-606 (#6211) — Programme fidélité : programme, clients, points.
@@ -178,5 +179,90 @@ class RestaurantLoyaltyController extends Controller
         }
 
         return (new RestaurantLoyaltyCustomerResource($customer))->response();
+    }
+
+
+    public function indexPrograms(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('viewAny', RestaurantLoyaltyProgram::class)) {
+            abort(403);
+        }
+
+        $programs = RestaurantLoyaltyProgram::query()
+            ->orderByDesc('is_active')
+            ->orderByDesc('id')
+            ->get();
+
+        return RestaurantLoyaltyProgramResource::collection($programs)->response();
+    }
+
+
+    public function showProgram(Request $request, RestaurantLoyaltyProgram $restaurantLoyaltyProgram): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantLoyaltyProgram->company_id) {
+            abort(404);
+        }
+
+        return (new RestaurantLoyaltyProgramResource($restaurantLoyaltyProgram))->response();
+    }
+
+
+    public function showCustomer(Request $request, RestaurantLoyaltyCustomer $restaurantLoyaltyCustomer): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantLoyaltyCustomer->company_id) {
+            abort(404);
+        }
+
+        return (new RestaurantLoyaltyCustomerResource($restaurantLoyaltyCustomer))->response();
+    }
+
+
+    public function customerMovements(Request $request, RestaurantLoyaltyCustomer $restaurantLoyaltyCustomer): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantLoyaltyCustomer->company_id) {
+            abort(404);
+        }
+
+        $perPage = max(1, min(500, (int) $request->query('per_page', 50)));
+
+        $movements = $restaurantLoyaltyCustomer->movements()
+            ->orderByDesc('id')
+            ->paginate($perPage);
+
+        return RestaurantLoyaltyPointsMovementResource::collection($movements)->response();
+    }
+
+
+    public function redeem(
+        RedeemRestaurantLoyaltyCustomerRequest $request,
+        RestaurantLoyaltyCustomer $restaurantLoyaltyCustomer,
+    ): JsonResponse {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $restaurantLoyaltyCustomer->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('redeem', $restaurantLoyaltyCustomer)) {
+            abort(403);
+        }
+
+        $this->redeemLoyaltyPoints->redeem($restaurantLoyaltyCustomer, (int) $request->validated('points'));
+        $restaurantLoyaltyCustomer->refresh();
+
+        return (new RestaurantLoyaltyCustomerResource($restaurantLoyaltyCustomer))->response();
     }
 }

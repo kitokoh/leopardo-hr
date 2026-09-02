@@ -249,4 +249,38 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             // Synchronisation offline (RESTO-804/#6225) : file idempotente.
             Route::post('/sync', [RestaurantMobileSyncController::class, 'sync']);
         });
+Route::get('/delivery-riders', [RestaurantDeliveryRiderController::class, 'index']);
+Route::post('/delivery-riders', [RestaurantDeliveryRiderController::class, 'store']);
+Route::get('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'show']);
+Route::put('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'update']);
+Route::delete('/delivery-riders/{restaurantDeliveryRider}', [RestaurantDeliveryRiderController::class, 'destroy']);
+Route::post('/orders/{restaurantOrder}/delivery', [RestaurantDeliveryController::class, 'store']);
+Route::get('/deliveries/{restaurantDelivery}', [RestaurantDeliveryController::class, 'show']);
+Route::post('/deliveries/{restaurantDelivery}/assign', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/out-for-delivery', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/deliver', [RestaurantDeliveryController::class, 'transition']);
+Route::post('/deliveries/{restaurantDelivery}/cancel', [RestaurantDeliveryController::class, 'transition']);
+Route::get('/loyalty-programs', [RestaurantLoyaltyController::class, 'indexPrograms']);
+Route::post('/loyalty-programs', [RestaurantLoyaltyController::class, 'storeProgram']);
+Route::get('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'showProgram']);
+Route::put('/loyalty-programs/{restaurantLoyaltyProgram}', [RestaurantLoyaltyController::class, 'updateProgram']);
+Route::get('/loyalty-customers', [RestaurantLoyaltyController::class, 'indexCustomers']);
+Route::post('/loyalty-customers', [RestaurantLoyaltyController::class, 'storeCustomer']);
+Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}', [RestaurantLoyaltyController::class, 'showCustomer']);
+Route::get('/loyalty-customers/{restaurantLoyaltyCustomer}/movements', [RestaurantLoyaltyController::class, 'customerMovements']);
+Route::post('/loyalty-customers/{restaurantLoyaltyCustomer}/redeem', [RestaurantLoyaltyController::class, 'redeem']);
+Route::get('/promotions', [RestaurantPromotionController::class, 'index']);
+Route::post('/promotions', [RestaurantPromotionController::class, 'store']);
+Route::get('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'show']);
+Route::put('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'update']);
+Route::delete('/promotions/{restaurantPromotion}', [RestaurantPromotionController::class, 'destroy']);
+Route::get('/reports/sales', [RestaurantReportController::class, 'sales']);
+Route::get('/reports/occupancy', [RestaurantReportController::class, 'occupancy']);
+Route::get('/reports/products', [RestaurantReportController::class, 'products']);
+Route::get('/reports/cogs', [RestaurantReportController::class, 'cogs']);
+Route::get('/reports/pos', [RestaurantReportController::class, 'pos']);
+Route::get('/reports/kpis', [RestaurantReportController::class, 'kpis']);
+Route::post('/reports/export', [RestaurantReportController::class, 'export']);
+Route::get('/reports/exports/{export}/download', [RestaurantReportController::class, 'download'])
+            ->name('restaurant.reports.export.download');
     });

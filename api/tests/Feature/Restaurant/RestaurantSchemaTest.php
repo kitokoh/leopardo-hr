@@ -9,6 +9,7 @@ use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\DB;
 
 /**
  * RESTO-108 (#6165) — Harness de test BC-25 : schéma tenant complet.
@@ -107,4 +108,6 @@ class RestaurantSchemaTest extends TestCase
 
         $this->assertSame([], $unscoped, 'Tables restaurant sans colonne company_id (violation tenant-safe).');
     }
+
+
 }

@@ -7,3 +7,4 @@ return [
     'order_ready_body' => 'Commande :reference prête à être servie (table :table).',
     'reservation_reminder_title' => 'Réservation à venir (J-1)',
 ];
+    'reservation_reminder_body' => 'Réservation :reference : :covers couvert(s) le :datetime — préparez la table.',

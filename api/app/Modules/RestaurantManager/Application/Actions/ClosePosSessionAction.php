@@ -13,6 +13,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Modules\RestaurantManager\Domain\Enums\PaymentProvider;
 
 /**
  * RESTO-401 (#6188) / RESTO-412 (#6199) — Clôture d'une session de caisse POS.
@@ -120,5 +121,37 @@ final class ClosePosSessionAction
         }
 
         return $sum;
+    }
+
+    private function redactedPayload(RestaurantPosSession $session): array
+    {
+        return [
+            'pos_session_id' => $session->id,
+            'branch_id' => $session->branch_id,
+            'opened_at' => $session->opened_at->toIso8601String(),
+            'closed_at' => $session->closed_at?->toIso8601String(),
+            'opening_cash_minor' => $session->opening_cash_minor,
+            'expected_cash_minor' => $session->expected_cash_minor,
+            'counted_cash_minor' => $session->counted_cash_minor,
+            'variance_minor' => $session->variance_minor,
+            'payments_confirmed_minor' => $this->confirmedByProvider($session),
+        ];
+    }
+
+    private function confirmedByProvider(RestaurantPosSession $session): array
+    {
+        $rows = RestaurantOrderPayment::query()
+            ->where('company_id', $session->company_id)
+            ->where('pos_session_id', $session->id)
+            ->where('status', PaymentStatus::CONFIRMED->value)
+            ->get(['provider_code', 'amount_minor', 'tip_minor']);
+
+        $totals = [];
+        foreach ($rows as $row) {
+            $provider = $row->provider_code->value;
+            $totals[$provider] = ($totals[$provider] ?? 0) + (int) $row->amount_minor + (int) ($row->tip_minor ?? 0);
+        }
+
+        return $totals;
     }
 }

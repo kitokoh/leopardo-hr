@@ -7,3 +7,4 @@ return [
     'order_ready_body' => ':reference siparişi servise hazır (masa :table).',
     'reservation_reminder_title' => 'Yaklaşan rezervasyon (J-1)',
 ];
+    'reservation_reminder_body' => 'Rezervasyon :reference : :covers kapak :datetime — masayı hazırlayın.',

@@ -34,4 +34,10 @@ class RestaurantDeliveryPolicy
     {
         return $this->create($actor) && $delivery->company_id === $actor->company_id;
     }
+
+
+    public function transition(Employee $actor, RestaurantDelivery $delivery): bool
+    {
+        return $this->create($actor) && $delivery->company_id === $actor->company_id;
+    }
 }

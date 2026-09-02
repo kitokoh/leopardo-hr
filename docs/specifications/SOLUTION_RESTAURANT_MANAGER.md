@@ -744,3 +744,6 @@ PO       : draft → sent → received | cancelled
 - Modules de référence : `api/app/Modules/TravelAgency` (squelette implémenté), `api/app/Modules/CRM`
   (outbox, policies), `api/app/Modules/Cameras` (middleware de flag).
 - Règle d'or AGENTS.md : spec dans `docs/specifications/` **validée par le propriétaire** avant création des issues.
+- UNIQUE(company_id, order_id) (une livraison par commande — RESTO-605)
+| `restaurant.delivery.status.changed.v1` | Notifications (livreur) — RESTO-605 |
+| `restaurant.reservation.reminder.v1` | Notifications (équipe branche, J-1) — RESTO-608 |

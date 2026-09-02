@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 
 /**
  * RESTO-605 (#6210) — Ressource API d'un livreur.
@@ -29,4 +30,6 @@ class RestaurantDeliveryRiderResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
+
+
 }

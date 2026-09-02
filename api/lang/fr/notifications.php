@@ -38,6 +38,11 @@ return [
 
     'payment_document_ready_title' => 'Document prêt',
     'payment_document_ready_body' => 'Votre document de paiement est généré et disponible au téléchargement.',
+ HEAD
+    'restaurant_delivery_status_changed_title' => 'Livraison : :status',
+    'restaurant_delivery_status_changed_body' => 'La livraison #:delivery (commande #:order) est maintenant « :status ».',
+    'restaurant_reservation_reminder_title' => 'Réservation à venir (J-1)',
+    'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
 
@@ -59,4 +64,5 @@ return [
     'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
     'restaurant_order_ready_title' => 'Commande prête',
     'restaurant_order_ready_body' => 'Commande :reference prête à être servie (table :table).',
+ origin/main
 ];

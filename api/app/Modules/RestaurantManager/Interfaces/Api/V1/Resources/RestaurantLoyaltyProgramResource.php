@@ -6,6 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
 
 /**
  * RESTO-606 (#6211) — Ressource API du programme de fidélité.
@@ -26,4 +27,6 @@ class RestaurantLoyaltyProgramResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
+
+
 }

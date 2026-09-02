@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
 
 /**
  * RESTO-605 (#6210) — Création d'une livraison rattachée à une commande
@@ -33,5 +34,16 @@ class StoreRestaurantDeliveryRequest extends FormRequest
             'zone_id' => ['nullable', 'integer', Rule::exists('restaurant_delivery_zones', 'id')->where(fn (Builder $q) => $q->where('company_id', $actor->company_id))],
             'fee_minor' => ['required', 'integer', 'min:0'],
         ];
+    }
+
+
+    private function companyId(): ?string
+    {
+        $user = $this->user();
+        if ($user instanceof Employee && $user->company_id !== null) {
+            return $user->company_id;
+        }
+
+        return app()->bound('current_company') ? currentCompany()->id : null;
     }
 }

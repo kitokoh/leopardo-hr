@@ -20,6 +20,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use App\Contracts\Communication\CommunicationServiceInterface;
 
 class CommunicationService implements EmployeeNotifier
 {
@@ -461,4 +462,6 @@ class CommunicationService implements EmployeeNotifier
             'occurred_at' => now(),
         ]);
     }
+
+
 }

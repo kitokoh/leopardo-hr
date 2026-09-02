@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Domain\Contracts;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantOutboxEvent;
 
 /**
  * RESTO-806 (#6227) — Contrat de consommation d'un événement d'outbox
@@ -21,4 +22,6 @@ interface RestaurantOutboxConsumer
      * @param  array<string, mixed>  $payload
      */
     public function handle(array $payload): void;
+
+
 }
