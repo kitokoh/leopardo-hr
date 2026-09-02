@@ -20,26 +20,58 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('attendance_kiosks')) {
+        if (resolveTableSchema('attendance_kiosks') === null) {
             return;
         }
 
-        Schema::table('attendance_kiosks', function (Blueprint $table): void {
-            $table->unsignedInteger('site_id')->nullable()->index();
-            $table->json('punch_methods')->nullable();
-            $table->timestampTz('revoked_at')->nullable();
-            $table->unsignedInteger('revoked_by_employee_id')->nullable();
-        });
+        $schema = resolveTableSchema('attendance_kiosks');
+
+        if ($schema === null) {
+            return;
+        }
+
+        // Convention #1613 : pas d_appel Schéma-table au nom nu (piège F-17) —
+        // ALTER résolu via le search_path.
+        if (! schemaHasColumn('attendance_kiosks', 'site_id')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks ADD COLUMN site_id INTEGER NULL");
+            DB::statement("CREATE INDEX attendance_kiosks_site_id_index ON {$schema}.attendance_kiosks (site_id)");
+        }
+
+        if (! schemaHasColumn('attendance_kiosks', 'punch_methods')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks ADD COLUMN punch_methods JSON NULL");
+        }
+
+        if (! schemaHasColumn('attendance_kiosks', 'revoked_at')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks ADD COLUMN revoked_at TIMESTAMP(0) WITH TIME ZONE NULL");
+        }
+
+        if (! schemaHasColumn('attendance_kiosks', 'revoked_by_employee_id')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks ADD COLUMN revoked_by_employee_id INTEGER NULL");
+        }
     }
 
     public function down(): void
     {
-        if (! schemaTableExists('attendance_kiosks')) {
+        $schema = resolveTableSchema('attendance_kiosks');
+
+        if ($schema === null) {
             return;
         }
 
-        Schema::table('attendance_kiosks', function (Blueprint $table): void {
-            $table->dropColumn(['site_id', 'punch_methods', 'revoked_at', 'revoked_by_employee_id']);
-        });
+        if (schemaHasColumn('attendance_kiosks', 'site_id')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks DROP COLUMN site_id");
+        }
+
+        if (schemaHasColumn('attendance_kiosks', 'punch_methods')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks DROP COLUMN punch_methods");
+        }
+
+        if (schemaHasColumn('attendance_kiosks', 'revoked_at')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks DROP COLUMN revoked_at");
+        }
+
+        if (schemaHasColumn('attendance_kiosks', 'revoked_by_employee_id')) {
+            DB::statement("ALTER TABLE {$schema}.attendance_kiosks DROP COLUMN revoked_by_employee_id");
+        }
     }
 };

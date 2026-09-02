@@ -13,6 +13,7 @@ declare(strict_types=1);
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
+use App\Modules\Attendance\Interfaces\Api\V1\KioskEnrollmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
@@ -276,4 +277,22 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::get('/kiosks/{deviceCode}/config', [KioskController::class, 'config']);
     // BIO-004 (#6765) : pointage kiosque par vérification faciale (multipart).
     Route::post('/kiosks/{deviceCode}/verify-face', [KioskController::class, 'verifyFace']);
+
+    // ── ATT-004 (#6769) : surface kiosque versionnée ─────────────────────────
+    // `kiosk.device` authentifie l'appareil (X-Kiosk-Token) et pose
+    // `kiosk_device` ; `kiosk.idempotency` exige l'Idempotency-Key sur les
+    // écritures d'enrôlement (rejeu 24 h à l'identique).
+    Route::middleware(['kiosk.device'])->group(function (): void {
+        // BIO-007 (#6772) : état de synchronisation visible (compteur
+        // acquitté, heure serveur, politique offline).
+        Route::get('/kiosks/{deviceCode}/sync-status', [KioskController::class, 'syncStatus']);
+
+        Route::middleware(['kiosk.idempotency'])->group(function (): void {
+            Route::post('/kiosks/{deviceCode}/enrollments', [KioskEnrollmentController::class, 'start']);
+            Route::post('/kiosks/{deviceCode}/enrollments/{enrollment}/activate', [KioskEnrollmentController::class, 'activate'])->whereNumber('enrollment');
+            Route::post('/kiosks/{deviceCode}/enrollments/{enrollment}/revoke', [KioskEnrollmentController::class, 'revoke'])->whereNumber('enrollment');
+        });
+
+        Route::get('/kiosks/{deviceCode}/enrollments/status', [KioskEnrollmentController::class, 'status']);
+    });
 });

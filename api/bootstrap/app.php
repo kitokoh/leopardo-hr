@@ -154,6 +154,11 @@ return Application::configure(basePath: dirname(__DIR__))
             // #3368 : restaure le search_path après chaque requête kiosque
             // (les handlers basculent vers le schéma tenant sans try/finally).
             'kiosk.search_path' => EnsureKioskSearchPathReset::class,
+            // ATT-004 (#6769) : authentification appareil kiosque centralisée
+            // (X-Kiosk-Token) pour les routes versionnées — pose `kiosk_device`.
+            'kiosk.device' => \App\Http\Middleware\ResolveKioskDevice::class,
+            // ATT-004 (#6769) : Idempotency-Key obligatoire (écritures kiosque).
+            'kiosk.idempotency' => \App\Http\Middleware\RequireKioskIdempotencyKey::class,
             // #4934 (audit web client 2026-08-17) : auth device ZKTeco
             // (heartbeat / sync-attendance) — fail-closed, search_path-safe.
             'zkteco.device' => AuthenticateZktecoDevice::class,

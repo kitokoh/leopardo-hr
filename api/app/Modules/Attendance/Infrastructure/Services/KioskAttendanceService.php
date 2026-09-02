@@ -13,6 +13,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Domain\Models\BiometricAuditLog;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class KioskAttendanceService
@@ -20,8 +22,22 @@ class KioskAttendanceService
     public function __construct(
         private readonly AttendanceService $attendanceService,
         private readonly TenantManager $tenantManager,
+        private readonly KioskManagerGuard $managerGuard,
+        private readonly KioskOfflineSyncGuard $offlineSyncGuard,
     ) {}
 
+    /**
+     * Pointage kiosque (ATT-004 #6769 / BIO-006 #6767 / BIO-007 #6772).
+     *
+     * Règles serveur :
+     *   - employé résolu dans le tenant du kiosque (email/matricule/zkteco_id/
+     *     badge_number) ;
+     *   - `biometric` (hérité) exige un flag biométrique employé ;
+     *   - une méthode explicite doit être activée dans la matrice (BIO-006) ;
+     *     badge/PIN/carte/manager n'exigent PAS de flag biométrique ;
+     *   - `manager` exige un manager actif du même tenant ;
+     *   - `device_event_id` rend le pointage idempotent (rejeu → même log).
+     */
     public function punch(
         AttendanceKiosk $kiosk,
         string $identifier,
@@ -29,26 +45,25 @@ class KioskAttendanceService
         string $workType = 'normal',
         ?string $method = null,
         ?int $managerEmployeeId = null,
+        ?string $deviceEventId = null,
     ): AttendanceLog {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId): AttendanceLog {
-            $employee = Employee::query()
-                ->where('company_id', $kiosk->company_id)
-                ->where(function ($query) use ($identifier): void {
-                    $query
-                        ->where('email', $identifier)
-                        ->orWhere('matricule', $identifier)
-                        ->orWhere('zkteco_id', $identifier)
-                        // #5122 — badge/carte de pointage
-                        ->orWhere('badge_number', $identifier);
-                })
-                ->first();
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $identifier, $action, $workType, $method, $managerEmployeeId, $deviceEventId): AttendanceLog {
+            // BIO-007 (#6772) : rejeu d'un événement appareil déjà traité →
+            // retour du log existant (aucune présence dupliquée).
+            if ($deviceEventId !== null && $deviceEventId !== '') {
+                $existing = AttendanceLog::query()
+                    ->where('external_event_id', $deviceEventId)
+                    ->first();
+
+                if ($existing !== null) {
+                    return $existing;
+                }
+            }
+
+            $employee = $this->resolveEmployee($kiosk, $identifier);
 
             if (! $employee) {
                 throw (new ModelNotFoundException)->setModel(Employee::class);
-            }
-
-            if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
-                abort(403, 'BIOMETRIC_NOT_APPROVED');
             }
 
             // BIO-006 (#6767) : la méthode réellement utilisée est vérifiée
@@ -56,7 +71,12 @@ class KioskAttendanceService
             // l'interface l'envoie. `biometric` reste la valeur legacy quand
             // le kiosque n'indique pas de méthode précise.
             $resolvedMethod = $method ?: 'biometric';
-            if ($resolvedMethod !== 'biometric') {
+
+            if ($resolvedMethod === 'biometric') {
+                if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
+                    abort(403, 'BIOMETRIC_NOT_APPROVED');
+                }
+            } else {
                 $this->assertKioskMethodAllowed($kiosk, $employee, $resolvedMethod, $managerEmployeeId);
             }
 
@@ -76,8 +96,6 @@ class KioskAttendanceService
             // training/other) instead of being locked to plain check_in/out.
             $log = $action === 'check_out'
                 ? $this->attendanceService->checkOut($employee, new CheckInDTO(
-                    // Persist the canonical method accepted by attendance_logs;
-                    // biometric_mode remains available as biometric_type/metadata.
                     method: $persistedMethod,
                     work_type: $workType,
                     biometric_type: $resolvedMethod === 'biometric' ? $kiosk->biometric_mode : $persistedMethod,
@@ -87,6 +105,28 @@ class KioskAttendanceService
                     work_type: $workType,
                     biometric_type: $resolvedMethod === 'biometric' ? $kiosk->biometric_mode : $persistedMethod,
                 ));
+
+            // BIO-007 (#6772) : persistance de l'identifiant d'événement
+            // appareil pour les rejeux ultérieurs (contrainte unique
+            // external_event_id). Course éventuelle → 23505 → retour du log
+            // concurrent (idempotence, pas de 500).
+            if ($deviceEventId !== null && $deviceEventId !== '' && $log->external_event_id === null) {
+                try {
+                    $log->forceFill(['external_event_id' => $deviceEventId])->save();
+                } catch (QueryException $exception) {
+                    if (str_contains($exception->getMessage(), '23505')) {
+                        $concurrent = AttendanceLog::query()
+                            ->where('external_event_id', $deviceEventId)
+                            ->first();
+
+                        if ($concurrent !== null) {
+                            return $concurrent;
+                        }
+                    }
+
+                    throw $exception;
+                }
+            }
 
             // BIO-008 (#6773) : audit dans le contexte tenant (le search_path
             // est déjà positionné ici — un insert hors contexte échouerait sur
@@ -141,53 +181,50 @@ class KioskAttendanceService
         }
 
         if ($verificationMethod === VerificationMethod::Manager) {
-            $this->assertManagerValidation($kiosk, $managerEmployeeId);
+            $this->managerGuard->assertManager($kiosk, $managerEmployeeId);
         }
     }
 
     /**
-     * Validation manager (BIO-006) : le manager doit exister, être actif,
-     * appartenir au même tenant et porter un rôle de manager.
-     */
-    private function assertManagerValidation(AttendanceKiosk $kiosk, ?int $managerEmployeeId): void
-    {
-        if ($managerEmployeeId === null) {
-            abort(422, 'MANAGER_VALIDATION_REQUIRED');
-        }
-
-        $manager = Employee::query()
-            ->where('company_id', $kiosk->company_id)
-            ->whereKey($managerEmployeeId)
-            ->where('status', 'active')
-            ->first();
-
-        if (! $manager || ! $manager->isManager()) {
-            abort(403, 'MANAGER_VALIDATION_REQUIRED');
-        }
-    }
-
-    /**
-     * Synchronise un batch d'événements offline kiosk.
+     * Synchronise un batch d'événements offline kiosque (BIO-007 #6772).
      *
-     * Issue #3587 — les événements non importables n'étaient skippés
-     * silencieusement (continue sans log) alors que le bridge marquait TOUT
-     * le batch comme synchronisé → pointages définitivement perdus sans
-     * alerte (erreurs de paie invisibles). Désormais chaque événement refusé
-     * est retourné dans `skipped` (avec raison) ET journalisé, pour que le
-     * bridge l'isole en dead-letter au lieu de le marquer synced.
+     * #3587 — les événements non importables étaient skippés silencieusement
+     * alors que le bridge marquait TOUT le batch comme synchronisé → pointages
+     * définitivement perdus. Désormais chaque événement refusé est retourné
+     * dans `skipped` (avec raison) ET journalisé.
+     *
+     * BIO-007 (additif, rétro-compatible) :
+     *   - enveloppe `device_state` signée (HMAC) validée par
+     *     KioskOfflineSyncGuard : falsification → 422, rejeu → 409 ;
+     *   - événements porteurs de `device_event_id` (réconciliation unique) ;
+     *   - méthode réellement utilisée préservée (fidélité BIO-006) ;
+     *   - fenêtre offline bornée (`max_age_days`) appliquée aux batches
+     *     signés — un événement expiré est isolé (EVENT_EXPIRED) ;
+     *   - compteur monotone acquitté persisté sur le kiosque.
      *
      * @param  array<int, array<string, mixed>>  $events
+     * @param  array<string, mixed>|null  $deviceState
      * @return array{processed: array<int, int>, skipped: array<int, array{external_event_id: string|null, identifier: string, reason: string}>}
      */
-    public function syncPunches(AttendanceKiosk $kiosk, array $events, string $deviceCode): array
-    {
-        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events, $deviceCode) {
+    public function syncPunches(
+        AttendanceKiosk $kiosk,
+        array $events,
+        string $deviceCode,
+        ?array $deviceState = null,
+        string $plainSyncToken = '',
+    ): array {
+        return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events, $deviceCode, $deviceState, $plainSyncToken): array {
+            $validatedCounter = $this->offlineSyncGuard->validateBatch($kiosk, $deviceState, $plainSyncToken, $deviceCode);
+            $expiryCutoff = $validatedCounter !== null
+                ? Carbon::now('UTC')->subDays((int) config('attendance.kiosk.offline.max_age_days', 14))
+                : null;
+
             $processed = [];
             $skipped = [];
 
             foreach ($events as $event) {
                 $identifier = trim((string) ($event['identifier'] ?? ''));
-                $externalEventId = isset($event['external_event_id']) ? (string) $event['external_event_id'] : null;
+                $externalEventId = $this->eventExternalId($event);
 
                 $skip = static function (string $reason) use (&$skipped, $externalEventId, $identifier, $kiosk, $deviceCode): void {
                     $skipped[] = [
@@ -210,17 +247,17 @@ class KioskAttendanceService
                     continue;
                 }
 
-                $employee = Employee::query()
-                    ->where('company_id', $kiosk->company_id)
-                    ->where(function ($query) use ($identifier): void {
-                        $query
-                            ->where('email', $identifier)
-                            ->orWhere('matricule', $identifier)
-                            ->orWhere('zkteco_id', $identifier)
-                            // #5122 — badge/carte de pointage
-                            ->orWhere('badge_number', $identifier);
-                    })
-                    ->first();
+                // BIO-007 : fenêtre offline bornée (batches signés uniquement).
+                if ($expiryCutoff !== null && isset($event['occurred_at']) && is_string($event['occurred_at']) && $event['occurred_at'] !== '') {
+                    $occurredAt = Carbon::parse($event['occurred_at'])->utc();
+                    if ($occurredAt->lessThan($expiryCutoff)) {
+                        $skip('EVENT_EXPIRED');
+
+                        continue;
+                    }
+                }
+
+                $employee = $this->resolveEmployee($kiosk, $identifier);
 
                 if (! $employee) {
                     $skip('EMPLOYEE_NOT_FOUND');
@@ -228,7 +265,26 @@ class KioskAttendanceService
                     continue;
                 }
 
-                if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
+                // BIO-007 : méthode réellement utilisée (badge → card en
+                // persistance). `biometric` (hérité) exige un flag employé ;
+                // badge/PIN/carte/manager n'exigent pas de flag biométrique.
+                $eventMethod = isset($event['method']) && is_string($event['method']) ? $event['method'] : 'biometric';
+                $isLegacyBiometric = $eventMethod === 'biometric';
+
+                if (! $isLegacyBiometric) {
+                    $verificationMethod = VerificationMethod::tryFrom($eventMethod)
+                        ?? VerificationMethod::fromAttendanceLogMethod($eventMethod);
+
+                    if ($verificationMethod === null) {
+                        $skip('PUNCH_METHOD_NOT_CONFIGURED');
+
+                        continue;
+                    }
+
+                    $eventMethod = $verificationMethod->attendanceLogMethod();
+                }
+
+                if ($isLegacyBiometric && ! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
                     $skip('BIOMETRIC_NOT_APPROVED');
 
                     continue;
@@ -236,9 +292,9 @@ class KioskAttendanceService
 
                 try {
                     $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
-                        method: 'biometric',
+                        method: $isLegacyBiometric ? 'biometric' : $eventMethod,
                         occurred_at: $event['occurred_at'] ?? null,
-                        external_event_id: $event['external_event_id'] ?? null,
+                        external_event_id: $externalEventId,
                         biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
                         synced_from_offline: true,
                         action: $event['action'] ?? 'check_in',
@@ -264,6 +320,7 @@ class KioskAttendanceService
             $kiosk->forceFill([
                 'last_seen_at' => now(),
                 'last_sync_at' => now(),
+                'acked_event_counter' => $validatedCounter ?? (int) $kiosk->acked_event_counter,
             ])->save();
 
             return [
@@ -271,5 +328,38 @@ class KioskAttendanceService
                 'skipped' => $skipped,
             ];
         });
+    }
+
+    /**
+     * Identifiant de réconciliation d'un événement offline : `device_event_id`
+     * (BIO-007) puis `external_event_id` (hérité).
+     */
+    private function eventExternalId(array $event): ?string
+    {
+        $deviceEventId = $event['device_event_id'] ?? null;
+        if (is_string($deviceEventId) && $deviceEventId !== '') {
+            return $deviceEventId;
+        }
+
+        $externalEventId = $event['external_event_id'] ?? null;
+
+        return is_string($externalEventId) && $externalEventId !== ''
+            ? $externalEventId
+            : null;
+    }
+
+    private function resolveEmployee(AttendanceKiosk $kiosk, string $identifier): ?Employee
+    {
+        return Employee::query()
+            ->where('company_id', $kiosk->company_id)
+            ->where(function ($query) use ($identifier): void {
+                $query
+                    ->where('email', $identifier)
+                    ->orWhere('matricule', $identifier)
+                    ->orWhere('zkteco_id', $identifier)
+                    // #5122 — badge/carte de pointage
+                    ->orWhere('badge_number', $identifier);
+            })
+            ->first();
     }
 }

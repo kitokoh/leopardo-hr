@@ -397,6 +397,8 @@ trait CreatesMvpSchema
             $table->string('trusted_device_label', 120)->nullable();
             $table->timestampTz('last_seen_at')->nullable();
             $table->timestampTz('last_sync_at')->nullable();
+            // BIO-007 (#6772) — miroir de 2026_09_02_000204_6772_kiosk_offline_counter.php.
+            $table->unsignedBigInteger('acked_event_counter')->default(0);
             $table->unsignedInteger('site_id')->nullable()->index();
             $table->json('punch_methods')->nullable();
             $table->timestampTz('revoked_at')->nullable();

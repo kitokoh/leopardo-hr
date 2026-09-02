@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sync_token_hash
  * @property Carbon|null $last_seen_at
  * @property Carbon|null $last_sync_at
+ * @property int $acked_event_counter
  * @property Carbon|null $revoked_at
  * @property int|null $revoked_by_employee_id
  *
@@ -81,6 +82,7 @@ class AttendanceKiosk extends Model
         'sync_token_hash',
         'last_seen_at',
         'last_sync_at',
+        'acked_event_counter',
         'revoked_at',
         'revoked_by_employee_id',
     ];
@@ -88,6 +90,7 @@ class AttendanceKiosk extends Model
     protected $casts = [
         'last_seen_at' => 'datetime',
         'last_sync_at' => 'datetime',
+        'acked_event_counter' => 'integer',
         'revoked_at' => 'datetime',
         'punch_methods' => 'array',
     ];
