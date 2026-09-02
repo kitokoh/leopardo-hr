@@ -11,10 +11,7 @@ declare(strict_types=1);
 
 // ── Modules migrés ─────────────────────────────────────────────────────────────
 use App\Modules\Attendance\Interfaces\Api\V1\AttendanceController;
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceDayClosureController;
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceModeController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
-use App\Modules\Attendance\Interfaces\Api\V1\GeoSessionController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
@@ -114,27 +111,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // #5538 — alias DÉPRÉCIÉ de l'ancien chemin /attendance/{attendanceLog}/punch-photo
     // (clients en circulation). À supprimer après la fenêtre de compat.
     Route::get('/attendance/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog');
-
-    // ── Attendance — modes, sessions GPS & fermetures de journée ───────────────
-    // Issue #6673 : contrôleurs ADR-0016 Phase 5 jamais câblés dans les routes
-    // (404 malgré la documentation OpenAPI) — enregistrés ici, contrat aligné
-    // sur api/openapi.yaml (/attendance/config, /my-sessions, /geo-sessions,
-    // /dashboard, /mode-settings, /employees/{id}/preference, /day-closures).
-    Route::get('/attendance/config', [AttendanceModeController::class, 'config']);
-    Route::put('/attendance/preferences', [AttendanceModeController::class, 'updatePreference']);
-    Route::get('/attendance/mode-settings', [AttendanceModeController::class, 'getCompanySettings'])->middleware('api.manager');
-    Route::put('/attendance/mode-settings', [AttendanceModeController::class, 'updateCompanySettings'])->middleware('api.manager');
-    Route::get('/attendance/employees/{employeeId}/preference', [AttendanceModeController::class, 'employeePreference'])->whereNumber('employeeId')->middleware('api.manager');
-    Route::get('/attendance/my-sessions', [GeoSessionController::class, 'mySessions']);
-    Route::get('/attendance/geo-sessions', [GeoSessionController::class, 'index']);
-    Route::get('/attendance/geo-sessions/{id}', [GeoSessionController::class, 'show'])->whereNumber('id');
-    Route::post('/attendance/geo-sessions/{id}/approve', [GeoSessionController::class, 'approve'])->whereNumber('id')->middleware('api.manager');
-    Route::post('/attendance/geo-sessions/{id}/reject', [GeoSessionController::class, 'reject'])->whereNumber('id')->middleware('api.manager');
-    Route::get('/attendance/dashboard', [GeoSessionController::class, 'dashboard'])->middleware('api.manager');
-    Route::get('/attendance/day-closures', [AttendanceDayClosureController::class, 'index'])->middleware('api.manager');
-    Route::post('/attendance/day-closures', [AttendanceDayClosureController::class, 'store'])->middleware('api.manager');
-    Route::delete('/attendance/day-closures/{id}', [AttendanceDayClosureController::class, 'destroy'])->whereNumber('id')->middleware('api.manager');
-    Route::post('/attendance/day-closures/{id}/validate', [AttendanceDayClosureController::class, 'markValidated'])->whereNumber('id')->middleware('api.manager');
 
     // ── Invitations ───────────────────────────────────────────────────────────
     Route::get('/invitations', [InvitationController::class, 'index']);
