@@ -6,6 +6,8 @@ namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Accounting\Application\Services\OnlinePaymentService;
+use App\Modules\Accounting\Domain\Exceptions\PaymentAmountMismatchException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,7 +29,21 @@ final class AccountingPaymentWebhookController extends Controller
             ? (string) $request->header('Stripe-Signature', '')
             : (string) $request->header('X-Chargily-Signature', '');
 
-        $this->service->handleWebhook($gateway, $request->getContent(), $signatureHeader);
+        try {
+            $this->service->handleWebhook($gateway, $request->getContent(), $signatureHeader);
+        } catch (PaymentAmountMismatchException $e) {
+            // #6553 — montant notifié > solde restant (anti-fraude US2.4) :
+            // réponse 422 explicite pour que la passerelle cesse les retries.
+            Log::warning('Accounting webhook: notified amount exceeds balance - 422', [
+                'gateway' => $gateway,
+            ]);
+
+            return new JsonResponse([
+                'error' => 'PAYMENT_AMOUNT_MISMATCH',
+                'message' => 'PAYMENT_AMOUNT_MISMATCH',
+                'localized_message' => __('errors.PAYMENT_AMOUNT_MISMATCH'),
+            ], 422);
+        }
 
         return new JsonResponse(['received' => true]);
     }
