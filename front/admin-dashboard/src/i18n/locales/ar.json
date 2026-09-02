@@ -2621,7 +2621,8 @@
     "errReconciliations": "تعذر تحميل المطابقات.",
     "stationsCaption": "محطات الأسطول",
     "incidentsCaption": "الحوادث المبلغ عنها",
-    "reconciliationsCaption": "تقارير المطابقة"
+    "reconciliationsCaption": "تقارير المطابقة",
+    "apiUnavailable": "لم يتم تسليم واجهة FuelStation (مرجع المحطات، الحوادث، التسويات) بعد — ستعمل الصفحة مع دفعة BC-15 (#6373)."
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",

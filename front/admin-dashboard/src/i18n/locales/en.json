@@ -2621,7 +2621,8 @@
     "errReconciliations": "Unable to load reconciliations.",
     "stationsCaption": "Fleet stations",
     "incidentsCaption": "Reported incidents",
-    "reconciliationsCaption": "Reconciliation reports"
+    "reconciliationsCaption": "Reconciliation reports",
+    "apiUnavailable": "The FuelStation API (stations reference, incidents, reconciliations) is not delivered yet — the page will become operational with the BC-15 batch (#6373)."
   },
   "adminPalette": {
     "appLoading": "Loading the administration…",

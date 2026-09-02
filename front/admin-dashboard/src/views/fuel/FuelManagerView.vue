@@ -8,7 +8,10 @@
       <StatsCard :title="t('fuel.statVariance', 'Écarts à expliquer')" :value="stats.varianceMinor" icon="ArrowDownTrayIcon" color="green" />
     </div>
 
-    <div v-if="globalError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+    <div v-if="apiUnavailable" class="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700" role="status">
+      {{ t('fuel.apiUnavailable', 'L\'API FuelStation (référentiel stations, incidents, rapprochements) n\'est pas encore livrée — la page sera opérationnelle avec le batch BC-15 (#6373).') }}
+    </div>
+    <div v-else-if="globalError" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
       {{ globalError }}
     </div>
 
@@ -98,6 +101,7 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const loading = ref(false)
 const globalError = ref('')
+const apiUnavailable = ref(false)
 const errors = ref({ stations: '', incidents: '', reconciliations: '' })
 const stations = ref([])
 const incidents = ref([])
@@ -173,25 +177,35 @@ async function fetchData() {
   loading.value = true
   globalError.value = ''
   errors.value = { stations: '', incidents: '', reconciliations: '' }
+  // #6712 : _skipToast — les 404 (API BC-15 non encore livrée) ne doivent pas
+  // produire 3 toasts d'erreur permanents ; un 404 est un état « module en
+  // préparation », pas une erreur.
+  const handleFailure = (err, key, fallback) => {
+    if (err?.response?.status === 404) {
+      apiUnavailable.value = true
+      return
+    }
+    errors.value[key] = fallback
+  }
   try {
     // Routes tenant (auth:sanctum + api.manager) : 401 attendu en super-admin
     // — _skipAuthRedirect (#4170) évite la déconnexion de session.
-    const sRes = await api.get('/fuel-station/stations?per_page=100', { _skipAuthRedirect: true })
+    const sRes = await api.get('/fuel-station/stations?per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     stations.value = sRes.data.data || []
-  } catch {
-    errors.value.stations = t('fuel.errStations', 'Impossible de charger les stations.')
+  } catch (err) {
+    handleFailure(err, 'stations', t('fuel.errStations', 'Impossible de charger les stations.'))
   }
   try {
-    const iRes = await api.get('/fuel-station/incidents?per_page=100', { _skipAuthRedirect: true })
+    const iRes = await api.get('/fuel-station/incidents?per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     incidents.value = iRes.data.data || []
-  } catch {
-    errors.value.incidents = t('fuel.errIncidents', 'Impossible de charger les incidents.')
+  } catch (err) {
+    handleFailure(err, 'incidents', t('fuel.errIncidents', 'Impossible de charger les incidents.'))
   }
   try {
-    const rRes = await api.get('/fuel-station/reconciliations?status=pending_review&per_page=100', { _skipAuthRedirect: true })
+    const rRes = await api.get('/fuel-station/reconciliations?status=pending_review&per_page=100', { _skipAuthRedirect: true, _skipToast: true })
     reconciliations.value = rRes.data.data || []
-  } catch {
-    errors.value.reconciliations = t('fuel.errReconciliations', 'Impossible de charger les rapprochements.')
+  } catch (err) {
+    handleFailure(err, 'reconciliations', t('fuel.errReconciliations', 'Impossible de charger les rapprochements.'))
   }
   stats.value = {
     stations: stations.value.length,

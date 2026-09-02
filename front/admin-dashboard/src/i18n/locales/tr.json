@@ -2621,7 +2621,8 @@
     "errReconciliations": "Mutabakatlar yüklenemedi.",
     "stationsCaption": "Filo istasyonları",
     "incidentsCaption": "Bildirilen olaylar",
-    "reconciliationsCaption": "Mutabakat raporları"
+    "reconciliationsCaption": "Mutabakat raporları",
+    "apiUnavailable": "FuelStation API'si (istasyon referansı, olaylar, mutabakatlar) henüz teslim edilmedi — sayfa BC-15 partisiyle (#6373) birlikte çalışır hale gelecek."
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",
