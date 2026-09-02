@@ -6,13 +6,12 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryNotificationResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 
 /**
  * Notifications destinataire (DELIVERY-206, issue #6290) — opt-out effectif
@@ -48,17 +47,24 @@ final class DeliveryNotificationController
         }
 
         // RGPD : le numéro n'est visible en clair que pour les admins
-        // (manager principal — la matrice fine est BC-26-D05/#6312).
-        $employee = $request->user();
-        $maskPhone = ! ($employee->isManager() && $employee->hasManagerRole('principal'));
+        // (matrice fine BC-26-D05/#6312 — DeliveryRoleResolver).
+        // #675x (consolidation BC-26) : doublon de calcul supprimé — la
+        // deuxième affectation écrasait la première.
+        $maskPhone = ! (new DeliveryRoleResolver)->hasAnyRole($request->user(), ['admin']);
 
         $notifications = $query->paginate(min((int) $request->integer('per_page', 15), 100));
 
-        return DeliveryNotificationResource::collection($notifications)
-            ->additional(['meta' => ['phone_masked' => $maskPhone]])
-            ->each(function (DeliveryNotificationResource $resource) use ($maskPhone): void {
-                $resource->withMask($maskPhone);
-            });
+        $resources = DeliveryNotificationResource::collection($notifications)
+            ->additional(['meta' => ['phone_masked' => $maskPhone]]);
+
+        // #675x : ->each() retourne la Collection sous-jacente — appelé en
+        // dernière expression, il cassait le type de retour déclaré
+        // (AnonymousResourceCollection) → TypeError 500 sur GET /notifications.
+        $resources->each(function (DeliveryNotificationResource $resource) use ($maskPhone): void {
+            $resource->withMask($maskPhone);
+        });
+
+        return $resources;
     }
 
     private function companyId(Request $request): string
@@ -71,8 +77,4 @@ final class DeliveryNotificationController
 
         return $companyId;
     }
-
-
-
-
 }

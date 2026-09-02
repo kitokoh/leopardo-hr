@@ -7,7 +7,6 @@ namespace Tests\Feature\Delivery;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Delivery\Domain\Models\Delivery;
-use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use Laravel\Sanctum\Sanctum;

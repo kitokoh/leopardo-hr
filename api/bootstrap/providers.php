@@ -2,6 +2,8 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
+use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
@@ -68,6 +70,8 @@ return [
     AccountingServiceProvider::class,
 
 
+    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
+    DeliveryServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
     // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)

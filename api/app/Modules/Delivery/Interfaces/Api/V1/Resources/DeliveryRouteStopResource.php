@@ -7,7 +7,6 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Resources;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\Delivery\Domain\Models\DeliveryStop;
 
 /**
  * Stop d'une tournée (DELIVERY-202, issue #6286) — allowlisté.
@@ -35,6 +34,4 @@ final class DeliveryRouteStopResource extends JsonResource
             'proof_id' => $this->proof_id,
         ];
     }
-
-
 }

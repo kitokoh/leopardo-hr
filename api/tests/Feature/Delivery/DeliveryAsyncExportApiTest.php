@@ -73,7 +73,7 @@ class DeliveryAsyncExportApiTest extends TestCase
     {
         Sanctum::actingAs($this->manager());
 
-        Delivery::query()->create([
+        $delivery = Delivery::query()->create([
             'company_id' => $this->company->id,
             'reference' => 'DLV-2026-111001',
             'source' => 'manual',
@@ -83,6 +83,12 @@ class DeliveryAsyncExportApiTest extends TestCase
             'dropoff_contact' => 'Client',
             'dropoff_address' => 'Alger',
         ]);
+        // created_at n'est pas mass-assignable : forceFill pour placer la
+        // livraison DANS la fenêtre de l'export (août) — sinon le CSV est vide.
+        $delivery->forceFill([
+            'created_at' => '2026-08-15 10:00:00',
+            'updated_at' => '2026-08-15 10:00:00',
+        ])->save();
 
         $export = DeliveryExport::query()->create([
             'company_id' => $this->company->id,

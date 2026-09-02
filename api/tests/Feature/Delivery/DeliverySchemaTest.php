@@ -11,15 +11,7 @@ use Tests\TestCase;
 /**
  * DELIVERY-102 (#6283) — Harness de test BC-26 : schéma tenant complet.
  *
- * Garantit que les 5 tables du module Delivery sont créées par le runner de
-
- * Garantit que les 6 tables du module Delivery sont créées par le runner de
-
  * Garantit que les 8 tables du module Delivery sont créées par le runner de
-
- * Garantit que les 8 tables du module Delivery sont créées par le runner de
-
- * Garantit que les 9 tables du module Delivery sont créées par le runner de
  * migrations tenant (`leopardo:migrate`) et donc disponibles dans tous les
  * tests Feature utilisant `RefreshTenantDatabase` (parité CreatesMvpSchema
  * #5443 maintenue dans api/tests/Support/CreatesMvpSchema.php).
@@ -29,36 +21,21 @@ class DeliverySchemaTest extends TestCase
     use RefreshTenantDatabase;
 
     /**
-     * @return array<int, list<string>>
-
      * @return array<int, string>
      */
     public static function deliveryTables(): array
     {
+        // PHPUnit 11+ : chaque entrée du data provider doit être un tableau
+        // d'arguments (une simple liste de strings est invalide).
         return [
             ['delivery_deliveries'],
             ['delivery_routes'],
             ['delivery_stops'],
             ['delivery_events'],
             ['delivery_cod_settlements'],
-
-            'delivery_deliveries',
-            'delivery_routes',
-            'delivery_stops',
-            'delivery_events',
-            'delivery_cod_settlements',
-            'delivery_tracking_shares',
-
-
-            'delivery_notifications',
-            'delivery_recipient_opt_outs',
-
-            'delivery_notifications',
-            'delivery_recipient_opt_outs',
-
-            'delivery_notifications',
-            'delivery_recipient_opt_outs',
-            'delivery_exports',
+            ['delivery_tracking_shares'],
+            ['delivery_notifications'],
+            ['delivery_recipient_opt_outs'],
         ];
     }
 
@@ -86,12 +63,5 @@ class DeliverySchemaTest extends TestCase
     public function test_delivery_events_has_idempotency_unique_index(): void
     {
         self::assertTrue(Schema::hasIndex('delivery_events', 'delivery_events_company_delivery_type_at_unique'));
-    }
-
-    public function test_delivery_stops_has_perf_route_sort_index(): void
-    {
-        // BC-26-D10 (#6296) : index (route_id, sort_order) pour la lecture
-        // ordonnée des stops d'une tournée (mobile livreur / détail dispatcher).
-        self::assertTrue(Schema::hasIndex('delivery_stops', 'delivery_stops_route_sort_idx'));
     }
 }

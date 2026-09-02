@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Carbon;
 
 /**
  * API des tournées (DELIVERY-202, issue #6286) — RBAC manager
@@ -37,7 +36,7 @@ final class DeliveryRouteController
             companyId: $this->companyId($request),
             routeDate: $routeDate,
             zone: $validated['zone'] ?? null,
-            deliveryIds: array_values(array_map('intval', $validated['delivery_ids'])),
+            deliveryIds: array_map('intval', $validated['delivery_ids']),
         );
 
         return (new DeliveryRouteResource($route))
@@ -91,6 +90,4 @@ final class DeliveryRouteController
 
         return $companyId;
     }
-
-
 }

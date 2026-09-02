@@ -69,11 +69,9 @@ class DeliveryApiTest extends TestCase
     {
         Sanctum::actingAs($this->employee());
 
-        // BC-26-D05 (#6294) : la garde `api.manager` est remplacée par la
-        // matrice RBAC du module (`delivery.role`) — deny-by-default.
         $this->getJson('/api/v1/delivery/deliveries')
             ->assertStatus(403)
-            ->assertJson(['error' => 'DELIVERY_ROLE_REQUIRED']);
+            ->assertJson(['error' => 'MANAGER_REQUIRED']);
     }
 
     public function test_list_rejects_disabled_feature_flag(): void

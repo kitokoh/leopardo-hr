@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryEventService;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStopStatusRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteResource;
-use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryStopResource;
+use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Core\Auth\Domain\Models\Employee;use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
-use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
 
 /**
  * API mobile livreur (DELIVERY-203, issue #6287) — partie serveur.
@@ -30,7 +30,10 @@ use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;use App\Modules\Del
  */
 final class DeliveryRiderController
 {
-    public function __construct(private readonly DeliveryEventService $events) {}
+    public function __construct(
+        private readonly DeliveryEventService $events,
+        private readonly DeliveryRoleResolver $roles,
+    ) {}
 
     public function today(Request $request): JsonResponse
     {
@@ -42,9 +45,8 @@ final class DeliveryRiderController
             ->where('company_id', $companyId)
             ->where('route_date', $today);
 
-        // Scope par propriété : un rider ne voit QUE ses tournées ; un
-        // manager voit toutes les tournées du jour (RBAC fin : BC-26-D05).
-        if (! $employee->isManager()) {
+        // Scope par propriété : un rider ne voit QUE ses tournées.
+        if (! $this->roles->hasAnyRole($employee, ['dispatcher', 'manager', 'admin'])) {
             $query->where('driver_id', $employee->id);
         }
 
@@ -77,9 +79,7 @@ final class DeliveryRiderController
 
             if ($route === null || ! $this->canOperate($employee, $route)) {
                 abort(403, 'ROUTE_NOT_ASSIGNED_TO_RIDER');
-            }
-
-            // Idempotence : même statut rejoué → même arrêt, aucun effet.
+            }            // Idempotence : même statut rejoué → même arrêt, aucun effet.
             if ($found->status === $validated['status']) {
                 return $found;
             }
@@ -124,16 +124,17 @@ final class DeliveryRiderController
             return $found->fresh();
         });
 
-        return (new DeliveryStopResource($updated))->response();
+        return (new DeliveryRouteStopResource($updated))->response();
     }
 
-    private function canOperate(Request $request, DeliveryRoute $route): bool
+    /**
+     * #675x (consolidation BC-26) : reçoit l'Employee directement — la
+     * version précédente attendait un Request mais était appelée avec
+     * l'employé (TypeError → 500 sur POST /deliveries/stops/{stop}/status).
+     */
+    private function canOperate(Employee $employee, DeliveryRoute $route): bool
     {
-        $employee = $request->user();
-
-        // Un manager peut opérer sur toutes les tournées du tenant ; un
-        // employé non-manager uniquement sur la sienne (propriété).
-        if ($employee->isManager()) {
+        if ($this->roles->hasAnyRole($employee, ['dispatcher', 'manager', 'admin'])) {
             return true;
         }
 
@@ -150,8 +151,4 @@ final class DeliveryRiderController
 
         return $companyId;
     }
-
-
-
-
 }

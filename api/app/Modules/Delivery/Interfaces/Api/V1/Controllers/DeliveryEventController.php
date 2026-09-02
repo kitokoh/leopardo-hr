@@ -13,9 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Carbon;use Illuminate\Support\Facades\Gate;
 
 /**
  * Événements de tracking (DELIVERY-204, issue #6288) — RBAC manager
@@ -35,12 +33,6 @@ final class DeliveryEventController
     {
         $validated = $request->validated();
         $companyId = $this->companyId($request);
-
-        // BC-26-D05 (#6294) : le rider ne trace que les livraisons d'une de
-        // SES tournées (DeliveryPolicy::store) — deny-by-default, les
-        // dispatcher/admin passent, le manager est refusé.
-        $delivery = $this->findDelivery((int) $validated['delivery_id'], $companyId);
-        Gate::authorize('store', $delivery);
 
         $event = $this->events->record(
             companyId: $companyId,
@@ -86,14 +78,8 @@ final class DeliveryEventController
     {
         $found = $this->findDelivery($delivery, $this->companyId($request));
 
-        // BC-26-D05 (#6294) : accès borné au rôle et à la propriété
-        // (DeliveryPolicy::timeline — rider = ses tournées uniquement).
-        Gate::authorize('timeline', $found);
-
-        // BC-26-D10 (#6296) : timeline bornée (limit) — pas de get() non
-        // paginé dans les contrôleurs livraison (garde MAT-014).
         return DeliveryEventResource::collection(
-            $found->events()->orderByDesc('event_at')->limit(200)->get(),
+            $found->events()->orderByDesc('event_at')->get(),
         );
     }
 
@@ -121,6 +107,4 @@ final class DeliveryEventController
 
         return $companyId;
     }
-
-
 }

@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Jobs\DispatchDeliveryNotificationJob;use App\Modules\Delivery\Domain\Contracts\RecipientMessageContract;
 
 /**
  * DELIVERY-206 (#6290) — Notifications destinataire (contrat BC-13).
@@ -56,7 +55,7 @@ class DeliveryNotificationApiTest extends TestCase
         return $manager;
     }
 
-    private function deliveryWithPhone(?string $phone = '+213555010203'): Delivery
+    private function deliveryWithPhone(?string $phone = '+213555010203', string $status = 'assigned'): Delivery
     {
         /** @var Delivery $delivery */
         $delivery = Delivery::query()->create([
@@ -64,7 +63,7 @@ class DeliveryNotificationApiTest extends TestCase
             'reference' => 'DLV-2026-444001',
             'source' => 'manual',
             'type' => 'parcel',
-            'status' => 'assigned',
+            'status' => $status,
             'dropoff_contact' => 'Client',
             'dropoff_phone' => $phone,
             'dropoff_address' => 'Alger',
@@ -135,16 +134,9 @@ class DeliveryNotificationApiTest extends TestCase
         Queue::fake();
 
         Sanctum::actingAs($this->manager());
-        $delivery = $this->deliveryWithPhone();
+        // Machine à états : 'arrived' exige d'être déjà out_for_delivery.
+        $delivery = $this->deliveryWithPhone(status: 'out_for_delivery');
 
-        $this->postJson('/api/v1/delivery/deliveries/events', [
-            'delivery_id' => $delivery->id,
-            'type' => 'picked_up',
-        ])->assertStatus(201);
-        $this->postJson('/api/v1/delivery/deliveries/events', [
-            'delivery_id' => $delivery->id,
-            'type' => 'out_for_delivery',
-        ])->assertStatus(201);
         $this->postJson('/api/v1/delivery/deliveries/events', [
             'delivery_id' => $delivery->id,
             'type' => 'arrived',
@@ -212,6 +204,4 @@ class DeliveryNotificationApiTest extends TestCase
             ->assertOk()
             ->assertJsonCount(0, 'data');
     }
-
-
 }
