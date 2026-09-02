@@ -9,8 +9,11 @@ use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
+use Closure;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -29,10 +32,12 @@ class ZktecoController extends Controller
 
         $company = currentCompany();
 
-        $devices = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->orderBy('name')
-            ->get();
+        $devices = $this->guardZktecoQuery(
+            fn (): mixed => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->orderBy('name')
+                ->get(),
+        );
 
         return new JsonResponse(['data' => $devices]);
     }
@@ -58,13 +63,17 @@ class ZktecoController extends Controller
         ]);
 
         $company = currentCompany();
-        $device = $this->zktecoService->registerDevice($company->id, $validated);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => $this->zktecoService->registerDevice($company->id, $validated),
+        );
 
         // Sécurité #2216 : token de device généré à l'enregistrement, retourné
         // UNE SEULE FOIS en clair, stocké hashé côté serveur. Le client doit
         // l'envoyer en en-tête X-Device-Token sur heartbeat/sync-attendance.
         $plainToken = Str::random(48);
-        $device->update(['sync_token_hash' => Hash::make($plainToken)]);
+        $this->guardZktecoQuery(
+            fn (): bool => (bool) $device->update(['sync_token_hash' => Hash::make($plainToken)]),
+        );
 
         return new JsonResponse([
             'data' => $device->fresh(),
@@ -83,12 +92,16 @@ class ZktecoController extends Controller
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->findOrFail($id);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->findOrFail($id),
+        );
 
         $plainToken = Str::random(48);
-        $device->update(['sync_token_hash' => Hash::make($plainToken)]);
+        $this->guardZktecoQuery(
+            fn (): bool => (bool) $device->update(['sync_token_hash' => Hash::make($plainToken)]),
+        );
 
         Log::channel('audit')->info('zkteco_token.rotated', [
             'device_id' => $device->id,
@@ -110,11 +123,15 @@ class ZktecoController extends Controller
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->findOrFail($id);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->findOrFail($id),
+        );
 
-        $syncHistory = $this->zktecoService->getSyncHistory($device, 10);
+        $syncHistory = $this->guardZktecoQuery(
+            fn (): mixed => $this->zktecoService->getSyncHistory($device, 10),
+        );
 
         return new JsonResponse([
             'data' => $device,
@@ -129,9 +146,11 @@ class ZktecoController extends Controller
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->findOrFail($id);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->findOrFail($id),
+        );
 
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:120'],
@@ -145,7 +164,7 @@ class ZktecoController extends Controller
             'punch_methods.*' => ['string', 'in:fingerprint,face,card', 'distinct'],
         ]);
 
-        $device->update($validated);
+        $this->guardZktecoQuery(fn (): bool => (bool) $device->update($validated));
 
         return new JsonResponse(['data' => $device->fresh()]);
     }
@@ -157,11 +176,13 @@ class ZktecoController extends Controller
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->findOrFail($id);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->findOrFail($id),
+        );
 
-        $device->delete();
+        $this->guardZktecoQuery(fn (): bool => (bool) $device->delete());
 
         return new JsonResponse(null, 204);
     }
@@ -235,12 +256,14 @@ class ZktecoController extends Controller
         // serial_number seul (le serial est partagé entre tenants) :
         // un manager ne doit pouvoir pousser que sur SES appareils.
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->where('serial_number', $serialNumber)
-            ->firstOrFail();
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->where('serial_number', $serialNumber)
+                ->firstOrFail(),
+        );
 
-        $syncLog = $this->zktecoService->pushUsers($device);
+        $syncLog = $this->guardZktecoQuery(fn (): mixed => $this->zktecoService->pushUsers($device));
 
         return new JsonResponse([
             'data' => [
@@ -258,12 +281,76 @@ class ZktecoController extends Controller
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
         $company = currentCompany();
-        $device = ZktecoDevice::query()
-            ->where('company_id', $company->id)
-            ->findOrFail($id);
+        $device = $this->guardZktecoQuery(
+            fn (): ZktecoDevice => ZktecoDevice::query()
+                ->where('company_id', $company->id)
+                ->findOrFail($id),
+        );
 
-        $logs = $this->zktecoService->getSyncHistory($device, $request->integer('limit', 20));
+        $logs = $this->guardZktecoQuery(
+            fn (): mixed => $this->zktecoService->getSyncHistory($device, $request->integer('limit', 20)),
+        );
 
         return new JsonResponse(['data' => $logs]);
+    }
+
+    /**
+     * #6672 — dérive de schéma tenant (prod 2026-09-01) : les migrations
+     * tenant `add_sync_token_hash_to_zkteco_devices_table` (2026-08-14),
+     * `add_punch_methods_to_zkteco_devices` (2026-08-19) et
+     * `zkteco_devices_company_id_uuid` (2026-08-19) n'ayant pas été rejouées
+     * sur le schéma du tenant, toute requête scopée par `company_id` (UUID)
+     * sur une colonne restée `bigint` lève `SQLSTATE[22P02] invalid input
+     * syntax for type bigint`, et une colonne manquante lève `42703` → les
+     * endpoints manager (`index`/`show`/`sync-logs`/…) répondaient
+     * 500 INTERNAL_ERROR au lieu d'un état actionnable.
+     *
+     * Correctif : la requête est isolée dans un savepoint (transaction
+     * imbriquée — sans effet en prod hors transaction, et sans empoisonner
+     * la transaction du test/du service appelant) ; une dérive détectée
+     * devient un 503 explicite (`ZKTECO_SCHEMA_DRIFT`) + trace d'audit, le
+     * correctif réel étant `leopardo:migrate` sur le tenant (migrations
+     * idempotentes). Sans cette garde, l'erreur reste opaque (500 générique)
+     * et indistingable d'un vrai bug serveur.
+     *
+     * @template TReturn
+     *
+     * @param  Closure(): TReturn  $callback
+     * @return TReturn
+     */
+    private function guardZktecoQuery(Closure $callback): mixed
+    {
+        DB::beginTransaction();
+
+        try {
+            $result = $callback();
+            DB::commit();
+
+            return $result;
+        } catch (QueryException $exception) {
+            DB::rollBack();
+
+            if ($this->isZktecoSchemaDrift($exception)) {
+                Log::channel('audit')->error('zkteco.schema_drift', [
+                    'exception' => $exception->getMessage(),
+                    'url' => request()->fullUrl(),
+                    'actor_id' => request()->user()?->getAuthIdentifier(),
+                ]);
+
+                abort(503, 'ZKTECO_SCHEMA_DRIFT');
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Détecte les SQLSTATE caractéristiques d'un schéma tenant non migré :
+     * 22P02 (conversion uuid→bigint impossible sur `company_id`) et 42703
+     * (colonne absente). Toute autre erreur est relancée telle quelle.
+     */
+    private function isZktecoSchemaDrift(QueryException $exception): bool
+    {
+        return in_array((string) $exception->getCode(), ['22P02', '42703'], true);
     }
 }
