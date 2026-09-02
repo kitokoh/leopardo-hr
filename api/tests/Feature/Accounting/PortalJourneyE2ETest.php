@@ -7,7 +7,7 @@ namespace Tests\Feature\Accounting;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Mail\DocumentShareMail;
-use App\Modules\Accounting\Application\Actions\SendDocumentEmail;
+use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;

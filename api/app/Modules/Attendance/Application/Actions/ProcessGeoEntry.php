@@ -19,7 +19,7 @@ class ProcessGeoEntry
     ) {
     }
 
-    public function handle(GeoEventDTO $dto): GeoAttendanceSession
+    public function execute(GeoEventDTO $dto): GeoAttendanceSession
     {
         return $this->sessionManager->openSession($dto);
     }

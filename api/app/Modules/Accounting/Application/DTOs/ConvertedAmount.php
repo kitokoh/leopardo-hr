@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Application\DTOs;
 
-use App\Modules\Accounting\Application\Actions\DocumentCurrencyConverter;
+use App\Modules\Accounting\Infrastructure\Services\DocumentCurrencyConverter;
 
 /**
  * Résultat d'une conversion de montant — issue #5270.

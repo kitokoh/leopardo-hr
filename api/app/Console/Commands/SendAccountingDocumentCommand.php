@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Modules\Accounting\Application\Actions\SendDocumentEmail;
+use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use Illuminate\Console\Command;
 

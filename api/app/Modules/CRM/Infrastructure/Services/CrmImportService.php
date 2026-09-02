@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\CRM\Application\Actions;
+namespace App\Modules\CRM\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;

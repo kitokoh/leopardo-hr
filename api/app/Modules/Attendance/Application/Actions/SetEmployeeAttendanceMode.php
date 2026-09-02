@@ -21,7 +21,7 @@ class SetEmployeeAttendanceMode
     /**
      * @param  array<string, mixed>  $data
      */
-    public function handle(Employee $employee, array $data): EmployeeAttendancePreference
+    public function execute(Employee $employee, array $data): EmployeeAttendancePreference
     {
         $preferredMode = $data['preferred_mode'];
 

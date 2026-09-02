@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Console;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Application\Actions\SeedAccountingDemoData;
+use App\Modules\Accounting\Infrastructure\Services\SeedAccountingDemoData;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 

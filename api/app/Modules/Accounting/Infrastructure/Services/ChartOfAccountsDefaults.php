@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Application\Actions;
+namespace App\Modules\Accounting\Infrastructure\Services;
 
 /**
  * Plan comptable par défaut — issue #5422.

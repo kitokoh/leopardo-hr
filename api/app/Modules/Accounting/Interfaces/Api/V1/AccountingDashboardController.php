@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Application\Actions\AccountingDashboardService;
+use App\Modules\Accounting\Infrastructure\Services\AccountingDashboardService;
 use App\Modules\Accounting\Application\Actions\AccountingReportingSnapshotService;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\AccountingDashboardRequest;
 use Illuminate\Http\JsonResponse;
