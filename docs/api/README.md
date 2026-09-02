@@ -40,11 +40,14 @@ Every request is automatically scoped to the authenticated user's tenant (compan
 ### 🕒 Attendance & Kiosk
 - `POST /attendance/check-in` — Register start of work (GPS/Biometric).
 - `POST /attendance/check-out` — Register end of work.
-- `GET /kiosks/roster` — Fetch daily roster for ZKTeco devices.
+- `GET /kiosks/{deviceCode}/roster` — Fetch daily roster for a ZKTeco device (device token required).
 
 ### 💰 Payroll & Finance
-- `GET /payroll/estimate` — Get AI-driven salary estimation.
-- `POST /payroll/generate` — Trigger monthly payroll batch.
+- `GET /employees/{id}/quick-estimate` — Get an AI-driven salary estimation for an employee (also `GET /me/quick-estimate`).
+- `POST /payroll-runs/{id}/calculate` — Calculate a payroll run (`validate` / `lock` for the closing steps).
+
+> ⚠️ (Audit doc 2026-08-31, #6582) : les endpoints listés ci-dessus ont été
+> corrigés pour refléter les routes réelles (`/kiosks/{deviceCode}/roster`, `/employees/{id}/quick-estimate`, `/payroll-runs/{id}/calculate`). La source de vérité reste `api/openapi.yaml`.
 
 ## 🚦 Rate Limiting & Versioning
 

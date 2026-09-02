@@ -816,59 +816,14 @@ parameters:
 			count: 1
 			path: app/Mail/CabinetShareMail.php
 
-		-
-			message: '#^Method App\\Modules\\Cameras\\Application\\DTOs\\CreateCameraDTO\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/CreateCameraDTO.php
 
-		-
-			message: '#^Parameter \$metadata of class App\\Modules\\Cameras\\Application\\DTOs\\CreateCameraDTO constructor expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/CreateCameraDTO.php
 
-		-
-			message: '#^Method App\\Modules\\Cameras\\Application\\DTOs\\IssueAccessTokenDTO\:\:__construct\(\) has parameter \$ip_whitelist with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/IssueAccessTokenDTO.php
 
-		-
-			message: '#^Method App\\Modules\\Cameras\\Application\\DTOs\\IssueAccessTokenDTO\:\:__construct\(\) has parameter \$permissions with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/IssueAccessTokenDTO.php
 
-		-
-			message: '#^Parameter \$ip_whitelist of class App\\Modules\\Cameras\\Application\\DTOs\\IssueAccessTokenDTO constructor expects array\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/IssueAccessTokenDTO.php
 
-		-
-			message: '#^Parameter \$permissions of class App\\Modules\\Cameras\\Application\\DTOs\\IssueAccessTokenDTO constructor expects array, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/IssueAccessTokenDTO.php
 
-		-
-			message: '#^Method App\\Modules\\Cameras\\Application\\DTOs\\UpdateCameraDTO\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/UpdateCameraDTO.php
 
-		-
-			message: '#^Method App\\Modules\\Cameras\\Application\\DTOs\\UpdateCameraDTO\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/UpdateCameraDTO.php
 
-		-
-			message: '#^Parameter \$metadata of class App\\Modules\\Cameras\\Application\\DTOs\\UpdateCameraDTO constructor expects array\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Application/DTOs/UpdateCameraDTO.php
 
 		-
 			message: '#^Class App\\Modules\\Cameras\\Domain\\Camera uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
