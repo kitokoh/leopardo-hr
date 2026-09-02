@@ -398,6 +398,7 @@ class DocumentWorkflowService
         }
     }
 
+    /** @param list<DocumentStatus> $allowed */
     private function assertStatus(AccountingDocument $document, array $allowed, string $message): void
     {
         if (! in_array(DocumentStatus::tryFrom($document->status), $allowed, true)) {
