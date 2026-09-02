@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use Throwable;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollPaymentOrder;
 use App\Modules\Payroll\Domain\Models\PayrollPaymentOrderItem;
@@ -85,39 +86,54 @@ class PayrollPaymentOrderService
 
         $total = (float) $slips->sum('net_salary');
 
-        return DB::transaction(function () use ($run, $format, $filePath, $total, $slips, $actor): PayrollPaymentOrder {
-            $order = PayrollPaymentOrder::create([
-                'company_id' => $run->company_id,
-                'payroll_run_id' => $run->id,
-                'status' => PayrollPaymentOrder::STATUS_PREPARED,
-                'format' => $format,
-                'file_path' => $filePath,
-                'total_amount' => $total,
-                'transfer_count' => $slips->count(),
-                'created_by' => $actor?->id,
-            ]);
+        try {
+            return DB::transaction(function () use ($run, $format, $filePath, $total, $slips, $actor): PayrollPaymentOrder {
+                $order = PayrollPaymentOrder::create([
+                    'company_id' => $run->company_id,
+                    'payroll_run_id' => $run->id,
+                    'status' => PayrollPaymentOrder::STATUS_PREPARED,
+                    'format' => $format,
+                    'file_path' => $filePath,
+                    'total_amount' => $total,
+                    'transfer_count' => $slips->count(),
+                    'created_by' => $actor?->id,
+                ]);
 
-            $items = $slips->map(fn (PaySlip $slip): array => [
-                'payment_order_id' => $order->id,
-                'employee_id' => $slip->employee_id,
-                'net_amount' => (float) $slip->net_salary,
-                'iban' => $slip->employee->iban ?? null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ])->all();
+                $items = $slips->map(fn (PaySlip $slip): array => [
+                    'payment_order_id' => $order->id,
+                    'employee_id' => $slip->employee_id,
+                    'net_amount' => (float) $slip->net_salary,
+                    'iban' => $slip->employee->iban ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])->all();
 
-            PayrollPaymentOrderItem::query()->insert($items);
+                PayrollPaymentOrderItem::query()->insert($items);
 
-            Log::info('payroll.payment_order.prepared', [
-                'payment_order_id' => $order->id,
-                'payroll_run_id' => $run->id,
-                'total_amount' => $total,
-                'transfer_count' => count($items),
-                'by' => $actor?->id,
-            ]);
+                Log::info('payroll.payment_order.prepared', [
+                    'payment_order_id' => $order->id,
+                    'payroll_run_id' => $run->id,
+                    'total_amount' => $total,
+                    'transfer_count' => count($items),
+                    'by' => $actor?->id,
+                ]);
 
-            return $order->load('items');
-        });
+                return $order->load('items');
+            });
+        } catch (Throwable $e) {
+            // Issue #6559 : le fichier banque etait ecrit AVANT la transaction —
+            // sur rollback, un fichier orphelin restait sur le disque. On le
+            // nettoie quand la transaction echoue.
+            if ($filePath !== null && Storage::disk('local')->exists($filePath)) {
+                Storage::disk('local')->delete($filePath);
+                Log::warning('payroll.payment_order.orphan_file_cleaned', [
+                    'payroll_run_id' => $run->id,
+                    'file_path' => $filePath,
+                ]);
+            }
+
+            throw $e;
+        }
     }
 
     /**
