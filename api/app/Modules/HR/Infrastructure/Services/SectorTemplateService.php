@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -191,8 +191,15 @@ class SectorTemplateService
         $payload = [
             'name' => 'Operations',
             'created_at' => now(),
-            'updated_at' => now(),
         ];
+
+        // Le schéma partagé historique ne porte pas toujours `updated_at`
+        // (migration tenant T-01 : created_at seul). Insertion défensive,
+        // même pattern que sharedColumnExists() utilisé plus haut — évite le
+        // 42703 sur les tenants/schémas de test construits par migrations.
+        if ($this->sharedColumnExists('departments', 'updated_at')) {
+            $payload['updated_at'] = now();
+        }
 
         if ($departmentHasCompany) {
             $payload['company_id'] = $companyId;
