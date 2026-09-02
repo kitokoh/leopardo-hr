@@ -437,4 +437,76 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonPath('error', 'TRIAL_OTP_SEND_FAILED')
             ->assertJsonPath('success', false);
     }
+
+
+    public function test_five_bad_otps_lock_the_email(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@lockout.com',
+            'company' => 'Lockout Test',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        // Prérègle le compteur à 4 échecs (le throttle IP `auth-sensitive`
+        // plafonne à 5 requêtes/15 min : 4 POST suffisent à le déclencher
+        // avant le contrôleur — le compteur email est testé via la base).
+        \App\Core\Tenant\Domain\Models\CompanyRequest::query()
+            ->where('email', 'founder@lockout.com')
+            ->update(['otp_attempts' => 4]);
+
+        // Le 5ᵉ mauvais code → 429 (verrouillage de l'email).
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@lockout.com',
+            'code' => '000000',
+        ])->assertStatus(429)
+            ->assertJson([
+                'success' => false,
+                'error' => 'OTP_TOO_MANY_ATTEMPTS',
+            ]);
+
+        // La demande est verrouillée en base (anti-brute-force #6547).
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder@lockout.com',
+            'status' => 'pending',
+        ]);
+        $request = CompanyRequest::query()
+            ->where('email', 'founder@lockout.com')
+            ->firstOrFail();
+        $this->assertGreaterThanOrEqual(5, (int) $request->otp_attempts);
+        $this->assertNotNull($request->otp_locked_until);
+    }
+
+
+    public function test_valid_otp_resets_attempt_counter(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@retry.dz',
+            'company' => 'Retry Test',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        // 2 échecs puis le bon code → succès et compteurs remis à zéro.
+        $this->postJson('/api/v1/trial/verify', ['email' => 'founder@retry.dz', 'code' => '000000'])->assertStatus(400);
+        $this->postJson('/api/v1/trial/verify', ['email' => 'founder@retry.dz', 'code' => '111111'])->assertStatus(400);
+
+        $request = CompanyRequest::query()
+            ->where('email', 'founder@retry.dz')
+            ->firstOrFail();
+        $this->assertSame(2, (int) $request->otp_attempts);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@retry.dz',
+            'code' => $request->verification_token,
+        ])->assertStatus(201);
+
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder@retry.dz',
+            'status' => 'approved',
+            'otp_attempts' => 0,
+        ]);
+    }
 }

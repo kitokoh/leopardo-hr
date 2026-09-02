@@ -276,4 +276,6 @@ return [
     'MANAGER_ONLY_ACTION' => 'هذا الإجراء مخصص للمدراء فقط.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'لديك طلب معلق بالفعل لهذه الشركة.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'طلب التكامل غير موجود.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تحقق من بريدك الإلكتروني وحاول مجددًا بعد 15 دقيقة.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تم إبطال الرمز، يرجى تسجيل الدخول مجددًا.',
 ];

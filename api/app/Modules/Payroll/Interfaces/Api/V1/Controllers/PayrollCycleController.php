@@ -177,10 +177,6 @@ class PayrollCycleController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($actor->id !== $employee && ! $actor->isManager()) {
-            abort(403);
-        }
-
         /** @var Employee|null $targetEmployee */
         $targetEmployee = Employee::query()
             ->where('company_id', $actor->company_id)
@@ -188,6 +184,15 @@ class PayrollCycleController extends Controller
 
         if ($targetEmployee === null) {
             abort(404);
+        }
+
+        // Issue #6545 (audit) : garde mutualisée — self ou manager, + scope
+        // équipe pour les rôles team-scoped (pattern visibleToManager).
+        if ($actor->id !== $employee && ! $actor->isManager()) {
+            abort(403);
+        }
+        if ($actor->isManager() && $actor->isTeamScoped() && ! $actor->managesTeamMemberOf($targetEmployee)) {
+            abort(403);
         }
 
         $payload = $this->cycleService->getEmployeeBalance($targetEmployee);

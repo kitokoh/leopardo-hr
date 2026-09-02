@@ -45,6 +45,23 @@ class VerifyTrialSignup
             DB::statement('SET search_path TO public');
         }
 
+        // #6547 (audit) : verrouillage anti-brute-force — après 5 mauvais
+        // codes, l'email est bloqué 15 minutes (le throttle IP ne protège
+        // pas contre la rotation d'IP).
+        $pendingRequest = CompanyRequest::query()
+            ->where('email', $email)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingRequest !== null && $pendingRequest->otp_locked_until !== null && $pendingRequest->otp_locked_until->isFuture()) {
+            return [
+                'success' => false,
+                'error' => 'OTP_TOO_MANY_ATTEMPTS',
+                'message' => __('errors.OTP_TOO_MANY_ATTEMPTS'),
+                'status' => 429,
+            ];
+        }
+
         // QA #2996 — verrou atomique anti double-provisioning : deux POST
         // /trial/verify simultanés avec le même OTP valide créaient 2 tenants
         // + 2 managers pour le même email (lecture pending → provisioning →
@@ -84,6 +101,29 @@ class VerifyTrialSignup
                     'message' => __('errors.ALREADY_PROCESSED'),
                     'status' => 409,
                 ];
+            }
+
+            // #6547 (audit) : compteur d'échecs par EMAIL (pas par IP) — la
+            // demande en attente est incrémentée, verrouillée après 5 échecs.
+            $pending = CompanyRequest::query()
+                ->where('email', $email)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($pending !== null) {
+                $pending->increment('otp_attempts');
+
+                if ((int) $pending->otp_attempts >= 5) {
+                    $pending->update(['otp_locked_until' => now()->addMinutes(15)]);
+                    Log::warning('trial.verify_otp_locked', ['email' => $email]);
+
+                    return [
+                        'success' => false,
+                        'error' => 'OTP_TOO_MANY_ATTEMPTS',
+                        'message' => __('errors.OTP_TOO_MANY_ATTEMPTS'),
+                        'status' => 429,
+                    ];
+                }
             }
 
             return [
@@ -238,6 +278,8 @@ class VerifyTrialSignup
             'status' => 'approved',
             'approved_company_id' => $result['company']->id,
             'verification_token' => null,
+            'otp_attempts' => 0,
+            'otp_locked_until' => null,
         ]);
 
         Log::info('SelfServiceTrial: Company provisioned after verification', [

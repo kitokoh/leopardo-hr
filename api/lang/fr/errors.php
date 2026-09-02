@@ -279,4 +279,6 @@ return [
     'MANAGER_ONLY_ACTION' => 'Cette action est réservée aux managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Vous avez déjà une demande en attente pour cette entreprise.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Demande d\'intégration introuvable.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Vérifiez votre boîte mail et réessayez dans 15 minutes.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Le code a été invalidé, reconnectez-vous.',
 ];
