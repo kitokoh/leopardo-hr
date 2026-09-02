@@ -5,6 +5,7 @@
 - **fix(architecture): exceptions metier canoniques — rebranchement des services sur Modules/*/Domain/Exceptions + suppression des 6 jumelles App\Exceptions (Closes #6573).** AbsenceService (Planning), AttendanceService/KioskAttendanceService (Attendance), SalaryAdvanceService (Payroll) et AttendanceServiceTest importent desormais les classes canoniques ; constructeurs des jumelles module alignes (args optionnels / signature (available, requested)) pour rester compatibles avec les sites d appel existants ; 6 doublons App\Exceptions supprimes (AbsenceDateConflict, AbsenceNotPending, InsufficientLeaveBalance, AlreadyCheckedIn, MissingCheckIn, SalaryAdvanceNotPending). `rg App\Exceptions\<Nom>` = 0. PHPStan strict 0 erreur, Pint OK.
 ## [Unreleased]
 - **fix(gouvernance): Gate::policy CRM au point unique (PA2-ARCH-008) + BC-25 RESTAURANT au registre canonique (Closes #6575, #6602).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
+- **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via
 > les PRs de merge en cours). Pour l'état réel par bounded context, se référer au registre
 > canonique `dev-hub/governance/bounded-context-registry.json` (MAT-001, #6602).
