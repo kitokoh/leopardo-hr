@@ -9,6 +9,10 @@
 # packages, and plugins designed to encourage good coding practices.
 analyzer:
   exclude:
+
+    # #6590 (audit org Vague 2) : fichiers générés (build_runner *.g.dart /
+    # *.freezed.dart, flutter gen-l10n lib/l10n/generated/) — exclus de
+    # l'analyse statique (régénérés au build, cf. .gitignore).
     - build/**
     - android/**
     - ios/**
