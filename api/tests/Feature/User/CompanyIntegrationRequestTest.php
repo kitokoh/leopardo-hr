@@ -24,7 +24,7 @@ use Tests\TestCase;
  *   GET  /user/companies/search               (recherche d'entreprise)
  *
  * Côté manager :
- *   GET  /company-integration-requests        (demandes du tenant)
+ *   GET  /company-integration-requests/manage (demandes du tenant)
  *   POST /company-integration-requests/{id}/accept
  *   POST /company-integration-requests/{id}/reject
  */
@@ -232,7 +232,7 @@ class CompanyIntegrationRequestTest extends TestCase
         Sanctum::actingAs($employee);
 
         // Le middleware api.manager intercepte avant le contrôleur (famille #3150)
-        $this->getJson('/api/v1/company-integration-requests')
+        $this->getJson('/api/v1/company-integration-requests/manage')
             ->assertStatus(403)
             ->assertJsonPath('error', 'MANAGER_REQUIRED');
     }
@@ -255,7 +255,7 @@ class CompanyIntegrationRequestTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->getJson('/api/v1/company-integration-requests')
+        $this->getJson('/api/v1/company-integration-requests/manage')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.user.email', $user->email)

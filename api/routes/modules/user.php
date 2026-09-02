@@ -53,7 +53,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/employees/link-user', [UserEmployeeLinkController::class, 'linkByEmail']);
 
     // #5540 — Gestion des demandes d'intégration (côté manager/RH)
-    Route::get('/company-integration-requests', [CompanyIntegrationRequestController::class, 'managerIndex']);
+    Route::get('/company-integration-requests/manage', [CompanyIntegrationRequestController::class, 'managerIndex']);
     Route::post('/company-integration-requests/{id}/accept', [CompanyIntegrationRequestController::class, 'accept'])->whereNumber('id');
     Route::post('/company-integration-requests/{id}/reject', [CompanyIntegrationRequestController::class, 'reject'])->whereNumber('id');
 });
