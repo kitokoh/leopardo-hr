@@ -252,7 +252,7 @@ const navigation = computed(() => [
     icon: GlobeAltIcon
   },
   {
-    name: 'chat',
+    name: 'fuelStation',
     title: t('navigation.fuelStation', 'Stations-service'),
     path: '/fuel-station',
     icon: BoltIcon
@@ -264,6 +264,7 @@ const navigation = computed(() => [
     icon: ChatBubbleLeftRightIcon
   },
   {
+    name: 'chat',
     title: t('navigation.chat', 'Chat IA'),
     path: '/chat',
     icon: SparklesIcon
