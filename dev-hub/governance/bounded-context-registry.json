@@ -575,9 +575,7 @@
       "routes": [
         "api/routes/modules/cameras.php"
       ],
-      "migrations": [
-        "api/database/migrations/edge"
-      ],
+      "migrations": [],
       "events": [
         "App\\Modules\\Cameras\\Domain\\Events",
         "App\\Modules\\EdgeSync\\Domain\\Events"

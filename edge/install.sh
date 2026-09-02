@@ -133,16 +133,16 @@ EOF
 # bearer EDGE_TOKEN restait lisible par tous. Le faire après écriture.
 chmod 600 .env
 
-# Download license public key
-curl -fsSL "$CLOUD_URL/api/v1/edge/license-public-key" -o license.pub
-if [[ ! -s license.pub ]]; then
+# Download license public key (source unique: edge/keys/edge_license_public.pem, #6604)
+mkdir -p keys
+curl -fsSL "$CLOUD_URL/api/v1/edge/license-public-key" -o keys/edge_license_public.pem
+if [[ ! -s keys/edge_license_public.pem ]]; then
     echo "Echec du telechargement de la cle publique de licence depuis $CLOUD_URL" >&2
     exit 1
 fi
 
-# Start services
-docker compose pull
-docker compose up -d
+# Start services (build local — les images sont construites, pas tirées : #6604)
+docker compose up -d --build
 
 echo ""
 echo "✅ Leopardo Edge installed successfully!"

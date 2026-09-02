@@ -82,8 +82,9 @@ run_soft() {
 # ---------------------------------------------------------------------------
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     echo "[edge-entrypoint] Running Edge migrations..."
-    # #4411 : database/migrations/edge n'existe PAS (le glob vide = aucune
-    # migration → schéma jamais créé, sync morte en silence). Les 4 tables
+    # #4411 + #6604 : le chemin fantôme database/migrations/edge a été
+    # supprimé (miroir dédupliqué) — source unique = la migration tenant
+    # 2026_06_29_000001. Les 4 tables
     # edge (edge_nodes, sync_logs, sync_queue, edge_licenses) sont créées par
     # la migration tenant 2026_06_29_000001, autonome et SQLite-compatible
     # (aucun resolveTableSchema/search_path). Les autres migrations tenant
