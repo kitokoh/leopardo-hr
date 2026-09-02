@@ -93,7 +93,7 @@ class Company extends Model
 
     /**
      * Liste des modules connus de la plateforme (APV L.08).
-     * L ajout d un nouveau module passe par cette constante + une entree dans docs/ROADMAP.md.
+     * L ajout d un nouveau module passe par cette constante + une entree dans docs/REFERENTIEL_PRODUIT/ROADMAP.md (la ROADMAP racine aspirationnelle est archivee, issue #6698).
      */
     public const KNOWN_MODULES = [
         'rh',
