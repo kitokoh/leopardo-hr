@@ -17,6 +17,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterOcrController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
@@ -37,6 +38,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('station')
         ->whereNumber('pump')
         ->whereNumber('meter');
+
+    // AI-002 (#6771) — OCR des compteurs : soumission photo (multipart, tout
+    // employé authentifié) → 202 asynchrone ; suivi ; revue humaine manager.
+    Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings/ocr', [FuelMeterOcrController::class, 'submit'])
+        ->whereNumber('station')
+        ->whereNumber('pump')
+        ->whereNumber('meter');
+    Route::get('/fuel-station/meter-ocr-requests/{ocr}', [FuelMeterOcrController::class, 'show'])
+        ->whereNumber('ocr');
+    Route::post('/fuel-station/meter-ocr-requests/{ocr}/review', [FuelMeterOcrController::class, 'review'])
+        ->middleware('api.manager')
+        ->whereNumber('ocr');
 
     // Corrections et revues — manager principal/rh (Policy).
     Route::post('/fuel-station/meter-readings/{reading}/corrections', [FuelMeterReadingController::class, 'correct'])

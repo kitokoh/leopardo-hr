@@ -2619,6 +2619,37 @@ trait CreatesMvpSchema
             });
         }
 
+        // AI-002 (#6771) — miroir de 2026_09_02_000205_6771_create_fuel_meter_ocr_requests_table.php.
+        if (! Schema::hasTable($this->moduleTable('fuel_meter_ocr_requests'))) {
+            Schema::create($this->moduleTable('fuel_meter_ocr_requests'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('station_id');
+                $table->unsignedBigInteger('pump_id');
+                $table->unsignedBigInteger('meter_id');
+                $table->unsignedBigInteger('requested_by_employee_id');
+                $table->unsignedBigInteger('shift_id')->nullable();
+                $table->string('photo_path', 255);
+                $table->string('status', 20)->default('queued');
+                $table->unsignedBigInteger('extracted_value_minor')->nullable();
+                $table->string('extracted_unit', 10)->nullable();
+                $table->decimal('confidence', 5, 4)->nullable();
+                $table->json('anomalies')->nullable();
+                $table->string('correlation_id', 100);
+                $table->string('model_version', 60)->nullable();
+                $table->unsignedSmallInteger('attempts')->default(0);
+                $table->string('error_code', 60)->nullable();
+                $table->unsignedBigInteger('reviewed_by_employee_id')->nullable();
+                $table->string('review_decision', 10)->nullable();
+                $table->timestampTz('reviewed_at')->nullable();
+                $table->unsignedBigInteger('reading_id')->nullable();
+                $table->timestamps();
+
+                $table->index(['company_id', 'status'], 'fuel_ocr_requests_company_status_idx');
+                $table->unique('correlation_id', 'fuel_ocr_requests_correlation_unique');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('fuel_meter_intervals'))) {
             Schema::create($this->moduleTable('fuel_meter_intervals'), function (Blueprint $table): void {
                 $table->id();

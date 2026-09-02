@@ -189,4 +189,12 @@ return [
             ),
         ],
     ],
+
+    // AI-002 (#6771) — OCR des compteurs FuelStation : seuil de confiance
+    // sous lequel un relevé n'est JAMAIS auto-enregistré (revue humaine
+    // obligatoire, statut needs_review). Sur-seuil SANS anomalie (unité,
+    // valeur décroissante) requis pour l'enregistrement automatique.
+    'meter_ocr' => [
+        'confidence_threshold' => (float) env('METER_OCR_CONFIDENCE_THRESHOLD', 0.92),
+    ],
 ];
