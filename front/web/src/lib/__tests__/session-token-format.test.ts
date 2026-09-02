@@ -36,7 +36,7 @@ describe('session token format vs middleware guard (#6679)', () => {
     );
     // Le cookie reçoit directement la valeur `token` de la réponse backend
     // (pas un hash dérivé) — c'est ce qui impose l'acceptation du `|`.
-    const cookieSet = loginSrc.match(/cookies\.set\([^)]*token[^)]*\)/s);
+    const cookieSet = loginSrc.match(/cookies\.set\([^)]*token[^)]*\)/);
     expect(cookieSet).not.toBeNull();
   });
 });
