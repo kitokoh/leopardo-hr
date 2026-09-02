@@ -126,7 +126,10 @@ class DeliveryRiderApiTest extends TestCase
         // Colis déjà picked_up (la machine à états interdit assigned →
         // out_for_delivery ; le picked_up est enregistré côté dispatcher/manager).
         $route = $this->createRouteFor(11, deliveryStatus: 'picked_up');
-        $stopId = (int) $route->stops()->first()->id;
+        $stop = $route->stops()->first();
+        self::assertNotNull($stop, 'Stop attendu pour la tournée.');
+        /** @var DeliveryStop $stop */
+        $stopId = (int) $stop->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -152,9 +155,15 @@ class DeliveryRiderApiTest extends TestCase
             ->assertJsonPath('data.proof_id', 555);
 
         // La livraison est passée delivered via la machine à états.
-        $deliveryId = (int) $route->stops()->find($stopId)->delivery_id;
-        self::assertSame('delivered', Delivery::query()->find($deliveryId)->status);
-        self::assertNotNull(Delivery::query()->find($deliveryId)->delivered_at);
+        $stop2 = $route->stops()->find($stopId);
+        self::assertNotNull($stop2, 'Stop re-trouvé après transition.');
+        /** @var DeliveryStop $stop2 */
+        $deliveryId = (int) $stop2->delivery_id;
+        $delivery = Delivery::query()->find($deliveryId);
+        self::assertNotNull($delivery, 'Livraison attendue en base.');
+        /** @var Delivery $delivery */
+        self::assertSame('delivered', $delivery->status);
+        self::assertNotNull($delivery->delivered_at);
     }
 
     public function test_stop_status_replay_is_idempotent(): void
@@ -163,7 +172,10 @@ class DeliveryRiderApiTest extends TestCase
         // arrived) : on démarre à out_for_delivery pour que 'arrived' soit
         // une transition légale, puis on rejoue le même statut (idempotent).
         $route = $this->createRouteFor(11, deliveryStatus: 'out_for_delivery');
-        $stopId = (int) $route->stops()->first()->id;
+        $stop = $route->stops()->first();
+        self::assertNotNull($stop, 'Stop attendu pour la tournée.');
+        /** @var DeliveryStop $stop */
+        $stopId = (int) $stop->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -181,7 +193,10 @@ class DeliveryRiderApiTest extends TestCase
     public function test_rider_cannot_update_other_drivers_stop(): void
     {
         $route = $this->createRouteFor(12);
-        $stopId = (int) $route->stops()->first()->id;
+        $stop = $route->stops()->first();
+        self::assertNotNull($stop, 'Stop attendu pour la tournée.');
+        /** @var DeliveryStop $stop */
+        $stopId = (int) $stop->id;
 
         Sanctum::actingAs($this->rider(11));
 
@@ -193,7 +208,10 @@ class DeliveryRiderApiTest extends TestCase
     public function test_stop_status_is_tenant_scoped(): void
     {
         $route = $this->createRouteFor(11);
-        $stopId = (int) $route->stops()->first()->id;
+        $stop = $route->stops()->first();
+        self::assertNotNull($stop, 'Stop attendu pour la tournée.');
+        /** @var DeliveryStop $stop */
+        $stopId = (int) $stop->id;
 
         /** @var Company $other */
         $other = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
