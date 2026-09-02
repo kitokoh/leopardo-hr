@@ -153,6 +153,9 @@ jobs:
       - name: Providers syntax guard — php -l sur *ServiceProvider.php (issue #5519)
         run: bash dev-hub/tools/check-providers-syntax.sh api
 
+      - name: Gate::policy single point guard — AuthServiceProvider only (PA2-ARCH-008, issue #6575)
+        run: bash dev-hub/tools/check-policies-single-point.sh api
+
       - name: Module isolation guard — no new cross-module imports (issue #5584)
         run: bash dev-hub/tools/check-module-isolation.sh api
 
