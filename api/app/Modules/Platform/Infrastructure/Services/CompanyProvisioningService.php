@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
+use App\Core\Solutions\SolutionActivator;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Tenant\TenantManager;
@@ -24,11 +27,13 @@ class CompanyProvisioningService
         private readonly UserInvitationService $invitationService,
         private readonly TenantManager $tenantManager,
         private readonly SectorTemplateService $sectorTemplateService,
+        private readonly SolutionActivator $solutionActivator,
+        private readonly SolutionCatalogue $solutionCatalogue,
     ) {}
 
     /**
      * @param  array<string, mixed>  $payload
-     * @return array{company: Company, manager: Employee}
+     * @return array{company: Company, manager: Employee, solutions?: array<string, array{code: string, status: string, missing?: list<string>}>}
      */
     public function provisionSharedCompany(array $payload, SuperAdmin $superAdmin): array
     {
@@ -46,8 +51,24 @@ class CompanyProvisioningService
         $payload['currency'] = strtoupper((string) ($payload['currency'] ?? $countryDefaults['currency']));
         $payload['timezone'] = $payload['timezone'] ?? $countryDefaults['timezone'];
 
+        // #6693 : allowlist des solutions demandées (fail-closed avant toute
+        // écriture) — un code inconnu fait échouer le provisioning (422),
+        // jamais de résolution dynamique.
+        $solutionsStatus = [];
+        $requestedSolutions = array_values(array_unique(array_map(
+            'strval',
+            (array) ($payload['solutions'] ?? []),
+        )));
+        foreach ($requestedSolutions as $solutionCode) {
+            if (! $this->solutionCatalogue->has($solutionCode)) {
+                throw ValidationException::withMessages([
+                    'solutions' => ["Solution sectorielle inconnue : {$solutionCode} (allowlist SolutionCatalogue)."],
+                ]);
+            }
+        }
+
         /** @var array{company: Company, manager: Employee} $result */
-        $result = DB::transaction(function () use ($payload): array {
+        $result = DB::transaction(function () use ($payload, &$solutionsStatus): array {
             $plan = DB::table('plans')->where('id', $payload['plan_id'])->first();
             $trialDays = (int) ($plan->trial_days ?? 14);
             $slug = $this->resolveUniqueSlug((string) ($payload['slug'] ?? Str::slug((string) $payload['name'])));
@@ -112,14 +133,26 @@ class CompanyProvisioningService
                 // client sautait le GET). Le seed est idempotent (dédup par
                 // step_key) et s'exécute dans le contexte tenant du company.
                 app(SeedDefaultSteps::class)->execute($company->id);
+
+                // #6693 : activation des solutions sectorielles demandées à
+                // l'inscription (ex. « restaurant » depuis le wizard vitrine).
+                // Fail-closed : code inconnu → 422 ; dépendances manquantes →
+                // statut refusé tracé (le tenant est créé quand même).
+                $this->activateRequestedSolutions($company, $payload, $solutionsStatus);
             } finally {
                 $this->tenantManager->resetToPrevious();
             }
 
-            return [
+            $result = [
                 'company' => $company,
                 'manager' => $manager,
             ];
+
+            if ($solutionsStatus !== []) {
+                $result['solutions'] = $solutionsStatus;
+            }
+
+            return $result;
         });
 
         $this->invitationService->createAndSend(
@@ -130,6 +163,42 @@ class CompanyProvisioningService
         );
 
         return $result;
+    }
+
+    /**
+     * Active les solutions sectorielles demandées au provisioning (#6693).
+     *
+     * Fail-closed : seuls les codes de l'allowlist SolutionCatalogue sont
+     * acceptés (validé avant la transaction). Une solution dont les modules
+     * requis sont inactifs est REFUSÉE (SolutionMissingDependencyException)
+     * sans faire échouer le provisioning : le statut est tracé dans la
+     * réponse et en logs (opération manuelle possible via
+     * `leopardo:solution:activate`).
+     *
+     * @param  array<string, mixed>  $payload
+     * @param  list<array{code: string, status: string, missing?: list<string>}>  $solutionsStatus
+     */
+    private function activateRequestedSolutions(Company $company, array $payload, array &$solutionsStatus): void
+    {
+        foreach ((array) ($payload['solutions'] ?? []) as $solutionCode) {
+            $code = (string) $solutionCode;
+
+            try {
+                $result = $this->solutionActivator->activate($company, $code);
+                $solutionsStatus[] = $result;
+            } catch (SolutionMissingDependencyException $exception) {
+                Log::warning('company.provisioning.solution_refused', [
+                    'company_id' => $company->id,
+                    'solution' => $code,
+                    'missing' => $exception->missing,
+                ]);
+                $solutionsStatus[] = [
+                    'code' => $code,
+                    'status' => 'refused_missing_dependencies',
+                    'missing' => $exception->missing,
+                ];
+            }
+        }
     }
 
     /**

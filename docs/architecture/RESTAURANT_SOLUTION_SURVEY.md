@@ -79,8 +79,13 @@ Le moteur, le registre et les endpoints sont **génériques** : aucun changement
 
 - **Moteur déterministe, zéro IA** : une ligne de règle = `{package, priority, when, reason_key}`. Un modèle (Ollama self-host) pourrait plus tard réordonner les packages sans changer le contrat.
 - **Modules « futur » déjà au catalogue** (stock, delivery, pos, reservations) : le front peut les afficher, le manifest ne les active pas côté serveur.
-- **Label_i18n clés** : `label_key`/`reason_key` résolus par `SOLUTION_LABELS` côté front (fr/en complets, tr/ar → en). Chemin production : catalogue central `/i18n/catalog`.
-- **Sans inscription** : endpoints publics (pré-qualification). L'activation réelle d'une solution par tenant passe par l'existant `SolutionActivator` (feature flags) au moment du provisioning.
+- **Label_i18n clés** : `label_key`/`reason_key` résolus par `SOLUTION_LABELS` côté front (×4 fr/en/tr/ar, #6691) ; le PDF utilise `api/lang/{fr,en,tr,ar}/solutions.php` (parité contrôlée par `LangCatalogParityTest`).
+- **Sans inscription** : endpoints publics (pré-qualification). L'activation réelle d'une solution par tenant passe par l'existant `SolutionActivator` (feature flags) au moment du provisioning (#6693).
+
+## Activation de la solution sur un tenant (#6693)
+
+- **Automatique au provisioning** : `POST /platform/companies` accepte un champ `solutions: ["restaurant"]` (allowlist `SolutionCatalogue`, fail-closed : code inconnu → 422). `CompanyProvisioningService` active chaque solution après création du tenant (feature flag `Company::setFeature('restaurant', true)` + audit `solution.activated`). Les modules requis (`rh`, `attendance`, `documents`, `notifications` — transversaux, actifs par défaut) sont vérifiés ; un refus est tracé (`refused_missing_dependencies`) sans bloquer le provisioning.
+- **Manuelle (ops/pilote)** : `php artisan leopardo:solution:activate {company_uuid} restaurant [--actor=ID]` (idempotent). Un écran super-admin (feature toggles) reste le chemin production futur (voir `PlatformCompanyFeatureController`).
 
 <<<<<<< HEAD
 ## Activation de la solution sur un tenant (#6693)
@@ -132,8 +137,20 @@ commande console ou le dashboard (voir ci-dessous).
 - [x] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
 =======
 - [x] Rendu PDF du pack (dompdf) — `GET /solutions/{code}/pack`, i18n serveur `solutions.*`
+<<<<<<< HEAD
 - [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
 - [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
 - [ ] Activation tenant post-inscription via `SolutionActivator`
 - [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
 >>>>>>> origin/feat/restaurant-solution-survey
+||||||| 37b21bf98
+- [ ] Traductions tr/ar des labels (ou branchement `/i18n/catalog`)
+- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant
+- [ ] Activation tenant post-inscription via `SolutionActivator`
+- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion)
+=======
+- [x] Traductions tr/ar des labels (SOLUTION_LABELS ×4 + `api/lang/{tr,ar}/solutions.php`) — #6691
+- [ ] Persistance des leads (réponses) via le webhook `MarketingLeadController` existant (voir PR #6705)
+- [x] Activation tenant post-inscription via `SolutionActivator` — #6693 (provisioning + commande console)
+- [ ] Écran admin (Vue) de pilotage des surveys (stats de conversion) — #6694
+>>>>>>> origin/bc/bc25-survey-i18n-activator-admin

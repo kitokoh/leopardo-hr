@@ -12,6 +12,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -95,6 +97,25 @@ final class SolutionSurveyController extends Controller
 
         $result = $this->engine->suggest($survey, $answers);
 
+        // #6694 : persistance anonyme de la réponse (stats admin de
+        // conversion du wizard). Jamais d'écriture bloquante : le survey
+        // reste utilisable même si la table est indisponible.
+        try {
+            DB::table('solution_survey_responses')->insert([
+                'solution_code' => $survey->code(),
+                'answers' => json_encode($answers, JSON_UNESCAPED_UNICODE),
+                'suggested_packages' => json_encode($result['packages'], JSON_UNESCAPED_UNICODE),
+                'total_packages' => (int) $result['total'],
+                'lead_email_hash' => $this->leadEmailHash($request),
+                'created_at' => now(),
+            ]);
+        } catch (Throwable $e) {
+            Log::warning('solutions.survey.persist_failed', [
+                'solution' => $survey->code(),
+                'exception' => $e->getMessage(),
+            ]);
+        }
+
         return new JsonResponse([
             'data' => [
                 'code' => $survey->code(),
@@ -102,6 +123,17 @@ final class SolutionSurveyController extends Controller
                 'total' => $result['total'],
             ],
         ]);
+    }
+
+    /**
+     * Hachage du lead si l'email est joint (champ `lead_email`, futur PR
+     * #6705) — jamais d'email en clair en base (RGPD). #6694
+     */
+    private function leadEmailHash(Request $request): ?string
+    {
+        $email = strtolower(trim((string) $request->input('lead_email', '')));
+
+        return $email !== '' ? hash('sha256', $email) : null;
     }
 
     /**

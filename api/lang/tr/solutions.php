@@ -50,3 +50,11 @@ return [
         'footer' => 'Otomatik oluşturuldu — leopardo-hr. Paketinizi istediğiniz zaman değiştirebilirsiniz.',
     ],
 ];
+ * Solutions sektörel i18n etiketleri (PDF çıktısı). #6691
+ * api/lang/fr/solutions.php ile aynı anahtarlar (tr = tam çeviri, en'e
+ * sessiz düşüş YOK).
+            'kiosk' => 'Yoklama kiosku (terminal)',
+            'kiosk' => 'Terminal üzerinden yoklamayı seçtiniz.',
+        'empty' => 'Hiçbir öğe seçilmedi.',
+        'next_step_account' => 'Leopardo alanınızı oluşturun (ücretsiz deneme, kredi kartı gerekmez).',
+        'footer' => 'Otomatik oluşturulan belge — leopardo-hr. Paket alanınızdan istediğiniz zaman değiştirilebilir.',
