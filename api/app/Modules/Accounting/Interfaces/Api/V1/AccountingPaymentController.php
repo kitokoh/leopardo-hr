@@ -36,8 +36,9 @@ final class AccountingPaymentController extends Controller
         $documentId = $request->integer('document_id') > 0 ? $request->integer('document_id') : null;
         $status = $request->string('status')->toString();
         $status = in_array($status, ['pending', 'recorded', 'matched'], true) ? $status : null;
+        $limit = $this->boundedLimit($request, 200, 500);
 
-        $payments = $this->payments->list($documentId, $status);
+        $payments = $this->payments->list($documentId, $status, $limit);
 
         return response()->json([
             'data' => $payments->map(static fn (AccountingPayment $payment): array => [

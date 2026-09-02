@@ -117,7 +117,13 @@ final class PaymentRegistrationService
      *
      * @return Collection<int, AccountingPayment>
      */
-    public function list(?int $documentId = null, ?string $status = null): Collection
+    /**
+     * Issue #6562 — limit optionnel pour borner les listes non paginees.
+     */
+    /**
+     * @return Collection<int, AccountingPayment>
+     */
+    public function list(?int $documentId = null, ?string $status = null, ?int $limit = null): Collection
     {
         $query = AccountingPayment::query()->orderByDesc('received_at')->orderByDesc('id');
 
@@ -127,6 +133,10 @@ final class PaymentRegistrationService
 
         if ($status !== null) {
             $query->where('status', $status);
+        }
+
+        if ($limit !== null) {
+            $query->limit($limit);
         }
 
         return $query->get();

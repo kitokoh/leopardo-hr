@@ -147,14 +147,27 @@ final class JournalPostingService
      *
      * @return Collection<int, AccountingJournalEntry>
      */
-    public function entriesForPeriod(string $period): Collection
+    /**
+     * Issue #6562 — limit optionnel pour borner les reponses volumineuses
+     * (journal comptable entier = lenteur/DoS). L'export CSV appelle sans
+     * limit (flux complet voulu).
+     */
+    /**
+     * @return Collection<int, AccountingJournalEntry>
+     */
+    public function entriesForPeriod(string $period, ?int $limit = null): Collection
     {
-        return AccountingJournalEntry::query()
+        $query = AccountingJournalEntry::query()
             ->where('period', $period)
             ->orderBy('entry_date')
             ->orderBy('source_id')
-            ->orderBy('account_code')
-            ->get();
+            ->orderBy('account_code');
+
+        if ($limit !== null) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
 
     /** @return array{debit: float, credit: float} */
