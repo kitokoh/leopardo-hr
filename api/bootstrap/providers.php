@@ -1,6 +1,5 @@
 <?php
 
-use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
@@ -48,7 +47,6 @@ return [
     CrmServiceProvider::class,
     // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
-    AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
     NotificationServiceProvider::class,
     // — New DDD modules (Phase 3–4)

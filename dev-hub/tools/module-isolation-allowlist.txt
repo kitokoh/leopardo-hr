@@ -10,7 +10,6 @@ Core/Auth -> Modules/Notification
 Core/Auth -> Modules/Planning
 Core/Feature -> Modules/Billing
 Core/Tenant -> Modules/Attendance
-Modules/Absence -> Modules/Planning
 Modules/Accounting -> Modules/Marketing
 Modules/Accounting -> Modules/Notification
 Modules/Attendance -> Modules/Fleet
