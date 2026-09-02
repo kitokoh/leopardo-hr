@@ -51,11 +51,7 @@ class DeliveryRiderApiTest extends TestCase
         return $employee;
     }
 
-<<<<<<< HEAD
     private function createRouteFor(int $driverId, string $date = 'today', int $count = 2, string $deliveryStatus = 'assigned'): DeliveryRoute
-=======
-    private function createRouteFor(int $driverId, string $date = 'today', int $count = 2): DeliveryRoute
->>>>>>> origin/feat/delivery-d07-async-export
     {
         $ids = [];
         for ($i = 0; $i < $count; $i++) {
@@ -64,11 +60,7 @@ class DeliveryRiderApiTest extends TestCase
                 'reference' => 'DLV-2026-9'.str_pad((string) random_int(10000, 99999), 5, '0', STR_PAD_LEFT),
                 'source' => 'manual',
                 'type' => 'parcel',
-<<<<<<< HEAD
                 'status' => $deliveryStatus,
-=======
-                'status' => 'assigned',
->>>>>>> origin/feat/delivery-d07-async-export
                 'dropoff_contact' => 'Client '.$i,
                 'dropoff_address' => 'Alger',
             ]);
@@ -131,13 +123,9 @@ class DeliveryRiderApiTest extends TestCase
 
     public function test_stop_status_drives_delivery_transition(): void
     {
-<<<<<<< HEAD
         // Colis déjà picked_up (la machine à états interdit assigned →
         // out_for_delivery ; le picked_up est enregistré côté dispatcher/manager).
         $route = $this->createRouteFor(11, deliveryStatus: 'picked_up');
-=======
-        $route = $this->createRouteFor(11);
->>>>>>> origin/feat/delivery-d07-async-export
         $stopId = (int) $route->stops()->first()->id;
 
         Sanctum::actingAs($this->rider(11));

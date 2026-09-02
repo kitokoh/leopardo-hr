@@ -20,16 +20,7 @@
  * Référence : docs/specifications/SOLUTION_DELIVERY.md (§4 API v1).
  */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
-=======
-=======
->>>>>>> origin/feat/delivery-206-notifications
-=======
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryAsyncExportController;
->>>>>>> origin/feat/delivery-d07-async-export
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryCodSettlementController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryHealthController;
@@ -39,7 +30,6 @@ use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRouteController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryReportController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\DeliveryRiderController;
 use App\Modules\Delivery\Interfaces\Api\V1\Controllers\PublicDeliveryTrackingController;
->>>>>>> origin/feat/delivery-205-cod
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.delivery'])
@@ -47,79 +37,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     ->group(function (): void {
         // Smoke test du module (DELIVERY-101/#6282) — lecture pure.
         Route::get('/ping', [DeliveryHealthController::class, 'ping']);
-<<<<<<< HEAD
-    });
-=======
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feat/delivery-d12-golden-journey
-        // Mobile livreur (DELIVERY-203/#6287) — tournée du jour + statuts
-        // d'arrêts. PAS de garde manager : l'accès est vérifié dans le
-        // contrôleur par PROPRIÉTÉ (driver_id = employé authentifié) ou rôle
-        // manager — la matrice RBAC fine (delivery.role) est BC-26-D05.
-        Route::get('/deliveries/routes/today', [DeliveryRiderController::class, 'today']);
-        Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
-
-        // CRUD livraisons (DELIVERY-201/#6285), tournées (202), tracking (204),
-        // rapports (207) — RBAC manager (la matrice fine est BC-26-D05/#6312).
-        Route::middleware('api.manager')->group(function (): void {
-<<<<<<< HEAD
-=======
         // CRUD livraisons (DELIVERY-201/#6285) — RBAC fine (BC-26-D05/#6294) :
         // dispatcher/manager/admin (la création vient du dispatcher/manager).
         Route::middleware('delivery.permission:dispatcher|manager|admin')->group(function (): void {
->>>>>>> origin/feat/delivery-d07-async-export
-=======
->>>>>>> origin/feat/delivery-d12-golden-journey
             Route::get('/deliveries', [DeliveryController::class, 'index']);
             Route::post('/deliveries', [DeliveryController::class, 'store']);
             Route::get('/deliveries/{delivery}', [DeliveryController::class, 'show'])->whereNumber('delivery');
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-            // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
-
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
-
-            // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d01-glossary
-=======
->>>>>>> origin/feat/delivery-d03-isolation
-            // Notifications destinataire (DELIVERY-206/#6290) — opt-out
-            // effectif + outbox (numéros masqués RGPD hors admin).
-            Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);
-            Route::get('/deliveries/notifications', [DeliveryNotificationController::class, 'index']);
-<<<<<<< HEAD
->>>>>>> origin/feat/delivery-206-notifications
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
             // Mobile livreur (DELIVERY-203/#6287) — tournée du jour scopée par
             // propriété (driver_id = employé) + statuts d'arrêts idempotents.
             Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
@@ -127,29 +52,43 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
                 Route::post('/deliveries/stops/{stop}/status', [DeliveryRiderController::class, 'status'])->whereNumber('stop');
             });
 
-=======
->>>>>>> origin/feat/delivery-d12-golden-journey
             // Tournées (DELIVERY-202/#6286) — planification du dispatcher.
-            Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
-            Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
-            Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
-            Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            Route::middleware('delivery.permission:dispatcher|admin|manager')->group(function (): void {
+                Route::post('/deliveries/routes', [DeliveryRouteController::class, 'store']);
+                Route::post('/deliveries/routes/{route}/assign', [DeliveryRouteController::class, 'assign'])->whereNumber('route');
+                Route::post('/deliveries/routes/{route}/close', [DeliveryRouteController::class, 'close'])->whereNumber('route');
+                Route::get('/deliveries/routes/{route}', [DeliveryRouteController::class, 'show'])->whereNumber('route');
+            });
 
-            // Tracking (DELIVERY-204/#6288) — événements, lien public, timeline.
-            Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
-            Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
-            Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            // Tracking (DELIVERY-204/#6288) — l'écriture d'événements est
+            // ouverte au rider (mobile livreur, DELIVERY-203).
+            Route::middleware('delivery.permission:rider|dispatcher|manager|admin')->group(function (): void {
+                Route::post('/deliveries/events', [DeliveryEventController::class, 'store']);
+                Route::post('/deliveries/{delivery}/tracking-link', [DeliveryEventController::class, 'link'])->whereNumber('delivery');
+                Route::get('/deliveries/{delivery}/tracking', [DeliveryEventController::class, 'timeline'])->whereNumber('delivery');
+            });
+
+            // Rapports & KPIs (DELIVERY-207/#6291).
+            Route::middleware('delivery.permission:manager|admin')->group(function (): void {
+                Route::get('/deliveries/reports/summary', [DeliveryReportController::class, 'summary']);
+                Route::get('/deliveries/reports/export', [DeliveryReportController::class, 'export']);
+            });
 
             // Règlement COD & commissions (DELIVERY-205/#6289) — cycle de vie
-            // pending→collected→settled→reconciled, idempotent. settle/reconcile
-            // sont réservés à l'admin (check contrôleur) ; la matrice RBAC fine
-            // (delivery.role) est portée par BC-26-D05/#6312.
-            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])->whereNumber('route');
-            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])->whereNumber('settlement');
-            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])->whereNumber('settlement');
-            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index']);
-            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
+            // pending→collected→settled→reconciled, idempotent.
+            Route::post('/deliveries/routes/{route}/settlement', [DeliveryCodSettlementController::class, 'store'])
+                ->middleware('delivery.permission:dispatcher|admin|manager')->whereNumber('route');
+            Route::post('/deliveries/cod-settlements/{settlement}/collect', [DeliveryCodSettlementController::class, 'collect'])
+                ->middleware('delivery.permission:admin|manager')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/settle', [DeliveryCodSettlementController::class, 'settle'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::post('/deliveries/cod-settlements/{settlement}/reconcile', [DeliveryCodSettlementController::class, 'reconcile'])
+                ->middleware('delivery.permission:admin')->whereNumber('settlement');
+            Route::get('/deliveries/cod-settlements', [DeliveryCodSettlementController::class, 'index'])
+                ->middleware('delivery.permission:admin|manager');
+            Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report'])
+                ->middleware('delivery.permission:admin|manager');
+
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut'])
@@ -165,7 +104,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
             Route::get('/deliveries/reports/async-export/{export}/download', [DeliveryAsyncExportController::class, 'download'])
                 ->middleware('delivery.permission:admin|manager')->whereNumber('export');
->>>>>>> origin/feat/delivery-d07-async-export
         });
     });
 
@@ -174,4 +112,3 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/deliveries/tracking/{token}', [PublicDeliveryTrackingController::class, 'show'])
         ->middleware('throttle:60,1')
         ->where('token', '[A-Za-z0-9]{64}');
->>>>>>> origin/feat/delivery-205-cod

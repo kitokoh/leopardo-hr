@@ -11,23 +11,15 @@ use Tests\TestCase;
 /**
  * DELIVERY-102 (#6283) — Harness de test BC-26 : schéma tenant complet.
  *
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
  * Garantit que les 5 tables du module Delivery sont créées par le runner de
-=======
+
  * Garantit que les 6 tables du module Delivery sont créées par le runner de
->>>>>>> origin/feat/delivery-205-cod
-=======
+
  * Garantit que les 8 tables du module Delivery sont créées par le runner de
->>>>>>> origin/feat/delivery-206-notifications
-=======
+
  * Garantit que les 8 tables du module Delivery sont créées par le runner de
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
+
  * Garantit que les 9 tables du module Delivery sont créées par le runner de
->>>>>>> origin/feat/delivery-d07-async-export
  * migrations tenant (`leopardo:migrate`) et donc disponibles dans tous les
  * tests Feature utilisant `RefreshTenantDatabase` (parité CreatesMvpSchema
  * #5443 maintenue dans api/tests/Support/CreatesMvpSchema.php).
@@ -37,45 +29,36 @@ class DeliverySchemaTest extends TestCase
     use RefreshTenantDatabase;
 
     /**
-<<<<<<< HEAD
      * @return array<int, list<string>>
-=======
+
      * @return array<int, string>
->>>>>>> origin/feat/delivery-205-cod
      */
     public static function deliveryTables(): array
     {
         return [
-<<<<<<< HEAD
             ['delivery_deliveries'],
             ['delivery_routes'],
             ['delivery_stops'],
             ['delivery_events'],
             ['delivery_cod_settlements'],
-=======
+
             'delivery_deliveries',
             'delivery_routes',
             'delivery_stops',
             'delivery_events',
             'delivery_cod_settlements',
             'delivery_tracking_shares',
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin/feat/delivery-205-cod
-=======
+
+
             'delivery_notifications',
             'delivery_recipient_opt_outs',
->>>>>>> origin/feat/delivery-206-notifications
-=======
+
             'delivery_notifications',
             'delivery_recipient_opt_outs',
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
+
             'delivery_notifications',
             'delivery_recipient_opt_outs',
             'delivery_exports',
->>>>>>> origin/feat/delivery-d07-async-export
         ];
     }
 

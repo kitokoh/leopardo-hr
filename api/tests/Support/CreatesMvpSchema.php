@@ -2420,8 +2420,7 @@ trait CreatesMvpSchema
             });
         }
 
-<<<<<<< HEAD
-=======
+
         // ── BC-26 DELIVERY (delivery_exports) ─────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
             Schema::create($this->moduleTable('delivery_exports'), function (Blueprint $table): void {
@@ -2439,7 +2438,6 @@ trait CreatesMvpSchema
             });
         }
 
->>>>>>> origin/feat/delivery-d07-async-export
         // ── BC-26 DELIVERY (delivery_tracking_shares) ─────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_tracking_shares'))) {
             Schema::create($this->moduleTable('delivery_tracking_shares'), function (Blueprint $table): void {
@@ -2682,14 +2680,6 @@ trait CreatesMvpSchema
             });
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
@@ -2801,22 +2791,14 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
-=======
->>>>>>> origin/feat/delivery-206-notifications
-=======
->>>>>>> origin/feat/delivery-207-reports
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d01-glossary
-=======
->>>>>>> origin/feat/delivery-d03-isolation
-=======
->>>>>>> origin/feat/delivery-d07-async-export
-=======
->>>>>>> origin/feat/delivery-d10-budgets
-=======
->>>>>>> origin/feat/delivery-d12-golden-journey
+
+
+
+
+
+
+
+
     }
 
     private function dropMvpTables(): void

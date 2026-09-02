@@ -2,17 +2,13 @@
 
 use App\Modules\Absence\Providers\AbsenceServiceProvider;
 use App\Modules\Accounting\Providers\AccountingServiceProvider;
-<<<<<<< HEAD
-=======
+
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
->>>>>>> origin/feat/delivery-205-cod
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Billing\Providers\BillingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
-use App\Modules\CRM\Providers\CrmServiceProvider;
-use App\Modules\Delivery\Providers\DeliveryServiceProvider;
 use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
 use App\Modules\Expense\Providers\ExpenseServiceProvider;
 use App\Modules\Fleet\Providers\FleetServiceProvider;
@@ -69,30 +65,14 @@ return [
     DeliveryServiceProvider::class,
     // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
-=======
->>>>>>> origin/feat/delivery-206-notifications
-=======
->>>>>>> origin/feat/delivery-207-reports
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d01-glossary
-=======
->>>>>>> origin/feat/delivery-d03-isolation
-=======
->>>>>>> origin/feat/delivery-d07-async-export
-=======
->>>>>>> origin/feat/delivery-d10-budgets
-=======
->>>>>>> origin/feat/delivery-d12-golden-journey
+
+
+
+
+
+
+
+
 ];

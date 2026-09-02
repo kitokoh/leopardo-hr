@@ -185,11 +185,7 @@ class DeliveryCodSettlementApiTest extends TestCase
 
         $this->postJson(sprintf('/api/v1/delivery/deliveries/cod-settlements/%d/settle', $id))
             ->assertStatus(403)
-<<<<<<< HEAD
             ->assertJson(['message' => 'DELIVERY_ROLE_REQUIRED']);
-=======
-            ->assertJson(['error' => 'DELIVERY_ROLE_REQUIRED']);
->>>>>>> origin/feat/delivery-d07-async-export
     }
 
     public function test_report_shows_expected_vs_collected(): void

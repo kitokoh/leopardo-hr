@@ -24021,8 +24021,7 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
-<<<<<<< HEAD
-=======
+
   /delivery/deliveries:
     get:
       tags:
@@ -24731,14 +24730,9 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/DeliveryCodSettlement'
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d07-async-export
+
+
+
   /delivery/deliveries/notifications/opt-out:
     post:
       tags:
@@ -24797,13 +24791,9 @@ paths:
                       phone_masked:
                         type: boolean
 
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin/feat/delivery-206-notifications
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d07-async-export
+
+
+
   /delivery/deliveries/cod-settlements/report:
     get:
       tags:
@@ -24919,7 +24909,6 @@ paths:
         '404':
           description: Livraison introuvable ou hors tenant
 
->>>>>>> origin/feat/delivery-205-cod
   /delivery/ping:
     get:
       tags:
@@ -26830,14 +26819,9 @@ components:
           type: object
           nullable: true
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d07-async-export
+
+
+
     DeliveryNotification:
       type: object
       properties:
@@ -26863,13 +26847,9 @@ components:
           format: date-time
           nullable: true
 
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin/feat/delivery-206-notifications
-=======
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
->>>>>>> origin/feat/delivery-d07-async-export
+
+
+
     DeliveryCodSettlement:
       type: object
       properties:
