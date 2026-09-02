@@ -29,8 +29,6 @@ class DeliveryTenantIsolationMatrixTest extends TestCase
 
     private Company $companyA;
 
-    private Company $companyB;
-
     private Employee $managerA;
 
     private Employee $managerB;
@@ -52,7 +50,6 @@ class DeliveryTenantIsolationMatrixTest extends TestCase
         $b = Company::factory()->create(['country' => 'MA', 'currency' => 'MAD']);
         $b->setFeature('delivery', true);
         $b->save();
-        $this->companyB = $b;
 
         /** @var Employee $managerA */
         $managerA = Employee::factory()->create([

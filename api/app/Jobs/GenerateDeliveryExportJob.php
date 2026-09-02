@@ -84,6 +84,9 @@ class GenerateDeliveryExportJob implements ShouldQueue, TenantScopedJob
                 ->get();
 
             $handle = fopen('php://temp', 'w+');
+            if ($handle === false) {
+                throw new \RuntimeException("Impossible d'ouvrir le flux CSV de sortie.");
+            }
             fputcsv($handle, [
                 'reference', 'source', 'type', 'status', 'cod_amount_minor',
                 'dropoff_address', 'created_at', 'delivered_at',
