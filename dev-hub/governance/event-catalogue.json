@@ -12,7 +12,6 @@
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence",
         "approver": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -27,7 +26,6 @@
       "payload": {
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -42,7 +40,6 @@
       "payload": {
         "absence": "App\\Modules\\Planning\\Domain\\Models\\Absence"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -57,7 +54,6 @@
       "payload": {
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -72,7 +68,6 @@
       "payload": {
         "log": "App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -132,7 +127,6 @@
       "payload": {
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -147,7 +141,6 @@
       "payload": {
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -163,7 +156,6 @@
         "employee": "App\\Core\\Auth\\Domain\\Models\\Employee",
         "departure": "App\\Modules\\HR\\Domain\\Models\\EmployeeDeparture"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"],
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -195,7 +187,6 @@
         "previousRole": "?string",
         "newRole": "?string"
       },
-      "consumers": ["App\\Listeners\\AuditLogger"]
       "consumers": [
         "App\\Listeners\\AuditLogger"
       ]
@@ -210,7 +201,6 @@
         "lead": "App\\Modules\\Marketing\\Domain\\Models\\MarketingLead",
         "companyId": "string"
       },
-      "consumers": ["App\\Listeners\\ConvertMarketingLeadToContact"]
       "consumers": [
         "App\\Listeners\\ConvertMarketingLeadToContact"
       ]
@@ -224,7 +214,6 @@
       "payload": {
         "payroll": "App\\Modules\\Payroll\\Domain\\Models\\Payroll"
       },
-      "consumers": ["App\\Listeners\\AuditLogger", "App\\Listeners\\WebhookListener"]
       "consumers": [
         "App\\Listeners\\AuditLogger",
         "App\\Listeners\\WebhookListener"
@@ -239,7 +228,6 @@
       "payload": {
         "payment": "App\\Modules\\Payroll\\Domain\\Models\\Payment"
       },
-      "consumers": ["App\\Listeners\\ProcessCommissionOnPayment"],
       "consumers": [
         "App\\Listeners\\ProcessCommissionOnPayment"
       ],
@@ -255,7 +243,6 @@
         "model": "Illuminate\\Database\\Eloquent\\Model",
         "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"]
       "consumers": [
         "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateApproved"
       ]
@@ -271,7 +258,6 @@
         "actor": "App\\Core\\Tenant\\Domain\\Models\\SuperAdmin",
         "reason": "string"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"]
       "consumers": [
         "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateRejected"
       ]
@@ -286,7 +272,6 @@
         "model": "Illuminate\\Database\\Eloquent\\Model",
         "actor": "App\\Core\\Auth\\Domain\\Models\\Employee"
       },
-      "consumers": ["App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"]
       "consumers": [
         "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"
       ]
