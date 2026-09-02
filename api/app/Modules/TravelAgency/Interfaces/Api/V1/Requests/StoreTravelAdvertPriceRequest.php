@@ -11,6 +11,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
+use Illuminate\Contracts\Validation\Validator;
 
 /**
  * TRAVEL-906 (#6109) — Création d'une grille tarifaire.
@@ -67,4 +68,6 @@ class StoreTravelAdvertPriceRequest extends FormRequest
             }
         });
     }
+
+
 }

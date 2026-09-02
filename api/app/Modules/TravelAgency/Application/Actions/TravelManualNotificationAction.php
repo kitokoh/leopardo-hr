@@ -11,6 +11,7 @@ use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 
 /**
  * TRAVEL-910 (#6113) — Notifications manuelles legacy gv-back → canaux
@@ -86,4 +87,6 @@ final class TravelManualNotificationAction
 
         return ['channels' => $sent];
     }
+
+
 }

@@ -59,6 +59,10 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPdvController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelWebhookSubscriptionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCustomerContactController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
     ->prefix('travel')
@@ -351,4 +355,8 @@ Route::post('/adverts/{advert}/renew', [TravelAdvertController::class, 'renew'])
 Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
 Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
 Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
+Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
+Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
+Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
+Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });

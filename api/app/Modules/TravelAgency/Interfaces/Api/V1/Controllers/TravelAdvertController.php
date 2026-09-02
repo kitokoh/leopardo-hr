@@ -1036,4 +1036,26 @@ class TravelAdvertController extends Controller
             abort(403);
         }
     }
+
+    public function validate(Request $request, TravelAdvert|array $travelAdvert, array $messages = [], array $attributes = []): array
+    {
+        if (! $travelAdvert instanceof TravelAdvert) {
+            abort(404);
+        }
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('moderate', $travelAdvert)) {
+            abort(403);
+        }
+
+        $advert = $this->moderate->validate($travelAdvert, $actor);
+
+        return ['data' => [
+            'id' => $advert->id,
+            'status' => $advert->status->value,
+            'expires_at' => $advert->expires_at?->toIso8601String(),
+        ]];
+    }
 }

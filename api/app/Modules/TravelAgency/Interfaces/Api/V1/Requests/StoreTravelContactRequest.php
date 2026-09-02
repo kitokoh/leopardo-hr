@@ -37,4 +37,14 @@ class StoreTravelContactRequest extends FormRequest
             'idempotency_key' => ['sometimes', 'string', 'max:64'],
         ];
     }
+
+
+    public function messages(): array
+    {
+        return [
+            'consent_email.required' => 'Le consentement de contact est obligatoire.',
+            'consent_email.accepted' => 'Le consentement de contact doit être accepté.',
+            'message.max' => 'Le message ne doit pas dépasser 2000 caractères.',
+        ];
+    }
 }

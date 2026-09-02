@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
+use Illuminate\Contracts\Validation\Validator;
 
 /**
  * TRAVEL-904 (#6107) — Ajout d'une question à un quiz.
@@ -44,4 +45,6 @@ class StoreTravelQuizQuestionRequest extends FormRequest
             }
         });
     }
+
+
 }

@@ -100,3 +100,77 @@ export function formatMinor(amount, currency = 'XOF', locale = 'fr') {
     return `${value.toFixed(2)} ${currency}`
   }
 }
+
+// ── Contenu & monétisation (TRAVEL-911/#6416) ──────────────────────────────
+// Quiz, annonces payantes (référentiels + cycle de vie), sites touristiques.
+// Les endpoints existent côté backend (TRAVEL-904..909) — aucun mock.
+
+/** POST /travel/quizzes/{id}/questions — ajout d'une question. */
+export function createQuizQuestion(quizId, payload) {
+  return api.post(`/travel/quizzes/${quizId}/questions`, payload)
+}
+
+/** PUT /travel/quizzes/{quizId}/questions/{questionId}. */
+export function updateQuizQuestion(quizId, questionId, payload) {
+  return api.put(`/travel/quizzes/${quizId}/questions/${questionId}`, payload)
+}
+
+/** DELETE /travel/quizzes/{quizId}/questions/{questionId}. */
+export function deleteQuizQuestion(quizId, questionId) {
+  return api.delete(`/travel/quizzes/${quizId}/questions/${questionId}`)
+}
+
+/** POST /travel/quizzes/{id}/participate — participation (score serveur). */
+export function participateQuiz(quizId, answers) {
+  return api.post(`/travel/quizzes/${quizId}/participate`, { answers })
+}
+
+/** GET /travel/quizzes/{id}/participations — résultats (travel.manage). */
+export function quizParticipations(quizId) {
+  return api.get(`/travel/quizzes/${quizId}/participations`)
+}
+
+/** POST /travel/adverts/{id}/pay — paiement d'une annonce. */
+export function payAdvert(id, payload) {
+  return api.post(`/travel/adverts/${id}/pay`, payload)
+}
+
+/** POST /travel/adverts/{id}/validate — validation/rejet (travel.manage). */
+export function validateAdvert(id, payload) {
+  return api.post(`/travel/adverts/${id}/validate`, payload)
+}
+
+/** POST /travel/adverts/{id}/renew — renouvellement payé. */
+export function renewAdvert(id, payload) {
+  return api.post(`/travel/adverts/${id}/renew`, payload)
+}
+
+/** GET /travel/advert-types|advert-positions|advert-prices (listes nues). */
+export function listAdvertCatalog(resource) {
+  return api.get(`/travel/${resource}`)
+}
+
+/** POST /travel/advert-types|advert-positions (création). */
+export function createAdvertCatalog(resource, payload) {
+  return api.post(`/travel/${resource}`, payload)
+}
+
+/** PUT /travel/advert-types/{id} (mise à jour catalogue). */
+export function updateAdvertCatalog(resource, id, payload) {
+  return api.put(`/travel/${resource}/${id}`, payload)
+}
+
+/** DELETE /travel/advert-types/{id}. */
+export function deleteAdvertCatalog(resource, id) {
+  return api.delete(`/travel/${resource}/${id}`)
+}
+
+/** GET /travel/tourist-sites (filtres city_id/search/status). */
+export function listTouristSites(params = {}) {
+  return api.get('/travel/tourist-sites', { params })
+}
+
+/** POST /travel/contacts/{id}/notify — notification manuelle (TRAVEL-912). */
+export function notifyTravelContact(id, payload) {
+  return api.post(`/travel/contacts/${id}/notify`, payload)
+}
