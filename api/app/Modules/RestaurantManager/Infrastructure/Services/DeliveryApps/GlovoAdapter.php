@@ -8,6 +8,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceOrderItem;
+use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
 
 /**
  * RESTO-806 (#6227) — Adapter Glovo.
@@ -91,5 +92,32 @@ final class GlovoAdapter implements DeliveryAppAdapter
             'status' => strtoupper((string) $order->status->value),
             'updated_at' => $order->updated_at?->toIso8601String(),
         ];
+    }
+
+    public function parseInbound(array $payload): DeliveryAppOrderPayload
+    {
+        $items = [];
+
+        foreach ((array) ($payload['products'] ?? []) as $item) {
+            if (! is_array($item) || ! isset($item['product_id'], $item['quantity'])) {
+                continue;
+            }
+
+            $items[] = [
+                'product_id' => (int) $item['product_id'],
+                'quantity' => (float) $item['quantity'],
+            ];
+        }
+
+        return new DeliveryAppOrderPayload(
+            externalOrderId: (string) ($payload['external_order_id'] ?? ''),
+            externalRestaurantId: (string) ($payload['restaurant_external_id'] ?? ''),
+            orderType: 'delivery',
+            items: $items,
+            customerName: isset($payload['customer_name']) ? (string) $payload['customer_name'] : null,
+            customerPhone: isset($payload['customer_phone']) ? (string) $payload['customer_phone'] : null,
+            customerAddress: isset($payload['delivery_address']) ? (string) $payload['delivery_address'] : null,
+            note: isset($payload['comments']) ? (string) $payload['comments'] : null,
+        );
     }
 }

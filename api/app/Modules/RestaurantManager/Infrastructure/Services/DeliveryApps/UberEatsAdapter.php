@@ -8,6 +8,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceOrderItem;
+use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
 
 /**
  * RESTO-806 (#6227) — Adapter Uber Eats.
@@ -91,5 +92,32 @@ final class UberEatsAdapter implements DeliveryAppAdapter
             'status' => strtoupper((string) $order->status->value),
             'updated_at' => $order->updated_at?->toIso8601String(),
         ];
+    }
+
+    public function parseInbound(array $payload): DeliveryAppOrderPayload
+    {
+        $items = [];
+
+        foreach ((array) ($payload['items'] ?? []) as $item) {
+            if (! is_array($item) || ! isset($item['product_id'], $item['quantity'])) {
+                continue;
+            }
+
+            $items[] = [
+                'product_id' => (int) $item['product_id'],
+                'quantity' => (float) $item['quantity'],
+            ];
+        }
+
+        return new DeliveryAppOrderPayload(
+            externalOrderId: (string) ($payload['order_id'] ?? ''),
+            externalRestaurantId: (string) ($payload['restaurant_id'] ?? ''),
+            orderType: 'delivery',
+            items: $items,
+            customerName: isset($payload['customer']['name']) ? (string) $payload['customer']['name'] : null,
+            customerPhone: isset($payload['customer']['phone']) ? (string) $payload['customer']['phone'] : null,
+            customerAddress: isset($payload['delivery']['address']) ? (string) $payload['delivery']['address'] : null,
+            note: isset($payload['note']) ? (string) $payload['note'] : null,
+        );
     }
 }

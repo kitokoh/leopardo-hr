@@ -14,6 +14,7 @@ enum OrderSource: string
     case PHONE = 'phone';
     case DELIVERY_APP = 'delivery_app';
     case ONLINE = 'online';
+    case KIOSK = 'kiosk';
 
     public function label(): string
     {
@@ -23,6 +24,7 @@ enum OrderSource: string
             self::PHONE => 'Téléphone',
             self::DELIVERY_APP => 'Application de livraison',
             self::ONLINE => 'Commande en ligne',
+            self::KIOSK => 'Kiosque libre-service',
         };
     }
 }
