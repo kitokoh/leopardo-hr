@@ -13,6 +13,7 @@ enum OrderSource: string
     case WEB = 'web';
     case PHONE = 'phone';
     case DELIVERY_APP = 'delivery_app';
+    case ONLINE = 'online';
 
     public function label(): string
     {
@@ -21,6 +22,7 @@ enum OrderSource: string
             self::WEB => 'Web',
             self::PHONE => 'Téléphone',
             self::DELIVERY_APP => 'Application de livraison',
+            self::ONLINE => 'Commande en ligne',
         };
     }
 }

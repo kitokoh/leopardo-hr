@@ -4255,6 +4255,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/public/careers/{companySlug}/jobs/{jobPosting}/apply", options);
     },
 
+    /** Branches actives du tenant (RESTO-807/#6228 — sélecteur kiosque) */
+    getPublicRestaurantBranches(options = {}) {
+      return request("GET", "/public/restaurant/branches", options);
+    },
+
+    /** Menu public du tenant (RESTO-805/#6226) — catégories + produits actifs/disponibles */
+    getPublicRestaurantMenu(options = {}) {
+      return request("GET", "/public/restaurant/menu", options);
+    },
+
+    /** Commande en ligne publique (RESTO-805/#6226) — source online, totaux serveur, idempotente */
+    postPublicRestaurantOrders(options = {}) {
+      return request("POST", "/public/restaurant/orders", options);
+    },
+
+    /** Suivi public d''une commande par référence (RESTO-805/#6226) — statut + totaux */
+    getPublicRestaurantOrdersByReference(options = {}) {
+      return request("GET", "/public/restaurant/orders/{reference}", options);
+    },
+
+    /** Paiement en ligne d''une commande (RESTO-805/#6226) — cash confirmé immédiat, mobile money via callback signé */
+    postPublicRestaurantOrdersByReferencePay(options = {}) {
+      return request("POST", "/public/restaurant/orders/{reference}/pay", options);
+    },
+
     /** Envoyer une notification push de test a un employe */
     postPushNotificationsSend(options = {}) {
       return request("POST", "/push-notifications/send", options);
@@ -4393,6 +4418,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Taux de rotation (turnover) sur N mois */
     getReportsTurnover(options = {}) {
       return request("GET", "/reports/turnover", options);
+    },
+
+    /** Webhook entrant d''une app de livraison (RESTO-806/#6227) — signature HMAC fail-closed, idempotent par event_id */
+    postRestaurantMarketplaceByProviderWebhooks(options = {}) {
+      return request("POST", "/restaurant/marketplace/{provider}/webhooks", options);
+    },
+
+    /** État du jeton de boutique publique (RESTO-805/#6226) — jamais le jeton en clair */
+    getRestaurantPublicShopToken(options = {}) {
+      return request("GET", "/restaurant/public-shop-token", options);
+    },
+
+    /** (Re)génère le jeton de boutique publique (RESTO-805/#6226) — l''ancien est invalidé, le jeton en clair n''est renvoyé qu''ici */
+    postRestaurantPublicShopTokenRotate(options = {}) {
+      return request("POST", "/restaurant/public-shop-token/rotate", options);
     },
 
     /** Lister les avances sur salaire */
