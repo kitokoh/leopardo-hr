@@ -3,6 +3,12 @@
 Socle transversal multi-tenant (`App\Core\Tenant`). Migration terminée — voir
 `api/ARCHITECTURE.md` section "Nettoyage complet" pour l'historique.
 
+> **Contrat d'exécution tenant (issue #5736)** : la matrice complète
+> d'établissement/restauration du contexte pour HTTP, jobs, events,
+> imports/exports, webhooks, cache et read models vit dans
+> `docs/architecture/TENANT_RUNTIME_CONTRACT.md` (tests de référence :
+> `api/tests/Feature/Tenant/TenantManagerStandardizationTest.php`).
+
 ## Contenu
 
 - **`TenantManager.php`** — Gestionnaire du contexte multi-tenant : active/désactive

@@ -398,6 +398,63 @@
         "won": "مربوحة",
         "lost": "خاسرة"
       }
+    },
+    "hub_title": "إدارة علاقات العملاء",
+    "hub_subtitle": "حسابات وجهات الاتصال والعملاء المحتملين والفرص الخاصة بشركتك.",
+    "opportunities": "الفرص",
+    "account_detail": "الحساب",
+    "stage": "المرحلة",
+    "status": {
+      "approved": "تمت الموافقة",
+      "cancelled": "ملغاة",
+      "detected": "تم الكشف",
+      "pending": "قيد التحقق",
+      "rejected": "مرفوضة"
+    },
+    "tasks": "المهام",
+    "activities": "الأنشطة",
+    "load_error": "تعذر تحميل بيانات CRM. حاول مرة أخرى.",
+    "empty_accounts": "لا توجد حسابات بعد.",
+    "empty_contacts": "لا توجد جهات اتصال.",
+    "empty_tasks": "لا توجد مهام.",
+    "empty_activities": "لا توجد أنشطة.",
+    "empty_leads": "لا يوجد عملاء محتملون بعد.",
+    "empty_opportunities": "لا توجد فرص بعد.",
+    "task_completed": "تمت المهمة.",
+    "enable": {
+      "auto": {
+        "gps": "تفعيل GPS التلقائي"
+      }
+    },
+    "forced": "مفروض",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "لم يتم إعداد منطقة GPS لشركتك بعد."
+        }
+      }
+    },
+    "permission": {
+      "denied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
+    },
+    "presence": {
+      "in": {
+        "progress": "حضور قيد التقدم منذ {time}"
+      }
+    },
+    "recent": {
+      "sessions": "الجلسات الأخيرة"
+    },
+    "rejected": "مرفوضة",
+    "sessions": {
+      "load": {
+        "error": "تعذر تحميل جلسات GPS. تحقق من اتصالك."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة."
+      }
     }
   },
   "attendanceBreakTitle": "الذهاب في استراحة",
@@ -3711,6 +3768,39 @@
       "detected": "تم الكشف",
       "pending": "قيد التحقق",
       "rejected": "مرفوضة"
+    },
+    "settings": {
+      "title": "إعدادات المحاسبة",
+      "subtitle": "الشركة وضريبة القيمة المضافة والترقيم وقوالب المستندات.",
+      "load_error": "تعذر تحميل إعدادات المحاسبة.",
+      "save": "حفظ",
+      "saved": "تم حفظ الإعدادات.",
+      "save_error": "فشل الحفظ.",
+      "reload": "إعادة التحميل",
+      "company_title": "معلومات الشركة",
+      "company_subtitle": "الاسم والعنوان والمعرفات الضريبية.",
+      "series_title": "الترقيم",
+      "series_subtitle": "اللاحقة ونقطة البداية لسلاسل الفواتير.",
+      "mentions_title": "الإشارات القانونية",
+      "mentions_subtitle": "النص المعروض في تذييل الفاتورة.",
+      "mentions_placeholder": "مثال: ضريبة القيمة المضافة غير قابلة للتطبيق، المادة 87…",
+      "tva_title": "ضريبة القيمة المضافة الافتراضية",
+      "tva_subtitle": "النسبة المطبقة على الفواتير الجديدة.",
+      "add_rate": "إضافة نسبة",
+      "remove_rate": "إزالة",
+      "rate_label": "التسمية",
+      "rate_default_label": "ضريبة قياسية",
+      "rate_value": "النسبة (%)",
+      "currency": "العملة",
+      "document_language": "لغة المستندات",
+      "lang_fr": "الفرنسية",
+      "lang_en": "الإنجليزية",
+      "lang_ar": "العربية",
+      "lang_tr": "التركية",
+      "payment_terms": "مدة السداد (أيام)",
+      "template_style": "قالب الفاتورة",
+      "template_classic": "كلاسيكي",
+      "template_modern": "حديث"
     }
   },
   "attendanceRoleForbidden": "دورك لا يسمح بهذا الإجراء الخاص بالحضور.",

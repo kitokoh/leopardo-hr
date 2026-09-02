@@ -7,6 +7,7 @@ namespace App\Modules\HR\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
@@ -218,6 +219,18 @@ class MobileExperienceService
                 route: '/company/branding',
                 status: 'active',
             );
+            // CRM client (issue #5730) — feature-flagged, opt-in par tenant
+            // (ADR-CRM-004). L'app employee n'expose aucune route CRM.
+            if (FeatureFlag::enabled('crm', currentCompany())) {
+                $modules[] = $this->module(
+                    key: 'crm',
+                    title: 'CRM',
+                    description: 'Comptes, contacts, leads et opportunites de votre entreprise.',
+                    domain: 'crm',
+                    route: '/crm',
+                    status: 'active',
+                );
+            }
             $modules[] = $this->module(
                 key: 'dashboard_admin',
                 title: 'Tableau de bord admin',

@@ -25,6 +25,14 @@ Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /
 
 Note 2026-08-31 (BC-16 EDU, EduManager — PR #6378) : nouvelle surface API verticale `EduManager` (`api/routes/modules/edu_manager.php`, préfixe `/edu-manager`, middleware `throttle:api → auth:sanctum → token.refresh → tenant → throttle:api-plan → module.edumanager`). 77 routes : référentiel (campuses, academic-years, subjects, classes + affectation enseignants, students + responsables légaux), admissions (CRUD + convert → student), présence (index/store par classe + correct), emplois du temps (course-slots), évaluations & notes versionnées, bulletins (report cards + publication), frais & contrat Accounting (fees), import/export sécurisé, marketing admissions, notifications & portail guardian (tokens d'accès). Les scénarios CI associés vivent dans `api/tests/Feature/EduManager/*` (`EduApiTest`, `EduCampusInvariantTest`, `EduAttendanceServiceTest`, `EduGradeServiceTest`, `EduImportExportTest`, `EduGuardianPortalApiTest`, `EduFeeApiTest`, `EduMarketingApiTest`, `EduNotificationApiTest`, ...) et couvrent : RBAC scolaire (director/headmaster/teacher/guardian), isolation tenant (404 sûr cross-tenant), invariants de présence/notes/bulletins, idempotence import/export et 401/403 feature-gate. Actif via le flag `companies.features.edumanager` (kill switch).
 
+Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouvelle surface API CRM tenant —
+- `POST /api/v1/crm/consents` (accord/refus) + `POST /api/v1/crm/consents/{id}/revoke` : consentements par (contact, canal, finalité), historique immuable `audit_logs` (RGPD art. 7), aucun envoi sans consentement (fail-closed) ;
+- `GET/POST/PUT/DELETE /api/v1/crm/segments*` + `POST /api/v1/crm/segments/{id}/rebuild` + `GET /{id}/members` : définitions JSONB strictement allowlistées (aucun SQL utilisateur), versionnées (snapshot reproductible), membership tenant-scopée ;
+- `GET/POST/PUT/DELETE /api/v1/crm/campaigns*` + `start|pause|resume|cancel|finish` + `report` : cycle de vie strict (transitions invalides 422), audience segment OU explicite filtrée au consentement au start, envoi stoppable et observable ;
+- `POST /api/v1/crm/email/transactional|marketing` : marketing soumis au consentement + suppression (adresse hashée SHA-256, aucune PII) + quotas par tenant/heure (429 `EMAIL_RATE_LIMITED`) ;
+- `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
+- RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
+- Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
 ## Perimetre
 
 - API publique
@@ -1599,6 +1607,11 @@ Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/p
   employé simple → 403 ; événement outbox → livraison signée (en-têtes HMAC + timestamp) ; rejeu → pas de doublon ;
   échec HTTP → retry/backoff puis dead-letter après 5 tentatives.
 - Couverture : `api/tests/Feature/Travel/TravelWebhookTest.php` (215 tests Travel au total).
+Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client tenant (`App\Modules\CRM`) — surface API ajoutee :
+- Canaux de communication : `GET/POST /crm/channels`, `PATCH /crm/channels/{channel}`, `POST /crm/channels/{channel}/send`, `GET /crm/channels/{channel}/messages|conversations|observability` (api.manager:principal,rh) ; webhooks publics `GET/POST /crm/webhooks/whatsapp` (signature HMAC fail-closed, anti-rejeu).
+- Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
+- Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
+Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
@@ -1700,8 +1713,7 @@ Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images)
 Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read models de reporting + golden journey Analytics.
 - `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
 - Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
+||||||| 5d41e8337
 =======
-Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read models de reporting + golden journey Analytics.
-- `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
-- Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
->>>>>>> origin/pm/merge-bc25-restaurant
+
+>>>>>>> origin/pm/merge-crm-suite

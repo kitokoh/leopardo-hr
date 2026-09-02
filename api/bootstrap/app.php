@@ -46,6 +46,7 @@ use Illuminate\Validation\ValidationException;
 use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
@@ -489,4 +490,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 'localized_message' => __('errors.SERVER_ERROR'),
             ], 500);
         });
-    })->create();
+    
+
+})->create();

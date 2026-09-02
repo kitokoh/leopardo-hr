@@ -1,0 +1,19 @@
+# Issue #5744 (CRM PRE) — événements webhook annoncés mais non encore émis.
+#
+# Règle : un événement annoncé dans WebhookController::AVAILABLE_EVENTS doit
+# être émis par WebhookListener::EVENT_NAMES. S'il est légitimement planifié
+# (ADR 0010 : « certains noms restent aspirationnels tant que le dispatch
+# réel n'existe pas ») ou réservé à un usage spécifique, il doit être listé
+# ICI avec une justification. Aucune entrée silencieuse.
+#
+# Format : <event> | <justification>
+
+employee.updated   | Événement planifié (édition collaborateur) — dispatch réel non branché (ADR 0010)
+contract.created   | Événement planifié (contrats) — dispatch réel non branché (ADR 0010)
+contract.activated | Événement planifié (contrats) — dispatch réel non branché (ADR 0010)
+contract.terminated| Événement planifié (contrats) — dispatch réel non branché (ADR 0010)
+loan.approved      | Événement planifié (avances salaire) — dispatch réel non branché (ADR 0010)
+loan.disbursed     | Événement planifié (avances salaire) — dispatch réel non branché (ADR 0010)
+expense.submitted  | Événement planifié (notes de frais) — dispatch réel non branché (ADR 0010)
+expense.approved   | Événement planifié (notes de frais) — dispatch réel non branché (ADR 0010)
+webhook.test       | Test ping — le endpoint test POST /webhooks/{id}/test émet `test` directement

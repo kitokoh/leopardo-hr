@@ -99,6 +99,8 @@ tags:
   description: Connexion du compte social (agregateur Ayrshare) et gestion des publications reseaux sociaux d'un tenant.
 - name: Platform Admin
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
+- name: CRM
+  description: 'CRM client tenant : canaux de communication (WhatsApp/SMS/email), automatisations, exports et read models (issues #5725/#5727/#5728/#5729).'
 paths:
   /attendance/config:
     get:
@@ -13653,6 +13655,439 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /crm/dashboard/pipeline:
+    get:
+      tags:
+      - CRM
+      summary: Dashboard pipeline CRM (issue #5721)
+      description: "Agregats tenant-scoped : totaux par statut, valeur par stage, opportunites stagnantes (sans activite depuis 30 jours), owners sans opportunite ouverte, taches en retard. Roles manager principal/rh/marketing."
+      responses:
+        '200':
+          description: Agregats pipeline
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          open_count:
+                            type: integer
+                          open_value:
+                            type: number
+                          won_count:
+                            type: integer
+                          lost_count:
+                            type: integer
+                      by_stage:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            stage_id:
+                              type: integer
+                            stage_name:
+                              type: string
+                            count:
+                              type: integer
+                            value:
+                              type: number
+                      stagnant_opportunities:
+                        type: integer
+                      owners_without_open_opportunities:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            owner_id:
+                              type: integer
+                            open_opportunities:
+                              type: integer
+                      overdue_tasks:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/dashboard/quality:
+    get:
+      tags:
+      - CRM
+      summary: Qualite des donnees CRM (issue #5721)
+      description: "Metriques tenant-scoped : accounts sans contact primaire, contacts incomplets, doublons estimes (email normalise)."
+      responses:
+        '200':
+          description: Metriques de qualite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      accounts_total:
+                        type: integer
+                      accounts_archived:
+                        type: integer
+                      accounts_without_primary_contact:
+                        type: integer
+                      contacts_total:
+                        type: integer
+                      contacts_without_email:
+                        type: integer
+                      contacts_without_phone:
+                        type: integer
+                      duplicate_contacts_estimate:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/tasks:
+    get:
+      tags:
+      - CRM
+      summary: Lister les tâches CRM du tenant (issue #5720)
+      description: Filtres strictement allowlistes (status/overdue/priority/owner_id/account_id), tri fixe due_at ASC. Roles manager principal/rh/marketing.
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+      - name: overdue
+        in: query
+        schema:
+          type: boolean
+      - name: priority
+        in: query
+        schema:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+      - name: owner_id
+        in: query
+        schema:
+          type: integer
+      - name: account_id
+        in: query
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Liste paginee des taches CRM
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmTask'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - CRM
+      summary: Creer une tache CRM (issue #5720)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskPayload'
+      responses:
+        '201':
+          description: Tache creee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks/{task}:
+    get:
+      tags:
+      - CRM
+      summary: Detail d'une tache CRM
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      tags:
+      - CRM
+      summary: Mettre a jour une tache CRM (transitions de statut controlees)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmTaskPayload'
+      responses:
+        '200':
+          description: Tache mise a jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmTask'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - CRM
+      summary: Supprimer une tache CRM
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Tache supprimee
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/tasks/{task}/complete:
+    post:
+      tags:
+      - CRM
+      summary: Cloturer une tache CRM (status -> done)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache cloturee
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/tasks/{task}/reopen:
+    post:
+      tags:
+      - CRM
+      summary: Rouvrir une tache CRM (status -> todo)
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tache rouverte
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /crm/accounts/{account}/timeline:
+    get:
+      tags:
+      - CRM
+      summary: Timeline d'activites d'un account CRM (issue #5720)
+      description: Cursor pagination keyset (before_id, ordre id DESC). Append-only.
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          maximum: 50
+      - name: before_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Activities paginees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmActivity'
+                  meta:
+                    type: object
+                    properties:
+                      next_cursor:
+                        type: integer
+                        nullable: true
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/search:
+    get:
+      tags:
+      - CRM
+      summary: Rechercher accounts et contacts du tenant courant (issue #5719)
+      description: Recherche tenant-scoped, filtres strictement allowlistes (aucun tri/SQL libre). Roles manager principal/rh/marketing.
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 120
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - account
+          - contact
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - archived
+      - name: owner_id
+        in: query
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Resultats de recherche pagines (type account|contact)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - account
+                          - contact
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        legal_name:
+                          type: string
+                          nullable: true
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        email:
+                          type: string
+                          format: email
+                          nullable: true
+                        phone:
+                          type: string
+                          nullable: true
+                        job_title:
+                          type: string
+                          nullable: true
+                        status:
+                          type: string
+                        account:
+                          type: object
+                          nullable: true
+                          properties:
+                            id:
+                              type: integer
+                            name:
+                              type: string
+                        owner:
+                          type: object
+                          nullable: true
+                          properties:
+                            id:
+                              type: integer
+                            first_name:
+                              type: string
+                            last_name:
+                              type: string
+                        created_at:
+                          type: string
+                          format: date-time
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
     post:
       tags:
@@ -35381,6 +35816,173 @@ paths:
             text/csv:
           description: Signature invalide ou expirée
           description: Export introuvable
+  /crm/webhooks/whatsapp:
+      - CRM
+      summary: Verification d'abonnement du webhook WhatsApp Business (Meta)
+      description: Endpoint public appele par Meta lors de la configuration du webhook (hub.challenge). Fail-closed si le verify_token n'est pas configure.
+      - name: hub_mode
+      - name: hub_verify_token
+      - name: hub_challenge
+          description: Challenge renvoye (abonnement confirme)
+          description: Token de verification invalide
+      summary: Webhook entrant WhatsApp Business Cloud API (messages + statuts)
+      description: Public, protege par signature X-Hub-Signature-256 (HMAC-SHA256, fail-closed). Tenant resolu via lookup public (phone_number_id), idempotence par (company_id, provider_message_id), dead-letter des erreurs fournisseur.
+                object:
+                entry:
+          description: Evenement acquitte
+        '503':
+          description: Secret non configure (fail-closed)
+  /crm/channels:
+      summary: Lister les canaux de communication du tenant
+      description: Reserve aux managers principal/rh (api.manager:principal,rh). Tenant-scope.
+          description: Canaux du tenant
+          $ref: '#/components/responses/Error401'
+          $ref: '#/components/responses/Error403'
+      summary: Configurer un canal de communication (whatsapp/sms/email)
+      description: Entrees strictes (type/provider whitelistes). Les secrets (token, api_key) sont explicitement refuses dans le payload — secret manager uniquement.
+              - type
+              - provider
+                type:
+                  enum: [whatsapp, sms, email]
+                provider:
+                is_configured:
+                monthly_quota:
+                settings:
+                    phone_number_id:
+                    language_code:
+          description: Canal configure
+          $ref: '#/components/responses/Validation422'
+  /crm/channels/{channel}:
+    patch:
+      summary: Mettre a jour un canal (quota, statut, configuration)
+      - name: channel
+          description: Canal mis a jour
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/send:
+      summary: Envoyer un message via un canal CRM (WhatsApp, SMS, email)
+      description: Consentement (fail-closed par defaut), quota mensuel, envoi provider avec retry borne + dead-letter. Le corps et les adresses ne sont jamais exposes dans la reponse (PII masquee).
+              - to
+                body:
+                  maxLength: 4000
+                template_name:
+                template_parameters:
+                contact_id:
+                purpose:
+                  enum: [transactional, marketing, service]
+          description: Message accepte par le provider
+          description: Quota mensuel du canal depasse
+        '502':
+          description: Erreur fournisseur (dead-letter possible)
+  /crm/channels/{channel}/messages:
+      summary: Lister les messages d'un canal (metadonnees, PII masquee)
+          description: Messages du canal
+  /crm/channels/{channel}/conversations:
+      summary: Lister les conversations d'un canal (inbox unique)
+          description: Conversations du canal
+  /crm/exports:
+      summary: Lister les jobs d'export CRM du tenant
+      description: Reserve aux managers principal/rh. Tenant-scope, filtre par statut possible.
+          description: Jobs d'export du tenant
+      summary: Creer un job d'export CRM asynchrone (CSV)
+      description: Colonnes allowlistees par entite, filtres controles (statut/owner), generation asynchrone, acces expirant (expires_at).
+              - entity
+                entity:
+                  enum: [accounts, contacts, leads, opportunities, activities, tasks]
+                columns:
+                filters:
+                    status:
+                    owner_id:
+          description: Job d'export cree (queued)
+  /crm/exports/{export}:
+      summary: Statut et progression d'un job d'export
+          description: Etat du job d'export
+  /crm/exports/{export}/download:
+      summary: Telecharger un export termine (acces expirant)
+      description: Refuse si le job n'est pas completed (409) ou si expires_at est depasse (410, statut passe a expired).
+          description: Export pas encore pret ou en echec
+        '410':
+          description: Export expire
+  /crm/read-models:
+      summary: Read models CRM recalculables (agregats analytiques tenant)
+      description: Compteurs par statut/stage, contacts par compte, totaux pipeline et score qualite des donnees. Aucune donnee personnelle exposee. Chaque agregat est schema-garde (retourne vide si le socle V0 n'est pas merge).
+          description: Agregats recalculables
+  /crm/channels/{channel}/observability:
+      summary: Observabilite d'un canal (cout et erreurs agreges)
+      description: "Totaux messages, echecs, dead-letter, tentatives et cout cumule \u2014 aucune donnee personnelle. Reserve aux managers principal/rh."
+          description: Agregats d'observabilite
+  /crm/automations:
+      summary: Lister les automatisations CRM du tenant
+          description: Automatisations du tenant
+      summary: Creer une automatisation (event/conditions/actions)
+      description: Trigger/actions/operateurs whitelistes (moteur borne), versionnage automatique, statut draft|active|paused.
+              - name
+              - trigger_event
+              - actions
+                name:
+                trigger_event:
+                  - crm.lead.created
+                  - crm.contact.created
+                  - crm.account.created
+                  - crm.opportunity.stage_changed
+                  - crm.message.inbound
+                  - crm.message.sent
+                conditions:
+                      field:
+                      operator:
+                        - equals
+                        - not_equals
+                        - contains
+                        - exists
+                        - greater_than
+                        - less_than
+                      value:
+                actions:
+                  maxItems: 5
+                        - send_whatsapp
+                        - send_sms
+                        - send_email
+                        - create_task
+                        - http_webhook
+                      config:
+                  - draft
+                  - active
+                  - paused
+          description: Automatisation creee
+  /crm/automations/{automation}:
+      summary: Detail d'une automatisation
+      - name: automation
+          description: Automatisation
+      summary: Mettre a jour une automatisation (version incrementee)
+          description: Automatisation mise a jour
+      summary: Archiver une automatisation (soft delete)
+          description: Automatisation archivee (statut disabled)
+  /crm/automations/{automation}/activate:
+      summary: Activer une automatisation
+          description: Automatisation activee
+  /crm/automations/{automation}/pause:
+      summary: Mettre en pause une automatisation
+          description: Automatisation en pause
+  /crm/automations/{automation}/simulate:
+      summary: Simuler une automatisation sans effet de bord
+      description: Evalue les conditions et decrit les actions (dry-run, aucun envoi/ecriture). Un run dry_run est historise.
+                context:
+          description: Resultat de simulation (matched + effets)
+  /crm/automations/{automation}/runs:
+      summary: Historique d'execution d'une automatisation
+          description: Runs (succeeded|skipped|failed|dead_lettered, dry_run)
+  /crm/automations/emergency-stop:
+      summary: Arret d'urgence des automatisations du tenant
+      description: enabled=false coupe tout dispatch immediatement (423) ; enabled=true reactive.
+                enabled:
+          description: Etat de l'interrupteur
+  /crm/automations/events/{event}:
+      summary: Emettre un evenement metier CRM (declenche les automatisations)
+      description: Point d'entree des triggers (utilise par le module CRM et le futur socle V0). Idempotent par (automation, evenement, entite).
+      - name: event
+          description: Evenement recu et traite
+          description: Evenement inconnu (non allowliste)
+        '423':
+          description: Automatisations arretees d'urgence
 components:
   securitySchemes:
     RestaurantPublicShopTokenAuth:
@@ -37081,6 +37683,58 @@ components:
           type: string
           nullable: true
           example: req_01HYZ4VY9K7M1A2B3C4D5E6F7G
+    WebhookDeliveryEnvelope:
+      type: object
+      description: >-
+        Enveloppe canonique des webhooks sortants (issue #5744). Livrée à
+        l'endpoint partenaire pour chaque événement métier. Contrat ADDITIVE :
+        les champs heredités (timestamp, data) restent émis ; les champs
+        versionnés (event_version, company_id, correlation_id, occurred_at)
+        sont ajoutés sans rupture. Version courante : 1.
+      required:
+      - event
+      - event_version
+      - company_id
+      - correlation_id
+      - occurred_at
+      - timestamp
+      - data
+      properties:
+        event:
+          type: string
+          description: >-
+            Nom stable de l'événement (catalogue AVAILABLE_EVENTS). Renommer
+            ou supprimer un événement = changement incompatible → CI bloquée
+            (garde check-webhook-event-catalog.sh).
+          example: employee.created
+        event_version:
+          type: integer
+          description: >-
+            Version de l'événement. Incrémentée uniquement pour un changement
+            incompatible (procédure de dépréciation docs/api/VERSIONING.md § 5).
+          example: 1
+        company_id:
+          type: string
+          description: Identifiant du tenant propriétaire de l'événement (uuid).
+          example: 8f14e45f-ceea-4b0a-9d0e-3c9b3a0f5c12
+        correlation_id:
+          type: string
+          description: >-
+            Identifiant de corrélation de l'occurrence métier — identique pour
+            tous les endpoints d'un même tenant lors d'un même dispatch.
+          example: 0f7c3a2e-4d1b-4a5c-9e8f-6a7b8c9d0e1f
+        occurred_at:
+          type: string
+          format: date-time
+          description: Moment métier de l'occurrence (ISO 8601).
+        timestamp:
+          type: string
+          format: date-time
+          description: Horodatage de livraison (champ hérité, rétro-compatible).
+        data:
+          type: object
+          description: Données métier de l'événement.
+          additionalProperties: true
     ValidationErrorResponse:
       type: object
       required:
@@ -39980,6 +40634,137 @@ components:
           type: string
           format: date-time
           nullable: true
+    CrmTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        assignee:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        account:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        contact_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CrmTaskPayload:
+      type: object
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+        due_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          type: string
+          enum:
+          - todo
+          - in_progress
+          - done
+          - cancelled
+        priority:
+          type: string
+          enum:
+          - low
+          - medium
+          - high
+        assignee_id:
+          type: integer
+          nullable: true
+        account_id:
+          type: integer
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+    CrmActivity:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        subject:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        contact_id:
+          type: integer
+          nullable: true
+        lead_id:
+          type: integer
+          nullable: true
+        opportunity_id:
+          type: integer
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+        actor:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        created_at:
+          type: string
+          format: date-time
     AccountingContactPayload:
       type: object
       required:
@@ -43966,6 +44751,7 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue
+          description: Paiement candidat proposé par le matching auto (issue #5523)
     FuelMeterReadingPayload:
       type: object
       required:

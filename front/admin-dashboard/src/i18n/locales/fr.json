@@ -398,6 +398,63 @@
         "won": "Gagné",
         "lost": "Perdu"
       }
+    },
+    "hub_title": "CRM",
+    "hub_subtitle": "Comptes, contacts, leads et opportunités de votre entreprise.",
+    "opportunities": "Opportunités",
+    "account_detail": "Compte",
+    "stage": "Étape",
+    "status": {
+      "approved": "Approuvée",
+      "cancelled": "Annulée",
+      "detected": "Détectée",
+      "pending": "En validation",
+      "rejected": "Rejetée"
+    },
+    "tasks": "Tâches",
+    "activities": "Activités",
+    "load_error": "Impossible de charger les données CRM. Réessayez.",
+    "empty_accounts": "Aucun compte pour le moment.",
+    "empty_contacts": "Aucun contact.",
+    "empty_tasks": "Aucune tâche.",
+    "empty_activities": "Aucune activité.",
+    "empty_leads": "Aucun lead pour le moment.",
+    "empty_opportunities": "Aucune opportunité pour le moment.",
+    "task_completed": "Tâche terminée.",
+    "enable": {
+      "auto": {
+        "gps": "Activer le GPS automatique"
+      }
+    },
+    "forced": "Imposé",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
+    },
+    "presence": {
+      "in": {
+        "progress": "Présence en cours depuis {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Sessions récentes"
+    },
+    "rejected": "Rejetées",
+    "sessions": {
+      "load": {
+        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
+      }
     }
   },
   "attendanceBreakTitle": "Partir en pause",
@@ -3717,6 +3774,39 @@
       "detected": "Détectée",
       "pending": "En validation",
       "rejected": "Rejetée"
+    },
+    "settings": {
+      "title": "Paramètres comptables",
+      "subtitle": "Société, TVA, numérotation et modèles de documents.",
+      "load_error": "Impossible de charger les paramètres comptables.",
+      "save": "Enregistrer",
+      "saved": "Paramètres enregistrés.",
+      "save_error": "L'enregistrement a échoué.",
+      "reload": "Recharger",
+      "company_title": "Informations société",
+      "company_subtitle": "Nom, adresse et identifiants fiscaux.",
+      "series_title": "Numérotation",
+      "series_subtitle": "Suffixe et point de départ des séries de factures.",
+      "mentions_title": "Mentions légales",
+      "mentions_subtitle": "Texte affiché en pied de facture.",
+      "mentions_placeholder": "Ex. : TVA non applicable, article 87 du CGI…",
+      "tva_title": "TVA par défaut",
+      "tva_subtitle": "Taux appliqué aux nouvelles factures.",
+      "add_rate": "Ajouter un taux",
+      "remove_rate": "Supprimer",
+      "rate_label": "Libellé",
+      "rate_default_label": "TVA standard",
+      "rate_value": "Taux (%)",
+      "currency": "Devise",
+      "document_language": "Langue des documents",
+      "lang_fr": "Français",
+      "lang_en": "Anglais",
+      "lang_ar": "Arabe",
+      "lang_tr": "Turc",
+      "payment_terms": "Délai de paiement (jours)",
+      "template_style": "Modèle de facture",
+      "template_classic": "Classique",
+      "template_modern": "Moderne"
     }
   },
   "attendanceRoleForbidden": "Votre rôle ne permet pas cette action de pointage.",

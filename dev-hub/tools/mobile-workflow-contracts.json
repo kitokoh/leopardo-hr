@@ -213,7 +213,11 @@
         "/me/monthly",
         "/history",
         "/modules",
-        "/settings"
+        "/settings",
+        "/crm",
+        "/crm/accounts",
+        "/crm/leads",
+        "/crm/opportunities"
       ],
       "workflows": [
         {
@@ -538,6 +542,268 @@
         "/settings"
       ],
       "workflows": []
+    },
+    {
+      "name": "manager",
+      "root": "front/mobile_apps/leopardo_manager",
+      "requiredBackendExperienceRoutes": [
+        "/attendance",
+        "/absences",
+        "/salary-advances",
+        "/payrolls",
+        "/evaluations",
+        "/notifications",
+        "/cabinet",
+        "/team",
+        "/schedules",
+        "/tasks",
+        "/company/branding",
+        "/me/monthly",
+        "/history",
+        "/modules",
+        "/settings",
+        "/crm",
+        "/crm/accounts",
+        "/crm/leads",
+        "/crm/opportunities"
+      ],
+      "workflows": [
+        {
+          "name": "auth_session",
+          "routes": [
+            "/welcome",
+            "/login",
+            "/register",
+            "/settings"
+          ],
+          "endpoints": [
+            "/auth/login",
+            "/auth/me",
+            "/auth/logout",
+            "/auth/google/token",
+            "/auth/change-password",
+            "/auth/language"
+          ],
+          "screenFiles": [
+            "lib/features/auth/screens/login_screen.dart",
+            "lib/features/settings/screens/settings_screen.dart"
+          ],
+          "sourceTokens": [
+            "loginWithGoogle",
+            ".login(",
+            ".logout()",
+            "changePassword",
+            "_saveLanguage"
+          ]
+        },
+        {
+          "name": "team_management",
+          "routes": [
+            "/team",
+            "/schedules",
+            "/tasks"
+          ],
+          "endpoints": [
+            "/employees",
+            "/invitations",
+            "/schedules",
+            "/tasks",
+            "/tasks/today"
+          ],
+          "screenFiles": [
+            "lib/features/team/screens/team_screen.dart",
+            "lib/features/schedules/screens/schedule_list_screen.dart",
+            "lib/features/tasks/screens/task_list_screen.dart"
+          ],
+          "sourceTokens": [
+            "_openCreateEmployeeSheet",
+            ".create(",
+            "archive(",
+            "resendInvitation",
+            "contractStart",
+            "salaryBase",
+            "hourlyRate",
+            "scheduleId",
+            "_showScheduleSheet",
+            "Creer la regle",
+            "Assigner une tache",
+            "templateKey"
+          ]
+        },
+        {
+          "name": "manager_decisions",
+          "routes": [
+            "/absences",
+            "/salary-advances",
+            "/approvals"
+          ],
+          "endpoints": [
+            "/absences",
+            "/salary-advances",
+            "/salary-advances/$advanceId/manager-approve",
+            "/salary-advances/$advanceId/mark-paid",
+            "/approvals/pending",
+            "/approvals/$id/approve",
+            "/approvals/$id/reject"
+          ],
+          "screenFiles": [
+            "lib/features/absences/screens/absence_list_screen.dart",
+            "lib/features/salary_advances/screens/salary_advance_list_screen.dart",
+            "lib/features/approvals/screens/approval_screen.dart"
+          ],
+          "sourceTokens": [
+            "approveAbsence",
+            "rejectAbsence",
+            "approveAdvance",
+            "rejectAdvance",
+            "markPaid",
+            "_approve(",
+            "_reject("
+          ]
+        },
+        {
+          "name": "payrolls",
+          "routes": [
+            "/payrolls"
+          ],
+          "endpoints": [
+            "/payrolls",
+            "/payroll/mobile-summary",
+            "/pay-slips/$payslipId/pdf",
+            "/payments/$payrollRunId/documents",
+            "/me/payment-documents/${document.id}/download"
+          ],
+          "screenFiles": [
+            "lib/features/payrolls/screens/payroll_list_screen.dart",
+            "lib/features/payrolls/data/payroll_repository.dart"
+          ],
+          "sourceTokens": [
+            "getMobileSummary",
+            "getPaymentDocumentsForPayrollRun",
+            "downloadPaymentDocument",
+            "payrollTeamBalance",
+            "payrollPaymentDocuments",
+            "_downloadPdf",
+            "RefreshIndicator"
+          ]
+        },
+        {
+          "name": "attendance",
+          "routes": [
+            "/attendance",
+            "/history",
+            "/me/monthly",
+            "/settings",
+            "/manager/attendance",
+            "/manager/anomalies",
+            "/manager/corrections"
+          ],
+          "endpoints": [
+            "/attendance/today",
+            "/attendance/check-in",
+            "/attendance/check-out",
+            "/attendance/corrections",
+            "/attendance/corrections/$correctionId/approve",
+            "/attendance/corrections/$correctionId/reject",
+            "/attendance/anomalies",
+            "/attendance",
+            "/me/monthly-summary"
+          ],
+          "screenFiles": [
+            "lib/features/attendance/screens/attendance_screen.dart",
+            "lib/features/attendance/screens/history_screen.dart",
+            "lib/features/attendance/screens/monthly_summary_screen.dart",
+            "lib/features/manager/screens/manager_attendance_monitoring_screen.dart"
+          ],
+          "sourceTokens": [
+            "_handlePunch",
+            "HapticFeedback.mediumImpact",
+            ".checkIn(",
+            ".checkOut(",
+            "requestCorrection",
+            "updateCorrection",
+            "ManagerAttendanceMonitoringScreen",
+            "ManagerAnomaliesScreen",
+            "ManagerCorrectionsScreen",
+            "approveCorrection",
+            "rejectCorrection"
+          ]
+        },
+        {
+          "name": "notifications",
+          "routes": [
+            "/notifications"
+          ],
+          "endpoints": [
+            "/notifications",
+            "/notifications/read-all",
+            "/device-tokens"
+          ],
+          "screenFiles": [
+            "../leopardo_core/lib/features/notifications/screens/notification_list_screen.dart"
+          ],
+          "sourceTokens": [
+            "markAllAsRead",
+            "markAsRead",
+            "RefreshIndicator"
+          ]
+        },
+        {
+          "name": "company_branding",
+          "routes": [
+            "/company/branding"
+          ],
+          "endpoints": [
+            "/company/branding"
+          ],
+          "screenFiles": [
+            "lib/features/company_branding/screens/company_branding_screen.dart",
+            "lib/features/company_branding/data/company_branding_repository.dart"
+          ],
+          "sourceTokens": [
+            "CompanyBrandingScreen",
+            "Identite entreprise",
+            ".update(",
+            "/company/branding"
+          ]
+        },
+        {
+          "name": "crm_terrain",
+          "routes": [
+            "/crm",
+            "/crm/accounts",
+            "/crm/accounts/:id",
+            "/crm/leads",
+            "/crm/opportunities"
+          ],
+          "endpoints": [
+            "/crm/accounts",
+            "/crm/accounts/{id}",
+            "/crm/accounts/{id}/contacts",
+            "/crm/leads",
+            "/crm/opportunities",
+            "/crm/opportunities/{id}",
+            "/crm/activities",
+            "/crm/tasks",
+            "/crm/tasks/{id}"
+          ],
+          "screenFiles": [
+            "lib/features/crm/screens/crm_hub_screen.dart",
+            "lib/features/crm/screens/crm_accounts_screen.dart",
+            "lib/features/crm/screens/crm_account_detail_screen.dart",
+            "lib/features/crm/screens/crm_leads_screen.dart",
+            "lib/features/crm/screens/crm_opportunities_screen.dart"
+          ],
+          "sourceTokens": [
+            "CrmRepository",
+            "crmAccountsProvider",
+            "crmLeadsProvider",
+            "crmOpportunitiesProvider",
+            "transitionOpportunity",
+            "completeTask"
+          ]
+        }
+      ]
     }
   ]
 }

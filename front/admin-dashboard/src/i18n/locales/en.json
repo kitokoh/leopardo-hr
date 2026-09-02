@@ -398,6 +398,63 @@
         "won": "Won",
         "lost": "Lost"
       }
+    },
+    "hub_title": "CRM",
+    "hub_subtitle": "Accounts, contacts, leads and opportunities for your company.",
+    "opportunities": "Opportunities",
+    "account_detail": "Account",
+    "stage": "Stage",
+    "status": {
+      "approved": "Approved",
+      "cancelled": "Cancelled",
+      "detected": "Detected",
+      "pending": "Pending validation",
+      "rejected": "Rejected"
+    },
+    "tasks": "Tasks",
+    "activities": "Activities",
+    "load_error": "Unable to load CRM data. Please retry.",
+    "empty_accounts": "No accounts yet.",
+    "empty_contacts": "No contacts.",
+    "empty_tasks": "No tasks.",
+    "empty_activities": "No activities.",
+    "empty_leads": "No leads yet.",
+    "empty_opportunities": "No opportunities yet.",
+    "task_completed": "Task completed.",
+    "enable": {
+      "auto": {
+        "gps": "Enable automatic GPS"
+      }
+    },
+    "forced": "Enforced",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Your company's GPS zone is not configured yet."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Location permission denied. Enable GPS in settings to start monitoring."
+    },
+    "presence": {
+      "in": {
+        "progress": "Presence in progress since {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Recent sessions"
+    },
+    "rejected": "Rejected",
+    "sessions": {
+      "load": {
+        "error": "Unable to load GPS sessions. Check your connection."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Unable to start GPS monitoring. Check location permissions and try again."
+      }
     }
   },
   "attendanceBreakTitle": "Take a break",
@@ -3711,6 +3768,39 @@
       "detected": "Detected",
       "pending": "Pending validation",
       "rejected": "Rejected"
+    },
+    "settings": {
+      "title": "Accounting settings",
+      "subtitle": "Company, VAT, numbering and document templates.",
+      "load_error": "Unable to load accounting settings.",
+      "save": "Save",
+      "saved": "Settings saved.",
+      "save_error": "Saving failed.",
+      "reload": "Reload",
+      "company_title": "Company information",
+      "company_subtitle": "Name, address and tax identifiers.",
+      "series_title": "Numbering",
+      "series_subtitle": "Suffix and starting point for invoice series.",
+      "mentions_title": "Legal mentions",
+      "mentions_subtitle": "Text displayed in the invoice footer.",
+      "mentions_placeholder": "E.g.: VAT not applicable, article 87 of the CGI…",
+      "tva_title": "Default VAT",
+      "tva_subtitle": "Rate applied to new invoices.",
+      "add_rate": "Add a rate",
+      "remove_rate": "Remove",
+      "rate_label": "Label",
+      "rate_default_label": "Standard VAT",
+      "rate_value": "Rate (%)",
+      "currency": "Currency",
+      "document_language": "Document language",
+      "lang_fr": "French",
+      "lang_en": "English",
+      "lang_ar": "Arabic",
+      "lang_tr": "Turkish",
+      "payment_terms": "Payment terms (days)",
+      "template_style": "Invoice template",
+      "template_classic": "Classic",
+      "template_modern": "Modern"
     }
   },
   "attendanceRoleForbidden": "Your role does not allow this attendance action.",

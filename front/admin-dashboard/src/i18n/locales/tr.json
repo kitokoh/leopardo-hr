@@ -398,6 +398,63 @@
         "won": "Kazanıldı",
         "lost": "Kaybedildi"
       }
+    },
+    "hub_title": "CRM",
+    "hub_subtitle": "Şirketinizin hesapları, kişileri, potansiyel müşterileri ve fırsatları.",
+    "opportunities": "Fırsatlar",
+    "account_detail": "Hesap",
+    "stage": "Aşama",
+    "status": {
+      "approved": "Onaylandı",
+      "cancelled": "İptal edildi",
+      "detected": "Algılandı",
+      "pending": "Onay bekleniyor",
+      "rejected": "Reddedildi"
+    },
+    "tasks": "Görevler",
+    "activities": "Aktiviteler",
+    "load_error": "CRM verileri yüklenemedi. Tekrar deneyin.",
+    "empty_accounts": "Henüz hesap yok.",
+    "empty_contacts": "Kişi yok.",
+    "empty_tasks": "Görev yok.",
+    "empty_activities": "Aktivite yok.",
+    "empty_leads": "Henüz potansiyel müşteri yok.",
+    "empty_opportunities": "Henüz fırsat yok.",
+    "task_completed": "Görev tamamlandı.",
+    "enable": {
+      "auto": {
+        "gps": "Otomatik GPS'i aç"
+      }
+    },
+    "forced": "Zorunlu",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
+    },
+    "presence": {
+      "in": {
+        "progress": "{time} itibarıyla devam eden katılım"
+      }
+    },
+    "recent": {
+      "sessions": "Son oturumlar"
+    },
+    "rejected": "Reddedilen",
+    "sessions": {
+      "load": {
+        "error": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin."
+      }
     }
   },
   "attendanceBreakTitle": "Molaya çık",
@@ -3717,6 +3774,39 @@
       "detected": "Algılandı",
       "pending": "Onay bekleniyor",
       "rejected": "Reddedildi"
+    },
+    "settings": {
+      "title": "Muhasebe ayarları",
+      "subtitle": "Şirket, KDV, numaralandırma ve belge şablonları.",
+      "load_error": "Muhasebe ayarları yüklenemedi.",
+      "save": "Kaydet",
+      "saved": "Ayarlar kaydedildi.",
+      "save_error": "Kaydetme başarısız oldu.",
+      "reload": "Yenile",
+      "company_title": "Şirket bilgileri",
+      "company_subtitle": "Ad, adres ve vergi kimlikleri.",
+      "series_title": "Numaralandırma",
+      "series_subtitle": "Fatura serileri için sonek ve başlangıç noktası.",
+      "mentions_title": "Yasal ibareler",
+      "mentions_subtitle": "Fatura altbilgisinde görünen metin.",
+      "mentions_placeholder": "Örn.: KDV uygulanmaz, CGI madde 87…",
+      "tva_title": "Varsayılan KDV",
+      "tva_subtitle": "Yeni faturalara uygulanan oran.",
+      "add_rate": "Oran ekle",
+      "remove_rate": "Kaldır",
+      "rate_label": "Etiket",
+      "rate_default_label": "Standart KDV",
+      "rate_value": "Oran (%)",
+      "currency": "Para birimi",
+      "document_language": "Belge dili",
+      "lang_fr": "Fransızca",
+      "lang_en": "İngilizce",
+      "lang_ar": "Arapça",
+      "lang_tr": "Türkçe",
+      "payment_terms": "Ödeme vadesi (gün)",
+      "template_style": "Fatura şablonu",
+      "template_classic": "Klasik",
+      "template_modern": "Modern"
     }
   },
   "attendanceRoleForbidden": "Rolünüz bu yoklama işlemine izin vermiyor.",

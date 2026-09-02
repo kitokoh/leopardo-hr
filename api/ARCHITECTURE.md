@@ -74,6 +74,17 @@ rajoutée « pour passer ». Dérogations structurelles déjà documentées :
 canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
 consommateurs).
 
+**Frontières du module CRM client (issue #5745, ADR 0018) :** le futur module
+`CRM` (CRM client tenant, cf. ADR-CRM-DUAL-CONTEXTS) est couvert par une garde
+orientée dédiée, `dev-hub/tools/check-crm-boundary-imports.sh`, en complément
+de la garde symétrique #5584 ci-dessus. Elle interdit en HARD BLOCK tout
+`use App\Modules\{Platform,Marketing,Payroll,Accounting}\` dans
+`api/app/Modules/CRM/**` (CRM commercial, paie, comptabilité — aucun échange
+direct), et exige une exemption justifiée dans
+`dev-hub/tools/crm-boundary-allowlist.txt` pour tout autre import
+inter-module. Les imports `App\Core\*`, `App\Shared\*` et intra-module
+restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
+
 ## Modules existants
 
 | Module | Statut routes | Statut code | ServiceProvider |
@@ -103,12 +114,15 @@ consommateurs).
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/Delivery` | 🔶 en cours (DELIVERY-1xx, routes #6282) | 🔶 squelette DDD | `DeliveryServiceProvider` |
+| `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 V1 en construction (canaux #5725, automatisations #5728, exports #5729) | `CrmServiceProvider` |
+| `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` || `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 
 > **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **60 classes `JsonResource`** de l'API vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
 | `Modules/TravelAgency` | ✅ routes/modules/travelagency.php | 🔶 fondations verticale (squelette DDD complet + manifest, TRAVEL-101..108, 201..203) | `TravelAgencyServiceProvider` |
+| `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 en construction (V0/V1 CRM client — issues #5707→#5731) | `CrmServiceProvider` |
 
 **Légende :** ✅ complet | 🔄 migration partielle en cours
 

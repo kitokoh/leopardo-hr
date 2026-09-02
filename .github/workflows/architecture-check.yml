@@ -171,6 +171,12 @@ jobs:
       - name: .claim-marker forbidden in working tree (issue #5447)
         run: bash dev-hub/tools/check-no-claim-marker.sh
 
+      - name: Check CRM client module boundary imports (issue #5745)
+        # Garde orientée CRM client : HARD BLOCK des imports vers le CRM
+        # commercial (Platform/Marketing), Payroll et Accounting ; tout autre
+        # import inter-module exige une exemption justifiée dans
+        # crm-boundary-allowlist.txt.
+        run: bash dev-hub/tools/check-crm-boundary-imports.sh api
       - name: Runbook coverage guard par BC — backup/restore/rollback (issue #5873, MAT-015)
         run: bash dev-hub/tools/check-runbooks.sh
       - name: Golden journeys guard — routes des parcours critiques (issue #5871, MAT-013)
@@ -363,6 +369,12 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Check webhook event catalog drift (issue #5744)
+        # Contrat partenaire : AVAILABLE_EVENTS ↔ WebhookListener::EVENT_NAMES.
+        # Annoncé non émis = contrat fantôme ; émis non annoncé = contrat
+        # implicite ; nom invalide = contrat cassé. Allowlist justifiée pour
+        # les événements planifiés (ADR 0010).
+        run: bash dev-hub/tools/check-webhook-event-catalog.sh api
       - name: Event catalogue guard self-test (MAT-006 / issue #5864)
         run: python3 dev-hub/tools/check-event-catalogue-test.py
 

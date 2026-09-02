@@ -102,6 +102,23 @@
       ]
     },
     {
+      "name": "CrmTaskOverdue",
+      "class": "App\\Events\\CrmTaskOverdue",
+      "owner": "BC-17 CRM",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "companyId": "int",
+        "taskId": "int",
+        "assigneeId": "?int",
+        "title": "string",
+        "dueAtIso": "?string"
+      },
+      "consumers": [
+        "App\\Listeners\\NotifyCrmTaskOverdue"
+      ]
+    },
+    {
       "name": "EmployeeArchived",
       "class": "App\\Events\\EmployeeArchived",
       "owner": "BC-04 HR",
