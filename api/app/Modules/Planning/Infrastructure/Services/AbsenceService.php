@@ -9,9 +9,9 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
-use App\Exceptions\AbsenceDateConflictException;
-use App\Exceptions\AbsenceNotPendingException;
-use App\Exceptions\InsufficientLeaveBalanceException;
+use App\Modules\Planning\Domain\Exceptions\AbsenceDateConflictException;
+use App\Modules\Planning\Domain\Exceptions\AbsenceNotPendingException;
+use App\Modules\Planning\Domain\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
@@ -77,7 +77,7 @@ class AbsenceService
                     : $this->currentAvailableBalance($employee, $typeId, $year);
 
                 if ($balance < $daysCount) {
-                    throw new InsufficientLeaveBalanceException($balance, $daysCount);
+                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', $balance, $daysCount));
                 }
             }
 
@@ -152,7 +152,7 @@ class AbsenceService
     public function approve(Absence $absence, Employee $approver): Absence
     {
         if ($absence->status !== 'pending') {
-            throw new AbsenceNotPendingException;
+            throw new AbsenceNotPendingException((string) $absence->id);
         }
 
         DB::transaction(function () use ($absence, $approver) {
@@ -207,7 +207,7 @@ class AbsenceService
                 $available = (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending;
 
                 if ($available < $days) {
-                    throw new InsufficientLeaveBalanceException(max(0.0, $available), $days);
+                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', max(0.0, $available), $days));
                 }
 
                 $snapshot->update([
@@ -254,7 +254,7 @@ class AbsenceService
     public function reject(Absence $absence, string $reason): Absence
     {
         if (! in_array($absence->status, ['pending', 'approved'])) {
-            throw new AbsenceNotPendingException;
+            throw new AbsenceNotPendingException((string) $absence->id);
         }
 
         DB::transaction(function () use ($absence, $reason) {
