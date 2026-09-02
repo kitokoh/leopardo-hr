@@ -233,6 +233,50 @@ readonly class AuthService
         }
     }
 
+    /**
+     * #6541 — résolution d'un employé pour les surfaces WEB (session) :
+     * même chemin que login() (lookup public.user_lookups → schéma tenant →
+     * fallback search_path par défaut), sans lever d'exception : retourne
+     * null si introuvable. N'émet aucun token.
+     */
+    public function resolveEmployeeForLogin(string $email): ?Employee
+    {
+        $lookup = null;
+        if ($this->lookupTableExists()) {
+            $lookup = DB::table($this->lookupTable())
+                ->where('email', $email)
+                ->first();
+        }
+
+        if ($lookup) {
+            $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+            if ($lookupSchema && $this->isSafeSchemaName($lookupSchema) && $this->tenantEmployeesTableExists($lookupSchema)) {
+                $this->setTenantSearchPath($lookupSchema);
+
+                /** @var Employee|null $employee */
+                $employee = Employee::withoutGlobalScopes()
+                    ->with('company')
+                    ->where('company_id', $lookup->company_id)
+                    ->where('id', $lookup->employee_id)
+                    ->first();
+
+                if ($employee instanceof Employee) {
+                    return $employee;
+                }
+            }
+        }
+
+        /** @var Employee|null $employee */
+        $employee = Employee::withoutGlobalScopes()
+            ->with('company')
+            ->where('email', $email)
+            ->first();
+        $employee?->syncUserLookup();
+
+        return $employee;
+    }
+
     private function lookupTable(): string
     {
         return DB::getDriverName() === 'pgsql' ? 'public.user_lookups' : 'user_lookups';

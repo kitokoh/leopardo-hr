@@ -222,4 +222,37 @@ class EmailBounceWebhookControllerTest extends TestCase
             'email' => 'bounce-target-'.$company->id.'@example.test',
         ]);
     }
+
+
+    public function test_invalid_payload_422_does_not_orphan_idempotency_reservation(): void
+    {
+        // #6561 — la validation passe AVANT begin() : un payload invalide doit
+        // renvoyer 422 sans laisser de réservation orpheline, et une
+        // redelivrance valide du même payload (même eventId) est traitée
+        // normalement au lieu d'être répondu « vide ».
+        $employee = $this->employee();
+        $this->bindLookupStub($employee);
+
+        $invalid = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => 'not-an-email',
+            'event' => 'bounce',
+        ]);
+
+        $invalid->assertStatus(422);
+
+        $valid = $this->postJson('/api/v1/webhooks/email-bounce', [
+            'email' => $employee->email,
+            'event' => 'bounce',
+            'reason' => 'reservation released',
+        ]);
+
+        $valid->assertOk()->assertJsonPath('received', true);
+        $this->assertNotNull($employee->fresh()?->email_bounced_at);
+        $this->assertDatabaseHas('communication_events', [
+            'employee_id' => $employee->id,
+            'event_name' => 'email_provider_webhook',
+            'status' => 'bounced',
+            'error_message' => 'reservation released',
+        ]);
+    }
 }

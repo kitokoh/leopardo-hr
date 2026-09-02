@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\HR\Infrastructure\Services\DepartureNoticeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Récapitulatif du préavis légal (issue #5325, gap G2).
@@ -50,4 +51,6 @@ class DepartureNoticeController extends Controller
             'data' => $this->service->summaryFor($employee),
         ]);
     }
+
+
 }

@@ -7,6 +7,7 @@ return [
     'logout_success' => 'Logout successful.',
     'session_expired' => 'Your session has expired. Please log in again.',
     'account_suspended' => 'Your account has been suspended. Contact your manager.',
+    'account_locked' => 'Account temporarily locked. Please try again later.',
     'welcome' => 'Welcome :name!',
     'password_changed' => 'Password changed successfully.',
     'password_reset_sent' => 'If an account exists for this email, a reset link has been sent.',

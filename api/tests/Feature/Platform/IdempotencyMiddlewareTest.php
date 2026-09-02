@@ -50,6 +50,25 @@ class IdempotencyMiddlewareTest extends TestCase
         });
     }
 
+    public function test_degraded_cache_does_not_block_writes_or_500(): void
+    {
+        // #6557 — Redis injoignable : les erreurs cache sont avalées
+        // (fail-open journalisé) — la requête est traitée normalement, pas de
+        // 500 ni de 409 permanent.
+        Cache::shouldReceive('get')->andThrow(new \RuntimeException('redis down'));
+        Cache::shouldReceive('add')->andThrow(new \RuntimeException('redis down'));
+        Cache::shouldReceive('put')->andThrow(new \RuntimeException('redis down'));
+        Cache::shouldReceive('forget')->andThrow(new \RuntimeException('redis down'));
+
+        $response = $this->postJson('/api/_test/rtmx-idem', ['n' => 42], [
+            'Authorization' => self::AUTH,
+            'Idempotency-Key' => 'rtmx-degraded-key-001',
+        ]);
+
+        $response->assertOk();
+        $this->assertSame(42, $response->json('received'));
+    }
+
     public function test_without_key_every_request_is_processed(): void
     {
         $first = $this->postJson('/api/_test/rtmx-idem', ['n' => 1], ['Authorization' => self::AUTH]);

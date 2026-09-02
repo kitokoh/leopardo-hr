@@ -523,4 +523,56 @@ class SSOOidcFlowTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
     }
+
+
+    public function test_callback_rejects_unknown_kid(): void
+    {
+        // #6542 — fail-closed : un kid inconnu du JWKS doit être rejeté
+        // (plus de repli sur la première clé RSA du JWKS).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        // Même clé, mais header kid qui ne matche aucun kid du JWKS.
+        $idToken = $this->signIdToken($privateKey, $nonce, kid: 'unknown-key');
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertStatus(422);
+    }
+
+
+    public function test_callback_accepts_rs384_token(): void
+    {
+        // #6542 — l'algorithme du header (RS384) doit être mappé vers
+        // OPENSSL_ALGO_SHA384 (avant : toujours SHA256 → login SSO cassé).
+        $this->configureOidc();
+        [$privateKey, $jwks] = $this->rsaKeyPair();
+        $this->seedEmployeeForSso();
+
+        $authorize = $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/authorize')->assertOk()->json('data.authorize_url');
+        $authorizeQuery = parse_url($authorize, PHP_URL_QUERY);
+        parse_str(is_string($authorizeQuery) ? $authorizeQuery : '', $query);
+        $state = is_string($query['state'] ?? null) ? $query['state'] : '';
+        $nonce = is_string($query['nonce'] ?? null) ? $query['nonce'] : '';
+
+        Http::fake([
+            $this->issuer.'/jwks*' => Http::response(['keys' => [$jwks]], 200),
+        ]);
+
+        $idToken = $this->signIdToken($privateKey, $nonce, alg: 'RS384');
+
+        $this->getJson('/api/v1/sso/oidc/'.$this->company->id.'/callback?state='.$state.'&id_token='.urlencode($idToken))
+            ->assertOk()
+            ->assertJsonPath('data.employee.email', 'sso.employee@example.com');
+    }
 }

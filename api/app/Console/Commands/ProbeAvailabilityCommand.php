@@ -48,10 +48,19 @@ class ProbeAvailabilityCommand extends Command
             'redis' => $redisUp ? 'up' : 'down',
             // Meilleur → pire : Redis si dispo (perf), sinon file (0 quota).
             'CACHE_STORE' => $redisUp ? 'redis' : 'file',
+            // #6557 — la déduplication d'idempotence (RTMX #5277) repose sur un
+            // cache PARTAGÉ : CACHE_STORE=file la casse silencieusement en
+            // multi-instance. Le flag explicite permet au boot/ops de détecter
+            // la dégradation au lieu d'un fallback discret.
+            'CACHE_DEGRADED' => $redisUp ? '0' : '1',
             'SESSION_DRIVER' => $redisUp ? 'redis' : 'file',
             // Queue : database volontairement FIXE (voir docblock).
             'QUEUE_CONNECTION' => 'database',
         ];
+
+        if (! $redisUp) {
+            $this->warn('[infra] Redis injoignable — CACHE_STORE=file : la déduplication idempotence est DÉSACTIVÉE (multi-instance).');
+        }
 
         if ($this->option('format') === 'env') {
             foreach ($result as $key => $value) {
