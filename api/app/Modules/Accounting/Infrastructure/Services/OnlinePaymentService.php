@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Application\Services;
+namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;

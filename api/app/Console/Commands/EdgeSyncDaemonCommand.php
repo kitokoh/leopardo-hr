@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
  * This daemon is the *only* Edge-side sync entry point: it reads the local
  * sync_queue and performs a real HTTP push/pull against the Cloud API via
  * {@see EdgeDaemonSyncClient}. It must never call
- * App\Modules\EdgeSync\Application\Services\SyncEngineService directly —
+ * App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService directly —
  * that service's applyToCloud()/CloudDeltaBuilder logic is Cloud-only and is
  * invoked exclusively by EdgeNodeController::pushFromEdge()/pullDelta() in
  * response to this daemon's HTTP calls, never by the daemon's own loop.

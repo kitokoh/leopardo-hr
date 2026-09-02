@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Accounting\Application\Jobs;
+namespace App\Modules\Accounting\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;

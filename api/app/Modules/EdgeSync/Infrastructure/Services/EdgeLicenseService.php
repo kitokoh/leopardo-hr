@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\EdgeSync\Application\Services;
+namespace App\Modules\EdgeSync\Infrastructure\Services;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
@@ -53,6 +53,7 @@ class EdgeLicenseService
         );
     }
 
+    /** @return array<string, mixed> */
     public function validateLicense(string $signedPayload): array
     {
         if (empty($signedPayload)) {
@@ -93,6 +94,7 @@ class EdgeLicenseService
      * Sign a payload as RS256 JWT.
      * Falls back to HS256 with app key when no RSA key configured (dev/test).
      */
+    /** @param array<string, mixed> $payload */
     protected function sign(array $payload): string
     {
         $privateKey = config('edge.license_private_key');
@@ -102,8 +104,8 @@ class EdgeLicenseService
         }
 
         // Dev/test fallback — HS256 with app key
-        $header  = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
-        $body    = base64url_encode(json_encode($payload));
+        $header  = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']) ?: '');
+        $body    = base64url_encode(json_encode($payload) ?: '');
         $sig     = base64url_encode(hash_hmac('sha256', "$header.$body", config('app.key'), true));
 
         return "$header.$body.$sig";
@@ -116,6 +118,7 @@ class EdgeLicenseService
      * (issue #3317). Le décodage sans vérification n'est toléré qu'en
      * environnement local/testing (développement sans paire RSA).
      */
+    /** @return array<string, mixed> */
     protected function decode(string $token): array
     {
         $publicKey = config('edge.license_public_key');

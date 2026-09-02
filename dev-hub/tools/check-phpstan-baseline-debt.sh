@@ -174,10 +174,20 @@ do_guard() {
 
     # key = message|identifier|path ; value = count
     declare -A base_counts=()
+    # message|identifier -> "path=count " (pour détecter les déplacements de fichiers)
+    declare -A base_by_msgid=()
     while IFS=$'\t' read -r message identifier count path; do
       [ -z "$path" ] && continue
       base_counts["$message|$identifier|$path"]=$count
+      base_by_msgid["$message|$identifier"]="${base_by_msgid["$message|$identifier"]:-}${path}=${count} "
     done < "$base_entries"
+
+    # chemins présents côté HEAD (pour savoir si l'ancien chemin a disparu)
+    declare -A head_keys=()
+    while IFS=$'\t' read -r message identifier count path; do
+      [ -z "$path" ] && continue
+      head_keys["$message|$identifier|$path"]=1
+    done < "$head_entries"
 
     local file_violations=0
     while IFS=$'\t' read -r message identifier count path; do
@@ -185,6 +195,24 @@ do_guard() {
       local key="$message|$identifier|$path"
       local base_count="${base_counts[$key]:-0}"
       if [ "$base_count" -eq 0 ]; then
+        # Déplacement de fichier (refactor) ? Même message|identifier, même count,
+        # et l'ancien chemin a disparu de HEAD → déplacement, pas de dette nouvelle
+        # (ex: Application/Services -> Infrastructure/Services, issue #6571).
+        local moved_path=""
+        local msgid_entries="${base_by_msgid["$message|$identifier"]:-}"
+        local entry
+        for entry in $msgid_entries; do
+          local bpath="${entry%%=*}"
+          local bcount="${entry#*=}"
+          if [ "$bcount" = "$count" ] && [ "${head_keys["$message|$identifier|$bpath"]:-0}" -eq 0 ]; then
+            moved_path="$bpath"
+            break
+          fi
+        done
+        if [ -n "$moved_path" ]; then
+          echo "ℹ️  $bf : entrée déplacée (${moved_path} → ${path}, count $count) — pas de dette nouvelle"
+          continue
+        fi
         echo "❌ $bf : NOUVELLE entrée baseline — $path ($identifier, count $count)"
         file_violations=$((file_violations + 1))
       elif [ "$count" -gt "$base_count" ]; then

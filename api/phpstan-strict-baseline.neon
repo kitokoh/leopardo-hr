@@ -2298,73 +2298,73 @@ parameters:
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\CloudDeltaBuilder\:\:build\(\) should return array\{since\: string, entities\: array\<string, list\<array\<string, mixed\>\>\>\} but returns array\{since\: string, entities\: array\<string, non\-empty\-array\<mixed\>\>\}\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/CloudDeltaBuilder.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/CloudDeltaBuilder.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\CloudDeltaBuilder\:\:countDelta\(\) has parameter \$delta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/CloudDeltaBuilder.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/CloudDeltaBuilder.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\EdgeLicenseService\:\:decode\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/EdgeLicenseService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/EdgeLicenseService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\EdgeLicenseService\:\:sign\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/EdgeLicenseService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/EdgeLicenseService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\EdgeLicenseService\:\:validateLicense\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/EdgeLicenseService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/EdgeLicenseService.php
 
 		-
 			message: '#^Parameter \#1 \$data of function App\\Modules\\EdgeSync\\Application\\Services\\base64url_encode expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 2
-			path: app/Modules/EdgeSync/Application/Services/EdgeLicenseService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/EdgeLicenseService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyAbsence\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyAttendanceLog\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyGeneric\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:applyToCloud\(\) should return array\{conflict\: bool, conflict_note\: string\|null\} but returns array\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:resolveConflict\(\) has parameter \$result with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Method App\\Modules\\EdgeSync\\Application\\Services\\SyncEngineService\:\:sync\(\) should return App\\Modules\\EdgeSync\\Domain\\Models\\SyncLog but returns App\\Modules\\EdgeSync\\Domain\\Models\\SyncLog\|null\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Modules/EdgeSync/Application/Services/SyncEngineService.php
+			path: app/Modules/EdgeSync/Infrastructure/Services/SyncEngineService.php
 
 		-
 			message: '#^Class App\\Modules\\EdgeSync\\Domain\\Models\\EdgeLicense uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'

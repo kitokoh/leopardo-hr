@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\EdgeSync\Application\Services;
+namespace App\Modules\EdgeSync\Infrastructure\Services;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Illuminate\Support\Carbon;
@@ -71,7 +71,7 @@ class CloudDeltaBuilder
                     ->toArray();
 
                 if (! empty($records)) {
-                    $delta['entities'][$table] = $records;
+                    $delta['entities'][$table] = array_values($records);
                 }
             } catch (\Throwable $e) {
                 // Table might not exist in all tenant schemas — skip gracefully
@@ -88,6 +88,7 @@ class CloudDeltaBuilder
     /**
      * Count total records in the delta (for logging/metrics).
      */
+    /** @param array{entities?: array<string, array<int, mixed>>} $delta */
     public function countDelta(array $delta): int
     {
         return array_sum(array_map('count', $delta['entities'] ?? []));

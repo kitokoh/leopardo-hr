@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\HR\Domain\Models\TrainingCourse;
