@@ -705,7 +705,7 @@ abstract class AppLocalizations {
   /// No description provided for @modulesRestaurant.
   ///
   /// In fr, this message translates to:
-  /// **'Écran cuisine'**
+  /// **'Point de vente (POS)'**
   String get modulesRestaurant;
 
   /// No description provided for @emailsInvitationSubject.
@@ -15430,6 +15430,138 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Perdu'**
   String get crmPipelineStageLost;
+
+  /// No description provided for @restaurantPosTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente (POS)'**
+  String get restaurantPosTitle;
+
+  /// No description provided for @restaurantPosSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prise de commande et encaissement'**
+  String get restaurantPosSubtitle;
+
+  /// No description provided for @restaurantPosProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catalogue'**
+  String get restaurantPosProducts;
+
+  /// No description provided for @restaurantPosCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande en cours'**
+  String get restaurantPosCart;
+
+  /// No description provided for @restaurantPosNoproducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun produit disponible.'**
+  String get restaurantPosNoproducts;
+
+  /// No description provided for @restaurantPosNosession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune caisse ouverte pour cette branche.'**
+  String get restaurantPosNosession;
+
+  /// No description provided for @restaurantPosOpensession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la caisse'**
+  String get restaurantPosOpensession;
+
+  /// No description provided for @restaurantPosNoorder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune commande en cours.'**
+  String get restaurantPosNoorder;
+
+  /// No description provided for @restaurantPosNeworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantPosNeworder;
+
+  /// No description provided for @restaurantPosSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre'**
+  String get restaurantPosSubmit;
+
+  /// No description provided for @restaurantPosConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer (cuisine)'**
+  String get restaurantPosConfirm;
+
+  /// No description provided for @restaurantPosBill.
+  ///
+  /// In fr, this message translates to:
+  /// **'Addition'**
+  String get restaurantPosBill;
+
+  /// No description provided for @restaurantPosPaycash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser espèces'**
+  String get restaurantPosPaycash;
+
+  /// No description provided for @restaurantPosPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande payée'**
+  String get restaurantPosPaid;
+
+  /// No description provided for @restaurantPosSubtotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sous-total'**
+  String get restaurantPosSubtotal;
+
+  /// No description provided for @restaurantPosTax.
+  ///
+  /// In fr, this message translates to:
+  /// **'TVA'**
+  String get restaurantPosTax;
+
+  /// No description provided for @restaurantPosTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get restaurantPosTotal;
+
+  /// No description provided for @restaurantPosRemoveitem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get restaurantPosRemoveitem;
+
+  /// No description provided for @restaurantPosUncategorized.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans catégorie'**
+  String get restaurantPosUncategorized;
+
+  /// No description provided for @restaurantPosLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le point de vente.'**
+  String get restaurantPosLoaderror;
+
+  /// No description provided for @restaurantPosLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du point de vente…'**
+  String get restaurantPosLoading;
+
+  /// No description provided for @restaurantPosActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible, réessayez.'**
+  String get restaurantPosActionerror;
 
   /// No description provided for @restaurantKitchentitle.
   ///

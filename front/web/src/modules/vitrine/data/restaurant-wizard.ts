@@ -81,9 +81,9 @@ export const WIZARD_COPY: Record<VitrineLocale, WizardCopy> = {
     errorRetry: 'Could not build your pack. Try again.'
   },
   tr: { title: 'Ben bir restoran sahibiyim', subtitle: '3 soruya yanıt verin: restoranınıza uygun Leopardo paketini otomatik önerelim. İşaretleyin, indirin.', start: 'Başla', next: 'Paketimi gör', back: 'Geri', loading: 'Paketiniz hesaplanıyor…', questionsTitle: 'Restoranınızdan bahsedin', suggestionsTitle: 'Size önerilen paket', suggestionsSubtitle: 'Yanıtlarınıza göre önceden işaretlendi.', keep: 'Devam', uncheckNote: 'Seçilen öğeler hesap oluşturulduğunda etkinleşir.', downloadTitle: 'Paketinizi indirin', downloadSubtitle: 'Uygulamaları kurmak için QR kodu okutun.', qrHint: 'Kurulum için okutun', edgeTitle: 'Yerel Edge düğümü (çevrimdışı)', edgeCmdHint: 'Yerel düğümü restorandaki bir mini-PC\'ye kurun:', guideLabel: 'Başlangıç rehberi', includedLabel: 'Çalışma alanınıza dahil',
-    errorRetry: 'Paket hesaplanamadı. Tekrar deneyin.' restart: 'Baştan başla' },
+    errorRetry: 'Paket hesaplanamadı. Tekrar deneyin.', restart: 'Baştan başla' },
   ar: { title: 'أنا صاحب مطعم', subtitle: 'أجب عن 3 أسئلة وسنقترح عليك تلقائيًا حزمة Leopardo المناسبة لمطعمك. حدد ما تحتاجه وحمّله.', start: 'ابدأ', next: 'عرض حزمتي', back: 'رجوع', loading: 'جارٍ حساب الحزمة…', questionsTitle: 'حدثنا عن مطعمك', suggestionsTitle: 'هذه هي الحزمة المقترحة لك', suggestionsSubtitle: 'محددة مسبقًا حسب إجاباتك.', keep: 'متابعة', uncheckNote: 'سيتم تفعيل العناصر المحددة عند إنشاء الحساب.', downloadTitle: 'حمّل حزمتك', downloadSubtitle: 'امسح رمز QR لتثبيت التطبيقات.', qrHint: 'امسح للتثبيت', edgeTitle: 'عقدة Edge المحلية (بدون اتصال)', edgeCmdHint: 'ثبّت العقدة المحلية على جهاز صغير في المطعم:', guideLabel: 'دليل البدء', includedLabel: 'مضمن في مساحتك',
-    errorRetry: 'تعذر حساب الحزمة. حاولوا مرة أخرى.' restart: 'إعادة البدء' },
+    errorRetry: 'تعذر حساب الحزمة. حاولوا مرة أخرى.', restart: 'إعادة البدء' },
 };
 
 const LEAD_COPY: Record<

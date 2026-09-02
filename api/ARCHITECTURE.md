@@ -88,6 +88,7 @@ consommateurs).
 | `Modules/Expense` | ✅ routes/modules/expense.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-011) | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/modules/notification.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
+| `Modules/Restaurant` | 🔶 routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |

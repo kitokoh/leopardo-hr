@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-07-19 (audit doc) | Phase 5 en cours — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 20 modules actifs
+## 1. Tableau de l'état DDD — 21 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -26,6 +26,7 @@
 | **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Restaurant**  | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | ⚠️ |
 
 > ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
 > — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).

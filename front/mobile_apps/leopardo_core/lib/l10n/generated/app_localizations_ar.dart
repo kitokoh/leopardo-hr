@@ -320,7 +320,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modulesEvaluations => 'التقييمات';
 
   @override
-  String get modulesRestaurant => 'المطبخ';
+  String get modulesRestaurant => 'المطعم';
 
   @override
   String get emailsInvitationSubject =>
@@ -8203,6 +8203,72 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get crmPipelineStageLost => 'خاسرة';
+
+  @override
+  String get restaurantPosTitle => 'نقطة البيع';
+
+  @override
+  String get restaurantPosSubtitle => 'أخذ الطلبات والتحصيل';
+
+  @override
+  String get restaurantPosProducts => 'قائمة المنتجات';
+
+  @override
+  String get restaurantPosCart => 'الطلب الحالي';
+
+  @override
+  String get restaurantPosNoproducts => 'لا توجد منتجات متاحة.';
+
+  @override
+  String get restaurantPosNosession => 'لا توجد جلسة نقدية مفتوحة لهذا الفرع.';
+
+  @override
+  String get restaurantPosOpensession => 'فتح الجلسة النقدية';
+
+  @override
+  String get restaurantPosNoorder => 'لا يوجد طلب حالي.';
+
+  @override
+  String get restaurantPosNeworder => 'طلب جديد';
+
+  @override
+  String get restaurantPosSubmit => 'إرسال';
+
+  @override
+  String get restaurantPosConfirm => 'تأكيد (المطبخ)';
+
+  @override
+  String get restaurantPosBill => 'الفاتورة';
+
+  @override
+  String get restaurantPosPaycash => 'الدفع نقدًا';
+
+  @override
+  String get restaurantPosPaid => 'تم دفع الطلب';
+
+  @override
+  String get restaurantPosSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get restaurantPosTax => 'الضريبة';
+
+  @override
+  String get restaurantPosTotal => 'الإجمالي';
+
+  @override
+  String get restaurantPosRemoveitem => 'إزالة';
+
+  @override
+  String get restaurantPosUncategorized => 'بدون تصنيف';
+
+  @override
+  String get restaurantPosLoaderror => 'تعذر تحميل نقطة البيع.';
+
+  @override
+  String get restaurantPosLoading => 'جارٍ تحميل نقطة البيع…';
+
+  @override
+  String get restaurantPosActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
 
   @override
   String get restaurantKitchentitle => 'شاشة المطبخ';

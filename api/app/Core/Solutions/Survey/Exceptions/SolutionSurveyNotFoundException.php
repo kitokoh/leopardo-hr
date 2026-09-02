@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Solutions\Survey\Exceptions;
 
+use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use RuntimeException;
 
 /**
  * Questionnaire de solution inconnu (fail-closed).
  *
- * @see \App\Core\Solutions\Survey\SolutionSurveyRegistry::resolve()
+ * @see SolutionSurveyRegistry::resolve()
  */
 final class SolutionSurveyNotFoundException extends RuntimeException
 {

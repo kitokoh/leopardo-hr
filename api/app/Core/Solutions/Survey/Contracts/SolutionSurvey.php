@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Solutions\Survey\Contracts;
 
+use App\Core\Solutions\Survey\SolutionSurveyEngine;
+
 /**
  * Questionnaire de pré-qualification d'une solution sectorielle.
  *
@@ -12,7 +14,7 @@ namespace App\Core\Solutions\Survey\Contracts;
  *  - un catalogue de « packages » suggérables (module, app mobile,
  *    dispositif, Edge…) ;
  *  - des règles de suggestion : à partir des réponses, le moteur
- *    {@see \App\Core\Solutions\Survey\SolutionSurveyEngine} détermine
+ *    {@see SolutionSurveyEngine} détermine
  *    les packages pertinents, chacun avec une raison lisible.
  *
  * Le moteur est volontairement DÉTERMINISTE (règles pures en PHP, aucun
