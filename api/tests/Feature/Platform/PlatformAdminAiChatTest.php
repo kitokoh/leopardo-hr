@@ -9,7 +9,6 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -114,6 +113,7 @@ class PlatformAdminAiChatTest extends TestCase
             ->assertStatus(404)
             ->assertJsonPath('error', 'AI_MESSAGES_UNAVAILABLE');
     }
+
     public function test_conversations_index_returns_200_with_message_count_when_table_exists(): void
     {
         // #6690 (cause racine n°2) : `json_array_length` est invalide sur une
