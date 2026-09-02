@@ -1956,11 +1956,6 @@ parameters:
 			count: 1
 			path: app/Support/I18nCatalog.php
 
-		-
-			message: '#^Trait App\\Traits\\Auditable is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Traits/Auditable.php
 
 		-
 			message: '#^Cannot call method call\(\) on mixed\.$#'
