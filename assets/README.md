@@ -1,40 +1,35 @@
-# Visual Assets Directory — Leopardo RH
+# assets/ — Zone d'archives visuelles (non déployée)
 
-This directory contains high-quality visual assets for documentation, marketing, and developer onboarding.
+> Statut : **archive**. Rien sous `assets/` n'est déployé par les pipelines
+> (vitrine = `front/web/public/`). Les seules références vivantes sont
+> `README.md:21` (`branding/og-banner.png`) et
+> `docs/design/REFONTE_PREMIUM_STATUT.md` (4 mockups `design/mockups/`).
 
-## 📁 Directory Structure
+## Nettoyage #6605 (audit Vague 3, 2026-09-01)
 
-- 🖼 **[/screenshots/](screenshots/)** — High-resolution captures of the Web and Mobile interfaces (includes `web_dashboard/`, `web_showcase/`, `admin/`, `mobile_employee/`, `mobile_manager/`, and `marketing/`).
-- 🎞 **[/videos/](videos/)** — Product demos and feature walkthroughs.
+- **86 pointeurs LFS dupliqués supprimés** : les fichiers `screenshots/{admin,web_dashboard,mobile_employee,mobile_manager}/*`
+  pointaient vers 4 images uniques (mêmes `oid sha256:`) sous des dizaines de noms différents.
+  Un représentant par groupe est conservé :
+  - `screenshots/admin/analytics.png` (23 fichiers identiques → 1)
+  - `screenshots/mobile_manager/absences.png` (31 → 1)
+  - `screenshots/mobile_employee/absences.png` (20 → 1)
+  - `screenshots/web_dashboard/absences.png` (11 → 1)
+  - + 6 doublons croisés (company-request, register, user-home, user-register, settings/guides) → 1 chacun.
+- `branding/logo-240.png` et `branding/og-banner.png` sont les **2 seuls vrais binaires** (hors LFS) — conservés.
+- `videos/*` (3 captures) : conservées (références historiques README/archives), non déployées.
 
-> Sequence/class/state diagrams (Mermaid Markdown) live in
-> [`docs/dossierdeConception/19_diagrammes_uml/`](../docs/dossierdeConception/19_diagrammes_uml/) — that
-> is the canonical location. There is no `/diagrams/` or `/banners/` subfolder here; the
-> two quick reference diagrams below live directly in this README.
+## Zones canoniques
 
-## 🏗 Key Diagrams
+| Zone | Rôle | Déployée |
+|---|---|---|
+| `front/web/public/` | Visuels de la vitrine (binaires réels, hors LFS) | ✅ Vercel/Render |
+| `assets/branding/` | Logos/OG (LFS) référencés par README | ❌ |
+| `assets/design/mockups/` | Maquettes de référence (LFS) | ❌ |
+| `assets/screenshots/` | Captures d'archive (LFS, dédupées) | ❌ |
+| `marketing/` + `shared/mediaForMarketing/` | **Zones concurrentes historiques** — décision : ne plus y ajouter de visuel ; la vitrine est la source unique des assets marketing déployés. `marketing/` racine est migré vers `docs/GOTO_MARKET` (PR #6657). |
 
-### RBAC System Flow
-```mermaid
-graph TD
-    User[User Session] --> Role{Has Role?}
-    Role -- SuperAdmin --> Full[All Tenants & Platform]
-    Role -- Manager --> Tenant[Tenant Data + Approvals]
-    Role -- Employee --> Self[Personal Data + Attendance]
-    Role -- Finance --> Pay[Payroll & Reports]
-```
+## Garde recommandée (suivi)
 
-### AI Orchestration
-```mermaid
-graph LR
-    API[Laravel API] --> Queue[Redis Queue]
-    Queue --> Worker[AI Worker]
-    Worker --> LLM[Claude/GPT-4]
-    LLM --> Worker
-    Worker --> DB[(Database)]
-    DB --> UI[Dashboard]
-```
-
-## 📸 Branding Assets
-
-Official icons and splash screens can be found in `docs/assets/mobile-branding/`.
+Un garde CI (type `check-lfs-pointer-consistency.sh`) doit échouer si un
+nouveau pointeur LFS duplique un oid existant sous `assets/screenshots/`
+(anti-réintroduction des 86 doublons). Non câblé à ce jour — voir issue #6605.
