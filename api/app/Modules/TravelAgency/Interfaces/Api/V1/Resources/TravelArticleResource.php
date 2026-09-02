@@ -13,6 +13,16 @@ use Illuminate\Support\Carbon;
  * TRAVEL-901 (#6104) — Représentation API d'un article.
  *
  * @mixin TravelArticle
+ *
+ * @property-read int|null $category_id
+ * @property-read string $slug
+ * @property-read string $title
+ * @property-read string $body_redacted
+ * @property-read string $status
+ * @property-read string|null $author_type
+ * @property-read int|null $author_id
+ * @property-read Carbon|null $published_at
+ * @property-read Carbon|null $moderated_at
  */
 class TravelArticleResource extends JsonResource
 {

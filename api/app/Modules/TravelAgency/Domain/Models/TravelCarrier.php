@@ -11,6 +11,7 @@ use Database\Factories\TravelCarrierFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Compagnie de transport de la verticale TravelAgency (TRAVEL-204, issue #6017).
@@ -39,6 +40,8 @@ class TravelCarrier extends Model
         'type' => CarrierType::class,
         'status' => TravelRecordStatus::class,
     ];
+
+
 
 
 }

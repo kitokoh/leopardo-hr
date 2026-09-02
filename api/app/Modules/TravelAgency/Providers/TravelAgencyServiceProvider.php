@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Providers;
 
+use App\Console\Commands\TravelOutboxDispatchCommand;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
+use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
@@ -12,6 +16,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
+use App\Modules\TravelAgency\Domain\Models\TravelComment;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
@@ -29,12 +34,15 @@ use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelEventPublisherConsumer;
+use App\Modules\TravelAgency\Policies\TravelArticlePolicy;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
 use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
+use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
 use App\Modules\TravelAgency\Policies\TravelLoyaltyPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
@@ -42,6 +50,7 @@ use App\Modules\TravelAgency\Policies\TravelQuotePolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
+use App\Modules\TravelAgency\Policies\TravelReportPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelWebhookSubscriptionPolicy;
@@ -84,6 +93,12 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
             return new TravelOutboxConsumerRegistry;
         });
+        // TRAVEL-506 (#6076) — recalcul des read models de reporting.
+        // TRAVEL-414 (#6066) — consommation de l'outbox événementielle.
+        $this->commands([
+            RecalculateTravelReadModelsCommand::class,
+            TravelOutboxDispatchCommand::class,
+        $this->app->singleton(TravelOutboxConsumerRegistry::class);
     }
 
     public function boot(): void
@@ -155,5 +170,6 @@ use App\Modules\TravelAgency\Policies\TravelTouristSitePolicy;
             /** @var TravelOutboxConsumer $consumer */
             $consumer = $this->app->make(TravelEventPublisherConsumer::class);
             $registry->register($consumer);
+        });
         Gate::policy(TravelComment::class, TravelCommentPolicy::class);
         Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));

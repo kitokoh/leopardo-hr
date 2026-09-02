@@ -166,7 +166,7 @@ class TravelHotelController extends Controller
         }
 
         if ($travelHotelRoom->company_id !== $travelHotel->company_id
-            || $travelHotelRoom->hotel_id !== $travelHotel->id) {
+            || (int) $travelHotelRoom->hotel_id !== $travelHotel->id) {
             abort(404);
         }
 
@@ -192,7 +192,7 @@ class TravelHotelController extends Controller
         }
 
         if ($travelHotelRoom->company_id !== $travelHotel->company_id
-            || $travelHotelRoom->hotel_id !== $travelHotel->id) {
+            || (int) $travelHotelRoom->hotel_id !== $travelHotel->id) {
             abort(404);
         }
 

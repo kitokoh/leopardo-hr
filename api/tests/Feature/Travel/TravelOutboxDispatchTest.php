@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
+use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 
 /**
  * TRAVEL-414 (#6066) — Consommation de l'outbox TravelAgency.
@@ -484,4 +485,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
     {
         return $this->applied;
     }
+
+
 }

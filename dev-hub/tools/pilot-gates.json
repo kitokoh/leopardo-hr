@@ -246,7 +246,7 @@
         },
         {
           "id": "observability",
-          "label": "Outbox + jobs surveillés (logs, dead-letter)",
+          "label": "Runbooks exploitation + supervision",
           "status": "pending"
         },
         {

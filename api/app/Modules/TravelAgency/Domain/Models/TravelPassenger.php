@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Passager d'une réservation (TRAVEL-209, issue #6022).
@@ -95,6 +96,8 @@ class TravelPassenger extends Model
     {
         return $this->belongsTo(TravelClass::class, 'class_id');
     }
+
+
 
 
 }

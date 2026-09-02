@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Étape ordonnée d'une route (TRAVEL-206, issue #6019).
@@ -54,6 +55,8 @@ class TravelRouteStop extends Model
     {
         return $this->belongsTo(TravelCity::class, 'city_id');
     }
+
+
 
 
 }

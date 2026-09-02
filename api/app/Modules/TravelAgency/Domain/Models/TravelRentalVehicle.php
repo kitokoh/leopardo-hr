@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Véhicule en location (TRAVEL-212, issue #6025).
@@ -69,6 +70,8 @@ class TravelRentalVehicle extends Model
     {
         return $this->hasMany(TravelRentalVehicleImage::class, 'vehicle_id')->orderBy('position');
     }
+
+
 
 
 }

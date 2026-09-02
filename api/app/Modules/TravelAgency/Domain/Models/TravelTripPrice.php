@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Tarif d'un trajet par classe (TRAVEL-207, issue #6020).
@@ -53,6 +54,8 @@ class TravelTripPrice extends Model
     {
         return $this->belongsTo(TravelClass::class, 'class_id');
     }
+
+
 
 
 }

@@ -15,6 +15,19 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property Carbon $sale_date
+ * @property int $trip_id
+ * @property int $bookings_count
+ * @property int $passengers_count
+ * @property int $revenue_minor
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelDailySale extends Model
 {
     use BelongsToCompany;

@@ -43,7 +43,8 @@ class RecalculateTravelReadModelsCommand extends Command
             return self::SUCCESS;
         }
 
-        $from = $this->option('from') ? (string) $this->option('from') : now()->subDays(30)->toDateString();
+        $fromOption = $this->option('from');
+        $from = is_string($fromOption) && $fromOption !== '' ? $fromOption : now()->subDays(30)->toDateString();
 
         $total = 0;
 

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Hôtel du catalogue TravelAgency (TRAVEL-214, issue #6027).
@@ -56,6 +57,8 @@ class TravelHotel extends Model
     {
         return $this->hasMany(TravelHotelRoom::class, 'hotel_id');
     }
+
+
 
 
 }

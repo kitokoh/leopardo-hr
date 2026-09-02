@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Ville du référentiel TravelAgency (TRAVEL-202, issue #6015).
@@ -48,6 +49,8 @@ class TravelCity extends Model
     {
         return $this->belongsTo(TravelCountry::class, 'country_iso2', 'iso2');
     }
+
+
 
 
 }

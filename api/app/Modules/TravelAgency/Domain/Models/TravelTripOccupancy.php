@@ -15,6 +15,19 @@ use Illuminate\Support\Carbon;
  *
  * @mixin Builder<static>
  */
+/**
+ * @property int $id
+ * @property string $company_id
+ * @property string $trip_id
+ * @property string $departure_date
+ * @property int $seats_sold
+ * @property int $total_seats
+ * @property float $occupancy_rate
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @mixin Builder<static>
+ */
 class TravelTripOccupancy extends Model
 {
     use BelongsToCompany;

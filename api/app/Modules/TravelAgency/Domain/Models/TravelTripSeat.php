@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;use Illuminate\Support\Carbon;
+use Illuminate\Support\Carbon;
 
 /**
  * Siège de l'inventaire d'un trajet (TRAVEL-208, issue #6021).
@@ -48,6 +49,8 @@ class TravelTripSeat extends Model
     {
         return $this->belongsTo(TravelTrip::class, 'trip_id');
     }
+
+
 
 
 }
