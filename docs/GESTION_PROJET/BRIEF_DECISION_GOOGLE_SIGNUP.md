@@ -77,8 +77,8 @@ promesse produit sans rouvrir l'auto-provisionnement d'entreprises complètes.
 
 - Code : `AuthController.php:225-275` (callback Google, 401 UNKNOWN_ACCOUNT, forceCreate demo),
   `googleAuthHref()` (login + checkout), `ProvisionGuidedTrial.php:193` (garde DEMO_MODE).
-- QA : `QA_RAPPORT_2026-08-17.md` (F1 création employé 500 — corrigé ; F2 trial pending — #4948).
+- QA : `docs/qa/QA_RAPPORT_2026-08-17.md` (F1 création employé 500 — corrigé ; F2 trial pending — #4948).
 - Onboarding pilotes : `docs/pilotes/ONBOARDING_PILOTE.md` (« le parcours Google nécessite une
   invitation (#5171) ; ne pas laisser le pilote se heurter au 401 »).
-- Plan : `PLAN_60_JOURS.md` (KPI 1 conversion ≥ 30 %, KPI 2 trial < 2 min).
+- Plan : `PLAN_60_JOURS.md` (racine) (KPI 1 conversion ≥ 30 %, KPI 2 trial < 2 min).
 - Décision antérieure : #3724 (anti-provisionnement silencieux).
