@@ -84,9 +84,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/deliveries/cod-settlements/report', [DeliveryCodSettlementController::class, 'report']);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin/feat/delivery-208-source-contracts
+=======
+>>>>>>> origin/feat/delivery-d01-glossary
             // Notifications destinataire (DELIVERY-206/#6290) — opt-out
             // effectif + outbox (numéros masqués RGPD hors admin).
             Route::post('/deliveries/notifications/opt-out', [DeliveryNotificationController::class, 'optOut']);

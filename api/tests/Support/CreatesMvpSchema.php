@@ -2665,6 +2665,7 @@ trait CreatesMvpSchema
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         // ── BC-26 DELIVERY (delivery_deliveries) ─────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_deliveries'))) {
             Schema::create($this->moduleTable('delivery_deliveries'), function (Blueprint $table): void {
@@ -2782,6 +2783,8 @@ trait CreatesMvpSchema
 >>>>>>> origin/feat/delivery-207-reports
 =======
 >>>>>>> origin/feat/delivery-208-source-contracts
+=======
+>>>>>>> origin/feat/delivery-d01-glossary
     }
 
     private function dropMvpTables(): void
