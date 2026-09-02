@@ -1,3 +1,9 @@
+# ============================================================
+# COMPOSE LARAVEL SAIL — LEGACY (issue #6700)
+# ============================================================
+# App + pgsql en local (hérité Sail). Pour le stack dev complet
+# (api + postgres + redis + mailpit), utiliser le compose RACINE :
+#   docker compose up -d   (à la racine du repo)
 services:
   app:
     build:
