@@ -119,5 +119,6 @@ return [
         'notifications' => 'Bildirimler',
         'evaluations' => 'Degerlendirmeler',
         'restaurant' => 'Satış noktası (POS)',
+        'restaurant' => 'Mutfak ekranı',
     ],
 ];

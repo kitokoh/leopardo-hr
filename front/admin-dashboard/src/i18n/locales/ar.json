@@ -223,7 +223,21 @@
     "hrReportUnavailable": "تعذر إنشاء تقرير الموارد البشرية (نقطة النهاية غير متاحة).",
     "clientSpaceNote": "التصديرات متاحة في مساحة العميل.",
     "historyClientOnly": "السجل مرئي للعملاء فقط.",
-    "historyError": "تعذر تحميل السجل."
+    "historyError": "تعذر تحميل السجل.",
+    "colLicense": "الترخيص",
+    "colLastSync": "آخر مزامنة",
+    "colActions": "إجراءات",
+    "sync": "مزامنة",
+    "syncing": "مزامنة…",
+    "details": "تفاصيل",
+    "revoke": "إلغاء",
+    "revokeConfirm": "تأكيد الإلغاء؟",
+    "revoking": "جارٍ الإلغاء…",
+    "loadError": "خطأ في تحميل عقد Edge.",
+    "syncError": "خطأ في تشغيل المزامنة.",
+    "syncSuccess": "بدأت المزامنة لـ {name}",
+    "revokeSuccess": "تم إلغاء الترخيص لـ {name}",
+    "revokeError": "خطأ في إلغاء الترخيص."
   },
   "settingsEdgePairingRemoved": "تمت إزالة اقتران Edge.",
   "teamArchiveSuccess": "تمت أرشفة الموظف.",
@@ -4600,7 +4614,8 @@
     "fuelStation": "محطات الوقود",
     "travelAgency": "وكالة السفر",
     "surveyStats": "استبيانات الحلول",
-    "solutionSurveys": "استبيانات الحلول"
+    "solutionSurveys": "استبيانات الحلول",
+    "travel": "وكالة السفر"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -4849,26 +4864,31 @@
     "tripStatus": {
       "draft": "مسودة",
       "published": "منشور",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "scheduled": "مجدول"
     },
     "bookingStatus": {
       "pending": "قيد الانتظار",
       "confirmed": "مؤكد",
       "cancelled": "ملغى",
       "refunded": "مسترجع",
-      "expired": "منتهي الصلاحية"
+      "expired": "منتهي الصلاحية",
+      "completed": "مكتملة"
     },
     "paymentStatus": {
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "failed": "فشل",
-      "refunded": "مسترجع"
+      "refunded": "مسترجع",
+      "confirmed": "مؤكد"
     },
     "ticketStatus": {
       "issued": "صادر",
       "checkedIn": "تم الصعود",
       "revoked": "ملغى",
-      "unknown": "غير معروف"
+      "unknown": "غير معروف",
+      "checked_in": "مسجَّل",
+      "void": "ملغى"
     },
     "routes": {
       "title": "الخطوط والمسارات",
@@ -4896,7 +4916,28 @@
       "cancelReasonTitle": "سبب الإلغاء",
       "refundReasonTitle": "سبب الاسترداد",
       "reason": "السبب",
-      "reasonRequired": "السبب إلزامي."
+      "reasonRequired": "السبب إلزامي.",
+      "cancel": "إلغاء",
+      "cancelTitle": "إلغاء الحجز",
+      "confirmBody": "تأكيد الحجز {ref}؟ سيتم تحديد المقاعد كـ\"مباعة\".",
+      "confirm": "تأكيد",
+      "confirmTitle": "تأكيد الحجز",
+      "detail": "التفاصيل",
+      "issueTicketsBody": "إصدار تذكرة اسمية لكل مسافر من {ref}؟",
+      "issueTickets": "إصدار تذكرة",
+      "issueTicketsTitle": "إصدار التذاكر",
+      "noTickets": "لم يتم إصدار أي تذكرة",
+      "passengerCount": "المسافرون",
+      "paymentStatus": "الدفع",
+      "referencePlaceholder": "مثال: GV-2026-0001…",
+      "reference": "المرجع",
+      "refund": "استرداد",
+      "refundTitle": "استرداد الحجز",
+      "seat": "المقعد",
+      "source": "المصدر",
+      "subtitle": "البيع في الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
+      "total": "الإجمالي",
+      "trip": "الرحلة"
     },
     "checkin": {
       "selectTrip": "اختر رحلة",
@@ -4909,7 +4950,17 @@
       "checkIn": "صعود",
       "checkedIn": "تم الصعود ✓",
       "emptyManifest": "لا ركاب في هذه الرحلة.",
-      "noTicket": "لا تذكرة مرتبطة بهذا الراكب."
+      "noTicket": "لا تذكرة مرتبطة بهذا الراكب.",
+      "action": "الصعود",
+      "age": "العمر",
+      "class": "الدرجة",
+      "done": "على متن الرحلة",
+      "passenger": "المسافر",
+      "seat": "المقعد",
+      "subtitle": "الصعود حسب الرحلة وعداد المسافرين.",
+      "ticket": "تذكرة",
+      "title": "تسجيل الوصول وقائمة الركاب",
+      "trip": "الرحلة"
     },
     "tickets": {
       "title": "إصدار التذاكر",
@@ -4919,7 +4970,10 @@
       "downloadPdf": "تحميل PDF",
       "revoke": "إلغاء",
       "revokeTitle": "سبب الإلغاء",
-      "pdfError": "فشل التنزيل."
+      "pdfError": "فشل التنزيل.",
+      "download": "PDF",
+      "revokeBody": "إبطال التذكرة {number}؟ سيصبح PDF غير صالح وستتحول التذكرة إلى حالة ملغاة.",
+      "subtitle": "الاطلاع على التذاكر وتنزيل PDF وإبطالها."
     },
     "reports": {
       "tabsLabel": "التقارير",
@@ -4929,7 +4983,36 @@
       "cancellations": "الإلغاءات",
       "exportCsv": "تصدير CSV",
       "empty": "لا بيانات للفترة.",
-      "exportError": "فشل التصدير."
+      "exportError": "فشل التصدير.",
+      "apply": "تطبيق",
+      "byReason": "حسب السبب",
+      "bySource": "حسب المصدر",
+      "cancellationsCount": "الإلغاءات",
+      "cancellationsRate": "المعدل",
+      "cancellationsTotal": "الحجوزات النهائية",
+      "count": "العدد",
+      "export": "تصدير CSV",
+      "free": "متاحة",
+      "from": "من",
+      "kpiBookings": "الحجوزات",
+      "kpiCancellations": "الإلغاءات",
+      "kpiOccupancy": "الإشغال",
+      "kpiSales": "المبيعات",
+      "reserved": "محجوزة",
+      "revenueConfirmed": "مؤكد",
+      "revenueNet": "الصافي",
+      "revenueRefunded": "مسترد",
+      "salesAmount": "المبلغ",
+      "salesCount": "المبيعات",
+      "salesPassengers": "المسافرون",
+      "sold": "مباعة",
+      "subtitle": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
+      "tabCancellations": "الإلغاءات",
+      "tabOccupancy": "الإشغال",
+      "tabRevenue": "الإيرادات",
+      "tabSales": "المبيعات",
+      "title": "التقارير",
+      "to": "إلى"
     },
     "rentals": {
       "vehicles": "مركبات الإيجار",
@@ -4999,7 +5082,21 @@
       "hint": {
         "options": "خيار واحد في كل سطر.",
         "correctIndex": "يبدأ من 0 (السطر الأول = 0)."
-      }
+      },
+      "endsAt": "النهاية",
+      "status": {
+        "draft": "مسودة",
+        "active": "نشط",
+        "closed": "مغلق"
+      },
+      "addQuestion": "إضافة سؤال",
+      "bonus": "المكافأة",
+      "create": "إنشاء اختبار",
+      "options": "الخيارات",
+      "participant": "المشارك",
+      "questions": "الأسئلة",
+      "results": "النتائج",
+      "score": "النتيجة"
     },
     "quizStatus": {
       "draft": "مسودة",
@@ -5037,7 +5134,29 @@
         "reject": "رفض"
       },
       "rejectTitle": "رفض الإعلان",
-      "rejectTarget": "الإعلان"
+      "rejectTarget": "الإعلان",
+      "currency": "العملة",
+      "label": "التسمية",
+      "status": {
+        "draft": "مسودة",
+        "expired": "منتهي",
+        "paid": "مدفوع",
+        "rejected": "مرفوض",
+        "submitted": "مُقدَّم",
+        "validated": "معتمد"
+      },
+      "type": "النوع",
+      "allStatuses": "جميع الحالات",
+      "create": "تقديم إعلان",
+      "expiresAt": "انتهاء الصلاحية",
+      "pay": "دفع",
+      "position": "الترتيب",
+      "priceChar": "سعر الحرف",
+      "priceImage": "سعر الصورة",
+      "price": "السعر",
+      "reject": "رفض",
+      "renew": "تجديد",
+      "validate": "اعتماد"
     },
     "sites": {
       "title": "المواقع السياحية",
@@ -5048,7 +5167,8 @@
       "field": {
         "latitude": "خط العرض",
         "longitude": "خط الطول"
-      }
+      },
+      "name": "الاسم"
     },
     "contacts": {
       "formTitle": "نموذج الاتصال",
@@ -5078,7 +5198,31 @@
         "toggleConsent": "تبديل الموافقة",
         "notify": "إشعار",
         "send": "إرسال"
-      }
+      },
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "consents": "الموافقات",
+      "notify": "إشعار",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "channelEmail": "البريد الإلكتروني",
+      "search": "البحث بالبريد الإلكتروني",
+      "title": "جهات اتصال المسافرين",
+      "subtitle": "سجل جهات الاتصال، الموافقات حسب القناة (GDPR) والإشعارات اليدوية.",
+      "publicForm": "نموذج الاتصال العام",
+      "empty": "لا توجد جهات اتصال مسجلة.",
+      "toggleConsent": "تبديل الموافقة على {channel}",
+      "message": "الرسالة",
+      "channels": "القنوات (الموافقة مطلوبة)",
+      "noConsent": "بدون موافقة",
+      "noChannel": "اختر قناة واحدة بموافقة على الأقل.",
+      "consentGiven": "موافق",
+      "consentRefused": "مرفوض",
+      "never": "لم يُعبَّر عنه",
+      "email": "البريد الإلكتروني",
+      "app": "التطبيق"
     },
     "advertStatus": {
       "draft": "مسودة",
@@ -5088,6 +5232,273 @@
       "rejected": "مرفوضة",
       "expired": "منتهية",
       "archived": "مؤرشفة"
+    },
+    "ageCategory": {
+      "adult": "بالغ",
+      "child": "طفل",
+      "infant": "رضيع"
+    },
+    "bookingSource": {
+      "office": "شباك",
+      "online": "عبر الإنترنت",
+      "phone": "الهاتف"
+    },
+    "carriers": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "type": "النوع"
+    },
+    "carrierTypes": {
+      "boat": "قارب",
+      "bus": "حافلة",
+      "plane": "طائرة",
+      "train": "قطار"
+    },
+    "catalog": {
+      "addRoom": "إضافة غرفة",
+      "capacity": "السعة",
+      "classification": "التصنيف",
+      "end": "النهاية",
+      "hotelName": "الاسم",
+      "images": "الصور",
+      "noImages": "لا توجد صور",
+      "priceDay": "السعر / اليوم",
+      "priceNight": "السعر / الليلة",
+      "rentalImagesTitle": "صور المركبة",
+      "roomNumber": "رقم",
+      "rooms": "الغرف",
+      "roomType": "النوع",
+      "start": "البداية",
+      "subtitle": "مركبات للإيجار وحجوزات وفهرس الفنادق.",
+      "tabHotels": "الفنادق",
+      "tabRentalBookings": "حجوزات الإيجار",
+      "tabRentals": "مركبات للإيجار",
+      "title": "العنوان",
+      "hotelRoomsTitle": "غرف الفندق"
+    },
+    "cities": {
+      "country": "الدول",
+      "name": "المدينة",
+      "region": "المنطقة"
+    },
+    "classes": {
+      "color": "اللون",
+      "label": "التسمية",
+      "priority": "الأولوية"
+    },
+    "common": {
+      "cancel": "إلغاء",
+      "city": "المدينة",
+      "statusDraft": "مسودة",
+      "featureDisabledBody": "لم يتم تفعيل خيار travelagency للعميل المتصل. اتصل بمسؤول المنصة لتفعيله.",
+      "tenantRequiredBody": "تكون بيانات وكالة السفر متاحة عبر جلسة عميل (انتحال أو حساب مدير).",
+      "actions": "الإجراءات",
+      "active": "نشط",
+      "all": "الكل",
+      "carrier": "الشركة",
+      "close": "إغلاق",
+      "confirmDeleteBody": "هذا الإجراء لا رجعة فيه. هل تريد حقًا حذف « {name} »؟",
+      "confirmDeleteTitle": "حذف هذا العنصر؟",
+      "create": "إنشاء",
+      "createdAt": "أُنشئ في",
+      "delete": "حذف",
+      "disabled": "غير نشط",
+      "edit": "تعديل",
+      "empty": "لا توجد بيانات.",
+      "featureDisabledTitle": "وحدة وكالة السفر غير نشطة",
+      "loadErrorBody": "حدث خطأ.",
+      "loadErrorTitle": "تعذر التحميل",
+      "noData": "لا توجد بيانات",
+      "no": "لا",
+      "reason": "السبب",
+      "retry": "إعادة المحاولة",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "search": "بحث",
+      "selectPlaceholder": "— اختر —",
+      "status": "الحالة",
+      "tenantRequiredTitle": "سياق العميل مطلوب",
+      "yes": "نعم"
+    },
+    "countries": {
+      "name": "الاسم",
+      "phoneCode": "رمز الاتصال"
+    },
+    "home": {
+      "flagActive": "الوحدة نشطة",
+      "flowBody": "المرجعية والشبكة ← برمجة الرحلات ← النشر ← البيع في الشباك ← التذاكر وتسجيل الوصول ← التقارير.",
+      "flowTitle": "مسار العمل",
+      "subtitle": "إدارة عمود وكالة السفر: الشبكة والمبيعات والتذاكر والإدارة.",
+      "title": "وكالة السفر"
+    },
+    "network": {
+      "addPrice": "إضافة سعر",
+      "addStop": "إضافة محطة",
+      "adultPrice": "سعر البالغ",
+      "arrival": "الوصول",
+      "cancelTrip": "إلغاء الرحلة",
+      "childPrice": "سعر الطفل",
+      "class": "الدرجة",
+      "currency": "العملة",
+      "departure": "المغادرة",
+      "destination": "الوجهة",
+      "distance": "المسافة (كم)",
+      "duration": "المدة (دقيقة)",
+      "means": "الوسيلة",
+      "minDuration": "المدة الدنيا (دقيقة)",
+      "origin": "نقطة الانطلاق",
+      "prices": "الأسعار",
+      "publish": "نشر",
+      "rank": "الترتيب",
+      "route": "الخط",
+      "routes": "الخطوط والمحطات",
+      "routeStopsTitle": "محطات الخط",
+      "stopover": "توقف",
+      "stops": "المحطات",
+      "subtitle": "الخطوط والمحطات والبرمجة والأسعار والنشر.",
+      "title": "الخطوط والرحلات",
+      "tripPricesTitle": "أسعار الرحلة",
+      "trips": "الرحلات والأسعار"
+    },
+    "offices": {
+      "address": "العنوان",
+      "name": "الاسم",
+      "phone": "الهاتف"
+    },
+    "referential": {
+      "carriers": "الشركات",
+      "cities": "المدن",
+      "classes": "درجات الخدمة",
+      "countries": "الدول",
+      "offices": "مكاتب البيع",
+      "stations": "المحطات والمواقف",
+      "subtitle": "الدول والمدن والمحطات والمكاتب والشركات والدرجات والمركبات.",
+      "title": "المرجعية",
+      "vehicles": "المركبات"
+    },
+    "stations": {
+      "isTerminal": "محطة طرفية",
+      "name": "الاسم",
+      "phone": "الهاتف"
+    },
+    "vehicles": {
+      "registration": "رقم اللوحة",
+      "seats": "المقاعد"
+    },
+    "content": {
+      "quiz": {
+        "description": "الوصف",
+        "statusDraft": "مسودة",
+        "startsAt": "البداية",
+        "endsAt": "النهاية",
+        "questionsHint": "لا يتم الكشف عن الإجابة الصحيحة أبدًا للمشاركين.",
+        "noQuestions": "لا توجد أسئلة لهذا الاختبار.",
+        "options": "الخيارات (سطر واحد لكل خيار، من 2 إلى 10)",
+        "optionsCount": "{count} خيارات",
+        "optionsMin": "يلزم خياران على الأقل.",
+        "correctOption": "الإجابة الصحيحة (المؤشر)",
+        "correctIndexError": "مؤشر الإجابة الصحيحة غير صالح.",
+        "points": "{points} نقطة",
+        "noResults": "لا توجد مشاركات لهذا الاختبار.",
+        "title": "الاختبارات والمسابقات",
+        "createTitle": "اختبار جديد",
+        "questions": "الأسئلة",
+        "results": "النتائج",
+        "addQuestion": "إضافة سؤال",
+        "question": "السؤال",
+        "pointsLabel": "النقاط",
+        "position": "الترتيب",
+        "statusActive": "نشط",
+        "statusClosed": "مغلق",
+        "maxParticipations": "الحد الأقصى للمشاركات / جهة اتصال",
+        "participantName": "المشارك",
+        "participantEmail": "البريد الإلكتروني",
+        "score": "النتيجة",
+        "bonus": "المكافأة",
+        "submittedAt": "أُرسل في"
+      },
+      "adverts": {
+        "type": "النوع",
+        "code": "الرمز",
+        "label": "التسمية",
+        "typeLabel": "التسمية",
+        "positionLabel": "التسمية",
+        "currency": "العملة",
+        "confirmDeleteRef": "هذا الإجراء لا رجعة فيه. هل تريد حقًا حذف هذا العنصر؟",
+        "title": "الإعلانات المدفوعة",
+        "createTitle": "إعلان جديد",
+        "position": "الترتيب",
+        "types": "الأنواع",
+        "positions": "المواضع",
+        "prices": "جدول الأسعار",
+        "createType": "نوع جديد",
+        "createPosition": "موضع جديد",
+        "createPrice": "سعر جديد",
+        "price": "السعر",
+        "pricePerImage": "السعر / صورة",
+        "pricePerCharacter": "السعر / حرف",
+        "content": "المحتوى",
+        "validityDays": "مدة الصلاحية (أيام)",
+        "expiresAt": "انتهاء الصلاحية",
+        "pay": "دفع",
+        "validate": "اعتماد",
+        "reject": "رفض",
+        "rejectTitle": "رفض الإعلان",
+        "renew": "تجديد",
+        "statusSubmitted": "مُقدَّم",
+        "statusPaid": "مدفوع",
+        "statusValidated": "معتمد",
+        "statusRejected": "مرفوض",
+        "statusExpired": "منتهي",
+        "statusArchived": "مؤرشف"
+      },
+      "sites": {
+        "name": "الاسم",
+        "description": "الوصف",
+        "title": "المواقع السياحية",
+        "allCities": "جميع المدن",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول"
+      },
+      "subtitle": "الاختبارات والإعلانات المدفوعة والمواقع السياحية.",
+      "tabs": {
+        "adverts": "الإعلانات",
+        "contacts": "جهات الاتصال",
+        "quiz": "اختبار",
+        "sites": "المواقع السياحية"
+      },
+      "title": "المحتوى والإعلانات"
+    },
+    "contactForm": {
+      "lastName": "الاسم",
+      "phone": "الهاتف",
+      "title": "اتصل بنا",
+      "subtitle": "سؤال عن خطوطنا أو جداولنا أو تذاكرنا؟ اكتب لنا.",
+      "firstName": "الاسم الأول",
+      "email": "البريد الإلكتروني",
+      "message": "الرسالة",
+      "consent": "أوافق على أن يتم التواصل معي عبر البريد الإلكتروني بخصوص طلبي.",
+      "send": "إرسال",
+      "received": "تم استلام الطلب",
+      "receivedBody": "سيتواصل معك فريقنا في أقرب وقت.",
+      "newRequest": "طلب جديد"
+    },
+    "publicContact": {
+      "title": "تواصل مع وكالة السفر",
+      "subtitle": "سؤال عن رحلاتك أو حجوزاتك أو تذاكرك؟ اكتب لنا.",
+      "noLink": "يتطلب هذا النموذج رابط الاتصال الذي توفره الوكالة (رابط موقّع).",
+      "invalidLink": "رابط الاتصال غير صالح أو منتهي الصلاحية. اطلب رابطًا جديدًا من الوكالة.",
+      "sendFailed": "فشل الإرسال. حاول مرة أخرى.",
+      "ackTitle": "تم استلام الطلب",
+      "ackBody": "شكرًا! سترد عليك الوكالة في أقرب وقت.",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "message": "الرسالة",
+      "consent": "أوافق على التواصل معي عبر البريد الإلكتروني بشأن طلبي.",
+      "sending": "جارٍ الإرسال…",
+      "send": "إرسال الطلب"
     }
   },
   "edu": {

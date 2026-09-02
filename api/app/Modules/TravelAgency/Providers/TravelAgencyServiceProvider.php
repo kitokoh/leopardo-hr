@@ -23,6 +23,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelComment;
+use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
 use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelOffice;
@@ -54,6 +55,7 @@ use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
 use App\Modules\TravelAgency\Policies\TravelClassPolicy;
 use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
 use App\Modules\TravelAgency\Policies\TravelCommentPolicy;
+use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
 use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
 use App\Modules\TravelAgency\Policies\TravelLoyaltyPolicy;
 use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
@@ -63,6 +65,8 @@ use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
+use App\Modules\TravelAgency\Policies\TravelQuizPolicy;
 use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
 use App\Modules\TravelAgency\Policies\TravelStationPolicy;
 use App\Modules\TravelAgency\Policies\TravelWebhookSubscriptionPolicy;
@@ -81,8 +85,8 @@ use Illuminate\Support\ServiceProvider;
  * l'architecture DDD multi-tenant Leopardo HR.
  *
  * `register()` enregistre les ports & adapters du module (contrats →
- * implémentations) ; les Policies métier seront enregistrées dans `boot()`
- * au fil des lots API (épic 3xx).
+ * implémentations) ; les Policies métier sont enregistrées dans `boot()`
+ * au fil des lots API (épic 3xx) et des extensions 8xx.
  *
  * L'activation par tenant passe par le feature flag `travelagency`
  * (companies.features) — voir EnsureTravelAgencyModuleMiddleware (TRAVEL-102)
@@ -226,3 +230,10 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookConsumer;
         Gate::policy(TravelAdvert::class, TravelAdvertPolicy::class);
         Gate::policy(TravelTouristSite::class, TravelTouristSitePolicy::class);
     }
+<<<<<<< HEAD
+||||||| merged common ancestors
+}
+>>>>>>>>> Temporary merge branch 2
+=======
+}
+>>>>>>> origin/fix/6453-travel-content-h1-a11y

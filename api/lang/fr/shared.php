@@ -119,5 +119,6 @@ return [
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
         'restaurant' => 'Point de vente (POS)',
+        'restaurant' => 'Écran cuisine',
     ],
 ];
