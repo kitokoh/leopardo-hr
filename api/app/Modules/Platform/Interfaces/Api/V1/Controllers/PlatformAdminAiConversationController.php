@@ -27,8 +27,12 @@ class PlatformAdminAiConversationController extends Controller
         // 1) table ai_conversations absente (IA jamais provisionnée) : état
         //    MÉTIER ATTENDU → 404 avec code stable, jamais 500 (le guard
         //    hasTable évite aussi le SQLSTATE 25P02 transaction empoisonnée) ;
-        // 2) `json_array_length()` invalide sur colonne jsonb → 500 à CHAQUE
-        //    requête même table présente (corrigé en jsonb_array_length).
+        // 2) longueur JSON calculée en SQL : `json_array_length()` n'accepte
+        //    que `json` (500 sur la colonne `jsonb` de prod) et
+        //    `jsonb_array_length()` n'accepte que `jsonb` (500 sur la colonne
+        //    `json` de la fixture de test CreatesMvpSchema) → cast explicite
+        //    `messages::jsonb` : la fonction est valide quel que soit le type
+        //    physique réel de la colonne.
         if (! Schema::hasTable(self::TENANT_SCHEMA.'.ai_conversations')) {
             return response()->json([
                 'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
@@ -46,7 +50,7 @@ class PlatformAdminAiConversationController extends Controller
                     'token_count',
                     'created_at',
                     'updated_at',
-                    DB::raw('jsonb_array_length(messages) as message_count'),
+                    DB::raw('jsonb_array_length(messages::jsonb) as message_count'),
                 ])
                 ->orderByDesc('updated_at')
                 ->limit(50)
@@ -178,10 +182,14 @@ class PlatformAdminAiConversationController extends Controller
      * `ai_conversations` n'existe pas quand l'IA n'a jamais été provisionnée
      * pour le schéma partagé. Toute autre erreur reste une vraie erreur
      * serveur (500).
+     *
+     * Ne PAS matcher sur le message (« ai_conversations » apparaît dans le
+     * SQL de TOUTE requête de ce contrôleur) : cela masquerait en 404 des
+     * erreurs réelles (42883 fonction absente, 42703 colonne absente, …).
+     * Seul le SQLSTATE 42P01 correspond à l'état métier attendu.
      */
     private function isMissingAiTable(QueryException $exception): bool
     {
-        return str_contains((string) $exception->getCode(), '42P01')
-            || str_contains($exception->getMessage(), 'ai_conversations');
+        return str_contains((string) $exception->getCode(), '42P01');
     }
 }
