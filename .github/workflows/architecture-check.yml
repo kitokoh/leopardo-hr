@@ -156,6 +156,9 @@ jobs:
       - name: Attendance/Payroll boundary guard — presence events owned by Attendance (ATT-001, issue #6760)
         run: bash dev-hub/tools/check-attendance-boundary.sh api
 
+      - name: AI vendor boundary guard (QLT-003 #6777)
+        run: bash dev-hub/tools/check-ai-vendor-boundary.sh
+
       - name: Routes tenant/platform separation guard (MAT-003, issue #5861)
         run: bash dev-hub/tools/check-routes-tenant-platform.sh
 
