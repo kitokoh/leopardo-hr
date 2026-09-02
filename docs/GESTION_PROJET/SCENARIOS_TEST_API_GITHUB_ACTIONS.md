@@ -37,7 +37,6 @@ Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouv
 - `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
 - RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
 - Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
-Temporary merge branch 2
 
 ## Perimetre
 
@@ -1618,7 +1617,6 @@ Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client ten
 - Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
 - Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
 Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
-Temporary merge branch 2
 ## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
 
 - Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).

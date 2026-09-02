@@ -120,7 +120,6 @@ return [
         'evaluations' => 'Evaluations',
         'restaurant' => 'Kitchen display',
         'restaurant' => 'Point of sale (POS)',
-Temporary merge branch 2
         'restaurant' => 'Kitchen display',
         'restaurant' => 'Kitchen display',
         'restaurant' => 'Kitchen display',

@@ -191,7 +191,6 @@ Schedule::command('travel:expire-adverts')
 // (table crm_task_reminders, UNIQUE task_id+remind_date).
 Schedule::command('crm:tasks:send-overdue-reminders')
     ->everyThirtyMinutes()
-Temporary merge branch 2
     ->withoutOverlapping()
     ->onOneServer();
 

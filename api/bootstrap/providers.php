@@ -1,44 +1,44 @@
 <?php
 
-use App\Modules\Absence\Providers\AbsenceServiceProvider;
-use App\Modules\Accounting\Providers\AccountingServiceProvider;
-use App\Modules\CRM\Providers\CrmServiceProvider;
-use App\Modules\Delivery\Providers\DeliveryServiceProvider;
-use App\Modules\Attendance\Providers\AttendanceServiceProvider;
-use App\Modules\Billing\Providers\BillingServiceProvider;
-use App\Modules\Cabinet\Providers\CabinetServiceProvider;
-use App\Modules\Cameras\Providers\CamerasServiceProvider;
-use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
-use App\Modules\EduManager\Providers\EduManagerServiceProvider;
-use App\Modules\Expense\Providers\ExpenseServiceProvider;
-use App\Modules\Fleet\Providers\FleetServiceProvider;
-use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
-use App\Modules\Growth\Providers\GrowthServiceProvider;
-use App\Modules\HR\Providers\HRServiceProvider;
-use App\Modules\Marketing\Providers\MarketingServiceProvider;
-use App\Modules\Notification\Providers\NotificationServiceProvider;
-use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
-use App\Modules\Payroll\Providers\PayrollServiceProvider;
-use App\Modules\Planning\Providers\PlanningServiceProvider;
-use App\Modules\Platform\Providers\PlatformServiceProvider;
-use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
-use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
-use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
-use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\FeatureDetectionServiceProvider;
 use App\Providers\FeatureRegistryServiceProvider;
 use App\Providers\QueueCorrelationServiceProvider;
+use App\Modules\HR\Providers\HRServiceProvider;
+use App\Modules\Payroll\Providers\PayrollServiceProvider;
+use App\Modules\Attendance\Providers\AttendanceServiceProvider;
+use App\Modules\Planning\Providers\PlanningServiceProvider;
+use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
+use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
+use App\Modules\Cabinet\Providers\CabinetServiceProvider;
+use App\Modules\Fleet\Providers\FleetServiceProvider;
+use App\Modules\Billing\Providers\BillingServiceProvider;
+use App\Modules\Cameras\Providers\CamerasServiceProvider;
+use App\Modules\CRM\Providers\CrmServiceProvider;
+use App\Modules\Growth\Providers\GrowthServiceProvider;
+use App\Modules\Absence\Providers\AbsenceServiceProvider;
+use App\Modules\Expense\Providers\ExpenseServiceProvider;
+use App\Modules\Notification\Providers\NotificationServiceProvider;
+use App\Modules\Platform\Providers\PlatformServiceProvider;
+use App\Modules\Onboarding\Providers\OnboardingServiceProvider;
+use App\Modules\EdgeSync\Providers\EdgeSyncServiceProvider;
+use App\Modules\Marketing\Providers\MarketingServiceProvider;
+use App\Modules\Accounting\Providers\AccountingServiceProvider;
+use App\Modules\Delivery\Providers\DeliveryServiceProvider;
+use App\Modules\FuelStation\Providers\FuelStationServiceProvider;
+use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
+use App\Modules\EduManager\Providers\EduManagerServiceProvider;
+use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
 return [
     AppServiceProvider::class,
     AuthServiceProvider::class,
     EventServiceProvider::class,
     FeatureDetectionServiceProvider::class,
     FeatureRegistryServiceProvider::class,
-    // — Observabilité MAT-009 (#5867) : corrélation API→jobs + redaction PII
     QueueCorrelationServiceProvider::class,
+    // — Module providers (ordre stable)
     HRServiceProvider::class,
     PayrollServiceProvider::class,
     AttendanceServiceProvider::class,
@@ -49,122 +49,19 @@ return [
     FleetServiceProvider::class,
     BillingServiceProvider::class,
     CamerasServiceProvider::class,
-    // — CRM client (issue #5707, ADR-CRM-DUAL-CONTEXTS)
     CrmServiceProvider::class,
-    // — New DDD modules (Phase 2)
     GrowthServiceProvider::class,
     AbsenceServiceProvider::class,
     ExpenseServiceProvider::class,
     NotificationServiceProvider::class,
-    // — New DDD modules (Phase 3–4)
     PlatformServiceProvider::class,
     OnboardingServiceProvider::class,
-    // — EdgeSync module
     EdgeSyncServiceProvider::class,
-    // — Marketing module (Phase 1)
     MarketingServiceProvider::class,
-    // — Accounting module (Phase A, issue #5221)
     AccountingServiceProvider::class,
-
-
-    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
     FuelStationServiceProvider::class,
-    // — TravelAgency vertical (BC-24 TRAVEL, TRAVEL-101/#5977)
     TravelAgencyServiceProvider::class,
-    // — EduManager module (solution verticale, issue #5817)
     EduManagerServiceProvider::class,
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
- (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
-    // — FuelStation module (solution verticale, issue #5795)
-    FuelStationServiceProvider::class,
-
-    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
-    RestaurantManagerServiceProvider::class,
-    // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
-    DeliveryServiceProvider::class,
 ];

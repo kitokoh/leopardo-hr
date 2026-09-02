@@ -182,7 +182,6 @@ return [
             'title_key' => 'notifications.restaurant_order_ready_title',
             'body_key' => 'notifications.restaurant_order_ready_body',
         ],
-Temporary merge branch 2
         'task_comment_added' => [
             'category' => 'task',
             'title_key' => 'notifications.task_comment_added_title',

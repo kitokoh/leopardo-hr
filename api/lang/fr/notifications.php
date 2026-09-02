@@ -45,7 +45,6 @@ return [
     'restaurant_reservation_reminder_body' => 'Réservation :reference — :covers couvert(s) le :date. Préparez la table.',
     'weekly_manager_digest_title' => 'Digest hebdomadaire de votre équipe',
     'weekly_manager_digest_body' => 'Semaine du :week_start — Équipe de :team_size personne(s) · :present présence(s) enregistrée(s) · :pending_absences absence(s) en attente · :pending_advances avance(s) en attente · :pending_corrections correction(s) en attente.',
-Temporary merge branch 2
     'fuel_meter_anomaly_title' => 'Anomalie de relevé détectée',
     'fuel_meter_anomaly_body' => 'Un intervalle de relevé anormal n\'a pas été revu (intervalle #:interval_id).',
     'fuel_missing_closure_title' => 'Clôture de caisse manquante',
@@ -54,7 +53,6 @@ Temporary merge branch 2
     'fuel_stock_variance_body' => 'Le rapprochement #:run_id présente un écart non expliqué.',
     'fuel_maintenance_due_title' => 'Maintenance en retard',
     'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
-Temporary merge branch 2
     'restaurant_new_order_title' => 'Nouvelle commande',
     'restaurant_new_order_body' => 'Commande :reference — :covers couvert(s).',
     'restaurant_order_ready_title' => 'Commande prête',

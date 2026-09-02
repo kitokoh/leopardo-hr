@@ -120,7 +120,6 @@ return [
         'evaluations' => 'Degerlendirmeler',
         'restaurant' => 'Mutfak ekranı',
         'restaurant' => 'Satış noktası (POS)',
-Temporary merge branch 2
         'restaurant' => 'Mutfak ekranı',
         'restaurant' => 'Mutfak ekranı',
         'restaurant' => 'Mutfak ekranı',

@@ -120,7 +120,6 @@ return [
         'evaluations' => 'التقييمات',
         'restaurant' => 'المطبخ',
         'restaurant' => 'المطعم',
-Temporary merge branch 2
         'restaurant' => 'المطبخ',
         'restaurant' => 'المطبخ',
         'restaurant' => 'المطبخ',

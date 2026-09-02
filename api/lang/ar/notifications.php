@@ -45,7 +45,6 @@ return [
     'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
-Temporary merge branch 2
     'fuel_meter_anomaly_title' => 'تم اكتشاف خلل في قراءة العداد',
     'fuel_meter_anomaly_body' => 'لم تتم مراجعة فترة قراءة غير طبيعية (الفترة #:interval_id).',
     'fuel_missing_closure_title' => 'إغلاق جلسة الصندوق مفقود',
@@ -54,7 +53,6 @@ Temporary merge branch 2
     'fuel_stock_variance_body' => 'تسوية #:run_id تُظهر فرقًا غير مفسر.',
     'fuel_maintenance_due_title' => 'صيانة متأخرة',
     'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
-Temporary merge branch 2
     'restaurant_new_order_title' => 'طلب جديد',
     'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
     'restaurant_order_ready_title' => 'الطلب جاهز',

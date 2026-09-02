@@ -47,4 +47,3 @@
 - Épic 5xx : câbler `travel.reports` sur les endpoints rapports.
 - App mobile agent (TRAVEL-701) : `travel.agent` devra autoriser la vente guichet
   sans rôle manager — décision à trancher avec le portail client (TRAVEL-702).
-Temporary merge branch 2

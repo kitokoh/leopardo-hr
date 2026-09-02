@@ -70,10 +70,6 @@ use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
 use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
 use App\Modules\TravelAgency\Policies\TravelReportPolicy;
-Temporary merge branch 2
-Temporary merge branch 2
-Temporary merge branch 2
-Temporary merge branch 2
 }
 <?php
 
@@ -120,13 +116,10 @@ class TravelAgencyServiceProvider extends ServiceProvider
 
         // TRAVEL-506 (#6076) — recalcul des read models de reporting.
         // TRAVEL-414 (#6066) — consommation de l'outbox événementielle.
-Temporary merge branch 2
         $this->commands([
             RecalculateTravelReadModelsCommand::class,
             TravelOutboxDispatchCommand::class,
             TravelExpireAdvertsCommand::class,
-Temporary merge branch 2
-Temporary merge branch 2
         ]);
 
         $this->app->singleton(TravelOutboxConsumerRegistry::class);
@@ -179,7 +172,6 @@ Temporary merge branch 2
             $consumer = $this->app->make(TravelEventPublisherConsumer::class);
             $registry->register($consumer);
         });
-Temporary merge branch 2
         Gate::policy(TravelComment::class, TravelCommentPolicy::class);
         Gate::define('travel.reports', fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
 

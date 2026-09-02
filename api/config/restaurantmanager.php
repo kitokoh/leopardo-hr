@@ -88,7 +88,6 @@ return [
             'outbound_url' => env('RESTAURANT_GLOVO_OUTBOUND_URL'),
         ],
     ],
-Temporary merge branch 2
 ];
     | Stock (RESTO-411, issue #6198 — décrément à la confirmation)
     | Politique appliquée quand une confirmation de commande consomme plus

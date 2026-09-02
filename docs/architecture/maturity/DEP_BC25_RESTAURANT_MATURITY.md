@@ -156,4 +156,3 @@ security_review), 5 gates `pending` (core_flow, performance, observability, gold
 2. Livrer mobile/extensions (RESTO-801..808).
 3. Valider les gates `performance`/`observability`/`recette` + recette UAT signée avant GO pilote.
 origin/bc/bc25-restaurant-qualite-pilote
-Temporary merge branch 2

@@ -120,7 +120,6 @@ return [
         'evaluations' => 'Evaluations',
         'restaurant' => 'Écran cuisine',
         'restaurant' => 'Point de vente (POS)',
-Temporary merge branch 2
         'restaurant' => 'Écran cuisine',
         'restaurant' => 'Écran cuisine',
         'restaurant' => 'Écran cuisine',

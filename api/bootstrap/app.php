@@ -178,7 +178,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
-            'restaurant.public.shop' => \App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
