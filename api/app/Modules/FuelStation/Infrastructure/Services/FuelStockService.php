@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 
 /**
  * Stocks, cuves et rapprochement FuelStation — FUEL-009 (issue #5803).
@@ -271,5 +272,174 @@ final class FuelStockService
                 'threshold-'.$stationId.'-'.$productCode,
             );
         }
+    }
+
+    public function recordDelivery(FuelTank $tank, Employee $actor, array $data): FuelTankDelivery
+    {
+        $companyId = $tank->company_id;
+
+        $externalId = $data['external_id'] ?? null;
+        $externalId = is_string($externalId) ? $externalId : null;
+        if ($externalId !== null && $externalId !== '') {
+            $existing = FuelTankDelivery::query()
+                ->where('company_id', $companyId)
+                ->where('external_id', $externalId)
+                ->first();
+
+            if ($existing instanceof FuelTankDelivery) {
+                return $existing;
+            }
+        }
+
+        $quantityRaw = $data['quantity_minor'] ?? null;
+        $quantityMinor = is_numeric($quantityRaw) ? (int) $quantityRaw : 0;
+        if ($quantityMinor <= 0) {
+            abort(422, 'DELIVERY_QUANTITY_MUST_BE_POSITIVE');
+        }
+
+        $deliveredAtRaw = $data['delivered_at'] ?? null;
+        $deliveredAt = is_string($deliveredAtRaw) && $deliveredAtRaw !== ''
+            ? Carbon::parse($deliveredAtRaw)->utc()
+            : Carbon::now('UTC');
+
+        return DB::transaction(function () use ($tank, $actor, $companyId, $quantityMinor, $data, $deliveredAt, $externalId): FuelTankDelivery {
+            $delivery = FuelTankDelivery::query()->create([
+                'company_id' => $companyId,
+                'tank_id' => $tank->id,
+                'quantity_minor' => $quantityMinor,
+                'unit_price_minor' => isset($data['unit_price_minor']) && is_numeric($data['unit_price_minor'])
+                    ? (int) $data['unit_price_minor']
+                    : null,
+                'delivered_at' => $deliveredAt,
+                'external_id' => is_string($externalId) ? $externalId : null,
+                'notes' => $data['notes'] ?? null,
+                'created_by' => $actor->id,
+            ]);
+
+            // Mise à jour du niveau courant (aucun ajustement silencieux :
+            // la livraison EST un mouvement de stock légitime).
+            // Fige d'abord l'ouverture du jour au premier mouvement.
+            $this->captureDayOpening($tank, $quantityMinor);
+            $tank->increment('current_level_minor', $quantityMinor);
+
+            return $delivery;
+        });
+    }
+
+    private function captureDayOpening(FuelTank $tank, int $quantityMinor): void
+    {
+        if (! Schema::hasTable('fuel_stock_daily_openings')) {
+            return;
+        }
+
+        $companyId = $tank->company_id;
+        $today = now()->toDateString();
+
+        $exists = DB::table('fuel_stock_daily_openings')
+            ->where('company_id', $companyId)
+            ->where('tank_id', $tank->id)
+            ->where('open_date', $today)
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        // Le premier mouvement du jour fixe l'ouverture au niveau courant
+        // AVANT le mouvement (livraison : on fige avant l'incrément).
+        DB::table('fuel_stock_daily_openings')->insert([
+            'company_id' => $companyId,
+            'tank_id' => $tank->id,
+            'open_date' => $today,
+            'opening_level_minor' => (int) $tank->current_level_minor,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function dayOpening(FuelTank $tank, string $date): ?int
+    {
+        if (! Schema::hasTable('fuel_stock_daily_openings')) {
+            return null;
+        }
+
+        $opening = DB::table('fuel_stock_daily_openings')
+            ->where('company_id', $tank->company_id)
+            ->where('tank_id', $tank->id)
+            ->where('open_date', $date)
+            ->value('opening_level_minor');
+
+        return is_numeric($opening) ? (int) $opening : null;
+    }
+
+    private function computeSummary(string $companyId, int $stationId, string $date): array
+    {
+        $dayStart = $date.' 00:00:00';
+        $dayEnd = $date.' 23:59:59';
+
+        $tanks = FuelTank::query()
+            ->where('company_id', $companyId)
+            ->where('station_id', $stationId)
+            ->orderBy('code')
+            ->get();
+
+        $tankSummaries = [];
+
+        foreach ($tanks as $tank) {
+            $deliveries = FuelTankDelivery::query()
+                ->where('company_id', $companyId)
+                ->where('tank_id', $tank->id)
+                ->whereBetween('delivered_at', [$dayStart, $dayEnd])
+                ->sum('quantity_minor');
+
+            $sales = FuelSale::query()
+                ->where('company_id', $companyId)
+                ->where('station_id', $stationId)
+                ->where('product', $tank->product_type)
+                ->whereBetween('sale_time', [$dayStart, $dayEnd])
+                ->sum('quantity');
+
+            $deliveryMinor = (int) $deliveries;
+            $saleMinor = (int) round((float) $sales * 1000); // litres → unités mineures (millièmes)
+            $currentMinor = (int) $tank->current_level_minor;
+
+            // Ouverture = niveau figé au PREMIER mouvement du jour
+            // (fuel_stock_daily_openings) : valeur INDÉPENDANTE du niveau
+            // courant au moment du rapprochement. Sans mouvement ce jour-là,
+            // on retombe sur le niveau courant (aucune variation attendue).
+            $openingMinor = $this->dayOpening($tank, $date) ?? $currentMinor;
+
+            // Attendu = ouverture + livraisons − ventes ; mesuré = niveau
+            // courant. Registre cohérent → attendu == mesuré (écart 0,
+            // expliquable). Un écart (vol, fuite, mouvement non répercuté)
+            // est RAPPORTÉ, jamais corrigé silencieusement.
+            $expectedMinor = max(0, $openingMinor + $deliveryMinor - $saleMinor);
+            $measuredMinor = $currentMinor;
+            $varianceMinor = $expectedMinor - $measuredMinor;
+
+            $tankSummaries[] = [
+                'tank_id' => $tank->id,
+                'tank_code' => $tank->code,
+                'product_type' => $tank->product_type,
+                'opening_level_minor' => $openingMinor,
+                'deliveries_minor' => $deliveryMinor,
+                'sales_minor' => $saleMinor,
+                'expected_level_minor' => $expectedMinor,
+                'measured_level_minor' => $measuredMinor,
+                'variance_minor' => $varianceMinor,
+                'explainable' => $varianceMinor === 0,
+            ];
+        }
+
+        $totalVariance = array_sum(array_column($tankSummaries, 'variance_minor'));
+
+        return [
+            'generated_at' => Carbon::now('UTC')->toIso8601String(),
+            'run_date' => $date,
+            'station_id' => $stationId,
+            'total_variance_minor' => $totalVariance,
+            'explainable' => $totalVariance === 0,
+            'tanks' => $tankSummaries,
+        ];
     }
 }

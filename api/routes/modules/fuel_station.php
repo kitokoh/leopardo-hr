@@ -34,6 +34,9 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
 use Illuminate\Support\Facades\Route;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // FUEL-004 — relevés de compteur par pompe (spec §13.4).
@@ -164,4 +167,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/exports/readings', [FuelImportExportController::class, 'exportReadings']);
         Route::get('/fuel-station/imports', [FuelImportExportController::class, 'imports']);
     });
+        Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
+                    ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+                    ->whereNumber('id');
 });

@@ -9,6 +9,7 @@ use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
+use App\Core\Auth\Domain\Models\AuditLog;use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException;use Illuminate\Database\Eloquent\Model;use Illuminate\Support\Carbon;
 
 /**
  * Incidents, maintenance et tâches FuelStation — FUEL-010 (issue #5804).
@@ -178,5 +179,122 @@ final class FuelIncidentService
         if ($model->company_id !== (string) $actor->company_id) {
             abort(404);
         }
+    }
+
+    public function transitionTask(FuelMaintenanceTask $task, string $targetStatus, Employee $actor, array $data = []): FuelMaintenanceTask
+    {
+        if (! in_array($targetStatus, FuelMaintenanceTask::STATUSES, true)) {
+            throw new FuelWorkflowTransitionException("Statut cible invalide: {$targetStatus}");
+        }
+
+        $allowed = match ($task->status) {
+            FuelMaintenanceTask::STATUS_OPEN => [
+                FuelMaintenanceTask::STATUS_IN_PROGRESS,
+                FuelMaintenanceTask::STATUS_CANCELLED,
+            ],
+            FuelMaintenanceTask::STATUS_IN_PROGRESS => [
+                FuelMaintenanceTask::STATUS_DONE,
+                FuelMaintenanceTask::STATUS_CANCELLED,
+            ],
+            default => [],
+        };
+
+        if (! in_array($targetStatus, $allowed, true)) {
+            throw new FuelWorkflowTransitionException(
+                "Transition {$task->status} → {$targetStatus} interdite"
+            );
+        }
+
+        $updates = [
+            'status' => $targetStatus,
+            'assigned_to' => $data['assigned_to'] ?? $task->assigned_to,
+        ];
+
+        if ($targetStatus === FuelMaintenanceTask::STATUS_IN_PROGRESS && $task->started_at === null) {
+            $updates['started_at'] = Carbon::now('UTC');
+        }
+
+        if ($targetStatus === FuelMaintenanceTask::STATUS_DONE) {
+            $updates['completed_by'] = $actor->id;
+            $updates['completed_at'] = Carbon::now('UTC');
+        }
+
+        $task->update($updates);
+
+        $this->audit($actor, 'fuel.maintenance.task.'.$targetStatus, $task);
+
+        return $task->refresh();
+    }
+
+
+    private function assertTransitionAllowed(FuelIncident $incident, string $target): void
+    {
+        $allowed = match ($incident->status) {
+            FuelIncident::STATUS_REPORTED => [
+                FuelIncident::STATUS_ASSIGNED,
+                FuelIncident::STATUS_RESOLVED,
+            ],
+            FuelIncident::STATUS_ASSIGNED => [
+                FuelIncident::STATUS_RESOLVED,
+            ],
+            FuelIncident::STATUS_RESOLVED => [
+                FuelIncident::STATUS_CLOSED,
+            ],
+            default => [],
+        };
+
+        if (! in_array($target, $allowed, true)) {
+            throw new FuelWorkflowTransitionException(
+                "Transition {$incident->status} → {$target} interdite"
+            );
+        }
+    }
+
+    private function redact(string $description): string
+    {
+        $trimmed = trim($description);
+        if ($trimmed === '') {
+            return '—';
+        }
+
+        return mb_substr($trimmed, 0, 2000);
+    }
+
+
+    private function audit(Employee $actor, string $event, Model $target): void
+    {
+        AuditLog::record(
+            module: 'fuel',
+            action: $event,
+            subject: $target,
+            actor: $actor,
+            newValues: ['status' => $target->getAttribute('status')],
+        );
+    }
+
+
+    private function asString(mixed $value): string
+    {
+        return is_string($value) || is_numeric($value) ? (string) $value : '';
+    }
+
+
+    private function nullableInt(mixed $value): ?int
+    {
+        return is_numeric($value) ? (int) $value : null;
+    }
+
+
+    private function nullableDate(mixed $value): ?Carbon
+    {
+        return is_string($value) && $value !== '' ? Carbon::parse($value)->utc() : null;
+    }
+
+
+    private function companyId(Model $model, Employee $actor): string
+    {
+        $existing = $model->getAttribute('company_id');
+
+        return is_string($existing) && $existing !== '' ? $existing : (string) $actor->company_id;
     }
 }

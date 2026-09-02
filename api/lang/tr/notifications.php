@@ -47,3 +47,12 @@ return [
     'edu_absence_recorded_body' => ':student_name :date tarihinde :status.',
     'edu_report_card_published_title' => 'Karne yayınlandı',
     'edu_report_card_published_body' => ':student_name karnesi (:period) yayınlandı.', ];
+    'fuel_meter_anomaly_title' => 'Sayaç okuma anormalliği tespit edildi',
+    'fuel_meter_anomaly_body' => 'Anormal bir sayaç aralığı incelenmedi (aralık #:interval_id).',
+    'fuel_missing_closure_title' => 'Eksik kasa kapanışı',
+    'fuel_missing_closure_body' => 'Kasa oturumu #:session_id 24 saatten uzun süredir kapanmadan açık.',
+    'fuel_stock_variance_title' => 'Açıklanamayan stok farkı',
+    'fuel_stock_variance_body' => ':run_id numaralı mutabakat açıklanamayan bir fark gösteriyor.',
+    'fuel_maintenance_due_title' => 'Gecikmiş bakım',
+    'fuel_maintenance_due_body' => '“:task_title” görevi süresi geçmiş.',
+];

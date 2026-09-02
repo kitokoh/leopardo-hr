@@ -6,6 +6,7 @@ namespace App\Modules\FuelStation\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 
 /**
  * RBAC des incidents FuelStation (FUEL-010, #5804). deny-by-default.
@@ -51,5 +52,34 @@ class FuelIncidentPolicy
     public function close(Employee $actor, FuelIncident $incident): bool
     {
         return $actor->isManager() && $incident->company_id === (string) $actor->company_id;
+    }
+
+    public function report(Employee $actor): bool
+    {
+        return true;
+    }
+
+
+    public function createTask(Employee $actor): bool
+    {
+        return $actor->isManager();
+    }
+
+
+    public function viewAnyTask(Employee $actor): bool
+    {
+        return $actor->isManager();
+    }
+
+
+    public function viewTask(Employee $actor, FuelMaintenanceTask $task): bool
+    {
+        return $actor->isManager() || $task->assigned_to === $actor->id;
+    }
+
+
+    public function transitionTask(Employee $actor, FuelMaintenanceTask $task): bool
+    {
+        return $actor->isManager() || $task->assigned_to === $actor->id;
     }
 }

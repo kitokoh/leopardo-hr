@@ -47,3 +47,12 @@ return [
     'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
     'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
     'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];
+    'fuel_meter_anomaly_title' => 'تم اكتشاف خلل في قراءة العداد',
+    'fuel_meter_anomaly_body' => 'لم تتم مراجعة فترة قراءة غير طبيعية (الفترة #:interval_id).',
+    'fuel_missing_closure_title' => 'إغلاق جلسة الصندوق مفقود',
+    'fuel_missing_closure_body' => 'جلسة الصندوق #:session_id مفتوحة منذ أكثر من 24 ساعة دون إغلاق.',
+    'fuel_stock_variance_title' => 'فرق مخزون غير مفسر',
+    'fuel_stock_variance_body' => 'تسوية #:run_id تُظهر فرقًا غير مفسر.',
+    'fuel_maintenance_due_title' => 'صيانة متأخرة',
+    'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
+];

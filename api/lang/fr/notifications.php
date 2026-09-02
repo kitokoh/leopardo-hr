@@ -47,3 +47,12 @@ return [
     'edu_absence_recorded_body' => ':student_name est :status le :date.',
     'edu_report_card_published_title' => 'Bulletin publié',
     'edu_report_card_published_body' => 'Le bulletin :period de :student_name a été publié.', ];
+    'fuel_meter_anomaly_title' => 'Anomalie de relevé détectée',
+    'fuel_meter_anomaly_body' => 'Un intervalle de relevé anormal n\'a pas été revu (intervalle #:interval_id).',
+    'fuel_missing_closure_title' => 'Clôture de caisse manquante',
+    'fuel_missing_closure_body' => 'La session de caisse #:session_id est ouverte depuis plus de 24 h sans clôture.',
+    'fuel_stock_variance_title' => 'Écart de stock inexpliqué',
+    'fuel_stock_variance_body' => 'Le rapprochement #:run_id présente un écart non expliqué.',
+    'fuel_maintenance_due_title' => 'Maintenance en retard',
+    'fuel_maintenance_due_body' => 'La tâche « :task_title » a dépassé son échéance.',
+];

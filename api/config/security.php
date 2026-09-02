@@ -5,6 +5,7 @@ return [
         'auth_per_minute' => (int) env('RATE_LIMIT_AUTH_PER_MINUTE', 10),
         'privacy_per_minute' => (int) env('RATE_LIMIT_PRIVACY_PER_MINUTE', 20),
         'payroll_per_minute' => (int) env('RATE_LIMIT_PAYROLL_PER_MINUTE', 60),
+        'fuel_per_minute' => (int) env('RATE_LIMIT_FUEL_PER_MINUTE', 120), // FUEL-020 #5814 (écritures verticale FuelStation)
         'platform_per_minute' => (int) env('RATE_LIMIT_PLATFORM_PER_MINUTE', 60),
         'metrics_per_minute' => (int) env('RATE_LIMIT_METRICS_PER_MINUTE', 30), // #4694 GET /metrics (anti-fingerprinting)
         'ai_per_minute' => (int) env('RATE_LIMIT_AI_PER_MINUTE', 20),

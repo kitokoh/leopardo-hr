@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 
 /**
  * Création d'une tâche de maintenance (FUEL-010, #5804).
@@ -50,4 +51,6 @@ class StoreFuelMaintenanceTaskRequest extends FormRequest
             'scheduled_for' => ['nullable', 'date'],
         ];
     }
+
+
 }

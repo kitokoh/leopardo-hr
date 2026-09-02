@@ -6,6 +6,7 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 use Illuminate\Support\Str;
+use DateTimeInterface;use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Facades\DB;
 
 /**
  * Publication d'événements FuelStation dans l'outbox (FUEL-015/019).
@@ -52,4 +53,6 @@ final class FuelOutboxPublisher
     {
         return $eventType.'-'.($aggregateType ?? 'none').'-'.($aggregateId ?? Str::uuid()->toString());
     }
+
+
 }

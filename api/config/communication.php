@@ -192,6 +192,22 @@ return [
             'body_key' => 'notifications.fuel_stock_low_body',
             'vars' => ['station_id', 'product', 'level'],
         ],
+        'fuel_meter_anomaly' => [
+            'title_key' => 'notifications.fuel_meter_anomaly_title',
+            'body_key' => 'notifications.fuel_meter_anomaly_body',
+            'vars' => ['interval_id'],
+        'fuel_missing_closure' => [
+            'title_key' => 'notifications.fuel_missing_closure_title',
+            'body_key' => 'notifications.fuel_missing_closure_body',
+            'vars' => ['session_id'],
+        'fuel_stock_variance' => [
+            'title_key' => 'notifications.fuel_stock_variance_title',
+            'body_key' => 'notifications.fuel_stock_variance_body',
+            'vars' => ['run_id'],
+        'fuel_maintenance_due' => [
+            'title_key' => 'notifications.fuel_maintenance_due_title',
+            'body_key' => 'notifications.fuel_maintenance_due_body',
+            'vars' => ['task_title'],
         'weekly_manager_digest' => [
             'category' => 'hr',
             'title_key' => 'notifications.weekly_manager_digest_title',

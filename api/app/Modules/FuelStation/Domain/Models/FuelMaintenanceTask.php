@@ -8,6 +8,7 @@ use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use App\Core\Auth\Domain\Models\Employee;use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Tâche de maintenance préventive/corrective FuelStation — FUEL-010
@@ -73,5 +74,15 @@ class FuelMaintenanceTask extends Model
             'completed_at' => 'date',
             'completed_by' => 'integer',
         ];
+    }
+
+    public function incident(): BelongsTo
+    {
+        return $this->belongsTo(FuelIncident::class, 'incident_id');
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'assigned_to');
     }
 }

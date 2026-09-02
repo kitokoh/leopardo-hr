@@ -12,6 +12,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelOutboxConsumerRegistry;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Database\Query\Builder;use Illuminate\Support\Facades\Log;
 
 /**
  * fuel:outbox-dispatch — Consomme l'outbox des événements FuelStation
@@ -173,4 +174,6 @@ class FuelOutboxDispatchCommand extends Command
 
         $this->error("[fuel:outbox-dispatch] #{$event->id} dead-letter : {$error}");
     }
+
+
 }

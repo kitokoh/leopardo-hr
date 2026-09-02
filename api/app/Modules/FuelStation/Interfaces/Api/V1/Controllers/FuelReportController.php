@@ -13,6 +13,7 @@ use App\Modules\FuelStation\Infrastructure\Services\FuelReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;
 
 /**
  * Reporting opérationnel (FUEL-017, issue #5811). deny-by-default
@@ -80,5 +81,47 @@ class FuelReportController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+    }
+
+
+    public function show(Request $request, string $type): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('viewReports', FuelReportSnapshot::class);
+
+        if (! in_array($type, FuelReportSnapshot::TYPES, true)) {
+            abort(404, 'SNAPSHOT_TYPE_UNKNOWN');
+        }
+
+        $station = FuelStation::query()
+            ->where('company_id', $actor->company_id)
+            ->find($request->integer('station_id'));
+
+        if (! $station instanceof FuelStation) {
+            abort(404);
+        }
+
+        $periodStartRaw = $request->input('period_start') ?? now()->startOfMonth()->toDateString();
+        $periodEndRaw = $request->input('period_end') ?? now()->toDateString();
+        $periodStart = is_string($periodStartRaw) ? $periodStartRaw : now()->startOfMonth()->toDateString();
+        $periodEnd = is_string($periodEndRaw) ? $periodEndRaw : now()->toDateString();
+
+        $result = $this->reports->snapshot($station, $type, $periodStart, $periodEnd, $actor);
+
+        return response()->json([
+            'data' => [
+                'id' => $result['snapshot']->id,
+                'station_id' => $result['snapshot']->station_id,
+                'snapshot_type' => $result['snapshot']->snapshot_type,
+                'period_start' => Carbon::parse((string) $result['snapshot']->period_start)->toDateString(),
+                'period_end' => Carbon::parse((string) $result['snapshot']->period_end)->toDateString(),
+                'payload' => $result['snapshot']->payload,
+                'generated_at' => $result['snapshot']->generated_at->toIso8601String(),
+            ],
+            'meta' => ['recomputed' => $result['recomputed']],
+        ]);
     }
 }

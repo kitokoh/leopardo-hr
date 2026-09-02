@@ -47,3 +47,12 @@ return [
     'edu_absence_recorded_body' => ':student_name is :status on :date.',
     'edu_report_card_published_title' => 'Report card published',
     'edu_report_card_published_body' => ':student_name report card (:period) has been published.', ];
+    'fuel_meter_anomaly_title' => 'Meter reading anomaly detected',
+    'fuel_meter_anomaly_body' => 'An abnormal reading interval has not been reviewed (interval #:interval_id).',
+    'fuel_missing_closure_title' => 'Missing cash session closure',
+    'fuel_missing_closure_body' => 'Cash session #:session_id has been open for over 24 h without closure.',
+    'fuel_stock_variance_title' => 'Unexplained stock variance',
+    'fuel_stock_variance_body' => 'Reconciliation run #:run_id shows an unexplained variance.',
+    'fuel_maintenance_due_title' => 'Overdue maintenance',
+    'fuel_maintenance_due_body' => 'Task “:task_title” is past due.',
+];

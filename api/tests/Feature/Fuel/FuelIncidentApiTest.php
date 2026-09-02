@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 
 /**
  * Incidents, maintenance et tâches — FUEL-010 (issue #5804).
@@ -205,5 +206,229 @@ class FuelIncidentApiTest extends TestCase
 
         $this->getJson('/api/v1/fuel-station/incidents/'.$incident->id)->assertStatus(404);
         $this->postJson('/api/v1/fuel-station/incidents/'.$incident->id.'/close', ['closure_notes' => 'x'])->assertStatus(404);
+    }
+
+
+    public function test_unauthenticated_gets_401(): void
+    {
+        $this->postJson('/api/v1/fuel-station/incidents', [
+            'description_redacted' => 'Pompe 1 hors service',
+        ])->assertStatus(401);
+    }
+
+
+    public function test_operator_reports_incident(): void
+    {
+        [$company, $operator] = $this->seedTenant();
+
+        Sanctum::actingAs($operator);
+
+        $this->postJson('/api/v1/fuel-station/incidents', [
+            'category' => 'equipment',
+            'severity' => 'high',
+            'description_redacted' => 'Pompe 1 ne démarre plus',
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.status', 'reported')
+            ->assertJsonPath('data.reported_by', $operator->id)
+            ->assertJsonPath('data.category', 'equipment')
+            ->assertJsonPath('data.severity', 'high');
+
+        $this->assertDatabaseHas('fuel_incidents', [
+            'company_id' => $company->id,
+            'status' => 'reported',
+            'reported_by' => $operator->id,
+        ]);
+    }
+
+
+    public function test_incident_workflow_assign_resolve_close(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+
+        Sanctum::actingAs($manager);
+
+        // assign
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/assign", [
+            'assigned_to' => $manager->id,
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'assigned')
+            ->assertJsonPath('data.assigned_to', $manager->id);
+
+        // resolve
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/resolve")
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'resolved')
+            ->assertJsonPath('data.resolved_by', $manager->id);
+
+        // close
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/close")
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'closed')
+            ->assertJsonPath('data.closed_by', $manager->id);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'action' => 'fuel.incident.closed',
+        ]);
+    }
+
+
+    public function test_illegal_transition_is_rejected(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+
+        Sanctum::actingAs($manager);
+
+        // reported → closed est interdit (doit passer par assign/resolve).
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/close")
+            ->assertStatus(422);
+
+        $this->assertSame('reported', $incident->refresh()->status);
+    }
+
+
+    public function test_operator_cannot_transition_incident(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+        $operator = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+
+        Sanctum::actingAs($operator);
+
+        $this->postJson("/api/v1/fuel-station/incidents/{$incident->id}/resolve")
+            ->assertStatus(403);
+    }
+
+
+    public function test_manager_lists_and_sees_incidents(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/fuel-station/incidents')
+            ->assertStatus(200)
+            ->assertJsonPath('data.0.id', $incident->id);
+
+        $this->getJson("/api/v1/fuel-station/incidents/{$incident->id}")
+            ->assertStatus(200)
+            ->assertJsonPath('data.id', $incident->id);
+    }
+
+
+    public function test_maintenance_task_workflow(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+
+        Sanctum::actingAs($manager);
+
+        // Création d'une tâche corrective dérivée de l'incident.
+        $this->postJson('/api/v1/fuel-station/maintenance-tasks', [
+            'title' => 'Remplacer la pompe 1',
+            'incident_id' => $incident->id,
+            'task_type' => 'corrective',
+            'priority' => 'high',
+            'assigned_to' => $manager->id,
+            'due_at' => now()->addDays(2)->toDateTimeString(),
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.status', 'open')
+            ->assertJsonPath('data.incident_id', $incident->id)
+            ->assertJsonPath('data.priority', 'high');
+
+        $task = FuelMaintenanceTask::query()->firstOrFail();
+
+        // Transition open → in_progress → done (par l'assigné, manager ici).
+        $this->postJson("/api/v1/fuel-station/maintenance-tasks/{$task->id}/transition", [
+            'status' => 'in_progress',
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'in_progress');
+
+        $this->postJson("/api/v1/fuel-station/maintenance-tasks/{$task->id}/transition", [
+            'status' => 'done',
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.status', 'done')
+            ->assertJsonPath('data.completed_by', $manager->id);
+
+        $this->assertSame('done', $task->refresh()->status);
+    }
+
+
+    public function test_task_illegal_transition_is_rejected(): void
+    {
+        [$company, $manager, $incident] = $this->seedIncident();
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/fuel-station/maintenance-tasks', [
+            'title' => 'Tâche test',
+            'incident_id' => $incident->id,
+        ])->assertStatus(201);
+
+        $task = FuelMaintenanceTask::query()->firstOrFail();
+
+        // open → done sans passer par in_progress : interdit.
+        $this->postJson("/api/v1/fuel-station/maintenance-tasks/{$task->id}/transition", [
+            'status' => 'done',
+        ])->assertStatus(422);
+    }
+
+
+    public function test_solution_inactive_returns_403(): void
+    {
+        $company = Company::factory()->create(['features' => []]);
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/fuel-station/incidents')->assertStatus(403);
+    }
+
+    private function seedIncident(): array
+    {
+        [$company, $manager] = $this->seedTenant();
+        $incident = FuelIncident::query()->create([
+            'company_id' => $company->id,
+            'description_redacted' => 'Incident initial',
+            'reported_by' => $manager->id,
+        ]);
+
+        return [$company, $manager, $incident];
+    }
+
+    private function seedTenant(): array
+    {
+        $company = Company::factory()->create(['features' => ['fuel_station' => true]]);
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+
+        return [$company, $manager];
+    }
+
+
+    private function createStation(Company $company): FuelStation
+    {
+        /** @var FuelStation $station */
+        $station = FuelStation::query()->create([
+            'company_id' => $company->id,
+            'code' => 'ST-'.substr((string) $company->id, 0, 8),
+            'name' => 'Station Test',
+            'timezone' => 'Africa/Algiers',
+            'status' => FuelStation::STATUS_ACTIVE,
+        ]);
+
+        return $station;
     }
 }

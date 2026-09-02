@@ -15242,6 +15242,33 @@ abstract class AppLocalizations {
   /// **'Oui'**
   String get settingsYes;
 
+  /// No description provided for @fuelPumpistTitle.
+  String get fuelPumpistTitle;
+
+  /// No description provided for @fuelPumpistBackTooltip.
+  String get fuelPumpistBackTooltip;
+
+  /// No description provided for @fuelPumpistActiveShift.
+  String get fuelPumpistActiveShift;
+
+  /// No description provided for @fuelPumpistNoShiftTitle.
+  String get fuelPumpistNoShiftTitle;
+
+  /// No description provided for @fuelPumpistNoShiftDescription.
+  String get fuelPumpistNoShiftDescription;
+
+  /// No description provided for @fuelPumpistErrorTitle.
+  String get fuelPumpistErrorTitle;
+
+  /// No description provided for @fuelPumpistReadingLabel.
+  String get fuelPumpistReadingLabel;
+
+  /// No description provided for @fuelPumpistReadingHint.
+  String get fuelPumpistReadingHint;
+
+  /// No description provided for @fuelPumpistSubmit.
+  String get fuelPumpistSubmit;
+
   /// No description provided for @settingsJourneyAttachedTo.
   ///
   /// In fr, this message translates to:
