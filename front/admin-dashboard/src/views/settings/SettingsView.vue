@@ -319,7 +319,10 @@ const bankingForm = reactive({ company_iban: '', company_bic: '' })
 async function loadBanking() {
   isBankingLoading.value = true
   try {
-    const res = await api.get('/company/banking')
+    // #6714 : /company/banking est un endpoint TENANT — un super-admin
+    // reçoit 401 ; _skipAuthRedirect (#4170) évite que l'intercepteur
+    // détruise la session admin (repro : ouvrir Paramètres déconnectait).
+    const res = await api.get('/company/banking', { _skipAuthRedirect: true })
     const data = res.data?.data || {}
     bankingData.company_iban = data.company_iban ?? null
     bankingData.company_bic = data.company_bic ?? null
@@ -338,10 +341,11 @@ async function loadBanking() {
 async function submitBanking() {
   isSavingBanking.value = true
   try {
+    // #6714 : même opt-out que le GET — jamais de déconnexion de session.
     const res = await api.patch('/company/banking', {
       company_iban: bankingForm.company_iban.trim().toUpperCase().replace(/\s/g, '') || null,
       company_bic: bankingForm.company_bic.trim().toUpperCase() || null,
-    })
+    }, { _skipAuthRedirect: true })
     const data = res.data?.data || {}
     bankingData.company_iban = data.company_iban ?? null
     bankingData.company_bic = data.company_bic ?? null
