@@ -25,7 +25,7 @@ final class DeliveryEventResource extends JsonResource
             'id' => $this->id,
             'delivery_id' => $this->delivery_id,
             'type' => $this->type,
-            'event_at' => $this->event_at?->toIso8601String(),
+            'event_at' => $this->event_at->toIso8601String(),
             'latitude' => $this->latitude !== null ? (float) $this->latitude : null,
             'longitude' => $this->longitude !== null ? (float) $this->longitude : null,
             'origin' => $this->origin,
