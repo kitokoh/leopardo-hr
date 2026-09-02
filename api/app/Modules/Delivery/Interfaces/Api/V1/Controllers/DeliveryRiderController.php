@@ -38,6 +38,10 @@ final class DeliveryRiderController
     public function today(Request $request): JsonResponse
     {
         $employee = $request->user();
+        if (! $employee instanceof Employee) {
+            abort(401, 'AUTH_EMPLOYEE_REQUIRED');
+        }
+
         $companyId = $this->companyId($request);
         $today = now()->toDateString();
 
@@ -61,6 +65,10 @@ final class DeliveryRiderController
     {
         $validated = $request->validated();
         $employee = $request->user();
+        if (! $employee instanceof Employee) {
+            abort(401, 'AUTH_EMPLOYEE_REQUIRED');
+        }
+
         $companyId = $this->companyId($request);
 
         $updated = DB::transaction(function () use ($stop, $companyId, $validated, $employee): DeliveryStop {
@@ -121,7 +129,12 @@ final class DeliveryRiderController
                 'proof_id' => $status === 'delivered' ? $proofId : $found->proof_id,
             ])->save();
 
-            return $found->fresh();
+            $fresh = $found->fresh();
+            if ($fresh === null) {
+                abort(500, 'DELIVERY_STOP_RELOAD_FAILED');
+            }
+
+            return $fresh;
         });
 
         return (new DeliveryRouteStopResource($updated))->response();
