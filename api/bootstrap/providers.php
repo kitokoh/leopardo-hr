@@ -70,4 +70,15 @@ return [
     TravelAgencyServiceProvider::class,
     // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
     RestaurantManagerServiceProvider::class,
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
+
+    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
+    RestaurantManagerServiceProvider::class,
+ (feat(restaurant): squelette module DDD RestaurantManager (RESTO-101, #6158))
+    // — FuelStation module (solution verticale, issue #5795)
+    FuelStationServiceProvider::class,
+
+    // — RestaurantManager vertical (BC-25 RESTAURANT, RESTO-101/#6158)
+    RestaurantManagerServiceProvider::class,
 ];

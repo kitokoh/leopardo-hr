@@ -57,7 +57,7 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-Modules actifs (22, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `RestaurantManager`, `TravelAgency` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (24, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `RestaurantManager`, `TravelAgency`, `api/app/Core/`, `api/app/Modules/` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 

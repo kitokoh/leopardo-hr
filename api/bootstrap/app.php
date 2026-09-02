@@ -158,6 +158,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
             // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
+            // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
+            'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
+            // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
+            'restaurant.public.shop' => \App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
