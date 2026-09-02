@@ -74,6 +74,7 @@ return [
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     // — Delivery module (BC-26 DELIVERY, DELIVERY-101/#6282)
     DeliveryServiceProvider::class,
 =======
@@ -86,4 +87,6 @@ return [
 >>>>>>> origin/feat/delivery-d01-glossary
 =======
 >>>>>>> origin/feat/delivery-d03-isolation
+=======
+>>>>>>> origin/feat/delivery-d07-async-export
 ];

@@ -47,8 +47,11 @@ final class DeliveryCodSettlementController
 
     public function settle(Request $request, int $settlement): JsonResponse
     {
+<<<<<<< HEAD
         $this->requireAdmin($request);
 
+=======
+>>>>>>> origin/feat/delivery-d07-async-export
         $updated = $this->settlements->settle($settlement, $this->companyId($request));
 
         return (new DeliveryCodSettlementResource($updated))->response();
@@ -56,8 +59,11 @@ final class DeliveryCodSettlementController
 
     public function reconcile(Request $request, int $settlement): JsonResponse
     {
+<<<<<<< HEAD
         $this->requireAdmin($request);
 
+=======
+>>>>>>> origin/feat/delivery-d07-async-export
         $updated = $this->settlements->reconcile($settlement, $this->companyId($request));
 
         return (new DeliveryCodSettlementResource($updated))->response();
@@ -120,6 +126,7 @@ final class DeliveryCodSettlementController
         ]);
     }
 
+<<<<<<< HEAD
     /**
      * RBAC transitoire (BC-26-D05/#6312 portera la matrice delivery.role) :
      * settle/reconcile sont réservés à l'admin (manager principal).
@@ -133,6 +140,8 @@ final class DeliveryCodSettlementController
         }
     }
 
+=======
+>>>>>>> origin/feat/delivery-d07-async-export
     private function companyId(Request $request): string
     {
         $companyId = $request->user()?->getAttribute('company_id');

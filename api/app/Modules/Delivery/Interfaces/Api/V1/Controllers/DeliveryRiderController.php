@@ -7,6 +7,10 @@ namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 use App\Modules\Delivery\Application\Services\DeliveryEventService;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
+<<<<<<< HEAD
+=======
+use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
+>>>>>>> origin/feat/delivery-d07-async-export
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStopStatusRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteResource;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryStopResource;
@@ -28,7 +32,14 @@ use Illuminate\Support\Facades\DB;
  */
 final class DeliveryRiderController
 {
+<<<<<<< HEAD
     public function __construct(private readonly DeliveryEventService $events) {}
+=======
+    public function __construct(
+        private readonly DeliveryEventService $events,
+        private readonly DeliveryRoleResolver $roles,
+    ) {}
+>>>>>>> origin/feat/delivery-d07-async-export
 
     public function today(Request $request): JsonResponse
     {
@@ -40,9 +51,14 @@ final class DeliveryRiderController
             ->where('company_id', $companyId)
             ->where('route_date', $today);
 
+<<<<<<< HEAD
         // Scope par propriété : un rider ne voit QUE ses tournées ; un
         // manager voit toutes les tournées du jour (RBAC fin : BC-26-D05).
         if (! $employee->isManager()) {
+=======
+        // Scope par propriété : un rider ne voit QUE ses tournées.
+        if (! $this->roles->hasAnyRole($employee, ['dispatcher', 'manager', 'admin'])) {
+>>>>>>> origin/feat/delivery-d07-async-export
             $query->where('driver_id', $employee->id);
         }
 
@@ -129,9 +145,13 @@ final class DeliveryRiderController
     {
         $employee = $request->user();
 
+<<<<<<< HEAD
         // Un manager peut opérer sur toutes les tournées du tenant ; un
         // employé non-manager uniquement sur la sienne (propriété).
         if ($employee->isManager()) {
+=======
+        if ($this->roles->hasAnyRole($employee, ['dispatcher', 'manager', 'admin'])) {
+>>>>>>> origin/feat/delivery-d07-async-export
             return true;
         }
 
