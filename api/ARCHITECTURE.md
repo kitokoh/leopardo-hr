@@ -68,7 +68,7 @@ La dette héritée (19 modules sources, 51 paires source→cible — vérifié
 `dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
 ligne ajoutée exige une justification (issue de refactor), aucune n'est
 rajoutée « pour passer ». Dérogations structurelles déjà documentées :
-`Modules/Absence` et `Modules/Expense` sont des façades sur `Planning`
+`Modules/Absence` est une façade sur `Planning` ; `Modules/Expense` a évolué en module DDD complet depuis #5235 (voir dérogation PA2-ARCH-011, à jour plus bas)
 (PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
 (PayrollCalculator → extraire `Planning`) ; déplacement de l'`Employee`
 canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
@@ -85,7 +85,7 @@ consommateurs).
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
-| `Modules/Expense` | ✅ routes/modules/expense.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-011) | `ExpenseServiceProvider` |
+| `Modules/Expense` | ✅ routes/modules/expense.php | 🟢 Module DDD complet depuis #5235 (Domain/Infrastructure/Interfaces/Providers) — modèles de notes de frais sous contrat `Planning` (ex-dérogation PA2-ARCH-011, résorbée) | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
@@ -108,7 +108,8 @@ consommateurs).
 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 >
-> **Derogation documentee — `Modules/Expense` (PA2-ARCH-011, issue #1414)** : ce module ne possede que `Interfaces/` (controller `ExpenseClaimController`) et `Providers/`. Les couches `Domain/Application/Infrastructure` (`ExpenseClaim`, `ExpenseItem`, `ExpenseService`, `CreateExpenseClaim`, `SubmitExpenseClaim`, `ExpenseRepositoryInterface`, `CreateExpenseDTO`, `ExpenseNotDraftException`) ont ete supprimees car elles dupliquaient integralement (memes colonnes, meme table `expense_claims`/`expense_items`) le modele reel du module `Planning` (`Planning\Domain\Models\{ExpenseClaim,ExpenseItem}`) sans jamais etre appelees : le controller reellement route (`routes/modules/expense.php`) consommait deja `Planning\...\ExpenseClaim` directement, jamais `Expense\...\ExpenseClaim`. Consequence corrigee dans le meme changement : `AuthServiceProvider` enregistrait `Gate::policy()` sur le modele mort `Expense\Domain\Models\ExpenseClaim`, donc la policy Laravel native ne s'appliquait jamais au vrai modele utilise par le controller (celui-ci compensait avec des `abort_unless()` manuels). `Planning` est desormais le seul proprietaire canonique du modele de notes de frais ; `Modules/Expense` reste uniquement une facade HTTP qui consomme les classes `Planning\...` directement.
+> **Historique — `Modules/Expense` (PA2-ARCH-011, issue #1414, évolution #5235)** : la dérogation initiale (2024-2026) documentait un module « façade HTTP » ne possédant que `Interfaces/` (`ExpenseClaimController`) et `Providers/`, les modèles métier (`ExpenseClaim`, `ExpenseItem`) vivant canoniquement dans `Planning\Domain\Models` (le controller routé consommait `Planning\...\ExpenseClaim` directement ; la policy enregistrée sur le modèle mort avait été corrigée).
+> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD complet — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique).
 
 ---
 
@@ -236,9 +237,10 @@ cat bootstrap/providers.php
 
 # Vérifier la structure de modules DDD (dynamique — voir aussi
 # .github/workflows/architecture-check.yml, généré depuis app/Modules/* sans liste codée en dur)
-# NB: Absence et Expense n'ont que Interfaces/+Providers/ (derogations PA2-ARCH-002
-# et PA2-ARCH-011, voir plus haut)
-FACADE_ONLY_MODULES="Absence Expense"
+# NB: seule Absence reste une façade Interfaces/+Providers/ (derogation
+# PA2-ARCH-002, voir plus haut) — Expense est un module DDD complet depuis
+# #5235 (dérogation PA2-ARCH-011 résorbée)
+FACADE_ONLY_MODULES="Absence"
 for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     if echo "$FACADE_ONLY_MODULES" | grep -qw "$MOD" && echo "Application Domain Infrastructure" | grep -qw "$LAYER"; then
