@@ -209,6 +209,7 @@ jobs:
 
           DEPLOY_ID=""
           for attempt in {1..10}; do
+            echo "Resolving deploy ID, attempt ${attempt}/10..."
             DEPLOY_ID=$(curl --fail --silent --show-error \
               -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
               "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?limit=1" \
