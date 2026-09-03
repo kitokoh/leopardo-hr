@@ -356,7 +356,17 @@ return Application::configure(basePath: dirname(__DIR__))
             // porte toujours le message Laravel brut ("Too Many Attempts.") qui
             // n'est PAS un message statique volontaire. On sert systématiquement
             // le code stable + message localisé (headers Retry-After conservés).
-            if ($statusCode === 429 || $leakSignature === 1 || trim($rawMessage) === '') {
+            // Issue #6689 : le 403 de Policy/Gate arrive ici sous forme
+            // d'AccessDeniedHttpException au message Laravel par défaut
+            // (« This action is unauthorized. ») — prepareException() convertit
+            // AuthorizationException AVANT les renderers (vendor Laravel), donc
+            // le renderer AuthorizationException dédié ne se déclenche jamais.
+            // Ce message générique ne doit pas servir de code machine : code
+            // stable FORBIDDEN + message localisé, comme tout 403 de l'API.
+            if ($statusCode === 429
+                || ($statusCode === 403 && $rawMessage === 'This action is unauthorized.')
+                || $leakSignature === 1
+                || trim($rawMessage) === '') {
 
                 Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
                     'status' => $statusCode,
