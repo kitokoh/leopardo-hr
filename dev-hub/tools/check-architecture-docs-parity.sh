@@ -80,6 +80,21 @@ if grep -qE 'Modules actifs \([0-9]+, sous .api/app/Modules..\) : .*\`(SmartAtte
   violations=$((violations + 1))
 fi
 
+# --- 5. Spot-check ARCHITECTURE.md ↔ routes/modules/ (issue #6580) ---------
+# Toute référence « routes/modules/<fichier>.php » du tableau des modules doit
+# exister sur disque (les fichiers de routes ont des noms réels qui ont dérivé,
+# ex. fuel_station.php et non fuelstation.php — cf. audit 2026-08-31).
+ROUTES_DIR="api/routes/modules"
+if [[ -d "$ROUTES_DIR" ]]; then
+  while IFS= read -r ref; do
+    f="${ref#routes/modules/}"
+    if [[ ! -f "$ROUTES_DIR/$f" ]]; then
+      echo "::error::ARCHITECTURE.md référence routes/modules/$f inexistant (issue #6580)."
+      violations=$((violations + 1))
+    fi
+  done < <(grep -oE "routes/modules/[a-z_0-9]+\.php" api/ARCHITECTURE.md | sort -u)
+fi
+
 if [[ "$violations" -gt 0 ]]; then
   echo "::error::Parité docs ↔ modules : $violations divergence(s) (issue #5589)."
   exit 1
