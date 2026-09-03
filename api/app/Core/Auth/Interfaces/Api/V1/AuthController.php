@@ -256,10 +256,26 @@ class AuthController extends Controller
         $state = Str::random(40);
         session(['google_oauth_state' => $state]);
 
-        /** @var GoogleProvider $google */
-        $google = Socialite::driver('google');
+        try {
+            /** @var GoogleProvider $google */
+            $google = Socialite::driver('google');
 
-        return $google->with(['state' => $state])->redirect();
+            return $google->with(['state' => $state])->redirect();
+        } catch (\Throwable $exception) {
+            // Issue #6670 : même avec la config renseignée, Socialite peut
+            // échouer (URL de redirect invalide, provider injoignable, …) —
+            // le 500 INTERNAL_ERROR prod est opaque. On répond 503
+            // actionnable + trace serveur (classe + message, jamais exposés).
+            Log::error('auth.google.redirect_failed', [
+                'exception' => get_class($exception),
+                'message' => $exception->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_OAUTH_UNAVAILABLE',
+                'message' => __('errors.SERVICE_UNAVAILABLE'),
+            ], 503);
+        }
     }
 
     /**

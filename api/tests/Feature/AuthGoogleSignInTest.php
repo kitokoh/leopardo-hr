@@ -141,11 +141,13 @@ class AuthGoogleSignInTest extends TestCase
             ->assertJson(['error' => 'GOOGLE_OAUTH_NOT_CONFIGURED']);
     }
 
-    public function test_google_redirect_passes_when_oauth_configured(): void
+    public function test_google_redirect_fails_soft_when_socialite_breaks(): void
     {
-        // Credentials présents → la garde de configuration passe et la
-        // redirection Socialite est tentée (sans réseau en test, l'échec
-        // éventuel ne doit PAS être GOOGLE_OAUTH_NOT_CONFIGURED).
+        // Credentials présents → la garde de configuration passe ; si
+        // Socialite échoue (session indisponible en test, provider
+        // injoignable, URL invalide…), l'échec doit être SOFT et ACTIONNABLE
+        // — 503 GOOGLE_OAUTH_UNAVAILABLE, jamais 500 opaque ni
+        // GOOGLE_OAUTH_NOT_CONFIGURED (issue #6670).
         config([
             'services.google.client_id' => 'test-client-id',
             'services.google.client_secret' => 'test-client-secret',
@@ -154,7 +156,8 @@ class AuthGoogleSignInTest extends TestCase
 
         $response = $this->getJson('/api/v1/auth/google');
 
-        $this->assertNotEquals(503, $response->getStatusCode());
+        $this->assertNotEquals(500, $response->getStatusCode(), 'échec Socialite ne doit jamais être un 500');
         $this->assertNotEquals('GOOGLE_OAUTH_NOT_CONFIGURED', $response->json('error'));
+        $this->assertSame('GOOGLE_OAUTH_UNAVAILABLE', $response->json('error'));
     }
 }
