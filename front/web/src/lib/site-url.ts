@@ -3,10 +3,12 @@
  *
  * Avant : 8 copies du fallback, dont `http://localhost:3000` (canonicals
  * pointant sur localhost en build par défaut) et le domaine Vercel
- * « emprunté » `gestionemployer-backend.vercel.app` — explicitement interdit
- * dans les données structurées (issue #1775 : il évoque une entreprise US
- * sans rapport ; le domaine de marque officiel recommandé est
- * `www.leopardo-rh.com`, voir docs/DEPLOYMENT_PRODUCTION.md).
+ * `gestionemployer-backend.vercel.app` (issue #6683 : réconciliation de la
+ * gouvernance — c'est le déploiement web ACTUEL, registre DOMAINS.md statut
+ * `live`, mais il ne doit PAS servir de canonical/domaine de marque : les
+ * données structurées et canonicals utilisent `NEXT_PUBLIC_SITE_URL` →
+ * `leopardo-rh.com` (marque officielle, migration cible #3452 — cf.
+ * docs/DEPLOYMENT_PRODUCTION.md).
  *
  * Ordre de résolution :
  *   1. NEXT_PUBLIC_SITE_URL — l'URL de marque réelle (à poser au déploiement,

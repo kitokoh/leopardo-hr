@@ -5,10 +5,11 @@ interface JsonLdProps {
   data: Record<string, unknown>;
 }
 
-// Issue #1775 : https://gestionemployer-backend.vercel.app appartient à une entreprise de
-// construction US sans rapport — ne jamais l'utiliser dans les données
-// structurées. Source unique : getSiteUrl() (#2656) — NEXT_PUBLIC_SITE_URL →
-// DEFAULT_SITE_URL (marque) → localhost en dev. (Closes #3852)
+// Issue #1775/#6683 : le domaine Vercel est le déploiement web ACTUEL
+// (DOMAINS.md, statut live) mais il ne doit JAMAIS apparaître dans les
+// données structurées/canonicals — source unique : getSiteUrl() (#2656) —
+// NEXT_PUBLIC_SITE_URL → DEFAULT_SITE_URL (marque) → localhost en dev.
+// Migration cible : leopardo-rh.com (#3452). (Closes #3852)
 import { getSiteUrl } from '@/lib/site-url';
 
 const SITE_URL = getSiteUrl();

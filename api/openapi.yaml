@@ -1433,6 +1433,7 @@ paths:
       tags:
       - User
       summary: Crée un compte utilisateur sans entreprise (parcours legacy mobile)
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security: []
       requestBody:
         required: true
@@ -1466,6 +1467,7 @@ paths:
       tags:
       - User
       summary: Connexion utilisateur sans entreprise (parcours legacy mobile)
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security: []
       requestBody:
         required: true
@@ -1492,6 +1494,7 @@ paths:
       tags:
       - User
       summary: Profil de l'utilisateur connecté
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security:
       - BearerAuth: []
       responses:
@@ -1504,6 +1507,7 @@ paths:
       tags:
       - User
       summary: Met à jour le profil de l'utilisateur connecté
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security:
       - BearerAuth: []
       requestBody:
@@ -1539,6 +1543,7 @@ paths:
       tags:
       - User
       summary: Change le mot de passe de l'utilisateur connecté
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security:
       - BearerAuth: []
       requestBody:
@@ -1567,6 +1572,7 @@ paths:
       tags:
       - User
       summary: Déconnecte l'utilisateur (révoque le token)
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security:
       - BearerAuth: []
       responses:
@@ -1579,6 +1585,7 @@ paths:
       tags:
       - User
       summary: Connexion ou création de compte via Google (compte ordinaire)
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security: []
       requestBody:
         required: true
@@ -1601,6 +1608,7 @@ paths:
       tags:
       - User
       summary: Liste les demandes de création d'entreprise de l'utilisateur
+      description: 'Guard `auth:user_api` — comptes utilisateur ordinaires (sans entreprise). Un token Sanctum employé (employé/manager) reçoit 401 UNAUTHENTICATED (issue #6677).'
       security:
       - BearerAuth: []
       responses:
