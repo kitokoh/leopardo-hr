@@ -52,22 +52,22 @@ class CabinetShareOrphanRegressionTest extends TestCase
     private function makeShare(string $shareableType, int $shareableId, string $token): CabinetShare
     {
         return CabinetShare::create([
-            'company_id'     => $this->company->id,
-            'employee_id'    => $this->employee->id,
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
             'shareable_type' => $shareableType,
-            'shareable_id'   => $shareableId,
-            'share_token'    => $token,
-            'shared_via'     => 'link',
-            'expires_at'     => Carbon::now()->addDay(),
+            'shareable_id' => $shareableId,
+            'share_token' => $token,
+            'shared_via' => 'link',
+            'expires_at' => Carbon::now()->addDay(),
         ]);
     }
 
     public function test_list_ignores_legacy_shareable_type_without_500(): void
     {
         $folder = CabinetFolder::create([
-            'company_id'  => $this->company->id,
+            'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
-            'name'        => 'Dossier #6674',
+            'name' => 'Dossier #6674',
         ]);
 
         $valid = $this->makeShare(CabinetFolder::class, $folder->id, 'token-valid-6674');
@@ -102,14 +102,14 @@ class CabinetShareOrphanRegressionTest extends TestCase
     public function test_deleting_document_revokes_its_shares(): void
     {
         $document = CabinetDocument::create([
-            'company_id'    => $this->company->id,
-            'employee_id'   => $this->employee->id,
-            'name'          => 'doc-6674.pdf',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'name' => 'doc-6674.pdf',
             'original_name' => 'doc-6674.pdf',
-            'mime_type'     => 'application/pdf',
-            'size'          => 128,
-            'disk'          => 'local',
-            'path'          => 'cabinet/doc-6674.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 128,
+            'disk' => 'local',
+            'path' => 'cabinet/doc-6674.pdf',
         ]);
         Storage::disk('local')->put('cabinet/doc-6674.pdf', 'PDF');
 
@@ -128,21 +128,21 @@ class CabinetShareOrphanRegressionTest extends TestCase
     public function test_deleting_folder_revokes_folder_and_document_shares(): void
     {
         $folder = CabinetFolder::create([
-            'company_id'  => $this->company->id,
+            'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
-            'name'        => 'Dossier racine #6674',
+            'name' => 'Dossier racine #6674',
         ]);
 
         $document = CabinetDocument::create([
-            'company_id'    => $this->company->id,
-            'employee_id'   => $this->employee->id,
-            'folder_id'     => $folder->id,
-            'name'          => 'sous-doc.pdf',
+            'company_id' => $this->company->id,
+            'employee_id' => $this->employee->id,
+            'folder_id' => $folder->id,
+            'name' => 'sous-doc.pdf',
             'original_name' => 'sous-doc.pdf',
-            'mime_type'     => 'application/pdf',
-            'size'          => 128,
-            'disk'          => 'local',
-            'path'          => 'cabinet/sous-doc.pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 128,
+            'disk' => 'local',
+            'path' => 'cabinet/sous-doc.pdf',
         ]);
         Storage::disk('local')->put('cabinet/sous-doc.pdf', 'PDF');
 

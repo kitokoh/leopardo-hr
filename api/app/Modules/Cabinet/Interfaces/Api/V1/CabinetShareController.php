@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Domain\Models\CabinetFolder;
@@ -154,8 +156,8 @@ class CabinetShareController extends Controller
 
     public function accessByToken(string $token): JsonResponse|StreamedResponse
     {
-        $tenantManager = app(\App\Core\Tenant\TenantManager::class);
-        $companies = \App\Core\Tenant\Domain\Models\Company::query()
+        $tenantManager = app(TenantManager::class);
+        $companies = Company::query()
             ->where('status', 'active')
             ->orderBy('id')
             ->get();
