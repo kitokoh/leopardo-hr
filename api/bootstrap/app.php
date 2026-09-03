@@ -3,6 +3,7 @@
 use App\AI\Exceptions\TokenBudgetExceededException;
 use App\Core\Http\Middleware\HttpCacheMiddleware;
 use App\Core\Http\Middleware\IdempotencyMiddleware;
+use App\Exceptions\AccountLockedException;
 use App\Exceptions\DomainException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
@@ -182,6 +183,23 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => $exception->errorCode(),
                 'message' => $exception->errorCode(),
                 'localized_message' => __('errors.AI_TOKEN_BUDGET_EXCEEDED'),
+            ], $exception->statusCode());
+        });
+
+        // #6685 : verrouillage anti-brute-force compréhensible — la date de
+        // déverrouillage est passée en paramètre de traduction (jamais le
+        // message brut français de l'exception).
+        $exceptions->render(function (AccountLockedException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => $exception->errorCode(),
+                'message' => $exception->errorCode(),
+                'localized_message' => __('errors.ACCOUNT_LOCKED', [
+                    'date' => $exception->unlockDate()->format('d/m/Y H:i'),
+                ]),
             ], $exception->statusCode());
         });
 

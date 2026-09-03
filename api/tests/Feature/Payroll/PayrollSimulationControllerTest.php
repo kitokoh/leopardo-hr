@@ -145,4 +145,35 @@ class PayrollSimulationControllerTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_simulate_rejects_month_and_employee_id(): void
+    {
+        // Issue #6686 : month/employee_id ne font pas partie du contrat de
+        // simulation — un mois invalide (2026-13, "garbage", 2026-00) doit
+        // produire un 422 explicite, jamais un résultat chiffré avec
+        // month:null silencieux.
+        Sanctum::actingAs($this->manager);
+
+        foreach (['2026-13', 'garbage', '2026-00'] as $invalidMonth) {
+            $this->postJson('/api/v1/payroll/simulate', [
+                'country_code' => 'DZ',
+                'gross_salary' => 60000,
+                'month' => $invalidMonth,
+            ])->assertStatus(422)
+                ->assertJsonPath('error', 'VALIDATION_ERROR');
+        }
+
+        $this->postJson('/api/v1/payroll/simulate', [
+            'country_code' => 'DZ',
+            'gross_salary' => 60000,
+            'employee_id' => 6,
+        ])->assertStatus(422)
+            ->assertJsonPath('error', 'VALIDATION_ERROR');
+
+        // Sans ces champs, la simulation reste fonctionnelle.
+        $this->postJson('/api/v1/payroll/simulate', [
+            'country_code' => 'DZ',
+            'gross_salary' => 60000,
+        ])->assertOk();
+    }
 }

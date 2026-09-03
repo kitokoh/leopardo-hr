@@ -43,6 +43,17 @@ class CabinetShareController extends Controller
             ->orderByDesc('created_at')
             ->paginate($perPage);
 
+        // Issue #6674 : un partage orphelin (shareable supprimé) ou dont le
+        // shareable_type est une classe périmée (ex. module purgé) faisait
+        // planter la liste complète en 500 (morphTo → "Class not found" ou
+        // shareable null). Les partages orphelins sont filtrés ici ; la purge
+        // à la suppression de la ressource reste un chantier séparé.
+        $shares->setCollection(
+            $shares->getCollection()
+                ->filter(fn (CabinetShare $s) => class_exists((string) $s->shareable_type) && $s->shareable !== null)
+                ->values()
+        );
+
         // Pagination (#1703) : `data` reste une liste simple (contrat
         // historique des clients), les métadonnées de page sont exposées
         // dans `meta` — un paginator brut dans `data` cassait
