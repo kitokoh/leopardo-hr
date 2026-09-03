@@ -5,7 +5,7 @@ use App\Core\Auth\Interfaces\Api\V1\Controllers\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\PlatformAuthController;
 use App\Core\Auth\Interfaces\Api\V1\Controllers\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\Controllers\FeatureManifestController;
-use App\Http\Controllers\AI\VoiceController;
+use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentWebhookController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
