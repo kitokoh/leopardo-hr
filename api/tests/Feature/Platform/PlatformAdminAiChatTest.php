@@ -93,4 +93,48 @@ class PlatformAdminAiChatTest extends TestCase
         $after = DB::table('shared_tenants.ai_conversations')->where('id', $conversationId)->value('messages');
         $this->assertSame($before, $after);
     }
+    // ── #6690 — IA non provisionnée : état métier attendu (404), pas un 500 ──
+
+    public function test_conversations_index_returns_404_when_ai_table_missing(): void
+    {
+        // L'IA n'a jamais été provisionnée : la table tenant n'existe pas.
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.ai_conversations CASCADE');
+
+        $this->getJson('/api/v1/admin/ai/conversations')
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'AI_CONVERSATIONS_UNAVAILABLE');
+    }
+
+    public function test_conversation_messages_returns_404_when_ai_table_missing(): void
+    {
+        DB::statement('DROP TABLE IF EXISTS shared_tenants.ai_conversations CASCADE');
+
+        $this->getJson('/api/v1/admin/ai/conversations/1/messages')
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'AI_MESSAGES_UNAVAILABLE');
+    }
+
+    public function test_conversations_index_returns_200_with_message_count_when_table_exists(): void
+    {
+        // #6690 (cause racine n°2) : `json_array_length` est invalide sur une
+        // colonne jsonb → 500 à CHAQUE requête, même table présente. Le
+        // correctif `jsonb_array_length` doit rendre l'endpoint fonctionnel.
+        // FK ai_conversations.user_id → employees : créer un employé minimal.
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        DB::table('ai_conversations')->insert([
+            'company_id' => $company->id,
+            'user_id' => $employee->id,
+            'title' => 'Conversation test',
+            'messages' => json_encode([['role' => 'user', 'content' => 'Bonjour']]),
+            'context' => json_encode([]),
+            'token_count' => 3,
+        ]);
+
+        $this->getJson('/api/v1/admin/ai/conversations')
+            ->assertOk()
+            ->assertJsonPath('data.0.message_count', 1)
+            ->assertJsonPath('data.0.title', 'Conversation test');
+    }
 }

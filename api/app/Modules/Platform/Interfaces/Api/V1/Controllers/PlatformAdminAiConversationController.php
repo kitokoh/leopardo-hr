@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Conversations IA — vue cross-tenant super-admin (contrat SPA admin,
@@ -21,6 +23,23 @@ class PlatformAdminAiConversationController extends Controller
 
     public function index(): JsonResponse
     {
+        // Issue #6690 : deux causes de 500 INTERNAL_ERROR en prod —
+        // 1) table ai_conversations absente (IA jamais provisionnée) : état
+        //    MÉTIER ATTENDU → 404 avec code stable, jamais 500 (le guard
+        //    hasTable évite aussi le SQLSTATE 25P02 transaction empoisonnée) ;
+        // 2) longueur JSON calculée en SQL : `json_array_length()` n'accepte
+        //    que `json` (500 sur la colonne `jsonb` de prod) et
+        //    `jsonb_array_length()` n'accepte que `jsonb` (500 sur la colonne
+        //    `json` de la fixture de test CreatesMvpSchema) → cast explicite
+        //    `messages::jsonb` : la fonction est valide quel que soit le type
+        //    physique réel de la colonne.
+        if (! Schema::hasTable(self::TENANT_SCHEMA.'.ai_conversations')) {
+            return response()->json([
+                'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
+                'message' => __('platform.conversations_unavailable'),
+            ], 404);
+        }
+
         try {
             $conversations = DB::table(self::TENANT_SCHEMA.'.ai_conversations')
                 ->select([
@@ -31,14 +50,23 @@ class PlatformAdminAiConversationController extends Controller
                     'token_count',
                     'created_at',
                     'updated_at',
-                    DB::raw('json_array_length(messages) as message_count'),
+                    DB::raw('jsonb_array_length(messages::jsonb) as message_count'),
                 ])
                 ->orderByDesc('updated_at')
                 ->limit(50)
                 ->get();
 
             return response()->json(['data' => $conversations]);
-        } catch (\Throwable $exception) {
+        } catch (QueryException $exception) {
+            // Filet pour les races hasTable/query : table disparue entre les
+            // deux → 404, sinon vraie erreur serveur.
+            if ($this->isMissingAiTable($exception)) {
+                return response()->json([
+                    'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
+                    'message' => __('platform.conversations_unavailable'),
+                ], 404);
+            }
+
             Log::error('admin.ai.conversations.list_failed', [
                 'exception' => $exception->getMessage(),
             ]);
@@ -92,6 +120,14 @@ class PlatformAdminAiConversationController extends Controller
 
     public function messages(int $conversation): JsonResponse
     {
+        // Issue #6690 : même état métier que l'index — 404, pas 500.
+        if (! Schema::hasTable(self::TENANT_SCHEMA.'.ai_conversations')) {
+            return response()->json([
+                'error' => 'AI_MESSAGES_UNAVAILABLE',
+                'message' => __('platform.conversations_unavailable'),
+            ], 404);
+        }
+
         try {
             $row = DB::table(self::TENANT_SCHEMA.'.ai_conversations')
                 ->where('id', $conversation)
@@ -120,7 +156,15 @@ class PlatformAdminAiConversationController extends Controller
             }
 
             return response()->json(['data' => $enriched]);
-        } catch (\Throwable $exception) {
+        } catch (QueryException $exception) {
+            // Issue #6690 : même état métier que l'index — 404, pas 500.
+            if ($this->isMissingAiTable($exception)) {
+                return response()->json([
+                    'error' => 'AI_MESSAGES_UNAVAILABLE',
+                    'message' => __('platform.conversations_unavailable'),
+                ], 404);
+            }
+
             Log::error('admin.ai.conversation.messages_failed', [
                 'conversation' => $conversation,
                 'exception' => $exception->getMessage(),
@@ -131,5 +175,21 @@ class PlatformAdminAiConversationController extends Controller
                 'message' => __('platform.conversations_unavailable'),
             ], 500);
         }
+    }
+
+    /**
+     * Issue #6690 — SQLSTATE 42P01 (undefined_table) : la table tenant
+     * `ai_conversations` n'existe pas quand l'IA n'a jamais été provisionnée
+     * pour le schéma partagé. Toute autre erreur reste une vraie erreur
+     * serveur (500).
+     *
+     * Ne PAS matcher sur le message (« ai_conversations » apparaît dans le
+     * SQL de TOUTE requête de ce contrôleur) : cela masquerait en 404 des
+     * erreurs réelles (42883 fonction absente, 42703 colonne absente, …).
+     * Seul le SQLSTATE 42P01 correspond à l'état métier attendu.
+     */
+    private function isMissingAiTable(QueryException $exception): bool
+    {
+        return str_contains((string) $exception->getCode(), '42P01');
     }
 }

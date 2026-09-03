@@ -22,7 +22,10 @@
           <p class="truncate text-sm font-medium text-gray-900">{{ conv.title || t('adminChat.conversation', 'Conversation') }}</p>
           <p class="mt-0.5 truncate text-xs text-gray-400">{{ formatDate(conv.updated_at) }}</p>
         </div>
-        <div v-if="conversationsError" class="p-4 text-center" role="alert">
+        <div v-if="conversationsUnavailable" class="p-4 text-center text-xs text-amber-600" role="status">
+          {{ t('adminChat.unavailableTitle', 'Assistant IA indisponible au niveau plateforme') }}
+        </div>
+        <div v-else-if="conversationsError" class="p-4 text-center" role="alert">
           <p class="text-xs text-red-500">{{ t('adminChat.historyError', 'Impossible de charger les conversations.') }}</p>
           <button
             class="mt-2 rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700"
@@ -130,6 +133,7 @@ const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 // #4564 : refs d'état d'erreur manquants (utilisés par le template + fetch, #4333).
 const conversationsError = ref(false)
+const conversationsUnavailable = ref(false)
 const messagesError = ref(false)
 const conversations = ref([])
 const activeConversation = ref(null)
@@ -163,10 +167,18 @@ function scrollToBottom() {
 
 async function fetchConversations() {
   conversationsError.value = false
+  conversationsUnavailable.value = false
   try {
-    const res = await api.get('/admin/ai/conversations')
+    const res = await api.get('/admin/ai/conversations', { _skipToast: true })
     conversations.value = res.data.data || res.data || []
   } catch (err) {
+    // #6690 : IA non provisionnée au niveau plateforme (404
+    // AI_CONVERSATIONS_UNAVAILABLE) → état honnête « indisponible », pas une
+    // fausse erreur serveur avec retry. _skipToast évite le toast global.
+    if (err?.response?.status === 404 && err.response.data?.error === 'AI_CONVERSATIONS_UNAVAILABLE') {
+      conversationsUnavailable.value = true
+      return
+    }
     // #4333 : état d'erreur visible + retry (l'intercepteur global toast déjà).
     conversationsError.value = true
     console.warn('Failed to load AI conversations', err)
