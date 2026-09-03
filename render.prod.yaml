@@ -8,10 +8,16 @@
 # docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie
 # dev/prod et le plan de bascule vers un plan payant complet.
 #
-# ⚠️ PHASE 1 (tier gratuit, validation du pipeline uniquement) :
-#   - Postgres gratuit : expire après 30 jours (+ 14 jours de grâce), sans
-#     sauvegarde. NE JAMAIS y stocker de données réelles durablement.
-#   - Key Value (Redis) gratuit : en mémoire uniquement, perdu au redémarrage.
+# ⚠️ PHASE 1 (tier gratuit Render, validation du pipeline) :
+#   - Base de données : Neon Postgres (projet "LEOPARDO", branche
+#     "production"), PAS le Postgres Render — le Postgres gratuit Render
+#     expire après 30 jours et a été abandonné après test (même schéma
+#     que le dev, qui utilise déjà Neon en pratique malgré ce que
+#     render.yaml déclare). DB_URL est donc `sync: false` ci-dessous :
+#     valeur à saisir dans le dashboard Render (ou via Pulumi ESC
+#     solarnyxss/leopardo-hr/prod, clé render.databaseUrl).
+#   - Key Value (Redis) gratuit Render : en mémoire uniquement, perdu au
+#     redémarrage — suffisant pour cache/session en Phase 1.
 #   - Les Background Workers ne sont PAS éligibles au tier gratuit Render :
 #     `leopardo-queue-worker` et `leopardo-scheduler` ne sont donc PAS
 #     répliqués ici. QUEUE_CONNECTION=database fonctionne quand même (les
@@ -53,29 +59,13 @@ services:
         sync: false
       - key: SENTRY_TRACES_SAMPLE_RATE
         value: "0.1"
-      # Database
+      # Database — Neon Postgres externe (projet "LEOPARDO", branche
+      # "production"), pas un Postgres géré par Render. Voir note Phase 1
+      # en tête de fichier.
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_HOST
-        fromDatabase:
-          name: leopardo-db-prod
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: leopardo-db-prod
-          property: port
-      - key: DB_DATABASE
-        fromDatabase:
-          name: leopardo-db-prod
-          property: database
-      - key: DB_USERNAME
-        fromDatabase:
-          name: leopardo-db-prod
-          property: user
-      - key: DB_PASSWORD
-        fromDatabase:
-          name: leopardo-db-prod
-          property: password
+      - key: DB_URL
+        sync: false
       - key: DB_SEARCH_PATH
         value: shared_tenants,public
       # Redis (Key Value gratuit — en mémoire, cache/session uniquement)
@@ -184,26 +174,8 @@ services:
   #         property: host
   #     - key: DB_CONNECTION
   #       value: pgsql
-  #     - key: DB_HOST
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: host
-  #     - key: DB_PORT
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: port
-  #     - key: DB_DATABASE
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: database
-  #     - key: DB_USERNAME
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: user
-  #     - key: DB_PASSWORD
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: password
+  #     - key: DB_URL
+  #       sync: false
   #     - key: DB_SEARCH_PATH
   #       value: shared_tenants,public
   #     - key: QUEUE_CONNECTION
@@ -237,26 +209,8 @@ services:
   #         property: host
   #     - key: DB_CONNECTION
   #       value: pgsql
-  #     - key: DB_HOST
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: host
-  #     - key: DB_PORT
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: port
-  #     - key: DB_DATABASE
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: database
-  #     - key: DB_USERNAME
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: user
-  #     - key: DB_PASSWORD
-  #       fromDatabase:
-  #         name: leopardo-db-prod
-  #         property: password
+  #     - key: DB_URL
+  #       sync: false
   #     - key: DB_SEARCH_PATH
   #       value: shared_tenants,public
   #     - key: APP_KEY
@@ -266,16 +220,10 @@ services:
   #         envVarKey: APP_KEY
 
 databases:
-  # Plan gratuit : expire après 30 jours + 14 jours de grâce, sans
-  # sauvegarde automatique. Migrer vers un plan payant avant tout usage
-  # avec des données destinées à durer.
-  - name: leopardo-db-prod
-    databaseName: leopardo_db_prod
-    user: leopardo_user_prod
-    region: frankfurt
-    plan: free
-    ipAllowList: []  # restricted to Render internal network
-
+  # Pas de Postgres Render : la base de données est Neon (projet
+  # "LEOPARDO", externe, gérée hors Blueprint — voir DB_URL ci-dessus et
+  # docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md).
+  #
   # Plan gratuit : en mémoire uniquement, une seule instance par workspace.
   - name: leopardo-redis-prod
     plan: free

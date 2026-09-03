@@ -20,7 +20,28 @@ qui a permis de le requalifier sans opération de bascule à chaud.
 | Tier | Déclencheur | Fichier | Workflow | Coût |
 |------|-------------|---------|----------|------|
 | **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | Plan existant (Starter), inchangé |
-| **prod** (stable) | tag `vX.Y.Z` validé | `render.prod.yaml` | `deploy-prod.yml` | Phase 1 : tier gratuit (web + Postgres + Key Value) |
+| **prod** (stable) | tag `vX.Y.Z` validé | `render.prod.yaml` | `deploy-prod.yml` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
+
+### ⚠️ Dérive constatée entre `render.yaml` (dev) et la config réelle
+
+En vérifiant la config live du service dev (`gestionemployerBackend`,
+workspace Render `africanovatech`) avant de répliquer son schéma en prod,
+constat empirique (pas une supposition) :
+
+- `render.yaml` déclare un Postgres géré par Render (`databases:
+  leopardo-db`) — **ce Postgres n'existe pas** dans le workspace dev
+  (`GET /v1/postgres` → liste vide). La base réelle est `DB_URL` pointé
+  manuellement vers **Neon** (projet `leopardorh`, host
+  `...eu-west-2.aws.neon.tech`).
+- `render.yaml` déclare Redis (`CACHE_STORE=redis`, `SESSION_DRIVER=redis`,
+  `fromDatabase: leopardo-redis`) — la config live utilise en réalité
+  `CACHE_STORE=file` et `SESSION_DRIVER=file` (pas de Redis actif),
+  bien qu'une instance Key Value existe (`leopardoai`, apparemment inutilisée
+  pour ça).
+
+`render.yaml` (dev) n'a pas été corrigé dans ce chantier (hors périmètre
+initial), mais cette dérive doit être traitée séparément pour que le
+fichier redevienne une source de vérité fiable.
 
 ### Pourquoi `render.yaml` n'a pas été renommé
 
@@ -39,9 +60,15 @@ et Key Value le sont). `render.prod.yaml` ne provisionne donc, pour cette
 phase de validation, que :
 
 - le service web (API)
-- Postgres (⚠️ le plan gratuit expire après 30 jours + 14 jours de grâce —
-  ne jamais y stocker de données réelles durablement)
 - Key Value (Redis-compatible, en mémoire uniquement)
+
+La base de données n'est **pas** un Postgres Render : après avoir constaté
+que le Postgres gratuit Render expire au bout de 30 jours, et que le dev
+utilise déjà Neon en pratique (voir dérive ci-dessus), la prod a été
+alignée sur le même schéma — **Neon Postgres** (projet `LEOPARDO`, branche
+`production`, région `eu-central-1`), câblé via `DB_URL` (`sync: false`).
+Le Postgres Render initialement créé pour Phase 1 a été supprimé après
+validation croisée (healthcheck OK sur Neon).
 
 **`leopardo-queue-worker` et `leopardo-scheduler` ne sont pas encore
 répliqués en prod** — la paie, les notifications asynchrones et les tâches
@@ -55,8 +82,8 @@ n'auront pas été ajoutés sur un plan payant (Starter, ~7 $/mois chacun).
 2. Acheter le nom de domaine et le plan Render payant.
 3. Ajouter `leopardo-queue-worker` et `leopardo-scheduler` à
    `render.prod.yaml` sur un plan payant.
-4. Migrer Postgres du plan gratuit vers un plan payant avec sauvegardes
-   (le plan gratuit n'a aucune sauvegarde et expire).
+4. Passer le projet Neon `LEOPARDO` (actuellement plan gratuit) sur un
+   plan payant avant tout trafic réel (sauvegardes, quotas de calcul).
 5. Renseigner les secrets réels dans l'environnement Pulumi ESC
    `solarnyxss/leopardo-hr/prod` (`pulumi env set ... --secret`), après
    rotation des clés Render/Stripe/Chargily déjà partagées en clair.
@@ -76,6 +103,11 @@ rotation des clés Render déjà partagées en clair dans ce chat.
 |---|---|
 | `RENDER_PROD_API_KEY` | Clé API Render du workspace prod ("ALI MAHADI's workspace") — utilisée pour déclencher le déploiement, interroger son statut et effectuer un rollback réel via l'API (pas un simple deploy hook) |
 
+Le `DB_URL` (connexion Neon) est configuré directement comme variable
+d'environnement `sync: false` sur le service Render (pas un secret GitHub
+Actions) — valeur dans Pulumi ESC `solarnyxss/leopardo-hr/prod`
+(`neon.databaseUrl`).
+
 **Variables** (`Settings > Secrets and variables > Actions > Variables`) :
 
 | Variable | Rôle |
@@ -88,20 +120,24 @@ par `deploy-main.yml` (`RENDER_DEPLOY_HOOK_URL`, `RENDER_ROLLBACK_HOOK_URL`,
 `vars.PROD_API_BASE_URL`) pour éviter toute collision avec l'environnement
 dev/continu existant.
 
-**Ressources déjà provisionnées (2026-09-03)** via l'API Render, tier
-gratuit, workspace prod (`tea-da9svvpsrm7s73d8o2j0`) :
+**Ressources déjà provisionnées (2026-09-03)**, workspace prod Render
+(`tea-da9svvpsrm7s73d8o2j0`) et organisation Neon (`org-shiny-snow-15524747`,
+"ALI MAHADI") :
 - Service web `leopardo-prod` (`srv-dacsr6gae00c73ddk150`, URL
   `https://leopardo-prod.onrender.com`) — recréé sous ce nom pour un
   sous-domaine propre (le slug Render est figé à la création : un simple
   renommage du service `gestionemployerbackend-prod` d'origine
-  (`srv-dacr2j6k1f9s73adbj7g`, supprimé) ne changeait pas l'URL
-- Postgres `leopardo-db-prod` (`dpg-dacr1pcmqu1s739k61e0-a`) — ⚠️ expire
-  après 30 jours + 14 jours de grâce (tier gratuit, sans sauvegarde)
+  (`srv-dacr2j6k1f9s73adbj7g`, supprimé) ne changeait pas l'URL)
 - Key Value `leopardo-redis-prod` (`red-dacr1rfavr4c739gtan0`)
+- Postgres Neon — projet `LEOPARDO` (`rough-cherry-23234590`), branche
+  `production` (`br-broad-forest-b18ek61g`), région `eu-central-1`.
+  Le Postgres Render `leopardo-db-prod` initialement créé pour Phase 1 a
+  été **supprimé** après migration validée vers Neon (healthcheck OK) —
+  il n'apparaît plus dans `render.prod.yaml`.
 
-Les clés Render partagées en clair dans la conversation ont été utilisées
-pour cette création initiale ; elles doivent être régénérées avant tout
-lancement public, conformément au plan de bascule ci-dessus.
+Les clés Render et Neon partagées en clair dans la conversation ont été
+utilisées pour cette création initiale ; elles doivent être régénérées
+avant tout lancement public, conformément au plan de bascule ci-dessus.
 
 **Source de vérité recommandée :** l'environnement Pulumi ESC
 `solarnyxss/leopardo-hr/prod` (créé dans ce chantier) contient déjà la
