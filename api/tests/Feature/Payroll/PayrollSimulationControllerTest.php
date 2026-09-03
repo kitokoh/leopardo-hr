@@ -157,15 +157,19 @@ class PayrollSimulationControllerTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         foreach (['SN' => 300000, 'DZ' => 300000, 'MA' => 300000, 'TR' => 300000] as $country => $gross) {
+            /** @var array<string, mixed> $data */
             $data = $this->postJson('/api/v1/payroll/simulate', [
                 'country_code' => $country,
                 'gross_salary' => $gross,
             ])->assertOk()->json('data');
 
             $incomeTax = (float) $data['income_tax'];
+
+            /** @var array<int, array{tax?: mixed}> $slabRows */
+            $slabRows = is_array($data['income_tax_by_slab'] ?? null) ? $data['income_tax_by_slab'] : [];
             $slabSum = round(array_sum(array_map(
-                static fn (array $slab): float => (float) $slab['tax'],
-                $data['income_tax_by_slab'],
+                static fn (array $slab): float => (float) ($slab['tax'] ?? 0.0),
+                $slabRows,
             )), 2);
 
             $this->assertSame(
