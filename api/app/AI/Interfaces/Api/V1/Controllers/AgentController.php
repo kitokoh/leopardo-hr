@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\AI;
+namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\AgentRunner;
+use App\Core\Auth\Domain\Models\Employee;
 use App\AI\Orchestrator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -23,8 +24,14 @@ class AgentController extends Controller
         $orchestrator = app(Orchestrator::class);
         $agent = new AgentRunner($orchestrator, $validated['max_steps'] ?? 10);
 
+        $user = $request->user();
+
+        if (! $user instanceof Employee) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
         $result = $agent->execute(
-            $request->user(),
+            $user,
             $validated['task'],
             $validated['conversation_id'] ?? null,
         );

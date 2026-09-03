@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Delivery;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -59,8 +60,8 @@ class DeliveryIsolationTest extends TestCase
                 $this->insertDelivery($companyA, 'DLV-2026-000003', 'restaurant', 'RST-2026-0001');
             });
             self::fail('Unique (company_id, source, source_reference) attendu.');
-        } catch (\Throwable) {
-            self::assertTrue(true);
+        } catch (QueryException $e) {
+            self::assertInstanceOf(QueryException::class, $e);
         }
 
         // Le doublon intra-tenant a été rejeté : companyA garde 1 livraison
