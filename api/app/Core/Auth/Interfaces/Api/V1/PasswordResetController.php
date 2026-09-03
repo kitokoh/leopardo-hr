@@ -11,11 +11,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Issue #2626 — réinitialisation de mot de passe.
@@ -60,7 +60,20 @@ class PasswordResetController
                 'updated_at' => now(),
             ]);
 
-            Mail::to($email)->send(new PasswordResetMail($token, $email));
+            // #6751 : un échec de TRANSPORT (SMTP injoignable, credentials
+            // invalides) ne doit NI casser le parcours (500) NI fuiter
+            // l'existence du compte (200 inconnu vs 500 existant = énumération).
+            // Le token est déjà en base : l'échec est tracé (report → Sentry/logs),
+            // et la réponse publique reste la réponse anti-énumération standard.
+            try {
+                Mail::to($email)->send(new PasswordResetMail($token, $email));
+            } catch (\Throwable $exception) {
+                report($exception);
+                Log::warning('auth.password_reset.mail_send_failed', [
+                    'email_domain' => substr((string) strrchr($email, '@'), 1),
+                    'exception' => $exception->getMessage(),
+                ]);
+            }
         }
 
         return new JsonResponse([
