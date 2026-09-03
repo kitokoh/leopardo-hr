@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentPdfRenderer;
 use App\Modules\Accounting\Interfaces\Console\RecomputeReportingSnapshotCommand;
+use App\Modules\Accounting\Console\Commands\SendPaymentRemindersCommand;
 use App\Modules\Accounting\Interfaces\Console\SeedAccountingDemoCommand;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -38,6 +39,7 @@ class AccountingServiceProvider extends ServiceProvider
         // Issue #5274 — démo exploitable en 1 clic (données vitrine, jamais réelles).
         // Issue #6243 — recompute des snapshots de read models (BC-22-D10).
         $this->commands([
+            SendPaymentRemindersCommand::class,
             SeedAccountingDemoCommand::class,
             RecomputeReportingSnapshotCommand::class,
         ]);
