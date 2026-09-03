@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Modules\EdgeSync\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
@@ -39,7 +39,7 @@ class MonitorEdgeNodesCommand extends Command
                 '[EdgeMonitor] SILENT: %s (%s) — last seen %s',
                 $node->name,
                 $node->company->name ?? 'unknown',
-                $node->last_seen_at->diffForHumans()
+                $node->last_seen_at?->diffForHumans() ?? 'unknown'
             ));
 
             if ($node->company?->email) {
