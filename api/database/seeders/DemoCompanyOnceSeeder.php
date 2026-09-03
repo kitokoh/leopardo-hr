@@ -23,22 +23,40 @@ class DemoCompanyOnceSeeder extends Seeder
     public function run(): void
     {
         $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
+        $isProduction = app()->environment('production');
 
         DB::statement('SET search_path TO public');
 
-        $this->syncDemoSuperAdmin();
+        // #6543 (audit-secu M4) : le reset des credentials super-admin démo
+        // (password123 + 2FA retirée) ne s'exécute JAMAIS en production.
+        // DISABLE_DEMO_SEEDING, lui, ne bloque QUE la création/réparation des
+        // compagnies démo : le sync du compte super-admin reste un contrat
+        // existant (DemoSuperAdminSyncTest, AGENTS.md v4.16.234) — il tourne
+        // aussi quand le flag est posé, mais jamais sur APP_ENV=production.
+        if (! $isProduction) {
+            $this->syncDemoSuperAdmin();
+        }
 
         $existingDemoSlugs = DB::table('companies')
             ->whereIn('slug', self::DEMO_SLUGS)
             ->pluck('slug');
 
         if ($disabled) {
-            if ($existingDemoSlugs->isNotEmpty()) {
+            // Backfills non destructifs des démos existantes conservés quand
+            // le seed est désactivé (réparation — AGENTS.md v4.16.247), mais
+            // jamais en production.
+            if (! $isProduction && $existingDemoSlugs->isNotEmpty()) {
                 $this->backfillDemoLeaveBalances();
                 $this->backfillDemoLaunchReadinessSignals();
             }
 
             $this->command?->info('DemoCompanyOnceSeeder skipped creation (DISABLE_DEMO_SEEDING=true).');
+
+            return;
+        }
+
+        if ($isProduction) {
+            $this->command?->warn('DemoCompanyOnceSeeder skipped (APP_ENV=production).');
 
             return;
         }
