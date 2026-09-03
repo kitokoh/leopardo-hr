@@ -4,6 +4,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import FuelManagerView from '@/views/fuel/FuelManagerView.vue'
 
 // Configuration NProgress
 NProgress.configure({
@@ -208,6 +209,27 @@ const routes = [
           icon: 'TruckIcon'
           // requiresTenant retiré (#4710) : FleetView gère le 401 super-admin
           // via _skipAuthRedirect (#4170) et affiche un état d'erreur honnête.
+        }
+      },
+      {
+        path: '/fuel-station',
+        name: 'fuelStation',
+        component: FuelManagerView,
+        meta: {
+          title: 'navigation.fuelStation',
+          icon: 'BoltIcon'
+        }
+      },
+      {
+        path: '/travel',
+        name: 'travel',
+        component: () => import('../views/travel/TravelAgencyView.vue'),
+        meta: {
+          title: 'navigation.travelAgency',
+          icon: 'GlobeAltIcon'
+          // BC-24 TRAVEL (#6078) : la vue porte le gate du feature flag
+          // travelagency (GET /travel/ping → 403 = module non activé pour le
+          // tenant connecté). Même pattern que FleetView (#4710).
         }
       },
       {

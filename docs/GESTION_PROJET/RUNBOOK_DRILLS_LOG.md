@@ -15,6 +15,11 @@ Use this file to record real drill executions (staging recommended).
 
 ## Planned mandatory drills
 
+| DR-24 | Restore schéma tenant TravelAgency sur staging (RTO < 4h) | Avant GO pilote BC-24 (TRAVEL-1010) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md` (§8) |
+
+| DR-25 | Restore schéma tenant RestaurantManager sur staging | Avant GO pilote BC-25 (RESTO-903) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_RESTAURANTMANAGER.md` (§8) |
+| DR-26 | Restore schéma tenant TravelAgency sur staging | Avant GO pilote BC-24 (TRAVEL-050/051) | Chef de projet | PLANNED — exercice planifié avec le runbook `docs/ops/RUNBOOK_PILOT_TRAVELAGENCY.md` (§5) |
+
 | ID | Drill | Deadline | Owner | Status |
 |---|---|---|---|---|
 | DR-01 | Backup restore test on staging | Monthly via `Database Backup & Restore Drill` or manual fallback | Project lead | PASS 2026-08-22 (exercice #5283, local scratch PG 16) — prochain : workflow mensuel prod |
@@ -25,6 +30,5 @@ Use this file to record real drill executions (staging recommended).
 
 | Date | Type | Environnement | Trigger | Result | Duration | Evidence | Actions |
 |---|---|---|---|---|---|---|---|
+| 2026-08-30 | incident (tabletop) | staging (référence) | planned — revue runbook BC-23 AI (#6240, D11) | **pass** | ~15m | `docs/ops/RUNBOOK_AI.md` (incidents provider/budget, DLQ replay, purge RGPD, kill switch) — scénarios joués : DLQ→replay→resolved, budget dépassé → 422, purge RGPD ciblée | Tests `ConversationExportTest` (échec→DLQ, replay) + `TokenBudgetTest` couvrent les procédures |
 | 2026-08-22 | restore | local scratch (PG 16, aligné prod Neon) | planned — exercice #5283 (DoD) | **pass** | ~1m | `docs/ops/DR.md` §6.2 (log complet du run 20260822-171810) + fix bug `CREATE SCHEMA public` dans `dev-hub/scripts/backup_drill.sh` | PR #5283 ; prochain drill mensuel workflow (1er du mois) |
-
----

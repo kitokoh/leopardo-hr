@@ -153,6 +153,7 @@ import {
   AcademicCapIcon,
   TruckIcon,
   SparklesIcon,
+  BoltIcon,
   LinkIcon,
   ArrowDownTrayIcon,
   FunnelIcon,
@@ -243,6 +244,18 @@ const navigation = computed(() => [
     title: t('navigation.fleet', 'Flotte véhicules'),
     path: '/fleet',
     icon: TruckIcon
+  },
+  {
+    name: 'travel',
+    title: t('navigation.travelAgency', 'Agence de voyage'),
+    path: '/travel',
+    icon: GlobeAltIcon
+  },
+  {
+    name: 'fuelStation',
+    title: t('navigation.fuelStation', 'Stations-service'),
+    path: '/fuel-station',
+    icon: BoltIcon
   },
   {
     name: 'chat',

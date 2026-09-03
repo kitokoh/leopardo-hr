@@ -4,17 +4,30 @@ namespace App\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Site;
-use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Camera;
 use App\Modules\Cameras\Domain\CameraAccessToken;
-use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
-use App\Modules\Planning\Domain\Models\ExpenseClaim;
+use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmImport;
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Policies\CrmImportPolicy;
+use App\Modules\CRM\Policies\CrmLeadPolicy;
+use App\Modules\CRM\Policies\CrmMergePolicy;
 use App\Modules\Fleet\Domain\Models\Vehicle;
+use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
+use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\FuelStation\Domain\Models\FuelShift;
+use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
+use App\Modules\FuelStation\Domain\Policies\FuelCashSessionPolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelSalePolicy;
+use App\Modules\FuelStation\Domain\Policies\FuelShiftPolicy;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\Evaluation;
@@ -31,6 +44,8 @@ use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -46,21 +61,22 @@ use App\Policies\EvaluationPolicy;
 use App\Policies\ExpenseClaimPolicy;
 use App\Policies\ExportPolicy;
 use App\Policies\FeatureFlagPolicy;
+use App\Policies\FuelMeterReadingPolicy;
 use App\Policies\InvoicePolicy;
 use App\Policies\LoanPolicy;
 use App\Policies\OnboardingPolicy;
 use App\Policies\PayrollAuditPolicy;
 use App\Policies\PayrollPolicy;
+use App\Policies\PositionPolicy;
 use App\Policies\PublicHolidayPolicy;
 use App\Policies\RateValidationPolicy;
-use App\Policies\SocialContributionPolicy;
-use App\Policies\TaxSlabPolicy;
-use App\Policies\PositionPolicy;
 use App\Policies\RecruitmentPolicy;
 use App\Policies\SchedulePolicy;
 use App\Policies\SitePolicy;
 use App\Policies\SocialAccountPolicy;
+use App\Policies\SocialContributionPolicy;
 use App\Policies\SocialPostPolicy;
+use App\Policies\TaxSlabPolicy;
 use App\Policies\TrainingPolicy;
 use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
@@ -79,6 +95,13 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);
 
         // Org structure
+        Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);
+        Gate::policy(FuelMeterInterval::class, FuelMeterReadingPolicy::class);
+        // — FuelStation (FUEL-005 #5799, FUEL-007 #5801, FUEL-008 #5802)
+        Gate::policy(FuelShift::class, FuelShiftPolicy::class);
+        Gate::policy(FuelShiftAssignment::class, FuelShiftPolicy::class);
+        Gate::policy(FuelCashSession::class, FuelCashSessionPolicy::class);
+        Gate::policy(FuelSale::class, FuelSalePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
@@ -126,6 +149,11 @@ class AuthServiceProvider extends ServiceProvider
         // Marketing (Phase 2)
         Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
         Gate::policy(SocialPost::class, SocialPostPolicy::class);
+
+        // CRM client (PA2-ARCH-008 — point d'enregistrement unique, #6575)
+        Gate::policy(CrmImport::class, CrmImportPolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmAccount::class, CrmMergePolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);

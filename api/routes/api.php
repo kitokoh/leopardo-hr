@@ -1,12 +1,13 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
-use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
+use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
-use App\Http\Controllers\AI\VoiceController;
+use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
+use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
 use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
 use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
@@ -21,7 +22,6 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
 use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
@@ -263,9 +263,13 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
+    require __DIR__.'/modules/fuel_station.php';
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
+
+    // BC-26 DELIVERY — module de livraison générique (DELIVERY-101/#6282)
+    require __DIR__.'/modules/delivery.php';
 
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)

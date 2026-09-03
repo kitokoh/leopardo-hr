@@ -7,7 +7,7 @@
 ## Instructions
 
 ```
-Agis en tant que release manager pour le projet Leopardo RH situé dans c:\Users\cheic\Downloads\gestionemployer.
+Agis en tant que release manager pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt git).
 
 Commence par lire AGENTS.md. Ton objectif est de fusionner proprement TOUTES les PRs ouvertes dans main, en gardant main vert et stable.
 

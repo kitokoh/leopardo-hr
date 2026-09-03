@@ -51,7 +51,11 @@ tags:
 - name: Health
   description: Groupe d'opérations Health
 - name: Auth
+- name: Delivery
+  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
   description: Groupe d'opérations Auth
+- name: Delivery
+  description: Groupe d'opérations Delivery (BC-26 DELIVERY)
 - name: Payrolls
   description: Groupe d'opérations Payrolls
 - name: HR Referentials
@@ -6028,6 +6032,854 @@ paths:
                           type: integer
                         month:
                           type: integer
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings:
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer un releve de compteur (cumulatif, idempotent)
+      description: |-
+        Releve cumule d'un compteur (valeur en unites mineures entieres).
+        Idempotent (idempotency_key). Valeur decroissante sans rollover
+        documente → intervalle en anomalie (revue obligatoire). Solution
+        FuelStation active requise (403 sinon). Issue #5798.
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FuelMeterReadingPayload'
+      responses:
+        '201':
+          description: Releve accepte
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/FuelMeterReadingResult'
+        '200':
+          description: Rejeu idempotent (aucun doublon)
+        '403':
+          description: Solution inactive ou permission manquante
+        '404':
+          description: Station/pompe/compteur introuvable (hors tenant)
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les releves d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des releves (100 max, plus recents d'abord)
+  /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les intervalles calcules d'un compteur
+      parameters:
+      - name: station
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: pump
+        in: path
+        required: true
+        schema: {type: integer}
+      - name: meter
+        in: path
+        required: true
+        schema: {type: integer}
+      responses:
+        '200':
+          description: Liste des intervalles (valid|rollover|anomaly|pending_review)
+  /fuel-station/meter-readings/{reading}/corrections:
+    post:
+      tags:
+      - FuelStation
+      summary: Corriger un releve (versionne, audite) — manager principal/rh
+      parameters:
+      - name: reading
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reading_value_minor, reason]
+              properties:
+                reading_value_minor: {type: integer, minimum: 0}
+                reason: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Correction enregistree (nouvelle version, original marque corrected)
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Releve deja corrige ou rejete
+  /fuel-station/meter-intervals/{interval}/review:
+    post:
+      tags:
+      - FuelStation
+      summary: Revoir un intervalle en anomalie (accept/reject) — manager principal/rh
+      parameters:
+      - name: interval
+        in: path
+        required: true
+        schema: {type: integer}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: {type: string, enum: [accept, reject]}
+                note: {type: string, maxLength: 1000}
+      responses:
+        '200':
+          description: Revue enregistree
+        '403':
+          description: Permission manager requise
+        '409':
+          description: Intervalle deja revu
+
+  /fuel-station/me/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations de shifts du pompiste connecte (self-service)
+      description: FUEL-005 — liste les affectations du salarie authentifie sur une fenetre de dates (date_from/date_to, Y-m-d).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Liste des affectations
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shifts:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les shifts (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+      responses:
+        '200':
+          description: Liste des shifts
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Creer un shift (manager)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - start_time
+              - end_time
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: integer
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Shift cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: Validation (nom duplique, horaires invalides)
+  /fuel-station/shifts/{shift}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    put:
+      tags:
+      - FuelStation
+      summary: Mettre a jour un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 120
+                station_id:
+                  type: integer
+                  nullable: true
+                start_time:
+                  type: string
+                  example: '06:00'
+                end_time:
+                  type: string
+                  example: '14:00'
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Shift mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Validation
+    delete:
+      tags:
+      - FuelStation
+      summary: Supprimer un shift (manager, refus si affectations actives)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Shift supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_HAS_ASSIGNMENTS
+  /fuel-station/shifts/{shift}/assignments:
+    get:
+      tags:
+      - FuelStation
+      summary: Affectations d'un shift (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Affectations du shift
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+    post:
+      tags:
+      - FuelStation
+      summary: Affecter un employe a un shift pour une date (manager)
+      description: Rejette un employe d'un autre tenant (EMPLOYEE_OUTSIDE_TENANT), un shift inactif (SHIFT_INACTIVE) et un chevauchement horaire le meme jour (SHIFT_OVERLAP).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - employee_id
+              - assignment_date
+              properties:
+                employee_id:
+                  type: integer
+                assignment_date:
+                  type: string
+                  example: '2026-09-01'
+                status:
+                  type: string
+                  enum:
+                  - scheduled
+                  - confirmed
+                  - completed
+                  - cancelled
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Affectation creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: SHIFT_OVERLAP / SHIFT_INACTIVE / EMPLOYEE_OUTSIDE_TENANT
+  /fuel-station/shifts/{shift}/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Roster de presence du shift pour une date (manager)
+      description: "FUEL-006 - resout la presence des employes affectes depuis attendance_logs (source canonique Attendance) : present/late/absent/leave/holiday/incomplete + outside_shift si le check_in sort de la fenetre du shift."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: shift
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Roster de presence
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Shift introuvable ou autre tenant
+        '422':
+          description: Date invalide
+  /fuel-station/me/presence:
+    get:
+      tags:
+      - FuelStation
+      summary: Presence du pompiste connecte pour une date (self-service)
+      description: FUEL-006 - presence resolue depuis attendance_logs pour le salarie authentifie, avec le shift affecte ce jour.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          example: '2026-09-01'
+      responses:
+        '200':
+          description: Presence du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Date invalide
+  /fuel-station/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les sessions de caisse (manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: date
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Sessions paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Ouvrir une session de caisse (pompiste)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                opening_balance:
+                  type: number
+                  default: 0
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation
+  /fuel-station/cash-sessions/{session}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une session (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session avec mouvements
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Session introuvable ou autre tenant
+  /fuel-station/cash-sessions/{session}/movements:
+    post:
+      tags:
+      - FuelStation
+      summary: Ajouter un mouvement in/out (proprietaire, session ouverte)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - type
+              - amount
+              - reason
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - in
+                  - out
+                amount:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                reason:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Mouvement ajoute
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+        '422':
+          description: SESSION_NOT_OPEN ou validation
+  /fuel-station/cash-sessions/{session}/close:
+    post:
+      tags:
+      - FuelStation
+      summary: Cloturer une session (proprietaire, idempotente)
+      description: "Expected balance et variance calcules serveur. Rejeu sans effet (statut terminal)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - closing_balance
+              properties:
+                closing_balance:
+                  type: number
+                  minimum: 0
+      responses:
+        '200':
+          description: Session close (ou etat courant si deja close)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Pas le proprietaire
+  /fuel-station/cash-sessions/{session}/approve:
+    post:
+      tags:
+      - FuelStation
+      summary: Approuver une cloture (manager, verrouille l'ecart)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: session
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Session approuvee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Manager requis
+        '422':
+          description: SESSION_NOT_CLOSED
+  /fuel-station/me/cash-sessions:
+    get:
+      tags:
+      - FuelStation
+      summary: Sessions de caisse du pompiste connecte (self-service)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - closed
+          - approved
+      responses:
+        '200':
+          description: Sessions du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Lister les ventes (manager, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: station_id
+        in: query
+        schema:
+          type: integer
+      - name: pump_id
+        in: query
+        schema:
+          type: integer
+      - name: cash_session_id
+        in: query
+        schema:
+          type: integer
+      - name: product
+        in: query
+        schema:
+          type: string
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ventes paginees
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - FuelStation
+      summary: Enregistrer une vente (pompiste, idempotent via external_id)
+      description: "Montant calcule serveur (quantity x unit_price). Rejeu external_id sans doublon. Relation pompe/station validee quand les tables FUEL-002/003 existent."
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product
+              - quantity
+              - unit_price
+              properties:
+                station_id:
+                  type: integer
+                  nullable: true
+                pump_id:
+                  type: integer
+                  nullable: true
+                cash_session_id:
+                  type: integer
+                  nullable: true
+                product:
+                  type: string
+                  maxLength: 80
+                quantity:
+                  type: number
+                  exclusiveMinimum: true
+                  minimum: 0
+                unit_price:
+                  type: number
+                  minimum: 0
+                sale_time:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                  enum:
+                  - manual
+                  - kiosk
+                  - pos
+                external_id:
+                  type: string
+                  maxLength: 120
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Vente enregistree (ou vente existante si rejeu external_id)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          description: Validation ou session/cash hors tenant
+  /fuel-station/sales/{sale}:
+    get:
+      tags:
+      - FuelStation
+      summary: Detail d'une vente (proprietaire ou manager)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: sale
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Vente
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Vente introuvable ou autre tenant
+  /fuel-station/me/sales:
+    get:
+      tags:
+      - FuelStation
+      summary: Ventes du pompiste connecte (self-service, pagine)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: date_from
+        in: query
+        schema:
+          type: string
+          example: '2026-09-01'
+      - name: date_to
+        in: query
+        schema:
+          type: string
+          example: '2026-09-30'
+      responses:
+        '200':
+          description: Ventes du pompiste
+        '401':
+          $ref: '#/components/responses/Error401'
+  /fuel-station/shift-assignments/{assignment}:
+    delete:
+      tags:
+      - FuelStation
+      summary: Annuler une affectation (manager, statut cancelled)
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: assignment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Affectation annulee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: Affectation introuvable ou autre tenant
+
   /accounting/contacts:
     get:
       tags:
@@ -10180,6 +11032,105 @@ paths:
       responses:
         '200':
           description: Liste des tools enregistres dans le ToolRegistry
+  /ai/conversations/{conversationId}/export:
+    post:
+      tags:
+      - AI
+      summary: Exporter une conversation IA (asynchrone, idempotent)
+      description: BC-23-D07 — cree une exportation (statut pending) et lance le job sur la file ai ; une exportation existante (en cours, livree ou en echec) est renvoyee telle quelle (idempotence par tenant+conversation+format). Echec definitif consigne en dead-letter queue (replay via ai:dlq:replay).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: conversationId
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  enum:
+                  - json
+                  default: json
+      responses:
+        '200':
+          description: Exportation creee ou existante
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      conversation_id:
+                        type: integer
+                      format:
+                        type: string
+                      status:
+                        type: string
+                      error_message:
+                        type: string
+                        nullable: true
+                      created_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Conversation introuvable ou non autorisee
+        '422':
+          description: Format non supporte
+  /ai/exports/{exportId}:
+    get:
+      tags:
+      - AI
+      summary: Statut d'une exportation de conversation IA
+      description: BC-23-D07 — statut du job d'export (pending/processing/done/failed), erreur eventuelle.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: exportId
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statut de l'exportation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      conversation_id:
+                        type: integer
+                      format:
+                        type: string
+                      status:
+                        type: string
+                      error_message:
+                        type: string
+                        nullable: true
+                      created_at:
+                        type: string
+                        nullable: true
+                      updated_at:
+                        type: string
+                        nullable: true
+        '404':
+          description: Exportation introuvable ou non autorisee
   /ai/analytics/usage:
     get:
       tags:
@@ -10220,6 +11171,916 @@ paths:
       responses:
         '200':
           description: Liste des erreurs IA avec details
+  /delivery/deliveries:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des livraisons du tenant (DELIVERY-201/#6285)
+      description: |
+        Liste paginée des livraisons du tenant courant, filtres statut/source/date.
+        RBAC manager (api.manager) — la matrice fine est le scope de BC-26-D05.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: source
+        in: query
+        schema:
+          type: string
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          maximum: 100
+      responses:
+        '200':
+          description: Liste des livraisons
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Delivery'
+    post:
+      tags:
+      - Delivery
+      summary: Crée une livraison (DELIVERY-201/#6285)
+      description: |
+        Crée une livraison pour le tenant courant. Référence DLV-YYYY-NNNNNN
+        générée serveur. Source + source_reference uniques par tenant (zéro
+        doublon par commande source). Montants en minor units.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source
+              - type
+              - dropoff_contact
+              - dropoff_address
+              properties:
+                source:
+                  type: string
+                  enum: [manual, restaurant, retail, ecommerce, crm, field]
+                source_reference:
+                  type: string
+                type:
+                  type: string
+                  enum: [parcel, order, food, grocery, medication, document]
+                cod_amount_minor:
+                  type: integer
+                  minimum: 0
+                dropoff_contact:
+                  type: string
+                dropoff_address:
+                  type: string
+                idempotency_key:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Livraison créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /delivery/deliveries/reports/summary:
+    get:
+      tags:
+      - Delivery
+      summary: KPIs livraison du tenant (DELIVERY-207/#6291)
+      description: |
+        Read model déterministe scopé tenant : totaux (taux de succès, délai
+        moyen, COD attendu vs collecté) ventilés par source/jour/livreur.
+        Fenêtre de dates bornée (défaut 30 j) ; 422 si from > to.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Résumé des KPIs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryReportSummary'
+        '422':
+          description: Fenêtre de dates invalide
+
+  /delivery/deliveries/reports/async-export:
+    post:
+      tags:
+      - Delivery
+      summary: Lance un export CSV async (BC-26-D07/#6295)
+      description: |
+        Crée une ligne pending + dispatch GenerateDeliveryExportJob (file
+        documents, retry borné 3). Réponse 202 avec id d'observation.
+      security:
+      - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+      responses:
+        '202':
+          description: Export planifié
+  /delivery/deliveries/reports/async-export/{export}:
+    get:
+      tags:
+      - Delivery
+      summary: Statut de l'export (BC-26-D07/#6295)
+      description: |
+        pending → generating → done/failed. done → download_url.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Statut de l'export
+        '404':
+          description: Export introuvable ou hors tenant
+  /delivery/deliveries/reports/async-export/{export}/download:
+    get:
+      tags:
+      - Delivery
+      summary: Télécharge l'export CSV (BC-26-D07/#6295)
+      description: |
+        409 EXPORT_NOT_READY tant que done n'est pas atteint.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+        '409':
+          description: EXPORT_NOT_READY
+
+  /delivery/deliveries/reports/export:
+    get:
+      tags:
+      - Delivery
+      summary: Export CSV des livraisons (DELIVERY-207/#6291)
+      description: |
+        Export CSV streamé des livraisons du tenant sur la fenêtre (champs
+        métier, pas de PII superflue). Export async : BC-26-D07.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Fichier CSV
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /delivery/deliveries/events:
+    post:
+      tags:
+      - Delivery
+      summary: Enregistre un événement de tracking (DELIVERY-204/#6288)
+      description: |
+        Idempotent : unique (company, delivery, type, event_at) + idempotency_key
+        client — un rejeu retourne l'événement existant. Chaque type est une
+        transition légale de la machine à états ; delivered exige
+        proof_document_id (POD, BC-20 par valeur) — refus 409 PROOF_REQUIRED.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - delivery_id
+              - type
+              properties:
+                delivery_id:
+                  type: integer
+                type:
+                  type: string
+                  enum: [picked_up, out_for_delivery, arrived, delivered, failed, returned]
+                event_at:
+                  type: string
+                  format: date-time
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                origin:
+                  type: string
+                  enum: [mobile, edge, api]
+                  default: mobile
+                idempotency_key:
+                  type: string
+                  format: uuid
+                proof_document_id:
+                  type: integer
+      responses:
+        '201':
+          description: Événement enregistré (ou existant si rejeu)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+  /delivery/deliveries/{delivery}/tracking-link:
+    post:
+      tags:
+      - Delivery
+      summary: Génère un lien de suivi public borné (DELIVERY-204/#6288)
+      description: |
+        Token 64 chars expirant (7 jours) — le token EST la credential du
+        destinataire (pattern AccountingDocumentShare #5225).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Lien de suivi + expiration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      tracking_url:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /delivery/deliveries/{delivery}/tracking:
+    get:
+      tags:
+      - Delivery
+      summary: Ligne du temps interne (DELIVERY-204/#6288)
+      description: |
+        Événements d'une livraison, ordre chronologique décroissant — RBAC
+        manager, scope tenant (404 hors tenant).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Ligne du temps
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryEvent'
+        '404':
+          description: Livraison introuvable ou hors tenant
+  /deliveries/tracking/{token}:
+    get:
+      tags:
+      - Delivery
+      summary: Suivi public par lien borné (DELIVERY-204/#6288)
+      description: |
+        Endpoint public : le token 64 chars expirant EST la credential (pas
+        d'auth). Champs limités au suivi (RGPD) : statut, événements, adresse
+        de destination, fenêtre. Anti-énumération + Referrer-Policy no-referrer.
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '[A-Za-z0-9]{64}'
+      responses:
+        '200':
+          description: Suivi de la livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reference:
+                        type: string
+                      status:
+                        type: string
+                      dropoff_address:
+                        type: string
+                      window_from:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            event_at:
+                              type: string
+                              format: date-time
+        '404':
+          description: Token invalide ou expiré
+        '429':
+          description: Trop de requêtes (throttle)
+
+  /delivery/deliveries/routes/today:
+    get:
+      tags:
+      - Delivery
+      summary: Tournée du jour du livreur (DELIVERY-203/#6287)
+      description: |
+        Tournées du jour scopées par propriété : un rider ne voit que les
+        routes dont driver_id = son id d'employé ; dispatcher/manager/admin
+        voient toutes les routes du jour. Stops inclus.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tournées du jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryRoute'
+        '403':
+          description: Rôle delivery requis
+  /delivery/deliveries/stops/{stop}/status:
+    post:
+      tags:
+      - Delivery
+      summary: Statut d'un arrêt (DELIVERY-203/#6287)
+      description: |
+        Idempotent (rejeu du même statut → même arrêt). Chaque statut
+        déclenche l'événement de tracking correspondant (machine à états) ;
+        delivered exige proof_document_id (409 PROOF_REQUIRED). Scope par
+        propriété : un rider ne peut agir que sur sa tournée (403 sinon).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: stop
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum: [en_route, arrived, delivered, failed, skipped]
+                proof_document_id:
+                  type: integer
+      responses:
+        '200':
+          description: Arrêt mis à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRouteStop'
+        '403':
+          description: Hors de la tournée du rider
+        '404':
+          description: Arrêt introuvable ou hors tenant
+        '409':
+          description: PROOF_REQUIRED ou INVALID_TRANSITION
+
+  /delivery/deliveries/routes:
+    post:
+      tags:
+      - Delivery
+      summary: Crée une tournée (DELIVERY-202/#6286)
+      description: |
+        Crée une tournée (statut draft) + stops ordonnés à partir des colis.
+        Refus 409 si un colis est déjà planifié dans une tournée non close.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - route_date
+              - delivery_ids
+              properties:
+                route_date:
+                  type: string
+                  format: date
+                zone:
+                  type: string
+                delivery_ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: integer
+      responses:
+        '201':
+          description: Tournée créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Colis déjà planifié
+  /delivery/deliveries/routes/{route}/assign:
+    post:
+      tags:
+      - Delivery
+      summary: Affecte livreur + véhicule (DELIVERY-202/#6286)
+      description: |
+        Idempotent (même affectation → même résultat). Garde anti-chevauchement :
+        un livreur = une tournée par date (409 DRIVER_ALREADY_ASSIGNED).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driver_id
+              properties:
+                driver_id:
+                  type: integer
+                vehicle_code:
+                  type: string
+      responses:
+        '200':
+          description: Tournée affectée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Livreur déjà affecté ce jour
+  /delivery/deliveries/routes/{route}/settlement:
+    post:
+      tags:
+      - Delivery
+      summary: Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)
+      description: |
+        Idempotent (unique company+route). Exige une tournée close (409
+        ROUTE_NOT_CLOSED). expected_minor = COD collecté de la tournée.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Règlement créé (ou existant)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '409':
+          description: Tournée non close
+  /delivery/deliveries/cod-settlements:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des règlements COD (DELIVERY-205/#6289)
+      description: |
+        Paginée, filtres statut/driver_id. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: driver_id
+        in: query
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/collect:
+    post:
+      tags:
+      - Delivery
+      summary: Remise caisse (DELIVERY-205/#6289)
+      description: |
+        Idempotente, plafonnée à l'attendu (422 OVER_COLLECTION). Exige
+        pending. RBAC admin|manager.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - collected_minor
+              properties:
+                collected_minor:
+                  type: integer
+                  minimum: 0
+                commission_minor:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Règlement collecté
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+        '422':
+          description: OVER_COLLECTION
+  /delivery/deliveries/cod-settlements/{settlement}/settle:
+    post:
+      tags:
+      - Delivery
+      summary: Posting BC-08 + settled (DELIVERY-205/#6289)
+      description: |
+        Idempotent, exige collected (409 SETTLEMENT_NOT_COLLECTED). Écriture
+        comptable source-référencée via contrat BC-08. RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement settled (accounting_ref)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/cod-settlements/{settlement}/reconcile:
+    post:
+      tags:
+      - Delivery
+      summary: Réconciliation (DELIVERY-205/#6289)
+      description: |
+        Idempotente, exige settled (409 SETTLEMENT_NOT_SETTLED). RBAC admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: settlement
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Règlement reconciled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryCodSettlement'
+  /delivery/deliveries/notifications/opt-out:
+    post:
+      tags:
+      - Delivery
+      summary: Opt-out destinataire (DELIVERY-206/#6290)
+      description: |
+        Arrête les notifications planifiées vers ce numéro (jamais les déjà
+        envoyées). RGPD : la réponse ne renvoie que le numéro tronqué.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - phone
+              properties:
+                phone:
+                  type: string
+      responses:
+        '201':
+          description: Opt-out enregistré
+        '422':
+          description: INVALID_PHONE
+  /delivery/deliveries/notifications:
+    get:
+      tags:
+      - Delivery
+      summary: Liste des notifications (outbox) (DELIVERY-206/#6290)
+      description: |
+        Paginée, filtre statut. RGPD : numéros masqués hors admin.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryNotification'
+                  meta:
+                    type: object
+                    properties:
+                      phone_masked:
+                        type: boolean
+
+  /delivery/deliveries/cod-settlements/report:
+    get:
+      tags:
+      - Delivery
+      summary: Réconciliation attendu vs collecté (DELIVERY-205/#6289)
+      description: |
+        Totaux expected/collected/gap + ventilation par statut. RBAC
+        admin|manager.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Rapport de réconciliation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          expected_minor:
+                            type: integer
+                          collected_minor:
+                            type: integer
+                          gap_minor:
+                            type: integer
+
+  /delivery/deliveries/routes/{route}/close:
+    post:
+      tags:
+      - Delivery
+      summary: Clôture une tournée (DELIVERY-202/#6286)
+      description: |
+        Idempotente. Refus 409 ROUTE_INCOMPLETE si des stops sont non terminés.
+        Calcule totaux colis/livrés/échecs/COD collecté (verrou SELECT FOR UPDATE).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée clôturée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '409':
+          description: Tournée incomplète ou vide
+  /delivery/deliveries/routes/{route}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une tournée (DELIVERY-202/#6286)
+      description: |
+        Détail scopé au tenant — 404 si absente OU hors tenant. Stops ordonnés.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: route
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeliveryRoute'
+        '404':
+          description: Tournée introuvable ou hors tenant
+
+  /delivery/deliveries/{delivery}:
+    get:
+      tags:
+      - Delivery
+      summary: Détail d'une livraison (DELIVERY-201/#6285)
+      description: |
+        Détail d'une livraison scopé au tenant — 404 si absente OU hors tenant.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: delivery
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Livraison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Delivery'
+        '404':
+          description: Livraison introuvable ou hors tenant
+
+  /delivery/ping:
+    get:
+      tags:
+      - Delivery
+      summary: Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)
+      description: |
+        Route de contrôle : prouve que le module est chargé, que le feature flag
+        `delivery` est actif pour le tenant courant et que le pipeline
+        middleware (auth → tenant → module) est opérationnel. Lecture pure.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Module actif
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                - service
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: delivery
   /absences:
     get:
       tags:
@@ -23081,6 +24942,7 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+
   /accounting/dashboard:
     get:
       tags:
@@ -24868,6 +26730,255 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    DeliveryReportSummary:
+      type: object
+      properties:
+        range:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+        totals:
+          type: object
+          properties:
+            deliveries:
+              type: integer
+            delivered:
+              type: integer
+            failed:
+              type: integer
+            cancelled:
+              type: integer
+            returned:
+              type: integer
+            success_rate_pct:
+              type: number
+            avg_delivery_delay_minutes:
+              type: integer
+            cod_expected_minor:
+              type: integer
+            cod_collected_minor:
+              type: integer
+        by_source:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+              success_rate_pct:
+                type: number
+        by_day:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+        by_driver:
+          type: array
+          items:
+            type: object
+            properties:
+              driver_id:
+                type: integer
+                nullable: true
+              deliveries:
+                type: integer
+              delivered:
+                type: integer
+
+    DeliveryEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        type:
+          type: string
+        event_at:
+          type: string
+          format: date-time
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        origin:
+          type: string
+        payload:
+          type: object
+          nullable: true
+
+
+
+
+    DeliveryNotification:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        event_type:
+          type: string
+        channel:
+          type: string
+        recipient_phone:
+          type: string
+        template_key:
+          type: string
+        status:
+          type: string
+          enum: [pending, sent, failed, skipped]
+        attempts:
+          type: integer
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+
+
+
+
+    DeliveryCodSettlement:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_id:
+          type: integer
+        driver_id:
+          type: integer
+          nullable: true
+        expected_minor:
+          type: integer
+        collected_minor:
+          type: integer
+        commission_minor:
+          type: integer
+        status:
+          type: string
+          enum: [pending, collected, settled, reconciled]
+        accounting_ref:
+          type: string
+          nullable: true
+        collected_at:
+          type: string
+          format: date-time
+          nullable: true
+        settled_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    DeliveryRoute:
+      type: object
+      properties:
+        id:
+          type: integer
+        route_date:
+          type: string
+          format: date
+        zone:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, assigned, in_progress, completed]
+        driver_id:
+          type: integer
+          nullable: true
+        vehicle_code:
+          type: string
+          nullable: true
+        deliveries_count:
+          type: integer
+        delivered_count:
+          type: integer
+        failed_count:
+          type: integer
+        cod_collected_minor:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryRouteStop'
+    DeliveryRouteStop:
+      type: object
+      properties:
+        id:
+          type: integer
+        delivery_id:
+          type: integer
+        sort_order:
+          type: integer
+        status:
+          type: string
+          enum: [pending, en_route, arrived, delivered, failed, skipped]
+        address:
+          type: string
+        contact:
+          type: string
+          nullable: true
+        eta:
+          type: string
+          format: date-time
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Delivery:
+      type: object
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+          example: DLV-2026-000123
+        source:
+          type: string
+          enum: [manual, restaurant, retail, ecommerce, crm, field]
+        source_reference:
+          type: string
+          nullable: true
+        type:
+          type: string
+        status:
+          type: string
+          enum: [created, assigned, picked_up, out_for_delivery, arrived, delivered, failed, returned, cancelled]
+        cod_amount_minor:
+          type: integer
+          nullable: true
+        dropoff_contact:
+          type: string
+        dropoff_address:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
     AccountingChartAccount:
       type: object
       properties:
@@ -32186,18 +34297,79 @@ components:
           nullable: true
     AccountingDashboard:
       type: object
+      description: 'Synthèse de pilotage du dashboard comptable (issue #5230, BC-22). Le bloc snapshot expose la fraîcheur du read model (BC-22-D10, issue #6243).'
       properties:
-        totals:
+        period:
           type: object
-          additionalProperties: { type: number, format: double }
-        overdue_count:
-          type: integer
-        period_from:
-          type: string
-          format: date
-        period_to:
-          type: string
-          format: date
+          properties:
+            from: { type: string, format: date }
+            to: { type: string, format: date }
+        invoices:
+          type: object
+          description: 'Factures émises (glossaire BC-22 : documents client émis sur la période).'
+          properties:
+            count: { type: integer }
+            total_ttc: { type: number, format: double }
+        collections:
+          type: object
+          description: 'Encaissements (glossaire BC-22 : paiements reçus sur la période).'
+          properties:
+            count: { type: integer }
+            total: { type: number, format: double }
+        expenses:
+          type: object
+          description: 'Dépenses fournisseurs (glossaire BC-22).'
+          properties:
+            count: { type: integer }
+            total_ttc: { type: number, format: double }
+        outstanding:
+          type: object
+          description: 'Impayés (glossaire BC-22 : total_ttc > paid_amount) + aging.'
+          properties:
+            count: { type: integer }
+            total_due: { type: number, format: double }
+            aging:
+              type: array
+              items:
+                type: object
+                properties:
+                  bucket:
+                    type: string
+                    enum: [0_30, 31_60, 61_90, 90_plus]
+                  count: { type: integer }
+                  total_due: { type: number, format: double }
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: { type: integer }
+                  number: { type: string }
+                  contact: { type: string }
+                  issue_date: { type: string, format: date, nullable: true }
+                  due_date: { type: string, format: date, nullable: true }
+                  days_late: { type: integer }
+                  total_ttc: { type: number, format: double }
+                  paid_amount: { type: number, format: double }
+                  due_amount: { type: number, format: double }
+                  status: { type: string }
+        snapshot:
+          type: object
+          description: 'Fraîcheur du read model — live tant qu aucun snapshot n est activé, sinon source snapshot + version + refreshed_at.'
+          properties:
+            source:
+              type: string
+              enum: [live, snapshot]
+            report:
+              type: string
+              nullable: true
+            version:
+              type: integer
+              nullable: true
+            refreshed_at:
+              type: string
+              format: date-time
+              nullable: true
 
 
     AttendanceDayClosure:
@@ -32344,3 +34516,58 @@ components:
           type: integer
           nullable: true
           description: Paiement candidat proposé par le matching auto (issue #5523)
+
+    FuelMeterReadingPayload:
+      type: object
+      required: [reading_value_minor, idempotency_key]
+      properties:
+        reading_value_minor:
+          type: integer
+          minimum: 0
+          description: Valeur cumulee en unites mineures entieres (ex. centilitres)
+        reading_unit:
+          type: string
+          enum: [l, ml, gal, ft3]
+          default: l
+        captured_at:
+          type: string
+          format: date-time
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 64
+        shift_id:
+          type: integer
+          nullable: true
+        device_reference:
+          type: string
+          maxLength: 120
+          nullable: true
+        idempotency_key:
+          type: string
+          maxLength: 191
+    FuelMeterReadingResult:
+      type: object
+      properties:
+        reading:
+          type: object
+          properties:
+            id: {type: integer}
+            meter_id: {type: integer}
+            reading_value_minor: {type: integer}
+            reading_unit: {type: string}
+            captured_at_utc: {type: string, format: date-time}
+            status: {type: string}
+            source_code: {type: string}
+        interval:
+          type: object
+          nullable: true
+          properties:
+            id: {type: integer}
+            delta_minor: {type: integer}
+            calculation_status: {type: string}
+            interval_seconds: {type: integer}
+        replayed:
+          type: boolean
+        correlation_id:
+          type: string

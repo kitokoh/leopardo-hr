@@ -1,5 +1,6 @@
 <?php
 
+use App\AI\Exceptions\TokenBudgetExceededException;
 use App\Core\Http\Middleware\HttpCacheMiddleware;
 use App\Core\Http\Middleware\IdempotencyMiddleware;
 use App\Exceptions\DomainException;
@@ -7,6 +8,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
@@ -140,6 +142,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
+            'module.delivery' => EnsureDeliveryModuleMiddleware::class,
+            'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
@@ -161,6 +165,25 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
+
+        // BC-23-D10 (issue #6238) : budget de tokens AI dépassé → 422
+        // fail-closed avec code stable AI_TOKEN_BUDGET_EXCEEDED. Le message
+        // interne (détails de service) ne fuite jamais : il est tracé en logs
+        // (report) et dans ai_audit_logs par l'Orchestrator. Enregistré AVANT
+        // le renderer DomainException (TokenBudgetExceededException en hérite).
+        $exceptions->render(function (TokenBudgetExceededException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            report($exception);
+
+            return new JsonResponse([
+                'error' => $exception->errorCode(),
+                'message' => $exception->errorCode(),
+                'localized_message' => __('errors.AI_TOKEN_BUDGET_EXCEEDED'),
+            ], $exception->statusCode());
+        });
 
         $exceptions->render(function (DomainException $exception, Request $request) {
             if (! ($request->expectsJson() || $request->is('api/*'))) {
@@ -315,7 +338,17 @@ return Application::configure(basePath: dirname(__DIR__))
             // porte toujours le message Laravel brut ("Too Many Attempts.") qui
             // n'est PAS un message statique volontaire. On sert systématiquement
             // le code stable + message localisé (headers Retry-After conservés).
-            if ($statusCode === 429 || $leakSignature === 1 || trim($rawMessage) === '') {
+            // Issue #6689 : le 403 de Policy/Gate arrive ici sous forme
+            // d'AccessDeniedHttpException au message Laravel par défaut
+            // (« This action is unauthorized. ») — prepareException() convertit
+            // AuthorizationException AVANT les renderers (vendor Laravel), donc
+            // le renderer AuthorizationException dédié ne se déclenche jamais.
+            // Ce message générique ne doit pas servir de code machine : code
+            // stable FORBIDDEN + message localisé, comme tout 403 de l'API.
+            if ($statusCode === 429
+                || ($statusCode === 403 && $rawMessage === 'This action is unauthorized.')
+                || $leakSignature === 1
+                || trim($rawMessage) === '') {
 
                 Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
                     'status' => $statusCode,

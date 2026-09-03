@@ -118,5 +118,6 @@ return [
         'cabinet' => 'Belge kasasi',
         'notifications' => 'Bildirimler',
         'evaluations' => 'Degerlendirmeler',
+        'restaurant' => 'Satış noktası (POS)',
     ],
 ];

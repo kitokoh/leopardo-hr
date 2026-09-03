@@ -755,6 +755,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/ai/chat/history", options);
     },
 
+    /** Exporter une conversation IA (asynchrone, idempotent) */
+    postAiConversationsByConversationIdExport(options = {}) {
+      return request("POST", "/ai/conversations/{conversationId}/export", options);
+    },
+
+    /** Statut d'une exportation de conversation IA */
+    getAiExportsByExportId(options = {}) {
+      return request("GET", "/ai/exports/{exportId}", options);
+    },
+
     /** Liste des outils IA disponibles */
     getAiTools(options = {}) {
       return request("GET", "/ai/tools", options);
@@ -1720,6 +1730,141 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/dashboard/summary", options);
     },
 
+    /** Suivi public par lien borné (DELIVERY-204/#6288) */
+    getDeliveriesTrackingByToken(options = {}) {
+      return request("GET", "/deliveries/tracking/{token}", options);
+    },
+
+    /** Liste des livraisons du tenant (DELIVERY-201/#6285) */
+    getDeliveryDeliveries(options = {}) {
+      return request("GET", "/delivery/deliveries", options);
+    },
+
+    /** Crée une livraison (DELIVERY-201/#6285) */
+    postDeliveryDeliveries(options = {}) {
+      return request("POST", "/delivery/deliveries", options);
+    },
+
+    /** Détail d'une livraison (DELIVERY-201/#6285) */
+    getDeliveryDeliveriesByDelivery(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}", options);
+    },
+
+    /** Ligne du temps interne (DELIVERY-204/#6288) */
+    getDeliveryDeliveriesByDeliveryTracking(options = {}) {
+      return request("GET", "/delivery/deliveries/{delivery}/tracking", options);
+    },
+
+    /** Génère un lien de suivi public borné (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesByDeliveryTrackingLink(options = {}) {
+      return request("POST", "/delivery/deliveries/{delivery}/tracking-link", options);
+    },
+
+    /** Liste des règlements COD (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlements(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements", options);
+    },
+
+    /** Remise caisse (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementCollect(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", options);
+    },
+
+    /** Réconciliation (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementReconcile(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", options);
+    },
+
+    /** Posting BC-08 + settled (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesCodSettlementsBySettlementSettle(options = {}) {
+      return request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", options);
+    },
+
+    /** Réconciliation attendu vs collecté (DELIVERY-205/#6289) */
+    getDeliveryDeliveriesCodSettlementsReport(options = {}) {
+      return request("GET", "/delivery/deliveries/cod-settlements/report", options);
+    },
+
+    /** Enregistre un événement de tracking (DELIVERY-204/#6288) */
+    postDeliveryDeliveriesEvents(options = {}) {
+      return request("POST", "/delivery/deliveries/events", options);
+    },
+
+    /** Liste des notifications (outbox) (DELIVERY-206/#6290) */
+    getDeliveryDeliveriesNotifications(options = {}) {
+      return request("GET", "/delivery/deliveries/notifications", options);
+    },
+
+    /** Opt-out destinataire (DELIVERY-206/#6290) */
+    postDeliveryDeliveriesNotificationsOptOut(options = {}) {
+      return request("POST", "/delivery/deliveries/notifications/opt-out", options);
+    },
+
+    /** Lance un export CSV async (BC-26-D07/#6295) */
+    postDeliveryDeliveriesReportsAsyncExport(options = {}) {
+      return request("POST", "/delivery/deliveries/reports/async-export", options);
+    },
+
+    /** Statut de l'export (BC-26-D07/#6295) */
+    getDeliveryDeliveriesReportsAsyncExportByExport(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/async-export/{export}", options);
+    },
+
+    /** Télécharge l'export CSV (BC-26-D07/#6295) */
+    getDeliveryDeliveriesReportsAsyncExportByExportDownload(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/async-export/{export}/download", options);
+    },
+
+    /** Export CSV des livraisons (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsExport(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/export", options);
+    },
+
+    /** KPIs livraison du tenant (DELIVERY-207/#6291) */
+    getDeliveryDeliveriesReportsSummary(options = {}) {
+      return request("GET", "/delivery/deliveries/reports/summary", options);
+    },
+
+    /** Crée une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutes(options = {}) {
+      return request("POST", "/delivery/deliveries/routes", options);
+    },
+
+    /** Détail d'une tournée (DELIVERY-202/#6286) */
+    getDeliveryDeliveriesRoutesByRoute(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/{route}", options);
+    },
+
+    /** Affecte livreur + véhicule (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteAssign(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/assign", options);
+    },
+
+    /** Clôture une tournée (DELIVERY-202/#6286) */
+    postDeliveryDeliveriesRoutesByRouteClose(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/close", options);
+    },
+
+    /** Crée le règlement COD d'une tournée close (DELIVERY-205/#6289) */
+    postDeliveryDeliveriesRoutesByRouteSettlement(options = {}) {
+      return request("POST", "/delivery/deliveries/routes/{route}/settlement", options);
+    },
+
+    /** Tournée du jour du livreur (DELIVERY-203/#6287) */
+    getDeliveryDeliveriesRoutesToday(options = {}) {
+      return request("GET", "/delivery/deliveries/routes/today", options);
+    },
+
+    /** Statut d'un arrêt (DELIVERY-203/#6287) */
+    postDeliveryDeliveriesStopsByStopStatus(options = {}) {
+      return request("POST", "/delivery/deliveries/stops/{stop}/status", options);
+    },
+
+    /** Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282) */
+    getDeliveryPing(options = {}) {
+      return request("GET", "/delivery/ping", options);
+    },
+
     /** Comptes demo publics pour la documentation QA */
     getDemoUsers(options = {}) {
       return request("GET", "/demo-users", options);
@@ -2223,6 +2368,141 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rapport kilometrage */
     getFleetReportsMileage(options = {}) {
       return request("GET", "/fleet/reports/mileage", options);
+    },
+
+    /** Lister les sessions de caisse (manager) */
+    getFuelStationCashSessions(options = {}) {
+      return request("GET", "/fuel-station/cash-sessions", options);
+    },
+
+    /** Ouvrir une session de caisse (pompiste) */
+    postFuelStationCashSessions(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions", options);
+    },
+
+    /** Detail d'une session (proprietaire ou manager) */
+    getFuelStationCashSessionsBySession(options = {}) {
+      return request("GET", "/fuel-station/cash-sessions/{session}", options);
+    },
+
+    /** Approuver une cloture (manager, verrouille l'ecart) */
+    postFuelStationCashSessionsBySessionApprove(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/approve", options);
+    },
+
+    /** Cloturer une session (proprietaire, idempotente) */
+    postFuelStationCashSessionsBySessionClose(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/close", options);
+    },
+
+    /** Ajouter un mouvement in/out (proprietaire, session ouverte) */
+    postFuelStationCashSessionsBySessionMovements(options = {}) {
+      return request("POST", "/fuel-station/cash-sessions/{session}/movements", options);
+    },
+
+    /** Sessions de caisse du pompiste connecte (self-service) */
+    getFuelStationMeCashSessions(options = {}) {
+      return request("GET", "/fuel-station/me/cash-sessions", options);
+    },
+
+    /** Presence du pompiste connecte pour une date (self-service) */
+    getFuelStationMePresence(options = {}) {
+      return request("GET", "/fuel-station/me/presence", options);
+    },
+
+    /** Ventes du pompiste connecte (self-service, pagine) */
+    getFuelStationMeSales(options = {}) {
+      return request("GET", "/fuel-station/me/sales", options);
+    },
+
+    /** Affectations de shifts du pompiste connecte (self-service) */
+    getFuelStationMeShifts(options = {}) {
+      return request("GET", "/fuel-station/me/shifts", options);
+    },
+
+    /** Revoir un intervalle en anomalie (accept/reject) — manager principal/rh */
+    postFuelStationMeterIntervalsByIntervalReview(options = {}) {
+      return request("POST", "/fuel-station/meter-intervals/{interval}/review", options);
+    },
+
+    /** Corriger un releve (versionne, audite) — manager principal/rh */
+    postFuelStationMeterReadingsByReadingCorrections(options = {}) {
+      return request("POST", "/fuel-station/meter-readings/{reading}/corrections", options);
+    },
+
+    /** Lister les ventes (manager, pagine) */
+    getFuelStationSales(options = {}) {
+      return request("GET", "/fuel-station/sales", options);
+    },
+
+    /** Enregistrer une vente (pompiste, idempotent via external_id) */
+    postFuelStationSales(options = {}) {
+      return request("POST", "/fuel-station/sales", options);
+    },
+
+    /** Detail d'une vente (proprietaire ou manager) */
+    getFuelStationSalesBySale(options = {}) {
+      return request("GET", "/fuel-station/sales/{sale}", options);
+    },
+
+    /** Annuler une affectation (manager, statut cancelled) */
+    deleteFuelStationShiftAssignmentsByAssignment(options = {}) {
+      return request("DELETE", "/fuel-station/shift-assignments/{assignment}", options);
+    },
+
+    /** Lister les shifts (manager) */
+    getFuelStationShifts(options = {}) {
+      return request("GET", "/fuel-station/shifts", options);
+    },
+
+    /** Creer un shift (manager) */
+    postFuelStationShifts(options = {}) {
+      return request("POST", "/fuel-station/shifts", options);
+    },
+
+    /** Supprimer un shift (manager, refus si affectations actives) */
+    deleteFuelStationShiftsByShift(options = {}) {
+      return request("DELETE", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Detail d'un shift (manager) */
+    getFuelStationShiftsByShift(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Mettre a jour un shift (manager) */
+    putFuelStationShiftsByShift(options = {}) {
+      return request("PUT", "/fuel-station/shifts/{shift}", options);
+    },
+
+    /** Affectations d'un shift (manager) */
+    getFuelStationShiftsByShiftAssignments(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}/assignments", options);
+    },
+
+    /** Affecter un employe a un shift pour une date (manager) */
+    postFuelStationShiftsByShiftAssignments(options = {}) {
+      return request("POST", "/fuel-station/shifts/{shift}/assignments", options);
+    },
+
+    /** Roster de presence du shift pour une date (manager) */
+    getFuelStationShiftsByShiftPresence(options = {}) {
+      return request("GET", "/fuel-station/shifts/{shift}/presence", options);
+    },
+
+    /** Lister les intervalles calcules d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterIntervals(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", options);
+    },
+
+    /** Lister les releves d'un compteur */
+    getFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
+    },
+
+    /** Enregistrer un releve de compteur (cumulatif, idempotent) */
+    postFuelStationStationsByStationPumpsByPumpMetersByMeterReadings(options = {}) {
+      return request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", options);
     },
 
     /** Candidature partenaire */

@@ -624,6 +624,14 @@ class LeopardoClient:
         """Historique des conversations IA"""
         return self.request("GET", "/ai/chat/history", **kwargs)
 
+    def post_ai_conversations_by_conversationid_export(self, **kwargs):
+        """Exporter une conversation IA (asynchrone, idempotent)"""
+        return self.request("POST", "/ai/conversations/{conversationId}/export", **kwargs)
+
+    def get_ai_exports_by_exportid(self, **kwargs):
+        """Statut d'une exportation de conversation IA"""
+        return self.request("GET", "/ai/exports/{exportId}", **kwargs)
+
     def get_ai_tools(self, **kwargs):
         """Liste des outils IA disponibles"""
         return self.request("GET", "/ai/tools", **kwargs)
@@ -1396,6 +1404,114 @@ class LeopardoClient:
         """Resume dashboard"""
         return self.request("GET", "/dashboard/summary", **kwargs)
 
+    def get_deliveries_tracking_by_token(self, **kwargs):
+        """Suivi public par lien borné (DELIVERY-204/#6288)"""
+        return self.request("GET", "/deliveries/tracking/{token}", **kwargs)
+
+    def get_delivery_deliveries(self, **kwargs):
+        """Liste des livraisons du tenant (DELIVERY-201/#6285)"""
+        return self.request("GET", "/delivery/deliveries", **kwargs)
+
+    def post_delivery_deliveries(self, **kwargs):
+        """Crée une livraison (DELIVERY-201/#6285)"""
+        return self.request("POST", "/delivery/deliveries", **kwargs)
+
+    def get_delivery_deliveries_by_delivery(self, **kwargs):
+        """Détail d'une livraison (DELIVERY-201/#6285)"""
+        return self.request("GET", "/delivery/deliveries/{delivery}", **kwargs)
+
+    def get_delivery_deliveries_by_delivery_tracking(self, **kwargs):
+        """Ligne du temps interne (DELIVERY-204/#6288)"""
+        return self.request("GET", "/delivery/deliveries/{delivery}/tracking", **kwargs)
+
+    def post_delivery_deliveries_by_delivery_tracking_link(self, **kwargs):
+        """Génère un lien de suivi public borné (DELIVERY-204/#6288)"""
+        return self.request("POST", "/delivery/deliveries/{delivery}/tracking-link", **kwargs)
+
+    def get_delivery_deliveries_cod_settlements(self, **kwargs):
+        """Liste des règlements COD (DELIVERY-205/#6289)"""
+        return self.request("GET", "/delivery/deliveries/cod-settlements", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_collect(self, **kwargs):
+        """Remise caisse (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/collect", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_reconcile(self, **kwargs):
+        """Réconciliation (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/reconcile", **kwargs)
+
+    def post_delivery_deliveries_cod_settlements_by_settlement_settle(self, **kwargs):
+        """Posting BC-08 + settled (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/cod-settlements/{settlement}/settle", **kwargs)
+
+    def get_delivery_deliveries_cod_settlements_report(self, **kwargs):
+        """Réconciliation attendu vs collecté (DELIVERY-205/#6289)"""
+        return self.request("GET", "/delivery/deliveries/cod-settlements/report", **kwargs)
+
+    def post_delivery_deliveries_events(self, **kwargs):
+        """Enregistre un événement de tracking (DELIVERY-204/#6288)"""
+        return self.request("POST", "/delivery/deliveries/events", **kwargs)
+
+    def get_delivery_deliveries_notifications(self, **kwargs):
+        """Liste des notifications (outbox) (DELIVERY-206/#6290)"""
+        return self.request("GET", "/delivery/deliveries/notifications", **kwargs)
+
+    def post_delivery_deliveries_notifications_opt_out(self, **kwargs):
+        """Opt-out destinataire (DELIVERY-206/#6290)"""
+        return self.request("POST", "/delivery/deliveries/notifications/opt-out", **kwargs)
+
+    def post_delivery_deliveries_reports_async_export(self, **kwargs):
+        """Lance un export CSV async (BC-26-D07/#6295)"""
+        return self.request("POST", "/delivery/deliveries/reports/async-export", **kwargs)
+
+    def get_delivery_deliveries_reports_async_export_by_export(self, **kwargs):
+        """Statut de l'export (BC-26-D07/#6295)"""
+        return self.request("GET", "/delivery/deliveries/reports/async-export/{export}", **kwargs)
+
+    def get_delivery_deliveries_reports_async_export_by_export_download(self, **kwargs):
+        """Télécharge l'export CSV (BC-26-D07/#6295)"""
+        return self.request("GET", "/delivery/deliveries/reports/async-export/{export}/download", **kwargs)
+
+    def get_delivery_deliveries_reports_export(self, **kwargs):
+        """Export CSV des livraisons (DELIVERY-207/#6291)"""
+        return self.request("GET", "/delivery/deliveries/reports/export", **kwargs)
+
+    def get_delivery_deliveries_reports_summary(self, **kwargs):
+        """KPIs livraison du tenant (DELIVERY-207/#6291)"""
+        return self.request("GET", "/delivery/deliveries/reports/summary", **kwargs)
+
+    def post_delivery_deliveries_routes(self, **kwargs):
+        """Crée une tournée (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes", **kwargs)
+
+    def get_delivery_deliveries_routes_by_route(self, **kwargs):
+        """Détail d'une tournée (DELIVERY-202/#6286)"""
+        return self.request("GET", "/delivery/deliveries/routes/{route}", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_assign(self, **kwargs):
+        """Affecte livreur + véhicule (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/assign", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_close(self, **kwargs):
+        """Clôture une tournée (DELIVERY-202/#6286)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/close", **kwargs)
+
+    def post_delivery_deliveries_routes_by_route_settlement(self, **kwargs):
+        """Crée le règlement COD d'une tournée close (DELIVERY-205/#6289)"""
+        return self.request("POST", "/delivery/deliveries/routes/{route}/settlement", **kwargs)
+
+    def get_delivery_deliveries_routes_today(self, **kwargs):
+        """Tournée du jour du livreur (DELIVERY-203/#6287)"""
+        return self.request("GET", "/delivery/deliveries/routes/today", **kwargs)
+
+    def post_delivery_deliveries_stops_by_stop_status(self, **kwargs):
+        """Statut d'un arrêt (DELIVERY-203/#6287)"""
+        return self.request("POST", "/delivery/deliveries/stops/{stop}/status", **kwargs)
+
+    def get_delivery_ping(self, **kwargs):
+        """Smoke test du module Delivery (BC-26 DELIVERY, DELIVERY-101/#6282)"""
+        return self.request("GET", "/delivery/ping", **kwargs)
+
     def get_demo_users(self, **kwargs):
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)
@@ -1799,6 +1915,114 @@ class LeopardoClient:
     def get_fleet_reports_mileage(self, **kwargs):
         """Rapport kilometrage"""
         return self.request("GET", "/fleet/reports/mileage", **kwargs)
+
+    def get_fuel_station_cash_sessions(self, **kwargs):
+        """Lister les sessions de caisse (manager)"""
+        return self.request("GET", "/fuel-station/cash-sessions", **kwargs)
+
+    def post_fuel_station_cash_sessions(self, **kwargs):
+        """Ouvrir une session de caisse (pompiste)"""
+        return self.request("POST", "/fuel-station/cash-sessions", **kwargs)
+
+    def get_fuel_station_cash_sessions_by_session(self, **kwargs):
+        """Detail d'une session (proprietaire ou manager)"""
+        return self.request("GET", "/fuel-station/cash-sessions/{session}", **kwargs)
+
+    def post_fuel_station_cash_sessions_by_session_approve(self, **kwargs):
+        """Approuver une cloture (manager, verrouille l'ecart)"""
+        return self.request("POST", "/fuel-station/cash-sessions/{session}/approve", **kwargs)
+
+    def post_fuel_station_cash_sessions_by_session_close(self, **kwargs):
+        """Cloturer une session (proprietaire, idempotente)"""
+        return self.request("POST", "/fuel-station/cash-sessions/{session}/close", **kwargs)
+
+    def post_fuel_station_cash_sessions_by_session_movements(self, **kwargs):
+        """Ajouter un mouvement in/out (proprietaire, session ouverte)"""
+        return self.request("POST", "/fuel-station/cash-sessions/{session}/movements", **kwargs)
+
+    def get_fuel_station_me_cash_sessions(self, **kwargs):
+        """Sessions de caisse du pompiste connecte (self-service)"""
+        return self.request("GET", "/fuel-station/me/cash-sessions", **kwargs)
+
+    def get_fuel_station_me_presence(self, **kwargs):
+        """Presence du pompiste connecte pour une date (self-service)"""
+        return self.request("GET", "/fuel-station/me/presence", **kwargs)
+
+    def get_fuel_station_me_sales(self, **kwargs):
+        """Ventes du pompiste connecte (self-service, pagine)"""
+        return self.request("GET", "/fuel-station/me/sales", **kwargs)
+
+    def get_fuel_station_me_shifts(self, **kwargs):
+        """Affectations de shifts du pompiste connecte (self-service)"""
+        return self.request("GET", "/fuel-station/me/shifts", **kwargs)
+
+    def post_fuel_station_meter_intervals_by_interval_review(self, **kwargs):
+        """Revoir un intervalle en anomalie (accept/reject) — manager principal/rh"""
+        return self.request("POST", "/fuel-station/meter-intervals/{interval}/review", **kwargs)
+
+    def post_fuel_station_meter_readings_by_reading_corrections(self, **kwargs):
+        """Corriger un releve (versionne, audite) — manager principal/rh"""
+        return self.request("POST", "/fuel-station/meter-readings/{reading}/corrections", **kwargs)
+
+    def get_fuel_station_sales(self, **kwargs):
+        """Lister les ventes (manager, pagine)"""
+        return self.request("GET", "/fuel-station/sales", **kwargs)
+
+    def post_fuel_station_sales(self, **kwargs):
+        """Enregistrer une vente (pompiste, idempotent via external_id)"""
+        return self.request("POST", "/fuel-station/sales", **kwargs)
+
+    def get_fuel_station_sales_by_sale(self, **kwargs):
+        """Detail d'une vente (proprietaire ou manager)"""
+        return self.request("GET", "/fuel-station/sales/{sale}", **kwargs)
+
+    def delete_fuel_station_shift_assignments_by_assignment(self, **kwargs):
+        """Annuler une affectation (manager, statut cancelled)"""
+        return self.request("DELETE", "/fuel-station/shift-assignments/{assignment}", **kwargs)
+
+    def get_fuel_station_shifts(self, **kwargs):
+        """Lister les shifts (manager)"""
+        return self.request("GET", "/fuel-station/shifts", **kwargs)
+
+    def post_fuel_station_shifts(self, **kwargs):
+        """Creer un shift (manager)"""
+        return self.request("POST", "/fuel-station/shifts", **kwargs)
+
+    def delete_fuel_station_shifts_by_shift(self, **kwargs):
+        """Supprimer un shift (manager, refus si affectations actives)"""
+        return self.request("DELETE", "/fuel-station/shifts/{shift}", **kwargs)
+
+    def get_fuel_station_shifts_by_shift(self, **kwargs):
+        """Detail d'un shift (manager)"""
+        return self.request("GET", "/fuel-station/shifts/{shift}", **kwargs)
+
+    def put_fuel_station_shifts_by_shift(self, **kwargs):
+        """Mettre a jour un shift (manager)"""
+        return self.request("PUT", "/fuel-station/shifts/{shift}", **kwargs)
+
+    def get_fuel_station_shifts_by_shift_assignments(self, **kwargs):
+        """Affectations d'un shift (manager)"""
+        return self.request("GET", "/fuel-station/shifts/{shift}/assignments", **kwargs)
+
+    def post_fuel_station_shifts_by_shift_assignments(self, **kwargs):
+        """Affecter un employe a un shift pour une date (manager)"""
+        return self.request("POST", "/fuel-station/shifts/{shift}/assignments", **kwargs)
+
+    def get_fuel_station_shifts_by_shift_presence(self, **kwargs):
+        """Roster de presence du shift pour une date (manager)"""
+        return self.request("GET", "/fuel-station/shifts/{shift}/presence", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_intervals(self, **kwargs):
+        """Lister les intervalles calcules d'un compteur"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/intervals", **kwargs)
+
+    def get_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
+        """Lister les releves d'un compteur"""
+        return self.request("GET", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
+
+    def post_fuel_station_stations_by_station_pumps_by_pump_meters_by_meter_readings(self, **kwargs):
+        """Enregistrer un releve de compteur (cumulatif, idempotent)"""
+        return self.request("POST", "/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings", **kwargs)
 
     def post_growth_partner_apply(self, **kwargs):
         """Candidature partenaire"""

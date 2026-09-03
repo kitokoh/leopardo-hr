@@ -59,6 +59,8 @@ test.describe('Exports page structure', () => {
     await page.goto('/exports')
 
     await expect(page).toHaveURL(/\/exports$/, { timeout: 10_000 })
-    await expect(page.locator('main')).toContainText(/Disponible dans l.?espace client/i)
+    // #6244 : la traduction fr.json a remplacé le fallback « Disponible dans l'espace client »
+    // par « Les exports sont disponibles dans l'espace client. » — matcher tolérant.
+    await expect(page.locator('main')).toContainText(/disponibles? dans l.?espace client/i)
   })
 })

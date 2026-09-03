@@ -1,20 +1,22 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-07-19 (audit doc) | Phase 5 en cours — nettoyage legacy (PR #824)
+> Mis à jour le 2026-08-31 (audit docs #6585) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 19 modules actifs
+## 1. Tableau de l.état DDD — 21 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
-| **Absence**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Absence**     | — | — | — | — | — | — | ✅ | ✅ | — |
 | **Attendance**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **CRM** 🆕      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Delivery** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **EdgeSync** 🆕  | ✅ | — | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
-| **Expense**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Expense**     | — | — | — | — | — | — | ✅ | ✅ | — |
 | **Fleet**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **FuelStation** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Growth** 🆕   | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **HR**          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Marketing** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -82,20 +84,22 @@
 
 ---
 
+> **Absence** et **Expense** : façades HTTP sur `Planning` (Interfaces + Providers uniquement, PA2-ARCH-002 / PA2-ARCH-011) — voir `api/ARCHITECTURE.md`.
+
 ## 5. Roadmap restante (Phase 5+)
 
 | Item | Priorité | Effort | Statut |
 |------|:--------:|:------:|:------:|
-| Supprimer `app/Models/` doublons (75 modèles) | P1 | Élevé | 🔧 En cours |
-| Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | 🔧 En cours |
-| Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ⏳ À faire |
+| Supprimer `app/Models/` doublons (75 modèles) | P1 | Élevé | ✅ Fait — répertoire supprimé, 92 modèles migrés (voir `api/ARCHITECTURE.md`) |
+| Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | ✅ Fait — répertoire supprimé (DTOs dans les modules) |
+| Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ✅ Fait |
 | Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait — voir `api/ARCHITECTURE.md` «Nettoyage complet» et `api/app/Core/Tenant/README.md` |
 | Tests Feature pour Growth, Platform, Onboarding | P1 | Moyen | ⏳ À faire |
-| PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen | ⏳ À faire |
-| OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible | ⏳ À faire |
+| PHPStan niveau 5 via `phpstan-modules.neon` | P2 | Moyen | ✅ Fait — gate bloquant CI (niveau 5) |
+| OpenAPI canonique | P2 | Faible | ✅ Fait — `api/openapi.yaml` source de vérité, Redocly 0 erreur |
 | routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible | ⏳ À faire |
 | Cloudflare Workers build (fix ou supprimer) | P3 | Faible | ⏳ À faire |
-| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen | ⏳ À faire |
+| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen | ✅ Fait — `api/lang/{fr,en,ar}` |
 | Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé | ⏳ À faire |
 | PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé | ⏳ À faire |
 

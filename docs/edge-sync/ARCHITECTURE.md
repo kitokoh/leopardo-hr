@@ -102,8 +102,8 @@ api/app/Modules/EdgeSync/
 ### 3.2 Edge Docker Stack
 ```
 edge/
-├── docker-compose.yml    # Stack complète (api+ui+sync+proxy), utilise Dockerfile.edge
-├── Dockerfile.edge       # Image PHP 8.4 Alpine + SQLite (local/dev, buildée par docker-compose.yml)
+├── docker-compose.yml    # Stack complète (api+ui+sync+proxy) — tire les images publiées, pas de build local (voir #6595)
+├── Dockerfile.edge       # Image PHP 8.4 Alpine + SQLite (local/dev — non branché : le compose tire les images publiées)
 ├── Dockerfile.publish    # Image de production publiée sur Docker Hub (buildée par publish.sh)
 ├── Dockerfile            # Image FrankenPHP autonome (référence, non branchée dans un script de build)
 ├── Caddyfile.edge        # Reverse proxy
