@@ -1139,7 +1139,18 @@ trait CreatesMvpSchema
                             )
                       )
                 LOOP
-                    EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                    BEGIN
+                        EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                    EXCEPTION
+                        WHEN dependent_objects_still_exist THEN
+                            -- Row type d'une table publique réelle conservée
+                            -- (ex. `migrations` laissée par une classe
+                            -- RefreshTenantDatabase précédente) : la garde
+                            -- pg_attribute ci-dessus ne couvre pas les row
+                            -- types de tables — on les conserve (la table est
+                            -- volontairement gardée).
+                            NULL;
+                    END;
                 END LOOP;
             END $do$;
             SQL);

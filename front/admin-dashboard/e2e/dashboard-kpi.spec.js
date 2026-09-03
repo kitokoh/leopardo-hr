@@ -28,7 +28,7 @@ test.describe('Dashboard cockpit', () => {
     // QA 2026-08-15 (#2659) : le défaut d'api.js pointe désormais l'API de
     // prod — sans mock, ce test envoyait un VRAI appel (cold start Render,
     // non déterministe, >10s). On mock la route d'auth : 401 → LoginView
-    // affiche le bandeau « Erreur de connexion ».
+    // affiche le bandeau « Connexion impossible » (titre neutre #6675).
     await page.route('**/api/v1/platform/auth/login', async (route) => {
       await route.fulfill({
         status: 401,
@@ -43,7 +43,7 @@ test.describe('Dashboard cockpit', () => {
 
     // Should show error message after failed API call
     await expect(
-      page.getByRole('heading', { name: /Erreur de connexion/i }),
+      page.getByRole('heading', { name: /Connexion impossible/i }),
     ).toBeVisible({ timeout: 10_000 })
   })
 

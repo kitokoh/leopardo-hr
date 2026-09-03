@@ -51,6 +51,11 @@ class CsvInjectionExportsTest extends TestCase
             'period_end' => '2026-07-31',
             'gross_salary' => 60000,
             'net_salary' => 47558,
+            // Les générateurs n'exportent que les bulletins `validated`
+            // (BanqueExportGenerator/CNAS/CNPS filtrent sur ce statut) — sans
+            // ce statut, le bulletin seedé (draft par défaut) est exclu et le
+            // CSV ne contient que l'en-tête (0 bulletins).
+            'status' => 'validated',
         ]);
 
         return $run;

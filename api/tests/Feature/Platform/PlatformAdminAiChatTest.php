@@ -120,7 +120,9 @@ class PlatformAdminAiChatTest extends TestCase
         // colonne jsonb → 500 à CHAQUE requête, même table présente. Le
         // correctif `jsonb_array_length` doit rendre l'endpoint fonctionnel.
         // FK ai_conversations.user_id → employees : créer un employé minimal.
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         DB::table('ai_conversations')->insert([

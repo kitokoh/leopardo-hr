@@ -101,14 +101,27 @@ trait RefreshTenantDatabase
             DECLARE
                 r record;
             BEGIN
+                -- Tables ORDINAIRES et PARTITIONNÉES du schéma `public`
+                -- (`pg_tables` ne liste pas les tables partitionnées,
+                -- relkind 'p') : leurs row types composites disparaissent
+                -- avec elles.
                 FOR r IN
-                    SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'
+                    SELECT c.relname
+                    FROM pg_catalog.pg_class c
+                    JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                    WHERE n.nspname = 'public'
+                      AND c.relkind IN ('r', 'p')
                 LOOP
-                    EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+                    EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.relname) || ' CASCADE';
                 END LOOP;
 
                 -- Types composites/enum/domain orphelins (plus aucune table
                 -- `public` résidente ne les référence après la purge ci-dessus).
+                -- Chaque DROP est isolé : un type encore référencé par une
+                -- table conservée (ex. row type d'une table d'un autre schéma,
+                -- ou relation non couverte ci-dessus) lève 2BP01
+                -- (dependent_objects_still_exist) et ne doit PAS faire échouer
+                -- toute la purge — `migrate:fresh` qui suit gère le reste.
                 FOR r IN
                     SELECT t.typname
                     FROM pg_catalog.pg_type t
@@ -117,7 +130,12 @@ trait RefreshTenantDatabase
                       AND t.typtype IN ('c', 'e', 'd')
                       AND t.typname NOT LIKE '\_%'
                 LOOP
-                    EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                    BEGIN
+                        EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                    EXCEPTION
+                        WHEN dependent_objects_still_exist THEN
+                            NULL; -- row type d'une table résiduelle : migrate:fresh la droppe
+                    END;
                 END LOOP;
             END $do$;
             SQL);
