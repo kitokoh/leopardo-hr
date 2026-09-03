@@ -29,6 +29,9 @@ final class TwoFactorAuthService
 {
     public const CHALLENGE_TTL_SECONDS = 300;
 
+    /** #6538 — verrouillage anti brute-force TOTP : 5 échecs par challenge. */
+    public const MAX_CHALLENGE_ATTEMPTS = 5;
+
     public function __construct(private readonly TotpService $totp) {}
 
     /**
@@ -180,8 +183,15 @@ final class TwoFactorAuthService
     {
         $token = Str::random(64);
         Cache::put('mfa:challenge:'.$token, $context, self::CHALLENGE_TTL_SECONDS);
+        // #6538 — compteur d'échecs par challenge (anti brute-force TOTP).
+        Cache::put(self::challengeAttemptsKey($token), 0, self::CHALLENGE_TTL_SECONDS);
 
         return ['token' => $token, 'expires_in' => self::CHALLENGE_TTL_SECONDS];
+    }
+
+    private static function challengeAttemptsKey(string $challengeToken): string
+    {
+        return 'mfa:challenge:attempts:'.$challengeToken;
     }
 
     /**
@@ -197,6 +207,15 @@ final class TwoFactorAuthService
 
         if (! is_array($context)) {
             throw TwoFactorException::challengeExpired();
+        }
+
+        // #6538 — verrouillage après MAX_CHALLENGE_ATTEMPTS échecs : le
+        // challenge est invalidé (le compte devra se reconnecter).
+        $attempts = (int) Cache::get(self::challengeAttemptsKey($challengeToken), 0);
+        if ($attempts >= self::MAX_CHALLENGE_ATTEMPTS) {
+            Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget(self::challengeAttemptsKey($challengeToken));
+            throw TwoFactorException::tooManyAttempts();
         }
 
         $previousSearchPath = null;
@@ -235,6 +254,14 @@ final class TwoFactorAuthService
             }
 
             if (! $verified) {
+                // #6538 — compteur d'échecs : au 5e échec le challenge est
+                // invalidé (brute-force TOTP 6 chiffres, fenêtre ±1 période).
+                $attempts = (int) Cache::get(self::challengeAttemptsKey($challengeToken), 0) + 1;
+                Cache::put(self::challengeAttemptsKey($challengeToken), $attempts, self::CHALLENGE_TTL_SECONDS);
+                if ($attempts >= self::MAX_CHALLENGE_ATTEMPTS) {
+                    Cache::forget('mfa:challenge:'.$challengeToken);
+                }
+
                 throw TwoFactorException::invalidCode();
             }
 
@@ -242,6 +269,7 @@ final class TwoFactorAuthService
             // brûler le challenge (l'utilisateur peut retenter avec le même
             // token). Le challenge est consommé ici, après vérification.
             Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget(self::challengeAttemptsKey($challengeToken));
 
             /** @var Company|null $company */
             $company = Company::query()->find($context['company_id']);

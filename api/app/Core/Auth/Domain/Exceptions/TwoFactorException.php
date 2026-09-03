@@ -14,7 +14,8 @@ use App\Exceptions\DomainException;
  * - TWO_FACTOR_REQUIRED (403) : la politique tenant impose la 2FA (rôle
  *   sensible) et le compte n'est pas enrôlé ;
  * - TWO_FACTOR_ALREADY_ENABLED (409) : enrôlement/activation déjà faits ;
- * - TWO_FACTOR_CHALLENGE_EXPIRED (401) : challenge de connexion expiré/absent.
+ * - TWO_FACTOR_CHALLENGE_EXPIRED (401) : challenge de connexion expiré/absent ;
+ * - TWO_FACTOR_TOO_MANY_ATTEMPTS (429) : verrouillage après 5 échecs (#6538).
  */
 final class TwoFactorException extends DomainException
 {
@@ -36,5 +37,10 @@ final class TwoFactorException extends DomainException
     public static function challengeExpired(): self
     {
         return new self('Two-factor challenge expired or missing', 401, 'TWO_FACTOR_CHALLENGE_EXPIRED');
+    }
+
+    public static function tooManyAttempts(): self
+    {
+        return new self('Too many failed two-factor attempts', 429, 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
     }
 }

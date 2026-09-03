@@ -287,4 +287,41 @@ class TwoFactorAuthTest extends TestCase
             ->assertJsonStructure(['token'])
             ->assertJsonMissingPath('mfa_challenge');
     }
+
+    public function test_challenge_is_invalidated_after_max_failed_attempts(): void
+    {
+        // #6538 — anti brute-force TOTP : après 5 codes invalides, le
+        // challenge est invalidé (même un bon code est refusé ensuite).
+        $this->seedAccount('2fa-lock@example.com');
+        $employee = Employee::where('email', '2fa-lock@example.com')->firstOrFail();
+        $secret = (new TotpService)->generateSecret();
+        $employee->forceFill([
+            'two_fa_secret' => $secret,
+            'two_fa_enabled_at' => now(),
+            'two_fa_recovery_codes' => [],
+        ])->save();
+
+        $challengeToken = (string) $this->login('2fa-lock@example.com')->json('mfa_challenge_token');
+
+        // 5 codes invalides → 422 TWO_FACTOR_INVALID à chaque tentative.
+        for ($i = 0; $i < 5; $i++) {
+            $this->postJson('/api/v1/auth/2fa/verify', [
+                'challenge_token' => $challengeToken,
+                'code' => '000000',
+            ])->assertStatus(422)->assertJsonPath('error', 'TWO_FACTOR_INVALID');
+        }
+
+        // 6e tentative avec le BON code → challenge déjà invalidé.
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $challengeToken,
+            'code' => $this->totpCode($secret),
+        ])->assertStatus(401)->assertJsonPath('error', 'TWO_FACTOR_CHALLENGE_EXPIRED');
+
+        // Un nouveau login émet un challenge frais : le bon code passe.
+        $freshToken = (string) $this->login('2fa-lock@example.com')->json('mfa_challenge_token');
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $freshToken,
+            'code' => $this->totpCode($secret),
+        ])->assertStatus(200)->assertJsonStructure(['token']);
+    }
 }
