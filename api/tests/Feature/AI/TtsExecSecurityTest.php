@@ -59,7 +59,7 @@ class TtsExecSecurityTest extends TestCase
     {
         config(['ai.voice.edge_tts_binary' => '/nonexistent/edge-tts']);
 
-        $controller = new \App\Http\Controllers\AI\VoiceController();
+        $controller = new \App\AI\Interfaces\Api\V1\Controllers\VoiceController();
         $method = new \ReflectionMethod($controller, 'textToSpeech');
 
         $result = $method->invoke($controller, 'Bonjour', 'fr', null, 'edge_tts');
