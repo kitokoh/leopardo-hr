@@ -94,7 +94,11 @@ class EmployeeResource extends JsonResource
             'postal_code' => $this->employeeAttribute('postal_code'),
             'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),
             'emergency_contact_phone' => $this->employeeAttribute('emergency_contact_phone'),
-            'extra_data' => $this->employeeAttribute('extra_data') ?? [],
+            // #6546 (RGPD) — extra_data porte des clés sensibles (national_id,
+            // tax_identifier, blood_group) : whitelist défensive. Les clés non
+            // sensibles (job_title, work_location…) restent exposées ; les
+            // sensibles suivent le même RBAC que les salaires (#5262).
+            'extra_data' => $this->maskedExtraData($canViewSalary),
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
@@ -135,6 +139,30 @@ class EmployeeResource extends JsonResource
         }
 
         return $employee->getAttributeValue($key);
+    }
+
+    /**
+     * #6546 — extra_data filtré : les clés sensibles ne sortent que pour les
+     * rôles autorisés (mêmes règles que $canViewSalary, cf. #5262).
+     *
+     * @return array<string, mixed>
+     */
+    private function maskedExtraData(bool $canViewSensitive): array
+    {
+        $extraData = $this->employeeAttribute('extra_data');
+        if (! is_array($extraData)) {
+            return [];
+        }
+
+        if ($canViewSensitive) {
+            return $extraData;
+        }
+
+        return array_diff_key($extraData, array_flip([
+            'national_id',
+            'tax_identifier',
+            'blood_group',
+        ]));
     }
 
     private function capabilities(): array
