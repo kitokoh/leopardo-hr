@@ -62,7 +62,32 @@ class CabinetService
     public function deleteFolder(CabinetFolder $folder): void
     {
         $this->deleteFolderDocumentFiles($folder);
+        // #6674 : révoquer les partages du dossier et de ses documents AVANT
+        // suppression — sinon partages orphelins (shareable supprimé) → 500
+        // sur la liste /cabinet/shares du propriétaire.
+        $this->revokeFolderShares($folder);
         $folder->delete();
+    }
+
+    /**
+     * Révoque récursivement les partages du dossier, de ses documents et de
+     * ses sous-dossiers (#6674).
+     */
+    private function revokeFolderShares(CabinetFolder $folder): void
+    {
+        foreach ($folder->documents as $document) {
+            CabinetShare::where('shareable_type', CabinetDocument::class)
+                ->where('shareable_id', $document->id)
+                ->delete();
+        }
+
+        foreach ($folder->children as $child) {
+            $this->revokeFolderShares($child);
+        }
+
+        CabinetShare::where('shareable_type', CabinetFolder::class)
+            ->where('shareable_id', $folder->id)
+            ->delete();
     }
 
     // ── Documents ────────────────────────────────────────────────────────────
@@ -126,6 +151,12 @@ class CabinetService
         if ($document->read_only) {
             abort(403, __('errors.FORBIDDEN'));
         }
+
+        // #6674 : révoquer les partages AVANT suppression (partages orphelins
+        // → 500 sur la liste /cabinet/shares du propriétaire).
+        CabinetShare::where('shareable_type', CabinetDocument::class)
+            ->where('shareable_id', $document->id)
+            ->delete();
 
         Storage::disk($document->disk)->delete($document->path);
         $document->delete();
