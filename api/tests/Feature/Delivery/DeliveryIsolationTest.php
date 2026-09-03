@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Delivery;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -53,17 +54,21 @@ class DeliveryIsolationTest extends TestCase
 
         // …mais un même tenant ne peut pas créer deux livraisons pour la même source.
         try {
-            DB::beginTransaction();
-            $this->insertDelivery($companyA, 'DLV-2026-000003', 'restaurant', 'RST-2026-0001');
-            DB::commit();
+            // Transaction imbriquée = SAVEPOINT : l'échec attendu (23505) ne
+            // doit pas aborter la transaction de test englobante (25P02).
+            DB::transaction(function () use ($companyA): void {
+                $this->insertDelivery($companyA, 'DLV-2026-000003', 'restaurant', 'RST-2026-0001');
+            });
             self::fail('Unique (company_id, source, source_reference) attendu.');
-        } catch (\Throwable) {
-            DB::rollBack();
+        } catch (QueryException $e) {
+            self::assertInstanceOf(QueryException::class, $e);
         }
 
-        // La tentative en doublon n'a rien créé : le tenant A ne garde que
-        // SA livraison d'origine.
+        // Le doublon intra-tenant a été rejeté : companyA garde 1 livraison
+        // (la 3e a échoué), companyB garde la sienne (même référence source,
+        // tenant différent = autorisé).
         self::assertSame(1, DB::table('delivery_deliveries')->where('company_id', $companyA->id)->count());
+        self::assertSame(1, DB::table('delivery_deliveries')->where('company_id', $companyB->id)->count());
     }
 
     public function test_routes_and_events_are_scoped_per_company(): void
