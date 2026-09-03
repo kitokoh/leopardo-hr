@@ -174,6 +174,8 @@ jobs:
             path: front/mobile_apps/leopardo_platform_admin
           - name: leopardo_marketing
             path: front/mobile_apps/leopardo_marketing
+          - name: leopardo_travel_agent
+            path: front/mobile_apps/leopardo_travel_agent
 
     steps:
       - name: Checkout code
@@ -286,6 +288,9 @@ jobs:
           - name: leopardo_accounting
             path: front/mobile_apps/leopardo_accounting
             artifact: leopardo-accounting-debug-apk
+          - name: leopardo_travel_agent
+            path: front/mobile_apps/leopardo_travel_agent
+            artifact: leopardo-travel-agent-debug-apk
 
     steps:
       - name: Checkout code

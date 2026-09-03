@@ -42,6 +42,12 @@ use App\Modules\EduManager\Policies\EduStudentGuardianPolicy;
 use App\Modules\EduManager\Policies\EduStudentPolicy;
 use App\Modules\EduManager\Policies\EduSubjectPolicy;
 use App\Modules\EduManager\Policies\EduTeacherSubjectPolicy;
+use App\Modules\CRM\Domain\Models\CrmAccount;
+use App\Modules\CRM\Domain\Models\CrmImport;
+use App\Modules\CRM\Domain\Models\CrmLead;
+use App\Modules\CRM\Policies\CrmImportPolicy;
+use App\Modules\CRM\Policies\CrmLeadPolicy;
+use App\Modules\CRM\Policies\CrmMergePolicy;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
@@ -193,6 +199,11 @@ class AuthServiceProvider extends ServiceProvider
         // Marketing (Phase 2)
         Gate::policy(SocialAccount::class, SocialAccountPolicy::class);
         Gate::policy(SocialPost::class, SocialPostPolicy::class);
+
+        // CRM client (PA2-ARCH-008 — point d'enregistrement unique, #6575)
+        Gate::policy(CrmImport::class, CrmImportPolicy::class);
+        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
+        Gate::policy(CrmAccount::class, CrmMergePolicy::class);
 
         // Gate definitions
         Gate::define('manage-billing', [BillingPolicy::class, 'manageSubscription']);
