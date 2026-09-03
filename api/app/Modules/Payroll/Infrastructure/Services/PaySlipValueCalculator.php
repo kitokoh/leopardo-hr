@@ -146,7 +146,7 @@ class PaySlipValueCalculator
         $roundingDiff = round($expectedTax - $sum, 2);
         if (abs($roundingDiff) > 0.0 && $best !== []) {
             $last = array_key_last($best);
-            $best[$last]['tax'] = round(($best[$last]['tax'] ?? 0.0) + $roundingDiff, 2);
+            $best[$last]['tax'] = round($best[$last]['tax'] + $roundingDiff, 2);
         }
 
         return $best;
