@@ -36,7 +36,7 @@ final class DeliveryRouteController
             companyId: $this->companyId($request),
             routeDate: $routeDate,
             zone: $validated['zone'] ?? null,
-            deliveryIds: array_map('intval', $validated['delivery_ids']),
+            deliveryIds: array_values(array_map('intval', $validated['delivery_ids'])),
         );
 
         return (new DeliveryRouteResource($route))
