@@ -26,6 +26,7 @@
 <header>
     <h1>Guide testeur Leopardo RH</h1>
     <p style="color:#cbd5e1">Parcours de validation pour le portail client web, l'application mobile, l'administration plateforme et les API.</p>
+    <p style="color:#fbbf24">Note (#6525) : les boutons « Acces Demo » et <code>/api/v1/demo-users</code> (API Explorer) ne sont disponibles que si <code>DEMO_MODE_ENABLED=true</code> sur l'environnement (sinon 404 volontaire — hard gate AGENTS.md v4.16.128). Les comptes tenant demo restent utilisables en saisie manuelle (ex. <code>ahmed.benali@techcorp-algerie.dz</code> / <code>password123</code>).</p>
 </header>
 <main>
     <section class="grid">

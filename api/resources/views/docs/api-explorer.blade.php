@@ -76,7 +76,7 @@
     <section class="grid">
         <aside class="card">
             <h2>Profil demo</h2>
-            <p class="muted">Charge les profils exposes par <code>/api/v1/demo-users</code>.</p>
+            <p class="muted">Charge les profils exposes par <code>/api/v1/demo-users</code> (disponible uniquement si <code>DEMO_MODE_ENABLED=true</code> — sinon message explicite).</p>
             <label for="baseUrl">Base API</label>
             <input id="baseUrl" type="url">
             <label for="profile">Utilisateur</label>
@@ -223,6 +223,23 @@ async function request(path, options = {}) {
 async function loadDemoUsers() {
     print('Chargement des profils demo...');
     const result = await request('/demo-users');
+
+    // #6525 : message explicite quand le mode demo est désactivé (404
+    // RESOURCE_NOT_FOUND — hard gate DEMO_MODE_ENABLED, cf. AGENTS.md
+    // v4.16.128). Avant ce fix, l'échec était silencieux (liste vide).
+    if (!result.ok) {
+        if (result.status === 404) {
+            print({
+                error: 'DEMO_MODE_DISABLED',
+                message: 'Les profils demo ne sont pas disponibles sur cet environnement (le flux /api/v1/demo-users renvoie 404).',
+                hint: "Le mode demo (variable DEMO_MODE_ENABLED=true) est desactive sur ce service. Deux options : 1) renseigner vos propres identifiants dans le formulaire ci-dessous ; 2) activer DEMO_MODE_ENABLED sur l'environnement (staging) via le dashboard Render. Les comptes tenant demo restent utilisables sans ce flux (ex. ahmed.benali@techcorp-algerie.dz / password123).",
+            });
+        } else {
+            print(result);
+        }
+        return;
+    }
+
     print(result);
     profile.innerHTML = '';
     const superAdmin = result.payload?.data?.super_admin;
