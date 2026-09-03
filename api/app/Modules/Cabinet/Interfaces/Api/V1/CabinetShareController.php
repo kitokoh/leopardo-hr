@@ -33,6 +33,10 @@ class CabinetShareController extends Controller
         $perPage = max(1, min((int) $request->integer('per_page', 25), 100));
 
         $shares = CabinetShare::where('employee_id', $actor->id)
+            // #6674 : ne lister que les types supportés — un shareable_type
+            // legacy (classe supprimée, ex. avant migration DDD v4.21.0) fait
+            // échouer l'eager-load morph `with('shareable')` → 500.
+            ->whereIn('shareable_type', [CabinetFolder::class, CabinetDocument::class])
             ->with('shareable')
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -162,6 +166,9 @@ class CabinetShareController extends Controller
             $payload = $tenantManager->withinTenant($company, function () use ($token): ?array {
                 $share = CabinetShare::query()
                     ->with('shareable')
+                    // #6674 : même garde qu'à l'index — types supportés
+                    // uniquement (shareable_type legacy → 500 sur le morph).
+                    ->whereIn('shareable_type', [CabinetFolder::class, CabinetDocument::class])
                     ->where('share_token', $token)
                     ->first();
 
