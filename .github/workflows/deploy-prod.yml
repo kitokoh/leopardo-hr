@@ -1,0 +1,207 @@
+name: Deploy Production - Leopardo RH
+
+# Déploiement PRODUCTION : déclenché UNIQUEMENT par un tag git validé
+# (vX.Y.Z), jamais par un push direct sur main (contrairement à
+# deploy-main.yml, qui reste le déploiement continu dev/test). Réutilise la
+# même logique de vérification que release.yml (tag ancêtre de main +
+# checks requis verts) avant de déclencher le hook Render prod.
+#
+# Variable intentionnellement distincte de la `vars.PROD_API_BASE_URL`
+# utilisée ailleurs dans ce repo (qui cible en réalité l'environnement
+# dev/continu — dette de nommage historique, voir
+# docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md) : ce workflow utilise
+# `vars.PROD_RENDER_API_BASE_URL` pour éviter toute ambiguïté avec la vraie
+# production tant que ce renommage plus large n'a pas été fait.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to deploy (e.g., v1.0.0)"
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: deploy-prod-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    timeout-minutes: 30
+    name: Verify tag and required checks
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      tag_commit: ${{ steps.verify.outputs.tag_commit }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 0
+
+      - name: Resolve tag
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+
+          # Refus des tags invalides (injection / typos), même garde que release.yml.
+          if [[ ! "${TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid deploy tag: ${TAG} (expected vX.Y.Z)"
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Deploy tag: ${TAG}"
+
+      - name: Verify tag commit is on main
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.tag.outputs.tag }}"
+          TAG_COMMIT=$(git rev-parse "${TAG}^{commit}")
+          echo "tag_commit=${TAG_COMMIT}" >> "$GITHUB_OUTPUT"
+
+          # Le tag doit pointer sur un commit de `main` — jamais un tag
+          # orphelin ou poussé depuis un clone stale.
+          git fetch origin main --quiet
+          if ! git merge-base --is-ancestor "${TAG_COMMIT}" "origin/main"; then
+            echo "::error::Le tag ${TAG} (commit ${TAG_COMMIT}) n'est pas un ancetre de origin/main — deploiement prod refuse."
+            exit 1
+          fi
+          echo "Tag ${TAG} -> ${TAG_COMMIT} (sur main) : OK"
+
+      - name: Verify required checks on the release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ steps.verify.outputs.tag_commit }}"
+          REQUIRED=( \
+            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
+            "PHPStan — Strict (Core/Modules/Shared, level 8)" \
+            "Module Structure Validator" \
+            "Frontend — ESLint + TypeScript" \
+            "actionlint (+ shellcheck)" \
+          )
+          FAILED=()
+          for ctx in "${REQUIRED[@]}"; do
+            # Pagination : un vieux commit peut avoir >100 check-runs.
+            CONCS=()
+            PAGE=1
+            while :; do
+              BATCH=$(curl -fsSL \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100&page=${PAGE}")
+              COUNT_BATCH=$(jq '.check_runs | length' <<<"$BATCH")
+              if [[ "${COUNT_BATCH}" -eq 0 ]]; then break; fi
+              mapfile -t BATCH_CONCS < <(jq -r --arg ctx "$ctx" '.check_runs[] | select(.name == $ctx) | .conclusion' <<<"$BATCH")
+              CONCS+=("${BATCH_CONCS[@]}")
+              PAGE=$((PAGE + 1))
+              if [[ "${PAGE}" -gt 10 ]]; then break; fi
+            done
+            COUNT=${#CONCS[@]}
+            if [[ "${COUNT}" -eq 0 ]]; then
+              echo "::error::Aucun check '${ctx}' trouve sur ${SHA} — deploiement prod refuse (0 verification CI)"
+              FAILED+=("${ctx}")
+              continue
+            fi
+            CONC=$(printf '%s\n' "${CONCS[@]}" | sort -u | paste -sd, -)
+            if [[ "${CONC}" == *"failure"* || "${CONC}" == *"timed_out"* || "${CONC}" == *"cancelled"* ]]; then
+              echo "::error::Check requis en echec sur ${SHA} : ${ctx} (${CONC})"
+              FAILED+=("${ctx}")
+            else
+              echo "::notice::${ctx} -> ${CONC} : OK"
+            fi
+          done
+          if [[ ${#FAILED[@]} -gt 0 ]]; then
+            echo "::error::Deploiement prod bloque — checks requis en echec ou absents : ${FAILED[*]}"
+            exit 1
+          fi
+          echo "Required checks: all green : OK"
+
+  deploy-prod:
+    timeout-minutes: 30
+    name: Deploy API to Render (prod)
+    runs-on: ubuntu-latest
+    needs: verify
+    # GitHub Environment "production" — configurer des reviewers requis
+    # dans Settings > Environments si une approbation manuelle
+    # supplémentaire est souhaitée avant le déploiement.
+    environment:
+      name: production
+      url: ${{ vars.PROD_RENDER_API_BASE_URL }}
+    permissions:
+      contents: read
+    steps:
+      - name: Validate Render prod secret
+        shell: bash
+        env:
+          RENDER_PROD_DEPLOY_HOOK_URL: ${{ secrets.RENDER_PROD_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${RENDER_PROD_DEPLOY_HOOK_URL}" ]]; then
+            echo "::error::Missing GitHub secret: RENDER_PROD_DEPLOY_HOOK_URL (voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md)"
+            exit 1
+          fi
+
+      - name: Trigger Render prod deploy hook
+        shell: bash
+        env:
+          RENDER_PROD_DEPLOY_HOOK_URL: ${{ secrets.RENDER_PROD_DEPLOY_HOOK_URL }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          set -euo pipefail
+          echo "Triggering Render prod deploy for tag=${TAG}"
+          curl --fail --silent --show-error --request POST "${RENDER_PROD_DEPLOY_HOOK_URL}"
+
+      - name: Wait for prod API healthcheck
+        shell: bash
+        env:
+          PROD_RENDER_API_BASE_URL: ${{ vars.PROD_RENDER_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${PROD_RENDER_API_BASE_URL}" ]]; then
+            echo "::error::vars.PROD_RENDER_API_BASE_URL must be set (Render prod web service URL)."
+            exit 1
+          fi
+          URL="${PROD_RENDER_API_BASE_URL}/api/v1/health"
+          echo "Waiting for prod to be healthy at ${URL}..."
+          for attempt in {1..30}; do
+            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+            if curl --fail --silent --show-error --max-time 10 "${URL}" | grep -q '"status":"ok"'; then
+              echo "Render prod deployment healthy."
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Prod API healthcheck did not succeed in time (build failure or Render free-tier cold start)."
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        shell: bash
+        env:
+          RENDER_PROD_ROLLBACK_HOOK_URL: ${{ secrets.RENDER_PROD_ROLLBACK_HOOK_URL }}
+        run: |
+          if [[ -n "${RENDER_PROD_ROLLBACK_HOOK_URL}" ]]; then
+            echo "Prod deployment failed. Triggering Render rollback..."
+            curl --fail --silent --show-error --request POST "${RENDER_PROD_ROLLBACK_HOOK_URL}"
+          else
+            echo "::warning::Prod deployment failed but RENDER_PROD_ROLLBACK_HOOK_URL secret is missing. Cannot auto-rollback."
+          fi

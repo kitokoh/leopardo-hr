@@ -1,0 +1,284 @@
+# render.prod.yaml — Leopardo RH PRODUCTION infrastructure on Render
+# https://render.com/docs/infrastructure-as-code
+#
+# Ce blueprint N'EST JAMAIS synchronisé automatiquement sur push. Il est
+# déployé uniquement via le hook de déploiement Render déclenché par
+# .github/workflows/deploy-prod.yml, lui-même déclenché uniquement par un
+# tag git validé (vX.Y.Z, checks requis verts — voir release.yml). Voir
+# docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie
+# dev/prod et le plan de bascule vers un plan payant complet.
+#
+# ⚠️ PHASE 1 (tier gratuit, validation du pipeline uniquement) :
+#   - Postgres gratuit : expire après 30 jours (+ 14 jours de grâce), sans
+#     sauvegarde. NE JAMAIS y stocker de données réelles durablement.
+#   - Key Value (Redis) gratuit : en mémoire uniquement, perdu au redémarrage.
+#   - Les Background Workers ne sont PAS éligibles au tier gratuit Render :
+#     `leopardo-queue-worker` et `leopardo-scheduler` ne sont donc PAS
+#     répliqués ici. QUEUE_CONNECTION=database fonctionne quand même (les
+#     jobs s'accumulent sans être traités tant qu'aucun worker ne tourne) —
+#     à ajouter dès le passage à un plan payant.
+
+services:
+  # ──────────────────────────────────────────────────────────────────────────
+  # Web Service — Laravel API (PROD)
+  # ──────────────────────────────────────────────────────────────────────────
+  - type: web
+    name: gestionemployerbackend-prod
+    runtime: docker
+    dockerfilePath: api/Dockerfile.prod
+    dockerContext: .
+    region: frankfurt
+    plan: free
+    healthCheckPath: /api/v1/health
+    # Déploiement piloté exclusivement par le hook (deploy-prod.yml sur tag
+    # validé) — jamais par un push direct, même sur main.
+    autoDeploy: false
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DISABLE_DEMO_SEEDING
+        value: "true"
+      - key: APP_URL
+        fromService:
+          name: gestionemployerbackend-prod
+          type: web
+          property: host
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: SENTRY_LARAVEL_DSN
+        sync: false
+      - key: SENTRY_TRACES_SAMPLE_RATE
+        value: "0.1"
+      # Database
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: leopardo-db-prod
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: leopardo-db-prod
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: leopardo-db-prod
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: leopardo-db-prod
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: leopardo-db-prod
+          property: password
+      - key: DB_SEARCH_PATH
+        value: shared_tenants,public
+      # Redis (Key Value gratuit — en mémoire, cache/session uniquement)
+      - key: REDIS_CLIENT
+        value: predis
+      - key: REDIS_URL
+        fromDatabase:
+          name: leopardo-redis-prod
+          property: connectionString
+      - key: REDIS_PASSWORD
+        fromDatabase:
+          name: leopardo-redis-prod
+          property: password
+      - key: APP_KEY
+        generateValue: true
+      # Pas de worker en Phase 1 : les jobs s'accumulent sans être drainés.
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: redis
+      - key: SESSION_DRIVER
+        value: redis
+      # Paiements — clés réelles à saisir dans le dashboard Render (ou via
+      # Pulumi ESC solarnyxss/leopardo-hr/prod) après rotation.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_STARTER
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS
+        sync: false
+      - key: STRIPE_PRICE_ENTERPRISE
+        sync: false
+      - key: CHARGILY_API_KEY
+        sync: false
+      - key: CHARGILY_WEBHOOK_SECRET
+        sync: false
+      # Google OAuth
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URL
+        sync: false
+      # Firebase
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      # Mail
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@leopardo-rh.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
+      # Ops / admin
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false
+      - key: FORCE_SUPER_ADMIN_PASSWORD_RESET
+        value: "true"
+      - key: ADMIN_DASHBOARD_URL
+        sync: false
+      - key: DEMO_MODE_ENABLED
+        value: "false"
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Background Worker — Laravel Queue Worker (DÉSACTIVÉ, Phase 1 gratuite)
+  # Les Background Workers ne sont pas éligibles au tier gratuit Render.
+  # Décommenter et passer `plan: starter` (~7 $/mois) une fois le budget
+  # validé — voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md "Suite recommandée".
+  # - type: worker
+  #   name: leopardo-queue-worker-prod
+  #   runtime: docker
+  #   dockerfilePath: api/Dockerfile.prod
+  #   dockerContext: .
+  #   region: frankfurt
+  #   plan: starter
+  #   autoDeploy: false
+  #   dockerCommand: >-
+  #     php artisan queue:work
+  #     --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
+  #     --tries=3
+  #     --timeout=300
+  #     --sleep=3
+  #     --max-jobs=500
+  #     --max-time=3600
+  #   envVars:
+  #     - key: APP_ENV
+  #       value: production
+  #     - key: APP_URL
+  #       fromService:
+  #         name: gestionemployerbackend-prod
+  #         type: web
+  #         property: host
+  #     - key: DB_CONNECTION
+  #       value: pgsql
+  #     - key: DB_HOST
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: host
+  #     - key: DB_PORT
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: port
+  #     - key: DB_DATABASE
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: database
+  #     - key: DB_USERNAME
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: user
+  #     - key: DB_PASSWORD
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: password
+  #     - key: DB_SEARCH_PATH
+  #       value: shared_tenants,public
+  #     - key: QUEUE_CONNECTION
+  #       value: database
+  #     - key: APP_KEY
+  #       fromService:
+  #         name: gestionemployerbackend-prod
+  #         type: web
+  #         envVarKey: APP_KEY
+  #
+  # ──────────────────────────────────────────────────────────────────────────
+  # Background Worker — Scheduled tasks (DÉSACTIVÉ, Phase 1 gratuite)
+  # Même contrainte tier gratuit que le worker ci-dessus.
+  # - type: worker
+  #   name: leopardo-scheduler-prod
+  #   runtime: docker
+  #   dockerfilePath: api/Dockerfile.prod
+  #   dockerContext: .
+  #   region: frankfurt
+  #   plan: starter
+  #   autoDeploy: false
+  #   dockerCommand: >-
+  #     sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
+  #   envVars:
+  #     - key: APP_ENV
+  #       value: production
+  #     - key: APP_URL
+  #       fromService:
+  #         name: gestionemployerbackend-prod
+  #         type: web
+  #         property: host
+  #     - key: DB_CONNECTION
+  #       value: pgsql
+  #     - key: DB_HOST
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: host
+  #     - key: DB_PORT
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: port
+  #     - key: DB_DATABASE
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: database
+  #     - key: DB_USERNAME
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: user
+  #     - key: DB_PASSWORD
+  #       fromDatabase:
+  #         name: leopardo-db-prod
+  #         property: password
+  #     - key: DB_SEARCH_PATH
+  #       value: shared_tenants,public
+  #     - key: APP_KEY
+  #       fromService:
+  #         name: gestionemployerbackend-prod
+  #         type: web
+  #         envVarKey: APP_KEY
+
+databases:
+  # Plan gratuit : expire après 30 jours + 14 jours de grâce, sans
+  # sauvegarde automatique. Migrer vers un plan payant avant tout usage
+  # avec des données destinées à durer.
+  - name: leopardo-db-prod
+    databaseName: leopardo_db_prod
+    user: leopardo_user_prod
+    region: frankfurt
+    plan: free
+    ipAllowList: []  # restricted to Render internal network
+
+  # Plan gratuit : en mémoire uniquement, une seule instance par workspace.
+  - name: leopardo-redis-prod
+    plan: free
+    type: redis
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []  # restricted to Render internal network
