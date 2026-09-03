@@ -50,6 +50,18 @@ export async function POST(request: NextRequest) {
     const company = sanitizeInput(validatedData.company);
     const phone = validatedData.phone ? sanitizeInput(validatedData.phone) : undefined;
 
+    // Issue #6680 : le champ `country` est OBLIGATOIRE côté backend (#1867 —
+    // plus de fallback silencieux DZ). Le formulaire rapide du hero ne le
+    // collecte pas → détection géo côté serveur (Vercel `request.geo`), sinon
+    // la demande sera rejetée en 422 et le prospect verra une erreur honnête
+    // (jamais un faux succès).
+    //
+    // `geo` n'est pas typé sur NextRequest (augmentation Vercel runtime) —
+    // accès typé pour satisfaire ESLint/TS sans `any`.
+    const geo = (request as unknown as { geo?: { country?: string } }).geo;
+    const geoCountry = geo?.country?.toUpperCase() ?? '';
+    const effectiveCountry = validatedData.country || geoCountry || undefined;
+
     // Step 1: Capture the marketing lead (CRM tracking)
     const lead = await captureMarketingLead(request, {
       type: 'signup',
@@ -74,6 +86,7 @@ export async function POST(request: NextRequest) {
     // Step 2: Call the backend to initiate OTP verification
     let signupResult = null;
     let signupError = null;
+    let signupValidationDetails: unknown = null;
 
     try {
       const trialResponse = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
@@ -89,7 +102,7 @@ export async function POST(request: NextRequest) {
           last_name: validatedData.last_name || undefined,
           role: validatedData.role,
           employees: validatedData.employees,
-          country: validatedData.country || undefined,
+          country: effectiveCountry,
           phone,
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
@@ -107,6 +120,11 @@ export async function POST(request: NextRequest) {
         // réponse uniforme — la détection « email déjà enregistré » se fait à
         // l'étape verify (OTP), qui remonte EMAIL_ALREADY_REGISTERED (409).
         signupError = trialData.error || 'SIGNUP_FAILED';
+        // Issue #6680 : conserver les détails de validation (ex. country
+        // requis) pour une réponse d'erreur exploitable côté client.
+        if (trialData.error === 'VALIDATION_ERROR' && trialData.errors) {
+          signupValidationDetails = trialData.errors;
+        }
       }
     } catch (error) {
       signupError = error instanceof Error ? error.name : 'NETWORK_ERROR';
@@ -144,7 +162,37 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
     } else {
-      // FALLBACK: OTP send failed, fall back to guided trial
+      // Issue #6680 : ne JAMAIS renvoyer success:true quand le backend a
+      // rejeté la demande de trial (ex. 422 country manquant, hors détection
+      // géo) — le prospect croirait son essai lancé alors que rien n'est
+      // provisionné. Une erreur de validation remonte telle quelle (avec
+      // redirection vers le formulaire complet) ; le fallback marketing
+      // « contact sous 24h » ne s'applique qu'aux pannes réseau/backlog
+      // (OTP/back indisponible), pas aux rejets de contrat.
+      const backendError = signupError || 'SIGNUP_FAILED';
+
+      if (backendError === 'VALIDATION_ERROR' || backendError === 'SIGNUP_FAILED') {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Impossible de lancer l'essai automatique (pays requis). Utilisez le formulaire complet pour choisir votre pays.",
+            error: backendError,
+            data: {
+              id: lead.id,
+              email,
+              company,
+              nextStep: 'complete_signup',
+              confirmationSent: lead.emailForwarded,
+              crmForwarded: lead.crmForwarded,
+            },
+            ...(signupValidationDetails ? { details: signupValidationDetails } : {}),
+          },
+          { status: 422 }
+        );
+      }
+
+      // FALLBACK (panne réseau/back uniquement) : lead recue, contact sous 24h.
       return NextResponse.json(
         {
           success: true,

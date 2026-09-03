@@ -21,7 +21,7 @@ class DeliverySchemaTest extends TestCase
     use RefreshTenantDatabase;
 
     /**
-     * @return array<int, string>
+     * @return array<int, list<string>>
      */
     public static function deliveryTables(): array
     {
