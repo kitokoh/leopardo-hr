@@ -117,6 +117,38 @@ class PaySlipValueCalculator
             }
         }
 
+        // #6727 : convergence garantie du détail vers l'impôt réel. Les règles
+        // pays à abattement (SN 30 % plafonné 75 000/mois, MA 25 %, DZ
+        // réduction post-impôt 12–18 k/an, CM/CI…) appliquent la déduction
+        // DANS calculateIncomeTax() — aucun des 4 candidats bruts ci-dessus ne
+        // la reflète, donc Σ(taxes par tranche) divergeait de `income_tax`
+        // (constat prod : SN 300 000/mois → 61 960 affiché vs 39 460 réel).
+        // On répartit l'impôt réel proportionnellement aux tranches du
+        // meilleur candidat. Le détail reste indicatif : `income_tax` fait foi.
+        $bestTotal = array_sum(array_column($best, 'tax'));
+
+        if ($bestTotal > 0.0 && abs($bestTotal - $expectedTax) > 0.01) {
+            $scale = $expectedTax / $bestTotal;
+            $best = array_map(static fn (array $slab): array => [
+                ...$slab,
+                'tax' => round($slab['tax'] * $scale, 2),
+            ], $best);
+        } elseif ($bestTotal <= 0.0 && $expectedTax > 0.0 && $best !== []) {
+            // Taxe de minimum fiscal (ex. TRIMF SN) : aucun candidat ne
+            // produit de tranche positive — porter l'impôt réel sur la
+            // tranche supérieure pour garder Σ == income_tax.
+            $last = array_key_last($best);
+            $best[$last]['tax'] = round($expectedTax, 2);
+        }
+
+        // Absorbe l'écart d'arrondi (Σ doit valoir income_tax exactement).
+        $sum = array_sum(array_column($best, 'tax'));
+        $roundingDiff = round($expectedTax - $sum, 2);
+        if (abs($roundingDiff) > 0.0 && $best !== []) {
+            $last = array_key_last($best);
+            $best[$last]['tax'] = round($best[$last]['tax'] + $roundingDiff, 2);
+        }
+
         return $best;
     }
 

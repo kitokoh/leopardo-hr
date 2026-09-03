@@ -175,5 +175,37 @@ class PayrollSimulationControllerTest extends TestCase
             'country_code' => 'DZ',
             'gross_salary' => 60000,
         ])->assertOk();
+    /**
+     * #6727 — le détail `income_tax_by_slab` doit SOMMER vers `income_tax`
+     * (impôt réel du moteur), y compris pour les règles pays à abattement
+     * (SN/DZ/MA) où la déduction est appliquée dans calculateIncomeTax().
+     * Avant correctif : SN 300 000 → Σ 61 960 vs income_tax 39 460.
+     */
+    public function test_slab_breakdown_sums_to_income_tax_for_abatement_countries(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        foreach (['SN' => 300000, 'DZ' => 300000, 'MA' => 300000, 'TR' => 300000] as $country => $gross) {
+            /** @var array<string, mixed> $data */
+            $data = $this->postJson('/api/v1/payroll/simulate', [
+                'country_code' => $country,
+                'gross_salary' => $gross,
+            ])->assertOk()->json('data');
+
+            $incomeTax = (float) $data['income_tax'];
+
+            /** @var array<int, array{tax?: mixed}> $slabRows */
+            $slabRows = is_array($data['income_tax_by_slab'] ?? null) ? $data['income_tax_by_slab'] : [];
+            $slabSum = round(array_sum(array_map(
+                static fn (array $slab): float => (float) ($slab['tax'] ?? 0.0),
+                $slabRows,
+            )), 2);
+
+            $this->assertSame(
+                round($incomeTax, 2),
+                $slabSum,
+                sprintf('Σ income_tax_by_slab doit converger vers income_tax (%s, brut %d)', $country, $gross),
+            );
+        }
     }
 }
