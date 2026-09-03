@@ -6,6 +6,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\TenantRefreshRegistry;
 
 trait RefreshTenantDatabase
 {
@@ -85,6 +86,21 @@ trait RefreshTenantDatabase
      */
     protected function refreshTestDatabase(): void
     {
+        // #6754 (devx 2026-09-02) — frontière ENTRE FICHIERS dans le même
+        // process PHPUnit : l'état statique `RefreshDatabaseState::$migrated`
+        // du fichier précédent peut être périmé (fixtures CreatesMvpSchema,
+        // scénarios d'isolation qui drop/re-créent des schémas, ou un run
+        // interrompu sur la base locale persistante). On force la re-migration
+        // complète au premier setUp d'un NOUVEAU fichier de test — jamais
+        // entre deux tests du même fichier (coût : une migration par fichier,
+        // identique à une exécution isolée ; CI inchangée : DB par worker).
+        $currentClass = static::class;
+        if (TenantRefreshRegistry::$lastRefreshClass !== null
+            && TenantRefreshRegistry::$lastRefreshClass !== $currentClass) {
+            RefreshDatabaseState::$migrated = false;
+        }
+        TenantRefreshRegistry::$lastRefreshClass = $currentClass;
+
         // Some MVP fixture tests rebuild schemas outside Laravel's migration
         // repository. The static flag can therefore remain stale even after a
         // teardown; verify the canonical tables before trusting it.

@@ -44,6 +44,14 @@ class ProbeAvailabilityCommand extends Command
 
         $redisUp = $this->redisIsReachable();
 
+        // #6557 (audit fiabilité) : le repli CACHE_STORE=file ci-dessous est
+        // VOLONTAIRE et documenté — en mode dégradé Redis injoignable, la
+        // déduplication idempotente (IdempotencyMiddleware) n'est plus
+        // garantie ENTRE instances (store local par instance) ; le middleware
+        // absorbe la panne en mode dégradé (jamais de 500) et la fenêtre est
+        // documentée dans son docblock. Ne pas retirer ce repli : sans lui,
+        // un quota Upstash épuisé gèlerait le boot (cf. incident 2026-08-19).
+
         $result = [
             'redis' => $redisUp ? 'up' : 'down',
             // Meilleur → pire : Redis si dispo (perf), sinon file (0 quota).

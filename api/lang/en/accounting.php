@@ -93,6 +93,7 @@ return [
         'wf_payment_receive_status' => 'A paid or cancelled document cannot receive a payment.',
         'wf_payment_over_total' => 'The total payments exceed the total amount of the document.',
         'wf_cancel_status' => 'A paid document cannot be cancelled.',
+        'wf_document_missing_for_payment' => 'The accounting document could not be found (payment locking).',
         'wf_credit_note_requires_invoice' => 'A credit note must be linked to an invoice.',
         'wf_source_invoice_not_issuable' => 'A cancelled or draft invoice cannot generate a credit note.',
         'wf_source_invoice_paid' => 'The source invoice is already fully paid: no credit note is possible.',

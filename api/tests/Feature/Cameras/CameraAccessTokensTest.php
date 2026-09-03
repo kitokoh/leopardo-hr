@@ -108,10 +108,41 @@ class CameraAccessTokensTest extends TestCase
             'expires_at' => Carbon::now('UTC')->addHour(),
         ]);
 
-        $response = $this->getJson('/api/v1/view/cam?t='.$access->token);
+        // #4931/#6560 : le token voyage en header X-Token (plus en query).
+        $response = $this->withHeader('X-Token', $access->token)
+            ->getJson('/api/v1/view/cam');
         $response->assertOk();
         $response->assertJsonPath('data.camera.id', $cam->id);
         $response->assertJsonPath('data.stream_token', $access->token);
+    }
+
+    public function test_public_viewer_rejects_legacy_query_string_token(): void
+    {
+        // #6560 (audit sécurité F2) — le fallback `?t=` (fuite logs/Referer)
+        // a été supprimé : un token passé en query string est refusé, seul le
+        // header X-Token est accepté.
+        $company = $this->createCompanyWithCameras();
+        $principal = $this->createManager($company);
+
+        $cam = Camera::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Cam',
+            'rtsp_url' => 'rtsp://admin:pass@10.0.0.1:554/live',
+            'created_by' => $principal->id,
+        ]);
+
+        $access = CameraAccessToken::query()->create([
+            'company_id' => $company->id,
+            'camera_id' => $cam->id,
+            'token' => bin2hex(random_bytes(32)),
+            'granted_by' => $principal->id,
+            'permissions' => ['view' => true],
+            'expires_at' => Carbon::now('UTC')->addHour(),
+        ]);
+
+        $this->getJson('/api/v1/view/cam?t='.$access->token)
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'INVALID_TOKEN');
     }
 
     public function test_public_viewer_rejects_revoked_or_expired_token(): void

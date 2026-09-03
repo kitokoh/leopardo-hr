@@ -56,10 +56,20 @@ class TokenAutoRefreshMiddleware
         }
 
         $refreshWindowMinutes = (int) config('sanctum.auto_refresh_window', 1440);
-        $expiresAt             = $createdAt->copy()->addMinutes($expirationMinutes);
-        $refreshThreshold      = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
+        $expiresAt = $createdAt->copy()->addMinutes($expirationMinutes);
+        $refreshThreshold = $expiresAt->copy()->subMinutes($refreshWindowMinutes);
 
         if (now()->lt($refreshThreshold)) {
+            return $response;
+        }
+
+        // #6563 (audit auth) — la rotation n'est exécutée QUE si la réponse
+        // peut porter le nouveau token (corps JSON) : une rotation sur une
+        // réponse non-JSON (fichier, redirect, vide) supprimerait l'ancien
+        // token sans jamais délivrer le nouveau → session orpheline, client
+        // déconnecté au prochain appel. Le token restera valide jusqu'à son
+        // expiration et la rotation se fera à la prochaine réponse JSON.
+        if (! str_contains((string) $response->headers->get('Content-Type', ''), 'application/json')) {
             return $response;
         }
 
@@ -67,8 +77,8 @@ class TokenAutoRefreshMiddleware
         // Si une requête concurrente a déjà pivoté le token, lockForUpdate()
         // bloque jusqu'à la fin de l'autre transaction, puis find() retourne
         // null (le token est supprimé) — on sort proprement sans doublon.
-        $tokenId       = $currentToken->getKey();
-        $newExpiresAt  = now()->addMinutes($expirationMinutes);
+        $tokenId = $currentToken->getKey();
+        $newExpiresAt = now()->addMinutes($expirationMinutes);
 
         /** @var array{plain_token: string, expires_at: string}|null $rotated */
         $rotated = DB::transaction(static function () use ($user, $currentToken, $tokenId, $newExpiresAt): ?array {
@@ -90,7 +100,7 @@ class TokenAutoRefreshMiddleware
 
             return [
                 'plain_token' => $newToken->plainTextToken,
-                'expires_at'  => $newExpiresAt->toIso8601String(),
+                'expires_at' => $newExpiresAt->toIso8601String(),
             ];
         });
 
@@ -109,17 +119,15 @@ class TokenAutoRefreshMiddleware
         // Les headers sont loggués par les proxies/CDN — le token ne doit
         // pas y figurer. Le corps d'une réponse JSON applicative est le seul
         // canal sûr pour transmettre un secret au client.
-        if (str_contains($response->headers->get('Content-Type', ''), 'application/json')) {
-            /** @var array<string, mixed>|null $body */
-            $body = json_decode((string) $response->getContent(), true);
-            if (is_array($body)) {
-                $body['_auth'] = [
-                    'token_refreshed' => true,
-                    'token'           => $rotated['plain_token'],
-                    'expires_at'      => $rotated['expires_at'],
-                ];
-                $response->setContent((string) json_encode($body));
-            }
+        /** @var array<string, mixed>|null $body */
+        $body = json_decode((string) $response->getContent(), true);
+        if (is_array($body)) {
+            $body['_auth'] = [
+                'token_refreshed' => true,
+                'token' => $rotated['plain_token'],
+                'expires_at' => $rotated['expires_at'],
+            ];
+            $response->setContent((string) json_encode($body));
         }
 
         return $response;

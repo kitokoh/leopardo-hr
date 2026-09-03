@@ -113,6 +113,76 @@ class EdgeSyncTest extends TestCase
     }
 
     /** @test */
+    public function it_does_not_duplicate_sync_queue_rows_on_repeated_push(): void
+    {
+        // #6554 — un doublon de poussée (ack réseau perdu, double push) ne
+        // doit pas créer deux lignes `pending` pour le même enregistrement :
+        // la 2e poussée rafraîchit la ligne existante.
+        $this->withEdgeToken();
+
+        $record = [
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'local-uuid-dup-001',
+            'operation' => 'create',
+            'payload' => [
+                'id' => 'local-uuid-dup-001',
+                'company_id' => $this->company->id,
+                'employee_id' => 'emp-uuid-001',
+                'check_in' => now()->subHours(8)->toIso8601String(),
+                'method' => 'mobile',
+                'status' => 'present',
+                'synced_from_offline' => true,
+            ],
+        ];
+
+        $this->postJson("/api/v1/edge-node/{$this->node->id}/push", ['records' => [$record]])
+            ->assertOk()
+            ->assertJson(['queued' => 1]);
+
+        $this->postJson("/api/v1/edge-node/{$this->node->id}/push", ['records' => [$record]])
+            ->assertOk()
+            ->assertJson(['queued' => 1]);
+
+        $this->assertSame(1, SyncQueue::query()
+            ->where('edge_node_id', $this->node->id)
+            ->where('entity_type', 'attendance_logs')
+            ->where('entity_id', 'local-uuid-dup-001')
+            ->count());
+    }
+
+    /** @test */
+    public function push_response_reports_results_per_record(): void
+    {
+        // #6554 — le contrat machine push renvoie un résultat PAR
+        // enregistrement (le daemon Edge en a besoin pour ne pas marquer
+        // tout le lot `synced` sur un simple 2xx).
+        $this->withEdgeToken();
+
+        $response = $this->postJson("/api/v1/edge-node/{$this->node->id}/push", [
+            'records' => [
+                [
+                    'entity_type' => 'attendance_logs',
+                    'entity_id' => 'local-uuid-002',
+                    'operation' => 'create',
+                    'payload' => ['id' => 'local-uuid-002', 'company_id' => $this->company->id],
+                ],
+            ],
+        ]);
+
+        $response->assertOk()->assertJson([
+            'queued' => 1,
+            'results' => [
+                [
+                    'entity_type' => 'attendance_logs',
+                    'entity_id' => 'local-uuid-002',
+                    'operation' => 'create',
+                    'status' => 'queued',
+                ],
+            ],
+        ]);
+    }
+
+    /** @test */
     public function it_rejects_push_with_invalid_edge_token(): void
     {
         $response = $this->withToken('wrong-token')
@@ -195,6 +265,68 @@ class EdgeSyncTest extends TestCase
 
         $this->assertEquals('success', $log->status);
         $this->assertGreaterThanOrEqual(0, $log->records_sent);
+    }
+
+    /** @test */
+    public function it_does_not_reapply_an_item_claimed_by_a_concurrent_sync(): void
+    {
+        // #6554 — claim conditionnel : un item déjà passé en `processing` par
+        // un sync concurrent n'est ni re-claimé ni appliqué deux fois.
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+        ]);
+
+        $payload = [
+            'company_id' => $this->company->id,
+            'employee_id' => $employee->id,
+            'check_in' => now()->subHours(3)->toIso8601String(),
+            'method' => 'mobile',
+            'status' => 'present',
+            'session_number' => 1,
+            'date' => now()->toDateString(),
+            'work_type' => 'onsite',
+            'biometric_type' => 'none',
+            'hours_worked' => '0',
+            'overtime_hours' => '0',
+            'late_minutes' => 0,
+            'gps_lat' => '0',
+            'gps_lng' => '0',
+            'synced_from_offline' => true,
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
+        ];
+
+        // Item déjà claimé par un sync concurrent (processing).
+        $claimedItem = SyncQueue::create([
+            'edge_node_id' => $this->node->id,
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'att-claimed-001',
+            'operation' => 'create',
+            'payload' => $payload,
+            'status' => 'processing',
+            'attempt_count' => 1,
+        ]);
+
+        // Item libre (pending) que CE sync doit traiter.
+        $pendingItem = SyncQueue::create([
+            'edge_node_id' => $this->node->id,
+            'entity_type' => 'attendance_logs',
+            'entity_id' => 'att-free-001',
+            'operation' => 'create',
+            'payload' => $payload,
+            'status' => 'pending',
+            'attempt_count' => 0,
+        ]);
+
+        $result = app(SyncEngineService::class)->push($this->node);
+
+        $this->assertSame(1, $result['sent']);
+        $this->assertSame('synced', $pendingItem->refresh()->status);
+        // L'item concurrent n'est pas touché : pas de double application.
+        $this->assertSame('processing', $claimedItem->refresh()->status);
+        $this->assertSame(1, $claimedItem->attempt_count);
     }
 
     // ── Conflict Resolution ───────────────────────────────

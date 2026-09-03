@@ -9,6 +9,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
@@ -44,13 +46,26 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
     public int $timeout = 300;
 
+    /**
+     * #6548 — un claim plus vieux que le timeout du job (300 s) ne peut plus
+     * appartenir à un worker vivant (un worker est tué à son propre timeout) :
+     * c'est un orphelin avéré, volable par la tentative en cours. En dessous,
+     * le claim peut être celui d'un worker concurrent encore actif → on ne
+     * vole pas, on signale.
+     */
+    public const CLAIM_STALE_AFTER_SECONDS = 300;
+
+    /** TTL du claim slip (6 h) — voir #6548 : les orphelins sont désormais
+     * détectés par état réel + âge, le TTL n'est plus le seul garde-fou. */
+    public const CLAIM_TTL_SECONDS = 21600;
+
     private ?string $resolvedCompanyId = null;
 
     /**
      * @param  array<int, int>|null  $paySlipIds  Optional subset of pay_slips.id
-     *     to pay in this batch (PA2-PAY-005 "selection multiple"). Null
-     *     (the default) preserves the previous "pay every eligible slip
-     *     in the run" behaviour.
+     *                                            to pay in this batch (PA2-PAY-005 "selection multiple"). Null
+     *                                            (the default) preserves the previous "pay every eligible slip
+     *                                            in the run" behaviour.
      */
     public function __construct(
         public readonly int $payrollRunId,
@@ -132,7 +147,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             try {
                 $claimed = false;
                 try {
-                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
+                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', self::CLAIM_TTL_SECONDS, 'NX'); // @phpstan-ignore argument.type, arguments.count
                 } catch (Throwable $redisError) {
                     // #3857 : FAIL-CLOSED. Sans claim NX, un job concurrent
                     // (retry queue, second dispatch) re-traiterait des slips
@@ -150,8 +165,52 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                 }
 
                 if (! $claimed) {
-                    // Slip déjà traité par une tentative précédente → skip.
+                    // #6548 (audit fiabilité 2026-08-31) — un échec de claim
+                    // ne signifie PLUS automatiquement « slip déjà traité » :
+                    // le claim peut être ORPHELIN (worker mort entre le claim
+                    // NX et la fin de processSlip — le catch qui libère le
+                    // claim n'a jamais tourné). Avant ce correctif, le retry
+                    // comptait le slip en `$done++` sans entrée dans
+                    // `$failures` → run marqué `paid` sans que le salarié
+                    // soit payé, zéro alerte, slip non rejoué avant le TTL
+                    // (6 h). On re-vérifie donc l'ÉTAT RÉEL du slip (artefact
+                    // de paiement + statut) avant de conclure.
+                    $claimKey = $claimPrefix.$slip->id;
+                    if ($this->slipWasActuallyProcessed($slip)) {
+                        // Traité par une tentative précédente → succès réel.
+                        $done++;
+
+                        continue;
+                    }
+
+                    // Claim sans artefact : orphelin ou concurrent.
+                    $claimAge = $this->claimAgeSeconds($redis, $claimKey);
+                    if ($claimAge >= self::CLAIM_STALE_AFTER_SECONDS) {
+                        // Claim plus vieux que le timeout du job (300 s) : le
+                        // worker qui l'a posé est MORT (un worker vivant est
+                        // tué à son propre timeout) → orphelin avéré. On vole
+                        // le claim et on traite le slip DANS CETTE tentative.
+                        try {
+                            $redis->del($claimKey);
+                        } catch (Throwable) {
+                            // non bloquant
+                        }
+
+                        $this->processSlip($run, $slip);
+                    } else {
+                        // Claim récent : soit un worker actif le traite (double
+                        // dispatch), soit un worker mort il y a < timeout — le
+                        // redélivrage queue (retry_after ≥ timeout, #6535) le
+                        // rendra orphelin au cycle suivant. On ne compte JAMAIS
+                        // le slip réussi sans preuve : échec visible, jamais de
+                        // « payé à tort » silencieux.
+                        throw new \RuntimeException(
+                            "ProcessBulkPaymentJob: slip #{$slip->id} claimé sans artefact de paiement (claim concurrent ou orphelin récent) — rejoué au prochain cycle."
+                        );
+                    }
+
                     $done++;
+
                     continue;
                 }
 
@@ -173,7 +232,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
                 $failures[] = [
                     'pay_slip_id' => $slip->id,
-                    'employee_id' => $slip->employee_id,
+                    'employee_id' => (int) $slip->employee_id,
                     'error' => $e->getMessage(),
                 ];
             }
@@ -272,7 +331,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             ]);
 
         // Dispatch legacy payslip PDF and Plan 62 document index generation.
-        GeneratePaySlipPdfJob::dispatch($run->id, $slip->employee_id);
+        GeneratePaySlipPdfJob::dispatch($run->id, (int) $slip->employee_id);
         GeneratePaymentDocumentJob::dispatchForPaySlip($slip, $this->triggeredById);
     }
 
@@ -331,6 +390,52 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
     }
 
     /**
+     * #6548 — un slip est réellement traité quand un artefact de paiement
+     * (PaymentDocument) existe pour lui, ou quand il n'est plus éligible au
+     * paiement (statut sorti de calculated/validated). C'est la « preuve »
+     * qui distingue un claim légitime d'un claim orphelin.
+     */
+    private function slipWasActuallyProcessed(PaySlip $slip): bool
+    {
+        $artifact = PaymentDocument::query()
+            ->where('pay_slip_id', $slip->id)
+            ->where('company_id', $slip->company_id)
+            ->exists();
+
+        if ($artifact) {
+            return true;
+        }
+
+        $fresh = PaySlip::query()
+            ->where('id', $slip->id)
+            ->where('company_id', $slip->company_id)
+            ->first();
+
+        return $fresh === null || ! in_array($fresh->status, ['calculated', 'validated'], true);
+    }
+
+    /**
+     * Âge d'un claim en secondes (0 si la clé est absente ou sans TTL).
+     */
+    private function claimAgeSeconds(Connection $redis, string $claimKey): int
+    {
+        try {
+            $ttl = $redis->ttl($claimKey);
+
+            if (! is_int($ttl) || $ttl < 0) {
+                // Clé absente (course : le worker vient de la libérer) ou sans
+                // expiration : on considère le claim comme récent/non volable.
+                return 0;
+            }
+
+            return max(0, self::CLAIM_TTL_SECONDS - $ttl);
+        } catch (Throwable) {
+            // Redis injoignable sur la lecture d'âge : on ne vole pas.
+            return 0;
+        }
+    }
+
+    /**
      * #4205 : épuisement des retries — état visible + libération du claim du
      * run pour permettre un redispatch propre par le manager (le 503/abort
      * fail-closed #3857 reste la protection anti-doublon).
@@ -349,5 +454,4 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             // non bloquant
         }
     }
-
 }

@@ -230,6 +230,59 @@ class PayrollRunControllerTest extends TestCase
         ]);
     }
 
+    public function test_manager_can_recalculate_run_in_error_status(): void
+    {
+        // #6529 — un run laissé en `error` par le batch async est recalculable
+        // via l'API (avant correctif : refus 422 permanent, aucun chemin de
+        // reprise).
+        $this->bindFakePayrollCalculator();
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'error',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate");
+
+        $response->assertOk();
+        $response->assertJsonPath('data.status', 'calculated');
+    }
+
+    public function test_manager_can_recalculate_run_orphaned_in_processing_status(): void
+    {
+        // #6529 — un run orphelin en `processing` (worker mort entre le claim
+        // et le calcul) est recalculable via l'API.
+        $this->bindFakePayrollCalculator();
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'processing',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate");
+
+        $response->assertOk();
+        $response->assertJsonPath('data.status', 'calculated');
+    }
+
     public function test_calculate_run_placeholder_country_requires_acknowledgement(): void
     {
         // Issue #2332 — pays placeholder : le calcul du run est refusé sans

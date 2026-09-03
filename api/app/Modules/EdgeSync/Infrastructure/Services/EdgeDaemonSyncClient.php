@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\EdgeSync\Infrastructure\Services;
 
+use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Log;
  *
  * Runs exclusively inside the `edge:sync-daemon` command, on an Edge
  * deployment (APP_ENV=edge, local SQLite database). Unlike
- * {@see \App\Modules\EdgeSync\Application\Services\SyncEngineService}
+ * {@see SyncEngineService}
  * (which applies queued records directly against whatever DB connection
  * Laravel is currently using — correct when it runs on Cloud in response to
  * a real Edge push, but a silent no-op if it were ever run on Edge, since
@@ -32,8 +33,7 @@ class EdgeDaemonSyncClient
         private readonly string $edgeToken,
         private readonly int $batchSize = 100,
         private readonly int $timeoutSeconds = 30,
-    ) {
-    }
+    ) {}
 
     /**
      * Run one full push+pull cycle and record it as a SyncLog.
@@ -41,14 +41,14 @@ class EdgeDaemonSyncClient
     public function sync(): SyncLog
     {
         $log = SyncLog::create([
-            'edge_node_id'       => $this->edgeNodeId,
-            'direction'          => 'bidirectional',
-            'status'             => 'running',
-            'records_sent'       => 0,
-            'records_received'   => 0,
+            'edge_node_id' => $this->edgeNodeId,
+            'direction' => 'bidirectional',
+            'status' => 'running',
+            'records_sent' => 0,
+            'records_received' => 0,
             'conflicts_detected' => 0,
             'conflicts_resolved' => 0,
-            'started_at'         => now(),
+            'started_at' => now(),
         ]);
 
         try {
@@ -56,22 +56,22 @@ class EdgeDaemonSyncClient
             $pullResult = $this->pull();
 
             $log->update([
-                'status'           => 'success',
-                'records_sent'     => $pushResult['sent'],
+                'status' => 'success',
+                'records_sent' => $pushResult['sent'],
                 'records_received' => $pullResult['received'],
-                'summary'          => ['push' => $pushResult, 'pull' => $pullResult],
-                'finished_at'      => now(),
+                'summary' => ['push' => $pushResult, 'pull' => $pullResult],
+                'finished_at' => now(),
             ]);
         } catch (\Throwable $e) {
             Log::error('[EdgeSync Daemon] Edge -> Cloud sync failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'error'        => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
 
             $log->update([
-                'status'        => 'failed',
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
-                'finished_at'   => now(),
+                'finished_at' => now(),
             ]);
         }
 
@@ -81,6 +81,13 @@ class EdgeDaemonSyncClient
     /**
      * Push locally-queued records to the Cloud via
      * POST /api/v1/edge-node/{nodeId}/push.
+     *
+     * #6554 (audit fiabilité 2026-08-31) : le Cloud répond désormais PAR
+     * ENREGISTREMENT (`results[]`) ; chaque ligne locale n'est marquée
+     * `synced` que si le Cloud a accepté CET enregistrement. Un 2xx global
+     * ne masque plus les rejets : un enregistrement refusé reste `pending`
+     * (retenté au cycle suivant) jusqu'à épuisement des tentatives, puis
+     * passe `failed` — visible, jamais perdu en silence.
      *
      * @return array{sent:int, failed:int}
      */
@@ -97,9 +104,9 @@ class EdgeDaemonSyncClient
 
         $records = $pending->map(static fn (SyncQueue $item) => [
             'entity_type' => $item->entity_type,
-            'entity_id'   => $item->entity_id,
-            'operation'   => $item->operation,
-            'payload'     => $item->payload,
+            'entity_id' => $item->entity_id,
+            'operation' => $item->operation,
+            'payload' => $item->payload,
         ])->all();
 
         $response = Http::withToken($this->edgeToken)
@@ -111,26 +118,73 @@ class EdgeDaemonSyncClient
         if ($response->failed()) {
             Log::warning('[EdgeSync Daemon] Push to Cloud failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'status'       => $response->status(),
-                'body'         => $response->body(),
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
             foreach ($pending as $item) {
-                $newStatus = $item->attempt_count + 1 >= 5 ? 'failed' : 'pending';
+                $attempts = $item->attempt_count + 1;
                 $item->update([
-                    'status'        => $newStatus,
-                    'attempt_count' => $item->attempt_count + 1,
+                    'status' => $attempts >= 5 ? 'failed' : 'pending',
+                    'attempt_count' => $attempts,
                 ]);
             }
 
             return ['sent' => 0, 'failed' => $pending->count()];
         }
 
-        foreach ($pending as $item) {
-            $item->update(['status' => 'synced', 'synced_at' => now()]);
+        // Index des résultats par (entity_type|entity_id|operation).
+        $resultsByKey = [];
+        foreach ((array) $response->json('results', []) as $result) {
+            if (is_array($result)
+                && is_string($result['entity_type'] ?? null)
+                && is_string($result['entity_id'] ?? null)
+                && is_string($result['operation'] ?? null)
+                && is_string($result['status'] ?? null)) {
+                $resultsByKey[$result['entity_type'].'|'.$result['entity_id'].'|'.$result['operation']] = $result;
+            }
         }
 
-        return ['sent' => $pending->count(), 'failed' => 0];
+        $sent = 0;
+        $failed = 0;
+
+        foreach ($pending as $item) {
+            $result = $resultsByKey[$item->entity_type.'|'.$item->entity_id.'|'.$item->operation] ?? null;
+
+            if ($result === null) {
+                // Cloud ancien (2xx sans résultats par enregistrement) :
+                // comportement historique conservé pour la rétro-compatibilité.
+                $item->update(['status' => 'synced', 'synced_at' => now()]);
+                $sent++;
+
+                continue;
+            }
+
+            if ($result['status'] === 'queued' || $result['status'] === 'accepted') {
+                $item->update(['status' => 'synced', 'synced_at' => now()]);
+                $sent++;
+
+                continue;
+            }
+
+            // Rejet Cloud explicite pour CE enregistrement → retry local.
+            $attempts = $item->attempt_count + 1;
+            $item->update([
+                'status' => $attempts >= 5 ? 'failed' : 'pending',
+                'attempt_count' => $attempts,
+            ]);
+            $failed++;
+
+            Log::warning('[EdgeSync Daemon] Cloud rejected record — kept for retry', [
+                'edge_node_id' => $this->edgeNodeId,
+                'entity_type' => $item->entity_type,
+                'entity_id' => $item->entity_id,
+                'operation' => $item->operation,
+                'error' => $result['error'] ?? $result['status'],
+            ]);
+        }
+
+        return ['sent' => $sent, 'failed' => $failed];
     }
 
     /**
@@ -148,8 +202,8 @@ class EdgeDaemonSyncClient
         if ($response->failed()) {
             Log::warning('[EdgeSync Daemon] Pull from Cloud failed', [
                 'edge_node_id' => $this->edgeNodeId,
-                'status'       => $response->status(),
-                'body'         => $response->body(),
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
             return ['received' => 0];

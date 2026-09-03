@@ -46,7 +46,17 @@ return [
             'connection' => env('DB_QUEUE_CONNECTION'),
             'table' => env('DB_QUEUE_TABLE', 'jobs'),
             'queue' => env('DB_QUEUE', 'default'),
-            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 90),
+            // #6535 (audit fiabilité 2026-08-31) : `retry_after` doit rester
+            // STRICTEMENT supérieur au timeout du job le plus long de la
+            // connexion. Le driver database re-délivre un job réservé après
+            // retry_after : avec l'ancien défaut 90 s < timeouts des jobs
+            // paie (ProcessPayrollBatchJob 600 s, ArchivePaySlipsToCabinetJob
+            // 300 s, GeneratePaySlipPdfJob/GenerateBankExportJob/
+            // GeneratePaymentDocumentJob 120 s), tout job > 90 s était
+            // exécuté en DOUBLE (PDF re-générés, notifications « bulletin
+            // prêt » envoyées 2×, courses sur statuts). 900 s = 600 s (max
+            // actuel) + 50 % de marge. Ne pas descendre sous le timeout max.
+            'retry_after' => (int) env('DB_QUEUE_RETRY_AFTER', 900),
             'after_commit' => false,
         ],
 

@@ -106,10 +106,27 @@ class SyncEngineService
         $resolved = 0;
 
         foreach ($pending as $item) {
-            $item->update([
-                'status' => 'processing',
-                'attempt_count' => $item->attempt_count + 1,
-            ]);
+            // #6554 (audit fiabilité 2026-08-31) — claim conditionnel :
+            // la transition pending→processing est portée par l'UPDATE
+            // (lignes affectées contrôlées). Avant, `$item->update(...)`
+            // écrasait le statut sans vérifier l'état courant : deux syncs
+            // concurrents pouvaient appliquer le même enregistrement deux
+            // fois (seul applyAttendanceLog avait la garde 23505).
+            $attempts = $item->attempt_count + 1;
+            $claimed = SyncQueue::query()
+                ->where('id', $item->id)
+                ->where('edge_node_id', $node->id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'processing',
+                    'attempt_count' => $attempts,
+                ]);
+
+            if ($claimed === 0) {
+                // Un sync concurrent a déjà claimé cet item → on ne
+                // l'applique pas deux fois ; il sera traité par l'autre.
+                continue;
+            }
 
             try {
                 $result = $this->applyToCloud($item);
@@ -132,8 +149,11 @@ class SyncEngineService
                     'error' => $e->getMessage(),
                 ]);
 
-                $newStatus = $item->attempt_count >= 5 ? 'failed' : 'pending';
-                $item->update(['status' => $newStatus]);
+                $newStatus = $attempts >= 5 ? 'failed' : 'pending';
+                SyncQueue::query()
+                    ->where('id', $item->id)
+                    ->where('edge_node_id', $node->id)
+                    ->update(['status' => $newStatus, 'attempt_count' => $attempts]);
             }
         }
 

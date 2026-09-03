@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
-use App\Core\Auth\Domain\Models\AuditLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\PaySlipPdfGenerator;
@@ -58,7 +58,7 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function tenantCompanyId(): ?string
@@ -97,6 +97,12 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             ->whereIn('status', ['calculated', 'validated', 'sent'])
             ->get();
 
+        // #6559 (audit fiabilité) — les échecs par slip ne sont plus avalés :
+        // résumé d'échecs visible (pattern $failures) et, si TOUS les slips
+        // échouent, le job échoue (retry queue, puis failed_jobs observable)
+        // au lieu d'un « succès » vide.
+        $failures = [];
+
         foreach ($slips as $slip) {
             try {
                 $this->archiveSlip($slip, $pdfGenerator, $company);
@@ -107,7 +113,30 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
                     'employee_id' => $slip->employee_id,
                     'error' => $e->getMessage(),
                 ]);
+
+                $failures[] = [
+                    'slip_id' => $slip->id,
+                    'employee_id' => $slip->employee_id,
+                    'error' => $e->getMessage(),
+                ];
             }
+        }
+
+        if ($failures === []) {
+            return;
+        }
+
+        Log::error('payslip_archive_partial_failures', [
+            'run_id' => $run->id,
+            'total_slips' => $slips->count(),
+            'failed_slips' => count($failures),
+            'failures' => $failures,
+        ]);
+
+        if (count($failures) === $slips->count() && $slips->isNotEmpty()) {
+            throw new \RuntimeException(
+                "ArchivePaySlipsToCabinetJob: {$run->id} — tous les bulletins ont échoué à l'archivage (".count($failures).'/'.$slips->count().').'
+            );
         }
     }
 
@@ -214,5 +243,4 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

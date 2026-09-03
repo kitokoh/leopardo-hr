@@ -1168,11 +1168,31 @@ paths:
           type: string
       responses:
         '200':
-          description: Donnees poussees
+          description: Donnees poussees (acceptation par enregistrement, #6554)
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  queued:
+                    type: integer
+                    description: Nombre d'enregistrements acceptes (inseres ou rafraichis)
+                  results:
+                    type: array
+                    description: Resultat par enregistrement (consomme par le daemon Edge)
+                    items:
+                      type: object
+                      properties:
+                        entity_type:
+                          type: string
+                        entity_id:
+                          type: string
+                        operation:
+                          type: string
+                          enum: [create, update, delete]
+                        status:
+                          type: string
+                          enum: [queued, rejected]
         '422':
           $ref: '#/components/responses/Validation422'
   /edge-node/{nodeId}/pull:

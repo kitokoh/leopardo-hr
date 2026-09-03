@@ -10,7 +10,6 @@ use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Viewer public pour un token tiers. Renvoie un payload minimal (pas de
@@ -22,17 +21,12 @@ class PublicCameraViewerController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        // #4931 : le secret ne doit plus voyager en query string (fuite
-        // possible dans les logs proxy/historique). Header X-Token privilégié ;
-        // le paramètre ?t= reste accepté en fallback pour les viewers déjà
-        // déployés (dépréciation documentée).
+        // #4931 + #6560 (audit sécurité F2) : le secret voyage en HEADER
+        // X-Token uniquement. L'ancien fallback `?t=` (query string) a été
+        // SUPPRIMÉ : il fuitait dans les logs proxy, l'historique navigateur
+        // et le Referer. Tout viewer tiers encore sur `?t=` reçoit 404 —
+        // migrer vers l'en-tête (contrat X-Token, cf. docs caméras §3.3).
         $token = trim((string) $request->header('X-Token', ''));
-        if ($token === '') {
-            $token = trim((string) $request->query('t', ''));
-            if ($token !== '') {
-                Log::warning('camera.viewer_legacy_query_token', ['ip' => $request->ip()]);
-            }
-        }
 
         if ($token === '') {
             return new JsonResponse([

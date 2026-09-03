@@ -93,6 +93,7 @@ return [
         'wf_payment_receive_status' => 'لا يمكن أن يستقبل المستند المدفوع أو الملغى دفعة.',
         'wf_payment_over_total' => 'إجمالي الدفعات يتجاوز المبلغ الإجمالي للمستند.',
         'wf_cancel_status' => 'لا يمكن إلغاء مستند مدفوع.',
+        'wf_document_missing_for_payment' => 'تعذر العثور على المستند المحاسبي (قفل الدفع).',
         'wf_credit_note_requires_invoice' => 'يجب ربط الإشعار الدائن بفاتورة.',
         'wf_source_invoice_not_issuable' => 'لا يمكن للفاتورة الملغاة أو المسودة توليد إشعار دائن.',
         'wf_source_invoice_paid' => 'الفاتورة المصدرية مدفوعة بالكامل بالفعل: لا يمكن إصدار إشعار دائن.',

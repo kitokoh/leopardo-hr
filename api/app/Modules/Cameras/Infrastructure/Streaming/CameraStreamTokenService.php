@@ -42,6 +42,16 @@ class CameraStreamTokenService
             return $configured;
         }
 
+        // #6560 (audit sécurité F1, 2026-08-31) — hors local/testing, le
+        // secret DÉDIÉ est obligatoire : dériver la signature des tokens
+        // caméra depuis APP_KEY permettrait de forger des tokens si APP_KEY
+        // fuitait (défense en profondeur, cf. config/cameras.php
+        // « OBLIGATOIRE en prod via secret dédié »). Le repli APP_KEY n'est
+        // conservé qu'en dev (confort local sans secret dédié).
+        if (! app()->environment(['local', 'testing'])) {
+            throw new RuntimeException('CAMERAS_STREAM_TOKEN_SECRET is not configured (required outside local/testing).');
+        }
+
         $appKey = Config::get('app.key');
 
         if (! is_string($appKey) || $appKey === '') {

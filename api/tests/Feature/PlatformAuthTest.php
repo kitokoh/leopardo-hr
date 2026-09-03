@@ -183,18 +183,98 @@ class PlatformAuthTest extends TestCase
     {
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
+        // #6563 : changer l'email exige le mot de passe courant.
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->patchJson('/api/v1/platform/auth/profile', [
                 'name' => 'Updated Admin Name',
                 'email' => 'updated-admin@leopardo.test',
+                'current_password' => 'password123',
             ]);
 
         $response->assertOk();
         $response->assertJsonPath('data.name', 'Updated Admin Name');
         $response->assertJsonPath('data.email', 'updated-admin@leopardo.test');
 
-        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()->name);
-        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('Updated Admin Name', $fresh->name);
+        $this->assertSame('updated-admin@leopardo.test', $fresh->email);
+    }
+
+    public function test_super_admin_email_change_requires_current_password(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        // Sans mot de passe courant → 422 (validation).
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'email' => 'hijacked@leopardo.test',
+            ])
+            ->assertStatus(422);
+
+        // Mauvais mot de passe → 401 INVALID_PASSWORD, email inchangé.
+        $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'email' => 'hijacked@leopardo.test',
+                'current_password' => 'wrong-password',
+            ])
+            ->assertStatus(401)
+            ->assertJsonPath('error', 'INVALID_PASSWORD');
+
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
+    }
+
+    public function test_super_admin_login_locks_account_after_five_failures(): void
+    {
+        // #6563 — verrouillage par compte (cache partagé) après 5 échecs.
+        for ($i = 1; $i <= 5; $i++) {
+            $this->postJson('/api/v1/platform/auth/login', [
+                'email' => 'admin@leopardo.test',
+                'password' => 'wrong-password',
+            ])->assertStatus($i < 5 ? 401 : 423);
+        }
+
+        // Même avec le BON mot de passe, le compte reste verrouillé.
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ])
+            ->assertStatus(423)
+            ->assertJsonPath('error', 'ACCOUNT_LOCKED');
+    }
+
+    public function test_super_admin_successful_login_resets_failed_attempts(): void
+    {
+        // 3 échecs puis un succès → le compteur est remis à zéro : 5 nouveaux
+        // échecs sont nécessaires pour verrouiller.
+        for ($i = 1; $i <= 3; $i++) {
+            $this->postJson('/api/v1/platform/auth/login', [
+                'email' => 'admin@leopardo.test',
+                'password' => 'wrong-password',
+            ])->assertStatus(401);
+        }
+
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ])->assertOk();
+
+        for ($i = 1; $i <= 4; $i++) {
+            $this->postJson('/api/v1/platform/auth/login', [
+                'email' => 'admin@leopardo.test',
+                'password' => 'wrong-password',
+            ])->assertStatus(401);
+        }
+
+        // 4 échecs après reset → pas encore verrouillé ; le 5e verrouille.
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'wrong-password',
+        ])
+            ->assertStatus(423)
+            ->assertJsonPath('error', 'ACCOUNT_LOCKED');
     }
 
     public function test_super_admin_profile_update_rejects_email_already_taken(): void
@@ -207,14 +287,18 @@ class PlatformAuthTest extends TestCase
 
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
+        // #6563 : le changement d'email exige aussi le mot de passe courant.
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->patchJson('/api/v1/platform/auth/profile', [
                 'email' => 'other-admin@leopardo.test',
+                'current_password' => 'password123',
             ]);
 
         $response->assertStatus(422);
         $response->assertJsonPath('error', 'EMAIL_ALREADY_TAKEN');
-        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
     }
 
     public function test_super_admin_can_change_own_password(): void

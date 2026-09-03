@@ -6,6 +6,9 @@ namespace App\Modules\EdgeSync\Application\Services;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
+use Carbon\Carbon;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Support\Str;
 
 /**
@@ -24,15 +27,15 @@ class EdgeLicenseService
     public function issueLicense(EdgeNode $node, int $validDays = 30): EdgeLicense
     {
         $payload = [
-            'iss'              => config('app.url'),
-            'sub'              => $node->id,
-            'company_id'       => $node->company_id,
-            'edge_node_id'     => $node->id,
+            'iss' => config('app.url'),
+            'sub' => $node->id,
+            'company_id' => $node->company_id,
+            'edge_node_id' => $node->id,
             'allowed_features' => $node->capabilities['features'] ?? [],
-            'max_employees'    => $node->capabilities['max_employees'] ?? 50,
-            'iat'              => now()->timestamp,
-            'exp'              => now()->addDays($validDays)->timestamp,
-            'jti'              => Str::uuid()->toString(),
+            'max_employees' => $node->capabilities['max_employees'] ?? 50,
+            'iat' => now()->timestamp,
+            'exp' => now()->addDays($validDays)->timestamp,
+            'jti' => Str::uuid()->toString(),
         ];
 
         $signed = $this->sign($payload);
@@ -40,13 +43,13 @@ class EdgeLicenseService
         return EdgeLicense::updateOrCreate(
             ['edge_node_id' => $node->id],
             [
-                'company_id'        => $node->company_id,
-                'license_key'       => Str::uuid()->toString(),
-                'signed_payload'    => $signed,
-                'allowed_features'  => $payload['allowed_features'],
-                'max_employees'     => $payload['max_employees'],
-                'issued_at'         => now(),
-                'expires_at'        => now()->addDays($validDays),
+                'company_id' => $node->company_id,
+                'license_key' => Str::uuid()->toString(),
+                'signed_payload' => $signed,
+                'allowed_features' => $payload['allowed_features'],
+                'max_employees' => $payload['max_employees'],
+                'issued_at' => now(),
+                'expires_at' => now()->addDays($validDays),
                 'last_validated_at' => now(),
                 'validation_status' => 'valid',
             ]
@@ -63,9 +66,9 @@ class EdgeLicenseService
             $decoded = $this->decode($signedPayload);
 
             return [
-                'valid'   => true,
+                'valid' => true,
                 'payload' => $decoded,
-                'expires' => \Carbon\Carbon::createFromTimestamp($decoded['exp'])->toIso8601String(),
+                'expires' => Carbon::createFromTimestamp($decoded['exp'])->toIso8601String(),
             ];
         } catch (\Throwable $e) {
             return ['valid' => false, 'error' => $e->getMessage()];
@@ -97,14 +100,23 @@ class EdgeLicenseService
     {
         $privateKey = config('edge.license_private_key');
 
-        if ($privateKey && class_exists(\Firebase\JWT\JWT::class)) {
-            return \Firebase\JWT\JWT::encode($payload, $privateKey, 'RS256');
+        if ($privateKey && class_exists(JWT::class)) {
+            return JWT::encode($payload, $privateKey, 'RS256');
+        }
+
+        // #6560 (audit sécurité F6) — hors local/testing, la clé privée RSA
+        // est OBLIGATOIRE : signer en HS256(APP_KEY) en prod produirait une
+        // licence que la vérification fail-closed (RS256 côté Edge) rejettera
+        // toujours — ou pire, une licence forgeable si APP_KEY fuitait. Le
+        // repli HS256 n'est toléré qu'en dev (décodage non vérifié local).
+        if (! app()->environment(['local', 'testing'])) {
+            throw new \RuntimeException('Edge license private key not configured (RS256 required outside local/testing).');
         }
 
         // Dev/test fallback — HS256 with app key
-        $header  = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
-        $body    = base64url_encode(json_encode($payload));
-        $sig     = base64url_encode(hash_hmac('sha256', "$header.$body", config('app.key'), true));
+        $header = base64url_encode(json_encode(['typ' => 'JWT', 'alg' => 'HS256']));
+        $body = base64url_encode(json_encode($payload));
+        $sig = base64url_encode(hash_hmac('sha256', "$header.$body", config('app.key'), true));
 
         return "$header.$body.$sig";
     }
@@ -120,8 +132,8 @@ class EdgeLicenseService
     {
         $publicKey = config('edge.license_public_key');
 
-        if ($publicKey && class_exists(\Firebase\JWT\Key::class)) {
-            $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($publicKey, 'RS256'));
+        if ($publicKey && class_exists(Key::class)) {
+            $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
 
             return (array) $decoded;
         }
@@ -133,7 +145,7 @@ class EdgeLicenseService
         }
 
         // Dev/test fallback — decode without verification
-        $parts   = explode('.', $token);
+        $parts = explode('.', $token);
         if (count($parts) < 2) {
             throw new \RuntimeException('Invalid JWT structure');
         }

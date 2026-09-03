@@ -146,7 +146,12 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        if (in_array($payrollRun->status, ['draft', 'calculated'], true) === false) {
+        // #6529 (audit fiabilité) : un run en `error` (échec du batch async)
+        // ou orphelin en `processing` (worker mort) doit être RECALCULABLE via
+        // l'API — avant ce correctif, seul draft|calculated passait et un run
+        // bloqué ne pouvait plus jamais être repris. Les statuts terminaux
+        // (validated/paid/locked/cancelled) restent refusés.
+        if (in_array($payrollRun->status, ['draft', 'calculated', 'error', 'processing'], true) === false) {
             return response()->json(['message' => __('payroll.run_cannot_recalculate')], 422);
         }
 

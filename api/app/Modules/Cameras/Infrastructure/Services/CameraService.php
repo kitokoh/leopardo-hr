@@ -392,6 +392,15 @@ class CameraService
         // SSRF (issue #3147) : interdire les cibles loopback/privées/réservées
         // (réutilise la garde fail-closed NotPrivateUrl des webhooks) pour que
         // le serveur API ne puisse pas sonder le réseau interne via ffprobe.
+        //
+        // #6560 (audit sécurité F3, 2026-08-31) — TOCTOU DNS rebinding
+        // ACCEPTÉ et documenté : la cible est résolue par ffprobe APRÈS le
+        // contrôle `NotPrivateUrl::isPublicHost`, une résolution DNS hostile
+        // pourrait théoriquement pointer vers une IP privée entre les deux.
+        // Mitigations en place : contrôle sur le host littéral + résolution
+        // au moment du contrôle ; risque résiduel faible (attaque DNS
+        // active), accepté pour ce module caméras — ne pas durcir sans
+        // revue (bind local résolu avant exécution).
         $host = parse_url($rtspUrl, PHP_URL_HOST);
         if (! is_string($host) || $host === '' || ! NotPrivateUrl::isPublicHost($host)) {
             return ['ok' => false, 'error' => 'host_not_allowed', 'skipped' => false];

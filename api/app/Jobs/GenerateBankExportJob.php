@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
+use App\Support\SafeErrorMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -124,7 +125,7 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
         } catch (Throwable $e) {
             $export->forceFill([
                 'status' => 'failed',
-                'error_message' => $e->getMessage(),
+                'error_message' => SafeErrorMessage::summarize($e),
             ])->save();
 
             report($e);
@@ -156,16 +157,15 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
         ]);
 
         try {
-            $export = \App\Modules\Payroll\Domain\Models\BankExport::query()->find($this->bankExportId);
+            $export = BankExport::query()->find($this->bankExportId);
             if ($export !== null && in_array($export->status, ['pending', 'generating'], true)) {
                 $export->forceFill([
-                    'status' => \App\Modules\Payroll\Domain\Models\BankExport::STATUS_FAILED,
-                    'error_message' => mb_substr($e->getMessage(), 0, 1000),
+                    'status' => BankExport::STATUS_FAILED,
+                    'error_message' => SafeErrorMessage::summarize($e, 1000),
                 ])->save();
             }
         } catch (Throwable) {
             // non bloquant — le log ci-dessus reste la trace
         }
     }
-
 }

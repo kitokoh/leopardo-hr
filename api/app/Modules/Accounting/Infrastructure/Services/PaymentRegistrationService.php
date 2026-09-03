@@ -40,28 +40,52 @@ final class PaymentRegistrationService
         ?Carbon $receivedAt = null,
         ?string $gatewayPaymentId = null,
     ): AccountingPayment {
-        if (in_array($document->status, [DocumentStatus::Draft->value, DocumentStatus::Cancelled->value], true)) {
-            throw new PaymentOnUnsentDocumentException((string) $document->status);
-        }
-
         if ($amount <= 0) {
             throw new \InvalidArgumentException(__('accounting.errors.payment_amount_positive'));
         }
 
-        $alreadyPaid = (float) $document->paid_amount;
-        $total = (float) $document->total_ttc;
-
-        if ($alreadyPaid + $amount > $total + self::TOLERANCE) {
-            throw new PaymentExceedsTotalException($total, $alreadyPaid, $amount);
-        }
-
+        // #6536 (audit fiabilité 2026-08-31) — toute la séquence
+        // garde→création→update se fait SOUS verrou de ligne : deux
+        // encaissements concurrents (double-clic, webhook Stripe + saisie
+        // manuelle) sérialisent ici. Avant : le garde lisait `paid_amount`
+        // hors transaction et l'update réécrivait la valeur stale du modèle
+        // → cumul réel 2× mais `paid_amount` sous-évalué, document jamais
+        // `paid`, journal en déséquilibre.
         return DB::transaction(function () use ($document, $amount, $method, $reference, $receivedAt, $gatewayPaymentId): AccountingPayment {
+            /** @var AccountingDocument|null $locked */
+            $locked = AccountingDocument::query()
+                // Le scope tenant est contourné explicitement : l'isolation est
+                // portée par le WHERE company_id ci-dessous (déterministe aussi
+                // en console/jobs/tests, cf. BelongsToCompany docblock).
+                ->withoutGlobalScope('company')
+                ->whereKey($document->getKey())
+                ->where('company_id', $document->company_id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($locked === null) {
+                throw new \RuntimeException(__('accounting.errors.wf_document_missing_for_payment'));
+            }
+
+            if (in_array($locked->status, [DocumentStatus::Draft->value, DocumentStatus::Cancelled->value], true)) {
+                throw new PaymentOnUnsentDocumentException((string) $locked->status);
+            }
+
+            // Relecture APRÈS lockForUpdate : paid_amount est la valeur
+            // courante en base, plus jamais la copie stale du modèle passé.
+            $alreadyPaid = (float) $locked->paid_amount;
+            $total = (float) $locked->total_ttc;
+
+            if ($alreadyPaid + $amount > $total + self::TOLERANCE) {
+                throw new PaymentExceedsTotalException($total, $alreadyPaid, $amount);
+            }
+
             /** @var AccountingPayment $payment */
             $payment = AccountingPayment::create([
                 // company_id dérivé du document — indépendant du contexte
                 // tenant (API, console, tests) : jamais null (NOT NULL).
-                'company_id' => $document->company_id,
-                'document_id' => $document->id,
+                'company_id' => $locked->company_id,
+                'document_id' => $locked->id,
                 'amount' => $amount,
                 'method' => $method,
                 'reference' => $reference,
@@ -70,15 +94,15 @@ final class PaymentRegistrationService
                 'status' => 'recorded',
             ]);
 
-            $newPaidAmount = round((float) $document->paid_amount + $amount, 2);
-            $document->update(['paid_amount' => $newPaidAmount]);
+            $newPaidAmount = round($alreadyPaid + $amount, 2);
+            $locked->update(['paid_amount' => $newPaidAmount]);
 
             // Statut de document minimal : paid dès que soldé, sinon partially_paid.
-            if (in_array($document->status, [DocumentStatus::Sent->value, DocumentStatus::PartiallyPaid->value, DocumentStatus::Overdue->value], true)) {
-                $newStatus = $newPaidAmount >= (float) $document->total_ttc - self::TOLERANCE
+            if (in_array($locked->status, [DocumentStatus::Sent->value, DocumentStatus::PartiallyPaid->value, DocumentStatus::Overdue->value], true)) {
+                $newStatus = $newPaidAmount >= $total - self::TOLERANCE
                     ? DocumentStatus::Paid->value
                     : DocumentStatus::PartiallyPaid->value;
-                $document->update(['status' => $newStatus]);
+                $locked->update(['status' => $newStatus]);
             }
 
             return $payment;

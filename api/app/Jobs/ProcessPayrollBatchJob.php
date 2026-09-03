@@ -54,11 +54,39 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             'company_id' => $this->companyId,
         ]);
 
-        $run = PayrollRun::where('id', $this->payrollRunId)
+        $run = PayrollRun::query()
+            ->where('id', $this->payrollRunId)
             ->where('company_id', $this->companyId)
             ->firstOrFail();
 
-        if ($run->status !== 'draft') {
+        // #6529 (audit fiabilité 2026-08-31) — claim conditionnel ATOMIQUE :
+        // la transition est portée par l'UPDATE lui-même (`whereIn(status)`
+        // dans le WHERE de l'update, lignes affectées contrôlées). Avant ce
+        // correctif, le job skipait si le statut n'était plus `draft` APRÈS
+        // l'avoir passé en `processing`/`error` dans le catch : un échec
+        // transitoire laissait le run en `error`/`processing` pour toujours,
+        // le retry se sabordait silencieusement (retour normal = réussi) et
+        // aucun chemin API de recalcul n'existait.
+        //
+        // Statuts rejouables :
+        //   - draft       : exécution normale ;
+        //   - error       : retry après un échec transitoire (catch ci-dessous) ;
+        //   - processing  : run orphelin laissé par un worker mort entre le
+        //     claim et le calcul (le redélivrage queue n'intervient qu'après
+        //     retry_after ≥ timeout, cf. #6535 — pas de double exécution).
+        // Tout autre statut (calculated/validated/paid/locked/cancelled) est
+        // terminal : 0 ligne affectée → skip silencieux conservé.
+        $claimed = PayrollRun::query()
+            ->where('id', $this->payrollRunId)
+            ->where('company_id', $this->companyId)
+            ->whereIn('status', [
+                PayrollRun::STATUS_DRAFT,
+                PayrollRun::STATUS_ERROR,
+                PayrollRun::STATUS_PROCESSING,
+            ])
+            ->update(['status' => PayrollRun::STATUS_PROCESSING]);
+
+        if ($claimed === 0) {
             Log::channel('structured')->warning('payroll.batch.skip', [
                 'payroll_run_id' => $this->payrollRunId,
                 'status' => $run->status,
@@ -67,17 +95,28 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             return;
         }
 
-        $run->update(['status' => 'processing']);
-
         try {
-            app(PayrollCalculator::class)->calculateRun($run);
-            $run->update(['status' => 'calculated']);
+            // Relecture après claim : le run frais porte `processing` (et les
+            // totaux éventuellement partiels d'une tentative précédente).
+            $freshRun = PayrollRun::query()
+                ->where('id', $this->payrollRunId)
+                ->where('company_id', $this->companyId)
+                ->firstOrFail();
+
+            app(PayrollCalculator::class)->calculateRun($freshRun);
+            $freshRun->update(['status' => PayrollRun::STATUS_CALCULATED]);
 
             Log::channel('structured')->info('payroll.batch.complete', [
                 'payroll_run_id' => $this->payrollRunId,
             ]);
-        } catch (\Throwable $e) {
-            $run->update(['status' => 'error']);
+        } catch (Throwable $e) {
+            // #6529 — état `error` VISIBLE et RECALCULABLE (le contrôleur
+            // accepte désormais draft|calculated|error|processing) : le retry
+            // queue ou l'API peuvent reprendre le run.
+            PayrollRun::query()
+                ->where('id', $this->payrollRunId)
+                ->where('company_id', $this->companyId)
+                ->update(['status' => PayrollRun::STATUS_ERROR]);
 
             Log::channel('structured')->error('payroll.batch.failed', [
                 'payroll_run_id' => $this->payrollRunId,
@@ -88,6 +127,9 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
         }
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function tags(): array
     {
         return [
@@ -108,5 +150,4 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
     }
-
 }

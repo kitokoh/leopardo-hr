@@ -9,6 +9,7 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -28,13 +29,28 @@ use Symfony\Component\HttpFoundation\Response;
  *   aucune fausse relecture pour un corps différent ;
  * - les requêtes anonymes (sans Authorization) ne sont jamais dédupliquées ;
  * - seules les réponses JSON 2xx sont mémorisées ; le verrou anti-course est
- *   toujours libéré (finally) même en cas d'exception.
+ *   toujours libéré (finally) même en cas d'exception ;
+ * - #6557 (audit fiabilité) : toute panne du STOCKAGE de cache (Redis
+ *   injoignable, store dégradé en `file` multi-instance) est absorbée en mode
+ *   DÉGRADÉ — la requête est traitée normalement et l'incident est journalisé.
+ *   Limite acceptée et documentée : la fenêtre « commit DB réussi puis crash
+ *   avant Cache::put » (ou rejeu après perte du snapshot) peut ré-exécuter une
+ *   écriture ; la persistance du snapshot dans la transaction (outbox) reste
+ *   un chantier séparé. En mode dégradé multi-instance, la déduplication
+ *   n'est plus garantie entre instances (store local `file`).
  */
 class IdempotencyMiddleware
 {
     private const TTL_SECONDS = 86400; // 24 h
 
-    private const LOCK_TTL_SECONDS = 60;
+    /**
+     * #6557 : le verrou anti-course doit couvrir la requête la plus longue.
+     * 60 s pouvait expirer pendant des écritures lentes (webhooks, PDFs,
+     * exports) → un rejeu légitime passait le verrou et ré-exécutait.
+     * 300 s ≥ timeouts HTTP des proxies ; le verrou est de toute façon
+     * libéré en `finally` dès la fin de la requête.
+     */
+    private const LOCK_TTL_SECONDS = 300;
 
     private const KEY_PATTERN = '/^[A-Za-z0-9._:-]{8,255}$/';
 
@@ -61,13 +77,35 @@ class IdempotencyMiddleware
 
         $cacheKey = $this->cacheKey($request, $idempotencyKey, $authorization);
 
-        $cached = Cache::get($cacheKey);
+        // #6557 — le stockage peut être indisponible (Redis down, store
+        // dégradé) : on ne transforme JAMAIS une panne de cache en 500 alors
+        // que la requête est légitime. Mode dégradé : la requête passe, la
+        // déduplication est suspendue pour elle, l'incident est journalisé.
+        $cached = null;
+        try {
+            $cached = Cache::get($cacheKey);
+        } catch (\Throwable $cacheError) {
+            Log::warning('idempotency.cache_unavailable.get', [
+                'error' => $cacheError->getMessage(),
+            ]);
+        }
+
         if ($this->isSnapshot($cached)) {
             return $this->replay($cached);
         }
 
         $lockKey = $cacheKey.':lock';
-        if (! Cache::add($lockKey, (string) time(), self::LOCK_TTL_SECONDS)) {
+        try {
+            $lockAcquired = Cache::add($lockKey, (string) time(), self::LOCK_TTL_SECONDS);
+        } catch (\Throwable $cacheError) {
+            Log::warning('idempotency.cache_unavailable.lock', [
+                'error' => $cacheError->getMessage(),
+            ]);
+
+            return $next($request);
+        }
+
+        if (! $lockAcquired) {
             throw new DomainException(
                 'IDEMPOTENCY_IN_PROGRESS',
                 409,
@@ -80,12 +118,30 @@ class IdempotencyMiddleware
             $response = $next($request);
 
             if ($response instanceof JsonResponse && $response->isSuccessful()) {
-                Cache::put($cacheKey, $this->snapshot($response), self::TTL_SECONDS);
+                try {
+                    Cache::put($cacheKey, $this->snapshot($response), self::TTL_SECONDS);
+                } catch (\Throwable $cacheError) {
+                    // #6557 — crash/fenêtre entre le commit DB (déjà fait,
+                    // la réponse est un succès métier) et la mémorisation du
+                    // snapshot : on journalise et on retourne la VRAIE réponse
+                    // (jamais un 500 après un commit réussi). Limite acceptée :
+                    // une retentative ultérieure avec la même clé ré-exécutera
+                    // la requête (cf. docblock).
+                    Log::warning('idempotency.cache_unavailable.put', [
+                        'error' => $cacheError->getMessage(),
+                    ]);
+                }
             }
 
             return $response;
         } finally {
-            Cache::forget($lockKey);
+            try {
+                Cache::forget($lockKey);
+            } catch (\Throwable $cacheError) {
+                Log::warning('idempotency.cache_unavailable.forget', [
+                    'error' => $cacheError->getMessage(),
+                ]);
+            }
         }
     }
 

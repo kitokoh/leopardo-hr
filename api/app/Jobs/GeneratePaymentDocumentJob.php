@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
-use App\Jobs\Middleware\EnsureTenantContext;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Support\I18nCatalog;
+use App\Support\SafeErrorMessage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,7 +59,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(CommunicationService $communicationService): void
@@ -113,7 +114,7 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         } catch (Throwable $e) {
             $document->update([
                 'status' => PaymentDocument::STATUS_FAILED,
-                'error_message' => $e->getMessage(),
+                'error_message' => SafeErrorMessage::summarize($e),
             ]);
 
             $this->notifyDocumentStatus($communicationService, $document, 'payment_document_failed');
@@ -288,16 +289,15 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
         ]);
 
         try {
-            $document = \App\Modules\Payroll\Domain\Models\PaymentDocument::query()->find($this->paymentDocumentId);
+            $document = PaymentDocument::query()->find($this->paymentDocumentId);
             if ($document !== null) {
                 $document->update([
-                    'status' => \App\Modules\Payroll\Domain\Models\PaymentDocument::STATUS_FAILED,
-                    'error_message' => mb_substr($e->getMessage(), 0, 1000),
+                    'status' => PaymentDocument::STATUS_FAILED,
+                    'error_message' => SafeErrorMessage::summarize($e, 1000),
                 ]);
             }
         } catch (Throwable) {
             // non bloquant
         }
     }
-
 }

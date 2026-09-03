@@ -160,6 +160,78 @@ class EdgeDaemonSyncClientTest extends TestCase
         $this->assertSame('failed', $item->refresh()->status);
     }
 
+    public function test_push_marks_each_item_synced_from_per_record_results(): void
+    {
+        // #6554 — le Cloud répond par enregistrement : seuls les items dont
+        // le résultat est `queued`/`accepted` passent `synced`.
+        $item = SyncQueue::create([
+            'edge_node_id' => self::NODE_ID,
+            'entity_type' => 'attendance_logs',
+            'entity_id' => '55555555-5555-5555-5555-555555555555',
+            'operation' => 'create',
+            'payload' => ['employee_id' => 'emp-4'],
+            'status' => 'pending',
+            'attempt_count' => 0,
+        ]);
+
+        Http::fake([
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push' => Http::response([
+                'queued' => 1,
+                'results' => [
+                    [
+                        'entity_type' => 'attendance_logs',
+                        'entity_id' => '55555555-5555-5555-5555-555555555555',
+                        'operation' => 'create',
+                        'status' => 'queued',
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $result = $this->client()->push();
+
+        $this->assertSame(['sent' => 1, 'failed' => 0], $result);
+        $this->assertSame('synced', $item->refresh()->status);
+    }
+
+    public function test_push_keeps_cloud_rejected_record_pending_for_retry(): void
+    {
+        // #6554 — un enregistrement REJETÉ par le Cloud (2xx + résultat
+        // `rejected`) n'est PAS marqué synced : il reste pending (retenté au
+        // cycle suivant) au lieu d'être perdu en silence.
+        $item = SyncQueue::create([
+            'edge_node_id' => self::NODE_ID,
+            'entity_type' => 'absences',
+            'entity_id' => '66666666-6666-6666-6666-666666666666',
+            'operation' => 'create',
+            'payload' => ['employee_id' => 'emp-5'],
+            'status' => 'pending',
+            'attempt_count' => 2,
+        ]);
+
+        Http::fake([
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push' => Http::response([
+                'queued' => 0,
+                'results' => [
+                    [
+                        'entity_type' => 'absences',
+                        'entity_id' => '66666666-6666-6666-6666-666666666666',
+                        'operation' => 'create',
+                        'status' => 'rejected',
+                        'error' => 'payload invalide',
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $result = $this->client()->push();
+
+        $this->assertSame(['sent' => 0, 'failed' => 1], $result);
+        $item->refresh();
+        $this->assertSame('pending', $item->status);
+        $this->assertSame(3, $item->attempt_count);
+    }
+
     public function test_push_is_a_noop_when_queue_is_empty(): void
     {
         Http::fake();

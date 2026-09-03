@@ -173,39 +173,58 @@ class DocumentWorkflowService
         ?Carbon $receivedAt = null,
         ?string $reference = null,
     ): AccountingPayment {
-        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_payment_receive_status'));
-
         if ($amount <= 0.0) {
             throw new DocumentWorkflowException(__('accounting.errors.payment_amount_positive'));
         }
 
-        $newPaid = round($document->paid_amount + $amount, 2);
-        if ($newPaid > round($document->total_ttc, 2) + 0.001) {
-            throw new DocumentWorkflowException(__('accounting.errors.wf_payment_over_total'));
-        }
+        // #6536 (audit fiabilité 2026-08-31) — même correctif que
+        // PaymentRegistrationService::register : verrou de ligne + relecture
+        // dans la transaction. Avant, paid_amount était lu/écrit hors verrou
+        // avec la valeur stale du modèle → lost update sous encaissements
+        // concurrents (cumul 2× en base, document jamais `paid`).
+        return DB::transaction(function () use ($document, $amount, $method, $receivedAt, $reference): AccountingPayment {
+            /** @var AccountingDocument|null $locked */
+            $locked = AccountingDocument::query()
+                ->withoutGlobalScope('company')
+                ->whereKey($document->getKey())
+                ->where('company_id', $document->company_id)
+                ->lockForUpdate()
+                ->first();
 
-        /** @var AccountingPayment $payment */
-        $payment = AccountingPayment::create([
-            'company_id' => $document->company_id,
-            'document_id' => $document->id,
-            'amount' => round($amount, 2),
-            'method' => $method->value,
-            'reference' => $reference,
-            'received_at' => $receivedAt ?? now(),
-            'status' => PaymentStatus::Recorded->value,
-        ]);
+            if ($locked === null) {
+                throw new DocumentWorkflowException(__('accounting.errors.wf_document_missing_for_payment'));
+            }
 
-        $document->forceFill(['paid_amount' => $newPaid])->save();
+            $this->assertStatus($locked, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_payment_receive_status'));
 
-        // Transition : payé uniquement quand le cumul couvre le total
-        // (jamais de « paid » sans paiement — la garde statut ci-dessus).
-        if ($newPaid >= round($document->total_ttc, 2) - 0.001) {
-            $document->forceFill(['status' => DocumentStatus::Paid->value])->save();
-        } elseif ($document->status === DocumentStatus::Draft->value || $document->status === DocumentStatus::Sent->value) {
-            $document->forceFill(['status' => DocumentStatus::PartiallyPaid->value])->save();
-        }
+            $newPaid = round((float) $locked->paid_amount + $amount, 2);
+            if ($newPaid > round((float) $locked->total_ttc, 2) + 0.001) {
+                throw new DocumentWorkflowException(__('accounting.errors.wf_payment_over_total'));
+            }
 
-        return $payment;
+            /** @var AccountingPayment $payment */
+            $payment = AccountingPayment::create([
+                'company_id' => $locked->company_id,
+                'document_id' => $locked->id,
+                'amount' => round($amount, 2),
+                'method' => $method->value,
+                'reference' => $reference,
+                'received_at' => $receivedAt ?? now(),
+                'status' => PaymentStatus::Recorded->value,
+            ]);
+
+            $locked->forceFill(['paid_amount' => $newPaid])->save();
+
+            // Transition : payé uniquement quand le cumul couvre le total
+            // (jamais de « paid » sans paiement — la garde statut ci-dessus).
+            if ($newPaid >= round((float) $locked->total_ttc, 2) - 0.001) {
+                $locked->forceFill(['status' => DocumentStatus::Paid->value])->save();
+            } elseif ($locked->status === DocumentStatus::Draft->value || $locked->status === DocumentStatus::Sent->value) {
+                $locked->forceFill(['status' => DocumentStatus::PartiallyPaid->value])->save();
+            }
+
+            return $payment;
+        });
     }
 
     /**

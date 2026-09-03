@@ -45,12 +45,12 @@ class AdminMiddleware
      */
     private function userIsAdmin($user): bool
     {
-        $role = $user->role ?? '';
-
-        if (in_array($role, ['admin', 'super_admin'], true)) {
-            return true;
-        }
-
+        // #6563 (audit auth) — les rôles littéraux `admin`/`super_admin`
+        // n'étaient JAMAIS assignés sur les modèles protégés ici (Employee :
+        // role ∈ employee|manager ; le super-admin vit dans sa propre table
+        // avec son propre guard). Accepter ces valeurs était du code mort qui
+        // élargissait la surface d'autorisation. Seul le rôle manager
+        // `principal` administre cette surface.
         return is_object($user) && method_exists($user, 'hasManagerRole') && $user->hasManagerRole('principal');
     }
 }

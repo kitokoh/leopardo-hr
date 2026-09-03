@@ -153,9 +153,12 @@ class EdgeNodeController extends Controller
             'records.*.payload' => 'required|array',
         ]);
 
-        $queued = $this->pushEdgeRecords->execute($node, $validated['records']);
+        $result = $this->pushEdgeRecords->execute($node, $validated['records']);
 
-        return response()->json(['queued' => $queued]);
+        // #6554 — réponse PAR ENREGISTREMENT : le daemon Edge ne marque plus
+        // tout le lot `synced` sur un simple 2xx ; il sait exactement quels
+        // enregistrements ont été acceptés et rejoue/alerte les autres.
+        return response()->json($result);
     }
 
     /**
