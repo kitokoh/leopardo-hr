@@ -7,6 +7,8 @@ namespace App\Modules\EdgeSync\Providers;
 use App\Modules\EdgeSync\Infrastructure\Services\CloudDeltaBuilder;
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
 use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
+use App\Modules\EdgeSync\Console\Commands\EdgeSyncDaemonCommand;
+use App\Modules\EdgeSync\Console\Commands\MonitorEdgeNodesCommand;
 use Illuminate\Support\ServiceProvider;
 
 class EdgeSyncServiceProvider extends ServiceProvider
@@ -16,6 +18,11 @@ class EdgeSyncServiceProvider extends ServiceProvider
         $this->app->singleton(SyncEngineService::class);
         $this->app->singleton(EdgeLicenseService::class);
         $this->app->singleton(CloudDeltaBuilder::class);
+
+        $this->commands([
+            EdgeSyncDaemonCommand::class,
+            MonitorEdgeNodesCommand::class,
+        ]);
 
         $this->mergeConfigFrom(
             __DIR__ . '/../../../../config/edge.php',
