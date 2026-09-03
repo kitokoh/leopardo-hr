@@ -102,14 +102,6 @@
    "p95_ms": 200,
    "pagination": false,
    "notes": "Tournée du jour rider (DELIVERY-203) - scope propriété."
-  },
-  {
-   "method": "GET",
-   "route": "/api/v1/delivery/deliveries/reports/summary",
-   "max_queries": 8,
-   "p95_ms": 300,
-   "pagination": false,
-   "notes": "Read model KPIs (DELIVERY-207) - 5 agrégations scopées."
   }
  ],
  "required_indexes": [
