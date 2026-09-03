@@ -1,5 +1,5 @@
 name: leopardo_hr
-description: "Leopardo RH manager and HR mobile app."
+description: "Leopardo RH — application RH dédiée (gestion RH avancée, issue d'un split de leopardo_manager)."
 publish_to: 'none'
 
 version: 1.0.0+1
