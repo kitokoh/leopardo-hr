@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Support\CsvCellSanitizer;
 use Illuminate\Support\Collection;
 
 class SocialDeclarationGenerator
@@ -240,6 +241,11 @@ class SocialDeclarationGenerator
 
     private function sanitize(string $value): string
     {
-        return str_replace(['|', ';', "\r", "\n"], ['', '', '', ''], $value);
+        $value = str_replace(['|', ';', "\r", "\n"], ['', '', '', ''], $value);
+
+        // Audit #6556 — neutralisation OWASP des formules CSV (= + - @ TAB CR)
+        // : un champ employé commençant par ces préfixes deviendrait une
+        // formule exécutée à l'ouverture de la déclaration dans Excel.
+        return CsvCellSanitizer::neutralize($value);
     }
 }

