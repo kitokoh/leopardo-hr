@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\AI\AgentController;
-use App\Http\Controllers\AI\AIAnalyticsController;
-use App\Http\Controllers\AI\AIGatewayController;
-use App\Http\Controllers\AI\ConversationExportController;
-use App\Http\Controllers\AI\VoiceController;
+use App\AI\Interfaces\Api\V1\Controllers\AgentController;
+use App\AI\Interfaces\Api\V1\Controllers\AIAnalyticsController;
+use App\AI\Interfaces\Api\V1\Controllers\AIGatewayController;
+use App\AI\Interfaces\Api\V1\Controllers\ConversationExportController;
+use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Http\Middleware\AI\AIFeatureCheck;
 use App\Http\Middleware\AI\AIRateLimiter;
 use App\Http\Middleware\AI\AITenantInjector;
