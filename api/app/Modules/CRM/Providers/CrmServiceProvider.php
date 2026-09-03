@@ -24,9 +24,6 @@ use App\Modules\CRM\Domain\Contracts\CrmImportRowPersisterInterface;
 use App\Modules\CRM\Domain\Contracts\CrmLeadRepositoryInterface;
 use App\Modules\CRM\Domain\Events\CrmConsentRevoked;
 use App\Modules\CRM\Domain\Contracts\SegmentContactSourceInterface;
-use App\Modules\CRM\Domain\Models\CrmAccount;
-use App\Modules\CRM\Domain\Models\CrmImport;
-use App\Modules\CRM\Domain\Models\CrmLead;
 use App\Modules\CRM\Infrastructure\Repositories\CrmImportRepository;
 use App\Modules\CRM\Infrastructure\Repositories\CrmLeadRepository;
 use App\Modules\CRM\Infrastructure\Services\CrmContactSegmentSource;
@@ -38,11 +35,7 @@ use App\Modules\CRM\Infrastructure\Services\CrmConditionEvaluator;
 
 use App\Modules\CRM\Infrastructure\Services\CrmOutboxPublisher;
 use Illuminate\Contracts\Foundation\Application;
-use App\Modules\CRM\Policies\CrmImportPolicy;
-use App\Modules\CRM\Policies\CrmLeadPolicy;
-use App\Modules\CRM\Policies\CrmMergePolicy;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -140,9 +133,6 @@ class CrmServiceProvider extends ServiceProvider
         $this->commands([
             \App\Modules\CRM\Console\Commands\CleanupCrmExports::class,
         ]);
-        Gate::policy(CrmImport::class, CrmImportPolicy::class);
-        Gate::policy(CrmLead::class, CrmLeadPolicy::class);
-        Gate::policy(CrmAccount::class, CrmMergePolicy::class);
         // #5722 — propagation du retrait de consentement vers les campagnes
         // (#5724) : annulation des envois pending/queued du contact.
         Event::listen(CrmConsentRevoked::class, PropagateConsentRevocation::class);

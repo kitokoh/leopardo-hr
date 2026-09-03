@@ -48,6 +48,9 @@ final class DeliveryReportController
 
         $stream = function () use ($deliveries): void {
             $handle = fopen('php://output', 'wb');
+            if ($handle === false) {
+                throw new \RuntimeException("Impossible d'ouvrir le flux CSV de sortie.");
+            }
             fputcsv($handle, [
                 'reference', 'source', 'type', 'status', 'cod_amount_minor',
                 'dropoff_address', 'created_at', 'delivered_at',

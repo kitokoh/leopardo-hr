@@ -63,8 +63,8 @@ job Module Structure Validator) bloque TOUT nouvel import croisé :
 - `use App\Modules\<X>\...` dans un module ≠ X ;
 - `use App\Modules\<X>\...` dans `Core/`.
 
-La dette héritée (16/18 modules — seuls `Cameras` et `EdgeSync` s'abstiennent ;
-57 paires source→cible) est **actée** dans
+La dette héritée (19 modules sources, 51 paires source→cible — vérifié
+2026-08-31) est **actée** dans
 `dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
 ligne ajoutée exige une justification (issue de refactor), aucune n'est
 rajoutée « pour passer ». Dérogations structurelles déjà documentées :
@@ -85,48 +85,39 @@ direct), et exige une exemption justifiée dans
 inter-module. Les imports `App\Core\*`, `App\Shared\*` et intra-module
 restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
 
-## Modules existants
-
 | Module | Statut routes | Statut code | ServiceProvider |
 |--------|--------------|-------------|-----------------|
 | `Core/Auth` | ✅ routes/api.php | ✅ complet | — (AppServiceProvider) |
-| `Core/Tenant` | — | 🔄 en cours | — |
+| `Core/Tenant` | — | ✅ migré (TenantManager canonique) | — |
 | `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
 | `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | ✅ complet | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
 | `Modules/Expense` | ✅ routes/modules/expense.php | 🟢 Module DDD complet depuis #5235 (Domain/Infrastructure/Interfaces/Providers) — modèles de notes de frais sous contrat `Planning` (ex-dérogation PA2-ARCH-011, résorbée) | `ExpenseServiceProvider` |
-| `Modules/Notification` | ✅ routes/modules/notification.php | ✅ complet | `NotificationServiceProvider` |
+| `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
-| `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | ✅ complet | `RestaurantManagerServiceProvider` |
-| `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | ✅ DDD complet (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
-| `Modules/Restaurant` | 🔶 routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
+| `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
+| `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
+| `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | ✅ complet | `FleetServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
-| `Modules/CRM` | 🔶 en cours (squelette #5707, routes #5712) | 🔶 Application/Domain/Infrastructure/Interfaces + Providers (squelette) | `CrmServiceProvider` |
-| `Modules/FuelStation` | ✅ routes/modules/fuelstation.php | ✅ DDD complet (Application/Domain/Infrastructure/Interfaces/Providers) | `FuelStationServiceProvider` |
-| `Modules/Delivery` | 🔶 en cours (DELIVERY-101..208, routes #6282) | 🔶 squelette DDD | `DeliveryServiceProvider` |
-| `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
-| `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
-| `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` |
+| `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet (CRM client, ADR-CRM-DUAL-CONTEXTS) | `CrmServiceProvider` |
+| `Modules/FuelStation` | ✅ routes/modules/fuel_station.php | ✅ DDD complet (Application/Domain/Infrastructure/Interfaces/Providers) | `FuelStationServiceProvider` |
+| `Modules/Delivery` | ✅ routes/modules/delivery.php | 🟢 verticale BC-26 consolidée (#6757, PHPStan assaini #6759) | `DeliveryServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
-| `Modules/Delivery` | 🔶 en cours (DELIVERY-1xx, routes #6282) | 🔶 squelette DDD | `DeliveryServiceProvider` |
+| `Modules/TravelAgency` | ✅ routes partagées + publiques shop | 🟢 fondations verticale BC-24 (TRAVEL-101..108, 201..203 + shop/e-billets) | `TravelAgencyServiceProvider` |
 | `Modules/Growth` | ✅ routes/modules/growth.php | ✅ complet | `GrowthServiceProvider` |
 | `Modules/Marketing` | ✅ routes/modules/marketing.php | ✅ complet | `MarketingServiceProvider` |
-| `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 V1 en construction (canaux #5725, automatisations #5728, exports #5729) | `CrmServiceProvider` |
-| `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet | `CrmServiceProvider` || `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
-
-> **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **60 classes `JsonResource`** de l'API vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
 | `Modules/Onboarding` | ✅ routes/api.php | ✅ complet | `OnboardingServiceProvider` |
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
-| `Modules/TravelAgency` | ✅ routes/modules/travelagency.php | 🔶 fondations verticale (squelette DDD complet + manifest, TRAVEL-101..108, 201..203) | `TravelAgencyServiceProvider` |
-| `Modules/CRM` | ✅ routes/modules/crm.php | 🔶 en construction (V0/V1 CRM client — issues #5707→#5731) | `CrmServiceProvider` |
 
-**Légende :** ✅ complet | 🔄 migration partielle en cours
+> **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **60 classes `JsonResource`** de l'API vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
+
+**Légende :** ✅ complet | 🟢 verticale consolidée/complétée via le merge 2026-09-02 | 🔶 partiel / en cours | 🔄 migration partielle en cours
 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 >
@@ -217,32 +208,10 @@ _Issue #1413, complétant le suivi de la ligne ci-dessus._
 |---|---|---|---|---|
 | `phpstan.neon` | tout `app/` | `max` | non branché à un job CI dédié (voir `phpstan-modules`/`phpstan-strict` ci-dessous) | n/a |
 | `phpstan-modules.neon` | `app/Core`, `app/Modules`, `app/Shared` | `5` | **bloquant** (`architecture-check.yml`, job `phpstan-modules`) | rester à 5 pour l'instant ; réévaluer une montée à 6/7 une fois `phpstan-strict` stabilisé (voir ci-dessous) |
-| `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 2950 erreurs pré-existantes gelées ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
+| `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 1297 erreurs gelées au 2026-08-31, en réduction continue ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
 
-**Répartition de la baseline `phpstan-strict` par module (2950 erreurs, 2026-08-01) :**
-
-| Module | Erreurs |
-|---|---|
-| hors DDD (`app/Console`, `app/Http`, `app/AI`, `app/Enums`, `app/Exceptions`, ...) | 2220 |
-| HR | 110 |
-| Attendance | 108 |
-| Payroll | 100 |
-| Planning | 58 |
-| EdgeSync | 50 |
-| Billing | 48 |
-| Core/Auth | 40 |
-| Notification | 26 |
-| Core/Feature | 25 |
-| Platform | 22 |
-| Cabinet / Shared | 15 chacun |
-| Expense / Fleet | 12 chacun |
-| Cameras | 10 |
-| Growth | 9 |
-| Recruitment | 8 |
-| Onboarding | 7 |
-| Marketing | 6 |
-| Core/Tenant | 5 |
-| Absence | 4 |
+**Répartition de la baseline `phpstan-strict` par module (1297 erreurs, 2026-08-31) :**
+voir `api/phpstan-strict-baseline.neon` — la baseline est réduite module par module, dans des PR dédiées (chiffres du 2026-08-01 périmés : 2950 → 1297).
 
 Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas censés converger vers un seul niveau à court terme — `phpstan-modules` reste le gate rapide et bloquant sur tout PR touchant `app/Core`/`app/Modules`/`app/Shared`, tandis que `phpstan-strict` sert de garde anti-régression progressive sur le typage strict (niveau 8) sans bloquer sur la dette existante. Toute réduction de la baseline (fichier corrigé et retiré de `phpstan-strict-baseline.neon`) doit être faite module par module, dans des PR dédiées, pour rester revuable.
 
@@ -253,14 +222,14 @@ Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas c
 | Controllers `app/Http/Controllers/Api/V1/` supprimés | 90 |
 | Services `app/Services/` doublons supprimés | 26 |
 | Services `app/Services/` shims backward-compat supprimés | 17 (2026-08-11, #1728) |
-| Modèles `app/Models/` convertis en aliases | 92 (75+17) |
+| Modèles `app/Models/` migrés vers les modules — répertoire **supprimé** (shims retirés) | 92 |
 | FormRequests migrés vers modules | 64 |
 | `app/Shared/` peuplé (Traits, Attributes, Enums) | ✅ |
 | `Core/Tenant/TenantManager` canonique | ✅ |
 | `app/DTOs/` supprimé | ✅ |
 
 **`app/Services/`** : **répertoire supprimé (2026-08-11, #1728)** — les 17 derniers shims backward-compat ont été retirés ; tous les consommateurs référencent les canoniques (`App\Core\…` / `App\Modules\…`).
-**`app/Http/Requests/`** : shims backward-compat. Canonical dans les modules.
+**`app/Http/Requests/`** : répertoire **supprimé** (2026-08-31) — les 64 FormRequests migrés vers les modules, shims backward-compat retirés. Canonical dans les modules.
 
 ---
 
@@ -273,8 +242,8 @@ grep -r "App\\Http\\Controllers\\Api\\V1" api/routes/
 # Vérifier qu'aucun service legacy App\Services\* ne subsiste hors app/Services/
 grep -rn "App\\Services\\" api/app/ api/tests/ --include="*.php" | grep -v "app/Services/"
 
-# Lancer PHPStan sur Core et Modules
-vendor/bin/phpstan analyse app/Core app/Modules --level=3
+# Lancer PHPStan sur Core et Modules (gate bloquant = phpstan-modules.neon, niveau 5)
+vendor/bin/phpstan analyse --configuration=phpstan-modules.neon app/Core app/Modules
 
 # Vérifier que tous les ServiceProviders sont enregistrés
 cat bootstrap/providers.php
