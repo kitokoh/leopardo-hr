@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Delivery\Domain\Models\Delivery;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
+use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -142,7 +143,7 @@ class DeliveryRouteApiTest extends TestCase
         $response->assertJsonPath('data.status', 'draft');
         $response->assertJsonCount(3, 'data.stops');
 
-        $orders = collect($response->json('data.stops'))->pluck('sort_order')->all();
+        $orders = collect((array) $response->json('data.stops'))->pluck('sort_order')->all();
         self::assertSame([1, 2, 3], $orders);
     }
 
@@ -241,9 +242,18 @@ class DeliveryRouteApiTest extends TestCase
 
         // 2 stops livrés (COD 5000 chacun) + 1 stop en échec.
         $stops = $route->stops()->get();
-        $stops->get(0)->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:00:00')])->save();
-        $stops->get(1)->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:05:00')])->save();
-        $stops->get(2)->forceFill(['status' => 'failed'])->save();
+        $delivered0 = $stops->get(0);
+        $delivered1 = $stops->get(1);
+        $failed2 = $stops->get(2);
+        self::assertNotNull($delivered0);
+        self::assertNotNull($delivered1);
+        self::assertNotNull($failed2);
+        /** @var DeliveryStop $delivered0 */
+        /** @var DeliveryStop $delivered1 */
+        /** @var DeliveryStop $failed2 */
+        $delivered0->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:00:00')])->save();
+        $delivered1->forceFill(['status' => 'delivered', 'delivered_at' => Carbon::parse('2026-09-01 18:05:00')])->save();
+        $failed2->forceFill(['status' => 'failed'])->save();
 
         $first = $this->postJson(sprintf('/api/v1/delivery/deliveries/routes/%d/close', $route->id))->assertOk();
 

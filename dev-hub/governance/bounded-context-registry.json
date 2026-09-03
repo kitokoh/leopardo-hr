@@ -3,7 +3,7 @@
     "title": "Bounded Context Registry — Leopardo HR",
     "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
     "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-    "updated": "2026-08-30"
+    "updated": "2026-08-31"
   },
   "_shared_exceptions": [
     {
@@ -728,6 +728,47 @@
         "BC-11",
         "BC-13",
         "BC-20"
+      ]
+    },
+    {
+      "code": "BC-25",
+      "name": "RESTAURANT",
+      "context": "RestaurantManager",
+      "responsibility": "Gestion restauration multi-établissement : branches, référentiel produits/ingrédients, stock & achats, POS/prises de commande & encaissement, réservations, livraison, fidélité, kiosque libre-service, commande en ligne publique, apps mobiles serveur/livreur/gérant, rapports.",
+      "owner": "Agent 25 — BC-RESTAURANT",
+      "priority": "P1",
+      "status": "planned",
+      "paths": [
+        {
+          "path": "api/app/Modules/RestaurantManager",
+          "status": "planned"
+        },
+        {
+          "path": "front/web/src/app/restaurant",
+          "status": "planned"
+        },
+        {
+          "path": "front/admin-dashboard/src/views/restaurant",
+          "status": "planned"
+        }
+      ],
+      "routes": [],
+      "migrations": [
+        "api/database/migrations/tenant"
+      ],
+      "events": [
+        "App\\Modules\\RestaurantManager\\Domain\\Events"
+      ],
+      "dependencies": [
+        "BC-02",
+        "BC-03",
+        "BC-04",
+        "BC-08",
+        "BC-11",
+        "BC-13",
+        "BC-18",
+        "BC-20",
+        "BC-24"
       ]
     },
     {
