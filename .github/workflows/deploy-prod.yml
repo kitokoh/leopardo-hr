@@ -10,7 +10,7 @@ name: Deploy Production - Leopardo RH
 # utilisée ailleurs dans ce repo (qui cible en réalité l'environnement
 # dev/continu — dette de nommage historique, voir
 # docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md) : ce workflow utilise
-# `vars.PROD_RENDER_API_BASE_URL` pour éviter toute ambiguïté avec la vraie
+# `secrets.PROD_RENDER_API_BASE_URL` pour éviter toute ambiguïté avec la vraie
 # production tant que ce renommage plus large n'a pas été fait.
 #
 # Déploiement piloté par l'API Render (clé + ID de service) plutôt qu'un
@@ -150,6 +150,10 @@ jobs:
     # supplémentaire est souhaitée avant le déploiement.
     environment:
       name: production
+      # environment.url n'accepte pas le contexte `secrets` — si
+      # PROD_RENDER_API_BASE_URL est stockée en secret (pas en variable),
+      # ce lien reste vide dans l'UI GitHub (cosmétique uniquement, la
+      # logique fonctionnelle plus bas utilise bien `secrets.*`).
       url: ${{ vars.PROD_RENDER_API_BASE_URL }}
     permissions:
       contents: read
@@ -158,12 +162,12 @@ jobs:
         shell: bash
         env:
           RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
-          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
         run: |
           set -euo pipefail
           missing=()
           [[ -z "${RENDER_PROD_API_KEY}" ]] && missing+=("secrets.RENDER_PROD_API_KEY")
-          [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("vars.RENDER_PROD_SERVICE_ID")
+          [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("secrets.RENDER_PROD_SERVICE_ID")
           if [[ ${#missing[@]} -gt 0 ]]; then
             echo "::error::Missing: ${missing[*]} (voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md)"
             exit 1
@@ -174,7 +178,7 @@ jobs:
         shell: bash
         env:
           RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
-          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
         run: |
           set -euo pipefail
           PREV=$(curl --fail --silent --show-error \
@@ -189,7 +193,7 @@ jobs:
         shell: bash
         env:
           RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
-          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
           TAG: ${{ needs.verify.outputs.tag }}
         run: |
           set -euo pipefail
@@ -228,7 +232,7 @@ jobs:
         shell: bash
         env:
           RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
-          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
           DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
         run: |
           set -euo pipefail
@@ -254,11 +258,11 @@ jobs:
       - name: Wait for prod API healthcheck
         shell: bash
         env:
-          PROD_RENDER_API_BASE_URL: ${{ vars.PROD_RENDER_API_BASE_URL }}
+          PROD_RENDER_API_BASE_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}
         run: |
           set -euo pipefail
           if [[ -z "${PROD_RENDER_API_BASE_URL}" ]]; then
-            echo "::error::vars.PROD_RENDER_API_BASE_URL must be set (Render prod web service URL)."
+            echo "::error::secrets.PROD_RENDER_API_BASE_URL must be set (Render prod web service URL)."
             exit 1
           fi
           URL="${PROD_RENDER_API_BASE_URL}/api/v1/health"
@@ -279,7 +283,7 @@ jobs:
         shell: bash
         env:
           RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
-          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
           PREVIOUS_DEPLOY_ID: ${{ steps.previous.outputs.previous_deploy_id }}
         run: |
           set -euo pipefail
