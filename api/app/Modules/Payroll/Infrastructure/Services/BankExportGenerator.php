@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Support\CsvCellSanitizer;
+
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
@@ -231,10 +233,10 @@ class BankExportGenerator
             $csv .= sprintf(
                 "%d,%s,%s,%s,%s,%.2f,%s,%s\n",
                 $slip->employee_id,
-                $this->csvEscape($employee->first_name ?? ''),
-                $this->csvEscape($employee->last_name ?? ''),
-                $this->csvEscape($employee->iban ?? ''),
-                $this->csvEscape($employee->bank_account ?? ''),
+                $this->csvEscape(CsvCellSanitizer::neutralize($employee->first_name ?? '')),
+                $this->csvEscape(CsvCellSanitizer::neutralize($employee->last_name ?? '')),
+                $this->csvEscape(CsvCellSanitizer::neutralize($employee->iban ?? '')),
+                $this->csvEscape(CsvCellSanitizer::neutralize($employee->bank_account ?? '')),
                 $slip->net_salary,
                 $currency,
                 $period

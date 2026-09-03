@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Support\CsvCellSanitizer;
+
 use Illuminate\Support\Collection;
 
 class SocialDeclarationGenerator
@@ -235,11 +237,11 @@ class SocialDeclarationGenerator
 
     private function sanitizeDsn(string $value): string
     {
-        return str_replace(["'", "\r", "\n"], ['', '', ''], $value);
+        return CsvCellSanitizer::neutralize(str_replace(["'", "\r", "\n"], ['', '', ''], $value));
     }
 
     private function sanitize(string $value): string
     {
-        return str_replace(['|', ';', "\r", "\n"], ['', '', '', ''], $value);
+        return CsvCellSanitizer::neutralize(str_replace(['|', ';', "\r", "\n"], ['', '', '', ''], $value));
     }
 }
