@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Delivery\Application\Services\DeliveryNotificationService;
 use App\Modules\Delivery\Domain\Models\DeliveryNotification;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
@@ -50,7 +51,8 @@ final class DeliveryNotificationController
         // (matrice fine BC-26-D05/#6312 — DeliveryRoleResolver).
         // #675x (consolidation BC-26) : doublon de calcul supprimé — la
         // deuxième affectation écrasait la première.
-        $maskPhone = ! (new DeliveryRoleResolver)->hasAnyRole($request->user(), ['admin']);
+        $actor = $request->user();
+        $maskPhone = ! ($actor instanceof Employee && (new DeliveryRoleResolver)->hasAnyRole($actor, ['admin']));
 
         $notifications = $query->paginate(min((int) $request->integer('per_page', 15), 100));
 
@@ -60,9 +62,9 @@ final class DeliveryNotificationController
         // #675x : ->each() retourne la Collection sous-jacente — appelé en
         // dernière expression, il cassait le type de retour déclaré
         // (AnonymousResourceCollection) → TypeError 500 sur GET /notifications.
-        $resources->each(function (DeliveryNotificationResource $resource) use ($maskPhone): void {
+        foreach ($resources as $resource) {
             $resource->withMask($maskPhone);
-        });
+        }
 
         return $resources;
     }
