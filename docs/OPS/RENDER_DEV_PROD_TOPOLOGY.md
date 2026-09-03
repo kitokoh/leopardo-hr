@@ -74,19 +74,30 @@ rotation des clés Render déjà partagées en clair dans ce chat.
 
 | Secret | Rôle |
 |---|---|
-| `RENDER_PROD_DEPLOY_HOOK_URL` | Hook de déploiement du service `gestionemployerbackend-prod` (`render.prod.yaml`) |
-| `RENDER_PROD_ROLLBACK_HOOK_URL` | Hook de rollback (optionnel mais recommandé) |
+| `RENDER_PROD_API_KEY` | Clé API Render du workspace prod ("ALI MAHADI's workspace") — utilisée pour déclencher le déploiement, interroger son statut et effectuer un rollback réel via l'API (pas un simple deploy hook) |
 
 **Variables** (`Settings > Secrets and variables > Actions > Variables`) :
 
 | Variable | Rôle |
 |---|---|
-| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (ex. `https://gestionemployerbackend-prod.onrender.com`), utilisée pour le healthcheck post-déploiement |
+| `RENDER_PROD_SERVICE_ID` | ID du service web `gestionemployerbackend-prod` (`srv-...`) |
+| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (`https://gestionemployerbackend-prod.onrender.com`), utilisée pour le healthcheck post-déploiement |
 
 Ces noms sont volontairement distincts des secrets/variables déjà utilisés
 par `deploy-main.yml` (`RENDER_DEPLOY_HOOK_URL`, `RENDER_ROLLBACK_HOOK_URL`,
 `vars.PROD_API_BASE_URL`) pour éviter toute collision avec l'environnement
 dev/continu existant.
+
+**Ressources déjà provisionnées (2026-09-03)** via l'API Render, tier
+gratuit, workspace prod (`tea-da9svvpsrm7s73d8o2j0`) :
+- Service web `gestionemployerbackend-prod` (`srv-dacr2j6k1f9s73adbj7g`)
+- Postgres `leopardo-db-prod` (`dpg-dacr1pcmqu1s739k61e0-a`) — ⚠️ expire
+  après 30 jours + 14 jours de grâce (tier gratuit, sans sauvegarde)
+- Key Value `leopardo-redis-prod` (`red-dacr1rfavr4c739gtan0`)
+
+Les clés Render partagées en clair dans la conversation ont été utilisées
+une seule fois pour cette création initiale ; elles doivent être régénérées
+avant tout lancement public, conformément au plan de bascule ci-dessus.
 
 **Source de vérité recommandée :** l'environnement Pulumi ESC
 `solarnyxss/leopardo-hr/prod` (créé dans ce chantier) contient déjà la

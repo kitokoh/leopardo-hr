@@ -12,6 +12,11 @@ name: Deploy Production - Leopardo RH
 # docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md) : ce workflow utilise
 # `vars.PROD_RENDER_API_BASE_URL` pour éviter toute ambiguïté avec la vraie
 # production tant que ce renommage plus large n'a pas été fait.
+#
+# Déploiement piloté par l'API Render (clé + ID de service) plutôt qu'un
+# deploy hook : la clé API permet aussi d'interroger le statut du deploy
+# et de déclencher un vrai rollback vers le deploy précédent (POST
+# /services/{serviceId}/rollback), ce qu'un deploy hook seul ne permet pas.
 
 on:
   push:
@@ -149,26 +154,101 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Validate Render prod secret
+      - name: Validate Render prod secrets
         shell: bash
         env:
-          RENDER_PROD_DEPLOY_HOOK_URL: ${{ secrets.RENDER_PROD_DEPLOY_HOOK_URL }}
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
         run: |
           set -euo pipefail
-          if [[ -z "${RENDER_PROD_DEPLOY_HOOK_URL}" ]]; then
-            echo "::error::Missing GitHub secret: RENDER_PROD_DEPLOY_HOOK_URL (voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md)"
+          missing=()
+          [[ -z "${RENDER_PROD_API_KEY}" ]] && missing+=("secrets.RENDER_PROD_API_KEY")
+          [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("vars.RENDER_PROD_SERVICE_ID")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Missing: ${missing[*]} (voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md)"
             exit 1
           fi
 
-      - name: Trigger Render prod deploy hook
+      - name: Record current live deploy (rollback target)
+        id: previous
         shell: bash
         env:
-          RENDER_PROD_DEPLOY_HOOK_URL: ${{ secrets.RENDER_PROD_DEPLOY_HOOK_URL }}
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          PREV=$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?status=live&limit=1" \
+            | jq -r '.[0].deploy.id // ""')
+          echo "previous_deploy_id=${PREV}" >> "$GITHUB_OUTPUT"
+          echo "Previous live deploy (rollback target): ${PREV:-none}"
+
+      - name: Trigger Render prod deploy via API
+        id: trigger
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
           TAG: ${{ needs.verify.outputs.tag }}
         run: |
           set -euo pipefail
           echo "Triggering Render prod deploy for tag=${TAG}"
-          curl --fail --silent --show-error --request POST "${RENDER_PROD_DEPLOY_HOOK_URL}"
+          # POST /deploys renvoie 202 avec un corps VIDE (pas d'ID) —
+          # confirmé empiriquement contre l'API Render 2026-09. Il faut
+          # récupérer l'ID via l'endpoint de listing juste après.
+          HTTP_CODE=$(curl --silent --show-error -o /dev/null -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys" \
+            -d '{}')
+          if [[ "${HTTP_CODE}" != "202" && "${HTTP_CODE}" != "201" ]]; then
+            echo "::error::Render deploy trigger failed (HTTP ${HTTP_CODE})."
+            exit 1
+          fi
+
+          DEPLOY_ID=""
+          for attempt in {1..10}; do
+            DEPLOY_ID=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?limit=1" \
+              | jq -r '.[0].deploy.id // ""')
+            [[ -n "${DEPLOY_ID}" ]] && break
+            sleep 3
+          done
+          if [[ -z "${DEPLOY_ID}" ]]; then
+            echo "::error::Could not resolve deploy ID after triggering."
+            exit 1
+          fi
+          echo "deploy_id=${DEPLOY_ID}" >> "$GITHUB_OUTPUT"
+          echo "Deploy ${DEPLOY_ID} triggered."
+
+      - name: Wait for Render deploy status
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..40}; do
+            STATUS=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys/${DEPLOY_ID}" \
+              | jq -r '.status')
+            echo "Deploy status attempt ${attempt}/40: ${STATUS}"
+            if [[ "${STATUS}" == "live" ]]; then
+              echo "Render deploy ${DEPLOY_ID} is live."
+              exit 0
+            fi
+            if [[ "${STATUS}" == "build_failed" || "${STATUS}" == "update_failed" || "${STATUS}" == "canceled" || "${STATUS}" == "deactivated" ]]; then
+              echo "::error::Render deploy ${DEPLOY_ID} ended with status ${STATUS}."
+              exit 1
+            fi
+            sleep 15
+          done
+          echo "::error::Render deploy ${DEPLOY_ID} did not reach 'live' in time."
+          exit 1
 
       - name: Wait for prod API healthcheck
         shell: bash
@@ -197,11 +277,18 @@ jobs:
         if: failure()
         shell: bash
         env:
-          RENDER_PROD_ROLLBACK_HOOK_URL: ${{ secrets.RENDER_PROD_ROLLBACK_HOOK_URL }}
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ vars.RENDER_PROD_SERVICE_ID }}
+          PREVIOUS_DEPLOY_ID: ${{ steps.previous.outputs.previous_deploy_id }}
         run: |
-          if [[ -n "${RENDER_PROD_ROLLBACK_HOOK_URL}" ]]; then
-            echo "Prod deployment failed. Triggering Render rollback..."
-            curl --fail --silent --show-error --request POST "${RENDER_PROD_ROLLBACK_HOOK_URL}"
+          set -euo pipefail
+          if [[ -n "${PREVIOUS_DEPLOY_ID}" ]]; then
+            echo "Prod deployment failed. Rolling back to ${PREVIOUS_DEPLOY_ID}..."
+            curl --fail --silent --show-error -X POST \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/rollback" \
+              -d "{\"deployId\": \"${PREVIOUS_DEPLOY_ID}\"}"
           else
-            echo "::warning::Prod deployment failed but RENDER_PROD_ROLLBACK_HOOK_URL secret is missing. Cannot auto-rollback."
+            echo "::warning::Prod deployment failed and no previous live deploy was found. Cannot auto-rollback (first deploy?)."
           fi
