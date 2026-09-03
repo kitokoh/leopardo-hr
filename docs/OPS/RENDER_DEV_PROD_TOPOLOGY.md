@@ -80,8 +80,8 @@ rotation des clés Render déjà partagées en clair dans ce chat.
 
 | Variable | Rôle |
 |---|---|
-| `RENDER_PROD_SERVICE_ID` | ID du service web `gestionemployerbackend-prod` (`srv-...`) |
-| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (`https://gestionemployerbackend-prod.onrender.com`), utilisée pour le healthcheck post-déploiement |
+| `RENDER_PROD_SERVICE_ID` | ID du service web `leopardo-prod` (`srv-dacsr6gae00c73ddk150`) |
+| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (`https://leopardo-prod.onrender.com`), utilisée pour le healthcheck post-déploiement |
 
 Ces noms sont volontairement distincts des secrets/variables déjà utilisés
 par `deploy-main.yml` (`RENDER_DEPLOY_HOOK_URL`, `RENDER_ROLLBACK_HOOK_URL`,
@@ -90,14 +90,18 @@ dev/continu existant.
 
 **Ressources déjà provisionnées (2026-09-03)** via l'API Render, tier
 gratuit, workspace prod (`tea-da9svvpsrm7s73d8o2j0`) :
-- Service web `gestionemployerbackend-prod` (`srv-dacr2j6k1f9s73adbj7g`)
+- Service web `leopardo-prod` (`srv-dacsr6gae00c73ddk150`, URL
+  `https://leopardo-prod.onrender.com`) — recréé sous ce nom pour un
+  sous-domaine propre (le slug Render est figé à la création : un simple
+  renommage du service `gestionemployerbackend-prod` d'origine
+  (`srv-dacr2j6k1f9s73adbj7g`, supprimé) ne changeait pas l'URL
 - Postgres `leopardo-db-prod` (`dpg-dacr1pcmqu1s739k61e0-a`) — ⚠️ expire
   après 30 jours + 14 jours de grâce (tier gratuit, sans sauvegarde)
 - Key Value `leopardo-redis-prod` (`red-dacr1rfavr4c739gtan0`)
 
 Les clés Render partagées en clair dans la conversation ont été utilisées
-une seule fois pour cette création initiale ; elles doivent être régénérées
-avant tout lancement public, conformément au plan de bascule ci-dessus.
+pour cette création initiale ; elles doivent être régénérées avant tout
+lancement public, conformément au plan de bascule ci-dessus.
 
 **Source de vérité recommandée :** l'environnement Pulumi ESC
 `solarnyxss/leopardo-hr/prod` (créé dans ce chantier) contient déjà la

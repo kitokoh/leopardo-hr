@@ -23,7 +23,7 @@ services:
   # Web Service — Laravel API (PROD)
   # ──────────────────────────────────────────────────────────────────────────
   - type: web
-    name: gestionemployerbackend-prod
+    name: leopardo-prod
     runtime: docker
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
@@ -42,7 +42,7 @@ services:
         value: "true"
       - key: APP_URL
         fromService:
-          name: gestionemployerbackend-prod
+          name: leopardo-prod
           type: web
           property: host
       - key: LOG_CHANNEL
@@ -179,7 +179,7 @@ services:
   #       value: production
   #     - key: APP_URL
   #       fromService:
-  #         name: gestionemployerbackend-prod
+  #         name: leopardo-prod
   #         type: web
   #         property: host
   #     - key: DB_CONNECTION
@@ -210,7 +210,7 @@ services:
   #       value: database
   #     - key: APP_KEY
   #       fromService:
-  #         name: gestionemployerbackend-prod
+  #         name: leopardo-prod
   #         type: web
   #         envVarKey: APP_KEY
   #
@@ -232,7 +232,7 @@ services:
   #       value: production
   #     - key: APP_URL
   #       fromService:
-  #         name: gestionemployerbackend-prod
+  #         name: leopardo-prod
   #         type: web
   #         property: host
   #     - key: DB_CONNECTION
@@ -261,7 +261,7 @@ services:
   #       value: shared_tenants,public
   #     - key: APP_KEY
   #       fromService:
-  #         name: gestionemployerbackend-prod
+  #         name: leopardo-prod
   #         type: web
   #         envVarKey: APP_KEY
 
