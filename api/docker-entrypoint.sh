@@ -149,7 +149,17 @@ run_migrate_with_retry() {
 }
 
 maybe_reset_test_database_once() {
+    # Audit sécurité #6537 — fail-closed : le reset destructif one-shot
+    # (RESET_TEST_DB_ONCE) n'a AUCUNE raison d'être positionné hors d'un
+    # environnement de test. Si APP_ENV=production et la variable est vraie,
+    # on refuse de démarrer plutôt que de DROP toutes les tables/schémas.
     reset_once=$(php -r "echo filter_var(getenv('RESET_TEST_DB_ONCE') ?: false, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';")
+
+    if [ "$reset_once" = "true" ] && [ "${APP_ENV:-}" = "production" ]; then
+        echo "FATAL: RESET_TEST_DB_ONCE=true interdit quand APP_ENV=production (audit #6537)." >&2
+        echo "Ce reset destructif est réservé aux environnements de test. Arrêt du démarrage." >&2
+        exit 1
+    fi
 
     if [ "$reset_once" != "true" ]; then
         return 0
