@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Modules\EdgeSync\Console\Commands;
 
 use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
 use Illuminate\Console\Command;
