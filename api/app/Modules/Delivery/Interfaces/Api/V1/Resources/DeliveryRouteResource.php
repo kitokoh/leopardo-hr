@@ -22,7 +22,7 @@ final class DeliveryRouteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'route_date' => $this->route_date?->toDateString(),
+            'route_date' => $this->route_date->toDateString(),
             'zone' => $this->zone,
             'status' => $this->status,
             'driver_id' => $this->driver_id,
