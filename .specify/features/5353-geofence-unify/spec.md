@@ -7,7 +7,7 @@
 **Status**: Implemented
 
 **Module**: `attendance` — périmètre : `api/app/Modules/Attendance/**` +
-`api/app/Modules/SmartAttendance/**` (chemins d'usage géofence),
+(périmètre géofence : `api/app/Modules/Attendance/**`),
 `dev-hub/tools/check-geofence-single-usage.sh` (garde CI),
 `.github/workflows/architecture-check.yml` (étape garde).
 
