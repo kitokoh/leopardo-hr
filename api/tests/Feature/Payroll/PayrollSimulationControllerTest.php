@@ -175,6 +175,8 @@ class PayrollSimulationControllerTest extends TestCase
             'country_code' => 'DZ',
             'gross_salary' => 60000,
         ])->assertOk();
+    }
+
     /**
      * #6727 — le détail `income_tax_by_slab` doit SOMMER vers `income_tax`
      * (impôt réel du moteur), y compris pour les règles pays à abattement
