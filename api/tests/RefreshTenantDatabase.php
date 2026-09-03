@@ -53,6 +53,17 @@ trait RefreshTenantDatabase
             // Feature en aval échoue en cascade. Observé 2026-08-17.
             DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
             DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
+            // Issue #6754 — un schéma `public` pollué par une fixture partielle
+            // ou un run interrompu fait échouer `migrate:fresh` au setup de
+            // TOUS les fichiers suivants du process : `db:wipe` ne purge que
+            // les tables résolues via le search_path courant et laisse des
+            // types composites/enum orphelins → le `CREATE TABLE` suivant lève
+            // 23505 (pg_type_typname_nsp_index, ex. `seed_locks`), observé
+            // 2026-09-02 en exécution multi-fichiers (2 fichiers Feature → 100 %
+            // d'erreurs). On purge donc explicitement tables ET types du schéma
+            // `public` avant le `migrate:fresh`.
+            $this->purgePublicSchema();
         }
 
         try {
@@ -69,6 +80,50 @@ trait RefreshTenantDatabase
     }
 
     /**
+     * Purge les tables ET les types du schéma `public`.
+     *
+     * `db:wipe` (migrate:fresh) ne supprime que les tables résolues via le
+     * search_path courant ; les types composites/enum orphelins d'un schéma
+     * pollué survivent et font échouer le CREATE TABLE de la migration
+     * homonyme (23505 pg_type_typname_nsp_index). Le DROP explicite table +
+     * type rend la re-migration hermétique quel que soit l'état résiduel.
+     *
+     * @see https://github.com/kitokoh/leopardo-hr/issues/6754
+     */
+    private function purgePublicSchema(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        DB::statement(<<<'SQL'
+            DO $do$
+            DECLARE
+                r record;
+            BEGIN
+                FOR r IN
+                    SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'
+                LOOP
+                    EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+                END LOOP;
+
+                -- Types composites/enum/domain orphelins (plus aucune table
+                -- `public` résidente ne les référence après la purge ci-dessus).
+                FOR r IN
+                    SELECT t.typname
+                    FROM pg_catalog.pg_type t
+                    JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+                    WHERE n.nspname = 'public'
+                      AND t.typtype IN ('c', 'e', 'd')
+                      AND t.typname NOT LIKE '\_%'
+                LOOP
+                    EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                END LOOP;
+            END $do$;
+            SQL);
+    }
+
+    /**
      * Refresh the in-memory database.
      */
     protected function refreshInMemoryDatabase(): void
@@ -81,10 +136,32 @@ trait RefreshTenantDatabase
     }
 
     /**
+     * Dernière classe de test ayant rafraîchi la base dans CE process.
+     *
+     * Statique de trait : chaque classe utilisant le trait possède sa propre
+     * copie (vérifié — sémantique PHP), donc toute nouvelle classe voit `null`
+     * au premier test : on force `RefreshDatabaseState::$migrated = false`
+     * pour rejouer une migration COMPLÈTE et propre, exactement comme un run
+     * isolé. Sans ce reset, l'état statique du fichier précédent (même
+     * process) peut être périmé (repo tenant sans tables, tables sans repo,
+     * search_path de session dérivé…) — issue #6754.
+     */
+    private static ?string $lastRefreshingClass = null;
+
+    /**
      * Refresh the test database.
      */
     protected function refreshTestDatabase(): void
     {
+        // Herméticité multi-fichiers (issue #6754) : un NOUVEAU fichier de
+        // tests dans le même process ne doit JAMAIS faire confiance à l'état
+        // statique laissé par le fichier précédent. Le run séquentiel devient
+        // ainsi équivalent au run isolé (migration fraîche par classe).
+        if (self::$lastRefreshingClass !== static::class) {
+            RefreshDatabaseState::$migrated = false;
+            self::$lastRefreshingClass = static::class;
+        }
+
         // Some MVP fixture tests rebuild schemas outside Laravel's migration
         // repository. The static flag can therefore remain stale even after a
         // teardown; verify the canonical tables before trusting it.
@@ -112,7 +189,7 @@ trait RefreshTenantDatabase
         // tenant fixture and make a healthy canonical database look missing;
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
-            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications"
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,\n                    to_regclass('shared_tenants.migrations') AS migrations_repo,\n                    to_regclass('shared_tenants.training_enrollments') AS training_enrollments"
         );
 
         return $row !== null
@@ -128,7 +205,21 @@ trait RefreshTenantDatabase
             // « relation "employees" does not exist » / 25P02 dans le test
             // suivant du worker, observés en CI workers 3-4).
             && $row->employees !== null
-            && $row->app_notifications !== null;
+            && $row->app_notifications !== null
+            // Issue #6754 : la fixture `CreatesMvpSchema` laisse un schéma
+            // PARTIEL qui peut inclure les 6 tables canoniques ci-dessus (garde
+            // #5201) MAIS sans repository `migrations` tenant ni les tables hors
+            // canon (ex. training_*) : un RefreshTenantDatabase suivant
+            // croirait la base prête et sauterait la re-migration → « relation
+            // "training_enrollments" does not exist » / 25P02 en cascade. Le
+            // repository de migrations est donc exigé : seule une migration
+            // complète le crée.
+            && $row->migrations_repo !== null
+            // Issue #6754 : garde complémentaire — un repo `migrations` peut
+            // exister (migrations jouées) alors que la table a disparu
+            // (interruption entre DROP et re-migration) ; `training_enrollments`
+            // est la table du crash « alter table ... add constraint ».
+            && $row->training_enrollments !== null;
     }
 
     /**
@@ -144,7 +235,17 @@ trait RefreshTenantDatabase
     private function runTenantMigrations(): void
     {
         if (DB::getDriverName() === 'pgsql') {
-            // Le schéma `shared_tenants` peut manquer sur une base fraîche
+            // Herméticité (issue #6754) : DROP + CREATE du schéma tenant AVANT
+            // la re-migration, symétrique de `runPublicMigrations`. Sans ce
+            // DROP, un état résiduel (run interrompu, fixture partielle) fait
+            // échouer `migrate --path=tenant` : tables orphelines sans repo →
+            // `relation "projects" already exists` (42P07, repo recréé vide) ;
+            // ou repo marquant `create_training_tables` comme joué alors que la
+            // table a disparu → `relation "training_enrollments" does not
+            // exist` pendant `alter table ... add constraint` (42P01) — le
+            // crash exact signalé dans #6754.
+            DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
+            // Le schéma peut manquer sur une base fraîche
             // (ex. jobs payroll-ci.yml / coverage qui ne passent pas par
             // .github/actions/setup-backend-db) : le créer de façon idempotente
             // pour que `SET search_path TO shared_tenants` ne lève pas

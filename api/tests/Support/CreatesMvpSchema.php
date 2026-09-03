@@ -6,6 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 
 trait CreatesMvpSchema
 {
@@ -1062,10 +1063,86 @@ trait CreatesMvpSchema
         }
 
         $this->setPostgresSearchPath('public');
+
+        // Issue #6754 — pollution croisée : après une classe
+        // `RefreshTenantDatabase` (migration COMPLÈTE) ou le bootstrap CI
+        // (setup-backend-db), le schéma `public` garde des types
+        // composites/enum/domain orphelins que `DROP TABLE ... CASCADE` ne
+        // supprime pas → le `CREATE TABLE` homonyme de la fixture SQL lève
+        // 23505 (pg_type_typname_nsp_index, ex. `seed_locks`). On purge donc
+        // les TYPES orphelins APRÈS les drops de tables gérées par la
+        // fixture. Les tables publiques issues de vraies migrations
+        // (company_requests, platform_support_tickets, …) DOIVENT survivre :
+        // de nombreux tests CreatesMvpSchema les requêtent (contrat API réel)
+        // alors que la fixture ne les recrée pas. (Régression 2026-09-02 :
+        // purge des tables en plus des types → 28 tests Feature rouges,
+        // relation "platform_support_tickets"/"company_requests" does not
+        // exist.)
         $this->dropPostgresPublicTables();
+
+        $this->purgeOrphanPublicTypes();
 
         DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+    }
+
+    /**
+     * Purge les types composites/enum/domain ORPHELINS du schéma `public`
+     * (issue #6754) — PAS les tables.
+     *
+     * Un type n'est droppé que s'il n'est référencé par AUCUNE colonne
+     * (tous schémas confondus) : les enums encore utilisés par des tables
+     * publiques réelles conservées (ex. company_requests.status) ne sont
+     * jamais supprimés (DROP TYPE ... CASCADE supprimerait la colonne).
+     *
+     * Les tables publiques issues de vraies migrations (bootstrap CI ou
+     * fichier RefreshTenantDatabase précédent) sont volontairement
+     * CONSERVÉES : la fixture ne recrée pas toutes les tables publiques que
+     * les tests CreatesMvpSchema requêtent (ex. company_requests,
+     * platform_support_tickets). Les tables que la fixture gère sont déjà
+     * purgées par `dropPostgresPublicTables()` + les DROP en tête de
+     * mvp_schema.pgsql.sql.
+     *
+     * @see RefreshTenantDatabase::purgePublicSchema() (lui purge table +
+     *     type car une re-migration complète suit immédiatement)
+     */
+    private function purgeOrphanPublicTypes(): void
+    {
+        DB::statement(<<<'SQL'
+            DO $do$
+            DECLARE
+                r record;
+            BEGIN
+                FOR r IN
+                    SELECT t.typname
+                    FROM pg_catalog.pg_type t
+                    JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+                    WHERE n.nspname = 'public'
+                      AND t.typtype IN ('c', 'e', 'd')
+                      AND t.typname NOT LIKE '\_%'
+                      -- Exclut tout type encore référencé par une colonne
+                      -- (attisdropped = false), directement ou via son type
+                      -- tableau (typelem) : garde anti DROP CASCADE sur les
+                      -- tables réelles conservées (ex. company_requests et
+                      -- son enum de statut).
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM pg_catalog.pg_attribute a
+                          WHERE NOT a.attisdropped
+                            AND (
+                                a.atttypid = t.oid
+                                OR a.atttypid IN (
+                                    SELECT at.oid
+                                    FROM pg_catalog.pg_type at
+                                    WHERE at.typelem = t.oid
+                                )
+                            )
+                      )
+                LOOP
+                    EXECUTE 'DROP TYPE IF EXISTS public.' || quote_ident(r.typname) || ' CASCADE';
+                END LOOP;
+            END $do$;
+            SQL);
     }
 
     private function loadPostgresFixtureSchema(): void
