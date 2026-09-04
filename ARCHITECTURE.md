@@ -62,7 +62,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (22, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `TravelAgency`, `Delivery` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (25, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
 
 
 

@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (21 modules)
+## Modules existants (25 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -27,6 +27,9 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `CRM` | CRM client : consentements, segments, campagnes, canaux de communication (issues #5722/#5723/#5724/#5726) |
 | `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
 | `Delivery` | Livraison générique multi-tenant : colis, tournées, livreurs, tracking, COD, contrats sources (DELIVERY-101..208, BC-26) |
+| `EduManager` | Verticale scolaire BC-16 : inscriptions, classes, notes, frais, portail guardian, marketing admissions |
+| `Restaurant` | Solutions restaurant publiques BC-25 (enquêtes) |
+| `RestaurantManager` | Verticale restauration BC-25 : commandes, menus, livraisons, fidélité, promotions, kiosque |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
 | `Expense` | Notes de frais employés |
 | `Fleet` | Véhicules, trajets, affectations |
