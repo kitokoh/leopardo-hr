@@ -46,6 +46,23 @@ class CrmPilotSeeder extends Seeder
 
     public function run(): void
     {
+        // #6543 (audit-secu M4) : seeder pilote = credentials déterministes
+        // (pilot123) — refusé en production et respecte DISABLE_DEMO_SEEDING
+        // comme les autres seeders démo.
+        if (app()->environment('production')) {
+            $this->command?->warn('CrmPilotSeeder skipped (APP_ENV=production).');
+
+            return;
+        }
+
+        $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
+
+        if ($disabled) {
+            $this->command?->warn('CrmPilotSeeder skipped (DISABLE_DEMO_SEEDING=true).');
+
+            return;
+        }
+
         foreach (self::PILOTS as $pilot) {
             $this->seedPilot($pilot['slug'], $pilot['name'], $pilot['domain']);
         }
