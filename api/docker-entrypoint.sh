@@ -151,6 +151,15 @@ run_migrate_with_retry() {
 maybe_reset_test_database_once() {
     reset_once=$(php -r "echo filter_var(getenv('RESET_TEST_DB_ONCE') ?: false, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';")
 
+    # #6537 (audit-secu E-1) : RESET_TEST_DB_ONCE est une variable documentée
+    # pour les TESTS ; la positionner sur un environnement de production doit
+    # faire échouer le boot (fail-closed), jamais détruire la base (DROP de
+    # toutes les tables/séquences/vues + DROP SCHEMA shared_tenants CASCADE).
+    if [ "$reset_once" = "true" ] && [ "${APP_ENV:-}" = "production" ]; then
+        echo "FATAL: RESET_TEST_DB_ONCE=true is forbidden when APP_ENV=production (destructive one-shot DB reset). Aborting startup." >&2
+        exit 1
+    fi
+
     if [ "$reset_once" != "true" ]; then
         return 0
     fi
