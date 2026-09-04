@@ -94,6 +94,7 @@ return [
         'wf_payment_receive_status' => 'Un document payé ou annulé ne peut pas recevoir de paiement.',
         'wf_payment_over_total' => 'Le cumul des paiements dépasse le total TTC du document.',
         'wf_cancel_status' => 'Un document payé ne peut pas être annulé.',
+        'wf_document_missing_for_payment' => 'Le document comptable est introuvable (verrouillage du paiement).',
         'wf_credit_note_requires_invoice' => 'Un avoir doit être lié à une facture.',
         'wf_source_invoice_not_issuable' => 'Une facture annulée ou brouillon ne peut pas générer d\'avoir.',
         'wf_source_invoice_paid' => 'La facture source est déjà entièrement payée : aucun avoir possible.',

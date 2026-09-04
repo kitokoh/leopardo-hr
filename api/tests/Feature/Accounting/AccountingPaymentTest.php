@@ -409,4 +409,48 @@ class AccountingPaymentTest extends TestCase
 
         $this->forgetCompany();
     }
+
+    // ── #6536 : lost update sur paid_amount (encaissements concurrents) ─────
+
+    public function test_register_with_stale_document_re_reads_paid_amount_under_lock(): void
+    {
+        // Simulation d'une course : le 2e appel reçoit une instance de
+        // document STALE (paid_amount lu avant le commit du 1er paiement).
+        // Avant #6536, le 2e appel réécrivait paid_amount = 500 (cumul réel
+        // 1000 perdu, document jamais payé) ; désormais le service relit le
+        // document SOUS lockForUpdate dans sa transaction.
+        $company = $this->company();
+        $this->bindCompany($company);
+        $invoice = $this->document($company, 'sent', '2026-08-05', 1190.0);
+
+        app(PaymentRegistrationService::class)->register($invoice, 500.0, 'bank_transfer');
+        $this->assertSame(500.0, $invoice->refresh()->paid_amount);
+
+        // 2e encaissement avec l'instance stale (paid_amount toujours 0 en mémoire).
+        app(PaymentRegistrationService::class)->register($invoice, 500.0, 'cash');
+
+        $invoice->refresh();
+        $this->assertSame(1000.0, $invoice->paid_amount);
+        $this->assertSame(DocumentStatus::PartiallyPaid->value, $invoice->status);
+        $this->assertSame(2, AccountingPayment::query()->where('document_id', $invoice->id)->count());
+
+        $this->forgetCompany();
+    }
+
+    public function test_register_with_stale_document_rejects_over_total_instead_of_silent_lost_update(): void
+    {
+        $company = $this->company();
+        $this->bindCompany($company);
+        $invoice = $this->document($company, 'sent', '2026-08-05', 1190.0);
+
+        app(PaymentRegistrationService::class)->register($invoice, 1000.0, 'bank_transfer');
+        $this->assertSame(1000.0, $invoice->refresh()->paid_amount);
+
+        // L'instance stale croit qu'il reste 1190 de disponible ; le cumul
+        // réel (1000 + 500 > 1190) doit être rejeté, pas écrit en silence.
+        $this->expectException(PaymentExceedsTotalException::class);
+        app(PaymentRegistrationService::class)->register($invoice, 500.0, 'cash');
+
+        $this->forgetCompany();
+    }
 }

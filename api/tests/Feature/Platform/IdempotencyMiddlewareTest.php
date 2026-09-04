@@ -187,4 +187,24 @@ class IdempotencyMiddlewareTest extends TestCase
             'Deux tokens différents ne doivent jamais partager la réponse idempotente.'
         );
     }
+
+    public function test_cache_store_outage_degrades_gracefully_instead_of_500(): void
+    {
+        // #6557 — une panne du stockage de cache (Redis injoignable, store
+        // dégradé) ne doit JAMAIS transformer une requête légitime en 500 :
+        // le middleware journalise et laisse la requête s'exécuter.
+        Cache::shouldReceive('get')
+            ->once()
+            ->andThrow(new \RuntimeException('Connection refused — Redis down'));
+
+        $response = $this->postJson(
+            '/api/_test/rtmx-idem',
+            ['n' => 3],
+            ['Authorization' => self::AUTH, 'Idempotency-Key' => self::KEY]
+        );
+
+        $response->assertOk();
+        $response->assertHeaderMissing('Idempotent-Replayed');
+        $this->assertNotNull($response->json('id'));
+    }
 }

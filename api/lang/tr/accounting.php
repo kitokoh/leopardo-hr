@@ -93,6 +93,7 @@ return [
         'wf_payment_receive_status' => 'Ödenmiş veya iptal edilmiş bir belge ödeme alamaz.',
         'wf_payment_over_total' => 'Ödemelerin toplamı belgenin genel tutarını aşıyor.',
         'wf_cancel_status' => 'Ödenmiş bir belge iptal edilemez.',
+        'wf_document_missing_for_payment' => 'Muhasebe belgesi bulunamadı (ödeme kilidi).',
         'wf_credit_note_requires_invoice' => 'İade faturası bir faturaya bağlı olmalıdır.',
         'wf_source_invoice_not_issuable' => 'İptal edilmiş veya taslak bir fatura iade faturası oluşturamaz.',
         'wf_source_invoice_paid' => 'Kaynak fatura zaten tamamen ödendi: iade faturası mümkün değil.',
