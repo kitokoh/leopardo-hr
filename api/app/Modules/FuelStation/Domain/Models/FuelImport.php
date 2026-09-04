@@ -54,16 +54,22 @@ class FuelImport extends Model
 
     protected $fillable = [
         'company_id',
-        'kind',
-        'file_name',
+        'entity_type',
+        'filename',
         'status',
         'total_rows',
-        'processed_rows',
-        'failed_rows',
-        'error_summary',
+        'valid_rows',
+        'error_rows',
+        'columns',
+        'preview_data',
+        'errors',
+        'raw_rows',
+        'result',
         'created_by',
-        'started_at',
-        'finished_at',
+        'committed_by',
+        'cancelled_by',
+        'committed_at',
+        'cancelled_at',
     ];
 
     /** @return array<string, string> */
