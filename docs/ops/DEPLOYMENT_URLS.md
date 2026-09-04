@@ -29,6 +29,28 @@
   (défaut `https://gestionemployerbackend.onrender.com`).
 - **Rollback** : `RENDER_ROLLBACK_HOOK_URL` (déclenché en cas d'échec de deploy prod).
 
+## Surfaces prod (topologie tag `vX.Y.Z` — `deploy-prod.yml`)
+
+Vraie production, promue uniquement par un tag git validé (checks requis
+verts, tag ancêtre de `main`). Registre : `docs/ops/DOMAINS.md`.
+
+| Surface | URL | Service | Déployé par |
+|---|---|---|---|
+| API Laravel prod (base `/api/v1`) | `https://leopardo-prod.onrender.com` | Render prod (web service `leopardo-prod`, `srv-dacsr6gae00c73ddk150`) + Neon (projet `LEOPARDO`, branche `production`) | job `deploy-prod` |
+| Vitrine / portail web prod | `https://leopardo-prod.vercel.app` | Vercel prod (projet `leopardo-prod`, équipe ibrahimkoubaye-6514) — `front/web` buildé avec `NEXT_PUBLIC_API_URL` → API prod | job `deploy-web-prod` |
+| Admin plateforme prod | `https://leo-admin-prod.pages.dev` | Cloudflare Pages prod (projet `leo-admin-prod`, compte prod) — `front/admin-dashboard` buildé avec `VITE_API_URL` → API prod | job `deploy-admin-prod` |
+
+Secrets GitHub requis (fail-closed) : `RENDER_PROD_API_KEY`,
+`RENDER_PROD_SERVICE_ID`, `PROD_RENDER_API_BASE_URL`,
+`VERCEL_PROD_TOKEN`, `VERCEL_PROD_ORG_ID`, `VERCEL_PROD_PROJECT_ID`,
+`CLOUDFLARE_PROD_API_TOKEN`, `CLOUDFLARE_PROD_ACCOUNT_ID`.
+Variables GitHub : `RENDER_PROD_SERVICE_ID`, `PROD_WEB_PROD_URL`,
+`PROD_ADMIN_PROD_URL` (liens `environment.url`, cosmétique).
+
+Côté API prod, `CORS_EXTRA_ORIGIN`/`ADMIN_DASHBOARD_URL` =
+`https://leo-admin-prod.pages.dev`, `FRONTEND_URL` =
+`https://leopardo-prod.vercel.app` (posés sur le service Render prod).
+
 ## Déclenchement d'un déploiement
 
 ```bash
