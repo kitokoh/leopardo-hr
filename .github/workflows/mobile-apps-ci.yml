@@ -188,7 +188,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ matrix.project.path }}
-        run: flutter pub get --offline || flutter pub get
+        run: flutter pub get
 
       - name: Regenerate shared localizations
         # #4762 : les apps consomment AppLocalizations depuis le package core.
@@ -303,7 +303,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ matrix.project.path }}
-        run: flutter pub get --offline || flutter pub get
+        run: flutter pub get
 
       - name: Restore Firebase config from secret (issue #1467)
         # google-services.json n'est PLUS committé (clé API réelle exposée) :
