@@ -42,7 +42,7 @@ final class TravelWebhookConsumer implements TravelOutboxConsumer
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $companyId = (string) ($payload['company_id'] ?? '');
         $tripId = $this->tripIdFor($payload);

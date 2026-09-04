@@ -29,7 +29,7 @@ interface TravelOutboxConsumer
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function handle(array $payload): void;
+    public function handle(string $eventType, array $payload): void;
 
 
 

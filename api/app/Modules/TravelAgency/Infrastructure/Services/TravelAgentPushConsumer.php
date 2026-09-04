@@ -34,7 +34,7 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $companyId = isset($payload['company_id']) ? (string) $payload['company_id'] : '';
         $eventType = isset($payload['event_type']) ? (string) $payload['event_type'] : '';
