@@ -17,6 +17,7 @@ export * from './sections';
 export { DemoSection } from './DemoSection';
 export { ParticleField } from './ParticleField';
 export { LegalPageShell } from './LegalPageShell';
+export { RestaurantSolutionWizard } from './RestaurantSolutionWizard';
 
 // Common Components
 export * from './common';

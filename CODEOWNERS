@@ -25,6 +25,13 @@
 /api/app/Modules/Accounting/ @kitokoh
 /api/app/Modules/Expense/   @kitokoh
 /api/app/Modules/Recruitment/ @kitokoh
+/api/app/Modules/EduManager/ @kitokoh
+/api/app/Modules/CRM/       @kitokoh
+/api/app/Modules/TravelAgency/ @kitokoh
+/api/app/Modules/Marketing/ @kitokoh
+/api/app/Modules/Growth/    @kitokoh
+/api/app/Modules/Notification/ @kitokoh
+/api/app/Modules/RestaurantManager/ @kitokoh
 /api/app/Modules/CRM/       @kitokoh
 /api/app/Modules/Marketing/ @kitokoh
 /api/app/Modules/Growth/    @kitokoh
@@ -38,6 +45,7 @@
 /api/app/Modules/Cabinet/   @kitokoh
 /api/app/Modules/Billing/   @kitokoh
 /api/app/Modules/Fleet/     @kitokoh
+/api/app/Modules/Delivery/  @kitokoh
 /api/app/AI/                @kitokoh
 
 # Frontend web (Next.js)
@@ -64,6 +72,9 @@
 /api/app/Policies/          @kitokoh
 /api/config/                @kitokoh
 
+# CRM client module (bounded context tenant, issue #5745 / ADR-CRM-001)
+/api/app/Modules/CRM/       @kitokoh
+
 # Audit #1712 + issue #1730 : @kitokoh est seul propriétaire humain aujourd'hui.
 # ÉTAT RÉEL de la protection (source : dev-hub/tools/branch-protection-canonical.json,
 # vérifié via API le 2026-08-15, issue #3533) : **0 approval requis**,
@@ -79,3 +90,5 @@
 #      (ex. @second-maintainer) ET activer `require_code_owner_reviews` pour
 #      répartir les révisions obligatoires.
 /api/app/Modules/FuelStation/ @kitokoh
+/api/app/Modules/EduManager/ @kitokoh
+/api/app/Modules/Restaurant/ @kitokoh

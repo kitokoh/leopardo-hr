@@ -11,6 +11,9 @@ use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
+use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdateApplicationStatusRequest;
+use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdatePartnerRateRequest;
+use App\Modules\Growth\Interfaces\Api\V1\Requests\UpdatePayoutStatusRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,12 +48,9 @@ class GrowthAdminController extends Controller
     /**
      * Update partner commission rate with audit log.
      */
-    public function updateRate(Request $request, Partner $partner): JsonResponse
+    public function updateRate(UpdatePartnerRateRequest $request, Partner $partner): JsonResponse
     {
-        $validated = $request->validate([
-            'rate' => 'required|integer|min:0|max:10000',
-            'reason' => 'required|string|min:5',
-        ]);
+        $validated = $request->validated();
 
         $this->partnerService->updatePartnerRate(
             $partner,
@@ -77,12 +77,9 @@ class GrowthAdminController extends Controller
     /**
      * Update payout request status with audit.
      */
-    public function updatePayoutStatus(Request $request, PartnerPayoutRequest $payout): JsonResponse
+    public function updatePayoutStatus(UpdatePayoutStatusRequest $request, PartnerPayoutRequest $payout): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|in:paid,rejected',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $this->partnerService->updatePayoutStatus(
             $payout,
@@ -97,11 +94,9 @@ class GrowthAdminController extends Controller
     /**
      * Approve or Reject an application.
      */
-    public function updateApplicationStatus(Request $request, Partner $partner): JsonResponse
+    public function updateApplicationStatus(UpdateApplicationStatusRequest $request, Partner $partner): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|in:approved,rejected',
-        ]);
+        $validated = $request->validated();
 
         if ($validated['status'] === 'approved') {
             $this->partnerService->approve($partner, Auth::id());

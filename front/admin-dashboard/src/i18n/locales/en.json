@@ -223,7 +223,21 @@
     "hrReportUnavailable": "Unable to generate the HR report (endpoint unavailable).",
     "clientSpaceNote": "Exports are available in the client space.",
     "historyClientOnly": "History visible to clients only.",
-    "historyError": "Unable to load history."
+    "historyError": "Unable to load history.",
+    "colLicense": "License",
+    "colLastSync": "Last sync",
+    "colActions": "Actions",
+    "sync": "Sync",
+    "syncing": "Sync…",
+    "details": "Details",
+    "revoke": "Revoke",
+    "revokeConfirm": "Confirm revocation?",
+    "revoking": "Revoking…",
+    "loadError": "Error loading Edge nodes.",
+    "syncError": "Error triggering the sync.",
+    "syncSuccess": "Sync started for {name}",
+    "revokeSuccess": "License revoked for {name}",
+    "revokeError": "Error revoking the license."
   },
   "settingsEdgePairingRemoved": "Edge pairing removed.",
   "teamArchiveSuccess": "Employee archived.",
@@ -384,6 +398,63 @@
         "won": "Won",
         "lost": "Lost"
       }
+    },
+    "hub_title": "CRM",
+    "hub_subtitle": "Accounts, contacts, leads and opportunities for your company.",
+    "opportunities": "Opportunities",
+    "account_detail": "Account",
+    "stage": "Stage",
+    "status": {
+      "approved": "Approved",
+      "cancelled": "Cancelled",
+      "detected": "Detected",
+      "pending": "Pending validation",
+      "rejected": "Rejected"
+    },
+    "tasks": "Tasks",
+    "activities": "Activities",
+    "load_error": "Unable to load CRM data. Please retry.",
+    "empty_accounts": "No accounts yet.",
+    "empty_contacts": "No contacts.",
+    "empty_tasks": "No tasks.",
+    "empty_activities": "No activities.",
+    "empty_leads": "No leads yet.",
+    "empty_opportunities": "No opportunities yet.",
+    "task_completed": "Task completed.",
+    "enable": {
+      "auto": {
+        "gps": "Enable automatic GPS"
+      }
+    },
+    "forced": "Enforced",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Your company's GPS zone is not configured yet."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Location permission denied. Enable GPS in settings to start monitoring."
+    },
+    "presence": {
+      "in": {
+        "progress": "Presence in progress since {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Recent sessions"
+    },
+    "rejected": "Rejected",
+    "sessions": {
+      "load": {
+        "error": "Unable to load GPS sessions. Check your connection."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Unable to start GPS monitoring. Check location permissions and try again."
+      }
     }
   },
   "attendanceBreakTitle": "Take a break",
@@ -416,9 +487,9 @@
     "brand": {
       "subtitle": "Conversational, mobile-first, modular."
     },
-    "hero": {
-      "title": "Your workday starts here, not in a back office.",
-      "description": "Clock-ins, personal tracking, and active HR modules open first on the phone, with a simple and readable experience."
+    "creating": "Creating your account...",
+    "first": {
+      "name": "First name"
     },
     "story": {
       "clarity": {
@@ -439,7 +510,11 @@
       "team": "My team"
     },
     "presences": "Attendance",
-    "tasks": "Tasks"
+    "tasks": "Tasks",
+    "hero": {
+      "title": "Your workday starts here, not in a back office.",
+      "description": "Clock-ins, personal tracking, and active HR modules open first on the phone, with a simple and readable experience."
+    }
   },
   "holidays": {
     "page": {
@@ -2280,7 +2355,21 @@
       }
     },
     "sessions": "Sessions",
-    "break_minutes": "{minutes} min"
+    "break_minutes": "{minutes} min",
+    "payroll_ready": {
+      "subject": "Your payslip is ready",
+      "greeting": "Hello :name,",
+      "body": "Your payslip for :period is ready. You can review it in Leopardo HR.",
+      "action": "View my payslip",
+      "footer": "Please review your information before accounting export."
+    },
+    "absence_approved": {
+      "subject": "Your leave request has been approved",
+      "greeting": "Hello :name,",
+      "body": "Your leave request for :period has been approved.",
+      "action": "View request",
+      "footer": "The team schedule has been updated."
+    }
   },
   "teamEmptyHint": "Start by adding your team with the button below.",
   "attendanceCurrentMonth": "Current month",
@@ -2621,7 +2710,8 @@
     "errReconciliations": "Unable to load reconciliations.",
     "stationsCaption": "Fleet stations",
     "incidentsCaption": "Reported incidents",
-    "reconciliationsCaption": "Reconciliation reports"
+    "reconciliationsCaption": "Reconciliation reports",
+    "apiUnavailable": "The FuelStation API (stations reference, incidents, reconciliations) is not delivered yet — the page will become operational with the BC-15 batch (#6373)."
   },
   "adminPalette": {
     "appLoading": "Loading the administration…",
@@ -2741,21 +2831,44 @@
       }
     },
     "language": {
+      "label": "Language",
+      "variants": {
+        "fr-FR": "French (France)",
+        "fr-BE": "French (Belgium)",
+        "fr-CA": "French (Canada)",
+        "ar-SA": "Arabic (Saudi Arabia)",
+        "ar-MA": "Arabic (Morocco)",
+        "tr-TR": "Turkish (Turkey)",
+        "en-US": "English (United States)",
+        "en-GB": "English (United Kingdom)"
+      },
       "saved": "Language saved.",
       "subtitle": "The chosen language also drives future notifications and texts.",
       "title": "Language"
     },
-    "last": {
-      "name": {
-        "label": "Last name",
-        "required": "Last name is required"
-      }
-    },
-    "logout": "Log out",
-    "manager": {
-      "account": {
-        "hint": "A manager account must remain clear, secure and ready for field decisions."
-      }
+    "or": "or",
+    "countries": {
+      "BF": "Burkina Faso",
+      "BJ": "Benin",
+      "CA": "Canada",
+      "CF": "Central African Republic",
+      "CG": "Congo",
+      "CI": "Côte d'Ivoire",
+      "CM": "Cameroon",
+      "DZ": "Algeria",
+      "FR": "France",
+      "GA": "Gabon",
+      "GB": "United Kingdom",
+      "GQ": "Equatorial Guinea",
+      "MA": "Morocco",
+      "ML": "Mali",
+      "NE": "Niger",
+      "SN": "Senegal",
+      "TD": "Chad",
+      "TG": "Togo",
+      "TN": "Tunisia",
+      "TR": "Türkiye",
+      "US": "United States"
     },
     "mobile": {
       "access": "Mobile access"
@@ -2832,6 +2945,18 @@
     "team": {
       "drive": "Team drive",
       "drive_hint": "Profile, role and permissions remain readable for HR actions."
+    },
+    "last": {
+      "name": {
+        "label": "Last name",
+        "required": "Last name is required"
+      }
+    },
+    "logout": "Log out",
+    "manager": {
+      "account": {
+        "hint": "A manager account must remain clear, secure and ready for field decisions."
+      }
     }
   },
   "smartAttendanceSurveillanceInactive": "Inactive surveillance",
@@ -3476,6 +3601,48 @@
       "sim": {
         "compare": "Salary to compare"
       }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Enable automatic GPS"
+      }
+    },
+    "forced": "Enforced",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Your company's GPS zone is not configured yet."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Location permission denied. Enable GPS in settings to start monitoring."
+    },
+    "presence": {
+      "in": {
+        "progress": "Presence in progress since {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Recent sessions"
+    },
+    "rejected": "Rejected",
+    "sessions": {
+      "load": {
+        "error": "Unable to load GPS sessions. Check your connection."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Unable to start GPS monitoring. Check location permissions and try again."
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "cancelled": "Cancelled",
+      "detected": "Detected",
+      "pending": "Pending validation",
+      "rejected": "Rejected"
     }
   },
   "payrollSummaryUnavailable": "Payroll summary temporarily unavailable",
@@ -3601,6 +3768,39 @@
       "detected": "Detected",
       "pending": "Pending validation",
       "rejected": "Rejected"
+    },
+    "settings": {
+      "title": "Accounting settings",
+      "subtitle": "Company, VAT, numbering and document templates.",
+      "load_error": "Unable to load accounting settings.",
+      "save": "Save",
+      "saved": "Settings saved.",
+      "save_error": "Saving failed.",
+      "reload": "Reload",
+      "company_title": "Company information",
+      "company_subtitle": "Name, address and tax identifiers.",
+      "series_title": "Numbering",
+      "series_subtitle": "Suffix and starting point for invoice series.",
+      "mentions_title": "Legal mentions",
+      "mentions_subtitle": "Text displayed in the invoice footer.",
+      "mentions_placeholder": "E.g.: VAT not applicable, article 87 of the CGI…",
+      "tva_title": "Default VAT",
+      "tva_subtitle": "Rate applied to new invoices.",
+      "add_rate": "Add a rate",
+      "remove_rate": "Remove",
+      "rate_label": "Label",
+      "rate_default_label": "Standard VAT",
+      "rate_value": "Rate (%)",
+      "currency": "Currency",
+      "document_language": "Document language",
+      "lang_fr": "French",
+      "lang_en": "English",
+      "lang_ar": "Arabic",
+      "lang_tr": "Turkish",
+      "payment_terms": "Payment terms (days)",
+      "template_style": "Invoice template",
+      "template_classic": "Classic",
+      "template_modern": "Modern"
     }
   },
   "attendanceRoleForbidden": "Your role does not allow this attendance action.",
@@ -3851,6 +4051,169 @@
       "loadError": "Unable to load the point of sale.",
       "loading": "Loading point of sale…",
       "actionError": "Action failed, please retry."
+    },
+    "home": {
+      "title": "Restaurant Manager",
+      "subtitle": "POS, reservations, stock and delivery",
+      "loadError": "Unable to load the restaurant dashboard.",
+      "referential": "Referential",
+      "referentialDesc": "Branches, floor plan, catalog, ingredients, menus, suppliers",
+      "reservations": "Reservations",
+      "reservationsDesc": "Slots, check-in, deposits",
+      "stock": "Stock & purchasing",
+      "stockDesc": "Levels, purchase orders, receivings, counts",
+      "delivery": "Delivery & loyalty",
+      "deliveryDesc": "Zones, riders, rounds, points, promotions",
+      "reports": "Reports",
+      "reportsDesc": "Sales, occupancy, products, COGS, CSV export",
+      "open": "Open",
+      "kpiRevenue": "Today's revenue",
+      "kpiOrders": "Today's orders",
+      "kpiBasket": "Average basket",
+      "kpiRotation": "Table rotation",
+      "alerts": "Stock alerts",
+      "alertLine": "Ingredient"
+    },
+    "crud": {
+      "search": "Search...",
+      "create": "New",
+      "edit": "Edit",
+      "delete": "Delete",
+      "loading": "Loading...",
+      "empty": "No results.",
+      "loadError": "Unable to load data.",
+      "saveError": "Save failed.",
+      "deleteError": "Unable to delete.",
+      "confirmDelete": "Delete this item?",
+      "createTitle": "Create",
+      "editTitle": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "ref": {
+      "title": "Restaurant referential",
+      "subtitle": "Branches, floor plan, catalog, ingredients, menus, tax, suppliers",
+      "tabBranches": "Branches",
+      "tabZones": "Zones",
+      "tabTables": "Tables",
+      "tabCategories": "Categories",
+      "tabProducts": "Products",
+      "tabIngredients": "Ingredients",
+      "tabUnits": "Units",
+      "tabMenus": "Menus",
+      "tabTaxRates": "VAT",
+      "tabSuppliers": "Suppliers",
+      "tabHours": "Hours",
+      "branches": "Branches (establishments)",
+      "zones": "Zones (rooms)",
+      "tables": "Tables (floor plan)",
+      "categories": "Categories",
+      "products": "Products (catalog & recipes)",
+      "ingredients": "Ingredients (raw materials)",
+      "units": "Units",
+      "menus": "Menus (set meals)",
+      "taxRates": "VAT rates",
+      "suppliers": "Suppliers",
+      "hours": "Opening hours"
+    },
+    "res": {
+      "title": "Reservations",
+      "subtitle": "Slots, check-in, no-show, deposits",
+      "new": "New reservation",
+      "name": "Customer name",
+      "phone": "Phone",
+      "create": "Create",
+      "colRef": "Reference",
+      "colContact": "Customer",
+      "colWhen": "When",
+      "colCovers": "Covers",
+      "colStatus": "Status",
+      "confirm": "Confirm",
+      "checkin": "Check-in",
+      "noshow": "No-show",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "empty": "No reservations.",
+      "loadError": "Unable to load reservations.",
+      "createError": "Creation failed.",
+      "actionError": "Action failed."
+    },
+    "stock": {
+      "title": "Stock & purchasing",
+      "subtitle": "Levels, alerts, purchase orders, receivings",
+      "tabLevels": "Levels & alerts",
+      "tabPO": "Purchase orders",
+      "tabReceivings": "Receivings",
+      "colQty": "Quantity",
+      "colCost": "Average cost",
+      "colThreshold": "Threshold",
+      "colAlert": "Alert",
+      "colRef": "Reference",
+      "colStatus": "Status",
+      "colTotal": "Total",
+      "colDate": "Date",
+      "alert": "Threshold reached",
+      "ok": "OK",
+      "newPO": "New purchase order",
+      "createPO": "Create order",
+      "send": "Send",
+      "receive": "Receive",
+      "newReceiving": "New receiving",
+      "createReceiving": "Receive",
+      "loading": "Loading...",
+      "loadError": "Unable to load stock data.",
+      "poError": "Purchase order creation failed.",
+      "actionError": "Action failed on the order.",
+      "rcvError": "Receiving failed."
+    },
+    "del": {
+      "title": "Delivery & loyalty",
+      "subtitle": "Zones, riders, rounds, points, promotions",
+      "tabZones": "Zones",
+      "tabRiders": "Riders",
+      "tabDeliveries": "Deliveries",
+      "tabLoyalty": "Loyalty",
+      "tabPromos": "Promotions",
+      "colName": "Name",
+      "colPhone": "Phone",
+      "colVehicle": "Vehicle",
+      "colActive": "Active",
+      "colStatus": "Status",
+      "colFees": "Fees & minimum",
+      "colPoints": "Points",
+      "colTier": "Tier",
+      "colCode": "Code",
+      "colTitle": "Title",
+      "colType": "Type",
+      "colValue": "Value",
+      "colUses": "Uses",
+      "fee": "Fee",
+      "newDelivery": "New delivery",
+      "create": "Create",
+      "assign": "Assign",
+      "out": "Out for delivery",
+      "deliver": "Delivered",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "loadError": "Unable to load delivery/loyalty data.",
+      "createError": "Delivery creation failed.",
+      "actionError": "Action failed.",
+      "riderPrompt": "Rider ID to assign:"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Sales, occupancy, products, COGS, cash registers and CSV export",
+      "tabSales": "Sales",
+      "tabOccupancy": "Occupancy",
+      "tabProducts": "Products",
+      "tabCogs": "COGS",
+      "tabPos": "Registers",
+      "export": "CSV export",
+      "loading": "Loading...",
+      "empty": "No data for this period.",
+      "loadError": "Unable to load the report.",
+      "exportError": "CSV export failed."
     }
   },
   "commonLanguageArabic": "العربية",
@@ -4340,7 +4703,10 @@
     "accountingDashboard": "Accounting — Dashboard",
     "accountingSettings": "Accounting — Settings",
     "fuelStation": "Fuel stations",
-    "travelAgency": "Travel agency"
+    "travelAgency": "Travel agency",
+    "surveyStats": "Solution surveys",
+    "solutionSurveys": "Solution surveys",
+    "travel": "Travel Agency"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -4416,6 +4782,327 @@
   "back": "Back",
   "settingsRecoveryEmailLabel": "Recovery email",
   "travel": {
+    "common": {
+      "retry": "Retry",
+      "featureDisabledTitle": "Travel Agency module inactive",
+      "featureDisabledBody": "The travelagency flag is not enabled for the connected tenant. Contact a platform administrator to enable it.",
+      "tenantRequiredTitle": "Tenant context required",
+      "tenantRequiredBody": "Travel agency data requires a tenant session (impersonation or manager account).",
+      "loadErrorTitle": "Unable to load",
+      "loadErrorBody": "An error occurred while querying the travel API.",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "close": "Close",
+      "search": "Search",
+      "actions": "Actions",
+      "confirmDeleteTitle": "Delete this item?",
+      "confirmDeleteBody": "This action cannot be undone. Do you really want to delete \"{name}\"?",
+      "status": "Status",
+      "active": "Active",
+      "disabled": "Inactive",
+      "loading": "Loading…",
+      "noData": "No data",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "reason": "Reason",
+      "reasonRequired": "A reason is required.",
+      "previous": "Previous",
+      "next": "Next",
+      "all": "All",
+      "export": "Export",
+      "yes": "Yes",
+      "no": "No",
+      "perPage": "per page",
+      "city": "City",
+      "carrier": "Carrier",
+      "saving": "Saving…",
+      "selectPlaceholder": "— Select —"
+    },
+    "home": {
+      "title": "Travel Agency",
+      "subtitle": "Manage the TravelAgency vertical: network, sales, ticketing and monitoring.",
+      "flagActive": "Module active",
+      "flowTitle": "Business flow",
+      "flowBody": "Referential & network → trip scheduling → publication → counter sales → ticketing & check-in → reports."
+    },
+    "referential": {
+      "title": "Referential",
+      "subtitle": "Countries, cities, stations, offices, carriers, classes and vehicles.",
+      "tabs": "Referential sections",
+      "countries": "Countries",
+      "cities": "Cities",
+      "stations": "Stations & terminals",
+      "offices": "Sales offices",
+      "carriers": "Carriers",
+      "classes": "Service classes",
+      "vehicles": "Vehicles"
+    },
+    "network": {
+      "title": "Routes & trips",
+      "subtitle": "Lines, stops, scheduling, pricing and publication.",
+      "tabs": "Network sections",
+      "routes": "Routes & stops",
+      "trips": "Trips & pricing",
+      "publish": "Publish",
+      "cancelTrip": "Cancel trip",
+      "stops": "Stops",
+      "routeStopsTitle": "Route stops",
+      "addStop": "Add stop",
+      "prices": "Pricing",
+      "tripPricesTitle": "Trip pricing",
+      "addPrice": "Add price",
+      "origin": "Origin",
+      "destination": "Destination",
+      "distance": "Distance (km)",
+      "duration": "Duration (min)",
+      "rank": "Rank",
+      "stopover": "Stopover",
+      "minDuration": "Min duration (min)",
+      "route": "Route",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "means": "Means",
+      "class": "Class",
+      "adultPrice": "Adult price",
+      "childPrice": "Child price",
+      "currency": "Currency",
+      "routeCode": "Route code",
+      "tripCode": "Trip code",
+      "vehicle": "Vehicle",
+      "departureDate": "Departure date",
+      "departureTime": "Departure time",
+      "arrivalDate": "Arrival date",
+      "arrivalTime": "Arrival time"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "subtitle": "Counter sales, confirmation, cancellation, refund and tickets.",
+      "reference": "Reference",
+      "referencePlaceholder": "e.g. GV-2026-0001…",
+      "detail": "Details",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "refund": "Refund",
+      "issueTickets": "Issue tickets",
+      "detailTitle": "Booking",
+      "paymentStatus": "Payment",
+      "trip": "Trip",
+      "source": "Source",
+      "passengerCount": "Passengers",
+      "total": "Total",
+      "passengers": "Passengers",
+      "seat": "Seat",
+      "noTickets": "No tickets issued",
+      "confirmTitle": "Confirm booking",
+      "confirmBody": "Confirm booking {ref}? Seats will be marked as sold.",
+      "issueTicketsTitle": "Issue tickets",
+      "issueTicketsBody": "Issue one named ticket per passenger of {ref}?",
+      "cancelTitle": "Cancel booking",
+      "refundTitle": "Refund booking",
+      "filterStatus": "Status",
+      "allStatuses": "All",
+      "filterTrip": "Trip",
+      "allTrips": "All",
+      "from": "From",
+      "to": "To",
+      "reset": "Reset",
+      "tickets": "Tickets",
+      "payments": "Payments",
+      "cancelReasonTitle": "Cancellation reason",
+      "refundReasonTitle": "Refund reason",
+      "reason": "Reason",
+      "reasonRequired": "Reason is required."
+    },
+    "checkin": {
+      "title": "Check-in & manifest",
+      "subtitle": "Boarding per trip and passenger counter.",
+      "trip": "Trip",
+      "selectTrip": "Select a trip",
+      "boarded": "Boarded",
+      "seat": "Seat",
+      "passenger": "Passenger",
+      "age": "Age",
+      "class": "Class",
+      "ticket": "Ticket",
+      "action": "Boarding",
+      "emptyManifest": "No passenger on this trip.",
+      "noTicket": "No ticket linked to this passenger.",
+      "checkIn": "Check in",
+      "done": "Boarded",
+      "chooseTrip": "— Choose a trip —",
+      "refresh": "Refresh",
+      "pending": "Pending",
+      "searchManifest": "Search passenger / ticket",
+      "searchManifestPlaceholder": "Name or ticket no…",
+      "checkedIn": "Checked in ✓"
+    },
+    "tickets": {
+      "title": "Ticketing",
+      "subtitle": "Browse, PDF download and revocation.",
+      "download": "PDF",
+      "revoke": "Revoke",
+      "revokeTitle": "Revocation reason",
+      "revokeBody": "Revoke ticket {number}? The PDF will become invalid and the ticket status will change to void.",
+      "filterTrip": "Trip",
+      "manage": "Tickets",
+      "empty": "No ticket issued for this booking. Use the \"Ticket\" action in the Bookings tab.",
+      "downloadPdf": "PDF",
+      "pdfError": "Download failed."
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Sales, occupancy, revenue, cancellations and CSV exports.",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "export": "Export CSV",
+      "kpiSales": "Sales",
+      "kpiBookings": "Bookings",
+      "kpiOccupancy": "Occupancy",
+      "kpiCancellations": "Cancellations",
+      "salesCount": "Sales",
+      "salesPassengers": "Passengers",
+      "salesAmount": "Amount",
+      "tabSales": "Sales",
+      "tabOccupancy": "Occupancy",
+      "tabRevenue": "Revenue",
+      "tabCancellations": "Cancellations",
+      "sold": "Sold",
+      "reserved": "Reserved",
+      "free": "Free",
+      "revenueConfirmed": "Confirmed",
+      "revenueRefunded": "Refunded",
+      "revenueNet": "Net",
+      "cancellationsCount": "Cancellations",
+      "cancellationsRate": "Rate",
+      "cancellationsTotal": "Final bookings",
+      "byReason": "By reason",
+      "bySource": "By source",
+      "count": "Count",
+      "tabsLabel": "Reports",
+      "sales": "Sales",
+      "occupancy": "Occupancy",
+      "revenue": "Revenue",
+      "cancellations": "Cancellations",
+      "exportCsv": "Export CSV",
+      "empty": "No data for the period.",
+      "exportError": "Export failed."
+    },
+    "catalog": {
+      "title": "Title",
+      "subtitle": "Rental vehicles, bookings and hotel catalog.",
+      "tabRentals": "Rental vehicles",
+      "tabRentalBookings": "Rental bookings",
+      "tabHotels": "Hotels",
+      "images": "Images",
+      "rentalImagesTitle": "Vehicle images",
+      "noImages": "No images",
+      "rooms": "Rooms",
+      "hotelRoomsTitle": "Hotel rooms",
+      "addRoom": "Add room",
+      "priceDay": "Price / day",
+      "start": "Start",
+      "end": "End",
+      "hotelName": "Name",
+      "classification": "Classification",
+      "roomType": "Type",
+      "roomNumber": "No.",
+      "capacity": "Capacity",
+      "priceNight": "Price / night",
+      "code": "Code",
+      "availableFrom": "Available from",
+      "availableUntil": "Available until",
+      "owner": "Owner",
+      "description": "Description"
+    },
+    "countries": {
+      "name": "Name",
+      "phoneCode": "Phone code"
+    },
+    "cities": {
+      "name": "City",
+      "country": "Country",
+      "region": "Region"
+    },
+    "stations": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address",
+      "timezone": "Timezone",
+      "isTerminal": "Terminal",
+      "code": "Code"
+    },
+    "offices": {
+      "name": "Name",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "carriers": {
+      "name": "Name",
+      "type": "Type",
+      "phone": "Phone",
+      "code": "Code"
+    },
+    "classes": {
+      "label": "Label",
+      "color": "Color",
+      "priority": "Priority",
+      "code": "Code"
+    },
+    "vehicles": {
+      "registration": "Registration",
+      "seats": "Seats",
+      "code": "Code",
+      "notes": "Notes"
+    },
+    "carrierTypes": {
+      "bus": "Bus",
+      "train": "Train",
+      "plane": "Plane",
+      "boat": "Boat"
+    },
+    "tripStatus": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "published": "Published",
+      "cancelled": "Cancelled"
+    },
+    "bookingStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded",
+      "completed": "Completed",
+      "expired": "Expired"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "failed": "Failed",
+      "refunded": "Refunded",
+      "paid": "Paid"
+    },
+    "ticketStatus": {
+      "issued": "Issued",
+      "checked_in": "Checked in",
+      "void": "Void",
+      "checkedIn": "Checked in",
+      "revoked": "Revoked",
+      "unknown": "Unknown"
+    },
+    "bookingSource": {
+      "office": "Counter",
+      "phone": "Phone",
+      "online": "Online"
+    },
+    "ageCategory": {
+      "infant": "Infant",
+      "child": "Child",
+      "adult": "Adult"
+    },
     "loading": "Loading…",
     "section": {
       "title": "Travel agency",
@@ -4586,30 +5273,6 @@
       "boat": "Boat",
       "plane": "Plane"
     },
-    "tripStatus": {
-      "draft": "Draft",
-      "published": "Published",
-      "cancelled": "Cancelled"
-    },
-    "bookingStatus": {
-      "pending": "Pending",
-      "confirmed": "Confirmed",
-      "cancelled": "Cancelled",
-      "refunded": "Refunded",
-      "expired": "Expired"
-    },
-    "paymentStatus": {
-      "pending": "Pending",
-      "paid": "Paid",
-      "failed": "Failed",
-      "refunded": "Refunded"
-    },
-    "ticketStatus": {
-      "issued": "Issued",
-      "checkedIn": "Checked in",
-      "revoked": "Revoked",
-      "unknown": "Unknown"
-    },
     "routes": {
       "title": "Routes & itineraries",
       "subtitle": "City-to-city routes, ordered stops and stopovers.",
@@ -4619,57 +5282,6 @@
       "title": "Scheduled trips",
       "subtitle": "Planned departures, class prices, publication.",
       "pricesTitle": "Prices per class"
-    },
-    "bookings": {
-      "title": "Bookings",
-      "filterStatus": "Status",
-      "allStatuses": "All",
-      "filterTrip": "Trip",
-      "allTrips": "All",
-      "from": "From",
-      "to": "To",
-      "reset": "Reset",
-      "passengers": "Passengers",
-      "tickets": "Tickets",
-      "payments": "Payments",
-      "detailTitle": "Booking",
-      "cancelReasonTitle": "Cancellation reason",
-      "refundReasonTitle": "Refund reason",
-      "reason": "Reason",
-      "reasonRequired": "Reason is required."
-    },
-    "checkin": {
-      "selectTrip": "Select a trip",
-      "chooseTrip": "— Choose a trip —",
-      "refresh": "Refresh",
-      "boarded": "Boarded",
-      "pending": "Pending",
-      "searchManifest": "Search passenger / ticket",
-      "searchManifestPlaceholder": "Name or ticket no…",
-      "checkIn": "Check in",
-      "checkedIn": "Checked in ✓",
-      "emptyManifest": "No passenger on this trip.",
-      "noTicket": "No ticket linked to this passenger."
-    },
-    "tickets": {
-      "title": "Ticketing",
-      "filterTrip": "Trip",
-      "manage": "Tickets",
-      "empty": "No ticket issued for this booking. Use the \"Ticket\" action in the Bookings tab.",
-      "downloadPdf": "PDF",
-      "revoke": "Revoke",
-      "revokeTitle": "Revocation reason",
-      "pdfError": "Download failed."
-    },
-    "reports": {
-      "tabsLabel": "Reports",
-      "sales": "Sales",
-      "occupancy": "Occupancy",
-      "revenue": "Revenue",
-      "cancellations": "Cancellations",
-      "exportCsv": "Export CSV",
-      "empty": "No data for the period.",
-      "exportError": "Export failed."
     },
     "rentals": {
       "vehicles": "Rental vehicles",
@@ -4829,5 +5441,281 @@
       "expired": "Expired",
       "archived": "Archived"
     }
+  },
+  "edu": {
+    "nav": {
+      "label": "EduManager",
+      "admin": "School administration",
+      "teacher": "My teacher space"
+    },
+    "home": {
+      "title": "EduManager",
+      "subtitle": "School management: campuses, school years, classes, students, admissions, assessments and report cards.",
+      "campuses": "Campuses",
+      "classes": "Classes",
+      "students": "Students",
+      "admissions": "Admissions",
+      "reportCards": "Report cards",
+      "pendingReportCards": "report cards to validate",
+      "quickLinks": "Quick access",
+      "manageCampuses": "Manage campuses",
+      "manageClasses": "Manage classes",
+      "manageStudents": "Manage students",
+      "manageAssessments": "Assessments & grades",
+      "manageReportCards": "Report cards",
+      "teacherSpace": "Teacher space"
+    },
+    "campuses": {
+      "title": "Campuses",
+      "subtitle": "School sites of the establishment.",
+      "empty": "No campus yet. Create the first one.",
+      "create": "New campus",
+      "edit": "Edit campus",
+      "code": "Code",
+      "name": "Name",
+      "address": "Address",
+      "timezone": "Timezone",
+      "status": "Status",
+      "saveError": "Could not save campus.",
+      "deleteConfirm": "Delete this campus?",
+      "deleted": "Campus deleted."
+    },
+    "academicYears": {
+      "title": "School years",
+      "subtitle": "School periods (overlapping periods are rejected).",
+      "empty": "No school year.",
+      "create": "New school year",
+      "edit": "Edit school year",
+      "name": "Label",
+      "startDate": "Start",
+      "endDate": "End",
+      "status": "Status"
+    },
+    "subjects": {
+      "title": "Subjects",
+      "subtitle": "Catalogue of taught subjects.",
+      "empty": "No subject.",
+      "create": "New subject",
+      "edit": "Edit subject",
+      "code": "Code",
+      "name": "Label",
+      "defaultCoefficient": "Default coefficient"
+    },
+    "classes": {
+      "title": "Classes",
+      "subtitle": "Classes, levels, head teachers and per-subject assignments.",
+      "empty": "No class.",
+      "create": "New class",
+      "edit": "Edit class",
+      "code": "Code",
+      "name": "Name",
+      "level": "Level",
+      "capacity": "Max capacity",
+      "teacher": "Head teacher",
+      "campus": "Campus",
+      "year": "School year",
+      "assignTeacher": "Assign teacher",
+      "removeTeacher": "Remove",
+      "teacherPlaceholder": "Select a teacher…"
+    },
+    "students": {
+      "title": "Students",
+      "subtitle": "Student records (personal data protected).",
+      "empty": "No student.",
+      "create": "New student",
+      "edit": "Edit student",
+      "number": "ID number",
+      "name": "Display name",
+      "status": "Status",
+      "birthDate": "Birth date (encrypted)",
+      "piiHint": "Sensitive data is encrypted at rest and never exposed outside the tenant."
+    },
+    "admissions": {
+      "title": "Admissions",
+      "subtitle": "Admission pipeline with GDPR consent and student conversion.",
+      "empty": "No admission record.",
+      "create": "New record",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "status": "Status",
+      "convert": "Convert to student",
+      "converted": "Converted",
+      "converting": "Converting…",
+      "convertConfirm": "Convert this record to a student? The operation is idempotent."
+    },
+    "assessments": {
+      "title": "Title",
+      "subtitle": "Assessments, grading scales, grade entry and publishing.",
+      "empty": "No assessment.",
+      "create": "New assessment",
+      "edit": "Edit assessment",
+      "type": "Type",
+      "coefficient": "Coefficient",
+      "maxScore": "Scale (max)",
+      "date": "Date",
+      "class": "Class",
+      "subject": "Subject",
+      "grades": "Grades",
+      "enterGrades": "Enter grades",
+      "publish": "Publish",
+      "published": "Published",
+      "draft": "Draft",
+      "noStudents": "No student enrolled in this class.",
+      "score": "Score",
+      "comment": "Comment",
+      "saveGrades": "Save grades"
+    },
+    "reportCards": {
+      "title": "Report cards",
+      "subtitle": "Generation, head validation and locking publication.",
+      "empty": "No report card.",
+      "generate": "Generate",
+      "validate": "Validate",
+      "publish": "Publish",
+      "student": "Student",
+      "average": "Average",
+      "status": "Status",
+      "generated": "Generated",
+      "validated": "Validated",
+      "period": "Period"
+    },
+    "teacher": {
+      "title": "Teacher space",
+      "subtitle": "My classes: attendance, grades and submission for validation.",
+      "myClasses": "My classes",
+      "empty": "No class assigned to you.",
+      "attendance": "Attendance",
+      "grades": "Grades",
+      "date": "Date",
+      "present": "Present",
+      "absent": "Absent",
+      "late": "Late",
+      "excused": "Excused",
+      "saveAttendance": "Save attendance",
+      "attendanceSaved": "Attendance saved.",
+      "assessments": "My assessments",
+      "submit": "Submit for validation",
+      "submitHint": "Publishing locks the grade; correction history is preserved.",
+      "noAssessments": "No assessment for this class.",
+      "students": "Class students"
+    },
+    "guardian": {
+      "title": "Legal guardian portal",
+      "subtitle": "View the school records of the children entrusted to you.",
+      "children": "My children",
+      "presence": "Attendance",
+      "reportCards": "Report cards",
+      "communications": "Communications",
+      "consent": "By accessing this portal, you consent to the consultation of your children's school data.",
+      "invalid": "Invalid access link.",
+      "expired": "This access link has expired. Contact the school.",
+      "used": "This link has already been used and is no longer valid.",
+      "emptyChildren": "No child is linked to you.",
+      "today": "Today",
+      "last30days": "Last 30 days",
+      "publishedOnly": "Published report cards only.",
+      "accessNote": "Single-use link with limited validity. Every access is logged."
+    },
+    "common": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "loading": "Loading…",
+      "error": "An error occurred.",
+      "retry": "Retry",
+      "actions": "Actions",
+      "close": "Close",
+      "delete": "Delete",
+      "edit": "Edit",
+      "noData": "No data.",
+      "view": "View",
+      "back": "Back",
+      "deleteConfirm": "Delete this item?"
+    }
+  },
+  "surveyStats": {
+    "title": "Solution surveys",
+    "subtitle": "Track vitrine wizard conversion (responses, suggested packs, signups).",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "empty": "No survey responses yet.",
+    "metricResponses": "Responses",
+    "metricConverted": "Signups",
+    "metricConversionRate": "Conversion rate",
+    "metricPackagesSuggested": "Suggested packs",
+    "bySolutionTitle": "Volume per solution",
+    "bySolutionHint": "Response distribution per sectorial solution.",
+    "packagesTitle": "Top suggested packs",
+    "packagesHint": "Frequency of packs suggested by the engine.",
+    "answersTitle": "Answer distribution",
+    "answersHint": "Answer values per question (bounded sample).",
+    "solutionColumn": "Solution",
+    "responsesColumn": "Responses",
+    "shareColumn": "Share"
+  },
+  "survey": {
+    "title": "Solution surveys",
+    "subtitle": "Conversion of the « I am a restaurateur » wizard and vertical solutions",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "totalResponses": "Survey responses",
+    "converted": "Signups with solution",
+    "conversionRate": "Conversion rate",
+    "topPackages": "Most suggested packages",
+    "topPackagesCaption": "Rule engine suggestions",
+    "bySolution": "Responses per solution",
+    "bySolutionCaption": "Response volume per solution",
+    "colPackage": "Package",
+    "colSuggestions": "Suggestions",
+    "colSolution": "Solution",
+    "colResponses": "Responses",
+    "solutionRestaurant": "Restaurant",
+    "solutionFuelStation": "Fuel station",
+    "pkgMobileEmployee": "Employee mobile app",
+    "pkgMobileManager": "Manager mobile app",
+    "pkgAttendanceMobile": "Mobile attendance",
+    "pkgKiosk": "Attendance kiosk",
+    "pkgEdge": "Local Edge node",
+    "pkgPlanning": "Team scheduling",
+    "pkgPayroll": "Payroll",
+    "pkgAccounting": "Accounting",
+    "pkgDelivery": "Delivery",
+    "pkgReservations": "Reservations",
+    "pkgInventory": "Inventory",
+    "pkgLoyalty": "Loyalty",
+    "pkgPos": "Connected POS",
+    "loadError": "Unable to load solution survey stats."
+  },
+  "travelPortal": {
+    "title": "Traveler portal",
+    "subtitle": "Track your booking, download your e-tickets and cancel online.",
+    "referenceLabel": "Booking reference",
+    "referencePlaceholder": "E.g. GV-2026-0001",
+    "codeLabel": "Validation code",
+    "codePlaceholder": "Code shown on your e-ticket",
+    "track": "Track my booking",
+    "tracking": "Tracking…",
+    "status": "Status",
+    "trip": "Trip",
+    "passengers": "Passengers",
+    "total": "Total",
+    "tickets": "E-tickets",
+    "downloadTicket": "Download e-ticket",
+    "cancel": "Cancel online",
+    "cancelReason": "Cancellation reason",
+    "cancelReasonPlaceholder": "Briefly explain why you are cancelling…",
+    "cancelConfirm": "Confirm cancellation",
+    "cancelling": "Cancelling…",
+    "cancelled": "Booking cancelled",
+    "notFound": "No booking found for this reference.",
+    "invalidCode": "Invalid validation code.",
+    "error": "An error occurred. Please retry.",
+    "departurePast": "Departure has already passed: online cancellation is no longer possible.",
+    "empty": "No booking yet.",
+    "statusPending": "Pending",
+    "statusConfirmed": "Confirmed",
+    "statusRefunded": "Refunded",
+    "statusCompleted": "Completed"
   }
 }

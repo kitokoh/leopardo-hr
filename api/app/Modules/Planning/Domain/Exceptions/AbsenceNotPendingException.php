@@ -8,9 +8,18 @@ use App\Exceptions\DomainException;
 
 class AbsenceNotPendingException extends DomainException
 {
-    public function __construct(string $id)
+    /**
+     * Issue #6573 — le parametre id est optionnel pour rester compatible avec
+     * les sites d'appel legacy (message enrichi quand il est fourni).
+     */
+    public function __construct(string $id = '')
     {
-        parent::__construct("Absence [{$id}] is not in pending status.", 422);
+        parent::__construct(
+            $id !== ''
+                ? "Absence [{$id}] is not in pending status."
+                : "Cette absence n'est pas en attente d'approbation.",
+            422
+        );
     }
 
     public function errorCode(): string

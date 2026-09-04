@@ -349,6 +349,23 @@ class CedeaoPayrollRules extends AbstractCountryRules
         return parent::professionalExpensesDeduction();
     }
 
+    /**
+     * Issue #6727 — miroir de calculateIncomeTax() : TG applique
+     * l'abattement frais pro 28 % (plafonné 233 333,33 XOF/mois) sur la
+     * base imposable AVANT le barème annuel (CGI TG art. 26/74).
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        if ($this->memberCountryCode !== 'TG') {
+            return max(0.0, $grossTaxable) * $annualBasis;
+        }
+
+        $abatement = $this->professionalExpensesDeduction();
+        $monthlyDeduction = min($grossTaxable * ($abatement['rate'] / 100), (float) ($abatement['cap'] ?? PHP_FLOAT_MAX));
+
+        return max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
+    }
+
     public function calculateSocialCharges(float $grossSalary): array
     {
         // CI (#1825/#1913) : la CNPS distingue les plafonds par branche.

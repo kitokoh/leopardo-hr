@@ -304,6 +304,9 @@ CREATE TABLE shared_tenants.employees (
     manager_id integer NULL,
     leave_balance numeric(6, 2) NOT NULL DEFAULT 0,
     status varchar(20) NOT NULL DEFAULT 'active',
+    two_fa_secret varchar(32) NULL,
+    two_fa_enabled_at timestamptz NULL,
+    two_fa_recovery_codes json NULL,
     preferred_language char(2) NULL,
     photo_path varchar(255) NULL,
     iban varchar(255) NULL,
@@ -595,6 +598,7 @@ CREATE TABLE shared_tenants.absence_types (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+CREATE UNIQUE INDEX absence_types_company_id_code_unique ON shared_tenants.absence_types (company_id, code);
 
 -- Issue #5967 : index unique composite (company_id, code) — chaque tenant a
 -- ses propres codes standards sans collision inter-tenant (remplace l'ancien

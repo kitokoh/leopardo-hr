@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeController;
-use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeDownloadController;
-use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeDownloadController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use Illuminate\Support\Facades\Route;
 
 /*

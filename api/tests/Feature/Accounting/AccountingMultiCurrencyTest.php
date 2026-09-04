@@ -6,8 +6,8 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Application\Actions\AccountingCurrencyResolver;
-use App\Modules\Accounting\Application\Actions\DocumentCurrencyConverter;
+use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencyResolver;
+use App\Modules\Accounting\Infrastructure\Services\DocumentCurrencyConverter;
 use App\Modules\Accounting\Application\DTOs\ConvertedTotals;
 use App\Modules\Accounting\Domain\Contracts\CurrencyRateProviderInterface;
 use App\Modules\Accounting\Domain\Exceptions\CurrencyRateUnavailableException;

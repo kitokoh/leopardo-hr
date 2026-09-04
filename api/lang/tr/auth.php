@@ -7,6 +7,7 @@ return [
     'logout_success' => 'Çıkış başarılı.',
     'session_expired' => 'Oturumunuz sona erdi. Lütfen tekrar giriş yapın.',
     'account_suspended' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
+    'account_locked' => 'Hesap geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.',
     'welcome' => 'Hoş geldiniz :name!',
     'password_changed' => 'Şifre başarıyla değiştirildi.',
     'password_reset_sent' => 'Bu e-posta icin bir hesap varsa, bir sifirlama baglantisi gonderildi.',
@@ -22,5 +23,6 @@ return [
     'twofa_already_enabled' => 'Bu hesap icin 2FA zaten etkin.',
     'twofa_not_setup' => 'Onceki adimda setup2fa cagirarak bir secret olusturun.',
     'twofa_code_invalid_value' => 'Saglanan 2FA kodu gecersiz.',
+    'account_locked' => 'Hesap, birden fazla basarisiz giris denemesi nedeniyle gecici olarak kilitlendi. 15 dakika sonra tekrar deneyin.',,
     'password_incorrect' => 'Hatali sifre.',
 ];

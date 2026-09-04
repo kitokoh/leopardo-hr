@@ -98,6 +98,16 @@ class TunisiaPayrollRules extends AbstractCountryRules
         return max(0.0, $annualTaxable - $abatement);
     }
 
+    /**
+     * Issue #6727 — miroir de calculateIncomeTax() : abattement IRPP
+     * tunisien (CGI TN art. 39, 10 % borné [1 000 ; 1 500] TND/an) appliqué
+     * AVANT le barème annuel.
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        return $this->applyAnnualAbatement($grossTaxable * $annualBasis);
+    }
+
     public function calculateSocialCharges(float $grossSalary): array
     {
         // ZONE-INFRA (#1820) : chaque cotisation via computeContribution()

@@ -8,8 +8,10 @@ version: "3.9"
 # taggées par version (${EDGE_VERSION:-1.0.0}, aligné sur edge/publish.sh),
 # jamais `latest` flottant. Caddy est pinné par digest multi-arch. Une
 # install identique livre donc le même logiciel, quelle que soit la date.
-# ⚠️ Les images edge-api/edge-ui doivent être publiées (edge/publish.sh)
-#    sous le tag ${EDGE_VERSION:-1.0.0} avant de s'appuyer sur ce pin.
+# ⚠️ Depuis #6604, le compose construit localement (clés `build:`) :
+#    edge-api/edge-sync via edge/Dockerfile.edge, edge-ui via
+#    front/web-offline/Dockerfile (l'image publiée leopardo/edge-ui n'existait
+#    pas — fantôme). Les tags image: restent pour le pinning de version.
 # ============================================================
 
 services:
@@ -17,6 +19,9 @@ services:
   # ── Edge API (Laravel slim) ──────────────────────────────
   edge-api:
     image: leopardo/edge-api:${EDGE_VERSION:-1.0.0}
+    build:
+      context: ..
+      dockerfile: Dockerfile.edge
     container_name: leopardo-edge-api
     restart: unless-stopped
     environment:
@@ -31,9 +36,14 @@ services:
       LICENSE_PUBLIC_KEY_PATH: /var/leopardo/license.pub
     volumes:
       - edge_data:/var/leopardo
+      # #6604 : une seule copie de la clé publique dans le repo
+      # (edge/keys/edge_license_public.pem — servie aussi par l'API cloud).
+      - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
       # Issue #2751 — chemins relatifs au fichier compose (edge/) :
       # ./edge/license.pub résolvait edge/edge/license.pub (inexistant).
-      - ./license.pub:/var/leopardo/license.pub:ro
+      # #6700 : clé canonique edge/keys/edge_license_public.pem (le doublon
+      # edge/license.pub a été supprimé). Le chemin conteneur reste stable.
+      - ./keys/edge_license_public.pem:/var/leopardo/license.pub:ro
     ports:
       - "7878:80"       # http://leopardo.local:7878
     networks:
@@ -50,6 +60,9 @@ services:
   # ── Edge Web UI (Next.js static export) ─────────────────
   edge-ui:
     image: leopardo/edge-ui:${EDGE_VERSION:-1.0.0}
+    build:
+      context: ../front/web-offline
+      dockerfile: Dockerfile
     container_name: leopardo-edge-ui
     restart: unless-stopped
     environment:
@@ -64,11 +77,14 @@ services:
   # ── Sync Daemon ─────────────────────────────────────────
   edge-sync:
     image: leopardo/edge-api:${EDGE_VERSION:-1.0.0}
+    build:
+      context: ..
+      dockerfile: Dockerfile.edge
     container_name: leopardo-edge-sync
     restart: unless-stopped
     # #4411 : migration SQLite idempotente avant le daemon (l'API migre au
     # démarrage via supervisord, mais ce service est un conteneur séparé).
-    command: ["sh", "-c", "php artisan migrate --path=database/migrations/edge --database=sqlite --force --no-interaction && php artisan edge:sync-daemon"]
+    command: ["sh", "-c", "php artisan migrate --path=database/migrations/tenant/2026_06_29_000001_create_edge_sync_tables.php --database=sqlite --force --no-interaction && php artisan edge:sync-daemon"]
     environment:
       APP_ENV: edge
       APP_KEY: "${EDGE_APP_KEY}"

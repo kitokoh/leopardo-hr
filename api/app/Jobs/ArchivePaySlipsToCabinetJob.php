@@ -97,10 +97,13 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             ->whereIn('status', ['calculated', 'validated', 'sent'])
             ->get();
 
+        $failures = [];
+
         foreach ($slips as $slip) {
             try {
                 $this->archiveSlip($slip, $pdfGenerator, $company);
             } catch (Throwable $e) {
+                $failures[] = $slip->id;
                 Log::warning('payslip_archive_failed', [
                     'run_id' => $run->id,
                     'slip_id' => $slip->id,
@@ -109,6 +112,38 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
                 ]);
             }
         }
+
+        // Issue #6559 : les echecs etaient avales — le job « reussissait »
+        // meme si aucun bulletin n'avait ete archive. On remonte un resume :
+        // echec partiel → warning, echec total → le job echoue (retry puis
+        // DLQ), l'archivage n'est jamais silencieusement vide.
+        $total = $slips->count();
+        $failedCount = count($failures);
+
+        if ($failedCount === 0) {
+            return;
+        }
+
+        if ($failedCount < $total) {
+            Log::warning('payslip_archive_partial_failure', [
+                'run_id' => $run->id,
+                'total' => $total,
+                'failed' => $failedCount,
+                'slip_ids' => $failures,
+            ]);
+
+            return;
+        }
+
+        Log::error('payslip_archive_total_failure', [
+            'run_id' => $run->id,
+            'total' => $total,
+            'slip_ids' => $failures,
+        ]);
+
+        throw new \RuntimeException(
+            "ArchivePaySlipsToCabinetJob: {$failedCount}/{$total} bulletins non archivés pour le run #{$run->id}."
+        );
     }
 
     private function archiveSlip(PaySlip $slip, PaySlipPdfGenerator $pdfGenerator, Company $company): void

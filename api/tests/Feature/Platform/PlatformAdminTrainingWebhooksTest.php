@@ -10,6 +10,7 @@ use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -100,6 +101,12 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
 
     public function test_admin_webhook_test_dispatches_event(): void
     {
+        // #6550 (PR #6628) : DispatchWebhook rethrow sur non-2xx — le job de
+        // test ne doit JAMAIS taper le vrai réseau (example.com renvoie 405).
+        Http::fake([
+            'example.com/*' => Http::response('ok', 200),
+        ]);
+
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 

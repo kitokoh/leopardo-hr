@@ -103,6 +103,7 @@ return [
     'ALREADY_PROCESSED' => 'Bu deneme talebi zaten işlendi.',
     'INVALID_OR_EXPIRED_CODE' => 'Geçersiz veya süresi dolmuş doğrulama kodu.',
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
+    'INVALID_SOLUTION' => 'Bilinmeyen veya kullanılamayan sektörel çözüm: :solution.',
     'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
     'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
     'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
@@ -184,6 +185,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
+    'CRM_FEATURE_DISABLED' => 'CRM modülü bu çalışma alanı için etkin değil.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'CRM modülü geçici olarak kullanılamıyor (bakım).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'Yalnızca yöneticiler erişebilir.',
@@ -275,4 +278,7 @@ return [
     'MANAGER_ONLY_ACTION' => 'Bu işlem sadece yöneticiler için geçerlidir.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Bu şirket için zaten bekleyen bir talebiniz var.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Entegrasyon talebi bulunamadı.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Çok fazla deneme. E-postanızı kontrol edip 15 dakika sonra tekrar deneyin.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Çok fazla deneme. Kod geçersiz kılındı, lütfen tekrar giriş yapın.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Bu dönem için zaten bir maaş bordrosu çalışması mevcut.',
 ];

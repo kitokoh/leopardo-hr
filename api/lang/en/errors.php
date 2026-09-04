@@ -5,6 +5,7 @@ return [
     'UNKNOWN_ACCOUNT' => 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'ACCOUNT_SUSPENDED' => 'Your account has been suspended. Contact your manager.',
+    'ACCOUNT_LOCKED_TEMPORARILY' => "Your account is temporarily locked after too many attempts. Try again in a few minutes.",
     'ACCOUNT_ARCHIVED' => 'This account is archived.',
     'TOKEN_EXPIRED' => 'Your session has expired. Please log in again.',
     'TOO_MANY_ATTEMPTS' => 'Too many attempts. Try again in :minutes minutes.',
@@ -104,6 +105,7 @@ return [
     'ALREADY_PROCESSED' => 'This trial request has already been processed.',
     'INVALID_OR_EXPIRED_CODE' => 'Invalid or expired verification code.',
     'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
+    'INVALID_SOLUTION' => 'Unknown or unavailable sectorial solution: :solution.',
     'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
     'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
     'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',
@@ -116,6 +118,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Google authentication is unavailable.',
     'GOOGLE_TOKEN_INVALID' => 'The Google token is invalid or has expired.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'No account found for this Google account.',
+    'GOOGLE_IDENTITY_MISMATCH' => "This Google account does not match the identity linked to the Leopardo HR account. Contact your administrator.",
     'GOOGLE_INVITATION_REQUIRED' => 'No account exists for this Google email. Ask your administrator for an invitation.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'Google sign-in is not configured yet. Please try again later.',
     'NO_ACTIVE_SUBSCRIPTION' => 'No active subscription.',
@@ -185,6 +188,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
+    'CRM_FEATURE_DISABLED' => 'The CRM module is not enabled for this workspace.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'The CRM module is temporarily unavailable (maintenance).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'Manager access required.',
@@ -282,4 +287,7 @@ return [
     'MANAGER_ONLY_ACTION' => 'This action is reserved for managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'You already have a pending request for this company.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Integration request not found.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Too many attempts. Check your inbox and try again in 15 minutes.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Too many attempts. The code was invalidated, please sign in again.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'A payroll run already exists for this period.',
 ];

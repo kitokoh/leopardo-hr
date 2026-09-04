@@ -10,7 +10,6 @@ Core/Auth -> Modules/Notification
 Core/Auth -> Modules/Planning
 Core/Feature -> Modules/Billing
 Core/Tenant -> Modules/Attendance
-Modules/Absence -> Modules/Planning
 Modules/Accounting -> Modules/Marketing
 Modules/Accounting -> Modules/Notification
 Modules/Attendance -> Modules/Fleet
@@ -19,7 +18,6 @@ Modules/Attendance -> Modules/Notification
 Modules/Attendance -> Modules/Planning
 Modules/Billing -> Modules/Payroll
 Modules/Billing -> Modules/Platform
-Modules/Cabinet -> Modules/HR
 Modules/Expense -> Modules/Planning
 Modules/Fleet -> Modules/Attendance
 Modules/Growth -> Modules/Billing
@@ -54,3 +52,8 @@ Modules/Platform -> Modules/Onboarding
 Modules/Platform -> Modules/Payroll
 Modules/Platform -> Modules/Planning
 Modules/Recruitment -> Modules/HR
+# RESTO-808 (#6229) — les consommateurs d'outbox cuisine/service notifient via
+# CommunicationService (BC-13), pattern identique à Accounting/Payroll/Planning
+# -> Notification. Ajouté lors de la consolidation BC-25 (PR #6659) ; à
+# refactorer vers Events Shared si la revue d'architecture l'exige.
+Modules/RestaurantManager -> Modules/Notification

@@ -1,0 +1,5 @@
+# Services dupliqués Application/Infrastructure — déduplication en cours dans
+# la PR #6278 (issue #6572). Une fois mergée, retirer ces 2 lignes et déplacer
+# les copies Application vers Infrastructure/Services/ (issue #6571).
+app/Modules/Accounting/Application/Services/DocumentWorkflowService.php
+app/Modules/Payroll/Application/Services/PayrollRegularizationService.php

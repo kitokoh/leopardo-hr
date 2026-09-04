@@ -1,3 +1,13 @@
+# ============================================================
+# STACK DEV LOCAL CANONIQUE (issue #6700)
+# ============================================================
+# Full-stack dev environment — run from repo root:
+#   docker compose up -d
+#   docker compose exec api php artisan leopardo:migrate --seed
+#
+# NOTE (issue #6700) : `api/docker-compose.yml` est le compose Laravel Sail
+# legacy (app+pgsql) — le stack dev complet vit ICI. `edge/docker-compose.yml`
+# est le stack Edge installé chez le client (surface séparée, voir edge/README.md).
 # Full-stack dev environment — run from repo root:
 #   docker compose up -d
 #   docker compose exec api php artisan leopardo:migrate --seed

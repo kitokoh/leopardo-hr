@@ -6,7 +6,7 @@ namespace Tests\Feature\Edge;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\EdgeSync\Application\Services\SyncEngineService;
+use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use Illuminate\Support\Facades\DB;

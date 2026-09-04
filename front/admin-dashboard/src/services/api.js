@@ -368,6 +368,14 @@ api.interceptors.response.use(
           // _skipToast opt-out (#4713) : permet aux vues qui gèrent
           // l'erreur localement de ne pas afficher un second toast.
           if (skipToast) break
+          // #6690 : l'IA non activée au niveau plateforme répond 403
+          // AI_CONVERSATIONS_UNAVAILABLE — état de configuration normal,
+          // pas un incident. Toast info neutre, jamais une erreur serveur.
+          if (data?.error === 'AI_CONVERSATIONS_UNAVAILABLE') {
+            const msg = data.localized_message || data.message
+            if (msg) toast.info(msg)
+            break
+          }
           const msg = contextualErrorMessage(status, data, requestUrl)
           if (msg) {
             toast.error(msg)

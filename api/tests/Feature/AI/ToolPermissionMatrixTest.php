@@ -16,6 +16,9 @@ use Database\Seeders\AIToolRegistrySeeder;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
+use App\AI\ToolPermissionPolicy
+use App\AI\WriteActionRunner
+use App\Modules\Planning\Domain\Models\Absence;
 
 /**
  * BC-23-D05 (issue #6237) — matrice de permissions par outil AI versionnée.
@@ -258,5 +261,142 @@ class ToolPermissionMatrixTest extends TestCase
                 return 'test';
             }
         });
+    }
+
+    public function test_employee_cannot_read_pii_employee_tools(): void
+    {
+        // audit(securite) #6532 : les outils PII (liste/détail/recherche
+        // employés) sont désormais réservés aux managers — un employé qui les
+        // demande via le chat IA reçoit un refus, pas les données de
+        // l'entreprise.
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+
+        $engine = app(IntentEngine::class);
+
+        foreach (['get_employees', 'get_employee_details', 'search_employees'] as $toolName) {
+            $response = new AIResponse(
+                content: '',
+                toolCalls: [new ToolCall('call_1', $toolName, [])],
+            );
+
+            $results = $engine->executeToolCalls($response, $company->id, $employee->id);
+
+            $this->assertFalse($results[0]->success, "{$toolName} ne doit pas réussir pour un employé");
+            $this->assertSame('AI_TOOL_PERMISSION_DENIED', $this->payload($results[0]->content)['error'] ?? null);
+        }
+    }
+
+    public function test_manager_can_read_pii_employee_tools(): void
+    {
+        // Le manager garde l'accès (parité avec le REST EmployeeController).
+        [$company, $manager] = $this->aiFixture(role: 'manager');
+
+        $engine = app(IntentEngine::class);
+        $response = new AIResponse(
+            content: '',
+            toolCalls: [new ToolCall('call_1', 'get_employees', [])],
+        );
+
+        $results = $engine->executeToolCalls($response, $company->id, $manager->id);
+
+        $this->assertTrue($results[0]->success);
+        $this->assertArrayHasKey('employees', $this->payload($results[0]->content));
+    }
+
+    public function test_pii_tools_not_exposed_to_employee_in_registry(): void
+    {
+        // L'exposition LLM (getToolsForRole) ne propose plus les outils PII à
+        // un employé — le registre DB est aligné sur la matrice config.
+        $registry = app(ToolRegistry::class);
+        $employeeTools = $registry->getToolsForRole('employee', 'x');
+        $names = array_column($employeeTools, 'name');
+
+        $this->assertNotContains('get_employees', $names);
+        $this->assertNotContains('get_employee_details', $names);
+        $this->assertNotContains('search_employees', $names);
+    }
+
+
+    public function test_employee_cannot_use_pii_read_tools(): void
+    {
+        $policy = app(ToolPermissionPolicy::class);
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+
+        foreach (['get_employees', 'get_employee_details', 'search_employees', 'get_daily_summary'] as $tool) {
+            $this->assertFalse(
+                $policy->canUse($tool, 'employee'),
+                "L'outil PII '{$tool}' doit être refusé au rôle employee (#6532)"
+            );
+        }
+
+        // Le registre (exposition LLM) ne doit pas non plus proposer ces outils.
+        $registry = app(ToolRegistry::class);
+        $exposed = array_keys($registry->getToolsForRole('employee', (string) $company->id));
+        foreach (['get_employees', 'get_employee_details', 'search_employees', 'get_daily_summary'] as $tool) {
+            $this->assertNotContains($tool, $exposed, "L'outil '{$tool}' ne doit pas être exposé à un employee");
+        }
+    }
+
+
+    public function test_manager_can_use_pii_read_tools(): void
+    {
+        $policy = app(ToolPermissionPolicy::class);
+
+        foreach (['get_employees', 'get_employee_details', 'search_employees', 'get_daily_summary'] as $tool) {
+            $this->assertTrue($policy->canUse($tool, 'manager'), "L'outil '{$tool}' doit être autorisé au manager");
+        }
+    }
+
+
+    public function test_employee_cannot_create_absence_for_another_employee(): void
+    {
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+        $other = Employee::factory()->create(['company_id' => $company->id]);
+
+        $runner = app(WriteActionRunner::class);
+        $result = $runner->run('create_absence', [
+            'employee_id' => $other->id,
+            'start_date' => '2026-09-01',
+            'end_date' => '2026-09-02',
+        ], (string) $company->id, $employee->id);
+
+        $this->assertArrayHasKey('error', $result);
+        $this->assertStringContainsString('PERMISSION_DENIED', (string) $result['error'], '#6533 : employee ne crée pas d\'absence pour autrui');
+    }
+
+
+    public function test_employee_can_create_absence_for_self(): void
+    {
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+
+        $runner = app(WriteActionRunner::class);
+        $result = $runner->run('create_absence', [
+            'start_date' => '2026-09-01',
+            'end_date' => '2026-09-02',
+        ], (string) $company->id, $employee->id);
+
+        $this->assertArrayNotHasKey('error', $result, 'l\'employé crée sa propre absence');
+        $this->assertSame($employee->id, $result['employee_id'] ?? null);
+    }
+
+
+    public function test_employee_cannot_approve_absence_via_runner(): void
+    {
+        [$company, $employee] = $this->aiFixture(role: 'employee');
+        $requestor = Employee::factory()->create(['company_id' => $company->id]);
+        $absence = Absence::factory()->create([
+            'company_id' => $company->id,
+            'employee_id' => $requestor->id,
+            'status' => 'pending',
+        ]);
+
+        $runner = app(WriteActionRunner::class);
+        $result = $runner->run('approve_absence', [
+            'absence_id' => $absence->id,
+        ], (string) $company->id, $employee->id);
+
+        $this->assertArrayHasKey('error', $result);
+        $this->assertStringContainsString('PERMISSION_DENIED', (string) $result['error'], '#6533 : l\'approbation exige le rôle manager');
+        $this->assertSame('pending', $absence->fresh()->status);
     }
 }

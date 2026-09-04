@@ -6,7 +6,7 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Mail\DocumentShareMail;
-use App\Modules\Accounting\Application\Actions\SendDocumentEmail;
+use App\Modules\Accounting\Infrastructure\Services\SendDocumentEmail;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Models\AccountingContact;

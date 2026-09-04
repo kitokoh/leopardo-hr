@@ -103,6 +103,7 @@ return [
     'ALREADY_PROCESSED' => 'تمت معالجة طلب التجربة هذا بالفعل.',
     'INVALID_OR_EXPIRED_CODE' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
     'EMAIL_ALREADY_REGISTERED' => 'يوجد حساب بهذا البريد الإلكتروني بالفعل. سجّل الدخول مباشرة.',
+    'INVALID_SOLUTION' => 'حل قطاعي غير معروف أو غير متاح: :solution.',
     'INVALID_COUNTRY' => 'بلد التسجيل غير صالح أو غير مدعوم. يرجى إعادة بدء التسجيل.',
     'NO_PLAN_AVAILABLE' => 'خدمة التجربة غير متاحة مؤقتًا.',
     'PROVISIONING_FAILED' => 'حدث خطأ أثناء إنشاء مساحة العمل الخاصة بك. يرجى المحاولة مرة أخرى.',
@@ -184,6 +185,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
+    'CRM_FEATURE_DISABLED' => 'وحدة إدارة علاقات العملاء غير مفعّلة لهذه المساحة.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'وحدة إدارة علاقات العملاء غير متاحة مؤقتًا (صيانة).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'الوصول مخصص للمديرين.',
@@ -275,4 +278,7 @@ return [
     'MANAGER_ONLY_ACTION' => 'هذا الإجراء مخصص للمدراء فقط.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'لديك طلب معلق بالفعل لهذه الشركة.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'طلب التكامل غير موجود.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تحقق من بريدك الإلكتروني وحاول مجددًا بعد 15 دقيقة.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'محاولات كثيرة جدًا. تم إبطال الرمز، يرجى تسجيل الدخول مجددًا.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'توجد بالفعل دورة رواتب لهذه الفترة.',
 ];

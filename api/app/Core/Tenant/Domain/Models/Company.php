@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,6 +46,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Company extends Model
 {
+    /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
     use HasUuids;
 
@@ -93,7 +96,7 @@ class Company extends Model
 
     /**
      * Liste des modules connus de la plateforme (APV L.08).
-     * L ajout d un nouveau module passe par cette constante + une entree dans docs/ROADMAP.md.
+     * L ajout d un nouveau module passe par cette constante + une entree dans docs/REFERENTIEL_PRODUIT/ROADMAP.md (la ROADMAP racine aspirationnelle est archivee, issue #6698).
      */
     public const KNOWN_MODULES = [
         'rh',
@@ -101,15 +104,31 @@ class Company extends Model
         'cameras',
         'muhasebe',
         'leo_ai',
+        // #5742 (CRM PRE) : module CRM client — opt-in plateforme, désactivé
+        // par défaut (ADR-CRM-004). Activation = PATCH features plateforme ;
+        // gate serveur `crm.enabled` sur les routes /api/v1/crm/*.
+        'crm',
         'fuel_station',
+        'edumanager',
+        'restaurant',
     ];
 
     /**
      * Indique si un module (ou une sous-feature) est actif pour cette company.
      * Le module RH est actif par defaut (base de l app).
+     *
+     * MAT-010 (#5868) : kill switch global consulté en premier — un
+     * interrupteur actif coupe la feature pour TOUTE la plateforme
+     * (fail-closed), sans suppression de données. Point d'intégration unique :
+     * tous les gates (middleware module, FeatureFlag, resources) héritent du
+     * kill switch via cette méthode.
      */
     public function hasFeature(string $key): bool
     {
+        if (app(FeatureKillSwitchService::class)->isKilled($key)) {
+            return false;
+        }
+
         $features = $this->features ?? [];
 
         if ($key === 'rh') {

@@ -1,0 +1,169 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Payroll\Interfaces\Api\V1\Controllers;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PayrollResource;
+use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Payroll\Infrastructure\Services\PayrollService;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\PayrollIndexRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRequest;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\UpdatePayrollRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class PayrollController extends Controller
+{
+    public function __construct(private readonly PayrollService $payrollService) {}
+
+    public function index(PayrollIndexRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $query = Payroll::query()
+            ->where('company_id', $actor->company_id)
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'period_month',
+                'period_year',
+                'gross_salary',
+                'overtime_amount',
+                'bonuses',
+                'deductions',
+                'cotisations',
+                'ir_amount',
+                'advance_deduction',
+                'absence_deduction',
+                'penalty_deduction',
+                'net_salary',
+                'pdf_path',
+                'status',
+                'validated_by',
+                'validated_at',
+                'created_at',
+                'updated_at',
+            ])
+            ->with(['employee:id,company_id,first_name,last_name,email']);
+
+        if (! $actor->isManager()) {
+            $query->where('employee_id', $actor->id);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 (audit) : un manager dept/superviseur ne voit que
+            // les fiches de paie de SON équipe (pattern visibleToManager,
+            // PA2-SEC-002/003) — l'énumération des salaires de toute la
+            // société est fermée.
+            $query->whereIn('employee_id', Employee::query()->select('id')->visibleToManager($actor));
+        } elseif ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->integer('employee_id'));
+        }
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $query->forPeriod($request->integer('month'), $request->integer('year'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
+        $paginated = $query->orderByDesc('period_year')->orderByDesc('period_month')->paginate($perPage);
+
+        return PayrollResource::collection($paginated)->response();
+    }
+
+    public function store(StorePayrollRequest $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        // Policy produit (#3305) : les écritures payroll sont réservées au
+        // principal comptable / RH — un manager de département (isManager
+        // mais pas manager_role principal/rh) reçoit 403.
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $payroll = $this->payrollService->create($actor, $request->validated());
+
+        return (new PayrollResource($payroll->load('employee')))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function show(Request $request, Payroll $payroll): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if ($actor->id === $payroll->employee_id) {
+            // self-service conservé.
+        } elseif (! $actor->isManager()) {
+            abort(403);
+        } elseif ($actor->isTeamScoped()) {
+            // Issue #6534 : manager team-scoped → uniquement son équipe.
+            $target = $payroll->employee;
+            if ($target === null || ! $actor->managesTeamMemberOf($target)) {
+                abort(403);
+            }
+        }
+
+        return (new PayrollResource($payroll->load('employee')))->response();
+    }
+
+    public function update(UpdatePayrollRequest $request, Payroll $payroll): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        // Écriture réservée principal/RH (#3305), cf. store().
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $payroll = $this->payrollService->update($payroll, $request->validated());
+
+        return (new PayrollResource($payroll->load('employee')))->response();
+    }
+
+    public function validatePayroll(Request $request, Payroll $payroll): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        // Validation = écriture réservée principal/RH (#3305).
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $payroll = $this->payrollService->validate($payroll, $actor);
+
+        return (new PayrollResource($payroll->load('employee')))->response();
+    }
+
+    public function destroy(Request $request, Payroll $payroll): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payroll->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        // Suppression = écriture réservée principal/RH (#3305).
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $this->payrollService->delete($payroll);
+
+        return response()->json(['message' => __('payroll.payroll_deleted')]);
+    }
+}

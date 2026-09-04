@@ -90,7 +90,7 @@ class PlatformAuthTest extends TestCase
         $this->assertNotEmpty($secret);
 
         // Secret should not be saved yet
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
     }
 
     public function test_super_admin_can_enable_2fa(): void
@@ -108,7 +108,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(400);
         $response->assertJsonPath('error', 'INVALID_2FA_CODE');
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
         $this->assertSame($secret, Cache::get("2fa_setup:{$this->superAdmin->id}"));
     }
 
@@ -168,7 +168,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
-        $this->assertNotNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNotNull($this->superAdmin->fresh()?->two_fa_secret);
 
         $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
             ->postJson('/api/v1/platform/auth/2fa/disable', [
@@ -176,7 +176,7 @@ class PlatformAuthTest extends TestCase
             ]);
 
         $response->assertOk();
-        $this->assertNull($this->superAdmin->fresh()->two_fa_secret);
+        $this->assertNull($this->superAdmin->fresh()?->two_fa_secret);
     }
 
     public function test_super_admin_can_update_own_profile(): void
@@ -187,14 +187,84 @@ class PlatformAuthTest extends TestCase
             ->patchJson('/api/v1/platform/auth/profile', [
                 'name' => 'Updated Admin Name',
                 'email' => 'updated-admin@leopardo.test',
+                // #6563 (audit auth I5) : tout changement d'email exige le mot
+                // de passe courant.
+                'current_password' => 'password123',
             ]);
 
         $response->assertOk();
         $response->assertJsonPath('data.name', 'Updated Admin Name');
         $response->assertJsonPath('data.email', 'updated-admin@leopardo.test');
 
-        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()->name);
-        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $this->assertSame('Updated Admin Name', $this->superAdmin->fresh()?->name);
+        $this->assertSame('updated-admin@leopardo.test', $this->superAdmin->fresh()?->email);
+    }
+
+    public function test_super_admin_email_change_requires_current_password(): void
+    {
+        $token = $this->superAdmin->createToken('test')->plainTextToken;
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'email' => 'hijacked@leopardo.test',
+            ]);
+
+        $response->assertStatus(422);
+        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()?->email);
+
+        $badPassword = $this->withHeaders(['Authorization' => 'Bearer '.$token])
+            ->patchJson('/api/v1/platform/auth/profile', [
+                'email' => 'hijacked@leopardo.test',
+                'current_password' => 'wrong-password',
+            ]);
+
+        $badPassword->assertStatus(422);
+        $badPassword->assertJsonPath('error', 'INVALID_PASSWORD');
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
+    }
+
+    public function test_super_admin_login_locks_after_five_failures(): void
+    {
+        $this->assertNull(Cache::get('platform_login_admin@leopardo.test:lock'));
+
+        for ($i = 1; $i <= 5; $i++) {
+            $response = $this->postJson('/api/v1/platform/auth/login', [
+                'email' => 'admin@leopardo.test',
+                'password' => 'wrong-password',
+            ]);
+            $response->assertStatus(401);
+        }
+
+        $this->assertTrue(Cache::get('platform_login_admin@leopardo.test:lock'));
+
+        // Même avec le bon mot de passe, le compte est verrouillé 15 min.
+        $locked = $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $locked->assertStatus(423);
+        $locked->assertJsonPath('error', 'ACCOUNT_LOCKED');
+    }
+
+    public function test_super_admin_successful_login_resets_failure_counter(): void
+    {
+        for ($i = 1; $i <= 4; $i++) {
+            $this->postJson('/api/v1/platform/auth/login', [
+                'email' => 'admin@leopardo.test',
+                'password' => 'wrong-password',
+            ])->assertStatus(401);
+        }
+
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ])->assertOk();
+
+        $this->assertNull(Cache::get('platform_login_admin@leopardo.test:lock'));
+        $this->assertNull(Cache::get('platform_login_admin@leopardo.test:127.0.0.1'));
     }
 
     public function test_super_admin_profile_update_rejects_email_already_taken(): void
@@ -214,7 +284,9 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonPath('error', 'EMAIL_ALREADY_TAKEN');
-        $this->assertSame('admin@leopardo.test', $this->superAdmin->fresh()->email);
+        $fresh = $this->superAdmin->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('admin@leopardo.test', $fresh->email);
     }
 
     public function test_super_admin_can_change_own_password(): void
@@ -231,7 +303,7 @@ class PlatformAuthTest extends TestCase
         $response->assertOk();
         $response->assertJsonPath('status', 'ok');
 
-        $this->assertTrue(Hash::check('brandNewPassword456', $this->superAdmin->fresh()->password_hash));
+        $this->assertTrue(Hash::check('brandNewPassword456', (string) $this->superAdmin->fresh()?->password_hash));
 
         // Old sessions/tokens (except the one used for this request) are revoked.
         $loginAfterChange = $this->postJson('/api/v1/platform/auth/login', [
@@ -254,7 +326,7 @@ class PlatformAuthTest extends TestCase
 
         $response->assertStatus(401);
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
-        $this->assertTrue(Hash::check('password123', $this->superAdmin->fresh()->password_hash));
+        $this->assertTrue(Hash::check('password123', (string) $this->superAdmin->fresh()?->password_hash));
     }
 
     public function test_suspended_super_admin_cannot_login(): void
@@ -320,5 +392,133 @@ class PlatformAuthTest extends TestCase
         $admin->tokens()->delete();
 
         $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');
+    }
+
+    // ======================= Web login (#6530) =======================
+
+    public function test_web_login_succeeds_without_2fa_if_not_enabled(): void
+    {
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('platform.companies.index'));
+        $this->assertAuthenticated('super_admin_web');
+    }
+
+    public function test_web_login_rejects_invalid_credentials(): void
+    {
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_blocks_suspended_super_admin(): void
+    {
+        // Issue #6530 : un super-admin suspendu/désactivé ne doit pas pouvoir
+        // se connecter par la surface web (alors que la garde existait déjà
+        // côté API, #2630).
+        $this->superAdmin->status = 'suspended';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_requires_2fa_code_when_enabled(): void
+    {
+        $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('two_fa_code');
+        $response->assertSessionHas('two_fa_required');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_rejects_invalid_2fa_code(): void
+    {
+        $this->superAdmin->two_fa_secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'two_fa_code' => '123456', // Code invalide
+        ]);
+
+        $response->assertSessionHasErrors('two_fa_code');
+        $this->assertGuest('super_admin_web');
+    }
+
+    public function test_web_login_succeeds_with_valid_2fa_code(): void
+    {
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $this->superAdmin->two_fa_secret = $secret;
+        $this->superAdmin->save();
+
+        $response = $this->post('/platform/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'two_fa_code' => $this->totpAt($secret, time()),
+        ]);
+
+        $response->assertRedirect(route('platform.companies.index'));
+        $this->assertAuthenticated('super_admin_web');
+    }
+
+    /**
+     * TOTP RFC 6238 (SHA1, 6 digits, fenêtre 30 s) — miroir de
+     * SuperAdminService::totpAt pour les tests du login web (#6530).
+     */
+    private function totpAt(string $secret, int $timestamp): string
+    {
+        $counter = intdiv($timestamp, 30);
+        $binaryCounter = pack('N2', 0, $counter);
+        $key = $this->base32Decode($secret);
+        $hash = hash_hmac('sha1', $binaryCounter, $key, true);
+        $offset = ord(substr($hash, -1)) & 0x0F;
+        $chunk = substr($hash, $offset, 4);
+        $value = unpack('N', $chunk)[1] & 0x7FFFFFFF;
+
+        return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function base32Decode(string $value): string
+    {
+        $alphabet = array_flip(str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'));
+        $normalized = strtoupper(rtrim($value, '='));
+        $bits = '';
+
+        foreach (str_split($normalized) as $char) {
+            if (! array_key_exists($char, $alphabet)) {
+                continue;
+            }
+            $bits .= str_pad(decbin($alphabet[$char]), 5, '0', STR_PAD_LEFT);
+        }
+
+        $decoded = '';
+        foreach (str_split($bits, 8) as $chunk) {
+            if (strlen($chunk) < 8) {
+                continue;
+            }
+            $decoded .= chr(bindec($chunk));
+        }
+
+        return $decoded;
     }
 }

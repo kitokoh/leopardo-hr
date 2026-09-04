@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use Tests\TestCase;

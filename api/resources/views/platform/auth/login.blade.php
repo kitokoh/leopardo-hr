@@ -25,6 +25,13 @@
                     <input id="password" name="password" type="password" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" required @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
                     @error('password')<div id="password-error" role="alert" class="mt-1 text-sm text-rose-400">{{ $message }}</div>@enderror
                 </div>
+                @if (old('two_fa_required'))
+                <div>
+                    <label for="two_fa_code" class="mb-2 block text-sm text-slate-300">Code 2FA</label>
+                    <input id="two_fa_code" name="two_fa_code" type="text" inputmode="numeric" autocomplete="one-time-code" class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2" @error('two_fa_code') aria-invalid="true" aria-describedby="twofa-error" @enderror>
+                    @error('two_fa_code')<div id="twofa-error" role="alert" class="mt-1 text-sm text-rose-400">{{ $message }}</div>@enderror
+                </div>
+                @endif
             </div>
             <button type="submit" class="mt-6 w-full rounded-lg bg-emerald-500 px-4 py-3 font-medium text-slate-950">Se connecter</button>
         </form>

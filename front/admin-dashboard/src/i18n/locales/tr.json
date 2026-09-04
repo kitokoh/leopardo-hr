@@ -223,7 +223,21 @@
     "hrReportUnavailable": "HR raporu oluşturulamadı (uç nokta kullanılamıyor).",
     "clientSpaceNote": "Dışa aktarımlar müşteri alanında mevcuttur.",
     "historyClientOnly": "Geçmiş yalnızca müşteriler tarafından görülebilir.",
-    "historyError": "Geçmiş yüklenemedi."
+    "historyError": "Geçmiş yüklenemedi.",
+    "colLicense": "Lisans",
+    "colLastSync": "Son senkronizasyon",
+    "colActions": "İşlemler",
+    "sync": "Senkronize",
+    "syncing": "Senkronize ediliyor…",
+    "details": "Detaylar",
+    "revoke": "İptal et",
+    "revokeConfirm": "İptal onaylansın mı?",
+    "revoking": "İptal ediliyor…",
+    "loadError": "Edge düğümleri yüklenirken hata.",
+    "syncError": "Senkronizasyon başlatılırken hata.",
+    "syncSuccess": "{name} için senkronizasyon başladı",
+    "revokeSuccess": "{name} için lisans iptal edildi",
+    "revokeError": "Lisans iptal edilirken hata."
   },
   "settingsEdgePairingRemoved": "Edge eşleştirmesi kaldırıldı.",
   "teamArchiveSuccess": "Çalışan arşivlendi.",
@@ -384,6 +398,63 @@
         "won": "Kazanıldı",
         "lost": "Kaybedildi"
       }
+    },
+    "hub_title": "CRM",
+    "hub_subtitle": "Şirketinizin hesapları, kişileri, potansiyel müşterileri ve fırsatları.",
+    "opportunities": "Fırsatlar",
+    "account_detail": "Hesap",
+    "stage": "Aşama",
+    "status": {
+      "approved": "Onaylandı",
+      "cancelled": "İptal edildi",
+      "detected": "Algılandı",
+      "pending": "Onay bekleniyor",
+      "rejected": "Reddedildi"
+    },
+    "tasks": "Görevler",
+    "activities": "Aktiviteler",
+    "load_error": "CRM verileri yüklenemedi. Tekrar deneyin.",
+    "empty_accounts": "Henüz hesap yok.",
+    "empty_contacts": "Kişi yok.",
+    "empty_tasks": "Görev yok.",
+    "empty_activities": "Aktivite yok.",
+    "empty_leads": "Henüz potansiyel müşteri yok.",
+    "empty_opportunities": "Henüz fırsat yok.",
+    "task_completed": "Görev tamamlandı.",
+    "enable": {
+      "auto": {
+        "gps": "Otomatik GPS'i aç"
+      }
+    },
+    "forced": "Zorunlu",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
+    },
+    "presence": {
+      "in": {
+        "progress": "{time} itibarıyla devam eden katılım"
+      }
+    },
+    "recent": {
+      "sessions": "Son oturumlar"
+    },
+    "rejected": "Reddedilen",
+    "sessions": {
+      "load": {
+        "error": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin."
+      }
     }
   },
   "attendanceBreakTitle": "Molaya çık",
@@ -416,6 +487,16 @@
     "brand": {
       "subtitle": "Sohbet odakli, mobil oncelikli, moduler."
     },
+    "creating": "Hesap oluşturuluyor...",
+    "first": {
+      "name": "Ad"
+    },
+    "min": {
+      "chars": "En az 8 karakter"
+    },
+    "password": "Şifre",
+    "required": "Zorunlu",
+    "submit": "Hesabımı oluştur",
     "hero": {
       "title": "Is gununuz burada baslar, arka ofiste degil.",
       "description": "Puantaj, kisisel takip ve aktif IK modulleri once telefonda acilir; deneyim sade ve okunabilir kalir."
@@ -2280,7 +2361,21 @@
       }
     },
     "sessions": "Oturumlar",
-    "break_minutes": "{minutes} dk"
+    "break_minutes": "{minutes} dk",
+    "payroll_ready": {
+      "subject": "Maas pusulaniz hazir",
+      "greeting": "Merhaba :name,",
+      "body": ":period donemi icin maas pusulaniz hazir. Leopardo IK icinde inceleyebilirsiniz.",
+      "action": "Maas pusulasini gor",
+      "footer": "Muhasebe aktarimindan once bilgilerinizi kontrol edin."
+    },
+    "absence_approved": {
+      "subject": "Izin talebiniz onaylandi",
+      "greeting": "Merhaba :name,",
+      "body": ":period donemi icin izin talebiniz onaylandi.",
+      "action": "Talebi gor",
+      "footer": "Takim plani guncellendi."
+    }
   },
   "teamEmptyHint": "Aşağıdaki düğmeyle ekibinizi eklemeye başlayın.",
   "attendanceCurrentMonth": "Geçerli ay",
@@ -2621,7 +2716,8 @@
     "errReconciliations": "Mutabakatlar yüklenemedi.",
     "stationsCaption": "Filo istasyonları",
     "incidentsCaption": "Bildirilen olaylar",
-    "reconciliationsCaption": "Mutabakat raporları"
+    "reconciliationsCaption": "Mutabakat raporları",
+    "apiUnavailable": "FuelStation API'si (istasyon referansı, olaylar, mutabakatlar) henüz teslim edilmedi — sayfa BC-15 partisiyle (#6373) birlikte çalışır hale gelecek."
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",
@@ -2741,21 +2837,44 @@
       }
     },
     "language": {
+      "label": "Dil",
+      "variants": {
+        "fr-FR": "Fransizca (Fransa)",
+        "fr-BE": "Fransizca (Belcika)",
+        "fr-CA": "Fransizca (Kanada)",
+        "ar-SA": "Arapca (Suudi Arabistan)",
+        "ar-MA": "Arapca (Fas)",
+        "tr-TR": "Türkçe (Türkiye)",
+        "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
+        "en-GB": "Ingilizce (Birlesik Krallik)"
+      },
       "saved": "Dil kaydedildi.",
       "subtitle": "Seçilen dil gelecekteki bildirimleri ve metinleri de etkiler.",
       "title": "Dil"
     },
-    "last": {
-      "name": {
-        "label": "Soyad",
-        "required": "Soyad gereklidir"
-      }
-    },
-    "logout": "Çıkış yap",
-    "manager": {
-      "account": {
-        "hint": "Yönetici hesabı net, güvenli ve saha kararları için hazır olmalıdır."
-      }
+    "or": "veya",
+    "countries": {
+      "BF": "Burkina Faso",
+      "BJ": "Benin",
+      "CA": "Kanada",
+      "CF": "Orta Afrika Cumhuriyeti",
+      "CG": "Kongo",
+      "CI": "Fildişi Sahili",
+      "CM": "Kamerun",
+      "DZ": "Cezayir",
+      "FR": "Fransa",
+      "GA": "Gabon",
+      "GB": "Birleşik Krallık",
+      "GQ": "Ekvator Ginesi",
+      "MA": "Fas",
+      "ML": "Mali",
+      "NE": "Nijer",
+      "SN": "Senegal",
+      "TD": "Çad",
+      "TG": "Togo",
+      "TN": "Tunus",
+      "TR": "Türkiye",
+      "US": "Amerika Birleşik Devletleri"
     },
     "mobile": {
       "access": "Mobil erişim"
@@ -2832,6 +2951,18 @@
     "team": {
       "drive": "Ekip yönetimi",
       "drive_hint": "Profil, rol ve izinler İK işlemleri için okunabilir kalır."
+    },
+    "last": {
+      "name": {
+        "label": "Soyad",
+        "required": "Soyad gereklidir"
+      }
+    },
+    "logout": "Çıkış yap",
+    "manager": {
+      "account": {
+        "hint": "Yönetici hesabı net, güvenli ve saha kararları için hazır olmalıdır."
+      }
     }
   },
   "smartAttendanceSurveillanceInactive": "İzleme pasif",
@@ -3476,6 +3607,48 @@
       "sim": {
         "compare": "Karşılaştırılacak maaş"
       }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Otomatik GPS'i aç"
+      }
+    },
+    "forced": "Zorunlu",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
+    },
+    "presence": {
+      "in": {
+        "progress": "{time} itibarıyla devam eden katılım"
+      }
+    },
+    "recent": {
+      "sessions": "Son oturumlar"
+    },
+    "rejected": "Reddedilen",
+    "sessions": {
+      "load": {
+        "error": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin."
+      }
+    },
+    "status": {
+      "approved": "Onaylandı",
+      "cancelled": "İptal edildi",
+      "detected": "Algılandı",
+      "pending": "Onay bekleniyor",
+      "rejected": "Reddedildi"
     }
   },
   "payrollSummaryUnavailable": "Maaş özeti geçici olarak kullanılamıyor",
@@ -3601,6 +3774,39 @@
       "detected": "Algılandı",
       "pending": "Onay bekleniyor",
       "rejected": "Reddedildi"
+    },
+    "settings": {
+      "title": "Muhasebe ayarları",
+      "subtitle": "Şirket, KDV, numaralandırma ve belge şablonları.",
+      "load_error": "Muhasebe ayarları yüklenemedi.",
+      "save": "Kaydet",
+      "saved": "Ayarlar kaydedildi.",
+      "save_error": "Kaydetme başarısız oldu.",
+      "reload": "Yenile",
+      "company_title": "Şirket bilgileri",
+      "company_subtitle": "Ad, adres ve vergi kimlikleri.",
+      "series_title": "Numaralandırma",
+      "series_subtitle": "Fatura serileri için sonek ve başlangıç noktası.",
+      "mentions_title": "Yasal ibareler",
+      "mentions_subtitle": "Fatura altbilgisinde görünen metin.",
+      "mentions_placeholder": "Örn.: KDV uygulanmaz, CGI madde 87…",
+      "tva_title": "Varsayılan KDV",
+      "tva_subtitle": "Yeni faturalara uygulanan oran.",
+      "add_rate": "Oran ekle",
+      "remove_rate": "Kaldır",
+      "rate_label": "Etiket",
+      "rate_default_label": "Standart KDV",
+      "rate_value": "Oran (%)",
+      "currency": "Para birimi",
+      "document_language": "Belge dili",
+      "lang_fr": "Fransızca",
+      "lang_en": "İngilizce",
+      "lang_ar": "Arapça",
+      "lang_tr": "Türkçe",
+      "payment_terms": "Ödeme vadesi (gün)",
+      "template_style": "Fatura şablonu",
+      "template_classic": "Klasik",
+      "template_modern": "Modern"
     }
   },
   "attendanceRoleForbidden": "Rolünüz bu yoklama işlemine izin vermiyor.",
@@ -3851,6 +4057,169 @@
       "loadError": "Satış noktası yüklenemedi.",
       "loading": "Satış noktası yükleniyor…",
       "actionError": "İşlem başarısız, tekrar deneyin."
+    },
+    "home": {
+      "title": "Restoran Yöneticisi",
+      "subtitle": "Satış noktası, rezervasyonlar, stok ve teslimat",
+      "loadError": "Restoran panosu yüklenemedi.",
+      "referential": "Referans",
+      "referentialDesc": "Şubeler, salon planı, katalog, malzemeler, menüler, tedarikçiler",
+      "reservations": "Rezervasyonlar",
+      "reservationsDesc": "Saatler, giriş, depozitolar",
+      "stock": "Stok ve satın alma",
+      "stockDesc": "Seviyeler, siparişler, teslim almalar, sayımlar",
+      "delivery": "Teslimat ve sadakat",
+      "deliveryDesc": "Bölgeler, kuryeler, turlar, puanlar, promosyonlar",
+      "reports": "Raporlar",
+      "reportsDesc": "Satışlar, doluluk, ürünler, COGS, CSV dışa aktarım",
+      "open": "Aç",
+      "kpiRevenue": "Bugünkü ciro",
+      "kpiOrders": "Bugünkü siparişler",
+      "kpiBasket": "Ortalama sepet",
+      "kpiRotation": "Masa rotasyonu",
+      "alerts": "Stok uyarıları",
+      "alertLine": "Malzeme"
+    },
+    "crud": {
+      "search": "Ara...",
+      "create": "Yeni",
+      "edit": "Düzenle",
+      "delete": "Sil",
+      "loading": "Yükleniyor...",
+      "empty": "Sonuç yok.",
+      "loadError": "Veriler yüklenemedi.",
+      "saveError": "Kaydetme başarısız.",
+      "deleteError": "Silinemedi.",
+      "confirmDelete": "Bu öğe silinsin mi?",
+      "createTitle": "Oluştur",
+      "editTitle": "Düzenle",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor..."
+    },
+    "ref": {
+      "title": "Restoran referansı",
+      "subtitle": "Şubeler, salon planı, katalog, malzemeler, menüler, vergi, tedarikçiler",
+      "tabBranches": "Şubeler",
+      "tabZones": "Bölgeler",
+      "tabTables": "Masalar",
+      "tabCategories": "Kategoriler",
+      "tabProducts": "Ürünler",
+      "tabIngredients": "Malzemeler",
+      "tabUnits": "Birimler",
+      "tabMenus": "Menüler",
+      "tabTaxRates": "KDV",
+      "tabSuppliers": "Tedarikçiler",
+      "tabHours": "Saatler",
+      "branches": "Şubeler (işletmeler)",
+      "zones": "Bölgeler (salonlar)",
+      "tables": "Masalar (salon planı)",
+      "categories": "Kategoriler",
+      "products": "Ürünler (katalog ve tarifler)",
+      "ingredients": "Malzemeler (hammaddeler)",
+      "units": "Birimler",
+      "menus": "Menüler (setler)",
+      "taxRates": "KDV oranları",
+      "suppliers": "Tedarikçiler",
+      "hours": "Çalışma saatleri"
+    },
+    "res": {
+      "title": "Rezervasyonlar",
+      "subtitle": "Saatler, giriş, no-show, depozitolar",
+      "new": "Yeni rezervasyon",
+      "name": "Müşteri adı",
+      "phone": "Telefon",
+      "create": "Oluştur",
+      "colRef": "Referans",
+      "colContact": "Müşteri",
+      "colWhen": "Ne zaman",
+      "colCovers": "Kişi",
+      "colStatus": "Durum",
+      "confirm": "Onayla",
+      "checkin": "Giriş",
+      "noshow": "No-show",
+      "cancel": "İptal",
+      "loading": "Yükleniyor...",
+      "empty": "Rezervasyon yok.",
+      "loadError": "Rezervasyonlar yüklenemedi.",
+      "createError": "Oluşturma başarısız.",
+      "actionError": "İşlem başarısız."
+    },
+    "stock": {
+      "title": "Stok ve satın alma",
+      "subtitle": "Seviyeler, uyarılar, siparişler, teslim almalar",
+      "tabLevels": "Seviyeler ve uyarılar",
+      "tabPO": "Satın alma siparişleri",
+      "tabReceivings": "Teslim almalar",
+      "colQty": "Miktar",
+      "colCost": "Ortalama maliyet",
+      "colThreshold": "Eşik",
+      "colAlert": "Uyarı",
+      "colRef": "Referans",
+      "colStatus": "Durum",
+      "colTotal": "Toplam",
+      "colDate": "Tarih",
+      "alert": "Eşiğe ulaşıldı",
+      "ok": "OK",
+      "newPO": "Yeni satın alma siparişi",
+      "createPO": "Sipariş oluştur",
+      "send": "Gönder",
+      "receive": "Teslim al",
+      "newReceiving": "Yeni teslim alma",
+      "createReceiving": "Teslim al",
+      "loading": "Yükleniyor...",
+      "loadError": "Stok verileri yüklenemedi.",
+      "poError": "Sipariş oluşturma başarısız.",
+      "actionError": "Siparişte işlem başarısız.",
+      "rcvError": "Teslim alma başarısız."
+    },
+    "del": {
+      "title": "Teslimat ve sadakat",
+      "subtitle": "Bölgeler, kuryeler, turlar, puanlar, promosyonlar",
+      "tabZones": "Bölgeler",
+      "tabRiders": "Kuryeler",
+      "tabDeliveries": "Teslimatlar",
+      "tabLoyalty": "Sadakat",
+      "tabPromos": "Promosyonlar",
+      "colName": "Ad",
+      "colPhone": "Telefon",
+      "colVehicle": "Araç",
+      "colActive": "Aktif",
+      "colStatus": "Durum",
+      "colFees": "Ücretler ve minimum",
+      "colPoints": "Puan",
+      "colTier": "Seviye",
+      "colCode": "Kod",
+      "colTitle": "Başlık",
+      "colType": "Tür",
+      "colValue": "Değer",
+      "colUses": "Kullanım",
+      "fee": "Ücret",
+      "newDelivery": "Yeni teslimat",
+      "create": "Oluştur",
+      "assign": "Ata",
+      "out": "Teslimatta",
+      "deliver": "Teslim edildi",
+      "cancel": "İptal",
+      "loading": "Yükleniyor...",
+      "loadError": "Teslimat/sadakat verileri yüklenemedi.",
+      "createError": "Teslimat oluşturma başarısız.",
+      "actionError": "İşlem başarısız.",
+      "riderPrompt": "Atanacak kurye ID'si:"
+    },
+    "reports": {
+      "title": "Raporlar",
+      "subtitle": "Satışlar, doluluk, ürünler, COGS, kasalar ve CSV dışa aktarım",
+      "tabSales": "Satışlar",
+      "tabOccupancy": "Doluluk",
+      "tabProducts": "Ürünler",
+      "tabCogs": "COGS",
+      "tabPos": "Kasalar",
+      "export": "CSV dışa aktarım",
+      "loading": "Yükleniyor...",
+      "empty": "Bu dönem için veri yok.",
+      "loadError": "Rapor yüklenemedi.",
+      "exportError": "CSV dışa aktarma başarısız."
     }
   },
   "commonLanguageArabic": "Arapça",
@@ -4340,7 +4709,10 @@
     "accountingDashboard": "Muhasebe — Panel",
     "accountingSettings": "Muhasebe — Ayarlar",
     "fuelStation": "Akaryakıt istasyonları",
-    "travelAgency": "Seyahat acentesi"
+    "travelAgency": "Seyahat acentesi",
+    "surveyStats": "Çözüm anketleri",
+    "solutionSurveys": "Çözüm anketleri",
+    "travel": "Seyahat acentesi"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
@@ -4589,26 +4961,31 @@
     "tripStatus": {
       "draft": "Taslak",
       "published": "Yayınlandı",
-      "cancelled": "İptal edildi"
+      "cancelled": "İptal edildi",
+      "scheduled": "Planlandı"
     },
     "bookingStatus": {
       "pending": "Beklemede",
       "confirmed": "Onaylandı",
       "cancelled": "İptal edildi",
       "refunded": "Geri ödendi",
-      "expired": "Süresi doldu"
+      "expired": "Süresi doldu",
+      "completed": "Tamamlandı"
     },
     "paymentStatus": {
       "pending": "Beklemede",
       "paid": "Ödendi",
       "failed": "Başarısız",
-      "refunded": "Geri ödendi"
+      "refunded": "Geri ödendi",
+      "confirmed": "Onaylandı"
     },
     "ticketStatus": {
       "issued": "Düzenlendi",
       "checkedIn": "Check-in yapıldı",
       "revoked": "İptal edildi",
-      "unknown": "Bilinmiyor"
+      "unknown": "Bilinmiyor",
+      "checked_in": "Kayıtlı",
+      "void": "İptal edildi"
     },
     "routes": {
       "title": "Güzergâhlar ve güzergâhlar",
@@ -4636,7 +5013,28 @@
       "cancelReasonTitle": "İptal nedeni",
       "refundReasonTitle": "Geri ödeme nedeni",
       "reason": "Neden",
-      "reasonRequired": "Neden zorunludur."
+      "reasonRequired": "Neden zorunludur.",
+      "cancel": "İptal",
+      "cancelTitle": "Rezervasyonu iptal et",
+      "confirmBody": "{ref} rezervasyonu onaylansın mı? Koltuklar satıldı olarak işaretlenecek.",
+      "confirm": "Onayla",
+      "confirmTitle": "Rezervasyonu onayla",
+      "detail": "Detay",
+      "issueTicketsBody": "{ref} için her yolcuya adlı bilet düzenlensin mi?",
+      "issueTickets": "Bilet düzenle",
+      "issueTicketsTitle": "Biletleri düzenle",
+      "noTickets": "Bilet düzenlenmedi",
+      "passengerCount": "Yolcular",
+      "paymentStatus": "Ödeme",
+      "referencePlaceholder": "Örn. GV-2026-0001…",
+      "reference": "Referans",
+      "refund": "Geri öde",
+      "refundTitle": "Rezervasyonu geri öde",
+      "seat": "Koltuk",
+      "source": "Kaynak",
+      "subtitle": "Gişe satışları, onay, iptal, geri ödeme ve biletler.",
+      "total": "Toplam",
+      "trip": "Sefer"
     },
     "checkin": {
       "selectTrip": "Bir sefer seçin",
@@ -4649,7 +5047,17 @@
       "checkIn": "Biniş",
       "checkedIn": "Biniş yapıldı ✓",
       "emptyManifest": "Bu seferde yolcu yok.",
-      "noTicket": "Bu yolcuya bağlı bilet yok."
+      "noTicket": "Bu yolcuya bağlı bilet yok.",
+      "action": "Biniş",
+      "age": "Yaş",
+      "class": "Sınıf",
+      "done": "Bindi",
+      "passenger": "Yolcu",
+      "seat": "Koltuk",
+      "subtitle": "Sefer bazında biniş ve yolcu sayacı.",
+      "ticket": "Bilet",
+      "title": "Check-in ve yolcu listesi",
+      "trip": "Sefer"
     },
     "tickets": {
       "title": "Biletleme",
@@ -4659,7 +5067,10 @@
       "downloadPdf": "PDF",
       "revoke": "İptal et",
       "revokeTitle": "İptal nedeni",
-      "pdfError": "İndirme başarısız."
+      "pdfError": "İndirme başarısız.",
+      "download": "PDF",
+      "revokeBody": "{number} bileti iptal edilsin mi? PDF geçersiz olacak ve bilet iptal durumuna geçecek.",
+      "subtitle": "Biletleri görüntüleme, PDF indirme ve iptal etme."
     },
     "reports": {
       "tabsLabel": "Raporlar",
@@ -4669,7 +5080,36 @@
       "cancellations": "İptaller",
       "exportCsv": "CSV dışa aktar",
       "empty": "Dönem için veri yok.",
-      "exportError": "Dışa aktarma başarısız."
+      "exportError": "Dışa aktarma başarısız.",
+      "apply": "Uygula",
+      "byReason": "Sebebe göre",
+      "bySource": "Kaynağa göre",
+      "cancellationsCount": "İptaller",
+      "cancellationsRate": "Oran",
+      "cancellationsTotal": "Final rezervasyonlar",
+      "count": "Adet",
+      "export": "CSV dışa aktar",
+      "free": "Müsait",
+      "from": "İtibaren",
+      "kpiBookings": "Rezervasyonlar",
+      "kpiCancellations": "İptaller",
+      "kpiOccupancy": "Doluluk",
+      "kpiSales": "Satışlar",
+      "reserved": "Rezerve",
+      "revenueConfirmed": "Onaylandı",
+      "revenueNet": "Net",
+      "revenueRefunded": "Geri ödendi",
+      "salesAmount": "Tutar",
+      "salesCount": "Satışlar",
+      "salesPassengers": "Yolcular",
+      "sold": "Satıldı",
+      "subtitle": "Satışlar, doluluk, gelirler, iptaller ve CSV dışa aktarım.",
+      "tabCancellations": "İptaller",
+      "tabOccupancy": "Doluluk",
+      "tabRevenue": "Gelirler",
+      "tabSales": "Satışlar",
+      "title": "Raporlar",
+      "to": "Kadar"
     },
     "rentals": {
       "vehicles": "Kiralık araçlar",
@@ -4739,7 +5179,21 @@
       "hint": {
         "options": "Her satıra bir seçenek.",
         "correctIndex": "0'dan başlar (ilk satır = 0)."
-      }
+      },
+      "endsAt": "Bitiş",
+      "status": {
+        "draft": "Taslak",
+        "active": "Aktif",
+        "closed": "Kapatıldı"
+      },
+      "addQuestion": "Soru ekle",
+      "bonus": "Bonus",
+      "create": "Quiz oluştur",
+      "options": "Seçenekler",
+      "participant": "Katılımcı",
+      "questions": "Sorular",
+      "results": "Sonuçlar",
+      "score": "Skor"
     },
     "quizStatus": {
       "draft": "Taslak",
@@ -4777,7 +5231,29 @@
         "reject": "Reddet"
       },
       "rejectTitle": "Reklamı reddet",
-      "rejectTarget": "Reklam"
+      "rejectTarget": "Reklam",
+      "currency": "Para birimi",
+      "label": "Etiket",
+      "status": {
+        "draft": "Taslak",
+        "expired": "Süresi doldu",
+        "paid": "Ödendi",
+        "rejected": "Reddedildi",
+        "submitted": "Gönderildi",
+        "validated": "Onaylandı"
+      },
+      "type": "Tür",
+      "allStatuses": "Tüm durumlar",
+      "create": "İlan gönder",
+      "expiresAt": "Bitiş",
+      "pay": "Öde",
+      "position": "Sıra",
+      "priceChar": "Karakter fiyatı",
+      "priceImage": "Görsel fiyatı",
+      "price": "Fiyat",
+      "reject": "Reddet",
+      "renew": "Yenile",
+      "validate": "Onayla"
     },
     "sites": {
       "title": "Turistik yerler",
@@ -4788,7 +5264,8 @@
       "field": {
         "latitude": "Enlem",
         "longitude": "Boylam"
-      }
+      },
+      "name": "Ad"
     },
     "contacts": {
       "formTitle": "İletişim formu",
@@ -4818,7 +5295,31 @@
         "toggleConsent": "Onayı değiştir",
         "notify": "Bildir",
         "send": "Gönder"
-      }
+      },
+      "name": "Ad",
+      "phone": "Telefon",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "consents": "Onaylar",
+      "notify": "Bildir",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "channelEmail": "E-posta",
+      "search": "E-posta ile ara",
+      "title": "Yolcu kişileri",
+      "subtitle": "Kişi kaydı, kanal bazında onaylar (GDPR) ve manuel bildirimler.",
+      "publicForm": "Genel iletişim formu",
+      "empty": "Kayıtlı kişi yok.",
+      "toggleConsent": "{channel} onayını değiştir",
+      "message": "Mesaj",
+      "channels": "Kanallar (onay gerekli)",
+      "noConsent": "onay yok",
+      "noChannel": "En az bir onaylı kanal seçin.",
+      "consentGiven": "Onaylı",
+      "consentRefused": "Reddedildi",
+      "never": "Hiç ifade edilmedi",
+      "email": "E-posta",
+      "app": "Uygulama"
     },
     "advertStatus": {
       "draft": "Taslak",
@@ -4828,6 +5329,549 @@
       "rejected": "Reddedildi",
       "expired": "Süresi doldu",
       "archived": "Arşivlendi"
+    },
+    "ageCategory": {
+      "adult": "Yetişkin",
+      "child": "Çocuk",
+      "infant": "Bebek"
+    },
+    "bookingSource": {
+      "office": "Gişe",
+      "online": "Çevrimiçi",
+      "phone": "Telefon"
+    },
+    "carriers": {
+      "name": "Ad",
+      "phone": "Telefon",
+      "type": "Tür"
+    },
+    "carrierTypes": {
+      "boat": "Gemi",
+      "bus": "Otobüs",
+      "plane": "Uçak",
+      "train": "Tren"
+    },
+    "catalog": {
+      "addRoom": "Oda ekle",
+      "capacity": "Kapasite",
+      "classification": "Sınıflandırma",
+      "end": "Bitiş",
+      "hotelName": "Ad",
+      "images": "Görseller",
+      "noImages": "Görsel yok",
+      "priceDay": "Fiyat / gün",
+      "priceNight": "Fiyat / gece",
+      "rentalImagesTitle": "Araç görselleri",
+      "roomNumber": "No",
+      "rooms": "Odalar",
+      "roomType": "Tür",
+      "start": "Başlangıç",
+      "subtitle": "Kiralık araçlar, rezervasyonlar ve otel kataloğu.",
+      "tabHotels": "Oteller",
+      "tabRentalBookings": "Kiralama rezervasyonları",
+      "tabRentals": "Kiralık araçlar",
+      "title": "Başlık",
+      "hotelRoomsTitle": "Otel odaları"
+    },
+    "cities": {
+      "country": "Ülkeler",
+      "name": "Şehir",
+      "region": "Bölge"
+    },
+    "classes": {
+      "color": "Renk",
+      "label": "Etiket",
+      "priority": "Öncelik"
+    },
+    "common": {
+      "cancel": "İptal",
+      "city": "Şehir",
+      "statusDraft": "Taslak",
+      "featureDisabledBody": "travelagency bayrağı bağlı tenant için etkin değil. Etkinleştirmek için platform yöneticisiyle iletişime geçin.",
+      "tenantRequiredBody": "Seyahat acentesi verilerine tenant oturumuyla (taklit veya yönetici hesabı) erişilir.",
+      "actions": "İşlemler",
+      "active": "Aktif",
+      "all": "Tümü",
+      "carrier": "Şirket",
+      "close": "Kapat",
+      "confirmDeleteBody": "Bu işlem geri alınamaz. « {name} » öğesini silmek istediğinize emin misiniz?",
+      "confirmDeleteTitle": "Bu öğe silinsin mi?",
+      "create": "Oluştur",
+      "createdAt": "Oluşturulma",
+      "delete": "Sil",
+      "disabled": "Pasif",
+      "edit": "Düzenle",
+      "empty": "Veri yok.",
+      "featureDisabledTitle": "Seyahat acentesi modülü pasif",
+      "loadErrorBody": "Bir hata oluştu.",
+      "loadErrorTitle": "Yükleme başarısız",
+      "noData": "Veri yok",
+      "no": "Hayır",
+      "reason": "Sebep",
+      "retry": "Yeniden dene",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor…",
+      "search": "Ara",
+      "selectPlaceholder": "— Seçin —",
+      "status": "Durum",
+      "tenantRequiredTitle": "Tenant bağlamı gerekli",
+      "yes": "Evet"
+    },
+    "countries": {
+      "name": "Ad",
+      "phoneCode": "Alan kodu"
+    },
+    "home": {
+      "flagActive": "Modül aktif",
+      "flowBody": "Referans ve ağ → sefer programlama → yayınlama → gişe satışı → biletleme ve check-in → raporlar.",
+      "flowTitle": "İş akışı",
+      "subtitle": "Seyahat acentesi dikeyinin yönetimi: ağ, satışlar, biletleme ve yönetim.",
+      "title": "Seyahat acentesi"
+    },
+    "network": {
+      "addPrice": "Fiyat ekle",
+      "addStop": "Durak ekle",
+      "adultPrice": "Yetişkin ücreti",
+      "arrival": "Varış",
+      "cancelTrip": "Seferi iptal et",
+      "childPrice": "Çocuk ücreti",
+      "class": "Sınıf",
+      "currency": "Para birimi",
+      "departure": "Kalkış",
+      "destination": "Varış noktası",
+      "distance": "Mesafe (km)",
+      "duration": "Süre (dk)",
+      "means": "Araç türü",
+      "minDuration": "Min. süre (dk)",
+      "origin": "Kalkış noktası",
+      "prices": "Fiyatlar",
+      "publish": "Yayınla",
+      "rank": "Sıra",
+      "route": "Hat",
+      "routes": "Hatlar ve duraklar",
+      "routeStopsTitle": "Hattın durakları",
+      "stopover": "Aktarma",
+      "stops": "Duraklar",
+      "subtitle": "Hatlar, duraklar, programlama, fiyatlar ve yayınlama.",
+      "title": "Hatlar ve seferler",
+      "tripPricesTitle": "Sefer fiyatları",
+      "trips": "Seferler ve fiyatlar"
+    },
+    "offices": {
+      "address": "Adres",
+      "name": "Ad",
+      "phone": "Telefon"
+    },
+    "referential": {
+      "carriers": "Şirketler",
+      "cities": "Şehirler",
+      "classes": "Hizmet sınıfları",
+      "countries": "Ülkeler",
+      "offices": "Satış ofisleri",
+      "stations": "Garlar ve terminaller",
+      "subtitle": "Ülkeler, şehirler, garlar, ofisler, şirketler, sınıflar ve araçlar.",
+      "title": "Referans verileri",
+      "vehicles": "Araçlar"
+    },
+    "stations": {
+      "isTerminal": "Terminal",
+      "name": "Ad",
+      "phone": "Telefon"
+    },
+    "vehicles": {
+      "registration": "Plaka",
+      "seats": "Koltuklar"
+    },
+    "content": {
+      "quiz": {
+        "description": "Açıklama",
+        "statusDraft": "Taslak",
+        "startsAt": "Başlangıç",
+        "endsAt": "Bitiş",
+        "questionsHint": "Doğru cevap katılımcılara asla gösterilmez.",
+        "noQuestions": "Bu quiz için henüz soru yok.",
+        "options": "Seçenekler (her satıra bir tane, 2 ile 10 arası)",
+        "optionsCount": "{count} seçenek",
+        "optionsMin": "En az 2 seçenek gerekli.",
+        "correctOption": "Doğru cevap (indeks)",
+        "correctIndexError": "Geçersiz doğru cevap indeksi.",
+        "points": "{points} puan",
+        "noResults": "Bu quiz için katılım yok.",
+        "title": "Quizler ve yarışmalar",
+        "createTitle": "Yeni quiz",
+        "questions": "Sorular",
+        "results": "Sonuçlar",
+        "addQuestion": "Soru ekle",
+        "question": "Soru",
+        "pointsLabel": "Puan",
+        "position": "Sıra",
+        "statusActive": "Aktif",
+        "statusClosed": "Kapatıldı",
+        "maxParticipations": "Maks. katılım / kişi",
+        "participantName": "Katılımcı",
+        "participantEmail": "E-posta",
+        "score": "Skor",
+        "bonus": "Bonus",
+        "submittedAt": "Gönderilme"
+      },
+      "adverts": {
+        "type": "Tür",
+        "code": "Kod",
+        "label": "Etiket",
+        "typeLabel": "Etiket",
+        "positionLabel": "Etiket",
+        "currency": "Para birimi",
+        "confirmDeleteRef": "Bu işlem geri alınamaz. Bu öğeyi silmek istediğinize emin misiniz?",
+        "title": "Ücretli ilanlar",
+        "createTitle": "Yeni ilan",
+        "position": "Sıra",
+        "types": "Türler",
+        "positions": "Konumlar",
+        "prices": "Fiyat tablosu",
+        "createType": "Yeni tür",
+        "createPosition": "Yeni konum",
+        "createPrice": "Yeni fiyat",
+        "price": "Fiyat",
+        "pricePerImage": "Fiyat / görsel",
+        "pricePerCharacter": "Fiyat / karakter",
+        "content": "İçerik",
+        "validityDays": "Geçerlilik (gün)",
+        "expiresAt": "Bitiş",
+        "pay": "Öde",
+        "validate": "Onayla",
+        "reject": "Reddet",
+        "rejectTitle": "İlanı reddet",
+        "renew": "Yenile",
+        "statusSubmitted": "Gönderildi",
+        "statusPaid": "Ödendi",
+        "statusValidated": "Onaylandı",
+        "statusRejected": "Reddedildi",
+        "statusExpired": "Süresi doldu",
+        "statusArchived": "Arşivlendi"
+      },
+      "sites": {
+        "name": "Ad",
+        "description": "Açıklama",
+        "title": "Turistik yerler",
+        "allCities": "Tüm şehirler",
+        "latitude": "Enlem",
+        "longitude": "Boylam"
+      },
+      "subtitle": "Quizler, ücretli ilanlar ve turistik yerler.",
+      "tabs": {
+        "adverts": "İlanlar",
+        "contacts": "Kişiler",
+        "quiz": "Quiz",
+        "sites": "Turistik yerler"
+      },
+      "title": "İçerik ve ilanlar"
+    },
+    "contactForm": {
+      "lastName": "Ad",
+      "phone": "Telefon",
+      "title": "Bize ulaşın",
+      "subtitle": "Hatlarımız, seferlerimiz veya biletlerimiz hakkında sorunuz mu var? Yazın.",
+      "firstName": "Ad",
+      "email": "E-posta",
+      "message": "Mesaj",
+      "consent": "Talebimle ilgili e-posta ile iletişime geçilmesini kabul ediyorum.",
+      "send": "Gönder",
+      "received": "Talep alındı",
+      "receivedBody": "Ekibimiz en kısa sürede size dönecektir.",
+      "newRequest": "Yeni talep"
+    },
+    "publicContact": {
+      "title": "Seyahat acentesiyle iletişime geçin",
+      "subtitle": "Yolculuklarınız, rezervasyonlarınız veya biletleriniz hakkında bir sorunuz mu var? Bize yazın.",
+      "noLink": "Bu form, acentenin sağladığı iletişim bağlantısını (imzalı bağlantı) gerektirir.",
+      "invalidLink": "Geçersiz veya süresi dolmuş iletişim bağlantısı. Ajansdan yeni bir bağlantı isteyin.",
+      "sendFailed": "Gönderim başarısız oldu. Tekrar deneyin.",
+      "ackTitle": "Talep alındı",
+      "ackBody": "Teşekkürler! Ajans en kısa sürede size dönüş yapacaktır.",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "message": "Mesaj",
+      "consent": "Talebim hakkında e-posta ile iletişime geçilmesini kabul ediyorum.",
+      "sending": "Gönderiliyor…",
+      "send": "Talebi gönder"
     }
+  },
+  "edu": {
+    "nav": {
+      "label": "EduManager",
+      "admin": "Okul yönetimi",
+      "teacher": "Öğretmen alanım"
+    },
+    "home": {
+      "title": "EduManager",
+      "subtitle": "Okul yönetimi: kampüsler, öğretim yılları, sınıflar, öğrenciler, kayıtlar, değerlendirmeler ve karne.",
+      "campuses": "Kampüsler",
+      "classes": "Sınıflar",
+      "students": "Öğrenciler",
+      "admissions": "Kayıtlar",
+      "reportCards": "Karneler",
+      "pendingReportCards": "onaylanacak karne",
+      "quickLinks": "Hızlı erişim",
+      "manageCampuses": "Kampüsleri yönet",
+      "manageClasses": "Sınıfları yönet",
+      "manageStudents": "Öğrencileri yönet",
+      "manageAssessments": "Değerlendirme ve notlar",
+      "manageReportCards": "Karneler",
+      "teacherSpace": "Öğretmen alanı"
+    },
+    "campuses": {
+      "title": "Kampüsler",
+      "subtitle": "Kurumun okul yerleşkeleri.",
+      "empty": "Henüz kampüs yok. İlk kampüsü oluşturun.",
+      "create": "Yeni kampüs",
+      "edit": "Kampüsü düzenle",
+      "code": "Kod",
+      "name": "Ad",
+      "address": "Adres",
+      "timezone": "Saat dilimi",
+      "status": "Durum",
+      "saveError": "Kampüs kaydedilemedi.",
+      "deleteConfirm": "Bu kampüs silinsin mi?",
+      "deleted": "Kampüs silindi."
+    },
+    "academicYears": {
+      "title": "Öğretim yılları",
+      "subtitle": "Kurumun öğretim dönemleri (çakışan dönemler reddedilir).",
+      "empty": "Öğretim yılı yok.",
+      "create": "Yeni öğretim yılı",
+      "edit": "Öğretim yılını düzenle",
+      "name": "Ad",
+      "startDate": "Başlangıç",
+      "endDate": "Bitiş",
+      "status": "Durum"
+    },
+    "subjects": {
+      "title": "Dersler",
+      "subtitle": "Okutulan derslerin kataloğu.",
+      "empty": "Ders yok.",
+      "create": "Yeni ders",
+      "edit": "Dersi düzenle",
+      "code": "Kod",
+      "name": "Ad",
+      "defaultCoefficient": "Varsayılan katsayı"
+    },
+    "classes": {
+      "title": "Sınıflar",
+      "subtitle": "Sınıflar, seviyeler, sınıf öğretmenleri ve ders atamaları.",
+      "empty": "Sınıf yok.",
+      "create": "Yeni sınıf",
+      "edit": "Sınıfı düzenle",
+      "code": "Kod",
+      "name": "Ad",
+      "level": "Seviye",
+      "capacity": "Azami kapasite",
+      "teacher": "Sınıf öğretmeni",
+      "campus": "Kampüs",
+      "year": "Öğretim yılı",
+      "assignTeacher": "Öğretmen ata",
+      "removeTeacher": "Kaldır",
+      "teacherPlaceholder": "Bir öğretmen seçin…"
+    },
+    "students": {
+      "title": "Öğrenciler",
+      "subtitle": "Öğrenci dosyaları (kişisel veriler korunur).",
+      "empty": "Öğrenci yok.",
+      "create": "Yeni öğrenci",
+      "edit": "Öğrenciyi düzenle",
+      "number": "Kayıt no",
+      "name": "Görünen ad",
+      "status": "Durum",
+      "birthDate": "Doğum tarihi (şifreli)",
+      "piiHint": "Hassas veriler beklemede şifrelenir ve asla kiracı dışına çıkmaz."
+    },
+    "admissions": {
+      "title": "Kayıtlar",
+      "subtitle": "KVKK onaylı kayıt süreci ve öğrenciye dönüştürme.",
+      "empty": "Kayıt dosyası yok.",
+      "create": "Yeni dosya",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "status": "Durum",
+      "convert": "Öğrenciye dönüştür",
+      "converted": "Dönüştürüldü",
+      "converting": "Dönüştürülüyor…",
+      "convertConfirm": "Bu dosya öğrenciye dönüştürülsün mü? İşlem tekrarlanabilir (idempotent)."
+    },
+    "assessments": {
+      "title": "Başlık",
+      "subtitle": "Değerlendirmeler, not ölçekleri, not girişi ve yayınlama.",
+      "empty": "Değerlendirme yok.",
+      "create": "Yeni değerlendirme",
+      "edit": "Değerlendirmeyi düzenle",
+      "type": "Tür",
+      "coefficient": "Katsayı",
+      "maxScore": "Ölçek (azami)",
+      "date": "Tarih",
+      "class": "Sınıf",
+      "subject": "Ders",
+      "grades": "Notlar",
+      "enterGrades": "Notları gir",
+      "publish": "Yayınla",
+      "published": "Yayınlandı",
+      "draft": "Taslak",
+      "noStudents": "Bu sınıfta kayıtlı öğrenci yok.",
+      "score": "Not",
+      "comment": "Yorum",
+      "saveGrades": "Notları kaydet"
+    },
+    "reportCards": {
+      "title": "Karneler",
+      "subtitle": "Oluşturma, yönetim onayı ve kilitleyerek yayınlama.",
+      "empty": "Karne yok.",
+      "generate": "Oluştur",
+      "validate": "Onayla",
+      "publish": "Yayınla",
+      "student": "Öğrenci",
+      "average": "Ortalama",
+      "status": "Durum",
+      "generated": "Oluşturuldu",
+      "validated": "Onaylandı",
+      "period": "Dönem"
+    },
+    "teacher": {
+      "title": "Öğretmen alanı",
+      "subtitle": "Sınıflarım: yoklama, notlar ve onay için gönderim.",
+      "myClasses": "Sınıflarım",
+      "empty": "Size atanmış sınıf yok.",
+      "attendance": "Yoklama",
+      "grades": "Notlar",
+      "date": "Tarih",
+      "present": "Mevcut",
+      "absent": "Yok",
+      "late": "Geç",
+      "excused": "Mazeretli",
+      "saveAttendance": "Yoklamayı kaydet",
+      "attendanceSaved": "Yoklama kaydedildi.",
+      "assessments": "Değerlendirmelerim",
+      "submit": "Onay için gönder",
+      "submitHint": "Yayınlama notu kilitler; düzeltme geçmişi korunur.",
+      "noAssessments": "Bu sınıf için değerlendirme yok.",
+      "students": "Sınıf öğrencileri"
+    },
+    "guardian": {
+      "title": "Veli portalı",
+      "subtitle": "Size emanet edilen çocukların okul kayıtlarını görüntüleyin.",
+      "children": "Çocuklarım",
+      "presence": "Yoklama",
+      "reportCards": "Karneler",
+      "communications": "İletişim",
+      "consent": "Portala erişerek çocuklarınızın okul verilerini görüntülemeyi kabul etmiş olursunuz.",
+      "invalid": "Geçersiz erişim bağlantısı.",
+      "expired": "Bu erişim bağlantısının süresi dolmuş. Okulla iletişime geçin.",
+      "used": "Bu bağlantı zaten kullanıldı ve artık geçerli değil.",
+      "emptyChildren": "Size bağlı çocuk yok.",
+      "today": "Bugün",
+      "last30days": "Son 30 gün",
+      "publishedOnly": "Yalnızca yayınlanmış karneler.",
+      "accessNote": "Tek kullanımlık ve süreli bağlantı. Her erişim kayıt altına alınır."
+    },
+    "common": {
+      "save": "Kaydet",
+      "cancel": "İptal",
+      "loading": "Yükleniyor…",
+      "error": "Bir hata oluştu.",
+      "retry": "Yeniden dene",
+      "actions": "İşlemler",
+      "close": "Kapat",
+      "delete": "Sil",
+      "edit": "Düzenle",
+      "noData": "Veri yok.",
+      "view": "Görüntüle",
+      "back": "Geri",
+      "deleteConfirm": "Bu öğe silinsin mi?"
+    }
+  },
+  "surveyStats": {
+    "title": "Çözüm anketleri",
+    "subtitle": "Vitrin sihirbazı dönüşümünü izleyin (yanıtlar, önerilen paketler, kayıtlar).",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "empty": "Henüz anket yanıtı yok.",
+    "metricResponses": "Yanıtlar",
+    "metricConverted": "Kayıtlar",
+    "metricConversionRate": "Dönüşüm oranı",
+    "metricPackagesSuggested": "Önerilen paketler",
+    "bySolutionTitle": "Çözüm başına hacim",
+    "bySolutionHint": "Sektörel çözüme göre yanıt dağılımı.",
+    "packagesTitle": "En çok önerilen paketler",
+    "packagesHint": "Motor tarafından önerilen paketlerin sıklığı.",
+    "answersTitle": "Yanıt dağılımı",
+    "answersHint": "Soru başına yanıt değerleri (sınırlı örneklem).",
+    "solutionColumn": "Çözüm",
+    "responsesColumn": "Yanıtlar",
+    "shareColumn": "Pay"
+  },
+  "survey": {
+    "title": "Çözüm anketleri",
+    "subtitle": "« Ben bir restoran işletmecisiyim » sihirbazı ve sektörel çözümlerin dönüşümü",
+    "last7": "Son 7 gün",
+    "last30": "Son 30 gün",
+    "last90": "Son 90 gün",
+    "totalResponses": "Anket yanıtları",
+    "converted": "Çözümlü kayıtlar",
+    "conversionRate": "Dönüşüm oranı",
+    "topPackages": "En çok önerilen paketler",
+    "topPackagesCaption": "Kural motoru önerileri",
+    "bySolution": "Çözüm başına yanıtlar",
+    "bySolutionCaption": "Çözüm başına yanıt hacmi",
+    "colPackage": "Paket",
+    "colSuggestions": "Öneriler",
+    "colSolution": "Çözüm",
+    "colResponses": "Yanıtlar",
+    "solutionRestaurant": "Restoran",
+    "solutionFuelStation": "Benzin istasyonu",
+    "pkgMobileEmployee": "Çalışan mobil uygulaması",
+    "pkgMobileManager": "Yönetici mobil uygulaması",
+    "pkgAttendanceMobile": "Mobil yoklama",
+    "pkgKiosk": "Yoklama kiosku",
+    "pkgEdge": "Yerel Edge düğümü",
+    "pkgPlanning": "Ekip planlaması",
+    "pkgPayroll": "Maaş bordrosu",
+    "pkgAccounting": "Muhasebe",
+    "pkgDelivery": "Teslimat",
+    "pkgReservations": "Rezervasyonlar",
+    "pkgInventory": "Stok",
+    "pkgLoyalty": "Sadakat",
+    "pkgPos": "Bağlı yazar kasa (POS)",
+    "loadError": "Çözüm anketi istatistikleri yüklenemedi."
+  },
+  "travelPortal": {
+    "title": "Yolcu portalı",
+    "subtitle": "Rezervasyonunuzu takip edin, e-biletlerinizi indirin ve çevrimiçi iptal edin.",
+    "referenceLabel": "Rezervasyon referansı",
+    "referencePlaceholder": "Örn. GV-2026-0001",
+    "codeLabel": "Doğrulama kodu",
+    "codePlaceholder": "E-biletinizdeki kod",
+    "track": "Rezervasyonumu takip et",
+    "tracking": "Takip ediliyor…",
+    "status": "Durum",
+    "trip": "Sefer",
+    "passengers": "Yolcular",
+    "total": "Toplam",
+    "tickets": "E-biletler",
+    "downloadTicket": "E-bileti indir",
+    "cancel": "Çevrimiçi iptal",
+    "cancelReason": "İptal nedeni",
+    "cancelReasonPlaceholder": "İptal nedeninizi kısaca açıklayın…",
+    "cancelConfirm": "İptali onayla",
+    "cancelling": "İptal ediliyor…",
+    "cancelled": "Rezervasyon iptal edildi",
+    "notFound": "Bu referans için rezervasyon bulunamadı.",
+    "invalidCode": "Geçersiz doğrulama kodu.",
+    "error": "Bir hata oluştu. Tekrar deneyin.",
+    "departurePast": "Kalkış çoktan geçti: çevrimiçi iptal artık mümkün değil.",
+    "empty": "Henüz rezervasyon yok.",
+    "statusPending": "Beklemede",
+    "statusConfirmed": "Onaylandı",
+    "statusRefunded": "İade edildi",
+    "statusCompleted": "Tamamlandı"
   }
 }

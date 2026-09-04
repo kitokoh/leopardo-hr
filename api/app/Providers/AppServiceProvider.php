@@ -2,14 +2,22 @@
 
 namespace App\Providers;
 
+use App\Core\Notifications\Contracts\InAppNotifier;
+use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
+
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
+use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
+use App\Policies\CrmDashboardPolicy;
+use App\Policies\CrmSearchPolicy;
+use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -30,8 +38,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Contrat transversal de notification in-app (garde cross-module #5584) :
+        // les modules métier type-hintent le contrat Core, l'implémentation vit
+        // dans le module Notification (BC-13).
+        $this->app->bind(InAppNotifier::class, InAppNotifierAdapter::class);
+
         // Canonical singleton — tous les nouveaux usages
         $this->app->singleton(TenantManager::class);
+
+        // MAT-011 (#5869) — classification PII + cycle de vie RGPD.
+        $this->app->singleton(PiiRegistry::class, fn (): PiiRegistry => new PiiRegistry((array) config('pii')));
+        $this->app->singleton(PiiLifecycleService::class);
 
         // Issue #1811 : service jours fériés — cache Redis (repository par défaut).
         // Issue #1812 : le calendrier islamique (dates mobiles saisies par
@@ -71,6 +88,13 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('export', [ExportPolicy::class, 'export']);
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
+
+        // Issue #5719 — recherche CRM client tenant-scoped (Policy CRM).
+        Gate::define('crm.search', [CrmSearchPolicy::class, 'search']);
+        // Issue #5720 — timeline d'activités d'un account CRM.
+        Gate::define('crm.timeline', [CrmTaskPolicy::class, 'viewTimeline']);
+        // Issue #5721 — dashboard CRM pipeline & qualité des données.
+        Gate::define('crm.dashboard', [CrmDashboardPolicy::class, 'viewDashboard']);
 
         Gate::define('viewApiDocs', function (?Employee $user = null) {
             // Pour l'instant, on autorise l'accès à la doc en dev, ou on peut exiger un accès Super Admin
@@ -113,6 +137,19 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute($limit)->by('plan:'.$normalizedPlan.':company:'.$user->company_id);
         });
 
+        // FUEL-020 (#5814) : bornes dédiées aux écritures FuelStation
+        // (relevés, ventes, livraisons, ajustements, imports, transitions)
+        // — anti-abus par tenant, distinct du quota API global.
+        RateLimiter::for('fuel-sensitive', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.fuel_per_minute', 120))
+                ->by('fuel:'.$key);
+        });
+
         RateLimiter::for('auth-sensitive', function (Request $request) {
             $email = strtolower((string) $request->input('email', 'anonymous'));
 
@@ -138,6 +175,19 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute((int) config('security.rate_limits.payroll_per_minute', 60))
                 ->by('payroll:'.$key);
+        });
+
+        // FUEL-020 (#5814) — rate limit dédié de la verticale FuelStation :
+        // les écritures (livraisons, ventes, relevés, imports, transitions)
+        // sont bornées par tenant pour limiter l'abus et le scraping.
+        RateLimiter::for('fuel', function (Request $request) {
+            $user = $request->user();
+            $key = $user instanceof Employee && $user->company_id
+                ? 'company:'.$user->company_id
+                : 'ip:'.$request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.fuel_per_minute', 120))
+                ->by('fuel:'.$key);
         });
 
         RateLimiter::for('metrics', function (Request $request) {
@@ -189,9 +239,58 @@ class AppServiceProvider extends ServiceProvider
         // instead of relying on the generic 'api' limiter which only applies to
         // authenticated routes further down the group. Keyed by IP since the
         // caller is a third-party payment provider, not a tenant.
+        // TRAVEL-1001 (#6114) — boutique publique : throttling renforcé
+        // (endpoints publics, sans auth utilisateur) — anti-scraping par IP.
+        RateLimiter::for('shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
+                ->by('shop-public:'.$request->ip());
+        });
+
         RateLimiter::for('webhooks-inbound', function (Request $request) {
-            return Limit::perMinute((int) config('security.rate_limits.webhooks_inbound_per_minute', 60))
-                ->by('webhooks-inbound:'.$request->ip());
+            $perMinute = (int) config('security.rate_limits.webhooks_inbound_per_minute', 60);
+
+            // #6555 — les passerelles de paiement (Stripe/Chargily) et les
+            // fournisseurs email partagent des IP entre TOUS les tenants :
+            // un bucket par IP 429 les webhooks légitimes dès que N tenants
+            // reçoivent des événements. Clé par gateway (segment de route)
+            // quand il existe, sinon par signature (identité du webhook).
+            $gateway = $request->route('gateway');
+            if (is_string($gateway) && $gateway !== '') {
+                return Limit::perMinute($perMinute)->by('webhooks-inbound:gw:'.$gateway);
+            }
+
+            $signature = (string) $request->header('Stripe-Signature', $request->header('X-Chargily-Signature', ''));
+            if ($signature !== '') {
+                return Limit::perMinute($perMinute)->by('webhooks-inbound:sig:'.md5($signature));
+            }
+
+            return Limit::perMinute($perMinute)->by('webhooks-inbound:'.$request->ip());
+        });
+
+        // #6555 — ZKTeco : les devices derrière un NAT partagent une IP ; le
+        // bucket générique `api` (par IP) 429 les pointages légitimes de
+        // plusieurs devices. Bucket dédié clé par serial_number + IP.
+        RateLimiter::for('zkteco-device', function (Request $request) {
+            $serial = strtoupper((string) $request->route('serialNumber', 'unknown'));
+
+            return Limit::perMinute((int) config('security.rate_limits.zkteco_per_minute', 120))
+                ->by('zkteco-device:'.$serial.'|'.$request->ip());
+        });
+
+        // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager :
+        // throttling renforcé (endpoints publics sans auth utilisateur),
+        // anti-scraping par IP (pattern shop-public TRAVEL-1001/#6114).
+        RateLimiter::for('restaurant-shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.restaurant_shop_public_per_minute', 30))
+                ->by('restaurant-shop-public:'.$request->ip());
+        });
+
+        // RESTO-805 (#6226) — boutique en ligne publique RestaurantManager :
+        // throttling renforcé (endpoints publics sans auth utilisateur),
+        // anti-scraping par IP (pattern shop-public TRAVEL-1001/#6114).
+        RateLimiter::for('restaurant-shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.restaurant_shop_public_per_minute', 30))
+                ->by('restaurant-shop-public:'.$request->ip());
         });
 
         // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
@@ -209,6 +308,14 @@ class AppServiceProvider extends ServiceProvider
         // dédié 60/min par IP pour la vitrine/onboarding/mobile pré-login.
         RateLimiter::for('public-registry', function (Request $request) {
             return Limit::perMinute(60)->by('public-registry:'.$request->ip());
+        });
+
+        // RESTO-805 (#6226) — boutique publique RestaurantManager : bucket
+        // renforcé (défaut 30/min par IP) pour le menu public / commande en
+        // ligne / kiosque (pattern TRAVEL-1001/#6114, `shop-public`).
+        RateLimiter::for('shop-public', function (Request $request) {
+            return Limit::perMinute((int) config('security.rate_limits.shop_public_per_minute', 30))
+                ->by('shop-public:'.$request->ip());
         });
 
         // PA2-API-005 — Session-based web login forms (employee login, super-admin
@@ -263,6 +370,17 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('public-careers', function (Request $request) {
             return Limit::perMinute((int) config('security.rate_limits.public_careers_per_minute', 60))
                 ->by('public-careers:'.$request->ip());
+        });
+
+        // EDU-013 (#5829) : consommation des liens du portail guardian (route
+        // publique). Bucket dédié par token + IP — 10/min borne l'énumération
+        // et le bruteforce sans affamer le flux légitime (un lien est à usage
+        // unique, 1-2 requêtes max par utilisateur).
+        RateLimiter::for('guardian-portal', function (Request $request) {
+            $token = (string) $request->route('token', 'unknown');
+
+            return Limit::perMinute((int) config('security.rate_limits.guardian_portal_per_minute', 10))
+                ->by('guardian-portal:'.substr(hash('sha256', $token), 0, 16).'|'.$request->ip());
         });
 
     }

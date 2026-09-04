@@ -4,7 +4,7 @@ namespace App\Http\Resources\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\HR\Application\Services\EmployeeDocumentService;
+use App\Modules\HR\Infrastructure\Services\EmployeeDocumentService;
 use App\Modules\HR\Domain\Models\EmployeeDocument;
 use App\Modules\HR\Infrastructure\Services\MobileExperienceService;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
@@ -13,6 +13,7 @@ use DateTimeInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
+use App\Modules\HR\Application\Services\EmployeeDocumentService;
 
 /**
  * @mixin Employee
@@ -190,5 +191,25 @@ class EmployeeResource extends JsonResource
             'can_view_payroll' => $this->hasManagerRole('principal', 'comptable'),
             'is_principal' => $this->hasManagerRole('principal'),
         ];
+    }
+
+    private function employeeExtraData(): array
+    {
+        $extra = $this->employeeAttribute('extra_data');
+
+        if (! is_array($extra)) {
+            return [];
+        }
+
+        $allowed = ['department', 'job_title', 'work_location', 'education_level'];
+
+        $filtered = [];
+        foreach ($extra as $key => $value) {
+            if (is_string($key) && in_array($key, $allowed, true)) {
+                $filtered[$key] = $value;
+            }
+        }
+
+        return $filtered;
     }
 }

@@ -33,7 +33,7 @@
 - **Dépassement non justifié** : revue de la cadence (règle 1-3) avant d'augmenter le budget
 
 ## Liens
-- Issue de suivi : #5148 · Plan 60 jours : `PLAN_60_JOURS.md` · Cadence : AGENTS.md (section gouvernance)
+- Issue de suivi : #5148 · Plan 60 jours : `PLAN_60_JOURS.md` (racine) · Cadence : AGENTS.md (section gouvernance)
 
 ---
 *Document généré depuis l'issue #5148 (plan 60 jours).*

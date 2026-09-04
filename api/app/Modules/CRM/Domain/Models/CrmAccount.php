@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $city
  * @property string|null $country
  * @property string|null $notes
+ * @property string|null $legal_name
  * @property string $status
  * @property int|null $owner_id
  * @property string|null $archived_at

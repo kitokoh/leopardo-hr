@@ -8,6 +8,7 @@ use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
+use App\AI\ToolPermissionPolicy;
 
 class WriteActionRunner
 {
@@ -69,7 +70,24 @@ class WriteActionRunner
      */
     private function createAbsence(string $companyId, int $userId, array $arguments): array
     {
-        $employeeId = $this->intArgument($arguments, 'employee_id', $userId);
+        /** @var Employee|null $actor */
+        $actor = Employee::query()
+            ->where('company_id', $companyId)
+            ->where('id', $userId)
+            ->first();
+
+        if ($actor === null) {
+            return ['error' => 'Actor not found'];
+        }
+
+        // audit(securite) #6533 : un non-manager ne peut créer une absence que
+        // pour LUI-MÊME — l'employee_id passé par le LLM est ignoré. Un
+        // manager peut créer pour un employé du même tenant (périmètre
+        // AbsencePolicy::create + company_id).
+        $employeeId = $actor->isManager()
+            ? $this->intArgument($arguments, 'employee_id', $userId)
+            : $userId;
+
         $employee = Employee::query()
             ->where('company_id', $companyId)
             ->where('id', $employeeId)
@@ -113,6 +131,20 @@ class WriteActionRunner
      */
     private function approveAbsence(string $companyId, int $userId, array $arguments): array
     {
+        // audit(securite) #6533 : ré-utilisation des policies REST
+        // (AbsencePolicy::approve = company_id match && isManager) — un
+        // manager dept/superviseur ne peut plus approuver via l'IA hors de son
+        // périmètre, et un employé ne peut pas approuver du tout.
+        /** @var Employee|null $actor */
+        $actor = Employee::query()
+            ->where('company_id', $companyId)
+            ->where('id', $userId)
+            ->first();
+
+        if ($actor === null || ! $actor->isManager()) {
+            return ['error' => 'AI_TOOL_PERMISSION_DENIED', 'message' => 'Manager role required to approve absences'];
+        }
+
         $absenceId = $this->intArgument($arguments, 'absence_id', 0);
         $absence = Absence::query()
             ->where('company_id', $companyId)
@@ -193,5 +225,9 @@ class WriteActionRunner
 
         return is_scalar($value) ? (string) $value : $default;
     }
-}
 
+    private function actorIsManager(string $companyId, int $userId): bool
+    {
+        return $this->toolPermissionPolicy->resolveRole($userId, $companyId) === 'manager';
+    }
+}

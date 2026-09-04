@@ -12,7 +12,7 @@ use App\Modules\Attendance\Domain\Models\GeoAttendanceSession;
  */
 class RejectGeoSession
 {
-    public function handle(
+    public function execute(
         GeoAttendanceSession $session,
         Employee $validator,
         string $reason

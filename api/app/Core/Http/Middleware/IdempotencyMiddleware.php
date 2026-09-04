@@ -9,7 +9,9 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
  * RTMX (#5277) — rejeu sûr des écritures API (POST/PUT/PATCH).
@@ -29,12 +31,23 @@ use Symfony\Component\HttpFoundation\Response;
  * - les requêtes anonymes (sans Authorization) ne sont jamais dédupliquées ;
  * - seules les réponses JSON 2xx sont mémorisées ; le verrou anti-course est
  *   toujours libéré (finally) même en cas d'exception.
+ *
+ * #6557 — limites assumées et durcissement :
+ * - fenêtre de crash : entre le commit DB (dans la requête) et le
+ *   Cache::put du snapshot, un crash peut laisser la retentative ré-exécuter
+ *   la mutation. Limite acceptée (borner = snapshot atomique outbox en
+ *   durcissement futur) ; bornée par le TTL du snapshot (24 h).
+ * - le verrou anti-course est aligné sur la durée max de requête raisonnable
+ *   (config security.idempotency_lock_ttl_seconds, défaut 300 s — avant
+ *   60 s, une requête plus longue que le lock relançait la course).
+ * - dégradation cache (Redis injoignable) : les erreurs cache sont avalées et
+ *   journalisées (mode dégradé fail-open) — l'API ne 500 pas et ne bloque pas
+ *   les écritures ; la déduplication est simplement désactivée le temps de la
+ *   panne (voir ProbeAvailabilityCommand : CACHE_DEGRADED=1 explicite).
  */
 class IdempotencyMiddleware
 {
     private const TTL_SECONDS = 86400; // 24 h
-
-    private const LOCK_TTL_SECONDS = 60;
 
     private const KEY_PATTERN = '/^[A-Za-z0-9._:-]{8,255}$/';
 
@@ -61,13 +74,13 @@ class IdempotencyMiddleware
 
         $cacheKey = $this->cacheKey($request, $idempotencyKey, $authorization);
 
-        $cached = Cache::get($cacheKey);
+        $cached = $this->cacheGet($cacheKey);
         if ($this->isSnapshot($cached)) {
             return $this->replay($cached);
         }
 
         $lockKey = $cacheKey.':lock';
-        if (! Cache::add($lockKey, (string) time(), self::LOCK_TTL_SECONDS)) {
+        if (! $this->cacheAdd($lockKey, (string) time(), $this->lockTtlSeconds())) {
             throw new DomainException(
                 'IDEMPOTENCY_IN_PROGRESS',
                 409,
@@ -80,12 +93,64 @@ class IdempotencyMiddleware
             $response = $next($request);
 
             if ($response instanceof JsonResponse && $response->isSuccessful()) {
-                Cache::put($cacheKey, $this->snapshot($response), self::TTL_SECONDS);
+                $this->cachePut($cacheKey, $this->snapshot($response), self::TTL_SECONDS);
             }
 
             return $response;
         } finally {
-            Cache::forget($lockKey);
+            $this->cacheForget($lockKey);
+        }
+    }
+
+    private function lockTtlSeconds(): int
+    {
+        return max(60, (int) config('security.idempotency_lock_ttl_seconds', 300));
+    }
+
+    // ── #6557 : mode dégradé cache (Redis injoignable) — les erreurs cache
+    // sont avalées et journalisées (fail-open) pour ne jamais bloquer les
+    // écritures ni produire de 500 ; la déduplication est désactivée le temps
+    // de la panne.
+
+    private function cacheGet(string $key): mixed
+    {
+        try {
+            return Cache::get($key);
+        } catch (Throwable $e) {
+            Log::warning('rtmx.cache_get_degraded', ['key' => $key, 'error' => $e->getMessage()]);
+
+            return null;
+        }
+    }
+
+    private function cacheAdd(string $key, string $value, int $ttl): bool
+    {
+        try {
+            return Cache::add($key, $value, $ttl);
+        } catch (Throwable $e) {
+            Log::warning('rtmx.cache_add_degraded', ['key' => $key, 'error' => $e->getMessage()]);
+
+            // fail-open : le verrou est best-effort, on laisse passer.
+            return true;
+        }
+    }
+
+    /** @param array<string, mixed> $snapshot */
+    private function cachePut(string $key, array $snapshot, int $ttl): void
+    {
+        try {
+            Cache::put($key, $snapshot, $ttl);
+        } catch (Throwable $e) {
+            Log::warning('rtmx.cache_put_degraded', ['key' => $key, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function cacheForget(string $key): void
+    {
+        try {
+            Cache::forget($key);
+        } catch (Throwable $e) {
+            Log::warning('rtmx.cache_forget_degraded', ['key' => $key, 'error' => $e->getMessage()]);
         }
     }
 

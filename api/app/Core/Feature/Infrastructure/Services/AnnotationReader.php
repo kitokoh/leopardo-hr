@@ -127,6 +127,7 @@ class AnnotationReader
             // Mapper les attributs connus
             // NB: les attributs canoniques vivent sous App\Shared\Attributes\*
             // (les alias App\Attributes\* ont été supprimés — #6565).
+            // (les anciens alias de compat ont été supprimés — #6565).
             // ReflectionAttribute::getName() renvoie le nom utilise au point de
             // declaration (le `use` du controleur).
             switch ($name) {
@@ -140,6 +141,7 @@ class AnnotationReader
                     $annotations['form_schema'] = $arguments['form_schema'] ?? [];
                     $annotations['list_schema'] = $arguments['list_schema'] ?? [];
                     break;
+
                 case 'App\\Shared\\Attributes\\RequiresPermission':
                     $permissions = $arguments['permissions'] ?? $arguments[0] ?? [];
                     if (! is_array($permissions)) {

@@ -119,6 +119,11 @@ class PlatformCompanyController extends Controller
             'manager_last_name' => ['required', 'string', 'max:100'],
             'manager_email' => ['required', 'email', 'max:150'],
             'manager_phone' => ['nullable', 'string', 'max:30'],
+            // #6693 : solutions sectorielles à activer au provisioning
+            // (ex. ["restaurant"] depuis le wizard vitrine). Allowlist
+            // vérifiée par CompanyProvisioningService (fail-closed).
+            'solutions' => ['nullable', 'array'],
+            'solutions.*' => ['string', 'max:50'],
         ]);
 
         $validated['sector'] = trim((string) ($validated['sector'] ?? '')) ?: 'Non precise';
@@ -185,17 +190,22 @@ class PlatformCompanyController extends Controller
         $result = $this->companyProvisioningService->provisionSharedCompany($validated, $superAdmin);
 
         if ($request->expectsJson()) {
-            return new JsonResponse([
-                'data' => [
-                    'company' => $result['company'],
-                    'manager' => [
-                        'id' => $result['manager']->id,
-                        'email' => $result['manager']->email,
-                        'role' => $result['manager']->role,
-                        'manager_role' => $result['manager']->manager_role,
-                    ],
+            $data = [
+                'company' => $result['company'],
+                'manager' => [
+                    'id' => $result['manager']->id,
+                    'email' => $result['manager']->email,
+                    'role' => $result['manager']->role,
+                    'manager_role' => $result['manager']->manager_role,
                 ],
-            ], 201);
+            ];
+
+            // #6693 : statut d'activation des solutions demandées.
+            if (isset($result['solutions'])) {
+                $data['solutions'] = $result['solutions'];
+            }
+
+            return new JsonResponse(['data' => $data], 201);
         }
 
         return redirect()

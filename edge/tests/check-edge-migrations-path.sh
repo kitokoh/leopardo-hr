@@ -13,9 +13,24 @@ for entrypoint in "$REPO_ROOT/edge/docker-entrypoint.edge.sh" "$REPO_ROOT/edge/d
     echo "FAIL: $entrypoint ne référence pas la migration Edge SQLite ($MIGRATION)" >&2
     exit 1
   fi
-  if ! grep -q -- "--path=database/migrations/edge" "$entrypoint"; then
-    echo "OK: $entrypoint n'utilise plus le chemin fantôme database/migrations/edge"
+  if grep -q -- "--path=database/migrations/edge" "$entrypoint"; then
+    echo "FAIL: $entrypoint utilise encore le chemin fantôme database/migrations/edge (issue #6604)" >&2
+    exit 1
   fi
+  echo "OK: $entrypoint utilise la migration tenant canonique ($MIGRATION)"
+done
+
+# #6604 : supervisord + compose edge-sync doivent aussi pointer la source unique
+for f in "$REPO_ROOT/edge/supervisord.edge.conf" "$REPO_ROOT/edge/docker-compose.yml"; do
+  if grep -q -- "--path=database/migrations/edge" "$f"; then
+    echo "FAIL: $f utilise encore le chemin fantôme database/migrations/edge (issue #6604)" >&2
+    exit 1
+  fi
+  if ! grep -q -- "--path=$MIGRATION" "$f"; then
+    echo "FAIL: $f ne référence pas la migration tenant canonique ($MIGRATION, issue #6604)" >&2
+    exit 1
+  fi
+  echo "OK: $f utilise la migration tenant canonique"
 done
 
 if [ ! -f "$REPO_ROOT/api/$MIGRATION" ]; then

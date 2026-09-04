@@ -17,7 +17,7 @@ use App\Modules\HR\Domain\Models\PrivacyRequest;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use App\Modules\Planning\Domain\Models\Schedule;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Carbon\CarbonInterface;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +35,18 @@ use Laravel\Sanctum\Contracts\HasApiTokens as HasApiTokensContract;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
+ * Modèle canonique Employé (toutes surfaces : API, web, mobile, jobs).
+ *
+ * Note sécurité (#6560, audit F2) : les champs salariaux (`salary_base`,
+ * `salary_type`, `salary_structure_id`) sont stockés EN CLAIR — décision
+ * assumée pour permettre les agrégations paie (totaux, moyennes, exports
+ * CNAS/CNPS/CNSS-MA) côté base de données. Les données RGPD sensibles
+ * (iban, bank_account, national_id) sont chiffrées via les casts
+ * `encrypted`. Si le chiffrement des salaires devient requis (TDE ou
+ * chiffrement applicatif + agrégations en mémoire), ouvrir une issue dédiée
+ * avec impact paie/performance — ne pas chiffrer sans étude (les scopes
+ * `where('salary_base', ...)` et les agrégations SQL caseraient).
+ *
  * @property int $id
  * @property string|null $company_id
  * @property int|null $department_id
@@ -55,6 +67,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $last_name
  * @property string|null $preferred_name
  * @property string $email
+ * @property string|null $google_id
  * @property string|null $personal_email
  * @property string|null $recovery_email
  * @property string|null $personal_phone
@@ -100,7 +113,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $failed_login_attempts
  * @property Carbon|null $locked_until
  * @property Carbon|null $email_bounced_at
- * @property string|null $email_bounce_reason
+ * @property string|null $email
+ * @property string|null $google_id_bounce_reason
  * @property string|null $two_fa_secret
  * @property Carbon|null $two_fa_enabled_at
  * @property list<string>|null $two_fa_recovery_codes
@@ -183,6 +197,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'biometric_fingerprint_enabled',
         'biometric_consent_at',
         'invitation_accepted_at',
+        'google_id',
         'emergency_contact_name',
         'emergency_contact_phone',
         'emergency_contact_relation',

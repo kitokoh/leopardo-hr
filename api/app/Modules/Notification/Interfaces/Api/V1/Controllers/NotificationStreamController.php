@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -27,7 +29,7 @@ class NotificationStreamController extends Controller
         if ($request->query('sse_token')) {
             $cacheKey = 'sse_token:'.$request->query('sse_token');
             /** @var array{user_id: int, company_id: int}|null $tokenData */
-            $tokenData = \Illuminate\Support\Facades\Cache::pull($cacheKey); // single-use
+            $tokenData = Cache::pull($cacheKey); // single-use
             if ($tokenData === null) {
                 return new StreamedResponse(function (): void {
                     echo "event: error\ndata: {\"message\":\"invalid_sse_token\"}\n\n";
@@ -43,7 +45,7 @@ class NotificationStreamController extends Controller
         } else {
             /** @var Employee $user */
             $user = $request->user();
-            if (!$user) {
+            if (! $user) {
                 return new StreamedResponse(function (): void {
                     echo "event: error\ndata: {\"message\":\"unauthenticated\"}\n\n";
                     ob_flush();
@@ -58,15 +60,15 @@ class NotificationStreamController extends Controller
 
         return new StreamedResponse(function () use ($userId, $companyId, &$lastCheck): void {
             $maxDuration = 120;
-            $start       = time();
-            $interval    = 5;
+            $start = time();
+            $interval = 5;
 
             while (time() - $start < $maxDuration) {
                 if (connection_aborted()) {
                     break;
                 }
 
-                /** @var (Employee&\Illuminate\Notifications\Notifiable)|null $employee */
+                /** @var (Employee&Notifiable)|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->where('id', $userId)
                     ->where('company_id', $companyId)
@@ -88,7 +90,7 @@ class NotificationStreamController extends Controller
                 if ($newNotifications->isNotEmpty()) {
                     $payload = json_encode([
                         'notifications' => $newNotifications->toArray(),
-                        'unread_count'  => $employee->unreadNotifications()->count(),
+                        'unread_count' => $employee->unreadNotifications()->count(),
                     ], JSON_THROW_ON_ERROR);
 
                     echo "event: notification\ndata: {$payload}\n\n";
@@ -106,9 +108,9 @@ class NotificationStreamController extends Controller
             ob_flush();
             flush();
         }, 200, [
-            'Content-Type'      => 'text/event-stream',
-            'Cache-Control'     => 'no-cache',
-            'Connection'        => 'keep-alive',
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'Connection' => 'keep-alive',
             'X-Accel-Buffering' => 'no',
         ]);
     }

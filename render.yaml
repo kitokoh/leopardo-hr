@@ -37,11 +37,15 @@ services:
     region: frankfurt
     plan: starter
     healthCheckPath: /api/v1/health
-    # #5xxx : autoDeploy:true redéploie à CHAQUE push main (même web/mobile/docs
-    # only) → gaspillage des build hours gratuits (quota ~500 h/mois). Recommandé :
-    # passer à `false` (push blueprint) et piloter uniquement via
-    # RENDER_DEPLOY_HOOK_URL (workflow deploy-main.yml, gate tests + filtre api/**).
-    autoDeploy: true
+    # #6700 : autoDeploy:false — le déploiement de l'API est piloté
+    # par le workflow deploy-main.yml via RENDER_DEPLOY_HOOK_URL (gate tests +
+    # filtre api/**). autoDeploy:true redéployait à CHAQUE push main (même
+    # web/mobile/docs only) → gaspillage des build hours gratuits (~500 h/mois).
+    autoDeploy: false
+    # #6700 : autoDeploy désactivé — les déploiements sont pilotés UNIQUEMENT
+    # par RENDER_DEPLOY_HOOK_URL (workflow deploy-main.yml, gate tests + filtre
+    # api/**). autoDeploy:true redéployait à CHAQUE push main (même
+    # web/mobile/docs only) → gaspillage des build hours gratuits.
     envVars:
       - key: APP_ENV
         value: production
@@ -199,7 +203,10 @@ services:
     dockerContext: .
     region: frankfurt
     plan: starter
+    # #6700 : PAS de hook Render dédié pour les workers → autoDeploy:true
+    # conservé volontairement (ils suivent main ; l'API, elle, est hook-pilotée).
     autoDeploy: true
+    autoDeploy: false
     # Issue #5578 : la queue est sur database — le worker consomme la
     # connexion par défaut (aligné sur le probe et le drain GH Actions).
     dockerCommand: >-
@@ -219,6 +226,12 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
+      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
+      # workers/scheduler (course de migrations + seed non idempotent à
+      # chaque redémarrage).
+      - key: RUN_MIGRATIONS
+        value: "false"
       # Audit #4412 : les workers génèrent des URLs absolues (reset password,
       # notifications, liens bulletins) — APP_URL requis sur tous les services.
       - key: APP_URL
@@ -329,7 +342,7 @@ services:
     dockerContext: .
     region: frankfurt
     plan: starter
-    autoDeploy: true
+    autoDeploy: false
     dockerCommand: >-
       sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
     envVars:
@@ -341,6 +354,12 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # #6558 (audit ops M-3) : migrations + seed UNIQUEMENT sur le service
+      # web (RUN_MIGRATIONS hérité du Dockerfile sinon) — jamais au boot des
+      # workers/scheduler (course de migrations + seed non idempotent à
+      # chaque redémarrage).
+      - key: RUN_MIGRATIONS
+        value: "false"
       # Audit #4412 : les workers génèrent des URLs absolues (reset password,
       # notifications, liens bulletins) — APP_URL requis sur tous les services.
       - key: APP_URL

@@ -75,9 +75,18 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 RUN cp /usr/local/bin/frankenphp /usr/local/bin/frankenphp-nocap \
     && mv /usr/local/bin/frankenphp-nocap /usr/local/bin/frankenphp
 
-EXPOSE 80 443 2019 8080
+EXPOSE 80 443 8080
 
 COPY api/Caddyfile /etc/caddy/Caddyfile
 COPY --chmod=755 api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+# #6558 (audit ops M-1) : ne jamais exécuter le process principal en root —
+# une RCE applicative ne doit pas donner root dans le conteneur. Le storage
+# est déjà chowné www-data ci-dessus ; Caddy/FrankenPHP écrit sa config dans
+# /config et /data (créés + chownés ici) et l'entrypoint force le port
+# d'écoute non privilégié ${PORT:-8080} (bind possible sans root).
+RUN mkdir -p /data /config && chown -R www-data:www-data /data /config
+
+USER www-data
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

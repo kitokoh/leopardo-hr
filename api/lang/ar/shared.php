@@ -118,6 +118,12 @@ return [
         'cabinet' => 'خزانة المستندات',
         'notifications' => 'الاشعارات',
         'evaluations' => 'التقييمات',
+        'restaurant' => 'المطبخ',
         'restaurant' => 'المطعم',
+        'restaurant' => 'المطبخ',
+        'restaurant' => 'المطبخ',
+        'restaurant' => 'المطبخ',
+        'restaurant' => 'المطبخ',
+        'restaurant' => 'المطبخ',
     ],
 ];

@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
-use App\Modules\HR\Application\Actions\ContractLifecycleAction;
+use App\Modules\HR\Infrastructure\Services\ContractLifecycleAction;
 use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
@@ -253,8 +253,14 @@ class ContractController extends Controller
      */
     public function templates(Request $request): JsonResponse
     {
-        /** @var Employee $actor */
+        /** @var Employee|null $actor */
         $actor = $request->user();
+        // #6671 : garde défensive — un token valide sans employé résolu (ex.
+        // compte supprimé) ne doit jamais produire un 500 fatal sur
+        // ->hasManagerRole() ; 401 explicite à la place.
+        if ($actor === null) {
+            abort(401);
+        }
         if ($actor->hasManagerRole('principal', 'rh') === false) {
             abort(403);
         }

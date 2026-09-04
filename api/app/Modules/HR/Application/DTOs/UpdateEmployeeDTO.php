@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Application\DTOs;
 
-use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\UpdateProfileRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 
 final readonly class UpdateEmployeeDTO

@@ -223,7 +223,21 @@
     "hrReportUnavailable": "تعذر إنشاء تقرير الموارد البشرية (نقطة النهاية غير متاحة).",
     "clientSpaceNote": "التصديرات متاحة في مساحة العميل.",
     "historyClientOnly": "السجل مرئي للعملاء فقط.",
-    "historyError": "تعذر تحميل السجل."
+    "historyError": "تعذر تحميل السجل.",
+    "colLicense": "الترخيص",
+    "colLastSync": "آخر مزامنة",
+    "colActions": "إجراءات",
+    "sync": "مزامنة",
+    "syncing": "مزامنة…",
+    "details": "تفاصيل",
+    "revoke": "إلغاء",
+    "revokeConfirm": "تأكيد الإلغاء؟",
+    "revoking": "جارٍ الإلغاء…",
+    "loadError": "خطأ في تحميل عقد Edge.",
+    "syncError": "خطأ في تشغيل المزامنة.",
+    "syncSuccess": "بدأت المزامنة لـ {name}",
+    "revokeSuccess": "تم إلغاء الترخيص لـ {name}",
+    "revokeError": "خطأ في إلغاء الترخيص."
   },
   "settingsEdgePairingRemoved": "تمت إزالة اقتران Edge.",
   "teamArchiveSuccess": "تمت أرشفة الموظف.",
@@ -384,6 +398,63 @@
         "won": "مربوحة",
         "lost": "خاسرة"
       }
+    },
+    "hub_title": "إدارة علاقات العملاء",
+    "hub_subtitle": "حسابات وجهات الاتصال والعملاء المحتملين والفرص الخاصة بشركتك.",
+    "opportunities": "الفرص",
+    "account_detail": "الحساب",
+    "stage": "المرحلة",
+    "status": {
+      "approved": "تمت الموافقة",
+      "cancelled": "ملغاة",
+      "detected": "تم الكشف",
+      "pending": "قيد التحقق",
+      "rejected": "مرفوضة"
+    },
+    "tasks": "المهام",
+    "activities": "الأنشطة",
+    "load_error": "تعذر تحميل بيانات CRM. حاول مرة أخرى.",
+    "empty_accounts": "لا توجد حسابات بعد.",
+    "empty_contacts": "لا توجد جهات اتصال.",
+    "empty_tasks": "لا توجد مهام.",
+    "empty_activities": "لا توجد أنشطة.",
+    "empty_leads": "لا يوجد عملاء محتملون بعد.",
+    "empty_opportunities": "لا توجد فرص بعد.",
+    "task_completed": "تمت المهمة.",
+    "enable": {
+      "auto": {
+        "gps": "تفعيل GPS التلقائي"
+      }
+    },
+    "forced": "مفروض",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "لم يتم إعداد منطقة GPS لشركتك بعد."
+        }
+      }
+    },
+    "permission": {
+      "denied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
+    },
+    "presence": {
+      "in": {
+        "progress": "حضور قيد التقدم منذ {time}"
+      }
+    },
+    "recent": {
+      "sessions": "الجلسات الأخيرة"
+    },
+    "rejected": "مرفوضة",
+    "sessions": {
+      "load": {
+        "error": "تعذر تحميل جلسات GPS. تحقق من اتصالك."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة."
+      }
     }
   },
   "attendanceBreakTitle": "الذهاب في استراحة",
@@ -416,9 +487,9 @@
     "brand": {
       "subtitle": "تجربة محادثية، موجهة للهاتف، وقابلة للتوسع."
     },
-    "hero": {
-      "title": "يبدأ يومك من هنا، وليس من مكتب خلفي.",
-      "description": "الحضور، المتابعة الشخصية، ووحدات الموارد البشرية النشطة تظهر اولا على الهاتف بتجربة بسيطة وواضحة."
+    "creating": "جارٍ إنشاء الحساب...",
+    "first": {
+      "name": "الاسم الأول"
     },
     "story": {
       "clarity": {
@@ -439,7 +510,11 @@
       "team": "فريقي"
     },
     "presences": "الحضور",
-    "tasks": "المهام"
+    "tasks": "المهام",
+    "hero": {
+      "title": "يبدأ يومك من هنا، وليس من مكتب خلفي.",
+      "description": "الحضور، المتابعة الشخصية، ووحدات الموارد البشرية النشطة تظهر اولا على الهاتف بتجربة بسيطة وواضحة."
+    }
   },
   "holidays": {
     "page": {
@@ -2280,7 +2355,21 @@
       }
     },
     "sessions": "الجلسات",
-    "break_minutes": "{minutes} دق"
+    "break_minutes": "{minutes} دق",
+    "payroll_ready": {
+      "subject": "كشف الراتب الخاص بك جاهز",
+      "greeting": "مرحبا :name،",
+      "body": "كشف الراتب لفترة :period جاهز. يمكنك مراجعته داخل ليوباردو للموارد البشرية.",
+      "action": "عرض كشف الراتب",
+      "footer": "يرجى التحقق من معلوماتك قبل التصدير المحاسبي."
+    },
+    "absence_approved": {
+      "subject": "تمت الموافقة على طلب الغياب",
+      "greeting": "مرحبا :name،",
+      "body": "تمت الموافقة على طلب الغياب للفترة :period.",
+      "action": "عرض الطلب",
+      "footer": "تم تحديث جدول الفريق."
+    }
   },
   "teamEmptyHint": "ابدأ بإضافة فريقك باستخدام الزر أدناه.",
   "attendanceCurrentMonth": "الشهر الحالي",
@@ -2621,7 +2710,8 @@
     "errReconciliations": "تعذر تحميل المطابقات.",
     "stationsCaption": "محطات الأسطول",
     "incidentsCaption": "الحوادث المبلغ عنها",
-    "reconciliationsCaption": "تقارير المطابقة"
+    "reconciliationsCaption": "تقارير المطابقة",
+    "apiUnavailable": "لم يتم تسليم واجهة FuelStation (مرجع المحطات، الحوادث، التسويات) بعد — ستعمل الصفحة مع دفعة BC-15 (#6373)."
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
@@ -2741,21 +2831,44 @@
       }
     },
     "language": {
+      "label": "اللغة",
+      "variants": {
+        "fr-FR": "الفرنسية (فرنسا)",
+        "fr-BE": "الفرنسية (بلجيكا)",
+        "fr-CA": "الفرنسية (كندا)",
+        "ar-SA": "العربية (السعودية)",
+        "ar-MA": "العربية (المغرب)",
+        "tr-TR": "التركية (تركيا)",
+        "en-US": "الانجليزية (الولايات المتحدة)",
+        "en-GB": "الانجليزية (المملكة المتحدة)"
+      },
       "saved": "تم حفظ اللغة.",
       "subtitle": "تؤثر اللغة المختارة أيضاً على الإشعارات والنصوص المستقبلية.",
       "title": "اللغة"
     },
-    "last": {
-      "name": {
-        "label": "اسم العائلة",
-        "required": "اسم العائلة مطلوب"
-      }
-    },
-    "logout": "تسجيل الخروج",
-    "manager": {
-      "account": {
-        "hint": "يجب أن يظل حساب المدير واضحاً وآمناً وجاهزاً لقرارات الميدان."
-      }
+    "or": "او",
+    "countries": {
+      "BF": "بوركينا فاسو",
+      "BJ": "بنين",
+      "CA": "كندا",
+      "CF": "جمهورية أفريقيا الوسطى",
+      "CG": "الكونغو",
+      "CI": "ساحل العاج",
+      "CM": "الكاميرون",
+      "DZ": "الجزائر",
+      "FR": "فرنسا",
+      "GA": "الغابون",
+      "GB": "المملكة المتحدة",
+      "GQ": "غينيا الاستوائية",
+      "MA": "المغرب",
+      "ML": "مالي",
+      "NE": "النيجر",
+      "SN": "السنغال",
+      "TD": "تشاد",
+      "TG": "توغو",
+      "TN": "تونس",
+      "TR": "تركيا",
+      "US": "الولايات المتحدة"
     },
     "mobile": {
       "access": "الوصول المحمول"
@@ -2832,6 +2945,18 @@
     "team": {
       "drive": "إدارة الفريق",
       "drive_hint": "يبقى الملف الشخصي والدور والصلاحيات مرئية لإجراءات الموارد البشرية."
+    },
+    "last": {
+      "name": {
+        "label": "اسم العائلة",
+        "required": "اسم العائلة مطلوب"
+      }
+    },
+    "logout": "تسجيل الخروج",
+    "manager": {
+      "account": {
+        "hint": "يجب أن يظل حساب المدير واضحاً وآمناً وجاهزاً لقرارات الميدان."
+      }
     }
   },
   "smartAttendanceSurveillanceInactive": "المراقبة غير نشطة",
@@ -3476,6 +3601,48 @@
       "sim": {
         "compare": "راتب للمقارنة"
       }
+    },
+    "enable": {
+      "auto": {
+        "gps": "تفعيل GPS التلقائي"
+      }
+    },
+    "forced": "مفروض",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "لم يتم إعداد منطقة GPS لشركتك بعد."
+        }
+      }
+    },
+    "permission": {
+      "denied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
+    },
+    "presence": {
+      "in": {
+        "progress": "حضور قيد التقدم منذ {time}"
+      }
+    },
+    "recent": {
+      "sessions": "الجلسات الأخيرة"
+    },
+    "rejected": "مرفوضة",
+    "sessions": {
+      "load": {
+        "error": "تعذر تحميل جلسات GPS. تحقق من اتصالك."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة."
+      }
+    },
+    "status": {
+      "approved": "تمت الموافقة",
+      "cancelled": "ملغاة",
+      "detected": "تم الكشف",
+      "pending": "قيد التحقق",
+      "rejected": "مرفوضة"
     }
   },
   "payrollSummaryUnavailable": "ملخص الرواتب غير متاح مؤقتًا",
@@ -3601,6 +3768,39 @@
       "detected": "تم الكشف",
       "pending": "قيد التحقق",
       "rejected": "مرفوضة"
+    },
+    "settings": {
+      "title": "إعدادات المحاسبة",
+      "subtitle": "الشركة وضريبة القيمة المضافة والترقيم وقوالب المستندات.",
+      "load_error": "تعذر تحميل إعدادات المحاسبة.",
+      "save": "حفظ",
+      "saved": "تم حفظ الإعدادات.",
+      "save_error": "فشل الحفظ.",
+      "reload": "إعادة التحميل",
+      "company_title": "معلومات الشركة",
+      "company_subtitle": "الاسم والعنوان والمعرفات الضريبية.",
+      "series_title": "الترقيم",
+      "series_subtitle": "اللاحقة ونقطة البداية لسلاسل الفواتير.",
+      "mentions_title": "الإشارات القانونية",
+      "mentions_subtitle": "النص المعروض في تذييل الفاتورة.",
+      "mentions_placeholder": "مثال: ضريبة القيمة المضافة غير قابلة للتطبيق، المادة 87…",
+      "tva_title": "ضريبة القيمة المضافة الافتراضية",
+      "tva_subtitle": "النسبة المطبقة على الفواتير الجديدة.",
+      "add_rate": "إضافة نسبة",
+      "remove_rate": "إزالة",
+      "rate_label": "التسمية",
+      "rate_default_label": "ضريبة قياسية",
+      "rate_value": "النسبة (%)",
+      "currency": "العملة",
+      "document_language": "لغة المستندات",
+      "lang_fr": "الفرنسية",
+      "lang_en": "الإنجليزية",
+      "lang_ar": "العربية",
+      "lang_tr": "التركية",
+      "payment_terms": "مدة السداد (أيام)",
+      "template_style": "قالب الفاتورة",
+      "template_classic": "كلاسيكي",
+      "template_modern": "حديث"
     }
   },
   "attendanceRoleForbidden": "دورك لا يسمح بهذا الإجراء الخاص بالحضور.",
@@ -3851,6 +4051,169 @@
       "loadError": "تعذر تحميل نقطة البيع.",
       "loading": "جارٍ تحميل نقطة البيع…",
       "actionError": "تعذر تنفيذ الإجراء، حاول مجددًا."
+    },
+    "home": {
+      "title": "مدير المطعم",
+      "subtitle": "نقطة البيع والحجوزات والمخزون والتوصيل",
+      "loadError": "تعذّر تحميل لوحة المطعم.",
+      "referential": "المرجع",
+      "referentialDesc": "الفروع، مخطط القاعة، الكتالوج، المكونات، القوائم، الموردون",
+      "reservations": "الحجوزات",
+      "reservationsDesc": "المواعيد، تسجيل الدخول، الودائع",
+      "stock": "المخزون والمشتريات",
+      "stockDesc": "المستويات، أوامر الشراء، الاستلام، الجرد",
+      "delivery": "التوصيل والولاء",
+      "deliveryDesc": "المناطق، السعاة، الجولات، النقاط، العروض",
+      "reports": "التقارير",
+      "reportsDesc": "المبيعات، الإشغال، المنتجات، التكلفة، تصدير CSV",
+      "open": "فتح",
+      "kpiRevenue": "إيرادات اليوم",
+      "kpiOrders": "طلبات اليوم",
+      "kpiBasket": "متوسط السلة",
+      "kpiRotation": "دوران الطاولات",
+      "alerts": "تنبيهات المخزون",
+      "alertLine": "مكوّن"
+    },
+    "crud": {
+      "search": "بحث...",
+      "create": "جديد",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "loading": "جارٍ التحميل...",
+      "empty": "لا نتائج.",
+      "loadError": "تعذّر تحميل البيانات.",
+      "saveError": "فشل الحفظ.",
+      "deleteError": "تعذّر الحذف.",
+      "confirmDelete": "حذف هذا العنصر؟",
+      "createTitle": "إنشاء",
+      "editTitle": "تعديل",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ..."
+    },
+    "ref": {
+      "title": "مرجع المطعم",
+      "subtitle": "الفروع، مخطط القاعة، الكتالوج، المكونات، القوائم، الضريبة، الموردون",
+      "tabBranches": "الفروع",
+      "tabZones": "المناطق",
+      "tabTables": "الطاولات",
+      "tabCategories": "الفئات",
+      "tabProducts": "المنتجات",
+      "tabIngredients": "المكونات",
+      "tabUnits": "الوحدات",
+      "tabMenus": "القوائم",
+      "tabTaxRates": "الضريبة",
+      "tabSuppliers": "الموردون",
+      "tabHours": "المواعيد",
+      "branches": "الفروع (المنشآت)",
+      "zones": "المناطق (القاعات)",
+      "tables": "الطاولات (مخطط القاعة)",
+      "categories": "الفئات",
+      "products": "المنتجات (الكتالوج والوصفات)",
+      "ingredients": "المكونات (المواد الخام)",
+      "units": "الوحدات",
+      "menus": "القوائم (الوجبات)",
+      "taxRates": "معدلات الضريبة",
+      "suppliers": "الموردون",
+      "hours": "ساعات العمل"
+    },
+    "res": {
+      "title": "الحجوزات",
+      "subtitle": "المواعيد، تسجيل الدخول، عدم الحضور، الودائع",
+      "new": "حجز جديد",
+      "name": "اسم العميل",
+      "phone": "الهاتف",
+      "create": "إنشاء",
+      "colRef": "المرجع",
+      "colContact": "العميل",
+      "colWhen": "متى",
+      "colCovers": "الأشخاص",
+      "colStatus": "الحالة",
+      "confirm": "تأكيد",
+      "checkin": "تسجيل الدخول",
+      "noshow": "عدم الحضور",
+      "cancel": "إلغاء",
+      "loading": "جارٍ التحميل...",
+      "empty": "لا حجوزات.",
+      "loadError": "تعذّر تحميل الحجوزات.",
+      "createError": "فشل الإنشاء.",
+      "actionError": "فشل الإجراء."
+    },
+    "stock": {
+      "title": "المخزون والمشتريات",
+      "subtitle": "المستويات والتنبيهات وأوامر الشراء والاستلام",
+      "tabLevels": "المستويات والتنبيهات",
+      "tabPO": "أوامر الشراء",
+      "tabReceivings": "الاستلام",
+      "colQty": "الكمية",
+      "colCost": "متوسط التكلفة",
+      "colThreshold": "العتبة",
+      "colAlert": "تنبيه",
+      "colRef": "المرجع",
+      "colStatus": "الحالة",
+      "colTotal": "الإجمالي",
+      "colDate": "التاريخ",
+      "alert": "تم بلوغ العتبة",
+      "ok": "موافق",
+      "newPO": "أمر شراء جديد",
+      "createPO": "إنشاء الأمر",
+      "send": "إرسال",
+      "receive": "استلام",
+      "newReceiving": "استلام جديد",
+      "createReceiving": "استلام",
+      "loading": "جارٍ التحميل...",
+      "loadError": "تعذّر تحميل بيانات المخزون.",
+      "poError": "فشل إنشاء أمر الشراء.",
+      "actionError": "فشل الإجراء على الأمر.",
+      "rcvError": "فشل الاستلام."
+    },
+    "del": {
+      "title": "التوصيل والولاء",
+      "subtitle": "المناطق والسعاة والجولات والنقاط والعروض",
+      "tabZones": "المناطق",
+      "tabRiders": "السعاة",
+      "tabDeliveries": "التوصيلات",
+      "tabLoyalty": "الولاء",
+      "tabPromos": "العروض",
+      "colName": "الاسم",
+      "colPhone": "الهاتف",
+      "colVehicle": "المركبة",
+      "colActive": "نشط",
+      "colStatus": "الحالة",
+      "colFees": "الرسوم والحد الأدنى",
+      "colPoints": "النقاط",
+      "colTier": "المستوى",
+      "colCode": "الرمز",
+      "colTitle": "العنوان",
+      "colType": "النوع",
+      "colValue": "القيمة",
+      "colUses": "الاستخدامات",
+      "fee": "الرسوم",
+      "newDelivery": "توصيل جديد",
+      "create": "إنشاء",
+      "assign": "تعيين",
+      "out": "في الطريق",
+      "deliver": "تم التسليم",
+      "cancel": "إلغاء",
+      "loading": "جارٍ التحميل...",
+      "loadError": "تعذّر تحميل بيانات التوصيل/الولاء.",
+      "createError": "فشل إنشاء التوصيل.",
+      "actionError": "فشل الإجراء.",
+      "riderPrompt": "معرف الساعي لتعيينه:"
+    },
+    "reports": {
+      "title": "التقارير",
+      "subtitle": "المبيعات والإشغال والمنتجات والتكلفة والسجلات وتصدير CSV",
+      "tabSales": "المبيعات",
+      "tabOccupancy": "الإشغال",
+      "tabProducts": "المنتجات",
+      "tabCogs": "التكلفة",
+      "tabPos": "السجلات",
+      "export": "تصدير CSV",
+      "loading": "جارٍ التحميل...",
+      "empty": "لا بيانات لهذه الفترة.",
+      "loadError": "تعذّر تحميل التقرير.",
+      "exportError": "فشل تصدير CSV."
     }
   },
   "commonLanguageArabic": "العربية",
@@ -4340,7 +4703,10 @@
     "accountingDashboard": "المحاسبة — لوحة القيادة",
     "accountingSettings": "المحاسبة — الإعدادات",
     "fuelStation": "محطات الوقود",
-    "travelAgency": "وكالة السفر"
+    "travelAgency": "وكالة السفر",
+    "surveyStats": "استبيانات الحلول",
+    "solutionSurveys": "استبيانات الحلول",
+    "travel": "وكالة السفر"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -4589,26 +4955,31 @@
     "tripStatus": {
       "draft": "مسودة",
       "published": "منشور",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "scheduled": "مجدول"
     },
     "bookingStatus": {
       "pending": "قيد الانتظار",
       "confirmed": "مؤكد",
       "cancelled": "ملغى",
       "refunded": "مسترجع",
-      "expired": "منتهي الصلاحية"
+      "expired": "منتهي الصلاحية",
+      "completed": "مكتملة"
     },
     "paymentStatus": {
       "pending": "قيد الانتظار",
       "paid": "مدفوع",
       "failed": "فشل",
-      "refunded": "مسترجع"
+      "refunded": "مسترجع",
+      "confirmed": "مؤكد"
     },
     "ticketStatus": {
       "issued": "صادر",
       "checkedIn": "تم الصعود",
       "revoked": "ملغى",
-      "unknown": "غير معروف"
+      "unknown": "غير معروف",
+      "checked_in": "مسجَّل",
+      "void": "ملغى"
     },
     "routes": {
       "title": "الخطوط والمسارات",
@@ -4636,7 +5007,28 @@
       "cancelReasonTitle": "سبب الإلغاء",
       "refundReasonTitle": "سبب الاسترداد",
       "reason": "السبب",
-      "reasonRequired": "السبب إلزامي."
+      "reasonRequired": "السبب إلزامي.",
+      "cancel": "إلغاء",
+      "cancelTitle": "إلغاء الحجز",
+      "confirmBody": "تأكيد الحجز {ref}؟ سيتم تحديد المقاعد كـ\"مباعة\".",
+      "confirm": "تأكيد",
+      "confirmTitle": "تأكيد الحجز",
+      "detail": "التفاصيل",
+      "issueTicketsBody": "إصدار تذكرة اسمية لكل مسافر من {ref}؟",
+      "issueTickets": "إصدار تذكرة",
+      "issueTicketsTitle": "إصدار التذاكر",
+      "noTickets": "لم يتم إصدار أي تذكرة",
+      "passengerCount": "المسافرون",
+      "paymentStatus": "الدفع",
+      "referencePlaceholder": "مثال: GV-2026-0001…",
+      "reference": "المرجع",
+      "refund": "استرداد",
+      "refundTitle": "استرداد الحجز",
+      "seat": "المقعد",
+      "source": "المصدر",
+      "subtitle": "البيع في الشباك والتأكيد والإلغاء والاسترداد والتذاكر.",
+      "total": "الإجمالي",
+      "trip": "الرحلة"
     },
     "checkin": {
       "selectTrip": "اختر رحلة",
@@ -4649,7 +5041,17 @@
       "checkIn": "صعود",
       "checkedIn": "تم الصعود ✓",
       "emptyManifest": "لا ركاب في هذه الرحلة.",
-      "noTicket": "لا تذكرة مرتبطة بهذا الراكب."
+      "noTicket": "لا تذكرة مرتبطة بهذا الراكب.",
+      "action": "الصعود",
+      "age": "العمر",
+      "class": "الدرجة",
+      "done": "على متن الرحلة",
+      "passenger": "المسافر",
+      "seat": "المقعد",
+      "subtitle": "الصعود حسب الرحلة وعداد المسافرين.",
+      "ticket": "تذكرة",
+      "title": "تسجيل الوصول وقائمة الركاب",
+      "trip": "الرحلة"
     },
     "tickets": {
       "title": "إصدار التذاكر",
@@ -4659,7 +5061,10 @@
       "downloadPdf": "تحميل PDF",
       "revoke": "إلغاء",
       "revokeTitle": "سبب الإلغاء",
-      "pdfError": "فشل التنزيل."
+      "pdfError": "فشل التنزيل.",
+      "download": "PDF",
+      "revokeBody": "إبطال التذكرة {number}؟ سيصبح PDF غير صالح وستتحول التذكرة إلى حالة ملغاة.",
+      "subtitle": "الاطلاع على التذاكر وتنزيل PDF وإبطالها."
     },
     "reports": {
       "tabsLabel": "التقارير",
@@ -4669,7 +5074,36 @@
       "cancellations": "الإلغاءات",
       "exportCsv": "تصدير CSV",
       "empty": "لا بيانات للفترة.",
-      "exportError": "فشل التصدير."
+      "exportError": "فشل التصدير.",
+      "apply": "تطبيق",
+      "byReason": "حسب السبب",
+      "bySource": "حسب المصدر",
+      "cancellationsCount": "الإلغاءات",
+      "cancellationsRate": "المعدل",
+      "cancellationsTotal": "الحجوزات النهائية",
+      "count": "العدد",
+      "export": "تصدير CSV",
+      "free": "متاحة",
+      "from": "من",
+      "kpiBookings": "الحجوزات",
+      "kpiCancellations": "الإلغاءات",
+      "kpiOccupancy": "الإشغال",
+      "kpiSales": "المبيعات",
+      "reserved": "محجوزة",
+      "revenueConfirmed": "مؤكد",
+      "revenueNet": "الصافي",
+      "revenueRefunded": "مسترد",
+      "salesAmount": "المبلغ",
+      "salesCount": "المبيعات",
+      "salesPassengers": "المسافرون",
+      "sold": "مباعة",
+      "subtitle": "المبيعات والإشغال والإيرادات والإلغاءات وتصدير CSV.",
+      "tabCancellations": "الإلغاءات",
+      "tabOccupancy": "الإشغال",
+      "tabRevenue": "الإيرادات",
+      "tabSales": "المبيعات",
+      "title": "التقارير",
+      "to": "إلى"
     },
     "rentals": {
       "vehicles": "مركبات الإيجار",
@@ -4739,7 +5173,21 @@
       "hint": {
         "options": "خيار واحد في كل سطر.",
         "correctIndex": "يبدأ من 0 (السطر الأول = 0)."
-      }
+      },
+      "endsAt": "النهاية",
+      "status": {
+        "draft": "مسودة",
+        "active": "نشط",
+        "closed": "مغلق"
+      },
+      "addQuestion": "إضافة سؤال",
+      "bonus": "المكافأة",
+      "create": "إنشاء اختبار",
+      "options": "الخيارات",
+      "participant": "المشارك",
+      "questions": "الأسئلة",
+      "results": "النتائج",
+      "score": "النتيجة"
     },
     "quizStatus": {
       "draft": "مسودة",
@@ -4777,7 +5225,29 @@
         "reject": "رفض"
       },
       "rejectTitle": "رفض الإعلان",
-      "rejectTarget": "الإعلان"
+      "rejectTarget": "الإعلان",
+      "currency": "العملة",
+      "label": "التسمية",
+      "status": {
+        "draft": "مسودة",
+        "expired": "منتهي",
+        "paid": "مدفوع",
+        "rejected": "مرفوض",
+        "submitted": "مُقدَّم",
+        "validated": "معتمد"
+      },
+      "type": "النوع",
+      "allStatuses": "جميع الحالات",
+      "create": "تقديم إعلان",
+      "expiresAt": "انتهاء الصلاحية",
+      "pay": "دفع",
+      "position": "الترتيب",
+      "priceChar": "سعر الحرف",
+      "priceImage": "سعر الصورة",
+      "price": "السعر",
+      "reject": "رفض",
+      "renew": "تجديد",
+      "validate": "اعتماد"
     },
     "sites": {
       "title": "المواقع السياحية",
@@ -4788,7 +5258,8 @@
       "field": {
         "latitude": "خط العرض",
         "longitude": "خط الطول"
-      }
+      },
+      "name": "الاسم"
     },
     "contacts": {
       "formTitle": "نموذج الاتصال",
@@ -4818,7 +5289,31 @@
         "toggleConsent": "تبديل الموافقة",
         "notify": "إشعار",
         "send": "إرسال"
-      }
+      },
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "channelSms": "SMS",
+      "channelWhatsapp": "WhatsApp",
+      "consents": "الموافقات",
+      "notify": "إشعار",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "channelEmail": "البريد الإلكتروني",
+      "search": "البحث بالبريد الإلكتروني",
+      "title": "جهات اتصال المسافرين",
+      "subtitle": "سجل جهات الاتصال، الموافقات حسب القناة (GDPR) والإشعارات اليدوية.",
+      "publicForm": "نموذج الاتصال العام",
+      "empty": "لا توجد جهات اتصال مسجلة.",
+      "toggleConsent": "تبديل الموافقة على {channel}",
+      "message": "الرسالة",
+      "channels": "القنوات (الموافقة مطلوبة)",
+      "noConsent": "بدون موافقة",
+      "noChannel": "اختر قناة واحدة بموافقة على الأقل.",
+      "consentGiven": "موافق",
+      "consentRefused": "مرفوض",
+      "never": "لم يُعبَّر عنه",
+      "email": "البريد الإلكتروني",
+      "app": "التطبيق"
     },
     "advertStatus": {
       "draft": "مسودة",
@@ -4828,6 +5323,549 @@
       "rejected": "مرفوضة",
       "expired": "منتهية",
       "archived": "مؤرشفة"
+    },
+    "ageCategory": {
+      "adult": "بالغ",
+      "child": "طفل",
+      "infant": "رضيع"
+    },
+    "bookingSource": {
+      "office": "شباك",
+      "online": "عبر الإنترنت",
+      "phone": "الهاتف"
+    },
+    "carriers": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "type": "النوع"
+    },
+    "carrierTypes": {
+      "boat": "قارب",
+      "bus": "حافلة",
+      "plane": "طائرة",
+      "train": "قطار"
+    },
+    "catalog": {
+      "addRoom": "إضافة غرفة",
+      "capacity": "السعة",
+      "classification": "التصنيف",
+      "end": "النهاية",
+      "hotelName": "الاسم",
+      "images": "الصور",
+      "noImages": "لا توجد صور",
+      "priceDay": "السعر / اليوم",
+      "priceNight": "السعر / الليلة",
+      "rentalImagesTitle": "صور المركبة",
+      "roomNumber": "رقم",
+      "rooms": "الغرف",
+      "roomType": "النوع",
+      "start": "البداية",
+      "subtitle": "مركبات للإيجار وحجوزات وفهرس الفنادق.",
+      "tabHotels": "الفنادق",
+      "tabRentalBookings": "حجوزات الإيجار",
+      "tabRentals": "مركبات للإيجار",
+      "title": "العنوان",
+      "hotelRoomsTitle": "غرف الفندق"
+    },
+    "cities": {
+      "country": "الدول",
+      "name": "المدينة",
+      "region": "المنطقة"
+    },
+    "classes": {
+      "color": "اللون",
+      "label": "التسمية",
+      "priority": "الأولوية"
+    },
+    "common": {
+      "cancel": "إلغاء",
+      "city": "المدينة",
+      "statusDraft": "مسودة",
+      "featureDisabledBody": "لم يتم تفعيل خيار travelagency للعميل المتصل. اتصل بمسؤول المنصة لتفعيله.",
+      "tenantRequiredBody": "تكون بيانات وكالة السفر متاحة عبر جلسة عميل (انتحال أو حساب مدير).",
+      "actions": "الإجراءات",
+      "active": "نشط",
+      "all": "الكل",
+      "carrier": "الشركة",
+      "close": "إغلاق",
+      "confirmDeleteBody": "هذا الإجراء لا رجعة فيه. هل تريد حقًا حذف « {name} »؟",
+      "confirmDeleteTitle": "حذف هذا العنصر؟",
+      "create": "إنشاء",
+      "createdAt": "أُنشئ في",
+      "delete": "حذف",
+      "disabled": "غير نشط",
+      "edit": "تعديل",
+      "empty": "لا توجد بيانات.",
+      "featureDisabledTitle": "وحدة وكالة السفر غير نشطة",
+      "loadErrorBody": "حدث خطأ.",
+      "loadErrorTitle": "تعذر التحميل",
+      "noData": "لا توجد بيانات",
+      "no": "لا",
+      "reason": "السبب",
+      "retry": "إعادة المحاولة",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "search": "بحث",
+      "selectPlaceholder": "— اختر —",
+      "status": "الحالة",
+      "tenantRequiredTitle": "سياق العميل مطلوب",
+      "yes": "نعم"
+    },
+    "countries": {
+      "name": "الاسم",
+      "phoneCode": "رمز الاتصال"
+    },
+    "home": {
+      "flagActive": "الوحدة نشطة",
+      "flowBody": "المرجعية والشبكة ← برمجة الرحلات ← النشر ← البيع في الشباك ← التذاكر وتسجيل الوصول ← التقارير.",
+      "flowTitle": "مسار العمل",
+      "subtitle": "إدارة عمود وكالة السفر: الشبكة والمبيعات والتذاكر والإدارة.",
+      "title": "وكالة السفر"
+    },
+    "network": {
+      "addPrice": "إضافة سعر",
+      "addStop": "إضافة محطة",
+      "adultPrice": "سعر البالغ",
+      "arrival": "الوصول",
+      "cancelTrip": "إلغاء الرحلة",
+      "childPrice": "سعر الطفل",
+      "class": "الدرجة",
+      "currency": "العملة",
+      "departure": "المغادرة",
+      "destination": "الوجهة",
+      "distance": "المسافة (كم)",
+      "duration": "المدة (دقيقة)",
+      "means": "الوسيلة",
+      "minDuration": "المدة الدنيا (دقيقة)",
+      "origin": "نقطة الانطلاق",
+      "prices": "الأسعار",
+      "publish": "نشر",
+      "rank": "الترتيب",
+      "route": "الخط",
+      "routes": "الخطوط والمحطات",
+      "routeStopsTitle": "محطات الخط",
+      "stopover": "توقف",
+      "stops": "المحطات",
+      "subtitle": "الخطوط والمحطات والبرمجة والأسعار والنشر.",
+      "title": "الخطوط والرحلات",
+      "tripPricesTitle": "أسعار الرحلة",
+      "trips": "الرحلات والأسعار"
+    },
+    "offices": {
+      "address": "العنوان",
+      "name": "الاسم",
+      "phone": "الهاتف"
+    },
+    "referential": {
+      "carriers": "الشركات",
+      "cities": "المدن",
+      "classes": "درجات الخدمة",
+      "countries": "الدول",
+      "offices": "مكاتب البيع",
+      "stations": "المحطات والمواقف",
+      "subtitle": "الدول والمدن والمحطات والمكاتب والشركات والدرجات والمركبات.",
+      "title": "المرجعية",
+      "vehicles": "المركبات"
+    },
+    "stations": {
+      "isTerminal": "محطة طرفية",
+      "name": "الاسم",
+      "phone": "الهاتف"
+    },
+    "vehicles": {
+      "registration": "رقم اللوحة",
+      "seats": "المقاعد"
+    },
+    "content": {
+      "quiz": {
+        "description": "الوصف",
+        "statusDraft": "مسودة",
+        "startsAt": "البداية",
+        "endsAt": "النهاية",
+        "questionsHint": "لا يتم الكشف عن الإجابة الصحيحة أبدًا للمشاركين.",
+        "noQuestions": "لا توجد أسئلة لهذا الاختبار.",
+        "options": "الخيارات (سطر واحد لكل خيار، من 2 إلى 10)",
+        "optionsCount": "{count} خيارات",
+        "optionsMin": "يلزم خياران على الأقل.",
+        "correctOption": "الإجابة الصحيحة (المؤشر)",
+        "correctIndexError": "مؤشر الإجابة الصحيحة غير صالح.",
+        "points": "{points} نقطة",
+        "noResults": "لا توجد مشاركات لهذا الاختبار.",
+        "title": "الاختبارات والمسابقات",
+        "createTitle": "اختبار جديد",
+        "questions": "الأسئلة",
+        "results": "النتائج",
+        "addQuestion": "إضافة سؤال",
+        "question": "السؤال",
+        "pointsLabel": "النقاط",
+        "position": "الترتيب",
+        "statusActive": "نشط",
+        "statusClosed": "مغلق",
+        "maxParticipations": "الحد الأقصى للمشاركات / جهة اتصال",
+        "participantName": "المشارك",
+        "participantEmail": "البريد الإلكتروني",
+        "score": "النتيجة",
+        "bonus": "المكافأة",
+        "submittedAt": "أُرسل في"
+      },
+      "adverts": {
+        "type": "النوع",
+        "code": "الرمز",
+        "label": "التسمية",
+        "typeLabel": "التسمية",
+        "positionLabel": "التسمية",
+        "currency": "العملة",
+        "confirmDeleteRef": "هذا الإجراء لا رجعة فيه. هل تريد حقًا حذف هذا العنصر؟",
+        "title": "الإعلانات المدفوعة",
+        "createTitle": "إعلان جديد",
+        "position": "الترتيب",
+        "types": "الأنواع",
+        "positions": "المواضع",
+        "prices": "جدول الأسعار",
+        "createType": "نوع جديد",
+        "createPosition": "موضع جديد",
+        "createPrice": "سعر جديد",
+        "price": "السعر",
+        "pricePerImage": "السعر / صورة",
+        "pricePerCharacter": "السعر / حرف",
+        "content": "المحتوى",
+        "validityDays": "مدة الصلاحية (أيام)",
+        "expiresAt": "انتهاء الصلاحية",
+        "pay": "دفع",
+        "validate": "اعتماد",
+        "reject": "رفض",
+        "rejectTitle": "رفض الإعلان",
+        "renew": "تجديد",
+        "statusSubmitted": "مُقدَّم",
+        "statusPaid": "مدفوع",
+        "statusValidated": "معتمد",
+        "statusRejected": "مرفوض",
+        "statusExpired": "منتهي",
+        "statusArchived": "مؤرشف"
+      },
+      "sites": {
+        "name": "الاسم",
+        "description": "الوصف",
+        "title": "المواقع السياحية",
+        "allCities": "جميع المدن",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول"
+      },
+      "subtitle": "الاختبارات والإعلانات المدفوعة والمواقع السياحية.",
+      "tabs": {
+        "adverts": "الإعلانات",
+        "contacts": "جهات الاتصال",
+        "quiz": "اختبار",
+        "sites": "المواقع السياحية"
+      },
+      "title": "المحتوى والإعلانات"
+    },
+    "contactForm": {
+      "lastName": "الاسم",
+      "phone": "الهاتف",
+      "title": "اتصل بنا",
+      "subtitle": "سؤال عن خطوطنا أو جداولنا أو تذاكرنا؟ اكتب لنا.",
+      "firstName": "الاسم الأول",
+      "email": "البريد الإلكتروني",
+      "message": "الرسالة",
+      "consent": "أوافق على أن يتم التواصل معي عبر البريد الإلكتروني بخصوص طلبي.",
+      "send": "إرسال",
+      "received": "تم استلام الطلب",
+      "receivedBody": "سيتواصل معك فريقنا في أقرب وقت.",
+      "newRequest": "طلب جديد"
+    },
+    "publicContact": {
+      "title": "تواصل مع وكالة السفر",
+      "subtitle": "سؤال عن رحلاتك أو حجوزاتك أو تذاكرك؟ اكتب لنا.",
+      "noLink": "يتطلب هذا النموذج رابط الاتصال الذي توفره الوكالة (رابط موقّع).",
+      "invalidLink": "رابط الاتصال غير صالح أو منتهي الصلاحية. اطلب رابطًا جديدًا من الوكالة.",
+      "sendFailed": "فشل الإرسال. حاول مرة أخرى.",
+      "ackTitle": "تم استلام الطلب",
+      "ackBody": "شكرًا! سترد عليك الوكالة في أقرب وقت.",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "message": "الرسالة",
+      "consent": "أوافق على التواصل معي عبر البريد الإلكتروني بشأن طلبي.",
+      "sending": "جارٍ الإرسال…",
+      "send": "إرسال الطلب"
     }
+  },
+  "edu": {
+    "nav": {
+      "label": "EduManager — الإدارة المدرسية",
+      "admin": "الإدارة المدرسية",
+      "teacher": "فضاء المعلّم"
+    },
+    "home": {
+      "title": "EduManager — الإدارة المدرسية",
+      "subtitle": "الإدارة المدرسية: الحرم الجامعي، السنوات الدراسية، الأقسام، التلاميذ، التسجيلات، التقييمات وكشوف النقاط.",
+      "campuses": "الحرم الجامعي",
+      "classes": "الأقسام",
+      "students": "التلاميذ",
+      "admissions": "التسجيلات",
+      "reportCards": "كشوف النقاط",
+      "pendingReportCards": "كشف نقاط بانتظار التحقق",
+      "quickLinks": "وصول سريع",
+      "manageCampuses": "إدارة الحرم الجامعي",
+      "manageClasses": "إدارة الأقسام",
+      "manageStudents": "إدارة التلاميذ",
+      "manageAssessments": "التقييمات والنقاط",
+      "manageReportCards": "كشوف النقاط",
+      "teacherSpace": "فضاء المعلّم"
+    },
+    "campuses": {
+      "title": "الحرم الجامعي",
+      "subtitle": "مواقع المؤسسة المدرسية.",
+      "empty": "لا يوجد حرم جامعي بعد. أنشئ أول حرم.",
+      "create": "حرم جديد",
+      "edit": "تعديل الحرم",
+      "code": "الرمز",
+      "name": "الاسم",
+      "address": "العنوان",
+      "timezone": "المنطقة الزمنية",
+      "status": "الحالة",
+      "saveError": "تعذّر حفظ الحرم.",
+      "deleteConfirm": "حذف هذا الحرم؟",
+      "deleted": "تم حذف الحرم."
+    },
+    "academicYears": {
+      "title": "السنوات الدراسية",
+      "subtitle": "الفترات الدراسية للمؤسسة (تُرفض الفترات المتداخلة).",
+      "empty": "لا توجد سنة دراسية.",
+      "create": "سنة جديدة",
+      "edit": "تعديل السنة",
+      "name": "الاسم",
+      "startDate": "البداية",
+      "endDate": "النهاية",
+      "status": "الحالة"
+    },
+    "subjects": {
+      "title": "المواد",
+      "subtitle": "فهرس المواد المدرّسة.",
+      "empty": "لا توجد مادة.",
+      "create": "مادة جديدة",
+      "edit": "تعديل المادة",
+      "code": "الرمز",
+      "name": "الاسم",
+      "defaultCoefficient": "المعامل الافتراضي"
+    },
+    "classes": {
+      "title": "الأقسام",
+      "subtitle": "الأقسام والمستويات والأساتذة الرئيسيون وتعيينات المواد.",
+      "empty": "لا يوجد قسم.",
+      "create": "قسم جديد",
+      "edit": "تعديل القسم",
+      "code": "الرمز",
+      "name": "الاسم",
+      "level": "المستوى",
+      "capacity": "الطاقة القصوى",
+      "teacher": "الأستاذ الرئيسي",
+      "campus": "الحرم",
+      "year": "السنة الدراسية",
+      "assignTeacher": "تعيين أستاذ",
+      "removeTeacher": "إزالة",
+      "teacherPlaceholder": "اختر أستاذًا…"
+    },
+    "students": {
+      "title": "التلاميذ",
+      "subtitle": "ملفات التلاميذ (البيانات الشخصية محمية).",
+      "empty": "لا يوجد تلميذ.",
+      "create": "تلميذ جديد",
+      "edit": "تعديل التلميذ",
+      "number": "رقم التسجيل",
+      "name": "الاسم المعروض",
+      "status": "الحالة",
+      "birthDate": "تاريخ الميلاد (مشفّر)",
+      "piiHint": "تُشفّر البيانات الحساسة ولا تُعرض خارج نطاق المؤسسة."
+    },
+    "admissions": {
+      "title": "التسجيلات",
+      "subtitle": "مسار التسجيل بموافقة RGPD والتحويل إلى تلميذ.",
+      "empty": "لا يوجد ملف تسجيل.",
+      "create": "ملف جديد",
+      "firstName": "الاسم",
+      "lastName": "اللقب",
+      "status": "الحالة",
+      "convert": "تحويل إلى تلميذ",
+      "converted": "تم التحويل",
+      "converting": "جارٍ التحويل…",
+      "convertConfirm": "تحويل هذا الملف إلى تلميذ؟ العملية آمنة التكرار."
+    },
+    "assessments": {
+      "title": "العنوان",
+      "subtitle": "التقييمات وسلالم التنقيط وإدخال النقاط والنشر.",
+      "empty": "لا يوجد تقييم.",
+      "create": "تقييم جديد",
+      "edit": "تعديل التقييم",
+      "type": "النوع",
+      "coefficient": "المعامل",
+      "maxScore": "السلم (الأقصى)",
+      "date": "التاريخ",
+      "class": "القسم",
+      "subject": "المادة",
+      "grades": "النقاط",
+      "enterGrades": "إدخال النقاط",
+      "publish": "نشر",
+      "published": "منشور",
+      "draft": "مسودة",
+      "noStudents": "لا يوجد تلاميذ مسجلون في هذا القسم.",
+      "score": "النقطة",
+      "comment": "تعليق",
+      "saveGrades": "حفظ النقاط"
+    },
+    "reportCards": {
+      "title": "كشوف النقاط",
+      "subtitle": "الإصدار وتحقق الإدارة والنشر المقفل.",
+      "empty": "لا يوجد كشف نقاط.",
+      "generate": "إصدار",
+      "validate": "تحقق",
+      "publish": "نشر",
+      "student": "التلميذ",
+      "average": "المعدل",
+      "status": "الحالة",
+      "generated": "صدر",
+      "validated": "تم التحقق",
+      "period": "الفترة"
+    },
+    "teacher": {
+      "title": "فضاء المعلّم",
+      "subtitle": "أقسامي: الحضور والنقاط والإرسال للتحقق.",
+      "myClasses": "أقسامي",
+      "empty": "لا يوجد قسم مخصص لك.",
+      "attendance": "الحضور",
+      "grades": "النقاط",
+      "date": "التاريخ",
+      "present": "حاضر",
+      "absent": "غائب",
+      "late": "متأخر",
+      "excused": "مُعذَّر",
+      "saveAttendance": "حفظ الحضور",
+      "attendanceSaved": "تم حفظ الحضور.",
+      "assessments": "تقييماتي",
+      "submit": "إرسال للتحقق",
+      "submitHint": "النشر يقفل النقطة؛ ويُحتفظ بسجل التصحيحات.",
+      "noAssessments": "لا يوجد تقييم لهذا القسم.",
+      "students": "تلاميذ القسم"
+    },
+    "guardian": {
+      "title": "بوابة ولي الأمر",
+      "subtitle": "اطّلع على السجل المدرسي للأطفال الموكولين إليك.",
+      "children": "أطفالي",
+      "presence": "الحضور",
+      "reportCards": "كشوف النقاط",
+      "communications": "التواصل",
+      "consent": "بدخولك إلى البوابة، توافق على الاطلاع على البيانات المدرسية لأطفالك.",
+      "invalid": "رابط وصول غير صالح.",
+      "expired": "انتهت صلاحية رابط الوصول. تواصل مع المؤسسة.",
+      "used": "سبق استخدام هذا الرابط ولم يعد صالحًا.",
+      "emptyChildren": "لا يوجد طفل مرتبط بك.",
+      "today": "اليوم",
+      "last30days": "آخر 30 يومًا",
+      "publishedOnly": "كشوف النقاط المنشورة فقط.",
+      "accessNote": "رابط أحادي الاستخدام ومحدد المدة. كل وصول يُسجَّل."
+    },
+    "common": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "loading": "جارٍ التحميل…",
+      "error": "حدث خطأ.",
+      "retry": "إعادة المحاولة",
+      "actions": "إجراءات",
+      "close": "إغلاق",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "noData": "لا توجد بيانات.",
+      "view": "عرض",
+      "back": "رجوع",
+      "deleteConfirm": "حذف هذا العنصر؟"
+    }
+  },
+  "surveyStats": {
+    "title": "استبيانات الحلول",
+    "subtitle": "تتبّع تحويل معالج الواجهة (الردود، الحزم المقترحة، التسجيلات).",
+    "refresh": "تحديث",
+    "retry": "إعادة محاولة",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا توجد ردود استبيان بعد.",
+    "metricResponses": "الردود",
+    "metricConverted": "التسجيلات",
+    "metricConversionRate": "معدل التحويل",
+    "metricPackagesSuggested": "الحزم المقترحة",
+    "bySolutionTitle": "الحجم حسب الحل",
+    "bySolutionHint": "توزيع الردود حسب الحل القطاعي.",
+    "packagesTitle": "أكثر الحزم اقتراحًا",
+    "packagesHint": "تكرار الحزم المقترحة من المحرك.",
+    "answersTitle": "توزيع الردود",
+    "answersHint": "قيم الردود حسب السؤال (عينة محدودة).",
+    "solutionColumn": "الحل",
+    "responsesColumn": "الردود",
+    "shareColumn": "الحصة"
+  },
+  "survey": {
+    "title": "استبيانات الحلول",
+    "subtitle": "تحويل معالج « أنا صاحب مطعم » والحلول القطاعية",
+    "last7": "آخر 7 أيام",
+    "last30": "آخر 30 يومًا",
+    "last90": "آخر 90 يومًا",
+    "totalResponses": "ردود الاستبيان",
+    "converted": "تسجيلات مع الحل",
+    "conversionRate": "معدل التحويل",
+    "topPackages": "الباقات الأكثر اقتراحًا",
+    "topPackagesCaption": "اقتراحات محرك القواعد",
+    "bySolution": "الردود حسب الحل",
+    "bySolutionCaption": "حجم الردود لكل حل",
+    "colPackage": "الباقة",
+    "colSuggestions": "الاقتراحات",
+    "colSolution": "الحل",
+    "colResponses": "الردود",
+    "solutionRestaurant": "مطعم",
+    "solutionFuelStation": "محطة وقود",
+    "pkgMobileEmployee": "تطبيق الموظف للجوال",
+    "pkgMobileManager": "تطبيق المدير للجوال",
+    "pkgAttendanceMobile": "تسجيل حضور عبر الجوال",
+    "pkgKiosk": "كشك تسجيل الحضور",
+    "pkgEdge": "عقدة Edge محلية",
+    "pkgPlanning": "جدولة الفرق",
+    "pkgPayroll": "الرواتب",
+    "pkgAccounting": "المحاسبة",
+    "pkgDelivery": "التوصيل",
+    "pkgReservations": "الحجوزات",
+    "pkgInventory": "المخزون",
+    "pkgLoyalty": "الولاء",
+    "pkgPos": "نقطة بيع (POS)",
+    "loadError": "تعذّر تحميل إحصائيات استبيانات الحلول."
+  },
+  "travelPortal": {
+    "title": "بوابة المسافر",
+    "subtitle": "تابع حجزك، حمّل تذاكرك الإلكترونية وألغِ عبر الإنترنت.",
+    "referenceLabel": "مرجع الحجز",
+    "referencePlaceholder": "مثال GV-2026-0001",
+    "codeLabel": "رمز التحقق",
+    "codePlaceholder": "الرمز الموجود على تذكرتك الإلكترونية",
+    "track": "تتبع حجزي",
+    "tracking": "جارٍ التتبع…",
+    "status": "الحالة",
+    "trip": "الرحلة",
+    "passengers": "المسافرون",
+    "total": "الإجمالي",
+    "tickets": "التذاكر الإلكترونية",
+    "downloadTicket": "تنزيل التذكرة الإلكترونية",
+    "cancel": "إلغاء عبر الإنترنت",
+    "cancelReason": "سبب الإلغاء",
+    "cancelReasonPlaceholder": "اشرح باختصار سبب الإلغاء…",
+    "cancelConfirm": "تأكيد الإلغاء",
+    "cancelling": "جارٍ الإلغاء…",
+    "cancelled": "تم إلغاء الحجز",
+    "notFound": "لا يوجد حجز بهذا المرجع.",
+    "invalidCode": "رمز تحقق غير صالح.",
+    "error": "حدث خطأ. حاول مرة أخرى.",
+    "departurePast": "لقد مضى موعد المغادرة: لم يعد الإلغاء عبر الإنترنت ممكنًا.",
+    "empty": "لا توجد حجوزات بعد.",
+    "statusPending": "قيد الانتظار",
+    "statusConfirmed": "مؤكدة",
+    "statusRefunded": "مستردة",
+    "statusCompleted": "مكتملة"
   }
 }

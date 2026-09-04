@@ -8,6 +8,7 @@ use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Billing\Domain\Models\WebhookDelivery;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
+use App\Modules\Billing\Infrastructure\Services\WebhookEnvelopeBuilder;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,6 +35,9 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
         private readonly WebhookEndpoint $endpoint,
         private readonly string $event,
         private readonly array $payload,
+        private readonly int $eventVersion = WebhookEnvelopeBuilder::CURRENT_VERSION,
+        private readonly ?string $correlationId = null,
+        private readonly ?string $occurredAt = null,
     ) {
         $this->queue = 'webhooks';
     }
@@ -49,14 +53,19 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
      */
     public function failed(Throwable $exception): void
     {
+        $body = WebhookEnvelopeBuilder::build(
+            $this->event,
+            $this->eventVersion,
+            $this->endpoint->company_id,
+            $this->correlationId ?? (string) Str::uuid(),
+            $this->occurredAt ?? now()->toIso8601String(),
+            $this->payload,
+        );
+
         WebhookDelivery::create([
             'webhook_endpoint_id' => $this->endpoint->id,
             'event' => $this->event,
-            'payload' => [
-                'event' => $this->event,
-                'timestamp' => now()->toIso8601String(),
-                'data' => $this->payload,
-            ],
+            'payload' => $body,
             'response_code' => 0,
             'response_body' => mb_substr('All retries exhausted: '.$exception->getMessage(), 0, 2000),
             'duration_ms' => 0,
@@ -110,54 +119,31 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             return;
         }
 
-        $body = [
-            'event' => $this->event,
-            'timestamp' => now()->toIso8601String(),
-            'data' => $this->payload,
-        ];
+        // Issue #5744 : enveloppe canonique versionnée (additive) — voir
+        // WebhookEnvelopeBuilder et docs/api/VERSIONING.md § 5.
+        $body = WebhookEnvelopeBuilder::build(
+            $this->event,
+            $this->eventVersion,
+            $this->endpoint->company_id,
+            $this->correlationId ?? (string) Str::uuid(),
+            $this->occurredAt ?? now()->toIso8601String(),
+            $this->payload,
+        );
 
-        $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
         $timestamp = time();
-        $signedPayload = "{$timestamp}.{$jsonBody}";
-        $signature = hash_hmac('sha256', $signedPayload, $this->endpoint->secret);
-        $svixSignature = "v1={$signature},t={$timestamp}";
 
         $start = microtime(true);
 
         try {
             $response = Http::timeout(10)
-                ->withHeaders([
-                    'Webhook-Id' => Str::uuid()->toString(),
-                    'Webhook-Timestamp' => (string) $timestamp,
-                    'Webhook-Signature' => $svixSignature,
-                    'X-Leopardo-Event' => $this->event, // Keep for legacy
-                    'X-Leopardo-Signature' => $signature, // Keep for legacy
-                    'Content-Type' => 'application/json',
-                ])
+                ->withHeaders(WebhookEnvelopeBuilder::headers(
+                    $this->event,
+                    (string) $this->eventVersion,
+                    (string) $this->endpoint->secret,
+                    $body,
+                    $timestamp,
+                ))
                 ->post($this->endpoint->url, $body);
-
-            $durationMs = (int) ((microtime(true) - $start) * 1000);
-
-            WebhookDelivery::create([
-                'webhook_endpoint_id' => $this->endpoint->id,
-                'event' => $this->event,
-                'payload' => $body,
-                'response_code' => $response->status(),
-                'response_body' => mb_substr($response->body(), 0, 2000),
-                'duration_ms' => $durationMs,
-            ]);
-
-            if ($response->successful()) {
-                $this->endpoint->update([
-                    'failure_count' => 0,
-                    'last_triggered_at' => now(),
-                ]);
-            } else {
-                $this->endpoint->increment('failure_count');
-                if ($this->endpoint->failure_count >= 10) {
-                    $this->endpoint->update(['active' => false]);
-                }
-            }
         } catch (Throwable $e) {
             $durationMs = (int) ((microtime(true) - $start) * 1000);
 
@@ -179,6 +165,58 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             ]);
 
             throw $e;
+        }
+
+        $durationMs = (int) ((microtime(true) - $start) * 1000);
+
+        WebhookDelivery::create([
+            'webhook_endpoint_id' => $this->endpoint->id,
+            'event' => $this->event,
+            'payload' => $body,
+            'response_code' => $response->status(),
+            'response_body' => mb_substr($response->body(), 0, 2000),
+            'duration_ms' => $durationMs,
+        ]);
+
+        if ($response->successful()) {
+            // #6550 (audit) : un succès réactive l'endpoint (la désactivation
+            // n'est plus définitive — un aléa réseau ne tue plus le webhook
+            // pour toujours).
+            $this->endpoint->update([
+                'active' => true,
+                'failure_count' => 0,
+                'last_triggered_at' => now(),
+            ]);
+
+            return;
+        }
+
+        // #6550 (audit) : un non-2xx doit être RETHROWN pour que le job
+        // repasse par les retries (tries/backoff) puis par failed() →
+        // dead-letter. Avant : la livraison était marquée réussie (aucun
+        // retry, aucune dead-letter) — perte sèche. Le throw est HORS du
+        // try/catch : le catch réseau (ci-dessus) n'est pas ré-exécuté, le
+        // compteur d'échecs n'est pas incrémenté deux fois.
+        $this->endpoint->increment('failure_count');
+        if ($this->endpoint->failure_count >= 10) {
+            $this->endpoint->update(['active' => false]);
+        }
+
+        throw new \RuntimeException(
+            sprintf('Webhook delivery failed with status %d: %s', $response->status(), mb_substr($response->body(), 0, 500))
+        );
+    }
+
+    private function recordFailure(string $kind, string $detail): void
+    {
+        $this->endpoint->increment('failure_count');
+        if ($this->endpoint->failure_count >= 10) {
+            $this->endpoint->update(['active' => false]);
+            Log::error('Webhook endpoint deactivated after consecutive failures', [
+                'endpoint_id' => $this->endpoint->id,
+                'kind' => $kind,
+                'detail' => mb_substr($detail, 0, 500),
+            ]);
         }
     }
 }

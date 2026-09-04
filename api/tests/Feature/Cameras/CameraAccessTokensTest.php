@@ -108,7 +108,7 @@ class CameraAccessTokensTest extends TestCase
             'expires_at' => Carbon::now('UTC')->addHour(),
         ]);
 
-        $response = $this->getJson('/api/v1/view/cam?t='.$access->token);
+        $response = $this->withHeader('X-Token', $access->token)->getJson('/api/v1/view/cam');
         $response->assertOk();
         $response->assertJsonPath('data.camera.id', $cam->id);
         $response->assertJsonPath('data.stream_token', $access->token);
@@ -135,7 +135,7 @@ class CameraAccessTokensTest extends TestCase
             'expires_at' => Carbon::now('UTC')->subHour(),
         ]);
 
-        $this->getJson('/api/v1/view/cam?t='.$expired->token)->assertStatus(404);
+        $this->withHeader('X-Token', $expired->token)->getJson('/api/v1/view/cam')->assertStatus(404);
 
         $revoked = CameraAccessToken::query()->create([
             'company_id' => $company->id,
@@ -147,7 +147,7 @@ class CameraAccessTokensTest extends TestCase
             'expires_at' => Carbon::now('UTC')->addHour(),
         ]);
 
-        $this->getJson('/api/v1/view/cam?t='.$revoked->token)->assertStatus(404);
+        $this->withHeader('X-Token', $revoked->token)->getJson('/api/v1/view/cam')->assertStatus(404);
     }
 
     public function test_expired_share_permission_cannot_issue_or_revoke_access_tokens(): void

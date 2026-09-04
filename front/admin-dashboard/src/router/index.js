@@ -56,6 +56,15 @@ const routes = [
         }
       },
       {
+        path: '/solutions/survey-stats',
+        name: 'solutionSurveyStats',
+        component: () => import('@/views/solutions/SolutionSurveyStatsView.vue'),
+        meta: {
+          title: 'navigation.surveyStats',
+          icon: 'ChatBubbleLeftRightIcon'
+        }
+      },
+      {
         path: '/globe',
         name: 'globe',
         component: () => import('@/views/globe/GlobeView.vue'),
@@ -201,6 +210,15 @@ const routes = [
         }
       },
       {
+        path: '/fuel-station',
+        name: 'fuel-station',
+        component: () => import('@/views/fuel/FuelStationView.vue'),
+        meta: {
+          title: 'navigation.fuelStation',
+          icon: 'FireIcon'
+        }
+      },
+      {
         path: '/fleet',
         name: 'fleet',
         component: () => import('@/views/fleet/FleetView.vue'),
@@ -218,18 +236,6 @@ const routes = [
         meta: {
           title: 'navigation.fuelStation',
           icon: 'BoltIcon'
-        }
-      },
-      {
-        path: '/travel',
-        name: 'travel',
-        component: () => import('../views/travel/TravelAgencyView.vue'),
-        meta: {
-          title: 'navigation.travelAgency',
-          icon: 'GlobeAltIcon'
-          // BC-24 TRAVEL (#6078) : la vue porte le gate du feature flag
-          // travelagency (GET /travel/ping → 403 = module non activé pour le
-          // tenant connecté). Même pattern que FleetView (#4710).
         }
       },
       {
@@ -277,6 +283,91 @@ const routes = [
         meta: {
           title: 'navigation.edge',
           icon: 'ServerIcon'
+        }
+      },
+      // ── Verticale TravelAgency (BC-24 TRAVEL, TRAVEL-601 #6078) ────────────
+      // Entrée de navigation conditionnée par le flag `travelagency` (store
+      // travel) ; chaque écran consomme exclusivement les endpoints réels
+      // /travel/* (convention TRAVEL-041, aucune donnée mock).
+      {
+        path: '/travel',
+        name: 'travel',
+        component: () => import('../views/travel/TravelHomeView.vue'),
+        meta: {
+          title: 'navigation.travel',
+          icon: 'PaperAirplaneIcon'
+        }
+      },
+      {
+        path: '/travel/referential',
+        name: 'travel-referential',
+        component: () => import('../views/travel/TravelReferentialView.vue'),
+        meta: {
+          title: 'travel.referential.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/network',
+        name: 'travel-network',
+        component: () => import('../views/travel/TravelNetworkView.vue'),
+        meta: {
+          title: 'travel.network.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/bookings',
+        name: 'travel-bookings',
+        component: () => import('../views/travel/TravelBookingsView.vue'),
+        meta: {
+          title: 'travel.bookings.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/checkin',
+        name: 'travel-checkin',
+        component: () => import('../views/travel/TravelCheckinView.vue'),
+        meta: {
+          title: 'travel.checkin.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/tickets',
+        name: 'travel-tickets',
+        component: () => import('../views/travel/TravelTicketsView.vue'),
+        meta: {
+          title: 'travel.tickets.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/reports',
+        name: 'travel-reports',
+        component: () => import('../views/travel/TravelReportsView.vue'),
+        meta: {
+          title: 'travel.reports.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/content',
+        name: 'travel-content',
+        component: () => import('../views/travel/TravelContentView.vue'),
+        meta: {
+          title: 'travel.content.title',
+          parent: 'travel'
+        }
+      },
+      {
+        path: '/travel/catalog',
+        name: 'travel-catalog',
+        component: () => import('../views/travel/TravelCatalogView.vue'),
+        meta: {
+          title: 'travel.catalog.title',
+          parent: 'travel'
         }
       },
       {

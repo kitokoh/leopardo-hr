@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Events\FuelCashSessionClosed;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
+use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
 
 /**
  * Cycle de vie des sessions de caisse FuelStation (FUEL-007, issue #5801).
@@ -25,6 +26,8 @@ use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
  */
 final class FuelCashSessionService
 {
+    public function __construct(private readonly FuelOutboxPublisher $outbox) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
@@ -99,11 +102,69 @@ final class FuelCashSessionService
 
         $session = $session->refresh();
 
-        // Contrat Accounting (FUEL-015) : consommer l'événement pour générer
-        // les écritures comptables (état figé, statut closed).
+        // Contrat Accounting (FUEL-015) : publier l'agrégat validé dans
+        // l'outbox (après commit, idempotent par clé dérivée) + émettre
+        // l'événement de domaine pour les listeners synchrones.
+        $this->publishClosedAggregate($session, $actor);
+
         FuelCashSessionClosed::dispatch($session);
 
+        // Publication outbox idempotente (replay sans doublon).
+        $this->outbox->publish(
+            (string) $actor->company_id,
+            FuelOutboxEvent::EVENT_CASH_SESSION_CLOSED,
+            [
+                'cash_session_id' => $session->id,
+                'station_id' => $session->station_id,
+                'opening_balance' => $session->opening_balance,
+                'closing_balance' => $session->closing_balance,
+                'expected_balance' => $session->expected_balance,
+                'variance' => $session->variance,
+                'closed_at' => $session->closed_at?->toISOString(),
+            ],
+            'fuel_cash_session',
+            (string) $session->id,
+            'cash-session-closed-'.$session->id,
+        );
+
         return $session;
+    }
+
+    /**
+     * Publie l'agrégat de clôture dans l'outbox FuelStation
+     * (événement `fuel.cash.closed.v1`, contrat Accounting).
+     */
+    private function publishClosedAggregate(FuelCashSession $session, Employee $actor): void
+    {
+        $outbox = app(FuelOutboxPublisher::class);
+
+        $aggregate = [
+            'session_id' => $session->id,
+            'station_id' => $session->station_id,
+            'opened_by' => $session->opened_by,
+            'closed_by' => $session->closed_by,
+            'opened_at' => $session->opened_at->toIso8601String(),
+            'closed_at' => $session->closed_at?->toIso8601String(),
+            'opening_balance' => $session->opening_balance,
+            'closing_balance' => $session->closing_balance,
+            'expected_balance' => $session->expected_balance,
+            'variance' => $session->variance,
+            'currency' => 'DZD', // devise du tenant pilote (FUEL-021) ; alignée via Company.currency par le consommateur.
+        ];
+
+        $outbox->publish(
+            companyId: (string) $actor->company_id,
+            eventType: 'fuel.cash.closed.v1',
+            payload: [
+                'schema_version' => '1.0',
+                'event' => 'cash.closed',
+                'company_id' => (string) $actor->company_id,
+                'idempotency_key' => 'fuel.cash.closed.v1:'.$session->id,
+                'aggregate' => $aggregate,
+            ],
+            aggregateType: 'fuel_cash_session',
+            aggregateId: (string) $session->id,
+        );
     }
 
     /**

@@ -6,7 +6,7 @@ namespace App\Modules\Accounting\Interfaces\Api\V1\Requests;
 
 use App\Modules\Accounting\Domain\Enums\ContactSource;
 use App\Modules\Accounting\Domain\Enums\ContactType;
-use App\Modules\Accounting\Domain\Support\AccountingCurrencies;
+use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencies;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

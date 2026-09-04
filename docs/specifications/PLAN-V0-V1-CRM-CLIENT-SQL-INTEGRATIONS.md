@@ -27,7 +27,7 @@ interne) reste **strictement séparé** — voir ADR-CRM-001/002.
 - Module DDD : `api/app/Modules/CRM/` (Application/Domain/Infrastructure/Interfaces/Providers).
 - Migrations : `api/database/migrations/tenant/` — nommage `YYYY_MM_DD_0000NN_<issue>_<slug>.php`,
   garde anti-collision (#1962/#5431) avant push.
-- Isolation : `company_id` uuid non nullable, `AbstractTenantModel`, Policies,
+- Isolation : `company_id` uuid non nullable, `BelongsToCompany`, Policies,
   tests cross-tenant 404 obligatoires.
 - Contrats : OpenAPI `api/openapi.yaml` maintenu à jour à chaque endpoint
   (garde `check-openapi-route-coverage.py`), SDK régénérés.

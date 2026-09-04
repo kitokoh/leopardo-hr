@@ -48,20 +48,31 @@ final class PaymentRegistrationService
             throw new \InvalidArgumentException(__('accounting.errors.payment_amount_positive'));
         }
 
-        $alreadyPaid = (float) $document->paid_amount;
-        $total = (float) $document->total_ttc;
-
-        if ($alreadyPaid + $amount > $total + self::TOLERANCE) {
-            throw new PaymentExceedsTotalException($total, $alreadyPaid, $amount);
-        }
-
         return DB::transaction(function () use ($document, $amount, $method, $reference, $receivedAt, $gatewayPaymentId): AccountingPayment {
+            // #6536 : verrou pessimiste + relecture DANS la transaction. Le
+            // garde « jamais payé > total » et l'update de `paid_amount`
+            // doivent lire la MÊME valeur fraîche : sans `lockForUpdate`,
+            // deux encaissements concurrents (double-clic, webhook Stripe +
+            // saisie manuelle) écrasent `paid_amount` → cumul réel 2× mais
+            // document jamais `paid` et journal en déséquilibre.
+            /** @var AccountingDocument $locked */
+            $locked = AccountingDocument::query()
+                ->lockForUpdate()
+                ->findOrFail($document->id);
+
+            $alreadyPaid = (float) $locked->paid_amount;
+            $total = (float) $locked->total_ttc;
+
+            if ($alreadyPaid + $amount > $total + self::TOLERANCE) {
+                throw new PaymentExceedsTotalException($total, $alreadyPaid, $amount);
+            }
+
             /** @var AccountingPayment $payment */
             $payment = AccountingPayment::create([
                 // company_id dérivé du document — indépendant du contexte
                 // tenant (API, console, tests) : jamais null (NOT NULL).
-                'company_id' => $document->company_id,
-                'document_id' => $document->id,
+                'company_id' => $locked->company_id,
+                'document_id' => $locked->id,
                 'amount' => $amount,
                 'method' => $method,
                 'reference' => $reference,
@@ -70,15 +81,15 @@ final class PaymentRegistrationService
                 'status' => 'recorded',
             ]);
 
-            $newPaidAmount = round((float) $document->paid_amount + $amount, 2);
-            $document->update(['paid_amount' => $newPaidAmount]);
+            $newPaidAmount = round($alreadyPaid + $amount, 2);
+            $locked->update(['paid_amount' => $newPaidAmount]);
 
             // Statut de document minimal : paid dès que soldé, sinon partially_paid.
-            if (in_array($document->status, [DocumentStatus::Sent->value, DocumentStatus::PartiallyPaid->value, DocumentStatus::Overdue->value], true)) {
-                $newStatus = $newPaidAmount >= (float) $document->total_ttc - self::TOLERANCE
+            if (in_array($locked->status, [DocumentStatus::Sent->value, DocumentStatus::PartiallyPaid->value, DocumentStatus::Overdue->value], true)) {
+                $newStatus = $newPaidAmount >= (float) $locked->total_ttc - self::TOLERANCE
                     ? DocumentStatus::Paid->value
                     : DocumentStatus::PartiallyPaid->value;
-                $document->update(['status' => $newStatus]);
+                $locked->update(['status' => $newStatus]);
             }
 
             return $payment;
@@ -106,7 +117,13 @@ final class PaymentRegistrationService
      *
      * @return Collection<int, AccountingPayment>
      */
-    public function list(?int $documentId = null, ?string $status = null): Collection
+    /**
+     * Issue #6562 — limit optionnel pour borner les listes non paginees.
+     */
+    /**
+     * @return Collection<int, AccountingPayment>
+     */
+    public function list(?int $documentId = null, ?string $status = null, ?int $limit = null): Collection
     {
         $query = AccountingPayment::query()->orderByDesc('received_at')->orderByDesc('id');
 
@@ -116,6 +133,10 @@ final class PaymentRegistrationService
 
         if ($status !== null) {
             $query->where('status', $status);
+        }
+
+        if ($limit !== null) {
+            $query->limit($limit);
         }
 
         return $query->get();

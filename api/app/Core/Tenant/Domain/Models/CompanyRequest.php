@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Tenant\Domain\Models;
 
 use App\Core\Auth\Domain\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -30,12 +31,15 @@ use Illuminate\Support\Carbon;
  * @property int|null $approved_company_id
  * @property string|null $admin_notes
  * @property Carbon|null $reviewed_at
+ * @property int $otp_attempts Tentatives OTP ratées (#6547)
+ * @property Carbon|null $otp_locked_until Verrouillage anti-brute-force OTP (#6547)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
  * @property-read string $source
  * @property-read string|null $note
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class CompanyRequest extends Model
 {
@@ -62,12 +66,15 @@ class CompanyRequest extends Model
         'admin_notes',
         'reviewed_at',
         'verification_token',
+        'otp_attempts',
+        'otp_locked_until',
         'verification_expires_at',
         'signup_payload',
     ];
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'otp_locked_until' => 'datetime',
         'verification_expires_at' => 'datetime',
         'signup_payload' => 'array',
     ];

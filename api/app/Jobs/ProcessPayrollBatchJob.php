@@ -54,20 +54,38 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             'company_id' => $this->companyId,
         ]);
 
-        $run = PayrollRun::where('id', $this->payrollRunId)
+        // #6529 : transition conditionnelle atomique. Un retry après échec
+        // (statut `error`) ou un worker mort en plein calcul (statut
+        // `processing`) doit pouvoir REPRENDRE le run au lieu de le laisser
+        // bloqué pour toujours ; `draft` reste l'état de départ normal.
+        // La mise à jour conditionnelle garantit qu'un seul « claim » aboutit
+        // (0 ligne affectée = run déjà calculé/validé/verrouillé/payé →
+        // skip silencieux, la queue marque le job réussi sans effet de bord).
+        $claimed = PayrollRun::query()
+            ->where('id', $this->payrollRunId)
             ->where('company_id', $this->companyId)
-            ->firstOrFail();
+            ->whereIn('status', [
+                PayrollRun::STATUS_DRAFT,
+                PayrollRun::STATUS_ERROR,
+                PayrollRun::STATUS_PROCESSING,
+            ])
+            ->update(['status' => PayrollRun::STATUS_PROCESSING]);
 
-        if ($run->status !== 'draft') {
+        if ($claimed === 0) {
             Log::channel('structured')->warning('payroll.batch.skip', [
                 'payroll_run_id' => $this->payrollRunId,
-                'status' => $run->status,
+                'status' => PayrollRun::query()
+                    ->where('id', $this->payrollRunId)
+                    ->where('company_id', $this->companyId)
+                    ->value('status'),
             ]);
 
             return;
         }
 
-        $run->update(['status' => 'processing']);
+        $run = PayrollRun::where('id', $this->payrollRunId)
+            ->where('company_id', $this->companyId)
+            ->firstOrFail();
 
         try {
             app(PayrollCalculator::class)->calculateRun($run);

@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\TestResponse;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -195,5 +197,153 @@ class WebAuthPagesTest extends TestCase
         $response->assertSee('aria-invalid="true"', false);
         $response->assertSee('aria-describedby="email-error"', false);
     }
-}
 
+    public function test_two_fa_account_requires_challenge_on_web_login(): void
+    {
+        // #6541 — un compte 2FA ne doit plus ouvrir de session web sans code :
+        // redirection vers le challenge au lieu de la connexion directe.
+        $company = $this->company();
+        $employee = $this->manager($company, [
+            'two_fa_enabled_at' => now(),
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+        ]);
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login/2fa');
+        $this->assertGuest('web');
+        $this->assertNotNull(session('pending_2fa_challenge'));
+    }
+
+    public function test_two_fa_challenge_verification_completes_web_login(): void
+    {
+        $company = $this->company();
+        $employee = $this->manager($company, [
+            'two_fa_enabled_at' => now(),
+            'two_fa_secret' => 'JBSWY3DPEHPK3PXP',
+        ]);
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login/2fa');
+
+        $challengeToken = (string) session('pending_2fa_challenge');
+        $this->assertNotSame('', $challengeToken);
+
+        $challenge = $this->get('/login/2fa');
+        $challenge->assertOk();
+        $challenge->assertSee('Double authentification');
+
+        $this->from('/login/2fa')->withSession(['_token' => $token])->post('/login/2fa', [
+            '_token' => $token,
+            'code' => $this->totpCode('JBSWY3DPEHPK3PXP'),
+        ])->assertRedirect('/dashboard');
+
+        $this->assertAuthenticated('web');
+        $this->assertNull(session('pending_2fa_challenge'));
+    }
+
+    public function test_account_is_locked_after_five_failed_web_logins(): void
+    {
+        // #6541 — le verrouillage API (5 échecs → 15 min) s'applique aussi à
+        // la surface web : au 6e essai, même le bon mot de passe est refusé.
+        $company = $this->company();
+        $employee = $this->manager($company);
+
+        $token = $this->csrfToken();
+        for ($i = 0; $i < 5; $i++) {
+            $this->webLogin($employee->email, 'mauvais', $token)->assertRedirect('/login');
+        }
+
+        $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertNotNull($fresh->getAttributes()['locked_until'] ?? null);
+        $this->assertSame(5, (int) $fresh->failed_login_attempts);
+
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/login');
+        $this->assertGuest('web');
+    }
+
+    public function test_successful_web_login_resets_failed_attempts(): void
+    {
+        $company = $this->company();
+        $employee = $this->manager($company);
+        $employee->forceFill(['failed_login_attempts' => 2, 'locked_until' => null])->save();
+
+        $token = $this->csrfToken();
+        $this->webLogin($employee->email, 'password123', $token)
+            ->assertRedirect('/dashboard');
+
+        $this->assertAuthenticated('web');
+        $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame(0, (int) $fresh->failed_login_attempts);
+    }
+
+    private function company(): Company
+    {
+        $company = Company::factory()->create();
+        $this->assertInstanceOf(Company::class, $company);
+
+        return $company;
+    }
+
+    /** @param array<string, mixed> $overrides */
+    private function manager(Company $company, array $overrides = []): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->manager()->create(array_merge([
+            'company_id' => $company->id,
+            'password_hash' => Hash::make('password123'),
+            'status' => 'active',
+        ], $overrides));
+
+        return $employee;
+    }
+
+    private function csrfToken(): string
+    {
+        $this->get('/login');
+
+        return (string) session()->token();
+    }
+
+    /** @return TestResponse<RedirectResponse> */
+    private function webLogin(string $email, string $password, string $token): TestResponse
+    {
+        return $this->withSession(['_token' => $token])->post('/login', [
+            '_token' => $token,
+            'email' => $email,
+            'password' => $password,
+        ]);
+    }
+
+    private function totpCode(string $secret): string
+    {
+        $alphabet = array_flip(str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'));
+        $normalized = strtoupper(rtrim($secret, '='));
+        $bits = '';
+        foreach (str_split($normalized) as $char) {
+            if (! array_key_exists($char, $alphabet)) {
+                continue;
+            }
+            $bits .= str_pad(decbin($alphabet[$char]), 5, '0', STR_PAD_LEFT);
+        }
+        $decoded = '';
+        foreach (str_split($bits, 8) as $chunk) {
+            if (strlen($chunk) < 8) {
+                continue;
+            }
+            $decoded .= chr((int) bindec($chunk));
+        }
+
+        $counter = intdiv(time(), 30);
+        $hash = hash_hmac('sha1', pack('N2', 0, $counter), $decoded, true);
+        $offset = ord(substr($hash, -1)) & 0x0F;
+        $unpacked = unpack('N', substr($hash, $offset, 4));
+        $value = ($unpacked !== false ? $unpacked[1] : 0) & 0x7FFFFFFF;
+
+        return str_pad((string) ($value % 1000000), 6, '0', STR_PAD_LEFT);
+    }
+}

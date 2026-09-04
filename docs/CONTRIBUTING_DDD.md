@@ -24,6 +24,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Billing` | Abonnements, webhooks Stripe, facturation |
 | `Cabinet` | Gestion documentaire, partage |
 | `Cameras` | Surveillance, streaming |
+| `CRM` | CRM client : consentements, segments, campagnes, canaux de communication (issues #5722/#5723/#5724/#5726) |
 | `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
 | `Delivery` | Livraison générique multi-tenant : colis, tournées, livreurs, tracking, COD, contrats sources (DELIVERY-101..208, BC-26) |
 | `EdgeSync` | Synchronisation offline/mobile (structure spécialisée, hors squelette DDD standard) |
@@ -39,7 +40,13 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Planning` | Planning, congés approbation side-manager |
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
+| `RestaurantManager` | Verticale restauration (BC-25) : référentiel (branches/tables/produits), POS/caisse, commandes, réservations, stock & achats (COGS), livraison, fidélité, promotions, rapports |
+| `RestaurantManager` | Verticale restaurant — livraison, fidélité, promotions, rapports, réservations, notifications (BC-25, RESTO-*) |
+| `Restaurant` | Solution sectorielle restaurant : questionnaire de pré-qualification public, pack suggéré (manifest Core/Solutions) |
 | `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
+| `TravelAgency` | Verticale agences de voyages : référentiel pays/villes/gare/bureaux, manifest de solution activable par tenant (TRAVEL-101..108, 201..203) |
+| `Accounting` | Comptabilité : plan comptable, grand livre, écritures, facturation, export FEC |
+| `Delivery` | Livraisons dernier-kilomètre : colis, tournées, livreurs, POD, tracking, COD, rapports (BC-26 DELIVERY) |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.

@@ -127,6 +127,7 @@ Schedule::command('leave:carry-forward --year='.(now()->year - 1))->yearlyOn(1, 
 Schedule::command('contracts:alert-expiring')->daily()->at('07:00');
 // Digest hebdomadaire manager (issue #5695) — chaque lundi à 07:00.
 Schedule::command('manager:weekly-digest')->weeklyOn(1, '07:00');
+Schedule::command('fuel:alerts-dispatch')->daily()->at('06:30');
 // Fermeture automatique unique (ADR-0016 Phase 4, #5355) : pointages sans
 // check-out + sessions GPS orphelines — une seule commande, même cycle.
 Schedule::command('attendance:auto-close --threshold=12 --hours=14')
@@ -155,6 +156,41 @@ Schedule::command('marketing:publish-scheduled-posts')
 // PA2-COMM-011 — publish scheduled company announcements that are due
 Schedule::command('announcements:publish-scheduled')
     ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — dispatch des événements d'outbox TravelAgency (#6066,
+// pattern crm:outbox-dispatch #5741) : consommation asynchrone idempotente.
+Schedule::command('travel:outbox-dispatch')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — synthèse mensuelle des ventes pour Accounting (#6069) :
+// période glissante = mois précédent, événement rejouable et idempotent.
+Schedule::command('travel:settle-sales')
+    ->monthlyOn(1, '02:30')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — expiration des réservations pending (#6070) : annulation
+// + libération des sièges + événement (idempotent, log borné).
+Schedule::command('travel:expire-pending-bookings')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// BC-24 TRAVEL — expiration des annonces validées (#6111) : durée de
+// validité dépassée → invisible (idempotent).
+Schedule::command('travel:expire-adverts')
+    ->hourly()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// CRM V1 (issue #5720) — relances internes des tâches en retard, idempotentes
+// (table crm_task_reminders, UNIQUE task_id+remind_date).
+Schedule::command('crm:tasks:send-overdue-reminders')
+    ->everyThirtyMinutes()
     ->withoutOverlapping()
     ->onOneServer();
 

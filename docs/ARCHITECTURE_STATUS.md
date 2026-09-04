@@ -2,6 +2,7 @@
 
 > Mis à jour le 2026-08-31 (audit docs #6585) | Phase 5 terminée — nettoyage legacy (PR #824)
 
+## 1. Tableau de l'état DDD — 21 modules actifs
 ## 1. Tableau de l.état DDD — 21 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
@@ -11,6 +12,7 @@
 | **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **CRM** 🆕      | ✅ | ✅ | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
 | **CRM** 🆕      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Delivery** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **EdgeSync** 🆕  | ✅ | — | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
@@ -26,6 +28,12 @@
 | **Planning**    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **RestaurantManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **TravelAgency** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Restaurant**  | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | ⚠️ |
+| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Delivery** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 > ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.

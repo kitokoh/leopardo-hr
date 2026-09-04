@@ -458,6 +458,33 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Issue #6727 — défaut : aucune réduction de base avant barème.
+     * Les pays à abattement légal (SN/MA/TN/CM/TG/GA) override.
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        return max(0.0, $grossTaxable) * $annualBasis;
+    }
+
+    /**
+     * Issue #6727 — défaut : aucune réduction d'impôt post-barème.
+     * L'Algérie (IRG 40 % borné [12 000 ; 18 000]/an) override.
+     */
+    public function annualTaxReduction(float $annualProgressiveTax): float
+    {
+        return 0.0;
+    }
+
+    /**
+     * Issue #6727 — défaut : pas de facteur de surcharge.
+     * Le Cameroun (centimes additionnels 10 %) override.
+     */
+    public function taxSurchargeFactor(): float
+    {
+        return 1.0;
+    }
+
+    /**
      * ZONE-INFRA (#1820): default = no minimum bracket tax.
      */
     public function calculateBracketTax(float $grossSalary): float

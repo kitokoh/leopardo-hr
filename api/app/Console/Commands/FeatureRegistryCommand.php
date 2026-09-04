@@ -243,4 +243,3 @@ class FeatureRegistryCommand extends Command
         return filter_var($value, FILTER_VALIDATE_BOOL) ? 'Oui' : 'Non';
     }
 }
-

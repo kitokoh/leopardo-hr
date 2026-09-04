@@ -6,7 +6,7 @@ namespace App\Modules\Notification\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\Department;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

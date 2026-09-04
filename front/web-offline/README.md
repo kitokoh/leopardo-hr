@@ -24,3 +24,10 @@ La PWA sonde `GET {EDGE_API}/api/v1/edge/health` (endpoint versionné, issue
 réintroduit. La synchronisation reste disponible depuis le nœud Edge
 authentifié ; la PWA affiche un état honnête (hors-ligne / erreur) sans faux
 bouton actif.
+
+## Place dans l'écosystème (issue #6697)
+
+Cette app est la surface **Edge UI** (offline-first, installée chez le client via
+`edge/docker-compose.yml`, image `leopardo/edge-ui`). La page `/offline` de la web
+app principale (`front/web/src/app/offline/`) est un AUTRE contrat (fallback du
+service worker PWA). Décision + justification : `docs/architecture/OFFLINE_SURFACES.md`.

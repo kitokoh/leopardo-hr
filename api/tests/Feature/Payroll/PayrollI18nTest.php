@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
-use App\Modules\Payroll\Infrastructure\Services\PayrollLineLabels;
+use App\Modules\Payroll\Domain\Services\PayrollLineLabels;
 use Tests\TestCase;
 
 /**

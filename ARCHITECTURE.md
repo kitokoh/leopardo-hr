@@ -13,11 +13,13 @@ leopardo-hr/
 │   ├── web/                # Next.js 16 — landing page + dashboard SaaS (déployé sur Vercel)
 │   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
-│   ├── mobile_apps/        # Flutter — 5 applications mobiles (voir melos.yaml)
+│   ├── mobile_apps/        # Flutter — 7 applications mobiles (voir melos.yaml)
 │   │   ├── leopardo_core/       # Package partagé (design system, services)
 │   │   ├── leopardo_employee/   # App employé
 │   │   ├── leopardo_manager/    # App manager/RH
 │   │   ├── leopardo_hr/         # App RH dédiée
+│   │   ├── leopardo_marketing/  # App marketing/communication
+│   │   ├── leopardo_accounting/ # App comptabilité
 │   │   └── leopardo_platform_admin/ # App admin plateforme
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
 ├── edge/                   # Bridge on-prem ZKTeco <-> cloud (Caddy, supervisord, install.sh)
@@ -29,7 +31,9 @@ leopardo-hr/
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
-├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
+├── assets/ , screenshots/  # Visuels marketing/README (Git LFS — voir README.md § Prérequis Git LFS (#4124) et assets/README.md)
+├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — config dans .gitattributes)
+├── marketing/              # (legacy — contenu à migrer vers docs/GOTO_MARKET/, voir #6603)
 └── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
@@ -57,43 +61,18 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-205-cod
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-206-notifications
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-207-reports
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-208-source-contracts
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-d01-glossary
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-d03-isolation
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-d07-async-export
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-d10-budgets
-=======
-Modules actifs (21, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment` + socle transversal `Core/Auth`, `Core/Feature`, `Core/Tenant`, `api/app/Core/`, `api/app/Modules/` (sous `api/app/Core/`).
->>>>>>> origin/feat/delivery-d12-golden-journey
+
+Modules actifs (22, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `TravelAgency`, `Delivery` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+
+
+
+
+
+
+
+
+
+
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 

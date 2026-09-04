@@ -423,4 +423,3 @@ class DemoFeatureRegistryCommand extends Command
         return $value ? 'Oui' : 'Non';
     }
 }
-

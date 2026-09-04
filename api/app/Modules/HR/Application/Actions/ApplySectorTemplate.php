@@ -1,15 +1,6 @@
-<?php
 
-declare(strict_types=1);
-
-namespace App\Modules\HR\Application\Actions;
-
-use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Payroll\Domain\Models\SalaryComponent;
+use App\Core\Tenant\Domain\Models\Company
 use Illuminate\Support\Facades\DB;
-
-class ApplySectorTemplate
-{
     public function execute(Company $company, string $sector): void
     {
         if ($sector === 'btp') {
@@ -19,6 +10,7 @@ class ApplySectorTemplate
         }
     }
 
+
     private function applyBtpTemplate(string $companyId): void
     {
         DB::transaction(function () use ($companyId) {
@@ -26,12 +18,11 @@ class ApplySectorTemplate
             $scheduleId = DB::table('schedules')->insertGetId([
                 'company_id' => $companyId,
                 'name' => 'Horaires de Chantier (BTP)',
-                'working_days' => json_encode(['monday', 'tuesday', 'wednesday', 'thursday', 'friday']),
+                'work_days' => json_encode([1, 2, 3, 4, 5]), // lundi→vendredi (schéma réel work_days jsonb [1-7])
                 'start_time' => '07:00:00',
                 'end_time' => '15:00:00',
-                'break_duration_minutes' => 60,
+                'break_minutes' => 60,
                 'created_at' => now(),
-                'updated_at' => now(),
             ]);
 
             // Prime de panier et salissure
@@ -53,7 +44,7 @@ class ApplySectorTemplate
                     'is_taxable' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]
+                ],
             ]);
 
             // Absence intemperies
@@ -68,6 +59,7 @@ class ApplySectorTemplate
         });
     }
 
+
     private function applySecurityTemplate(string $companyId): void
     {
         DB::transaction(function () use ($companyId) {
@@ -75,12 +67,11 @@ class ApplySectorTemplate
             $scheduleId = DB::table('schedules')->insertGetId([
                 'company_id' => $companyId,
                 'name' => 'Horaires de Nuit (Sécurité)',
-                'working_days' => json_encode(['monday', 'tuesday', 'wednesday', 'thursday', 'friday']),
+                'work_days' => json_encode([1, 2, 3, 4, 5, 6, 7]),
                 'start_time' => '22:00:00',
                 'end_time' => '06:00:00',
-                'break_duration_minutes' => 30,
+                'break_minutes' => 30,
                 'created_at' => now(),
-                'updated_at' => now(),
             ]);
 
             // Prime de risque
@@ -102,8 +93,7 @@ class ApplySectorTemplate
                     'is_taxable' => true,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]
+                ],
             ]);
         });
     }
-}

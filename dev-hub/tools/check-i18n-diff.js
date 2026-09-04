@@ -66,6 +66,16 @@ const ignorePathFragments = [
   // même mécanique que vitrine-locale.ts : c'est le catalogue inline, pas une
   // chaîne hardcodée hors i18n. Issue #4703.
   '/vitrine/lib/case-studies.ts',
+  // Route forms solution-survey (#6692) : messages de réponse français
+  // opérationnels, même pattern que les routes forms pré-existantes
+  // (contact/signup/newsletter/demo, PA2-MKT-007). Leur localisation est un
+  // follow-up documenté dans l'issue #6692.
+  '/api/forms/solution-survey/route.ts',
+  // Wizard « Je suis restaurateur » (issue #6691) : solution-survey.ts est le
+  // catalogue inline ×4 du survey (questions/packages/raisons, même mécanique
+  // que vitrine-locale.ts) ; RestaurantSolutionWizard.tsx contient le COPY
+  // localisé ×4 de l'UI du wizard (pattern des pages vitrine existantes).
+  '/vitrine/lib/solution-survey.ts', '/vitrine/components/RestaurantSolutionWizard.tsx',
 ];
 
 // Lines that already route text through a translation mechanism — never
@@ -109,6 +119,9 @@ function isTechnicalToken(value) {
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) return true;
   if (trimmed === 'use client' || trimmed === 'use server' || trimmed === 'use strict') return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
+  // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
+  // chaîne utilisateur (faux positif signalé sur #6663).
+  if (trimmed.startsWith('@/')) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 

@@ -5,6 +5,7 @@ return [
     'UNKNOWN_ACCOUNT' => "Aucun compte Leopardo RH n\'est associé à cet email Google. Demandez une invitation à votre administrateur.",
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'ACCOUNT_SUSPENDED' => 'Votre compte a été suspendu. Contactez votre responsable.',
+    'ACCOUNT_LOCKED_TEMPORARILY' => "Votre compte est temporairement verrouillé après plusieurs tentatives. Réessayez dans quelques minutes.",
     'ACCOUNT_ARCHIVED' => 'Ce compte est archivé.',
     'TOKEN_EXPIRED' => 'Votre session a expiré. Veuillez vous reconnecter.',
     'TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Réessayez dans :minutes minutes.',
@@ -104,6 +105,7 @@ return [
     'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
     'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
     'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+    'INVALID_SOLUTION' => "Solution sectorielle inconnue ou non disponible : ':solution'.",
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
     'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
@@ -116,6 +118,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Authentification Google indisponible.',
     'GOOGLE_TOKEN_INVALID' => 'Le jeton Google est invalide ou expiré.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'Aucun compte associé à ce compte Google.',
+    'GOOGLE_IDENTITY_MISMATCH' => "Ce compte Google ne correspond pas à l'identité liée au compte Leopardo RH. Contactez votre administrateur.",
     'GOOGLE_INVITATION_REQUIRED' => 'Aucun compte n\'existe pour cet email Google. Demandez une invitation à votre administrateur.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'La connexion via Google n\'est pas encore configurée. Réessayez plus tard.',
     'NO_ACTIVE_SUBSCRIPTION' => 'Aucun abonnement actif.',
@@ -185,6 +188,8 @@ return [
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Mode schema Enterprise gelé. Contactez le support.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
+    'CRM_FEATURE_DISABLED' => 'Le module CRM n\'est pas activé pour cet espace.',
+    'CRM_KILL_SWITCH_ACTIVE' => 'Le module CRM est temporairement indisponible (intervention).',
 
     // Manager roles (audit SWEQA-3, #4812)
     'MANAGER_ROLE_REQUIRED' => 'Accès réservé aux managers.',
@@ -276,4 +281,7 @@ return [
     'MANAGER_ONLY_ACTION' => 'Cette action est réservée aux managers.',
     'INTEGRATION_REQUEST_ALREADY_PENDING' => 'Vous avez déjà une demande en attente pour cette entreprise.',
     'INTEGRATION_REQUEST_NOT_FOUND' => 'Demande d\'intégration introuvable.',
+    'OTP_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Vérifiez votre boîte mail et réessayez dans 15 minutes.',
+    'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Le code a été invalidé, reconnectez-vous.',
+    'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Un run de paie existe déjà pour cette période.',
 ];

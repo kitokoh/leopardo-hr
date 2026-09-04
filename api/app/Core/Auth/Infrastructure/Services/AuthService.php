@@ -60,10 +60,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
-                $found = $this->findEmployeeInTenantSchemas($email);
-                if ($found !== null) {
-                    [$employee, $employeeSchema] = $found;
-                    $this->setTenantSearchPath($employeeSchema);
+                // #6563 (audit auth F3) : le balayage de tous les schémas
+                // tenants est un oracle de timing (email valide ⇒ réponse
+                // plus lente) — désactivé en production (user_lookups
+                // obligatoire), conservé hors prod pour la résilience démo.
+                if (config('auth.schema_sweep_enabled', true) && ! app()->environment('production')) {
+                    $found = $this->findEmployeeInTenantSchemas($email);
+                    if ($found !== null) {
+                        [$employee, $employeeSchema] = $found;
+                        $this->setTenantSearchPath($employeeSchema);
+                    }
                 }
             }
 
@@ -233,6 +239,50 @@ readonly class AuthService
         }
     }
 
+    /**
+     * #6541 — résolution d'un employé pour les surfaces WEB (session) :
+     * même chemin que login() (lookup public.user_lookups → schéma tenant →
+     * fallback search_path par défaut), sans lever d'exception : retourne
+     * null si introuvable. N'émet aucun token.
+     */
+    public function resolveEmployeeForLogin(string $email): ?Employee
+    {
+        $lookup = null;
+        if ($this->lookupTableExists()) {
+            $lookup = DB::table($this->lookupTable())
+                ->where('email', $email)
+                ->first();
+        }
+
+        if ($lookup) {
+            $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+            if ($lookupSchema && $this->isSafeSchemaName($lookupSchema) && $this->tenantEmployeesTableExists($lookupSchema)) {
+                $this->setTenantSearchPath($lookupSchema);
+
+                /** @var Employee|null $employee */
+                $employee = Employee::withoutGlobalScopes()
+                    ->with('company')
+                    ->where('company_id', $lookup->company_id)
+                    ->where('id', $lookup->employee_id)
+                    ->first();
+
+                if ($employee instanceof Employee) {
+                    return $employee;
+                }
+            }
+        }
+
+        /** @var Employee|null $employee */
+        $employee = Employee::withoutGlobalScopes()
+            ->with('company')
+            ->where('email', $email)
+            ->first();
+        $employee?->syncUserLookup();
+
+        return $employee;
+    }
+
     private function lookupTable(): string
     {
         return DB::getDriverName() === 'pgsql' ? 'public.user_lookups' : 'user_lookups';
@@ -266,8 +316,90 @@ readonly class AuthService
      * cross-schema `public.user_lookups` et les mêmes gardes que login()
      * (statut compte, statut employé, company résolue, abilities tenant).
      *
-     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string, tenant_schema: string|null}
      */
+    /**
+     * Résolution d'un employé par email, BORNÉE au tenant (user_lookups →
+     * schéma tenant → employé), sans émission de token. Réutilisée par les
+     * flux Google/SSO pour ne jamais rechercher cross-tenant par email seul
+     * (audit #6531) et pour disposer du tenant_schema du challenge 2FA
+     * (audit #6540). Mêmes gardes que login() : schéma absent/migré partiel
+     * → null (jamais de 500).
+     *
+     * @return array{employee: Employee, tenant_schema: ?string}|null
+     */
+    public function resolveEmployeeByEmail(string $email): ?array
+    {
+        $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
+        $employeeSchema = null;
+
+        try {
+            /** @var Employee|null $employee */
+            $employee = null;
+
+            if ($this->lookupTableExists()) {
+                $lookup = DB::table($this->lookupTable())
+                    ->where('email', $email)
+                    ->first();
+
+                if ($lookup !== null) {
+                    $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+                    if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                        $this->setTenantSearchPath($lookupSchema);
+                        $employeeSchema = $lookupSchema;
+                    }
+
+                    if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                        /** @var Employee|null $employee */
+                        $employee = Employee::withoutGlobalScopes()
+                            ->with('company')
+                            ->where('company_id', $lookup->company_id)
+                            ->where('id', $lookup->employee_id)
+                            ->where('email', $email)
+                            ->first();
+                    }
+                }
+            }
+
+            if (! $employee) {
+                $found = $this->findEmployeeInTenantSchemas($email);
+                if ($found !== null) {
+                    [$employee, $employeeSchema] = $found;
+                    $this->setTenantSearchPath($employeeSchema);
+                }
+            }
+
+            // Fallback : comptes hors tenant (rôle ordinary, sans company_id)
+            // et environnements sans user_lookups. La vérification google_id
+            // (audit #6531) reste le contrôle de sécurité décisif quel que
+            // soit le chemin de résolution.
+            if (! $employee) {
+                $employee = Employee::withoutGlobalScopes()
+                    ->with('company')
+                    ->where('email', $email)
+                    ->first();
+            }
+        } catch (QueryException $e) {
+            Log::warning('auth.resolve_employee_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
+
+        if (! $employee) {
+            return null;
+        }
+
+        return [
+            'employee' => $employee,
+            'tenant_schema' => $employeeSchema,
+        ];
+    }
+
+    /** @return array<string, mixed> */
     public function loginViaEmail(string $email, ?string $deviceName = null): array
     {
         $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
@@ -304,10 +436,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
-                $found = $this->findEmployeeInTenantSchemas($email);
-                if ($found !== null) {
-                    [$employee, $employeeSchema] = $found;
-                    $this->setTenantSearchPath($employeeSchema);
+                // #6563 (audit auth F3) : le balayage de tous les schémas
+                // tenants est un oracle de timing (email valide ⇒ réponse
+                // plus lente) — désactivé en production (user_lookups
+                // obligatoire), conservé hors prod pour la résilience démo.
+                if (config('auth.schema_sweep_enabled', true) && ! app()->environment('production')) {
+                    $found = $this->findEmployeeInTenantSchemas($email);
+                    if ($found !== null) {
+                        [$employee, $employeeSchema] = $found;
+                        $this->setTenantSearchPath($employeeSchema);
+                    }
                 }
             }
         } catch (QueryException $e) {

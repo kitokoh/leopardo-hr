@@ -7,6 +7,7 @@ return [
     'logout_success' => 'Logout successful.',
     'session_expired' => 'Your session has expired. Please log in again.',
     'account_suspended' => 'Your account has been suspended. Contact your manager.',
+    'account_locked' => 'Account temporarily locked. Please try again later.',
     'welcome' => 'Welcome :name!',
     'password_changed' => 'Password changed successfully.',
     'password_reset_sent' => 'If an account exists for this email, a reset link has been sent.',
@@ -22,5 +23,6 @@ return [
     'twofa_already_enabled' => '2FA is already enabled for this account.',
     'twofa_not_setup' => 'Please call setup2fa first to generate a secret.',
     'twofa_code_invalid_value' => 'The provided 2FA code is invalid.',
+    'account_locked' => 'Account temporarily locked after multiple failed login attempts. Try again in 15 minutes.',,
     'password_incorrect' => 'Incorrect password.',
 ];

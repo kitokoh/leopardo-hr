@@ -7,6 +7,7 @@ return [
     'logout_success' => 'Déconnexion réussie.',
     'session_expired' => 'Votre session a expiré. Veuillez vous reconnecter.',
     'account_suspended' => 'Votre compte a été suspendu. Contactez votre responsable.',
+    'account_locked' => 'Compte temporairement verrouillé. Réessayez plus tard.',
     'welcome' => 'Bienvenue :name !',
     'password_changed' => 'Mot de passe modifié avec succès.',
     'password_reset_sent' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',
@@ -22,5 +23,6 @@ return [
     'twofa_already_enabled' => 'Le 2FA est déjà activé pour ce compte.',
     'twofa_not_setup' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
     'twofa_code_invalid_value' => 'Le code 2FA fourni est invalide.',
+    'account_locked' => 'Compte temporairement verrouillé après plusieurs échecs de connexion. Réessayez dans 15 minutes.',,
     'password_incorrect' => 'Mot de passe incorrect.',
 ];

@@ -7,8 +7,10 @@
  * via email/password ou Google, et gerer son espace personnel.
  */
 
-use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\UserAuthController;
 use App\Core\Auth\Interfaces\Api\V1\UserAuthController;
+use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyIntegrationRequestController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
 use Illuminate\Support\Facades\Route;
@@ -53,7 +55,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/employees/link-user', [UserEmployeeLinkController::class, 'linkByEmail']);
 
     // #5540 — Gestion des demandes d'intégration (côté manager/RH)
-    Route::get('/company-integration-requests', [CompanyIntegrationRequestController::class, 'managerIndex']);
+    Route::get('/company-integration-requests/manage', [CompanyIntegrationRequestController::class, 'managerIndex']);
+    // #6566 : la GET collection manager dupliquait exactement la GET employé
+    // `/company-integration-requests` (même méthode + même URI, le groupe
+    // employé gagne en Laravel → managerIndex jamais atteinte). Chemin dédié
+    // `/manage` pour la gestion côté manager.
     Route::post('/company-integration-requests/{id}/accept', [CompanyIntegrationRequestController::class, 'accept'])->whereNumber('id');
     Route::post('/company-integration-requests/{id}/reject', [CompanyIntegrationRequestController::class, 'reject'])->whereNumber('id');
 });

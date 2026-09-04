@@ -49,8 +49,13 @@ class ProfilePermissionErrorContractTest extends TestCase
 
         Sanctum::actingAs($employee);
 
+        // #6689 : le 403 des Policies doit porter le code machine stable
+        // FORBIDDEN (normalisé), jamais le message brut « This action is
+        // unauthorized. » servi comme code d'erreur.
         $this->getJson('/api/v1/employees')
-            ->assertStatus(403);
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'FORBIDDEN')
+            ->assertJsonPath('message', 'FORBIDDEN');
     }
 
     public function test_employee_role_cannot_view_a_coworkers_profile(): void
@@ -59,8 +64,11 @@ class ProfilePermissionErrorContractTest extends TestCase
 
         Sanctum::actingAs($employee);
 
+        // #6689 : GET /employees/{id} cross-role → 403 FORBIDDEN stable.
         $this->getJson("/api/v1/employees/{$manager->id}")
-            ->assertStatus(403);
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'FORBIDDEN')
+            ->assertJsonPath('message', 'FORBIDDEN');
     }
 
     public function test_manager_role_can_reach_manager_only_employee_list(): void

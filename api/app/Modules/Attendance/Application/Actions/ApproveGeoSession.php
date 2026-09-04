@@ -34,7 +34,7 @@ class ApproveGeoSession
     /**
      * @throws \Throwable
      */
-    public function handle(
+    public function execute(
         GeoAttendanceSession $session,
         Employee $validator,
         ?string $note = null

@@ -118,6 +118,12 @@ return [
         'cabinet' => 'Document vault',
         'notifications' => 'Notifications',
         'evaluations' => 'Evaluations',
+        'restaurant' => 'Kitchen display',
         'restaurant' => 'Point of sale (POS)',
+        'restaurant' => 'Kitchen display',
+        'restaurant' => 'Kitchen display',
+        'restaurant' => 'Kitchen display',
+        'restaurant' => 'Kitchen display',
+        'restaurant' => 'Kitchen display',
     ],
 ];

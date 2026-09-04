@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -128,7 +129,7 @@ class KioskCrossTenantIsolationTest extends TestCase
     {
         $company = Company::query()->create([
             'name' => $name,
-            'slug' => \Illuminate\Support\Str::slug($name).'-'.\Illuminate\Support\Str::random(6),
+            'slug' => Str::slug($name).'-'.Str::random(6),
             'sector' => 'services',
             'country' => 'DZ',
             'city' => 'Alger',
@@ -204,5 +205,28 @@ class KioskCrossTenantIsolationTest extends TestCase
             'device_code' => $response->json('data.device_code'),
             'sync_token' => $response->json('data.sync_token'),
         ];
+    }
+
+    public function test_register_then_roster_immediately_with_returned_credentials(): void
+    {
+        // #6678 : non-régression provisioning — les credentials retournés par
+        // POST /kiosks (device_code + sync_token) DOIVENT être utilisables
+        // immédiatement sur le roster public. Avant la garde
+        // assertKioskVisibleToPublicLookup, un kiosque écrit dans un schéma
+        // parasite (fuite search_path, famille #4787/#4798/#4852) recevait un
+        // 201 avec des credentials définitivement 404.
+        [$companyA, $managerA] = $this->createCompanyWithManager('Company A', 'a@kiosk-prov.test');
+
+        $kiosk = $this->registerKiosk($managerA, 'Kiosk Provisioning');
+
+        $this->withHeader('X-Kiosk-Token', $kiosk['sync_token'])
+            ->getJson('/api/v1/kiosks/'.$kiosk['device_code'].'/roster')
+            ->assertOk();
+
+        // Le kiosque est bien visible depuis le schéma canonique (shared_tenants).
+        $this->assertDatabaseHas('shared_tenants.attendance_kiosks', [
+            'company_id' => $companyA->id,
+            'status' => 'active',
+        ]);
     }
 }

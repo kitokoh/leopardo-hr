@@ -1,4 +1,12 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
+
+Note 2026-09-01 (issue #6662, PR #6663) : nouvelle surface publique « solutions sectorielles » —
+- `GET /api/v1/solutions` : catalogue des solutions (allowlist serveur, fail-closed).
+- `GET /api/v1/solutions/{code}/survey` : questions + catalogue de packages.
+- `POST /api/v1/solutions/{code}/survey` : reponses → pack suggere (moteur de regles deterministe, aucune IA, aucune donnee tenant).
+- `GET /api/v1/solutions/{code}/pack?packages=k1,k2` : guide PDF du pack (dompdf, i18n serveur `solutions.*`).
+Public sans auth (pre-qualification vitrine), throttle 10/min. Couverture : `api/tests/Feature/Solutions/SolutionSurveyEndpointTest.php` (8 tests) + `api/tests/Unit/Core/Solutions/SolutionSurveyEngineTest.php` (4 tests).
+
   
 ## Objectif   
 
@@ -15,10 +23,20 @@ Note 2026-06-28 : Migration des modeles d'authentification (User/Employee) vers 
 
 Note 2026-08-22 (stabilisation CI, PR #5295) : les endpoints publics OIDC `GET /sso/oidc/{companyId}/authorize` et `GET /sso/oidc/{companyId}/callback` portent explicitement `throttle:10,1`; `SsoCallbackThrottleTest` vérifie ce contrat anti-abus. Le contrat `api/openapi.yaml` reste parsable par Redocly après fusion des chemins dupliqués, correction des nullable OpenAPI 3.0 et alignement des paramètres recruitment; le miroir et les SDK JavaScript/Python sont régénérés.
 
+Note 2026-08-31 (BC-16 EDU, EduManager — PR #6378) : nouvelle surface API verticale `EduManager` (`api/routes/modules/edu_manager.php`, préfixe `/edu-manager`, middleware `throttle:api → auth:sanctum → token.refresh → tenant → throttle:api-plan → module.edumanager`). 77 routes : référentiel (campuses, academic-years, subjects, classes + affectation enseignants, students + responsables légaux), admissions (CRUD + convert → student), présence (index/store par classe + correct), emplois du temps (course-slots), évaluations & notes versionnées, bulletins (report cards + publication), frais & contrat Accounting (fees), import/export sécurisé, marketing admissions, notifications & portail guardian (tokens d'accès). Les scénarios CI associés vivent dans `api/tests/Feature/EduManager/*` (`EduApiTest`, `EduCampusInvariantTest`, `EduAttendanceServiceTest`, `EduGradeServiceTest`, `EduImportExportTest`, `EduGuardianPortalApiTest`, `EduFeeApiTest`, `EduMarketingApiTest`, `EduNotificationApiTest`, ...) et couvrent : RBAC scolaire (director/headmaster/teacher/guardian), isolation tenant (404 sûr cross-tenant), invariants de présence/notes/bulletins, idempotence import/export et 401/403 feature-gate. Actif via le flag `companies.features.edumanager` (kill switch).
+
 Note 2026-08-30 (BC-26 DELIVERY, DELIVERY-101/#6282) : nouvelle surface API du module de
 livraison generique — smoke `GET /api/v1/delivery/ping` (feature flag `companies.features.delivery`,
 403 FEATURE_NOT_ENABLED sans flag) ; les API livraisons/tournees/tracking/COD/rapports
 (`/api/v1/deliveries/*`) arrivent dans les lots suivants (DELIVERY-201..208).
+Note 2026-08-28 (lot CRM client V0/V1 — issues #5722/#5723/#5724/#5726) : nouvelle surface API CRM tenant —
+- `POST /api/v1/crm/consents` (accord/refus) + `POST /api/v1/crm/consents/{id}/revoke` : consentements par (contact, canal, finalité), historique immuable `audit_logs` (RGPD art. 7), aucun envoi sans consentement (fail-closed) ;
+- `GET/POST/PUT/DELETE /api/v1/crm/segments*` + `POST /api/v1/crm/segments/{id}/rebuild` + `GET /{id}/members` : définitions JSONB strictement allowlistées (aucun SQL utilisateur), versionnées (snapshot reproductible), membership tenant-scopée ;
+- `GET/POST/PUT/DELETE /api/v1/crm/campaigns*` + `start|pause|resume|cancel|finish` + `report` : cycle de vie strict (transitions invalides 422), audience segment OU explicite filtrée au consentement au start, envoi stoppable et observable ;
+- `POST /api/v1/crm/email/transactional|marketing` : marketing soumis au consentement + suppression (adresse hashée SHA-256, aucune PII) + quotas par tenant/heure (429 `EMAIL_RATE_LIMITED`) ;
+- `POST /api/v1/crm/email/webhook` (secret partagé `X-Leopardo-Webhook-Secret`) et `POST /api/v1/crm/email/unsubscribe` (jeton HMAC) : endpoints publics par design, bounce/complaint/unsubscribe → suppression + propagation aux envois de campagne ;
+- RBAC : lecture = `api.manager` (tout manager du tenant) ; écritures/actions = `api.manager:principal,marketing` + Policies dédiées ; isolation tenant `BelongsToCompany` (404 cross-tenant testé).
+- Couverture : `api/tests/Feature/CRM/*` (consentements, segments, campagnes, email) + `api/tests/Unit/CRM/*` (grammaire de segment) — cycle de vie, RBAC, isolation, validation stricte, audit.
 
 ## Perimetre
 
@@ -258,7 +276,6 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `WebhookListener` dispatche les events vers les endpoints webhook du tenant
 - Les events sont dispatches depuis les services (EmployeeCreated, EmployeeArchived, AttendanceCheckedIn/Out, AbsenceRequested/Approved/Rejected, PayrollValidated)
 - `EventServiceProvider` cable chaque event aux listeners AuditLogger et WebhookListener
-- **Digest email hebdomadaire manager (issue #5695)** : la commande `manager:weekly-digest` (schedulee chaque lundi 07:00, `api/routes/console.php`) dispatche un job `SendWeeklyManagerDigestJob` par entreprise ACTIVE ; le job notifie chaque manager actif du tenant sur le canal email uniquement (template `weekly_manager_digest`, cles i18n `notifications.weekly_manager_digest_*` dans les 4 locales), avec contexte `week_start`/`team_size`/`present`/`pending_absences`/`pending_advances`/`pending_corrections`, scope manager respecte (principal/rh → toute l'entreprise ; dept → son departement ; superviseur → equipe directe, PA2-SEC-002/003) et entreprise inactive ignoree. Couvert par `WeeklyManagerDigestTest`.
 
 ### 11. Resilience et erreurs
 
@@ -318,17 +335,6 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Les endpoints privacy restent sous `auth:sanctum` + `tenant` et ne prennent jamais d'`employee_id` client pour eviter l'export d'un collegue ou d'un autre tenant
 - Les acces aux fiches employees et exports privacy creent une entree `audit_logs` avec `category=hr_data_access`, acteur, tenant et cible quand elle existe
 - Les endpoints privacy retournent `429` apres depassement du limiter `privacy-sensitive`
-
-### 17. IA — assistants bornes, budgets de tokens, exports asynchrones et DLQ (BC-23)
-
-- `POST /api/v1/ai/conversations/{conversation}/export` cree une exportation asynchrone idempotente (une seule par tenant+conversation+format via `dedup_key`) puis dispatche `ExportAiConversationJob` sur la file `ai` ; un echec passe l'exportation `failed` et consigne l'entree en dead-letter queue AI (`ai_dead_letter_queue`, une seule fois par `dedup_key`, `attempts` incrementees)
-- `GET /api/v1/ai/exports/{export}` est scope au proprietaire de la conversation et au tenant courant (404 cross-tenant/cross-user) ; le cycle d'etat est `pending → processing → done | failed`
-- `php artisan ai:dlq:replay` rejoue les entrees DLQ `open` (reset `pending` + re-dispatch), filtre par `--company-id`/`--id`/`--limit`, et resout l'entree en `resolved` quand le job aboutit
-- Budgets de tokens versionnes dans `config/ai.php` (`max_tokens_per_request`, `max_context_tokens`, `max_tokens_per_workflow`, env override `AI_BUDGET_*`) : rejet explicite 422 `AI_TOKEN_BUDGET_EXCEEDED` au depassement, cumul par conversation respecte
-- L'analytics AI expose les percentiles (p95) des tokens par requete/workflow (`/ai/analytics/usage`)
-- Matrice de permissions par outil AI versionnee (`ToolPermissionPolicy`) avec tests negatifs par role
-- Golden journey IA : seed pilote 100 % synthetique (`AiPilotSeeder`) + parcours E2E chat → action → confirmation humaine → audit (`ai_audit_logs`) couvert par `AiGoldenJourneyTest` et enregistre dans `dev-hub/tools/golden-journeys.json`
-- Suites associees : `TokenBudgetTest`, `ConversationExportTest`, `AiGoldenJourneyTest`, `ToolPermissionMatrixTest`, `AIGatewayAndAnalyticsTest` (workflow `Tests - Leopardo RH`)
 
 ## Mapping attendu vers les suites GitHub Actions
 
@@ -1525,6 +1531,99 @@ Note 2026-08-26 (PM hygiene, PR #5597) : retour au vert des checks backend — R
 - Payroll : `PayrollPaymentOrder::items()` a une FK explicite `payment_order_id` → l'ordre de virement prépare ses lignes sans QueryException (`column payroll_payment_order_id does not exist`).
 - Couverture : `VatDeclarationTest`, `AccountingMultiCurrencyTest`, `WebhookIdempotenceTest`, `EmailBounceWebhookControllerTest`, `ShareAccessAuditTest`, `PayrollPaymentOrderFlowTest`, `TwoFactorAuthTest`, `AccountingActivationTest` (route `/activation/complete`), `LangCatalogParityTest` (fins de fichier `];` tolérées), `OpenApiDocsTest` (`openapi: "3.0.3"` quoté).
 
+## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
+
+Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
+`GET|POST /travel/routes`, `GET|PUT|DELETE /travel/routes/{travelRoute}` ; sous-ressource étapes
+`GET|POST /travel/routes/{travelRoute}/stops` + `PUT|DELETE /travel/routes/{travelRoute}/stops/{travelRouteStop}`
+(rank auto-attribué, réordonnancement) ; `GET|POST /travel/trips` (génération transactionnelle des sièges),
+`GET|PUT|DELETE /travel/trips/{travelTrip}` ; `GET|POST /travel/trips/{travelTrip}/prices` +
+`GET|PUT|DELETE /travel/trips/{travelTrip}/prices/{travelTripPrice}` (409 sur doublon (trip, classe)) ;
+`POST /travel/trips/{travelTrip}/publish|cancel` (transitions validées, motif obligatoire à l'annulation,
+événements outbox `travel.trip.published.v1`/`travel.trip.cancelled.v1`) ; `GET /travel/trips/search`
+(filtres origin/destination/date/plage/moyen/statut/prix).
+- Scénarios à vérifier : 401 sans auth ; 403 feature flag inactif ; référence cross-tenant (ville, route,
+  carrier, classe) → 422 ; ressource cross-tenant → 404 ; trajet publié verrouillé → 422 ; doublon
+  (trip, classe) → 409 ; doublon code classe → 422 ; sièges générés en nombre exact ; outbox dédup par
+  (tenant, idempotency_key) ; recherche paginée sans N+1.
+- Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
+  `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
+  (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
+
+## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
+
+Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `POST /travel/bookings/{booking}/confirm|cancel|refund|issue-ticket`,
+`POST /travel/tickets/{ticket}/check-in`, `GET /travel/trips/{trip}/manifest`.
+- Scénarios à vérifier : création avec verrouillage transactionnel des sièges (2 réservations concurrentes → 1 seule obtient le siège) ;
+  idempotence (`idempotency_key` rejouée → même réservation, pas de doublon) ; total calculé côté serveur depuis les tarifs ;
+  PII jamais exposée (`has_document` booléen, jamais le n° de pièce) ; trajet non publié → 409 ; siège explicite indisponible → 409 ;
+  transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
+  manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).
+
+## BC-24 TRAVEL — API locations, hôtels & RBAC (TRAVEL-319..322, 2026-08-30)
+
+Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images), `GET|POST /travel/rental-bookings` + cancel,
+`GET|POST /travel/hotels` + chambres, matrice RBAC globale.
+- Scénarios à vérifier : non-chevauchement des réservations de location (409) ; montant calculé serveur (prix/jour × durée) ;
+  idempotence ; classification hôtel 1-5 (422 hors bornes) ; recherche par ville ; image sous-ressource (404/403) ;
+  matrice RBAC : employé simple → 403 sur toutes les écritures, lecture ouverte, cross-tenant → 404, flag inactif → 403,
+  non authentifié → 401.
+- Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
+  (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
+## BC-24 TRAVEL — Boutique en ligne & paiements (TRAVEL-401..409, 2026-08-30)
+Début de l'épic 4xx : `GET /travel/shop/trips` (recherche trajets publiés), `GET /travel/shop/trips/{trip}` (+ available_seats),
+`POST /travel/shop/bookings` (source online, expiration), `GET /travel/shop/bookings/{reference}` (suivi sans code en clair),
+`POST /travel/payments/initiate` (idempotent), `POST /travel/payments/callback` (webhook public signé HMAC, résolution par référence),
+`GET /travel/payments/{payment}`.
+- Scénarios à vérifier : seuls les trajets publiés sont vendables (404/409 sinon) ; disponibilité dérivée de l'inventaire ;
+  réservation online idempotente + expiration 15 min ; initiation idempotente (rejeu → 200) ; callback : signature invalide → 403,
+  montant incohérent → 422, référence inconnue → 404, rejeu → `replayed: true` sans effet de bord, confirmation → payment_status
+  confirmé + événement outbox ; PII jamais exposée.
+- Couverture : `api/tests/Feature/Travel/TravelShopTest.php`, `TravelPaymentTest.php` (184 tests Travel au total).
+## BC-24 TRAVEL — Re-conciliation, remboursement & billets PDF (TRAVEL-410..413, 2026-08-30)
+Suite de l'épic 4xx : `POST /travel/payments/{payment}/verify`, `POST /travel/payments/{payment}/refund`,
+`GET /travel/tickets/{ticket}/pdf` (URL signée), `POST /travel/tickets/{ticket}/revoke`.
+- Scénarios à vérifier : verify() ne re-concilie que les paiements pending (idempotent) ; refund() exige un paiement
+  confirmé + motif (422 sinon), réservé manage ; PDF généré localement (magic %PDF) ; URL signée 30 min ; révocation → void
+  + PDF supprimé + 410 au téléchargement ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelPaymentReconcileTest.php`, `TravelTicketPdfTest.php` (192 tests Travel au total).
+## BC-24 TRAVEL — Outbox & expiration des réservations (TRAVEL-414/418, 2026-08-30)
+`travel:outbox-dispatch` (consommation outbox événementielle, retry/backoff, dead-letter) et `travel:expire-bookings`
+(expiration des pending + libération des sièges + événement `travel.booking.expired.v1`).
+- Scénarios à vérifier : réservation pending expirée → cancelled + sièges libérés + événement outbox ; non-expirée
+  intacte ; rejeu idempotent (0 re-traitement) ; claim atomique (2 workers → 1 seul traite) ; outbox : aucun
+  consommateur → dead-letter, erreur transitoire → retry avec backoff, attempts ≥ max → failed.
+- Couverture : `api/tests/Feature/Travel/TravelBookingExpiryTest.php` (195 tests Travel au total).
+## BC-24 TRAVEL — Formulaire de contact (TRAVEL-416, 2026-08-30)
+`POST /travel/contact` → événement `travel.contact.submitted.v1` (lead CRM par événement, jamais d'import direct).
+- Scénarios à vérifier : 202 + événement publié ; consentement absent/faux → 422 ; message > 2000 → 422 ; email invalide → 422.
+- Couverture : `api/tests/Feature/Travel/TravelContactTest.php` (198 tests Travel au total).
+## BC-24 TRAVEL — Rapports & exports (TRAVEL-501..507, 2026-08-30)
+`GET /travel/reports/{sales,occupancy,revenue,cancellations,dashboard,export}` (permission `travel.reports`).
+- Scénarios à vérifier : agrégats exacts (count, passagers, montants minor units) ; isolation tenant ; taux d'occupation
+  = vendus/total borné [0,1] trié décroissant ; recettes = confirmés − remboursés ; annulations groupées par motif/source ;
+  employé simple → 403 ; export idempotent (même requête = même hash sha256 = même fichier, URL signée 30 min) ; type
+  inconnu → 422 ; read models recalculés → état identique après reprise.
+- Couverture : `api/tests/Feature/Travel/TravelReportApiTest.php` (208 tests Travel au total).
+## BC-24 TRAVEL — Webhooks transporteurs (TRAVEL-806, 2026-08-30)
+`GET/POST/DELETE /travel/webhook-subscriptions` (travel.manage) + livraison HMAC depuis l'outbox.
+- Scénarios à vérifier : création → secret jamais exposé (préfixe hash 8 car.) ; upsert par transporteur (pas de doublon) ;
+  employé simple → 403 ; événement outbox → livraison signée (en-têtes HMAC + timestamp) ; rejeu → pas de doublon ;
+  échec HTTP → retry/backoff puis dead-letter après 5 tentatives.
+- Couverture : `api/tests/Feature/Travel/TravelWebhookTest.php` (215 tests Travel au total).
+Note 2026-08-28 (issues #5725/#5727/#5728/#5729) : nouveau module CRM client tenant (`App\Modules\CRM`) — surface API ajoutee :
+- Canaux de communication : `GET/POST /crm/channels`, `PATCH /crm/channels/{channel}`, `POST /crm/channels/{channel}/send`, `GET /crm/channels/{channel}/messages|conversations|observability` (api.manager:principal,rh) ; webhooks publics `GET/POST /crm/webhooks/whatsapp` (signature HMAC fail-closed, anti-rejeu).
+- Automatisations : `GET/POST /crm/automations`, `GET/PUT/DELETE /crm/automations/{automation}`, `POST .../activate|pause|simulate`, `GET .../runs`, `POST /crm/automations/emergency-stop`, `POST /crm/automations/events/{event}`.
+- Exports/read models : `GET/POST /crm/exports`, `GET /crm/exports/{export}`, `GET /crm/exports/{export}/download`, `GET /crm/read-models`.
+Scenarios CI requis : RBAC (employee 403), isolation cross-tenant (404), consentement/quota/dead-letter canaux, webhook signature + rejeu, automatisations idempotence/simulation/emergency-stop, exports expiration/allowlist.
+## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
+
+- Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).
+- `billing:report` : agrège des compteurs non nominatifs (souscriptions/factures/paiements par statut) ; base vide → exit 0 sans erreur. Couverture : `BillingReportCommandTest`.
+- `billing:reconcile-payments` : dry-run par défaut (aucune mutation) ; `--apply` corrige uniquement les écarts sûrs (montant + company concordants, via `Invoice::transitionTo(Paid)`) ; doublons `provider_reference` et factures `paid` orphelines signalés (jamais corrigés) ; code retour 0 = aucun écart / 2 = écarts ; rejoué → idempotent. Couverture : `BillingReconcilePaymentsTest`.
+- Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
+
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
 - Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
 - Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
@@ -1536,6 +1635,93 @@ Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (man
 - Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
 - Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).
 
+## BC-24 TRAVEL — Verticale TravelAgency (TRAVEL-101..305, 2026-08-30)
+
+Surface API ajoutée par la verticale TravelAgency (module `api/app/Modules/TravelAgency`,
+préfixe `/api/v1/travel/*`, groupe `module.travelagency` — feature flag `travelagency`).
+
+- Fondations : `GET /api/v1/travel/ping` (smoke, feature flag actif).
+- Référentiel (lecture tenant) : `GET /travel/countries`, `GET /travel/cities`.
+- CRUD back-office (policies `travel.manage` — principal/rh/manager ; lecture tout employé du tenant) :
+  `GET|POST /travel/stations`, `GET|PUT|DELETE /travel/stations/{travelStation}`,
+  idem `/travel/offices`, `/travel/carriers`, `/travel/classes`.
+- Scénarios à vérifier : (1) sans auth → 401 ; (2) feature flag inactif → 403 ; (3) création
+  type hors enum (`spaceship`) → 422 ; (4) ressource cross-tenant → 404 (jamais 403 sur la
+  ressource) ; (5) suppression → 204 ; (6) liste paginée `per_page` borné (1..1000).
+- Couverture : `api/tests/Feature/Travel/Travel*CrudTest.php`, `TravelGeoReadEndpointsTest.php`,
+  `TravelFeatureFlagTest.php`, `TravelIsolationTest.php` (harness verticale TRAVEL-108).
+
+## BC-24 TRAVEL — API réseau & trajets (TRAVEL-306..311, 2026-08-30)
+
+Deuxième tranche de l'épic 3xx : `GET|POST /travel/vehicles`, `GET|PUT|DELETE /travel/vehicles/{travelVehicle}` ;
+`GET|POST /travel/routes`, `GET|PUT|DELETE /travel/routes/{travelRoute}` ; sous-ressource étapes
+`GET|POST /travel/routes/{travelRoute}/stops` + `PUT|DELETE /travel/routes/{travelRoute}/stops/{travelRouteStop}`
+(rank auto-attribué, réordonnancement) ; `GET|POST /travel/trips` (génération transactionnelle des sièges),
+`GET|PUT|DELETE /travel/trips/{travelTrip}` ; `GET|POST /travel/trips/{travelTrip}/prices` +
+`GET|PUT|DELETE /travel/trips/{travelTrip}/prices/{travelTripPrice}` (409 sur doublon (trip, classe)) ;
+`POST /travel/trips/{travelTrip}/publish|cancel` (transitions validées, motif obligatoire à l'annulation,
+événements outbox `travel.trip.published.v1`/`travel.trip.cancelled.v1`) ; `GET /travel/trips/search`
+(filtres origin/destination/date/plage/moyen/statut/prix).
+- Scénarios à vérifier : 401 sans auth ; 403 feature flag inactif ; référence cross-tenant (ville, route,
+  carrier, classe) → 422 ; ressource cross-tenant → 404 ; trajet publié verrouillé → 422 ; doublon
+  (trip, classe) → 409 ; doublon code classe → 422 ; sièges générés en nombre exact ; outbox dédup par
+  (tenant, idempotency_key) ; recherche paginée sans N+1.
+- Couverture : `api/tests/Feature/Travel/TravelVehicleApiTest.php`, `TravelRouteApiTest.php`,
+  `TravelTripApiTest.php`, `TravelTripPriceApiTest.php`, `TravelTripWorkflowTest.php`, `TravelTripSearchTest.php`
+  (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
+
+## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
+
+Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `POST /travel/bookings/{booking}/confirm|cancel|refund|issue-ticket`,
+`POST /travel/tickets/{ticket}/check-in`, `GET /travel/trips/{trip}/manifest`.
+- Scénarios à vérifier : création avec verrouillage transactionnel des sièges (2 réservations concurrentes → 1 seule obtient le siège) ;
+  idempotence (`idempotency_key` rejouée → même réservation, pas de doublon) ; total calculé côté serveur depuis les tarifs ;
+  PII jamais exposée (`has_document` booléen, jamais le n° de pièce) ; trajet non publié → 409 ; siège explicite indisponible → 409 ;
+  transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
+  manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).
+
+## BC-24 TRAVEL — API locations, hôtels & RBAC (TRAVEL-319..322, 2026-08-30)
+
+Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images), `GET|POST /travel/rental-bookings` + cancel,
+`GET|POST /travel/hotels` + chambres, matrice RBAC globale.
+- Scénarios à vérifier : non-chevauchement des réservations de location (409) ; montant calculé serveur (prix/jour × durée) ;
+  idempotence ; classification hôtel 1-5 (422 hors bornes) ; recherche par ville ; image sous-ressource (404/403) ;
+  matrice RBAC : employé simple → 403 sur toutes les écritures, lecture ouverte, cross-tenant → 404, flag inactif → 403,
+  non authentifié → 401.
+- Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
+  (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
+## Scenarios BC-25 RESTAURANT (verticale RestaurantManager)
+Note 2026-08-30 (lots RESTO-1xx..7xx) : la verticale `RestaurantManager` (préfixe `/restaurant/*`, feature flag `restaurantmanager`, middleware `module.restaurantmanager`) couvre POS & caisse, commandes, réservations, stock & achats, livraison, fidélité, promotions et rapports. Scénarios couverts par les tests Feature `api/tests/Feature/Restaurant/*` :
+- Activation/kill switch : `GET /restaurant/ping` 200 avec flag, 403 sans flag, 401 sans auth.
+- Isolation multitenant : toute ressource d'un autre tenant → 404 (jamais 403) ; `exists` tenant-scopées sur les requests (422 si référence étrangère).
+- RBAC `restaurant.*` : écriture référentiel/achats `principal`/`rh` ; opérationnel `manager` ; lecture `server`/`kitchen`/`rider` ; rapports via gate `restaurant.reports` (rôles opérationnels).
+- Référentiel (branches/zones/tables/catégories/produits/ingrédients/unités/menus/TVA/fournisseurs/horaires) : CRUD complet + unicité tenant-scopée.
+- Stock : niveaux + mouvements (raisons enum, référence polymorphe), invariant « jamais de stock négatif » (422), coût moyen pondéré exact à la réception, bons de commande draft→sent→received, inventaires avec approbation bloquée sur écart non justifié, alertes de seuil dédupliquées par (branche, ingrédient, jour).
+- Réservations : conflit de créneau → 409 (fenêtre ±2h), transitions confirm/check-in/no-show/cancel, disponibilité par table/couverts, politique d'annulation (pénalités serveur).
+- Livraison : cycle assign → out_for_delivery → delivered | cancel (livreur inactif refusé, annulation → commande retourne à `ready`).
+- Fidélité : opt-in RGPD requis, crédit unique par commande payée, solde jamais négatif.
+- Promotions : bornes (période, minimum, plafond d'utilisation), cumul contrôlé.
+- Rapports/KPIs : agrégats cohérents avec les données ; export CSV idempotent + URL signée (TTL 10 min, signature invalide → 403).
+  (+ 135 tests Travel au total, dont correctifs d'invariants 2xx protégés par savepoint).
+## BC-24 TRAVEL — API réservations & billetterie (TRAVEL-312..318, 2026-08-30)
+Troisième tranche de l'épic 3xx : `GET|POST /travel/bookings` (+ détails), `POST /travel/bookings/{booking}/confirm|cancel|refund|issue-ticket`,
+`POST /travel/tickets/{ticket}/check-in`, `GET /travel/trips/{trip}/manifest`.
+- Scénarios à vérifier : création avec verrouillage transactionnel des sièges (2 réservations concurrentes → 1 seule obtient le siège) ;
+  idempotence (`idempotency_key` rejouée → même réservation, pas de doublon) ; total calculé côté serveur depuis les tarifs ;
+  PII jamais exposée (`has_document` booléen, jamais le n° de pièce) ; trajet non publié → 409 ; siège explicite indisponible → 409 ;
+  transition invalide → 422 ; motif obligatoire (cancel/refund) ; billets : 1 par passager, ré-émission idempotente, check-in → checked_in ;
+  manifeste trié par siège sans n° de pièce ; cross-tenant → 404.
+- Couverture : `api/tests/Feature/Travel/TravelBookingApiTest.php`, `TravelBookingWorkflowTest.php` (148 tests Travel au total).
+## BC-24 TRAVEL — API locations, hôtels & RBAC (TRAVEL-319..322, 2026-08-30)
+Dernière tranche de l'épic 3xx : `GET|POST /travel/rental-vehicles` (+ images), `GET|POST /travel/rental-bookings` + cancel,
+`GET|POST /travel/hotels` + chambres, matrice RBAC globale.
+- Scénarios à vérifier : non-chevauchement des réservations de location (409) ; montant calculé serveur (prix/jour × durée) ;
+  idempotence ; classification hôtel 1-5 (422 hors bornes) ; recherche par ville ; image sous-ressource (404/403) ;
+  matrice RBAC : employé simple → 403 sur toutes les écritures, lecture ouverte, cross-tenant → 404, flag inactif → 403,
+  non authentifié → 401.
+- Couverture : `api/tests/Feature/Travel/TravelRentalApiTest.php`, `TravelHotelApiTest.php`, `TravelRbacMatrixTest.php`
+  (168 tests Travel au total) + `docs/security/TRAVEL_RBAC_MATRIX.md`.
 Note 2026-08-31 (BC-22 ANALYTICS, PR #6280) : snapshots horodatés des read models de reporting + golden journey Analytics.
 - `GET /api/v1/accounting/dashboard` expose désormais un bloc `data.snapshot` (`source: live|snapshot`, `version`, `refreshed_at`) — scénarios : lecture live par défaut (aucun snapshot actif → `source: live`) ; après activation du recompute (budget p95 dépassé, jamais préventif) → `source: snapshot` avec `version` incrémentée uniquement si le contenu change (2 recomputes identiques → même version) ; rejeu de la commande `accounting:reporting-snapshot` → aucune écriture dupliquée (clé unique `(company_id, report, period_from, period_to)`).
 - Seed pilote synthétique `analytics-pilot-001` (DZD, 100 % synthétique, refusé en production MAT-012) : agrégats cohérents + déterminisme (2 lectures → mêmes totaux), export CSV impayés téléchargeable et sanitisé (`CsvCellSanitizer`), tenant vide → agrégats zéro, RBAC 403 pour un employé simple. Tests : `AccountingReportingSnapshotTest`, `AccountingAnalyticsGoldenJourneyTest`.
@@ -1545,3 +1731,35 @@ Note 2026-09-02 (Cabinet, #6674) : partages orphelins/legacy — robustesse de /
 - Scénario orphelin : share valide dont le shareable a été supprimé → 200 avec `shareable_name: null` (plus de 500).
 - Scénario suppression : `DELETE /cabinet/documents/{id}` et `DELETE /cabinet/folders/{id}` révoquent les partages du document/dossier (récursif documents + sous-dossiers) avant suppression → plus d'orphelins créés.
 - Tests : `CabinetShareOrphanRegressionTest` (4 scénarios ci-dessus).
+||||||| /tmp/doc_base.md
+
+Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livraison générique multi-tenant.
+- Socle : manifest `DeliveryManifest` (DELIVERY-101, #6282), schéma tenant 5 tables `delivery_*` avec `company_id` non nullable + FK composites (DELIVERY-102, #6283), domaine (machine à états livraison, VOs, enums) (DELIVERY-103, #6284), modèles + repository tenant-scoped (DELIVERY-104, #6304).
+- API : CRUD colis dispatcher versionné (DELIVERY-201, #6285), tournées création/affectation livreur+véhicule/ordre des stops/clôture (DELIVERY-202, #6286), mobile livreur tournée du jour/statuts/POD (DELIVERY-203, #6287), tracking idempotent + lien destinataire borné (DELIVERY-204, #6288), COD & commissions posting BC-08 idempotent (DELIVERY-205, #6289), notifications destinataire outbox + opt-out RGPD (DELIVERY-206, #6290), rapports KPIs déterministes + export CSV (DELIVERY-207, #6291), contrats sources restaurant/retail/ecommerce/crm (DELIVERY-208, #6299).
+- Dimensions : glossaire (D01, #6292), isolation cross-tenant (D03, #6293), asynchronisme jobs tenant-scoped DLQ/replay (D07, #6294/#6295), budgets p95 (D10, #6296), golden journey E2E + seed pilote (D12, #6297).
+- Scénarios à vérifier : CRUD colis RBAC dispatcher (403 employé), tournée chevauchement rejeté (409), POD photo/signature, tracking idempotent (rejeu zéro doublon), COD posting comptable idempotent, notification opt-out respecté, rapport recalculé déterministe, contrat source idempotent par `external_ref`, isolation cross-tenant (404 sur IDs connus d'un autre tenant), jobs replay sans perte ni doublon.
+- Couverture : `tests/Feature/Delivery/*` (129 tests, 522 assertions) + `DeliveryReferenceTest`, `DeliveryOutboxTest`, `DeliveryIsolationTest`, `DeliveryGoldenJourneyTest`.
+
+- Manifest de solution : `App\Core\Solutions` (contrat `SolutionManifest`, catalogue allowlist fail-closed, activateur audité, commande `leopardo:solution:activate`) + `FuelStationManifest` (FUEL-001). Activation idempotente par feature flag, dépendances manquantes → 422 `SOLUTION_MISSING_DEPENDENCY`, code inconnu → 404 `SOLUTION_NOT_FOUND`. Tests : `SolutionManifestTest`.
+- Stations et sites tenant-first (FUEL-002) : tables `fuel_stations` (code unique par tenant, timezone, statut CHECK active|inactive|archived) et `fuel_sites` (FK composite `(station_id, company_id)` → `fuel_stations`, statut CHECK active|inactive) — company_id non nullable partout, références cross-tenant physiquement impossibles. Tests : `FuelStationMigrationTest`, `FuelSitesInvariantTest`.
+- Équipements (FUEL-003) : `fuel_pumps`, `fuel_tanks` (capacity_minor CHECK > 0, unit_code CHECK l|gal), `fuel_meter_registers` (meter_type/status/unit CHECKs, `UNIQUE (company_id, pump_id, meter_code)`) — FK composites anti cross-tenant. Tests : `FuelEquipmentTest`.
+- Relevés de compteur (FUEL-004) : `POST/GET /fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings` — cumul en unités mineures, heure UTC + locale, delta/rollover/anomalie, idempotence par `UNIQUE (company_id, idempotency_key)` (zéro doublon au rejeu), correction versionnée `POST /fuel-station/meter-readings/{reading}/corrections` et revue `POST /fuel-station/meter-intervals/{interval}/review` (RBAC `api.manager`). Tests : `FuelMeterReadingTest`.
+- Shifts et affectations (FUEL-005) : `GET/POST /fuel-station/shifts`, affectations par date, chevauchements contrôlés (`FuelShiftService::assertNoOverlap`), self-service pompiste `GET /fuel-station/me/shifts`. Tests : `FuelShiftApiTest`.
+- Présence opérateur (FUEL-006) : `GET /fuel-station/me/presence`, `GET /fuel-station/shifts/{shift}/presence` — résolue via la logique Attendance (pas de duplication). Tests : `FuelPresenceApiTest`.
+- Sessions de caisse (FUEL-007) : ouverture `POST /fuel-station/cash-sessions`, mouvements, clôture idempotente `POST /fuel-station/cash-sessions/{session}/close` (écarts + approbation manager, événement `FuelCashSessionClosed`). Tests : `FuelCashSessionApiTest`.
+- Ventes (FUEL-008) : `POST/GET /fuel-station/sales` — transactions par pompe liées shift/session. Tests : `FuelSaleApiTest`.
+- Couverture globale : solution inactive → 403 `FUEL_SOLUTION_INACTIVE` (fail-closed) ; OpenAPI 3 chemins `/fuel-station/*` + SDK régénérés (885 ops) ; i18n ×4 (`FUEL_*`).
+Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livraison générique multi-tenant.
+- Socle : manifest `DeliveryManifest` (DELIVERY-101, #6282), schéma tenant 5 tables `delivery_*` avec `company_id` non nullable + FK composites (DELIVERY-102, #6283), domaine (machine à états livraison, VOs, enums) (DELIVERY-103, #6284), modèles + repository tenant-scoped (DELIVERY-104, #6304).
+- API : CRUD colis dispatcher versionné (DELIVERY-201, #6285), tournées création/affectation livreur+véhicule/ordre des stops/clôture (DELIVERY-202, #6286), mobile livreur tournée du jour/statuts/POD (DELIVERY-203, #6287), tracking idempotent + lien destinataire borné (DELIVERY-204, #6288), COD & commissions posting BC-08 idempotent (DELIVERY-205, #6289), notifications destinataire outbox + opt-out RGPD (DELIVERY-206, #6290), rapports KPIs déterministes + export CSV (DELIVERY-207, #6291), contrats sources restaurant/retail/ecommerce/crm (DELIVERY-208, #6299).
+- Dimensions : glossaire (D01, #6292), isolation cross-tenant (D03, #6293), asynchronisme jobs tenant-scoped DLQ/replay (D07, #6294/#6295), budgets p95 (D10, #6296), golden journey E2E + seed pilote (D12, #6297).
+- Scénarios à vérifier : CRUD colis RBAC dispatcher (403 employé), tournée chevauchement rejeté (409), POD photo/signature, tracking idempotent (rejeu zéro doublon), COD posting comptable idempotent, notification opt-out respecté, rapport recalculé déterministe, contrat source idempotent par `external_ref`, isolation cross-tenant (404 sur IDs connus d'un autre tenant), jobs replay sans perte ni doublon.
+- Couverture : `tests/Feature/Delivery/*` (129 tests, 522 assertions) + `DeliveryReferenceTest`, `DeliveryOutboxTest`, `DeliveryIsolationTest`, `DeliveryGoldenJourneyTest`.
+## Billing ops — recouvrement & supervision (DEP-BC21, #6251/#6249/#6248)
+
+- Scheduler billing dédupliqué (PR #6263) : les commandes `billing:check-trials`, `billing:check-overdue`, `billing:generate-invoices` ne sont plus déclarées dans `api/routes/console.php` (source canonique : `bootstrap/app.php` → `withSchedule`) ; `billing:enforce-delinquency` planifié quotidien (06:30). Scénarios : `php artisan schedule:list` ne liste chaque commande billing QU'UNE fois ; rejouer la commande deux fois → aucun effet double (idempotence).
+- `billing:report` : agrège des compteurs non nominatifs (souscriptions/factures/paiements par statut) ; base vide → exit 0 sans erreur. Couverture : `BillingReportCommandTest`.
+- `billing:reconcile-payments` : dry-run par défaut (aucune mutation) ; `--apply` corrige uniquement les écarts sûrs (montant + company concordants, via `Invoice::transitionTo(Paid)`) ; doublons `provider_reference` et factures `paid` orphelines signalés (jamais corrigés) ; code retour 0 = aucun écart / 2 = écarts ; rejoué → idempotent. Couverture : `BillingReconcilePaymentsTest`.
+- Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
+
+Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).

@@ -39,27 +39,31 @@ class ChargilyService
             return null;
         }
 
-        // Strip the "sha256=" prefix if present
-        $provided = ltrim($signatureHeader, 'sha256=');
-        if (str_starts_with($signatureHeader, 'sha256=')) {
-            $provided = substr($signatureHeader, 7);
-        }
+        // #6561 (audit) : retrait du ltrim('sha256=') qui masquait des
+        // caractères de la signature (le substr suivant le corrigeait — code
+        // mort). Extraction propre du préfixe, sinon signature telle quelle.
+        $provided = str_starts_with($signatureHeader, 'sha256=')
+            ? substr($signatureHeader, 7)
+            : $signatureHeader;
 
         if (empty($provided)) {
             Log::warning('Chargily: Missing or malformed signature header.');
+
             return null;
         }
 
         $expected = hash_hmac('sha256', $payload, $this->webhookSecret);
 
-        if (!hash_equals($expected, $provided)) {
+        if (! hash_equals($expected, $provided)) {
             Log::warning('Chargily: Webhook signature mismatch.');
+
             return null;
         }
 
         $data = json_decode($payload, true);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             Log::warning('Chargily: Invalid JSON payload.');
+
             return null;
         }
 

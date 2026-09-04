@@ -39,6 +39,30 @@ interface CountryRulesInterface
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
 
     /**
+     * Issue #6727 — base imposable ANNUELLE effective, après abattement
+     * frais professionnels pré-barème, en miroir EXACT de
+     * calculateIncomeTax() (SN/MA/TN/CM/TG/GA réduisent la base avant le
+     * barème ; DZ et les pays sans abattement retournent $grossTaxable ×
+     * $annualBasis). Utilisée par le détail par tranche du simulateur
+     * (`income_tax_by_slab`) pour converger vers l'impôt réel.
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float;
+
+    /**
+     * Issue #6727 — réduction d'impôt POST-barème appliquée au barème
+     * progressif annuel (ex. abattement IRG algérien 40 % borné
+     * [12 000 ; 18 000] DZD/an). 0.0 quand le pays ne réduit pas l'impôt
+     * calculé (SN/MA/TN/CM/TG/GA réduisent la BASE avant le barème).
+     */
+    public function annualTaxReduction(float $annualProgressiveTax): float;
+
+    /**
+     * Issue #6727 — facteur multiplicatif appliqué à l'impôt des tranches
+     * (ex. centimes additionnels camerounais : IRPP × 1,10). 1.0 par défaut.
+     */
+    public function taxSurchargeFactor(): float;
+
+    /**
      * Returns a clone of these rules scoped to a given tenant company, so
      * company-specific TaxSlab/SocialContribution overrides are taken into
      * account. Pass null to reset to national/global rules. (MULTI-PAYS

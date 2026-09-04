@@ -134,6 +134,64 @@ class PayrollRunControllerTest extends TestCase
         $response->assertJsonPath('data.country_code', 'DZ');
     }
 
+    public function test_duplicate_period_is_rejected_with_409(): void
+    {
+        // Issue #6552 (audit) : deux runs non annulés pour la même période →
+        // 409 propre (garde applicative + index unique partiel en base).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ]);
+
+        $response->assertStatus(409);
+        $response->assertJsonPath('error', 'PAYROLL_RUN_PERIOD_ALREADY_EXISTS');
+        $this->assertSame(1, PayrollRun::query()->count());
+    }
+
+    public function test_cancelled_run_frees_the_period_for_a_new_run(): void
+    {
+        // Issue #6552 : l'index unique est PARTIEL (WHERE status <> 'cancelled')
+        // — un run annulé libère la période (on peut refaire le mois).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'cancelled',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertCreated();
+
+        $this->assertSame(2, PayrollRun::query()->count());
+    }
+
     public function test_manager_can_view_payroll_run(): void
     {
         /** @var Company $company */
@@ -566,5 +624,62 @@ class PayrollRunControllerTest extends TestCase
             'period_end' => now()->endOfMonth()->toDateString(),
         ])->assertCreated()
             ->assertJsonPath('data.country_code', 'CI');
+    }
+
+
+    public function test_duplicate_period_run_is_rejected_with_409(): void
+    {
+        // #6552 — index unique partiel (company_id, période) : créer un
+        // second run sur la même période non-cancelled → 409
+        // PAYROLL_RUN_PERIOD_CONFLICT au lieu d'un 201 (double paie).
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $payload = [
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ];
+
+        $this->postJson('/api/v1/payroll-runs', $payload)->assertCreated();
+
+        $second = $this->postJson('/api/v1/payroll-runs', $payload);
+        $second->assertStatus(409);
+        $this->assertSame('PAYROLL_RUN_PERIOD_CONFLICT', $second->json('error'));
+
+        $this->assertSame(1, PayrollRun::query()
+            ->where('company_id', $company->id)
+            ->count());
+    }
+
+
+    public function test_cancelled_run_frees_the_period(): void
+    {
+        // #6552 — un run annulé libère la période (index partiel WHERE
+        // status <> 'cancelled') : recréation autorisée.
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $cancelled = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'cancelled',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/payroll-runs', [
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth()->toDateString(),
+            'period_end' => now()->endOfMonth()->toDateString(),
+        ])->assertCreated();
     }
 }

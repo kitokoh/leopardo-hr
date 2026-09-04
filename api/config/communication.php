@@ -161,6 +161,27 @@ return [
             'title_key' => 'notifications.security_alert_title',
             'body_key' => 'notifications.security_alert_body',
         ],
+        // BC-25 RESTAURANT (RESTO-605/#6210, RESTO-608/#6213) — notifications
+        // de la verticale RestaurantManager (livraison, rappel réservation).
+        'restaurant_delivery_status_changed' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_delivery_status_changed_title',
+            'body_key' => 'notifications.restaurant_delivery_status_changed_body',
+        ],
+        'restaurant_reservation_reminder' => [
+            'title_key' => 'notifications.restaurant_reservation_reminder_title',
+            'body_key' => 'notifications.restaurant_reservation_reminder_body',
+        // BC-25 RESTAURANT (RESTO-808/#6229) — notifications cuisine/service.
+        'restaurant_new_order' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_new_order_title',
+            'body_key' => 'notifications.restaurant_new_order_body',
+        ],
+        'restaurant_order_ready' => [
+            'category' => 'restaurant',
+            'title_key' => 'notifications.restaurant_order_ready_title',
+            'body_key' => 'notifications.restaurant_order_ready_body',
+        ],
         'task_comment_added' => [
             'category' => 'task',
             'title_key' => 'notifications.task_comment_added_title',
@@ -179,6 +200,46 @@ return [
             'body_key' => 'notifications.platform_announcement_body',
         ],
 
+        'fuel_incident_reported' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_incident_reported_title',
+            'body_key' => 'notifications.fuel_incident_reported_body',
+            // Aucune PII : pas de nom client ni description d'incident.
+            'vars' => ['severity', 'station_id'],
+        ],
+        'fuel_stock_low' => [
+            'title_key' => 'notifications.fuel_stock_low_title',
+            'body_key' => 'notifications.fuel_stock_low_body',
+            'vars' => ['station_id', 'product', 'level'],
+        'fuel_meter_anomaly' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_incident_reported_title',
+            'body_key' => 'notifications.fuel_incident_reported_body',
+            // Aucune PII : pas de nom client ni description d'incident.
+            'vars' => ['severity', 'station_id'],
+        ],
+        'fuel_stock_low' => [
+            'category' => 'fuel',
+            'title_key' => 'notifications.fuel_stock_low_title',
+            'body_key' => 'notifications.fuel_stock_low_body',
+            'vars' => ['station_id', 'product', 'level'],
+        ],
+        'fuel_meter_anomaly' => [
+            'title_key' => 'notifications.fuel_meter_anomaly_title',
+            'body_key' => 'notifications.fuel_meter_anomaly_body',
+            'vars' => ['interval_id'],
+        'fuel_missing_closure' => [
+            'title_key' => 'notifications.fuel_missing_closure_title',
+            'body_key' => 'notifications.fuel_missing_closure_body',
+            'vars' => ['session_id'],
+        'fuel_stock_variance' => [
+            'title_key' => 'notifications.fuel_stock_variance_title',
+            'body_key' => 'notifications.fuel_stock_variance_body',
+            'vars' => ['run_id'],
+        'fuel_maintenance_due' => [
+            'title_key' => 'notifications.fuel_maintenance_due_title',
+            'body_key' => 'notifications.fuel_maintenance_due_body',
+            'vars' => ['task_title'],
         'weekly_manager_digest' => [
             'category' => 'hr',
             'title_key' => 'notifications.weekly_manager_digest_title',
@@ -186,6 +247,24 @@ return [
             // Semaine du lundi — contexte : week_start, team_size, present,
             // pending_absences, pending_advances, pending_corrections.
             'vars' => ['week_start', 'team_size', 'present', 'pending_absences', 'pending_advances', 'pending_corrections'],
+        ],
+        'edu_admission_converted' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_admission_converted_title',
+            'body_key' => 'notifications.edu_admission_converted_body',
+            'vars' => ['student_name', 'admission_number'],
+        ],
+        'edu_absence_recorded' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_absence_recorded_title',
+            'body_key' => 'notifications.edu_absence_recorded_body',
+            'vars' => ['student_name', 'date', 'status'],
+        ],
+        'edu_report_card_published' => [
+            'category' => 'edu',
+            'title_key' => 'notifications.edu_report_card_published_title',
+            'body_key' => 'notifications.edu_report_card_published_body',
+            'vars' => ['student_name', 'period'],
         ],
         'company_announcement' => [
             'category' => 'system',

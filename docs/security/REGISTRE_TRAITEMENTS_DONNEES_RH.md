@@ -99,3 +99,16 @@ Ce registre doit etre revu :
 | Workflow rectification / limitation dans l'admin | A concevoir | Moyenne |
 | DPA fournisseur et cartographie regions | A formaliser | Haute |
 | Politique IA avec validation humaine et audit action | A formaliser avant activation IA conversationnelle | Haute |
+
+## 9. CRM client (V0 — issue #5713)
+
+Traitements du CRM client (espaces client / API tenant) — distinct du CRM
+commercial Leopardo (Platform/Marketing, schéma public, registre RH non
+concerné). Stratégie PII détaillée : `docs/security/CRM_PII_HMAC.md`.
+
+| Traitement | Finalites | Donnees traitees | Personnes concernees | Base legale type | Conservation indicative | Mesures de protection |
+|---|---|---|---|---|---|---|
+| Gestion des leads | Capture, qualification, conversion des prospects client | Email, telephone, nom, societe, source, score, notes | Prospects des clients Leopardo | Contrat, interet legitime commercial, consentement (sollicitations) | 24 mois apres dernier contact (ajustable par client) | Isolation tenant (company_id), HMAC lookup (#5713), chiffrement AES-256, audit, softDeletes |
+| Comptes et contacts | CRM relationnel : fiches compte, contacts, roles | Identite, fonction, coordonnees, historique | Contacts des clients Leopardo | Contrat, interet legitime | Duree relation + 3 ans | Isolation tenant, HMAC lookup, chiffrement, policies de partage, audit |
+| Opportunites et pipelines | Suivi commercial : etapes, montants, echeances | Nom affaire, montant, devise, date attendue, proprietaire | Clients / prospects | Contrat, interet legitime | Duree relation + 3 ans | Isolation tenant, RBAC owner, audit |
+| Consentement et preferences (V1 #5722) | Gestion des canaux de communication autorises | Preferences, canaux, dates consentement | Contacts CRM | Consentement explicite | Jusqu'au retrait + preuve | Registre de consentement, retrait self-service, audit |

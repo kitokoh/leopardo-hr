@@ -162,6 +162,54 @@ class AccountingPaymentTest extends TestCase
         app(PaymentRegistrationService::class)->register($draft, 100.0, 'cash');
     }
 
+    public function test_register_uses_fresh_paid_amount_from_db_not_stale_model(): void
+    {
+        // #6536 : le garde « jamais payé > total » et l'update de paid_amount
+        // doivent lire la valeur EN BASE (verrou + relecture dans la
+        // transaction), pas la valeur potentiellement périmée du modèle passé
+        // (lost update sous encaissements concurrents : double-clic, webhook
+        // Stripe + saisie manuelle simultanées).
+        $company = $this->company();
+        $this->bindCompany($company);
+        $invoice = $this->document($company, 'sent', '2026-08-05', 1190.0);
+        app(PaymentRegistrationService::class)->register($invoice, 500.0, 'bank_transfer');
+
+        // Modèle périmé en mémoire : paid_amount encore à 0 alors que la base
+        // est à 500 (simulation d'un second encaissement concurrent qui a
+        // chargé le document avant le premier paiement).
+        $stale = $invoice->refresh();
+        $stale->paid_amount = 0.0;
+
+        app(PaymentRegistrationService::class)->register($stale, 500.0, 'check');
+
+        $invoice->refresh();
+        $this->assertSame(1000.0, $invoice->paid_amount);
+        $this->assertSame(DocumentStatus::PartiallyPaid->value, $invoice->status);
+        $this->assertSame(2, AccountingPayment::query()->count());
+    }
+
+    public function test_record_payment_uses_fresh_paid_amount_from_db_not_stale_model(): void
+    {
+        // #6536 — même garantie côté DocumentWorkflowService (Application) :
+        // recordPayment() doit re-lire paid_amount sous verrou, sinon un
+        // modèle périmé écrase le cumul (comptabilité déséquilibrée).
+        $company = $this->company();
+        $this->bindCompany($company);
+        $invoice = $this->document($company, 'sent', '2026-08-05', 1190.0);
+
+        $workflow = app(\App\Modules\Accounting\Application\Services\DocumentWorkflowService::class);
+        $workflow->recordPayment($invoice, 500.0, \App\Modules\Accounting\Domain\Enums\PaymentMethod::BankTransfer);
+
+        $stale = $invoice->refresh();
+        $stale->paid_amount = 0.0;
+
+        $workflow->recordPayment($stale, 500.0, \App\Modules\Accounting\Domain\Enums\PaymentMethod::Check);
+
+        $invoice->refresh();
+        $this->assertSame(1000.0, $invoice->paid_amount);
+        $this->assertSame(2, AccountingPayment::query()->count());
+    }
+
     // ── US2 : rapprochement ──────────────────────────────────────────────────
 
     public function test_reconcile_marks_matched_and_reconciled_at(): void

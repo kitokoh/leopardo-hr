@@ -6,7 +6,7 @@ namespace App\Modules\HR\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

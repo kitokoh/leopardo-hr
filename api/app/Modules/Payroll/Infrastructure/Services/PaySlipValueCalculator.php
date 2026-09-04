@@ -101,11 +101,38 @@ class PaySlipValueCalculator
     public function slabTaxBreakdown(CountryRulesContract $rules, float $gross, float $taxBase, float $expectedTax): array
     {
         $candidates = [
-            $this->progressiveSlabs($rules, $gross, 1.0),
-            $this->progressiveSlabs($rules, $taxBase, 1.0),
-            $this->progressiveSlabs($rules, $gross, 12.0),
-            $this->progressiveSlabs($rules, $taxBase, 12.0),
+            // Candidats historiques : assiette brute/imposable × convention
+            // mensuelle ou annualisée, sans abattement.
+            $this->slabsFromAnnualBase($rules, $gross, 1.0),
+            $this->slabsFromAnnualBase($rules, $taxBase, 1.0),
+            $this->slabsFromAnnualBase($rules, $gross * 12.0, 12.0),
+            $this->slabsFromAnnualBase($rules, $taxBase * 12.0, 12.0),
+            // Issue #6727 : candidats alignés sur le pipeline réel — abattement
+            // frais professionnels pré-barème (SN 30 % plafonné 75 000, MA 25 %,
+            // TN 10 % borné, CM 30 % plafonné 350 000, TG 28 %, GA 20 %/833 333)
+            // + facteur de surcharge (CM centimes additionnels × 1,10). Sans eux,
+            // le détail par tranche ne convergeait jamais vers income_tax pour
+            // les pays à abattement (repro #6727 : SN Δ 22 500, DZ Δ 1 500, MA Δ 950).
+            $this->slabsFromAnnualBase($rules, $rules->effectiveAnnualTaxableBase($taxBase, 12.0, $gross), 12.0),
+            $this->slabsFromAnnualBase($rules, $rules->effectiveAnnualTaxableBase($taxBase, 1.0, $gross), 1.0),
         ];
+
+        // Issue #6727 : candidat post-barème (DZ) — réduction d'impôt annuelle
+        // (IRG 40 % borné [12 000 ; 18 000]) répartie proportionnellement sur
+        // les tranches pour que Σ tax == income_tax. Le barème algérien est
+        // MENSUEL : on part de l'assiette mensuelle effective (jamais
+        // annualisée — annualiser avec des bornes mensuelles fausserait les
+        // tranches), l'impôt annuel servant uniquement au calcul de la
+        // réduction.
+        $monthlyTaxBaseSlabs = $this->slabsFromAnnualBase($rules, $rules->effectiveAnnualTaxableBase($taxBase, 1.0, $gross), 1.0);
+        $annualTax = array_sum(array_column($monthlyTaxBaseSlabs, 'tax')) * 12.0;
+        $reduction = $rules->annualTaxReduction($annualTax);
+        if ($reduction > 0.0 && $annualTax > 0.0) {
+            $candidates[] = $this->applyAnnualTaxReduction(
+                $monthlyTaxBaseSlabs,
+                min($reduction, $annualTax),
+            );
+        }
 
         $best = $candidates[0];
         $bestDelta = PHP_FLOAT_MAX;
@@ -153,11 +180,16 @@ class PaySlipValueCalculator
     }
 
     /**
+     * Décompose une base ANNUELLE en tranches mensualisées (divisées par
+     * $annualBasis), en appliquant le facteur de surcharge de la règle pays
+     * (ex. centimes additionnels CM). Le montant affiché par tranche est
+     * mensuel (contrat `income_tax_by_slab` du simulateur).
+     *
      * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
      */
-    private function progressiveSlabs(CountryRulesContract $rules, float $taxBase, float $periods): array
+    private function slabsFromAnnualBase(CountryRulesContract $rules, float $annualBase, float $annualBasis): array
     {
-        $base = $taxBase * $periods;
+        $surcharge = $rules->taxSurchargeFactor();
         $bySlab = [];
 
         foreach ($rules->taxSlabs() as $slab) {
@@ -166,22 +198,45 @@ class PaySlipValueCalculator
                 $lowerBound -= 1;
             }
             $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
-            $taxableInSlab = min($base, $upperBound) - $lowerBound;
+            $taxableInSlab = min($annualBase, $upperBound) - $lowerBound;
             if ($taxableInSlab <= 0) {
                 continue;
             }
-            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
+            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100) * $surcharge, 2);
 
             $bySlab[] = [
                 'min' => (float) $slab['min'],
                 'max' => $slab['max'],
                 'rate' => (float) $slab['rate'],
-                'taxable_amount' => round($taxableInSlab / $periods, 2),
-                'tax' => round($slabTax / $periods, 2),
+                'taxable_amount' => round($taxableInSlab / $annualBasis, 2),
+                'tax' => round($slabTax / $annualBasis, 2),
             ];
         }
 
         return $bySlab;
+    }
+
+    /**
+     * Répartit une réduction d'impôt ANNUELLE proportionnellement sur les
+     * tranches (montants mensuels) pour préserver Σ tax == income_tax.
+     *
+     * @param  array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>  $slabs
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
+    private function applyAnnualTaxReduction(array $slabs, float $annualReduction): array
+    {
+        $monthlyTotal = array_sum(array_column($slabs, 'tax'));
+        if ($monthlyTotal <= 0.0) {
+            return $slabs;
+        }
+
+        $factor = 1.0 - $annualReduction / ($monthlyTotal * 12.0);
+        foreach ($slabs as &$slab) {
+            $slab['tax'] = round($slab['tax'] * $factor, 2);
+        }
+        unset($slab);
+
+        return $slabs;
     }
 
     /**
@@ -992,5 +1047,34 @@ class PaySlipValueCalculator
         $parts = $employee->getAttribute('family_parts');
 
         return is_numeric($parts) ? (float) $parts : 1.0;
+    }
+
+    private function progressiveSlabs(CountryRulesContract $rules, float $taxBase, float $periods): array
+    {
+        $base = $taxBase * $periods;
+        $bySlab = [];
+
+        foreach ($rules->taxSlabs() as $slab) {
+            $lowerBound = (float) $slab['min'];
+            if ($lowerBound > 0) {
+                $lowerBound -= 1;
+            }
+            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
+            $taxableInSlab = min($base, $upperBound) - $lowerBound;
+            if ($taxableInSlab <= 0) {
+                continue;
+            }
+            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
+
+            $bySlab[] = [
+                'min' => (float) $slab['min'],
+                'max' => $slab['max'],
+                'rate' => (float) $slab['rate'],
+                'taxable_amount' => round($taxableInSlab / $periods, 2),
+                'tax' => round($slabTax / $periods, 2),
+            ];
+        }
+
+        return $bySlab;
     }
 }

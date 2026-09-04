@@ -7,7 +7,7 @@
  * Notifications are available to all authenticated employees.
  */
 
-use App\Modules\Attendance\Interfaces\Api\V1\AttendanceExportController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceExportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DashboardController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ExportController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationController;

@@ -42,12 +42,14 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
@@ -62,6 +64,13 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -142,7 +151,26 @@ Route::prefix('v1')->group(function (): void {
     // Stripe/Chargily webhooks (public, verified by provider signature inside
     // the controller). PA2-API-005: dedicated 'webhooks-inbound' throttle since
     // these routes sit outside the authenticated 'api' middleware group below.
+    // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé, sans
+    // auth utilisateur) — throttling renforcé `shop-public`.
+    Route::middleware(['throttle:shop-public', 'travel.public.shop'])->group(function (): void {
+        Route::get('/public/travel/shop/trips', [TravelPublicShopController::class, 'search']);
+        Route::get('/public/travel/shop/trips/{travelTrip}', [TravelPublicShopController::class, 'show']);
+        Route::post('/public/travel/shop/bookings', [TravelPublicShopController::class, 'storeBooking']);
+        Route::get('/public/travel/shop/bookings/{reference}', [TravelPublicShopController::class, 'track']);
+        // TRAVEL-1002 (#6115) — tunnel complet : paiement en ligne + e-billet.
+        Route::post('/public/travel/payments/initiate', [TravelPublicShopController::class, 'initiatePayment']);
+        Route::get('/public/travel/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
+    });
+
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {
+        // TRAVEL-409 (#6061) — callback provider paiements TravelAgency
+        // (signé HMAC, idempotent — public, vérifié dans le contrôleur).
+        Route::post('/travel/payments/callback', [TravelPaymentController::class, 'callback']);
+        // TRAVEL-807 (#6086) — API entrante de synchronisation des trajets
+        // transporteurs (jeton X-Carrier-Token, upsert idempotent par clé
+        // externe — public, authentifié dans le contrôleur).
+        Route::post('/travel/carrier-sync/trips', [TravelCarrierSyncController::class, 'upsertTrip']);
         Route::post('/webhooks/stripe', StripeWebhookController::class);
         Route::post('/webhooks/chargily', [PaymentWebhookController::class, 'chargily']);
         // #5272 — webhook des paiements en ligne des documents comptables.
@@ -154,6 +182,15 @@ Route::prefix('v1')->group(function (): void {
         // (Postmark, SES, Mailgun, ...), protected by a shared secret header
         // instead of Sanctum since the caller is a third-party mail provider.
         Route::post('/webhooks/email-bounce', EmailBounceWebhookController::class);
+        // RESTO-407 (#6194) — callback signé de confirmation mobile money de la
+        // verticale RestaurantManager. Public : la confiance est portée par la
+        // signature HMAC (secret par tenant, fail-closed) ; le tenant est résolu
+        // depuis le payload signé puis posé via TenantManager (pattern #5272).
+        Route::post('/restaurant/payments/{payment}/callback', [RestaurantPaymentCallbackController::class, 'handle']);
+        // RESTO-806 (#6227) — webhooks entrants apps de livraison (Uber Eats,
+        // Glovo, ...). Public : signature HMAC fail-closed par adaptateur
+        // (secret par tenant), tenant résolu depuis le payload signé.
+        Route::post('/restaurant/webhooks/delivery-apps/{provider}', [RestaurantDeliveryAppWebhookController::class, 'handle']);
     });
 
     // Public careers portal (ATS): unauthenticated job listing/detail, the
@@ -172,6 +209,23 @@ Route::prefix('v1')->group(function (): void {
     // apps mobiles pré-login listent les pays supportés avant toute connexion.
     // Aucune donnée sensible (codes ISO, devises, fuseaux, confidenceLevel).
     Route::middleware(['throttle:public-registry'])->get('/supported-countries', [SupportedCountryController::class, 'index']);
+
+    // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par
+    // tenant, sans auth utilisateur) — throttling renforcé `shop-public` +
+    // hook anti-bot CAPTCHA configurable (pattern TRAVEL-1001/#6114).
+    Route::middleware(['throttle:shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/shop/menu', [RestaurantPublicShopController::class, 'menu']);
+        Route::post('/public/restaurant/shop/orders', [RestaurantPublicShopController::class, 'storeOrder']);
+        Route::get('/public/restaurant/shop/orders/{reference}', [RestaurantPublicShopController::class, 'track']);
+        Route::post('/public/restaurant/shop/orders/{reference}/pay', [RestaurantPublicShopController::class, 'initiatePayment']);
+    });
+
+    // RESTO-807 (#6228) — kiosque libre-service (même jeton boutique, web).
+    Route::middleware(['throttle:shop-public', 'restaurant.public.shop'])->group(function (): void {
+        Route::get('/public/restaurant/kiosk/menu', [RestaurantKioskController::class, 'menu']);
+        Route::post('/public/restaurant/kiosk/orders', [RestaurantKioskController::class, 'storeOrder']);
+        Route::get('/public/restaurant/kiosk/orders/{reference}', [RestaurantKioskController::class, 'track']);
+    });
 
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
@@ -263,7 +317,14 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/absence.php';
     require __DIR__.'/modules/expense.php';
     require __DIR__.'/modules/marketing.php';
+    require __DIR__.'/modules/restaurantmanager.php';
+
+    require __DIR__.'/modules/travelagency.php';
     require __DIR__.'/modules/fuel_station.php';
+    require __DIR__.'/modules/edu_manager.php';
+    require __DIR__.'/modules/solutions.php';
+    require __DIR__.'/modules/travelagency.php';
+
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
@@ -299,6 +360,14 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+
+        // MAT-010 (#5868) — Feature kill switches : stopper un module pour
+        // toute la plateforme (fail-closed, sans suppression de données).
+        // Bascules idempotentes + audit (feature_kill_switches + canal audit).
+        Route::get('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'index']);
+        Route::post('/feature-kill-switches', [PlatformFeatureKillSwitchController::class, 'activate']);
+        Route::delete('/feature-kill-switches/{key}', [PlatformFeatureKillSwitchController::class, 'deactivate'])
+            ->where('key', '[A-Za-z0-9_.-]+');
         Route::get('/metrics/overview', PlatformMetricsOverviewController::class);
 
         // PA2-QA-006 — Redis/jobs observability (queue depth, failed jobs,
@@ -384,6 +453,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
         Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat']);
+
+        // BC-25 #6694 — pilotage des surveys de solutions (stats de conversion
+        // du wizard vitrine, agrégées depuis marketing_leads type solution_survey).
+        Route::get('/solutions/survey-stats', [PlatformSolutionSurveyStatsController::class, 'index']);
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 

@@ -9,7 +9,11 @@ use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Enums\PaymentMethod;
 use App\Modules\Accounting\Domain\Enums\PaymentStatus;
+use App\Modules\Accounting\Domain\Exceptions\CreditNoteRequiresSourceInvoiceException;
+use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateException;
+use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
+use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -34,9 +38,76 @@ class DocumentWorkflowService
 {
     public const MAX_NUMBERING_ATTEMPTS = 5;
 
+    /**
+     * Matrice des transitions autorisées (fusion #6572 : l'implémentation
+     * Infrastructure dédiée a été supprimée — cette classe est désormais la
+     * source unique du workflow documentaire #5223).
+     *
+     * @var array<string, list<string>>
+     */
+    private const TRANSITIONS = [
+        DocumentStatus::Draft->value => [DocumentStatus::Sent->value, DocumentStatus::Cancelled->value],
+        DocumentStatus::Sent->value => [
+            DocumentStatus::PartiallyPaid->value,
+            DocumentStatus::Paid->value,
+            DocumentStatus::Cancelled->value,
+            DocumentStatus::Overdue->value,
+        ],
+        DocumentStatus::PartiallyPaid->value => [DocumentStatus::Paid->value, DocumentStatus::Overdue->value],
+        DocumentStatus::Overdue->value => [DocumentStatus::Paid->value, DocumentStatus::PartiallyPaid->value],
+        DocumentStatus::Paid->value => [],
+        DocumentStatus::Cancelled->value => [],
+    ];
+
     public function __construct(
         private readonly DocumentNumberingInterface $numbering,
     ) {}
+
+    /**
+     * Transition générique de la machine à états (issue #5223).
+     *
+     * #6572 : méthode fusionnée depuis l'ancien
+     * `Accounting\Infrastructure\Services\DocumentWorkflowService` (utilisée
+     * par le seed démo et les tests) — la classe Infrastructure a été
+     * supprimée ; cette classe est la source unique.
+     */
+    public function transition(AccountingDocument $document, DocumentStatus $to): AccountingDocument
+    {
+        $current = DocumentStatus::tryFrom($document->status) ?? DocumentStatus::Draft;
+
+        $allowed = self::TRANSITIONS[$current->value];
+
+        if (! in_array($to->value, $allowed, true)) {
+            throw new InvalidDocumentTransitionException($current->value, $to->value, $allowed);
+        }
+
+        $this->assertTransitionBusinessRules($document, $current, $to);
+
+        $document->update(['status' => $to->value]);
+
+        return $document->refresh();
+    }
+
+    /**
+     * Lie un avoir à sa facture source (même entreprise).
+     *
+     * #6572 : méthode fusionnée depuis l'ancien
+     * `Accounting\Infrastructure\Services\DocumentWorkflowService`.
+     */
+    public function linkCreditNote(AccountingDocument $creditNote, AccountingDocument $invoice): AccountingDocument
+    {
+        if ($creditNote->company_id !== $invoice->company_id) {
+            throw new \InvalidArgumentException('CREDIT_NOTE_COMPANY_MISMATCH');
+        }
+
+        if ($creditNote->type !== DocumentType::CreditNote->value || $invoice->type !== DocumentType::Invoice->value) {
+            throw new \InvalidArgumentException('CREDIT_NOTE_LINK_TYPES_INVALID');
+        }
+
+        $creditNote->update(['source_document_id' => $invoice->id]);
+
+        return $creditNote->refresh();
+    }
 
     /**
      * Crée un document au statut draft avec ses lignes, totaux calculés et
@@ -173,39 +244,49 @@ class DocumentWorkflowService
         ?Carbon $receivedAt = null,
         ?string $reference = null,
     ): AccountingPayment {
-        $this->assertStatus($document, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_payment_receive_status'));
+        return DB::transaction(function () use ($document, $amount, $method, $receivedAt, $reference): AccountingPayment {
+            // #6536 : verrou pessimiste + relecture dans la transaction —
+            // sinon deux encaissements concurrents écrasent `paid_amount`
+            // (lost update) et le document n'est jamais soldé.
+            /** @var AccountingDocument $locked */
+            $locked = AccountingDocument::query()
+                ->lockForUpdate()
+                ->findOrFail($document->id);
 
-        if ($amount <= 0.0) {
-            throw new DocumentWorkflowException(__('accounting.errors.payment_amount_positive'));
-        }
+            $this->assertStatus($locked, [DocumentStatus::Draft, DocumentStatus::Sent, DocumentStatus::PartiallyPaid, DocumentStatus::Overdue], __('accounting.errors.wf_payment_receive_status'));
 
-        $newPaid = round($document->paid_amount + $amount, 2);
-        if ($newPaid > round($document->total_ttc, 2) + 0.001) {
-            throw new DocumentWorkflowException(__('accounting.errors.wf_payment_over_total'));
-        }
+            if ($amount <= 0.0) {
+                throw new DocumentWorkflowException(__('accounting.errors.payment_amount_positive'));
+            }
 
-        /** @var AccountingPayment $payment */
-        $payment = AccountingPayment::create([
-            'company_id' => $document->company_id,
-            'document_id' => $document->id,
-            'amount' => round($amount, 2),
-            'method' => $method->value,
-            'reference' => $reference,
-            'received_at' => $receivedAt ?? now(),
-            'status' => PaymentStatus::Recorded->value,
-        ]);
+            $newPaid = round((float) $locked->paid_amount + $amount, 2);
+            if ($newPaid > round((float) $locked->total_ttc, 2) + 0.001) {
+                throw new DocumentWorkflowException(__('accounting.errors.wf_payment_over_total'));
+            }
 
-        $document->forceFill(['paid_amount' => $newPaid])->save();
+            /** @var AccountingPayment $payment */
+            $payment = AccountingPayment::create([
+                'company_id' => $locked->company_id,
+                'document_id' => $locked->id,
+                'amount' => round($amount, 2),
+                'method' => $method->value,
+                'reference' => $reference,
+                'received_at' => $receivedAt ?? now(),
+                'status' => PaymentStatus::Recorded->value,
+            ]);
 
-        // Transition : payé uniquement quand le cumul couvre le total
-        // (jamais de « paid » sans paiement — la garde statut ci-dessus).
-        if ($newPaid >= round($document->total_ttc, 2) - 0.001) {
-            $document->forceFill(['status' => DocumentStatus::Paid->value])->save();
-        } elseif ($document->status === DocumentStatus::Draft->value || $document->status === DocumentStatus::Sent->value) {
-            $document->forceFill(['status' => DocumentStatus::PartiallyPaid->value])->save();
-        }
+            $locked->forceFill(['paid_amount' => $newPaid])->save();
 
-        return $payment;
+            // Transition : payé uniquement quand le cumul couvre le total
+            // (jamais de « paid » sans paiement — la garde statut ci-dessus).
+            if ($newPaid >= round((float) $locked->total_ttc, 2) - 0.001) {
+                $locked->forceFill(['status' => DocumentStatus::Paid->value])->save();
+            } elseif ($locked->status === DocumentStatus::Draft->value || $locked->status === DocumentStatus::Sent->value) {
+                $locked->forceFill(['status' => DocumentStatus::PartiallyPaid->value])->save();
+            }
+
+            return $payment;
+        });
     }
 
     /**
@@ -295,6 +376,39 @@ class DocumentWorkflowService
     /**
      * @param  list<DocumentStatus>  $allowed
      */
+    /**
+     * Règles métier des transitions génériques (fusion #6572) : un statut
+     * payé/partiellement payé exige le paiement correspondant, un avoir doit
+     * être lié à sa facture source, un bordereau doit porter sa date de
+     * livraison.
+     */
+    private function assertTransitionBusinessRules(AccountingDocument $document, DocumentStatus $current, DocumentStatus $to): void
+    {
+        $paidAmount = (float) $document->payments()->sum('amount');
+        $totalTtc = (float) $document->total_ttc;
+
+        if ($to === DocumentStatus::PartiallyPaid && $paidAmount <= 0) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($to === DocumentStatus::PartiallyPaid && $paidAmount >= $totalTtc) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($to === DocumentStatus::Paid && $paidAmount < $totalTtc) {
+            throw new DocumentNotFullyPaidException($totalTtc, $paidAmount);
+        }
+
+        if ($document->type === DocumentType::CreditNote->value && $document->source_document_id === null) {
+            throw new CreditNoteRequiresSourceInvoiceException;
+        }
+
+        if ($document->type === DocumentType::DeliveryNote->value && $document->delivery_date === null) {
+            throw new DeliveryNoteRequiresDeliveryDateException;
+        }
+    }
+
+    /** @param list<DocumentStatus> $allowed */
     private function assertStatus(AccountingDocument $document, array $allowed, string $message): void
     {
         if (! in_array(DocumentStatus::tryFrom($document->status), $allowed, true)) {

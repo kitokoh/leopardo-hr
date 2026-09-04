@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Mail\CommunicationMail;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use Illuminate\Bus\Queueable;
@@ -26,6 +27,8 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly string $companyName,
         public readonly ?string $country = null,
         public readonly ?string $provisioningToken = null,
+        /** @var list<string> $solutions BC-25 (#6693) : solutions sectorielles demandées à l'inscription. */
+        public readonly array $solutions = [],
     ) {}
 
     // Issue #3600 : provisioning trial = opération lourde et critique — retries
@@ -44,7 +47,8 @@ class ProvisionDemoTenantJob implements ShouldQueue
         Log::info('ProvisionDemoTenantJob started', ['company_name' => $this->companyName, 'email' => $this->email, 'country' => $this->country]);
 
         try {
-            $result = $provisioner->execute($this->email, $this->companyName, $this->country);
+            /** @var array{company: Company, manager: Employee} $result */
+            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions);
 
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
@@ -113,7 +117,8 @@ class ProvisionDemoTenantJob implements ShouldQueue
         $extraData['demo_access_token_expires_at'] = $expiresAt->toIso8601String();
         $manager->update(['extra_data' => $extraData]);
 
-        $magicUrl = rtrim((string) config('app.url'), '/').'/demo-login/'.$token;
+        $appUrl = config('app.url');
+        $magicUrl = rtrim(\is_string($appUrl) ? $appUrl : '', '/').'/demo-login/'.$token;
 
         // Best-effort : un échec d'envoi (mailer non configuré) ne doit pas
         // faire échouer le provisioning — le lien est loggé pour support.

@@ -268,6 +268,55 @@ class ProcessBulkPaymentJobTest extends TestCase
     /**
      * @return array{0: Company, 1: Employee}
      */
+    /**
+     * #6548 — un worker mort entre le claim Redis et le traitement laisse un
+     * claim orphelin : au retry, le slip ne doit NI être compté payé à tort
+     * (skip silencieux + run `paid`) NI disparaître — il doit remonter comme
+     * échec visible et empêcher le run de passer `paid`.
+     */
+    public function test_bulk_payment_reports_orphaned_slip_claim_as_failure_and_never_marks_run_paid(): void
+    {
+        Queue::fake();
+
+        [$company, $manager] = $this->companyAndManager();
+        $run = $this->payrollRun($company);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $slip = $this->paySlip($run, $employee);
+
+        // Simule le worker mort : le claim du slip existe déjà (jamais libéré),
+        // le slip est toujours éligible et n'a aucun document de paiement.
+        $claimed = (bool) Redis::connection('default')->set("bulk_pay:slip:{$run->id}:{$slip->id}", '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
+        $this->assertTrue((bool) $claimed, 'Pre-claim Redis doit réussir pour simuler le worker mort.');
+
+        (new ProcessBulkPaymentJob($run->id, $manager->id))->handle();
+
+        $run->refresh();
+        $this->assertNotSame('paid', $run->status, 'Un slip jamais payé ne doit pas faire passer le run `paid`.');
+
+        // Aucun document de paiement / bulletin PDF ne doit être généré pour
+        // le slip orphelin (seule la notification du manager peut partir).
+        Queue::assertNotPushed(GeneratePaySlipPdfJob::class);
+        Queue::assertNotPushed(GeneratePaymentDocumentJob::class);
+
+        $audit = AuditLog::query()
+            ->where('auditable_type', PayrollRun::class)
+            ->where('auditable_id', $run->id)
+            ->where('action', 'bulk_payment_processed')
+            ->first();
+
+        $this->assertNotNull($audit);
+        $this->assertSame(1, $audit->new_values['total_slips']);
+        $this->assertSame(0, $audit->new_values['succeeded']);
+        $this->assertSame(1, $audit->new_values['failed']);
+        $this->assertSame('completed_with_errors', $audit->new_values['status']);
+        $this->assertSame('slip_claim_unavailable_but_unprocessed', $audit->metadata['failures'][0]['error']);
+        $this->assertSame($slip->id, $audit->metadata['failures'][0]['pay_slip_id']);
+    }
+
+    /**
+     * @return array{0: Company, 1: Employee}
+     */
     private function companyAndManager(): array
     {
         $company = Company::factory()->create();

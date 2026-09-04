@@ -41,7 +41,7 @@ class CrmLeadController extends Controller
         }
 
         try {
-            $converted = $this->convertLead->handle($crmLead->id, $actor, $request->validated());
+            $converted = $this->convertLead->execute($crmLead->id, $actor, $request->validated());
         } catch (CrmLeadException $e) {
             return new JsonResponse([
                 'error' => $e->getMessage(),

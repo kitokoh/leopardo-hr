@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Domain\Models;
 
-use App\Modules\Payroll\Infrastructure\Services\PayrollLineLabels;
+use App\Modules\Payroll\Domain\Services\PayrollLineLabels;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

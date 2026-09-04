@@ -4,9 +4,9 @@
  * Routes Integrations: push notifications, calendar sync, ZKTeco and kiosks.
  */
 
-use App\Modules\Attendance\Interfaces\Api\V1\CalendarSyncController;
-use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
-use App\Modules\Attendance\Interfaces\Api\V1\ZktecoController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\CalendarSyncController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\ZktecoController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,7 +50,11 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::post('/kiosks/{deviceCode}/qr-punch', [KioskController::class, 'qrPunch']);
 });
 
-Route::middleware(['throttle:api'])->group(function (): void {
+Route::middleware(['throttle:zkteco-device'])->group(function (): void {
+    // Issue #6555 : bucket dedie par serial_number (au lieu de 'api' par IP) —
+    // plusieurs devices derriere un NAT partagent la meme IP.
+// Audit fiabilité #6555 : bucket dédié par device (serial_number + IP) — un
+// NAT partagé entre plusieurs devices ZKTeco ne provoque plus de 429 croisés.
     Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat'])
         ->middleware('zkteco.device');
     Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance'])

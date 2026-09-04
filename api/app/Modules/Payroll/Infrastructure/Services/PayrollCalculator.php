@@ -39,7 +39,7 @@ class PayrollCalculator
     private PaySlipValueCalculator $slipValues;
 
     /** #5591 (slice 3) — calcul d'un run de régularisation (service extrait du god-object). */
-    private PayrollRegularizationService $regularization;
+    private PayrollRegularizationCalculator $regularization;
 
     /**
      * @param  iterable<CountryRulesInterface>  $countryRules  règles custom (tests) ; vide → résolveur par défaut
@@ -67,7 +67,7 @@ class PayrollCalculator
         $this->slipValues = new PaySlipValueCalculator($rules, $publicHolidayService, $this->workInputAggregator);
         // #5591 (slice 3) : régularisation déléguée au service dédié — le
         // calcul des valeurs (PaySlipValueCalculator) est partagé.
-        $this->regularization = new PayrollRegularizationService($this->slipValues);
+        $this->regularization = new PayrollRegularizationCalculator($this->slipValues);
     }
 
     /**
@@ -77,8 +77,8 @@ class PayrollCalculator
      * continuent d'appeler PayrollCalculator::collectWorkInputs().
      */
     /**
-     * @param  array{overtime_hours?: float}|null                          $attendanceAgg
-     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null $leaveAgg
+     * @param  array{overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
     public function collectWorkInputs(
@@ -272,7 +272,7 @@ class PayrollCalculator
                     ? ($structures->get($employee->salary_structure_id) ?? $defaultStructure)
                     : $defaultStructure;
 
-                if (! $structure) {
+                if ($structure === null) {
                     continue;
                 }
 
@@ -444,7 +444,7 @@ class PayrollCalculator
      * golden, simulateurs, services) continuent d'appeler PayrollCalculator.
      */
     /**
-     * @param  array{distinct_days?: int, overtime_hours?: float}|null $attendanceAgg
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
      * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array

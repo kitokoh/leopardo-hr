@@ -11,9 +11,9 @@ class MarkNotificationsRead
     /**
      * Mark specific notifications (or all for the user) as read.
      *
-     * @param  int[]|null $ids  null = mark all unread for the user
+     * @param  int[]|null  $ids  null = mark all unread for the user
      */
-    public function handle(int $userId, ?array $ids = null): int
+    public function execute(int $userId, ?array $ids = null): int
     {
         $query = AppNotification::query()
             ->where('user_id', $userId)
@@ -24,7 +24,7 @@ class MarkNotificationsRead
         }
 
         return $query->update([
-            'read'    => true,
+            'read' => true,
             'read_at' => now(),
         ]);
     }

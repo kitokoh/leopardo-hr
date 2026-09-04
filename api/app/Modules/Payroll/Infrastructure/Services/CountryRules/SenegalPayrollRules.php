@@ -224,6 +224,20 @@ class SenegalPayrollRules extends AbstractCountryRules
     }
 
     /**
+     * Issue #6727 — miroir de calculateIncomeTax() : abattement frais pro
+     * 30 % du brut RÉEL (grossForAbatement), plafonné 75 000 FCFA/mois,
+     * appliqué AVANT le barème (CGI SN art. 100/168).
+     */
+    public function effectiveAnnualTaxableBase(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
+    {
+        $abatement = $this->professionalExpensesDeduction();
+        $base = $grossForAbatement ?? $grossTaxable;
+        $monthlyDeduction = min($base * ($abatement['rate'] / 100), (float) ($abatement['cap'] ?? PHP_FLOAT_MAX));
+
+        return max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
+    }
+
+    /**
      * Préavis sénégalais (Code du travail).
      *
      * Durée en JOURS OUVRÉS (#2219). Catégories :

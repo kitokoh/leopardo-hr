@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\NotificationResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use Illuminate\Http\JsonResponse;
@@ -24,13 +24,13 @@ class NotificationController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
-            'type'        => ['nullable', 'string', 'max:80'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'type' => ['nullable', 'string', 'max:80'],
             // #2331 : contrat v4.16.185 — `unread=true` (mobile) est l'alias
             // canonique ; `unread_only` reste accepté pour compatibilité.
-            'unread'      => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
+            'unread' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
             'unread_only' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
-            'sort_dir'    => ['nullable', 'in:asc,desc'],
+            'sort_dir' => ['nullable', 'in:asc,desc'],
         ]);
 
         $query = Notification::query()
@@ -103,13 +103,13 @@ class NotificationController extends Controller
 
             // Track the read event for communication analytics
             CommunicationEvent::create([
-                'company_id'      => $user->company_id,
-                'employee_id'     => $user->id,
+                'company_id' => $user->company_id,
+                'employee_id' => $user->id,
                 'notification_id' => $notification->id,
-                'event_name'      => 'notification_read',
-                'channel'         => 'app',
-                'status'          => 'delivered',
-                'occurred_at'     => now(),
+                'event_name' => 'notification_read',
+                'channel' => 'app',
+                'status' => 'delivered',
+                'occurred_at' => now(),
             ]);
 
             return $notification->fresh();
@@ -148,13 +148,13 @@ class NotificationController extends Controller
             $now = now();
             foreach ($unread as $notification) {
                 CommunicationEvent::create([
-                    'company_id'      => $user->company_id,
-                    'employee_id'     => $user->id,
+                    'company_id' => $user->company_id,
+                    'employee_id' => $user->id,
                     'notification_id' => $notification->id,
-                    'event_name'      => 'notification_read',
-                    'channel'         => 'app',
-                    'status'          => 'delivered',
-                    'occurred_at'     => $now,
+                    'event_name' => 'notification_read',
+                    'channel' => 'app',
+                    'status' => 'delivered',
+                    'occurred_at' => $now,
                 ]);
             }
         });
@@ -183,4 +183,3 @@ class NotificationController extends Controller
         return response()->json(['message' => 'Notification deleted.']);
     }
 }
-

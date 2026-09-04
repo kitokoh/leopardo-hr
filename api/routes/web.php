@@ -70,6 +70,13 @@ Route::middleware('guest:super_admin_web')->group(function (): void {
     Route::post('/platform/login', [PlatformAuthController::class, 'login'])
         ->middleware('throttle:web-login')
         ->name('platform.login.store');
+    // Issue #6530 — challenge TOTP de la surface web super-admin (alignement
+    // sur le login API) : l'etat « en attente de 2FA » est porte par la
+    // session, le code est verifie avant toute ouverture de session.
+    Route::get('/platform/login/2fa', [PlatformAuthController::class, 'show2fa'])->name('platform.login.2fa');
+    Route::post('/platform/login/2fa', [PlatformAuthController::class, 'verify2fa'])
+        ->middleware('throttle:web-login')
+        ->name('platform.login.2fa.verify');
 });
 
 Route::post('/platform/logout', [PlatformAuthController::class, 'logout'])
@@ -92,6 +99,13 @@ Route::middleware('guest:web')->group(function (): void {
     Route::post('/login', [WebAuthController::class, 'login'])
         ->middleware('throttle:web-login')
         ->name('login.store');
+    // #6541 — challenge 2FA web (session) : le compte 2FA doit fournir son
+    // code TOTP / code de récupération avant l'ouverture de session.
+    Route::get('/login/2fa', [WebAuthController::class, 'showTwoFactorChallenge'])
+        ->name('login.2fa');
+    Route::post('/login/2fa', [WebAuthController::class, 'verifyTwoFactor'])
+        ->middleware('throttle:web-login')
+        ->name('login.2fa.verify');
 });
 
 // #4498 : endpoints publics de pose de mot de passe — throttle dédié (token + IP).

@@ -35,7 +35,7 @@ Le CRM client n'existe **pas encore** : aucune table tenant, aucun module DDD, a
 |---|---|---|
 | Bounded context | `Platform` + `Marketing` (existant) | nouveau module DDD `App\Modules\CRM` |
 | Owner | Équipe Plateforme/Marketing Leopardo | L'entreprise cliente (tenant) + équipe Leopardo pour la plateforme produit |
-| Schéma PostgreSQL | `public` | schéma tenant (via `search_path` / `AbstractTenantModel`) |
+| Schéma PostgreSQL | `public` | schéma tenant (via `search_path` / `BelongsToCompany`) |
 | Isolation | Non-tenant par nature (leads ≠ entreprise) | Tenant strict — `company_id` non nullable sur toute donnée |
 | UI | `front/admin-dashboard` (admin Leopardo) | Espaces client (web + mobile terrain) |
 | Cycle de vie | Pipeline d'acquisition Leopardo | Cycle de vente de l'entreprise cliente |
@@ -51,7 +51,7 @@ Le module `CRM` **n'importe jamais** les agrégats de `Platform`/`Marketing` (in
 
 ### ADR-CRM-003 — Le contexte tenant est une donnée de sécurité (rappelle ADR-002 des fondations)
 
-Toute donnée du CRM client porte `company_id` non nullable ; toute requête Eloquent est scopée `->where('company_id', $companyId)` ou hérite du `search_path` via `AbstractTenantModel` ; tout endpoint expose un test d'isolation cross-tenant (404 attendu). Les jobs, events et caches du CRM client exigent un tenant (voir #5706, CRM-V0-02).
+Toute donnée du CRM client porte `company_id` non nullable ; toute requête Eloquent est scopée `->where('company_id', $companyId)` ou hérite du scope tenant `BelongsToCompany` ; tout endpoint expose un test d'isolation cross-tenant (404 attendu). Les jobs, events et caches du CRM client exigent un tenant (voir #5706, CRM-V0-02, et le contrat d'exécution tenant #5736).
 
 ### ADR-CRM-004 — Flux autorisé : Platform → activation tenant documenté
 

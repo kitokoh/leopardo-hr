@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Accounting\Application\DTOs;
 
-use App\Modules\Accounting\Application\Actions\DocumentCurrencyConverter;
+use App\Modules\Accounting\Infrastructure\Services\DocumentCurrencyConverter;
 
 /**
  * Totaux d'un document comptable dans la devise du document ET dans la

@@ -13,6 +13,7 @@ use App\Events\CompanyCreated;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
+use App\Events\FuelStationAlert;
 use App\Events\MarketingLeadQualified;
 use App\Events\PayrollValidated;
 use App\Events\SubscriptionPaid;
@@ -21,6 +22,7 @@ use App\Events\TaxRateRejected;
 use App\Events\TaxRateSubmitted;
 use App\Listeners\AuditLogger;
 use App\Listeners\ConvertMarketingLeadToContact;
+use App\Listeners\FuelStationAlertListener;
 use App\Listeners\LinkPartnerToNewCompany;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
@@ -39,6 +41,7 @@ class EventServiceProvider extends ServiceProvider
         AbsenceApproved::class => [AuditLogger::class, WebhookListener::class],
         AbsenceRejected::class => [AuditLogger::class, WebhookListener::class],
         PayrollValidated::class => [AuditLogger::class, WebhookListener::class],
+        FuelStationAlert::class => [FuelStationAlertListener::class],
         EmployeeRoleAssigned::class => [AuditLogger::class],
         CompanyCreated::class => [LinkPartnerToNewCompany::class],
         SubscriptionPaid::class => [ProcessCommissionOnPayment::class],

@@ -9,8 +9,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\AttendanceCheckedIn;
 use App\Events\AttendanceCheckedOut;
-use App\Exceptions\AlreadyCheckedInException;
-use App\Exceptions\MissingCheckInException;
+use App\Modules\Attendance\Domain\Exceptions\AlreadyCheckedInException;
+use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Exceptions\PunchPhotoRequiredException;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
@@ -64,7 +64,7 @@ class AttendanceService
                 ->first();
 
             if ($open) {
-                throw new AlreadyCheckedInException;
+                throw new AlreadyCheckedInException((string) $employee->id);
             }
 
             $this->ensurePunchPhotoProvided($company, $dto);
@@ -139,7 +139,7 @@ class AttendanceService
         });
 
         if (! $log) {
-            throw new MissingCheckInException;
+            throw new MissingCheckInException((string) $employee->id);
         }
 
         $this->ensurePunchPhotoProvided($company, $dto);
@@ -231,7 +231,7 @@ class AttendanceService
                 ->first();
 
             if (! $log) {
-                throw new MissingCheckInException;
+                throw new MissingCheckInException((string) $employee->id);
             }
 
             $schedule = $log->schedule_id

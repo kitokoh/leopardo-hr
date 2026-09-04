@@ -273,6 +273,44 @@ class TwoFactorAuthTest extends TestCase
         ])->assertStatus(401)->assertJsonPath('error', 'TWO_FACTOR_CHALLENGE_EXPIRED');
     }
 
+    public function test_five_bad_codes_invalidate_the_challenge(): void
+    {
+        // Issue #6538 (audit auth M1) : pas de compteur d'échecs par
+        // challenge — brute-force TOTP 6 chiffres possible en rotant les IP
+        // (le bucket auth-sensitive est keyé IP). 5 mauvais codes →
+        // challenge invalidé (429), même le BON code est ensuite refusé.
+        $this->seedAccount('2fa-bruteforce@example.com');
+        $employee = Employee::where('email', '2fa-bruteforce@example.com')->firstOrFail();
+        $secret = (new TotpService)->generateSecret();
+        $employee->forceFill([
+            'two_fa_secret' => $secret,
+            'two_fa_enabled_at' => now(),
+            'two_fa_recovery_codes' => [],
+        ])->save();
+
+        $challengeToken = (string) $this->login('2fa-bruteforce@example.com')->json('mfa_challenge_token');
+
+        // 4 mauvais codes → 422 (challenge toujours actif) ; le 5ᵉ → 429 +
+        // invalidation du challenge.
+        for ($i = 0; $i < 4; $i++) {
+            $this->postJson('/api/v1/auth/2fa/verify', [
+                'challenge_token' => $challengeToken,
+                'code' => '000000',
+            ])->assertStatus(422)->assertJsonPath('error', 'TWO_FACTOR_INVALID');
+        }
+
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $challengeToken,
+            'code' => '000000',
+        ])->assertStatus(429)->assertJsonPath('error', 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+
+        // Le challenge a été invalidé : même le BON code est refusé (401).
+        $this->postJson('/api/v1/auth/2fa/verify', [
+            'challenge_token' => $challengeToken,
+            'code' => $this->totpCode($secret),
+        ])->assertStatus(401)->assertJsonPath('error', 'TWO_FACTOR_CHALLENGE_EXPIRED');
+    }
+
     public function test_recovery_code_is_single_use(): void
     {
         [$company, $employee] = $this->seedAccount('2fa-recovery@example.com');

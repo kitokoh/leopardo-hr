@@ -18,12 +18,16 @@ use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
+use App\Http\Middleware\Restaurant\EnsureRestaurantManagerModuleMiddleware;
+use App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
+use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
+use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
@@ -40,7 +44,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Sentry\Laravel\Integration;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware
+use App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
@@ -49,14 +57,29 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('contracts:alert-expiring')->daily();
         $schedule->command('billing:check-trials')->daily();
         $schedule->command('billing:check-overdue')->daily();
+        // DEP-BC21 (#6251) : supervision recouvrement — réconciliation
+        // (dry-run) et métriques quotidiennes.
+        $schedule->command('billing:reconcile-payments')->daily()->withoutOverlapping();
+        $schedule->command('billing:report --json')->daily()->withoutOverlapping();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
+        // FuelStation (BC-15) — FUEL-015/019 : dispatch outbox idempotent.
+        $schedule->command('fuel:outbox-dispatch')->everyMinute();
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
         // Issue #4948 : trial provisionings bloqués (worker de queue jamais
         // exécuté) → fail-loud au lieu d'un pending silencieux.
         $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
+        // TRAVEL-418/#6070 — libère les sièges des réservations pending
+        // expirées (job tenant-scoped par compagnie, idempotent).
+        $schedule->command('travel:expire-pending-bookings')->everyFiveMinutes()->withoutOverlapping();
+        // TRAVEL-806/#6097 — webhooks sortants transporteurs (livraison idempotente, retry/backoff).
+        $schedule->command('travel:webhook-dispatch')->everyMinute()->withoutOverlapping();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
+        // BC-24 TRAVEL — outbox événementielle + expiration des réservations.
+        $schedule->command('travel:outbox-dispatch --limit=100')->everyMinute()->withoutOverlapping();
+        $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('travel:rebuild-report-readmodels')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
         $schedule->command('payroll:precalculate')->dailyAt('02:00');
         // Audit Mobile+Edge 2026-07-26 (issue #1288) — Edge node silence /
@@ -74,10 +97,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // Cible les managers dont la société a été créée il y a 20h–28h et
         // dont l'onboarding comporte encore des étapes requises non complétées.
         $schedule->command('onboarding:send-reminders')->dailyAt('09:00');
+        $schedule->command('travel:outbox-dispatch')->everyMinute()->withoutOverlapping();
         // Issue #5616 — Purge des fichiers TTS temporaires (RGPD + espace disque).
         // Les URLs signées expirent en 60 s ; purger les fichiers > 60 min suffit
         // pour garantir qu'aucun fichier accessible ne subsiste sur disque.
         $schedule->command('tts:purge')->hourly();
+        // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
+        // de la verticale (notifications cuisine/service, fidélité…).
+        $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
@@ -143,6 +170,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'manager_role' => EnsureManagerRoleMiddleware::class,
             'employee' => EnsureEmployeeMiddleware::class,
             'module.cameras' => EnsureCameraModuleMiddleware::class,
+            // BC-24 TRAVEL — gate feature flag travelagency (TRAVEL-102/#6007).
+            'module.travelagency' => EnsureTravelAgencyModuleMiddleware::class,
+            // BC-24 TRAVEL — API entrante transporteurs (TRAVEL-807/#6086).
+            'travel.partner' => TravelPartnerAuthMiddleware::class,
+            // BC-25 RESTAURANT — gate feature flag restaurantmanager (RESTO-102/#6159).
+            'module.restaurantmanager' => EnsureRestaurantManagerModuleMiddleware::class,
+            // RESTO-805 (#6226) — boutique publique RestaurantManager (jeton signé par tenant).
+            'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
+            // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
+            'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
@@ -294,6 +331,24 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'RESOURCE_NOT_FOUND',
                 'localized_message' => __('errors.NOT_FOUND'),
             ], 404);
+        });
+
+        // #6689 : en Laravel 12, `prepareException()` convertit
+        // AuthorizationException → Symfony AccessDeniedHttpException AVANT
+        // l'invocation des callbacks de rendu — le renderer AuthorizationException
+        // ci-dessous n'est donc JAMAIS atteint via $this->authorize()/Gate::denies().
+        // Sans ce renderer dédié, le 403 sortait avec le message brut
+        // « This action is unauthorized. » comme code machine.
+        $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'FORBIDDEN',
+                'message' => 'FORBIDDEN',
+                'localized_message' => __('errors.FORBIDDEN'),
+            ], 403);
         });
 
         $exceptions->render(function (AuthorizationException $exception, Request $request) {
@@ -448,4 +503,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 'localized_message' => __('errors.SERVER_ERROR'),
             ], 500);
         });
-    })->create();
+    
+
+
+
+
+
+})->create();

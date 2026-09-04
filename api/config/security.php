@@ -5,18 +5,32 @@ return [
         'auth_per_minute' => (int) env('RATE_LIMIT_AUTH_PER_MINUTE', 10),
         'privacy_per_minute' => (int) env('RATE_LIMIT_PRIVACY_PER_MINUTE', 20),
         'payroll_per_minute' => (int) env('RATE_LIMIT_PAYROLL_PER_MINUTE', 60),
+        'fuel_per_minute' => (int) env('RATE_LIMIT_FUEL_PER_MINUTE', 120), // FUEL-020 #5814 (écritures verticale FuelStation)
         'platform_per_minute' => (int) env('RATE_LIMIT_PLATFORM_PER_MINUTE', 60),
         'metrics_per_minute' => (int) env('RATE_LIMIT_METRICS_PER_MINUTE', 30), // #4694 GET /metrics (anti-fingerprinting)
         'ai_per_minute' => (int) env('RATE_LIMIT_AI_PER_MINUTE', 20),
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
         'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),
+        'restaurant_shop_public_per_minute' => (int) env('RATE_LIMIT_RESTAURANT_SHOP_PUBLIC_PER_MINUTE', 30),
+        // Audit fiabilité #6555 — bucket ZKTeco par device (serial_number + IP).
+        'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
+        // #6557 — durée du verrou anti-course de l'idempotence (RTMX #5277) :
+        // alignée sur la durée max de requête raisonnable (défaut 300 s) pour
+        // éviter qu'une requête longue relance la course après expiration du lock.
+        'idempotency_lock_ttl_seconds' => (int) env('IDEMPOTENCY_LOCK_TTL_SECONDS', 300),
         // PA2-API-005: web (session-based) login forms and kiosk punch endpoints
         // sit outside the API 'auth-sensitive'/'api' limiters, so they need their
         // own dedicated buckets to stay protected against brute-force attempts.
         'web_login_per_minute' => (int) env('RATE_LIMIT_WEB_LOGIN_PER_MINUTE', 10),
         'web_activate_per_minute' => (int) env('RATE_LIMIT_WEB_ACTIVATE_PER_MINUTE', 10),
         'kiosk_punch_per_minute' => (int) env('RATE_LIMIT_KIOSK_PUNCH_PER_MINUTE', 30),
+        // #6555 — heartbeat/sync ZKTeco : bucket dédié par serial (les devices
+        // derrière un NAT ne doivent pas partager le quota IP du bucket api).
+        'zkteco_per_minute' => (int) env('RATE_LIMIT_ZKTECO_PER_MINUTE', 120),
         'kiosk_show_per_minute' => (int) env('RATE_LIMIT_KIOSK_SHOW_PER_MINUTE', 120),
+        // Issue #6555 : bucket dedie par serial_number pour les devices
+        // ZKTeco (plusieurs devices derriere un NAT partagent l'IP).
+        'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
         // Public careers portal (job listing, job detail, XML feed, and
         // candidate application submission) is unauthenticated by design,
         // so it gets its own dedicated throttle bucket keyed by IP.

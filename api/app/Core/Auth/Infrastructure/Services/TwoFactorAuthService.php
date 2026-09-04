@@ -234,6 +234,16 @@ final class TwoFactorAuthService
                 throw TwoFactorException::challengeExpired();
             }
 
+            // #6540 — recoupement du contexte avant d'émettre le token :
+            // l'employé résolu doit correspondre au challenge (email +
+            // company_id). Empêche un challenge volé d'être rejoué sur un
+            // autre compte, et couvre le cas où le search_path du schéma
+            // tenant vient d'être positionné.
+            if ((string) $employee->email !== (string) $context['email']
+                || (int) $employee->company_id !== (int) $context['company_id']) {
+                throw TwoFactorException::challengeExpired();
+            }
+
             $verified = false;
             if (is_string($code) && $code !== '') {
                 $verified = $this->totp->verifyCode((string) $employee->two_fa_secret, $code);
@@ -289,6 +299,58 @@ final class TwoFactorAuthService
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }
+    }
+
+    /**
+     * #6541 — vérification d'un challenge 2FA pour une connexion WEB
+     * (session), sans émettre de token Sanctum. Le challenge est consommé au
+     * succès ; le contexte web utilise le search_path par défaut (pas de
+     * bascule de schéma — la résolution a déjà été faite au login).
+     *
+     * @return array{employee: Employee}
+     */
+    public function verifyWebChallenge(string $challengeToken, ?string $code, ?string $recoveryCode): array
+    {
+        /** @var array{employee_id: int, company_id: string, tenant_schema: string|null, email: string, device_name: string|null}|null $context */
+        $context = Cache::get('mfa:challenge:'.$challengeToken);
+
+        if (! is_array($context)) {
+            throw TwoFactorException::challengeExpired();
+        }
+
+        /** @var Employee|null $employee */
+        $employee = Employee::query()->find((int) $context['employee_id']);
+
+        if ($employee === null || $employee->two_fa_enabled_at === null) {
+            throw TwoFactorException::challengeExpired();
+        }
+
+        $verified = false;
+        if (is_string($code) && $code !== '') {
+            $verified = $this->totp->verifyCode((string) $employee->two_fa_secret, $code);
+        }
+
+        if (! $verified && is_string($recoveryCode) && $recoveryCode !== '') {
+            $verified = $this->consumeRecoveryCode($employee, $recoveryCode);
+        }
+
+        if (! $verified) {
+            throw TwoFactorException::invalidCode();
+        }
+
+        // Single-use au succès uniquement (même contrat que verifyChallenge).
+        Cache::forget('mfa:challenge:'.$challengeToken);
+
+        /** @var Company|null $company */
+        $company = Company::query()->find($context['company_id']);
+
+        if ($company === null || in_array($company->status, ['suspended', 'expired'], true)) {
+            throw TwoFactorException::challengeExpired();
+        }
+
+        $employee->forceFill(['last_login_at' => now()])->saveQuietly();
+
+        return ['employee' => $employee];
     }
 
     /**

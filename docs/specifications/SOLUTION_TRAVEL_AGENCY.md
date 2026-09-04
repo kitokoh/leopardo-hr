@@ -242,7 +242,8 @@ L'invariant « ne jamais vendre plus de places que disponibles » est modélisé
 - À la réservation : transaction `DB::transaction` + `SELECT ... FOR UPDATE` sur les lignes siège
   choisies (et sur le voyage) ; échec si indisponible → `409 SEATS_UNAVAILABLE`.
 - Réservations `pending` avec expiration (`expires_at`) : un job tenant-scoped libère les sièges
-  réservés non payés (retry + idempotence).
+  réservés non payés (retry + idempotence) — `ExpirePendingBookingsJob` + commande
+  `travel:expire-pending-bookings` (TRAVEL-418).
 - Le compteur « places restantes » exposé à la recherche est dérivé (read model recalculé par job
   idempotent), jamais un simple décrement non protégé.
 
@@ -574,6 +575,7 @@ avec événement de domaine + outbox ; jamais par assignation directe dans un co
 | GET | `/travel/tickets/{ticket}/pdf` | Télécharger le billet (URL signée) |
 | POST | `/travel/tickets/{ticket}/check-in` | Valider l'embarquement |
 | GET | `/travel/trips/{trip}/manifest` | Manifeste des passagers |
+| POST | `/travel/contact` | Formulaire de contact → événement `travel.contact.submitted.v1` (lead CRM, TRAVEL-416) |
 
 ### 7.3 Boutique en ligne (v1 : auth tenant ; P2 : publique)
 
@@ -662,11 +664,67 @@ rejouables.
 | Voyageur → contact CRM | Résolution par identifiant externe via contrat `TravelCustomerContactResolver` ; création de lead CRM par événement (formulaire de contact) |
 | Synthèse ventes → Accounting | Événement `travel.payment.confirmed.v1` ; Accounting construit ses écritures depuis un contrat de synthèse validé |
 | Notifications (mail/SMS/WhatsApp) | Événements → BC-13 COMMS (canal configuré + consentement) |
+
+> **TRAVEL-910 (#6113)** — le besoin de notifications de gv-back (file mail/SMS
+> manuelle) est migré vers les canaux BC-13 COMMS, sans table « notifications »
+> maison. Chaque événement notifiable porte dans son payload outbox redigé :
+> `notification_intent` (clé de template, tableau ci-dessous) et `consent`
+> (opt-in explicite — défaut `false` tant que le contrat CRM client TRAVEL-416
+> n'est pas branché ; un envoi sans consentement est refusé côté BC-13).
+
+| Événement outbox | notification_intent | Canal BC-13 cible |
+|---|---|---|
+| `travel.booking.pending.v1` | `travel.booking.pending` | email/WhatsApp (relance expiration 15 min) |
+| `travel.booking.confirmed.v1` | `travel.booking.confirmed` | email/WhatsApp confirmation |
+| `travel.booking.cancelled.v1` | `travel.booking.cancelled` | email/WhatsApp annulation |
+| `travel.payment.refunded.v1` | `travel.payment.refunded` | email/WhatsApp remboursement |
+| `travel.ticket.issued.v1` | `travel.ticket.issued` | email/WhatsApp billet électronique |
+
+
 | Billet PDF → Documents | Asset via contrat documents (BC-20) ; fallback disque tenant + URL signée |
 | Emploi du temps / personnel | HR (BC-04) reste propriétaire des employés ; la verticale référence `employee_id` par valeur (via contrat) |
 | Marketing (promos par consentement) | Événements + opt-in explicite (P2) |
 
 ---
+
+### 8.6 Intégrations livrées (TRAVEL-414..418, #6066..#6070)
+
+- `travel:outbox-dispatch` — consommation idempotente de `travel_outbox_events`
+  (claim atomique avec lease, retry backoff, dead-letter ; pattern #5741).
+- `travel:settle-sales` — synthèse mensuelle `travel.sales.settled.v1`
+  (période, montants minor units, devise, compteurs) ; rejouable par période.
+- `travel:expire-pending-bookings` — expiration des réservations pending
+  (annulation + libération des sièges + événement `travel.booking.cancelled.v1`).
+- `POST /travel/contact` — formulaire de contact → `travel.contact.submitted.v1`
+  (le BC CRM crée le lead ; aucun import direct).
+- Notifications voyageur : registre `travel_customer_contacts` (consentement
+  par canal) + consommateur in-app BC-13 / email transactionnel externe.
+
+### 8.7 Contenu & monétisation livrés (TRAVEL-904..908, #6107..#6111)
+
+- Quiz & jeu-concours : `travel_quizzes`/`travel_quiz_questions`/
+  `travel_quiz_participations` ; notation serveur, participation unique par
+  (quiz, email), la bonne réponse n'est jamais exposée.
+- Annonces payantes : référentiels `travel_advert_types`/`travel_advert_positions`
+  (code unique par tenant), grille `travel_advert_prices` (minor units, devise
+  tenant), `travel_adverts` — prix calculé serveur, paiement idempotent,
+  validation `travel.manage`, visible uniquement payée+validée+non expirée,
+  expiration (`travel:expire-adverts`) et renouvellement payé.
+
+### 8.8 Annuaire & notifications legacy livrés (TRAVEL-909/910, #6112/#6113)
+
+- Sites touristiques : `travel_tourist_sites` (nom, description redigée, ville,
+  géo, statut) — CRUD + recherche par ville/nom.
+- Notifications legacy gv-back : la file maison n'est pas reproduite ; envoi
+  manuel via canaux plateforme (email / in-app BC-13) + consentement
+  (`travel_customer_contacts`), endpoint `POST /travel/contacts/{contact}/notify`.
+
+### 8.9 Import legacy & qualité livrés (TRAVEL-1003/1004, #6116/#6117)
+
+- CLI `leopardo:travel:import-legacy` (mapping documenté, idempotent,
+  dry-run, rapport ; consentement jamais accordé par l'import).
+- Qualité du seed géographique versionné (ISO 3166-1, rejouable, zéro
+  ville orpheline).
 
 ## 9. Sécurité & RGPD
 
@@ -881,6 +939,19 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 8xx — Extensions métier (nouveau, « et même plus »)
 
+> **Statut (lot 3a, 2026-08-30) :** ✅ TRAVEL-803 (réservations corporate),
+> ✅ TRAVEL-805 (multi-devise), ✅ TRAVEL-809 (correspondances), ✅ TRAVEL-810
+> (PDV tablette) — l'épic 8xx est désormais COMPLET (avec 801/802/804/806/807/808/811/812/813).
+
+> **Statut (lot 2026-08-30, PR `feat/travel-batch1-integrations`) :** ✅ TRAVEL-801
+> (assignation auto des sièges), ✅ TRAVEL-802 (aller-retour), ✅ TRAVEL-804
+> (recherche flexible), ✅ TRAVEL-806 (webhooks sortants — lot shop), ✅ TRAVEL-807
+> (synchronisation entrante transporteurs), ✅ TRAVEL-808 (remboursements
+> partiels), ✅ TRAVEL-811 (fidélité voyageur), ✅ TRAVEL-812 (annulation de
+> trajet par l'agence), ✅ TRAVEL-813 (politiques d'annulation configurables).
+> Restants : TRAVEL-803, 805, 809, 810. — Épic 4xx : ✅ TRAVEL-415 (notifications)
+> et ✅ TRAVEL-417 (synthèse Accounting) livrés dans le même lot.
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-801 | Assignation automatique des sièges (algorithme simple, surclassable manuellement) | TRAVEL-022 |
@@ -899,6 +970,13 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 
 ### Épic 9xx — Contenu & monétisation (parents TRAVEL-060..062, désormais détaillés)
 
+> **Statut (lot 2026-08-30, PR `feat/travel-batch2-community`) :** ✅ TRAVEL-901
+> (articles + catégories), ✅ TRAVEL-902 (commentaires + modération), ✅ TRAVEL-903
+> (likes/partages/notes), ✅ TRAVEL-904 (quiz), ✅ TRAVEL-905 (référentiels
+> annonces), ✅ TRAVEL-906 (tarifs), ✅ TRAVEL-907 (cycle de paiement +
+> validation), ✅ TRAVEL-908 (expiration + renouvellement), ✅ TRAVEL-909 (sites
+> touristiques), ✅ TRAVEL-910 (notifications legacy → canaux plateforme).
+
 | ID | Tâche fine | Parent |
 |---|---|---|
 | TRAVEL-901 | `travel_articles` + catégories (CRUD, statuts, modération) | TRAVEL-060 |
@@ -913,6 +991,17 @@ logs sans PII inutile · PR courte fusionnable sur `main` · entrée `CHANGELOG.
 | TRAVEL-910 | Notifications legacy gv-back (file mail/SMS) → canaux plateforme BC-13 | TRAVEL-033 |
 
 ### Épic 10xx — Boutique publique, import legacy, qualité, pilote
+
+> **Statut (lots 3a/3b, 2026-08-30) :** ✅ TRAVEL-1001 (boutique publique, jeton
+> tenant), ✅ TRAVEL-1002 (tunnel d'achat public — recette E2E backend),
+> ✅ TRAVEL-1003 (import legacy CLI), ✅ TRAVEL-1004 (import géo legacy),
+> ✅ TRAVEL-1005 (OpenAPI complet + coverage CI 0 drift), ✅ TRAVEL-1006
+> (collection Postman + guide partenaires), ✅ TRAVEL-1007 (golden journey
+> GJ-TRAVEL-01 automatisé), ✅ TRAVEL-1008 (specs Playwright admin — à activer
+> avec l'UI 601..609), ✅ TRAVEL-1009 (templates notifications fr/en + doc RTL),
+> ✅ TRAVEL-1010 (runbook pilote + recette UAT), ✅ TRAVEL-1011 (pilot gates
+> MAT-018 enregistrés), ✅ TRAVEL-1012 (tenant pilote + `pilot-check`),
+> ✅ TRAVEL-1013 (audit sécurité & RGPD).
 
 | ID | Tâche fine | Parent |
 |---|---|---|
