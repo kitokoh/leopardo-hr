@@ -76,6 +76,15 @@ class FuelIncident extends Model
     public const EQUIPMENT_OTHER = 'other';
 
     public const EQUIPMENT_TYPES = [self::EQUIPMENT_PUMP, self::EQUIPMENT_TANK, self::EQUIPMENT_METER, self::EQUIPMENT_OTHER];
+    public const STATUS_ASSIGNED = 'assigned';
+    public const STATUS_REPORTED = 'reported';
+    public const TRANSITIONS = [
+            self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+            self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+            self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED],
+            self::STATUS_RESOLVED => [self::STATUS_CLOSED],
+            self::STATUS_CLOSED => [],
+        ];
 
     protected $fillable = [
         'company_id',

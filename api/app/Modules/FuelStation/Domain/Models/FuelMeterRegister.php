@@ -43,6 +43,7 @@ class FuelMeterRegister extends Model
     public const STATUS_ACTIVE = 'active';
 
     public const STATUS_RETIRED = 'retired';
+    public const STATUSES = [self::STATUS_ACTIVE, self::STATUS_RETIRED];
 
     public const TYPE_MECHANICAL = 'mechanical';
 

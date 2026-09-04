@@ -50,10 +50,13 @@ class FuelOutboxEvent extends Model
     public const MAX_ATTEMPTS = 8;
 
     // Événements versionnés — contrat docs/contracts/fuel-accounting.md.
+    public const TYPE_SALE_RECORDED = 'fuel.sale.recorded.v1';
     public const EVENT_SALE_RECORDED = 'fuel.sale.recorded.v1';
 
+    public const TYPE_CASH_SESSION_CLOSED = 'fuel.cash_session.closed.v1';
     public const EVENT_CASH_SESSION_CLOSED = 'fuel.cash_session.closed.v1';
 
+    public const TYPE_STOCK_RECONCILED = 'fuel.stock.reconciled.v1';
     public const EVENT_STOCK_RECONCILED = 'fuel.stock.reconciled.v1';
 
     public const EVENT_INCIDENT_REPORTED = 'fuel.incident.reported.v1';

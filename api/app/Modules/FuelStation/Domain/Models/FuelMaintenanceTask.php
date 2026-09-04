@@ -47,6 +47,8 @@ class FuelMaintenanceTask extends Model
     public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUSES = [self::STATUS_TODO, self::STATUS_IN_PROGRESS, self::STATUS_DONE, self::STATUS_CANCELLED];
+    public const STATUS_OPEN = 'open';
+    public const STATUS_PENDING = 'pending';
 
     protected $fillable = [
         'company_id',

@@ -51,6 +51,35 @@ class FuelImport extends Model
     public const STATUS_COMPLETED = 'completed';
 
     public const STATUS_FAILED = 'failed';
+    public const ENTITIES = [
+            self::ENTITY_PRODUCTS,
+            self::ENTITY_PUMPS,
+            self::ENTITY_TANKS,
+            self::ENTITY_SHIFTS,
+            self::ENTITY_READINGS,
+        ];
+    public const ENTITY_PRODUCTS = 'products';
+    public const ENTITY_PUMPS = 'pumps';
+    public const ENTITY_READINGS = 'readings';
+    public const ENTITY_SHIFTS = 'shifts';
+    public const ENTITY_TANKS = 'tanks';
+    public const MAX_FILE_BYTES = 2 * 1024 * 1024;
+    public const MAX_LINES = 5000;
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_COMMITTED = 'committed';
+    public const STATUS_COMMITTING = 'committing';
+    public const STATUS_PREVIEWED = 'previewed';
+    public const STATUS_VALIDATED = 'validated';
+    public const TYPES = [
+            self::TYPE_PRODUCTS,
+            self::TYPE_EQUIPMENT,
+            self::TYPE_SHIFTS,
+            self::TYPE_READINGS,
+        ];
+    public const TYPE_EQUIPMENT = 'equipment';
+    public const TYPE_PRODUCTS = 'products';
+    public const TYPE_READINGS = 'readings';
+    public const TYPE_SHIFTS = 'shifts';
 
     protected $fillable = [
         'company_id',

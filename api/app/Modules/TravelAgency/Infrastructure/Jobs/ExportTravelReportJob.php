@@ -30,6 +30,9 @@ use Throwable;
  */
 class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
 {
+    private const HISTORY_LIMIT = 50;
+
+    public const TYPES = ['sales', 'occupancy', 'revenue', 'cancellations'];
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;

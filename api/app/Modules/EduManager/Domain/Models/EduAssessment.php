@@ -54,6 +54,7 @@ class EduAssessment extends Model
         self::TYPE_HOMEWORK,
         self::TYPE_PROJECT,
     ];
+    public const STATUS_PUBLISHED = 'published';
 
     protected $table = 'edu_assessments';
 

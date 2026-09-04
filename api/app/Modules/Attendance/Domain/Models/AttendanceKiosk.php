@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Modules\Attendance\Domain\Enums\VerificationMethod;
+
 use App\Shared\Traits\BelongsToCompany;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +29,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AttendanceKiosk extends Model
 {
+    public const KIOSK_PUNCH_METHODS_ALL = [
+        VerificationMethod::Fingerprint->value,
+        VerificationMethod::Face->value,
+        VerificationMethod::Badge->value,
+        VerificationMethod::Pin->value,
+        VerificationMethod::Manager->value,
+    ];
+
     use BelongsToCompany;
 
     /**
