@@ -50,7 +50,14 @@ class RbacMatrixTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->getJson("/api/v1/employees/{$other->id}")->assertForbidden();
+        // Issue #6689 : le 403 de Policy doit servir le code machine stable
+        // FORBIDDEN + message localisé — jamais le message brut anglais
+        // « This action is unauthorized. » comme code d'erreur.
+        $this->getJson("/api/v1/employees/{$other->id}")
+            ->assertForbidden()
+            ->assertJsonPath('error', 'FORBIDDEN')
+            ->assertJsonPath('message', 'FORBIDDEN')
+            ->assertJsonPath('localized_message', __('errors.FORBIDDEN', [], 'en'));
     }
 
     public function test_employee_resource_masks_salary_for_foreign_viewer(): void
