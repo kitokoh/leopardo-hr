@@ -1,0 +1,521 @@
+name: Deploy Production - Leopardo RH
+
+# Déploiement PRODUCTION : déclenché par la PUBLICATION d'une GitHub Release
+# (chaîne : push d'un tag vX.Y.Z → release.yml crée la Release → cet
+# événement `release: published` → déploiement des trois surfaces prod).
+# Jamais par un push direct sur main (deploy-main.yml reste le tier
+# dev/continu). Le workflow_dispatch reste disponible pour (re)déployer un
+# tag existant après validation manuelle.
+# Réutilise la même logique de vérification que release.yml (checks requis
+# verts) AVANT de déclencher les trois surfaces prod :
+#   1. API Laravel      → Render prod  (service leopardo-prod)
+#   2. Web client       → Vercel prod  (projet leopardo-prod, front/web)
+#   3. Admin dashboard  → Cloudflare Pages prod (projet leo-admin-prod)
+# Les jobs web/admin sont exécutés seulement après le job API (l'admin et le
+# portail web pointent vers l'API prod ; un échec API ne doit pas promouvoir
+# un frontend qui le cible). Voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md.
+#
+# ⚠️ Limite connue de l'API Render (vérifiée en réel 2026-09-04) :
+# POST /services/{id}/deploys déploie la HEAD de la branche du service
+# (main), PAS le commit du tag. Pour garantir « prod = exactement le code
+# vérifié », le job verify exige donc que le tag pointe sur HEAD de main
+# (release automatique). En workflow_dispatch sur un tag plus ancien, un
+# avertissement explicite est émis (l'API recevra le code de main).
+#
+# Variable intentionnellement distincte de la `vars.PROD_API_BASE_URL`
+# utilisée ailleurs dans ce repo (qui cible en réalité l'environnement
+# dev/continu — dette de nommage historique, voir
+# docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md) : ce workflow utilise
+# `secrets.PROD_RENDER_API_BASE_URL` pour éviter toute ambiguïté avec la vraie
+# production tant que ce renommage plus large n'a pas été fait.
+#
+# Déploiement API piloté par l'API Render (clé + ID de service) plutôt qu'un
+# deploy hook : la clé API permet aussi d'interroger le statut du deploy
+# et de déclencher un vrai rollback vers le deploy précédent (POST
+# /services/{serviceId}/rollback), ce qu'un deploy hook seul ne permet pas.
+
+on:
+  # Publiée = chaîne tag vX.Y.Z → release.yml → release publiée (évite les
+  # doubles runs tag+release, rend le déclenchement visible dans l'UI GitHub).
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to deploy (e.g., v1.0.0)"
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: deploy-prod-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    timeout-minutes: 30
+    name: Verify tag and required checks
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      tag_commit: ${{ steps.verify.outputs.tag_commit }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 0
+
+      - name: Resolve tag
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+
+          # Refus des tags invalides (injection / typos), même garde que release.yml.
+          if [[ ! "${TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid deploy tag: ${TAG} (expected vX.Y.Z)"
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Deploy tag: ${TAG}"
+
+      - name: Verify tag commit is on main
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.tag.outputs.tag }}"
+          TAG_COMMIT=$(git rev-parse "${TAG}^{commit}")
+          echo "tag_commit=${TAG_COMMIT}" >> "$GITHUB_OUTPUT"
+
+          # Le tag doit pointer sur un commit de `main` — jamais un tag
+          # orphelin ou poussé depuis un clone stale.
+          git fetch origin main --quiet
+          if ! git merge-base --is-ancestor "${TAG_COMMIT}" "origin/main"; then
+            echo "::error::Le tag ${TAG} (commit ${TAG_COMMIT}) n'est pas un ancetre de origin/main — deploiement prod refuse."
+            exit 1
+          fi
+          echo "Tag ${TAG} -> ${TAG_COMMIT} (sur main) : OK"
+
+          # ⚠️ L'API Render déploie la HEAD de main, pas le commit du tag
+          # (limite API, voir en-tête). En déclenchement automatique
+          # (release), on exige donc tag == HEAD de main : le code vérifié
+          # est exactement le code déployé. En dispatch manuel d'un tag plus
+          # ancien, on avertit (l'API recevra le code de main).
+          MAIN_HEAD=$(git rev-parse "origin/main")
+          if [[ "${TAG_COMMIT}" != "${MAIN_HEAD}" ]]; then
+            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+              echo "::warning::Tag ${TAG} != HEAD de main (${MAIN_HEAD:0:8}). L'API Render déploiera le code de main, pas celui du tag (limite API Render). Les frontends Vercel/CF déploient eux le commit du tag."
+            else
+              echo "::error::Le tag ${TAG} (${TAG_COMMIT:0:8}) n'est pas sur HEAD de main (${MAIN_HEAD:0:8}) — la Release doit être créée sur le commit HEAD (le code API déployé par Render = HEAD de main)."
+              exit 1
+            fi
+          else
+            echo "Tag ${TAG} == HEAD de main : OK"
+          fi
+
+      - name: Verify required checks on the release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          SHA="${{ steps.verify.outputs.tag_commit }}"
+          REQUIRED=( \
+            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
+            "PHPStan — Strict (Core/Modules/Shared, level 8)" \
+            "Module Structure Validator" \
+            "Frontend — ESLint + TypeScript" \
+            "actionlint (+ shellcheck)" \
+          )
+          FAILED=()
+          for ctx in "${REQUIRED[@]}"; do
+            # Pagination : un vieux commit peut avoir >100 check-runs.
+            CONCS=()
+            PAGE=1
+            while :; do
+              BATCH=$(curl -fsSL \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100&page=${PAGE}")
+              COUNT_BATCH=$(jq '.check_runs | length' <<<"$BATCH")
+              if [[ "${COUNT_BATCH}" -eq 0 ]]; then break; fi
+              mapfile -t BATCH_CONCS < <(jq -r --arg ctx "$ctx" '.check_runs[] | select(.name == $ctx) | .conclusion' <<<"$BATCH")
+              CONCS+=("${BATCH_CONCS[@]}")
+              PAGE=$((PAGE + 1))
+              if [[ "${PAGE}" -gt 10 ]]; then break; fi
+            done
+            COUNT=${#CONCS[@]}
+            if [[ "${COUNT}" -eq 0 ]]; then
+              echo "::error::Aucun check '${ctx}' trouve sur ${SHA} — deploiement prod refuse (0 verification CI)"
+              FAILED+=("${ctx}")
+              continue
+            fi
+            CONC=$(printf '%s\n' "${CONCS[@]}" | sort -u | paste -sd, -)
+            if [[ "${CONC}" == *"failure"* || "${CONC}" == *"timed_out"* || "${CONC}" == *"cancelled"* ]]; then
+              echo "::error::Check requis en echec sur ${SHA} : ${ctx} (${CONC})"
+              FAILED+=("${ctx}")
+            else
+              echo "::notice::${ctx} -> ${CONC} : OK"
+            fi
+          done
+          if [[ ${#FAILED[@]} -gt 0 ]]; then
+            echo "::error::Deploiement prod bloque — checks requis en echec ou absents : ${FAILED[*]}"
+            exit 1
+          fi
+          echo "Required checks: all green : OK"
+
+  deploy-prod:
+    timeout-minutes: 30
+    name: Deploy API to Render (prod)
+    runs-on: ubuntu-latest
+    needs: verify
+    # GitHub Environment "production" — configurer des reviewers requis
+    # dans Settings > Environments si une approbation manuelle
+    # supplémentaire est souhaitée avant le déploiement.
+    environment:
+      name: production
+      # environment.url n'accepte pas le contexte `secrets` : la variable
+      # PROD_RENDER_SERVICE_URL (URL publique du service) alimente le lien.
+      url: ${{ vars.PROD_RENDER_SERVICE_URL }}
+    permissions:
+      contents: read
+    steps:
+      - name: Validate Render prod secrets
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -z "${RENDER_PROD_API_KEY}" ]] && missing+=("secrets.RENDER_PROD_API_KEY")
+          [[ -z "${RENDER_PROD_SERVICE_ID}" ]] && missing+=("secrets.RENDER_PROD_SERVICE_ID")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Missing: ${missing[*]} (voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md)"
+            exit 1
+          fi
+
+      - name: Record current live deploy (rollback target)
+        id: previous
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          PREV=$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?status=live&limit=1" \
+            | jq -r '.[0].deploy.id // ""')
+          echo "previous_deploy_id=${PREV}" >> "$GITHUB_OUTPUT"
+          echo "Previous live deploy (rollback target): ${PREV:-none}"
+
+      - name: Trigger Render prod deploy via API
+        id: trigger
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          set -euo pipefail
+          echo "Triggering Render prod deploy for tag=${TAG}"
+          # POST /deploys renvoie 202 avec un corps VIDE (pas d'ID) —
+          # confirmé empiriquement contre l'API Render 2026-09. Il faut
+          # récupérer l'ID via l'endpoint de listing juste après.
+          HTTP_CODE=$(curl --silent --show-error -o /dev/null -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys" \
+            -d '{}')
+          if [[ "${HTTP_CODE}" != "202" && "${HTTP_CODE}" != "201" ]]; then
+            echo "::error::Render deploy trigger failed (HTTP ${HTTP_CODE})."
+            exit 1
+          fi
+
+          DEPLOY_ID=""
+          for attempt in {1..10}; do
+            echo "Resolving deploy ID, attempt ${attempt}/10..."
+            DEPLOY_ID=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys?limit=1" \
+              | jq -r '.[0].deploy.id // ""')
+            [[ -n "${DEPLOY_ID}" ]] && break
+            sleep 3
+          done
+          if [[ -z "${DEPLOY_ID}" ]]; then
+            echo "::error::Could not resolve deploy ID after triggering."
+            exit 1
+          fi
+          echo "deploy_id=${DEPLOY_ID}" >> "$GITHUB_OUTPUT"
+          echo "Deploy ${DEPLOY_ID} triggered."
+
+      - name: Wait for Render deploy status
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          DEPLOY_ID: ${{ steps.trigger.outputs.deploy_id }}
+        run: |
+          set -euo pipefail
+          for attempt in {1..40}; do
+            STATUS=$(curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/deploys/${DEPLOY_ID}" \
+              | jq -r '.status')
+            echo "Deploy status attempt ${attempt}/40: ${STATUS}"
+            if [[ "${STATUS}" == "live" ]]; then
+              echo "Render deploy ${DEPLOY_ID} is live."
+              exit 0
+            fi
+            if [[ "${STATUS}" == "build_failed" || "${STATUS}" == "update_failed" || "${STATUS}" == "canceled" || "${STATUS}" == "deactivated" ]]; then
+              echo "::error::Render deploy ${DEPLOY_ID} ended with status ${STATUS}."
+              exit 1
+            fi
+            sleep 15
+          done
+          echo "::error::Render deploy ${DEPLOY_ID} did not reach 'live' in time."
+          exit 1
+
+      - name: Wait for prod API healthcheck
+        shell: bash
+        env:
+          PROD_RENDER_API_BASE_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${PROD_RENDER_API_BASE_URL}" ]]; then
+            echo "::error::secrets.PROD_RENDER_API_BASE_URL must be set (Render prod web service URL)."
+            exit 1
+          fi
+          URL="${PROD_RENDER_API_BASE_URL}/api/v1/health"
+          echo "Waiting for prod to be healthy at ${URL}..."
+          for attempt in {1..30}; do
+            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+            if curl --fail --silent --show-error --max-time 10 "${URL}" | grep -q '"status":"ok"'; then
+              echo "Render prod deployment healthy."
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "::error::Prod API healthcheck did not succeed in time (build failure or Render free-tier cold start)."
+          exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          PREVIOUS_DEPLOY_ID: ${{ steps.previous.outputs.previous_deploy_id }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${PREVIOUS_DEPLOY_ID}" ]]; then
+            echo "Prod deployment failed. Rolling back to ${PREVIOUS_DEPLOY_ID}..."
+            HTTP_CODE=$(curl --silent --show-error -o /tmp/rollback.out -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
+              -H "Content-Type: application/json" \
+              "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/rollback" \
+              -d "{\"deployId\": \"${PREVIOUS_DEPLOY_ID}\"}")
+            if [[ "${HTTP_CODE}" == "200" || "${HTTP_CODE}" == "201" || "${HTTP_CODE}" == "202" ]]; then
+              echo "Rollback triggered (HTTP ${HTTP_CODE})."
+            elif [[ "${HTTP_CODE}" == "400" || "${HTTP_CODE}" == "409" ]]; then
+              # Constat réel 2026-09-04 : Render renvoie 400 quand la cible du
+              # rollback est déjà le deploy live (rien à faire) — warning, pas
+              # un échec (le déploiement précédent reste en place).
+              echo "::warning::Rollback ignoré (HTTP ${HTTP_CODE}) — la cible ${PREVIOUS_DEPLOY_ID} est déjà le deploy live ou invalide : $(cat /tmp/rollback.out)"
+            else
+              echo "::error::Rollback failed (HTTP ${HTTP_CODE}) : $(cat /tmp/rollback.out)"
+              exit 1
+            fi
+          else
+            echo "::warning::Prod deployment failed and no previous live deploy was found. Cannot auto-rollback (first deploy?)."
+          fi
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Web client (front/web, Next.js) — Vercel PROD (compte ibrahimkoubaye).
+  # Projet : leopardo-prod (prj_Q2UQ7h5SeozRB2fVttHRAAq8PTdc, équipe
+  # team_EWSaydzjiTNOT4JlQEXRyrpa). Les variables de prod du projet pointent
+  # vers l'API prod (NEXT_PUBLIC_API_URL/LEOPARDO_API_URL →
+  # https://leopardo-prod.onrender.com) — voir
+  # docs/ops/RENDER_DEV_PROD_TOPOLOGY.md.
+  # Déploiement EXPLICITE via la CLI Vercel (pull → build → deploy
+  # --prebuilt --prod) sur le commit du tag : l'intégration Git du projet
+  # n'est pas utilisée pour la prod (politique : prod = tags validés
+  # uniquement, identique à l'API Render).
+  deploy-web-prod:
+    timeout-minutes: 45
+    name: Deploy Web client to Vercel (prod)
+    runs-on: ubuntu-latest
+    needs: [verify, deploy-prod]
+    environment:
+      name: production
+      url: ${{ vars.PROD_WEB_PROD_URL }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_PROD_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_PROD_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROD_PROJECT_ID }}
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          ref: ${{ needs.verify.outputs.tag }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/web/package-lock.json'
+
+      - name: Validate Vercel prod secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -z "${VERCEL_TOKEN}" ]] && missing+=("secrets.VERCEL_PROD_TOKEN")
+          [[ -z "${VERCEL_ORG_ID}" ]] && missing+=("secrets.VERCEL_PROD_ORG_ID")
+          [[ -z "${VERCEL_PROJECT_ID}" ]] && missing+=("secrets.VERCEL_PROD_PROJECT_ID")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Missing: ${missing[*]} (voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)"
+            exit 1
+          fi
+
+      - name: Install Vercel CLI (pinned)
+        run: npm install --global vercel@59.11.2
+
+      # Commandes lancées depuis la racine du repo (sans --cwd) : le projet
+      # Vercel leopardo-prod a rootDirectory: front/web, la CLI l'applique
+      # donc une seule fois. Avec --cwd front/web le chemin était doublé
+      # (front/web/front/web/package.json, ENOENT — fix #6810).
+      - name: Pull Vercel environment (production)
+        run: vercel pull --yes --environment=production
+
+      - name: Build (production)
+        run: vercel build --prod
+
+      # --prebuilt : pas de rebuild côté Vercel — on uploade le build local du
+      # TAG. Un échec sur une étape précédente laisse le déploiement prod
+      # existant en place (rien n'est promu) → pas de rollback requis ici.
+      - name: Deploy to production (Vercel)
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt --prod | tail -n 1)"
+          echo "Vercel prod deployment URL: ${URL}"
+          echo "::notice::Vercel prod deploy: ${URL}"
+
+      # Le portail Next.js proxy /api/v1/* vers le backend (route handler
+      # front/web/src/app/api/v1/[...path]) : le healthcheck passe par ce
+      # proxy et valide donc web + API prod en une fois.
+      - name: Wait for web prod healthcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://leopardo-prod.vercel.app/api/v1/health"
+          echo "Waiting for prod web to be healthy at ${URL}..."
+          for attempt in {1..30}; do
+            echo "Healthcheck attempt ${attempt}/30 on ${URL}"
+            if curl --fail --silent --show-error --max-time 15 "${URL}" | grep -q '"status":"ok"'; then
+              echo "Vercel prod web healthy (proxy API OK)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Vercel prod web healthcheck did not succeed in time (build failure, env manquante ou cold start)."
+          exit 1
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Admin dashboard (front/admin-dashboard, Vue) — Cloudflare Pages PROD
+  # (compte Cloudflare prod). Projet Pages : leo-admin-prod (créé 2026-09-04,
+  # domaine leo-admin-prod.pages.dev) — voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md.
+  # Même mécanique que le chemin dev (deploy-admin-dashboard.yml, projet
+  # leo-admin) : build Vite avec VITE_API_URL → upload direct wrangler pages.
+  # CORS/Sanctum côté API prod : ADMIN_DASHBOARD_URL / CORS_EXTRA_ORIGIN /
+  # SANCTUM_STATEFUL_DOMAINS posés sur le service Render prod (2026-09-04).
+  deploy-admin-prod:
+    timeout-minutes: 45
+    name: Deploy Admin dashboard to Cloudflare Pages (prod)
+    runs-on: ubuntu-latest
+    needs: [verify, deploy-prod]
+    environment:
+      name: production
+      url: ${{ vars.PROD_ADMIN_PROD_URL }}
+    env:
+      CF_API_TOKEN: ${{ secrets.CLOUDFLARE_PROD_API_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_PROD_ACCOUNT_ID }}
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          ref: ${{ needs.verify.outputs.tag }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
+
+      - name: Validate Cloudflare prod secrets
+        shell: bash
+        env:
+          PROD_API_BASE: ${{ secrets.PROD_RENDER_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -z "${CF_API_TOKEN}" ]] && missing+=("secrets.CLOUDFLARE_PROD_API_TOKEN")
+          [[ -z "${CF_ACCOUNT_ID}" ]] && missing+=("secrets.CLOUDFLARE_PROD_ACCOUNT_ID")
+          [[ -z "${PROD_API_BASE}" ]] && missing+=("secrets.PROD_RENDER_API_BASE_URL")
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Missing: ${missing[*]} (voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)"
+            exit 1
+          fi
+
+      - name: Build admin dashboard (prod API)
+        working-directory: front/admin-dashboard
+        env:
+          # QA 2026-08-15 (#2659) : sans VITE_API_URL explicite, le fallback
+          # du code pointe l'API dev — on cible ici l'API de production.
+          VITE_API_URL: ${{ secrets.PROD_RENDER_API_BASE_URL }}/api/v1
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to Cloudflare Pages (leo-admin-prod)
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        with:
+          apiToken: ${{ env.CF_API_TOKEN }}
+          accountId: ${{ env.CF_ACCOUNT_ID }}
+          command: pages deploy front/admin-dashboard/dist --project-name=leo-admin-prod --branch=main
+
+      # Un échec de build/upload laisse l'ancien déploiement prod en place
+      # (l'upload direct ne remplace la production qu'en cas de succès).
+      - name: Wait for admin prod healthcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://leo-admin-prod.pages.dev"
+          echo "Waiting for prod admin to serve at ${URL}..."
+          for attempt in {1..20}; do
+            echo "Healthcheck attempt ${attempt}/20 on ${URL}"
+            if curl --fail --silent --show-error --max-time 15 -o /dev/null "${URL}"; then
+              echo "Cloudflare Pages prod admin healthy."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Cloudflare Pages prod admin healthcheck did not succeed in time."
+          exit 1

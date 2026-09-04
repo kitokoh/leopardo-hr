@@ -62,10 +62,15 @@ note "== WORKFLOW MANAGER (paie, employés, présence) =="
 c=$(http_code GET /employees "$MT");   [ "$c" = "200" ] && ok "GET /employees 200" || ko "GET /employees $c"
 c=$(http_code GET /attendance "$MT");  [ "$c" = "200" ] && ok "GET /attendance 200" || ko "GET /attendance $c"
 c=$(http_code GET /schedules "$MT");   [ "$c" = "200" ] && ok "GET /schedules 200" || ko "GET /schedules $c"
-c=$(http_code GET /payroll/runs "$MT"); [ "$c" = "200" ] && ok "GET /payroll/runs 200" || ko "GET /payroll/runs $c"
+# Issue #6682 : route réelle = /payroll-runs (avec tiret) ; l'accès paie est
+# réservé comptable/principal — pour le compte manager rh du kit démo, 200
+# (si le compte a le rôle) OU 403 (deny RBAC attendu) sont sains ; 404/500 = cassé.
+c=$(http_code GET /payroll-runs "$MT"); case "$c" in 200|403) ok "GET /payroll-runs → $c (RBAC OK)";; *) ko "GET /payroll-runs $c";; esac
 
 note "== WORKFLOW EMPLOYEE =="
-c=$(http_code GET /me/attendance "$ET"); [ "$c" = "200" ] && ok "GET /me/attendance 200" || ko "GET /me/attendance $c"
+# Issue #6682 : la route self-service réelle est /me/attendance-anomalies
+# (l'ancien /me/attendance n'existe pas — 404).
+c=$(http_code GET /me/attendance-anomalies "$ET"); [ "$c" = "200" ] && ok "GET /me/attendance-anomalies 200" || ko "GET /me/attendance-anomalies $c"
 c=$(http_code GET /me/pay-slips "$ET");  [ "$c" = "200" ] && ok "GET /me/pay-slips 200" || ko "GET /me/pay-slips $c"
 
 note "== WORKFLOW PLATFORM =="
