@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+- **refactor(platform): rapports RH cross-tenant extraits en Actions (Part of #6569).** La logique métier des rapports RH cross-tenant de `PlatformHrReportController` est extraite en 5 Actions du module Platform (`GenerateHeadcountReportAction`, `GenerateTurnoverReportAction`, `GenerateAbsenteeismReportAction`, `GeneratePayrollSummaryReportAction`, `GenerateTrainingProgressReportAction`) : invocables directement, contrat `{columns, rows}` documenté, lecture cross-tenant via le schéma `shared_tenants`, erreurs de source de données fail-fast avec log corrélé. Tests dédiés `HrReportActionsTest`. Aucun changement de contrat API.
 - **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 - **fix(gouvernance): Gate::policy CRM au point unique (PA2-ARCH-008) + BC-25 RESTAURANT au registre canonique (Closes #6575, #6602).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via
