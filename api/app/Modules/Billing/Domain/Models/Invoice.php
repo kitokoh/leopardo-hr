@@ -14,7 +14,7 @@ namespace App\Modules\Billing\Domain\Models;
 // touchée ni par Pint ni par PHPStan.
 // See: docs/architecture/adr/0011-billing-payroll-domain-boundary.md  — Issue #1395.
 use App\Modules\Billing\Domain\Enums\InvoiceStatus;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
