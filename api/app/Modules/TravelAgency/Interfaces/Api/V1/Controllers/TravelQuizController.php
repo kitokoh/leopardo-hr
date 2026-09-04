@@ -17,9 +17,8 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestion
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Application\Actions\ParticipateInTravelQuizAction
+use App\Modules\TravelAgency\Application\Actions\ParticipateInTravelQuizAction;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
-use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation
 use App\Modules\TravelAgency\Infrastructure\Services\TravelQuizService;
 
 /**

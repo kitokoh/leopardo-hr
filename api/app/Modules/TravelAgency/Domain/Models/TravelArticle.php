@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Database\Factories\TravelArticleFactory
+use Database\Factories\TravelArticleFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**

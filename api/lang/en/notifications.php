@@ -38,32 +38,8 @@ return [
 
     'payment_document_ready_title' => 'Document ready',
     'payment_document_ready_body' => 'Your payment document is generated and available to download.',
- HEAD
-    'restaurant_delivery_status_changed_title' => 'Delivery: :status',
-    'restaurant_delivery_status_changed_body' => 'Delivery #:delivery (order #:order) is now “:status”.',
-    'restaurant_reservation_reminder_title' => 'Upcoming reservation (D-1)',
-    'restaurant_reservation_reminder_body' => 'Reservation :reference — :covers cover(s) on :date. Prepare the table.',
     'weekly_manager_digest_title' => 'Weekly team digest',
     'weekly_manager_digest_body' => 'Week of :week_start — Team of :team_size person(s) · :present attendance(s) recorded · :pending_absences pending absence(s) · :pending_advances pending advance(s) · :pending_corrections pending correction(s).',
-    'fuel_meter_anomaly_title' => 'Meter reading anomaly detected',
-    'fuel_meter_anomaly_body' => 'An abnormal reading interval has not been reviewed (interval #:interval_id).',
-    'fuel_missing_closure_title' => 'Missing cash session closure',
-    'fuel_missing_closure_body' => 'Cash session #:session_id has been open for over 24 h without closure.',
-    'fuel_stock_variance_title' => 'Unexplained stock variance',
-    'fuel_stock_variance_body' => 'Reconciliation run #:run_id shows an unexplained variance.',
-    'fuel_maintenance_due_title' => 'Overdue maintenance',
-    'fuel_maintenance_due_body' => 'Task “:task_title” is past due.',
-    'restaurant_new_order_title' => 'New order',
-    'restaurant_new_order_body' => 'Order :reference — :covers cover(s).',
-    'restaurant_order_ready_title' => 'Order ready',
-    'restaurant_order_ready_body' => 'Order :reference ready to serve (table :table).',
-];
-    'edu_admission_converted_title' => 'New admission converted',
-    'edu_admission_converted_body' => 'Admission :admission_number for :student_name was converted to a student.',
-    'edu_absence_recorded_title' => 'Absence recorded',
-    'edu_absence_recorded_body' => ':student_name is :status on :date.',
-    'edu_report_card_published_title' => 'Report card published',
-    'edu_report_card_published_body' => ':student_name report card (:period) has been published.', ];
 
     'edu_admission_converted_title' => 'New admission converted',
     'edu_admission_converted_body' => 'Admission :admission_number for :student_name was converted to a student.',
@@ -71,12 +47,3 @@ return [
     'edu_absence_recorded_body' => ':student_name is :status on :date.',
     'edu_report_card_published_title' => 'Report card published',
     'edu_report_card_published_body' => ':student_name report card (:period) has been published.', ];
-    'restaurant_delivery_status_changed_title' => 'Delivery: :status',
-    'restaurant_delivery_status_changed_body' => 'Delivery #:delivery (order #:order) is now “:status”.',
-    'restaurant_reservation_reminder_title' => 'Upcoming reservation (D-1)',
-    'restaurant_reservation_reminder_body' => 'Reservation :reference — :covers cover(s) on :date. Prepare the table.',
-    'restaurant_new_order_title' => 'New order',
-    'restaurant_new_order_body' => 'Order :reference — :covers cover(s).',
-    'restaurant_order_ready_title' => 'Order ready',
-    'restaurant_order_ready_body' => 'Order :reference ready to serve (table :table).',
-];

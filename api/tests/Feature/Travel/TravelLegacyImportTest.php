@@ -18,12 +18,7 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelLegacyImportService;
 use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Core\Auth\Domain\Models\Employee
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier
-use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService
-use Laravel\Sanctum\Sanctum;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier
-use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService
+use App\Core\Auth\Domain\Models\Employee;use App\Modules\TravelAgency\Domain\Models\TravelCarrier;use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService;use Laravel\Sanctum\Sanctum;
 
 /**
  * TRAVEL-1003 (#6116) — Import des données legacy gv-back.
@@ -297,6 +292,4 @@ class TravelLegacyImportTest extends TestCase
         $this->assertSame(0, $report['routes']);
         $this->assertNotEmpty($report['skipped']);
     }
-
-
 }

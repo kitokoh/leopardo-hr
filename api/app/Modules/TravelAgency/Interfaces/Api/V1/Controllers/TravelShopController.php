@@ -20,7 +20,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\TravelAgency\Application\Actions\CancelBookingAction
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 
 /**

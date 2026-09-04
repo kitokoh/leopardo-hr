@@ -38,32 +38,8 @@ return [
 
     'payment_document_ready_title' => 'المستند جاهز',
     'payment_document_ready_body' => 'تم إنشاء مسтد مدفوعاتك وهو متاح للتنزيل.',
- HEAD
-    'restaurant_delivery_status_changed_title' => 'التوصيل: :status',
-    'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
-    'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
-    'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
     'weekly_manager_digest_title' => 'ملخص الفريق الأسبوعي',
     'weekly_manager_digest_body' => 'أسبوع :week_start — فريق من :team_size شخص(ًا) · :present حضور مسجل · :pending_absences غياب قيد الانتظار · :pending_advances سلف قيد الانتظار · :pending_corrections تصحيحات قيد الانتظار.',
-    'fuel_meter_anomaly_title' => 'تم اكتشاف خلل في قراءة العداد',
-    'fuel_meter_anomaly_body' => 'لم تتم مراجعة فترة قراءة غير طبيعية (الفترة #:interval_id).',
-    'fuel_missing_closure_title' => 'إغلاق جلسة الصندوق مفقود',
-    'fuel_missing_closure_body' => 'جلسة الصندوق #:session_id مفتوحة منذ أكثر من 24 ساعة دون إغلاق.',
-    'fuel_stock_variance_title' => 'فرق مخزون غير مفسر',
-    'fuel_stock_variance_body' => 'تسوية #:run_id تُظهر فرقًا غير مفسر.',
-    'fuel_maintenance_due_title' => 'صيانة متأخرة',
-    'fuel_maintenance_due_body' => 'المهمة « :task_title » تجاوزت موعدها.',
-    'restaurant_new_order_title' => 'طلب جديد',
-    'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
-    'restaurant_order_ready_title' => 'الطلب جاهز',
-    'restaurant_order_ready_body' => 'الطلب :reference جاهز للتقديم (طاولة :table).',
-];
-    'edu_admission_converted_title' => 'تم تحويل قبول جديد',
-    'edu_admission_converted_body' => 'تم تحويل القبول :admission_number للطالب :student_name إلى طالب.',
-    'edu_absence_recorded_title' => 'تم تسجيل غياب',
-    'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
-    'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
-    'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];
 
     'edu_admission_converted_title' => 'تم تحويل قبول جديد',
     'edu_admission_converted_body' => 'تم تحويل القبول :admission_number للطالب :student_name إلى طالب.',
@@ -71,12 +47,3 @@ return [
     'edu_absence_recorded_body' => 'الطالب :student_name :status في :date.',
     'edu_report_card_published_title' => 'تم نشر كشف الدرجات',
     'edu_report_card_published_body' => 'تم نشر كشف درجات :student_name (:period).', ];
-    'restaurant_delivery_status_changed_title' => 'التوصيل: :status',
-    'restaurant_delivery_status_changed_body' => 'أصبح التوصيل رقم :delivery (الطلب رقم :order) الآن « :status ».',
-    'restaurant_reservation_reminder_title' => 'حجز قادم (قبل يوم)',
-    'restaurant_reservation_reminder_body' => 'الحجز :reference — :covers شخصًا في :date. جهّز الطاولة.',
-    'restaurant_new_order_title' => 'طلب جديد',
-    'restaurant_new_order_body' => 'الطلب :reference — :covers شخصًا.',
-    'restaurant_order_ready_title' => 'الطلب جاهز',
-    'restaurant_order_ready_body' => 'الطلب :reference جاهز للتقديم (طاولة :table).',
-];

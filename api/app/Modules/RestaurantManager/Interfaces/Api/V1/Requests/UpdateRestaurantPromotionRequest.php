@@ -6,12 +6,7 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Core\Auth\Domain\Models\Employee
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion
-use Illuminate\Database\Query\Builder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion
+use App\Core\Auth\Domain\Models\Employee;use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;use Illuminate\Database\Query\Builder;
 
 /**
  * RESTO-607 (#6212) — Mise à jour d'une promotion.
@@ -52,6 +47,4 @@ class UpdateRestaurantPromotionRequest extends FormRequest
 
         return app()->bound('current_company') ? currentCompany()->id : null;
     }
-
-
 }

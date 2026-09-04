@@ -16,8 +16,8 @@ use Database\Seeders\AIToolRegistrySeeder;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use App\AI\ToolPermissionPolicy
-use App\AI\WriteActionRunner
+use App\AI\ToolPermissionPolicy;
+use App\AI\WriteActionRunner;
 use App\Modules\Planning\Domain\Models\Absence;
 
 /**

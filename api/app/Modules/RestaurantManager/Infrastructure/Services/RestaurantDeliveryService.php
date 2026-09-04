@@ -10,7 +10,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use RuntimeException;
-use App\Modules\RestaurantManager\Domain\Enums\OrderStatus
+use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
 use App\Modules\RestaurantManager\Domain\Enums\OrderType;
 
 /**

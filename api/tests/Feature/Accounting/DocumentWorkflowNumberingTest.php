@@ -19,9 +19,9 @@ use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\Accounting\Domain\Enums\PaymentMethod
-use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException
-use App\Modules\Accounting\Domain\Models\AccountingContact
+use App\Modules\Accounting\Domain\Enums\PaymentMethod;
+use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
+use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 
 /**

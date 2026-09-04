@@ -6,7 +6,7 @@ namespace App\Modules\TravelAgency\Domain\Contracts;
 
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientOutboxException;
-use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 

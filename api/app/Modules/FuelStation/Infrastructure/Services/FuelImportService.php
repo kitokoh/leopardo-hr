@@ -12,9 +12,9 @@ use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Modules\FuelStation\Domain\Models\FuelMeterReading
-use App\Modules\FuelStation\Domain\Models\FuelMeterRegister
-use App\Modules\FuelStation\Domain\Models\FuelStation
+use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Illuminate\Http\UploadedFile;
 
 /**

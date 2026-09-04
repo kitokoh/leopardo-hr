@@ -16,8 +16,8 @@ use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelEquipmentRequest
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelEquipmentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelTankRequest;
 
 /**

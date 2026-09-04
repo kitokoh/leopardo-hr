@@ -11,7 +11,7 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Artisan;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB
+use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\PendingCommand;
 
 /**

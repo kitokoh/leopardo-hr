@@ -7,7 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Resources;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\TravelAgency\Domain\Enums\DocumentType
+use App\Modules\TravelAgency\Domain\Enums\DocumentType;
 use Illuminate\Support\Carbon;
 
 /**

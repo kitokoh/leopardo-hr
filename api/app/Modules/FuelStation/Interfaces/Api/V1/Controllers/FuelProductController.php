@@ -12,7 +12,6 @@ use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelProductRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelProductRequest;
 
 /**
  * Catalogue produits FuelStation (FUEL-011, #5805). deny-by-default
@@ -106,75 +105,5 @@ class FuelProductController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
-    }
-
-
-    public function show(Request $request, FuelProduct $product): JsonResponse
-    {
-        $this->assertSolutionActive();
-
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($product->company_id !== (string) $actor->company_id) {
-        if ($product->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $this->authorize('view', $product);
-
-        return response()->json(['data' => $this->payload($product)]);
-    }
-
-    public function update(SaveFuelProductRequest $request, FuelProduct $product): JsonResponse
-    {
-        $this->assertSolutionActive();
-
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if ($product->company_id !== $actor->company_id) {
-            abort(404);
-        }
-
-        $this->authorize('update', $product);
-
-        $product->update($request->validated());
-
-        return response()->json(['data' => $this->payload($product->refresh())]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function assertSolutionActive(): void
-    {
-        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
-            throw new FuelSolutionInactiveException;
-        }
-    }
-
-    /** @return array<string, mixed> */
-    private function payload(FuelProduct $product): array
-    {
-        return [
-            'id' => $product->id,
-            'company_id' => $product->company_id,
-            'code' => $product->code,
-            'name' => $product->name,
-            'unit_code' => $product->unit_code,
-            'status' => $product->status,
-            'created_at' => $product->created_at?->toISOString(),
-            'updated_at' => $product->updated_at?->toISOString(),
-        ];
-    }
-
-    private function assertSolutionActive(): void
-    {
-        if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
-            throw new FuelSolutionInactiveException;
-        }
-    }
-        ];
     }
 }

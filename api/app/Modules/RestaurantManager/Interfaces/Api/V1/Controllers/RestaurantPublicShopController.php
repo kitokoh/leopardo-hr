@@ -16,15 +16,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPublicShopToken;
 use App\Modules\RestaurantManager\Domain\Payments\InitiatePaymentRequest;
 use App\Modules\RestaurantManager\Infrastructure\Services\PaymentGatewayRegistry;
-use App\Modules\RestaurantManager\Application\Actions\CreateOnlineOrderAction;
-use App\Modules\RestaurantManager\Application\Actions\PayOrderAction;
-use App\Modules\RestaurantManager\Domain\Enums\RestaurantRecordStatus;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\PayRestaurantOrderRequest;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreOnlineOrderRequest;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantOrderPaymentResource;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantOrderResource;
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantPublicMenuResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -157,98 +148,6 @@ class RestaurantPublicShopController extends Controller
     {
         $provider = (string) $request->validate(['provider_code' => ['required', 'string', 'in:cash,mobile_money']])['provider_code'];
 
- * RESTO-805 (#6226) — Boutique en ligne publique (jeton signé par tenant).
- *
- * Menu, commande et paiement exposés SANS auth utilisateur : le tenant est
- * résolu par le jeton (middleware `restaurant.public.shop`), le scope
- * BelongsToCompany s'applique → aucune donnée cross-tenant (critère
- * d'acceptation). Throttling renforcé (`throttle:restaurant-shop-public`).
- */
-class RestaurantPublicShopController extends Controller
-{
-    /**
-     * Menu public du tenant (catégories + produits actifs/disponibles).
-     */
-    public function menu(Request $request): JsonResponse
-    {
-        $branchId = $request->query('branch_id') !== null
-            ? (int) $request->query('branch_id')
-            : null;
-
-        $categories = RestaurantCategory::query()
-            ->where('status', RestaurantRecordStatus::ACTIVE->value)
-            ->with(['products' => fn ($query) => $query
-                ->where('status', RestaurantRecordStatus::ACTIVE->value)
-                ->where('is_available', true)
-                ->when($branchId !== null, fn ($q) => $q->where(function ($sub) use ($branchId): void {
-                    $sub->whereNull('branch_id')->orWhere('branch_id', $branchId);
-                }))
-                ->orderBy('name'),
-            ])
-            ->when($branchId !== null, fn ($query) => $query->where(function ($sub) use ($branchId): void {
-                $sub->whereNull('branch_id')->orWhere('branch_id', $branchId);
-            }))
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->get();
-
-        return RestaurantPublicMenuResource::collection($categories)->response();
-    }
-
-    /**
-     * Branches actives du tenant (sélecteur du kiosque / boutiques).
-     */
-    public function branches(): JsonResponse
-    {
-        $branches = RestaurantBranch::query()
-            ->where('status', RestaurantRecordStatus::ACTIVE->value)
-            ->orderBy('name')
-            ->get(['id', 'code', 'name']);
-
-        return response()->json(['data' => $branches]);
-    }
-
-    /**
-     * Création d'une commande en ligne (source online, idempotente).
-     */
-    public function storeOrder(StoreOnlineOrderRequest $request): JsonResponse
-    {
-        $order = app(CreateOnlineOrderAction::class)->create($request->validated());
-
-        return (new RestaurantOrderResource($order->load(['items', 'payments'])))
-            ->response()
-            ->setStatusCode(201);
-    }
-
-    /**
-     * Suivi public d'une commande par référence (statut + totaux uniquement).
-     */
-    public function show(string $reference): JsonResponse
-    {
-        $order = RestaurantOrder::query()
-            ->where('reference', $reference)
-            ->with('items')
-            ->first();
-
-        if (! $order instanceof RestaurantOrder) {
-            abort(404);
-        }
-
-        // Le scope BelongsToCompany borne déjà à la company courante ;
-        // contrôle explicite de sécurité (bindings hors scope).
-        if ($order->company_id !== currentCompany()->id) {
-            abort(404);
-        }
-
-        return (new RestaurantOrderResource($order))->response();
-    }
-
-    /**
-     * Paiement en ligne d'une commande (cash → confirmé immédiat ;
-     * mobile_money → pending, confirmé par callback signé RESTO-407).
-     */
-    public function pay(string $reference, PayRestaurantOrderRequest $request): JsonResponse
-    {
         $order = RestaurantOrder::query()
             ->where('reference', $reference)
             ->first();
@@ -315,25 +214,6 @@ class RestaurantPublicShopController extends Controller
 
     // ── Gestion du jeton (authentifié, manager) ─────────────────────────────
 
-            abort(404);
-        }
-
-        if ($order->company_id !== currentCompany()->id) {
-            abort(404);
-        }
-
-        $payment = app(PayOrderAction::class)->payForCompany(
-            companyId: currentCompany()->id,
-            order: $order,
-            data: $request->validated(),
-        );
-
-        return (new RestaurantOrderPaymentResource($payment))->response()->setStatusCode(201);
-    }
-
-    /**
-     * État du jeton de boutique publique (jamais le jeton en clair).
-     */
     public function token(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -359,8 +239,6 @@ class RestaurantPublicShopController extends Controller
 
     /**
      * (Re)génère le jeton : l'ancien est invalidé immédiatement.
-     * (Re)génère le jeton de boutique publique : l'ancien est invalidé
-     * immédiatement. Le jeton en clair n'est retourné QU'à la rotation.
      */
     public function rotateToken(Request $request): JsonResponse
     {

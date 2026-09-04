@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException
+use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
 use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 
 /**

@@ -6,7 +6,7 @@ namespace Database\Factories;
 
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Modules\TravelAgency\Domain\Models\TravelClass
+use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 
 /**
