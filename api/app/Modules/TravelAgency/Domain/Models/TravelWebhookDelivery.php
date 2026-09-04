@@ -38,6 +38,20 @@ class TravelWebhookDelivery extends Model
 {
     use BelongsToCompany;
 
+    /**
+     * Compatibilité avec le code antérieur à l'enum TravelWebhookDeliveryStatus
+     * (#6097, fusion de branches divergentes) : les consommateurs/jobs legacy
+     * référençaient des constantes de classe. Elles sont mappées sur l'enum
+     * canonique pour que les deux pipelines restent fonctionnels.
+     */
+    public const STATUS_PENDING = TravelWebhookDeliveryStatus::PENDING;
+
+    public const STATUS_DELIVERED = TravelWebhookDeliveryStatus::SENT;
+
+    public const STATUS_FAILED = TravelWebhookDeliveryStatus::FAILED;
+
+    public const MAX_ATTEMPTS = 5;
+
     /** @use HasFactory<TravelWebhookDeliveryFactory> */
     use HasFactory;
 

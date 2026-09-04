@@ -28,6 +28,8 @@ use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
+use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
+use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
 use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
 use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
@@ -84,6 +86,17 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->app->singleton(TravelOutboxConsumerRegistry::class, function (): TravelOutboxConsumerRegistry {
             return new TravelOutboxConsumerRegistry;
         });
+
+        // Commandes artisan du module (hors app/Console/Commands → enregistrement
+        // explicite, pattern CRM #5729). travel:outbox-dispatch et
+        // travel:webhook-dispatch sont consommées par le scheduler (bootstrap/app.php)
+        // et par les tests d'intégration ; l'implémentation canonique vit dans le
+        // module (l'ancien doublon racine App\Console\Commands\TravelOutboxDispatchCommand
+        // a été supprimé lors de la consolidation CI 2026-09-04).
+        $this->commands([
+            TravelOutboxDispatchCommand::class,
+            TravelWebhookDispatchCommand::class,
+        ]);
     }
 
     public function boot(): void

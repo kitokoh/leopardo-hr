@@ -285,7 +285,7 @@ final class TravelLedgerConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $accountId = (int) ($payload['account_id'] ?? 0);
         $key = hash('sha256', $this->eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
@@ -316,7 +316,7 @@ final class TravelFlakyConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         throw new TransientOutboxException('provider indisponible (test)');
     }
@@ -334,7 +334,7 @@ final class TravelPermanentFailConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         throw new PermanentOutboxException('permanent failure (test)');
     }

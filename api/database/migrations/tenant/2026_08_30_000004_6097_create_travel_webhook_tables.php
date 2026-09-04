@@ -20,39 +20,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_webhook_subscriptions')) {
-            Schema::create('travel_webhook_subscriptions', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('carrier_id');
-                $table->string('url', 500);
-                $table->text('secret_encrypted');
-                $table->json('events');
-                $table->boolean('active')->default(true);
-                $table->unsignedBigInteger('created_by_user_id')->nullable();
-                $table->timestamps();
-
-                $table->unique(['company_id', 'carrier_id'], 'travel_webhook_sub_company_carrier_unique');
-            });
-        }
-
-        if (! schemaTableExists('travel_webhook_deliveries')) {
-            Schema::create('travel_webhook_deliveries', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('subscription_id');
-                $table->unsignedBigInteger('event_id');
-                $table->string('event_type', 60);
-                $table->json('payload_redacted');
-                $table->string('status', 20)->default('pending');
-                $table->unsignedTinyInteger('attempts')->default(0);
-                $table->timestamp('next_attempt_at')->nullable();
-                $table->unsignedInteger('last_http_status')->nullable();
-                $table->timestamps();
-
-                $table->unique(['subscription_id', 'event_id'], 'travel_webhook_delivery_event_unique');
-            });
-        }
+        // MIGRATION FANTÔME (merges travel parallèles, consolidation 2026-09-04) —
+        // la table travel_webhook_deliveries/subscriptions canonique (UUID, enum
+        // TravelWebhookDeliveryStatus, colonnes outbox_event_id/last_status_code/
+        // delivered_at) est créée par 2026_08_30_000925_6097 (PR #6521, modèle et
+        // factories alignés). Cette variante bigint antérieure (7a87cffd4) s'exécutait
+        // en premier et figeait un schéma obsolète. No-op volontaire.
     }
 
     public function down(): void

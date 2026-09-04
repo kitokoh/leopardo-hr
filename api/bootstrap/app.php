@@ -76,7 +76,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
         // BC-24 TRAVEL — outbox événementielle + expiration des réservations.
-        $schedule->command('travel:outbox-dispatch --limit=100')->everyMinute()->withoutOverlapping();
+        // (doublon de planification travel:outbox-dispatch supprimé lors de la
+        // consolidation CI 2026-09-04 : une seule passe/minute, limit par défaut 100.)
         $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('travel:rebuild-report-readmodels')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation

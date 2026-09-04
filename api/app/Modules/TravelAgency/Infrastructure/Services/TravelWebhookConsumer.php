@@ -72,7 +72,7 @@ final class TravelWebhookConsumer implements TravelOutboxConsumer
                 $created = TravelWebhookDelivery::query()->firstOrCreate(
                     [
                         'subscription_id' => $subscription->id,
-                        'event_id' => (int) ($payload['event_id'] ?? 0),
+                        'outbox_event_id' => (int) ($payload['outbox_event_id'] ?? $payload['event_id'] ?? 0),
                     ],
                     [
                         'company_id' => $companyId,

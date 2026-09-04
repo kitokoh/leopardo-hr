@@ -11,6 +11,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookDispatcher;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 use Illuminate\Support\Facades\Http;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -48,7 +49,7 @@ class TravelWebhookDispatchTest extends TestCase
 
         Http::assertSent(function ($request) use ($delivery, $subscription): bool {
             $body = $request->body();
-            $expectedSignature = (new TravelWebhookDispatcher())->signature($body, $subscription->secret());
+            $expectedSignature = (new TravelWebhookDispatcher())->signature($body, app(TravelWebhookSecretService::class)->get($subscription));
 
             return $request->url() === 'https://carrier.example.test/hooks/travel'
                 && $request->hasHeader('X-Leopardo-Signature', $expectedSignature)
