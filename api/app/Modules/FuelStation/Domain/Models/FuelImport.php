@@ -105,6 +105,7 @@ class FuelImport extends Model
     protected function casts(): array
     {
         return [
+            'raw_rows' => 'array',
             'total_rows' => 'integer',
             'processed_rows' => 'integer',
             'failed_rows' => 'integer',
