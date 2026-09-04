@@ -16,6 +16,7 @@ class NotificationServiceProvider extends ServiceProvider
         // Contrat partagé (isolation #5584) : les modules métier notifient
         // via l'interface, jamais par import direct du service.
         $this->app->bind(EmployeeNotifier::class, CommunicationService::class);
+        $this->app->bind(CommunicationServiceInterface::class, CommunicationService::class);
     }
 
     public function boot(): void {}
