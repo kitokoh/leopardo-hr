@@ -9,12 +9,14 @@ use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Infrastructure\Services\FuelIncidentService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelIncidentRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelIncidentRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;use Illuminate\Database\Eloquent\Model;
 
 /**
  * Incidents équipements (FUEL-010, issue #5804).
@@ -205,7 +207,6 @@ class FuelIncidentController extends Controller
         }
     }
 
-
     public function storeTask(StoreFuelMaintenanceTaskRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -222,7 +223,6 @@ class FuelIncidentController extends Controller
 
         return response()->json(['data' => $this->taskPayload($task)], 201);
     }
-
 
     public function tasks(Request $request): JsonResponse
     {
@@ -254,7 +254,6 @@ class FuelIncidentController extends Controller
             'data' => $tasks->map(fn (FuelMaintenanceTask $task): array => $this->taskPayload($task)),
         ]);
     }
-
 
     public function transitionTask(Request $request, FuelMaintenanceTask $task): JsonResponse
     {
@@ -326,7 +325,6 @@ class FuelIncidentController extends Controller
             'created_at' => $task->created_at?->toIso8601String(),
         ];
     }
-
 
     private function assertTenantOwned(Model $model, Employee $actor): void
     {

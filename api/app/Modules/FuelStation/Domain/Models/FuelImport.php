@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Journal d'import FuelStation — FUEL-018 (issue #5812).
@@ -90,6 +90,4 @@ class FuelImport extends Model
     {
         return $this->belongsTo(Employee::class, 'created_by');
     }
-
-
 }

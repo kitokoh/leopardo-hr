@@ -10,15 +10,16 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyProgram;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantLoyaltyService;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantLoyaltyCustomerRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantLoyaltyProgramRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\UpdateRestaurantLoyaltyProgramRequest;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyCustomerResource;
+use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyProgramResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
-use App\Modules\RestaurantManager\Application\Actions\RedeemLoyaltyPointsAction;use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RedeemRestaurantLoyaltyCustomerRequest;use App\Modules\RestaurantManager\Interfaces\Api\V1\Resources\RestaurantLoyaltyPointsMovementResource;
 
 /**
  * RESTO-606 (#6211) — Programme fidélité : programme, clients, points.
@@ -27,8 +28,7 @@ class RestaurantLoyaltyController extends Controller
 {
     public function __construct(
         private readonly RestaurantLoyaltyService $loyalty,
-    ) {
-    }
+    ) {}
 
     // ── Programme ────────────────────────────────────────────────────────────
 
@@ -181,7 +181,6 @@ class RestaurantLoyaltyController extends Controller
         return (new RestaurantLoyaltyCustomerResource($customer))->response();
     }
 
-
     public function indexPrograms(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -199,7 +198,6 @@ class RestaurantLoyaltyController extends Controller
         return RestaurantLoyaltyProgramResource::collection($programs)->response();
     }
 
-
     public function showProgram(Request $request, RestaurantLoyaltyProgram $restaurantLoyaltyProgram): JsonResponse
     {
         /** @var Employee $actor */
@@ -212,7 +210,6 @@ class RestaurantLoyaltyController extends Controller
         return (new RestaurantLoyaltyProgramResource($restaurantLoyaltyProgram))->response();
     }
 
-
     public function showCustomer(Request $request, RestaurantLoyaltyCustomer $restaurantLoyaltyCustomer): JsonResponse
     {
         /** @var Employee $actor */
@@ -224,7 +221,6 @@ class RestaurantLoyaltyController extends Controller
 
         return (new RestaurantLoyaltyCustomerResource($restaurantLoyaltyCustomer))->response();
     }
-
 
     public function customerMovements(Request $request, RestaurantLoyaltyCustomer $restaurantLoyaltyCustomer): JsonResponse
     {
@@ -243,7 +239,6 @@ class RestaurantLoyaltyController extends Controller
 
         return RestaurantLoyaltyPointsMovementResource::collection($movements)->response();
     }
-
 
     public function redeem(
         RedeemRestaurantLoyaltyCustomerRequest $request,

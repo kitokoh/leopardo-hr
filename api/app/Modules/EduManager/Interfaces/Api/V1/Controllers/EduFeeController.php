@@ -6,20 +6,20 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\EduManager\Domain\Models\EduFee;
-use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
-use App\Modules\EduManager\Interfaces\Api\V1\Requests\MarkEduFeePaidRequest;
-use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeRequest;
-use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Modules\EduManager\Domain\Models\EduAccountingEntry;
+use App\Modules\EduManager\Domain\Models\EduFee;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
 use App\Modules\EduManager\Domain\Models\EduFeeType;
+use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\MarkEduFeePaidRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest;
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeTypeRequest;
+use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * API des frais scolaires — EDU-016 (issue #5832).
@@ -158,7 +158,6 @@ class EduFeeController extends Controller
         ];
     }
 
-
     public function indexFeeTypes(Request $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -190,7 +189,6 @@ class EduFeeController extends Controller
         ]);
     }
 
-
     public function storeFeeType(StoreEduFeeTypeRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -203,7 +201,6 @@ class EduFeeController extends Controller
 
         return response()->json(['data' => $this->feeTypePayload($feeType)], 201);
     }
-
 
     public function indexCharges(Request $request): JsonResponse
     {
@@ -237,7 +234,6 @@ class EduFeeController extends Controller
         ]);
     }
 
-
     public function storeCharge(StoreEduFeeChargeRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -251,7 +247,6 @@ class EduFeeController extends Controller
         return response()->json(['data' => $this->payload($fee->load('student:id,student_number,display_name'))], 201);
     }
 
-
     public function storePayment(StoreEduFeePaymentRequest $request, EduFeeCharge $charge): JsonResponse
     {
         $this->assertSolutionActive();
@@ -263,7 +258,6 @@ class EduFeeController extends Controller
 
         return response()->json(['data' => $this->payload($fee->load('student:id,student_number,display_name'))]);
     }
-
 
     public function indexEntries(Request $request): JsonResponse
     {

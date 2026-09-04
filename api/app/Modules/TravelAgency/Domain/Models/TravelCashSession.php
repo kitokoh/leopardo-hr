@@ -6,8 +6,6 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 /**
  * Session de caisse du PDV tablette (TRAVEL-810, issue #6100).
@@ -20,6 +18,7 @@ class TravelCashSession extends Model
     use BelongsToCompany;
 
     public const STATUS_OPEN = 'open';
+
     public const STATUS_CLOSED = 'closed';
 
     protected $fillable = [
@@ -42,6 +41,4 @@ class TravelCashSession extends Model
         'actual_balance_minor' => 'integer',
         'difference_minor' => 'integer',
     ];
-
-
 }

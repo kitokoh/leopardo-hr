@@ -47,9 +47,9 @@ class TravelWebhookDispatchTest extends TestCase
 
         self::assertTrue($delivered);
 
-        Http::assertSent(function ($request) use ($delivery, $subscription): bool {
+        Http::assertSent(function ($request) use ($subscription): bool {
             $body = $request->body();
-            $expectedSignature = (new TravelWebhookDispatcher())->signature($body, app(TravelWebhookSecretService::class)->get($subscription));
+            $expectedSignature = (new TravelWebhookDispatcher)->signature($body, app(TravelWebhookSecretService::class)->get($subscription));
 
             return $request->url() === 'https://carrier.example.test/hooks/travel'
                 && $request->hasHeader('X-Leopardo-Signature', $expectedSignature)

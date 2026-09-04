@@ -7,12 +7,12 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelWebhookSubscriptionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelWebhookSubscriptionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 
 /**
  * TRAVEL-806 (#6097) — Abonnements webhook transporteurs (CRUD tenant-scoped).
@@ -23,9 +23,7 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
  */
 class TravelWebhookSubscriptionController extends Controller
 {
-    public function __construct(private readonly TravelWebhookSecretService $secretService)
-    {
-    }
+    public function __construct(private readonly TravelWebhookSecretService $secretService) {}
 
     public function index(Request $request): JsonResponse
     {

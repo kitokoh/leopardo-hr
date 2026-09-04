@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException;
-use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 
 /**
  * TRAVEL-414 (#6066) — Consommation de l'outbox TravelAgency.
@@ -359,7 +357,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         $this->ranWithinTenant = app(TenantManager::class)->hasTenant();
     }
 
-
     public function test_publish_then_dispatch_applies_effect_once(): void
     {
         $consumer = new TravelLedgerConsumer('travel.test.event');
@@ -382,7 +379,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         self::assertNotNull(TravelOutboxEvent::query()->firstOrFail()->processed_at, 'processed_at horodaté');
     }
 
-
     public function test_double_publish_same_key_is_deduped(): void
     {
         $this->publisher->publish(
@@ -400,7 +396,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
 
         self::assertSame(1, TravelOutboxEvent::query()->count(), 'clé d\'idempotence unique par tenant');
     }
-
 
     public function test_crash_after_effect_does_not_duplicate_on_replay(): void
     {
@@ -424,7 +419,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         Artisan::call('travel:outbox-dispatch');
         self::assertSame(1, $this->effectCount(55), 'zéro doublon après rejeu');
     }
-
 
     public function test_consumer_never_sees_another_tenant(): void
     {
@@ -454,7 +448,6 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         self::assertSame(1, $this->effectCount(1), 'un seul effet, dans le bon tenant');
     }
 
-
     public function test_load_pic_zero_loss_zero_duplicate_with_bounded_lag(): void
     {
         $consumer = new TravelLedgerConsumer('travel.test.event');
@@ -480,11 +473,8 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         self::assertLessThan(10.0, $elapsed, 'pic traité dans la fenêtre bornée');
     }
 
-
     public function appliedCount(): int
     {
         return $this->applied;
     }
-
-
 }

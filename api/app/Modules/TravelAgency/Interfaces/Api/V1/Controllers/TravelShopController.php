@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
@@ -14,14 +15,13 @@ use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelCurrencyService;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTripResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelShopBookingRequest;
 
 /**
  * TRAVEL-401..404 (#6053..#6056) — Boutique en ligne (v1 : auth tenant).
@@ -93,8 +93,6 @@ class TravelShopController extends Controller
     /**
      * TRAVEL-805 (#6096) — convertit les tarifs affichés dans la devise
      * demandée (param `currency`), sans toucher aux montants stockés.
-     *
-     * @param  mixed  $trips
      */
     private function convertDisplayPrices(mixed $trips, Request $request, Employee $actor): void
     {

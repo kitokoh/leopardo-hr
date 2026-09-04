@@ -6,8 +6,14 @@ namespace App\Modules\TravelAgency\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
+use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;
+use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;
+use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;
+use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;
 use App\Modules\TravelAgency\Domain\Models\TravelExportAsset;
+use App\Modules\TravelAgency\Domain\Models\TravelReportExport;
 use App\Modules\TravelAgency\Infrastructure\Exports\TravelCsvExporter;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,7 +22,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
-use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;use App\Modules\TravelAgency\Domain\Models\TravelReportExport;use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-505 (#6075) — Génération asynchrone d'un export CSV (pattern
@@ -97,7 +102,6 @@ class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
             throw $e;
         }
     }
-
 
     private function requestHash(): string
     {
@@ -234,7 +238,6 @@ class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
 
         return $filters;
     }
-
 
     private function pruneHistory(TravelReportExportStorage $storage): void
     {

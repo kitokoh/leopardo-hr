@@ -9,8 +9,6 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelClassFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 /**
  * Classe de service de la verticale TravelAgency (TRAVEL-204, issue #6017).
@@ -38,8 +36,4 @@ class TravelClass extends Model
         'priority' => 'integer',
         'status' => TravelRecordStatus::class,
     ];
-
-
-
-
 }

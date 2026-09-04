@@ -8,8 +8,6 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelCorporateAccountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 /**
  * Compte corporate B2B (TRAVEL-803, issue #6094).
@@ -38,6 +36,4 @@ class TravelCorporateAccount extends Model
         'credit_limit_minor' => 'integer',
         'is_active' => 'boolean',
     ];
-
-
 }

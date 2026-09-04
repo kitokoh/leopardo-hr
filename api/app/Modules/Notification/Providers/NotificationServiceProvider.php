@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Providers;
 
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\ServiceProvider;
-use App\Contracts\Communication\CommunicationServiceInterface;
 
 class NotificationServiceProvider extends ServiceProvider
 {
@@ -20,6 +20,4 @@ class NotificationServiceProvider extends ServiceProvider
     }
 
     public function boot(): void {}
-
-
 }

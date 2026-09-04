@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps;
 
 use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
+use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceOrderItem;
-use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryAppConfig;
 
 /**
  * RESTO-806 (#6227) — Adapter Glovo.
@@ -121,6 +120,4 @@ final class GlovoAdapter implements DeliveryAppAdapter
             note: isset($payload['comments']) ? (string) $payload['comments'] : null,
         );
     }
-
-
 }

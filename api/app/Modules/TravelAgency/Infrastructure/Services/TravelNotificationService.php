@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Mail\CommunicationMail;
+use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationConsent;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationLog;
@@ -12,8 +13,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
 
 /**
  * TRAVEL-415 (#6067) — Envoi des notifications voyageur.
@@ -338,10 +337,7 @@ final class TravelNotificationService
         return $payload;
     }
 
-
-    public function __construct(private readonly TravelCustomerContactResolver $contacts)
-    {
-    }
+    public function __construct(private readonly TravelCustomerContactResolver $contacts) {}
 
     private function configuredChannels(): array
     {
@@ -368,7 +364,6 @@ final class TravelNotificationService
             default => 'Mise à jour '.$booking->reference,
         };
     }
-
 
     private function templateKey(string $eventType): string
     {

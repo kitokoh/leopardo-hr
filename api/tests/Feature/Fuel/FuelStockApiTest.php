@@ -9,11 +9,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelStockEntry;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 
 /**
  * Stocks, cuves et rapprochement — FUEL-009 (issue #5803).
@@ -188,7 +189,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(1, $events);
     }
 
-
     public function test_manager_records_idempotent_delivery(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -226,7 +226,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(15000, (int) $tank->refresh()->current_level_minor);
     }
 
-
     public function test_delivery_rejects_non_positive_quantity(): void
     {
         [, $manager, , $tank] = $this->seedTenant();
@@ -242,7 +241,6 @@ class FuelStockApiTest extends TestCase
         ])->assertStatus(422);
     }
 
-
     public function test_operator_cannot_record_delivery(): void
     {
         [, , $operator, $tank] = $this->seedTenant();
@@ -253,7 +251,6 @@ class FuelStockApiTest extends TestCase
             'quantity_minor' => 1000,
         ])->assertStatus(403);
     }
-
 
     public function test_cross_tenant_delivery_is_404(): void
     {
@@ -273,7 +270,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(0, FuelTankDelivery::query()->where('company_id', $companyA->id)->count());
     }
 
-
     public function test_manager_lists_stock_levels_with_fill_ratio(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -286,7 +282,6 @@ class FuelStockApiTest extends TestCase
             ->assertJsonPath('data.0.current_level_minor', 10000)
             ->assertJsonPath('data.0.fill_ratio', 0.5);
     }
-
 
     public function test_reconciliation_is_replayable_and_reports_variance(): void
     {
@@ -343,7 +338,6 @@ class FuelStockApiTest extends TestCase
         $this->assertTrue($tankLine['explainable']);
     }
 
-
     public function test_reconciliation_reports_unexplained_variance(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -377,7 +371,6 @@ class FuelStockApiTest extends TestCase
         $this->assertFalse($tankLine['explainable']);
     }
 
-
     public function test_reconciliation_relaunches_failed_run(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -402,7 +395,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(1, FuelReconciliationRun::query()->count());
     }
 
-
     public function test_reconciliation_lists_and_shows(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -423,7 +415,6 @@ class FuelStockApiTest extends TestCase
             ->assertJsonPath('data.status', 'completed');
     }
 
-
     public function test_cross_tenant_reconciliation_is_404(): void
     {
         [$companyA, $managerA] = $this->seedTenant();
@@ -435,7 +426,6 @@ class FuelStockApiTest extends TestCase
         $this->postJson("/api/v1/fuel-station/stations/{$stationB->id}/reconciliations")
             ->assertStatus(404);
     }
-
 
     public function test_solution_inactive_returns_403(): void
     {
@@ -450,7 +440,6 @@ class FuelStockApiTest extends TestCase
         $this->getJson('/api/v1/fuel-station/stocks')->assertStatus(403);
     }
 
-
     private function createStation(Company $company): FuelStation
     {
         /** @var FuelStation $station */
@@ -464,7 +453,6 @@ class FuelStockApiTest extends TestCase
 
         return $station;
     }
-
 
     private function createTank(Company $company, FuelStation $station): FuelTank
     {

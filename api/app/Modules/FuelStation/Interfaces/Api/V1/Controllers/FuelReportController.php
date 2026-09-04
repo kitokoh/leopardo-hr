@@ -8,12 +8,13 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Policies\FuelReportPolicy;
 use App\Modules\FuelStation\Infrastructure\Services\FuelReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Infrastructure\Services\FuelReportingService;
 
 /**
  * Reporting opérationnel (FUEL-017, issue #5811). deny-by-default
@@ -82,7 +83,6 @@ class FuelReportController extends Controller
             throw new FuelSolutionInactiveException;
         }
     }
-
 
     public function show(Request $request, string $type): JsonResponse
     {

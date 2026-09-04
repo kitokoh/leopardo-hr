@@ -19,9 +19,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
  */
 final class TravelWebhookSecretService
 {
-    public function __construct(private readonly SensitiveDataEncryptor $encryptor)
-    {
-    }
+    public function __construct(private readonly SensitiveDataEncryptor $encryptor) {}
 
     /** Chiffre et pose le secret sur le modèle (persistance à la charge de l'appelant). */
     public function set(TravelWebhookSubscription $subscription, string $plainSecret): void

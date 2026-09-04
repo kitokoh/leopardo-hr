@@ -8,9 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 
 /**
  * RESTO-601 (#6206) — Validation stricte de création d'une réservation.
@@ -65,6 +62,4 @@ class StoreRestaurantReservationRequest extends FormRequest
             }
         });
     }
-
-
 }

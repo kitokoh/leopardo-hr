@@ -159,7 +159,7 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // verticale : notifications cuisine (nouvelle commande) et service
         // (commande prête) via CommunicationService (BC-13).
         $this->app->singleton(RestaurantOutboxConsumerRegistry::class, function (): RestaurantOutboxConsumerRegistry {
-            $registry = new RestaurantOutboxConsumerRegistry();
+            $registry = new RestaurantOutboxConsumerRegistry;
             $registry->register(new KitchenOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
             $registry->register(new ServiceOrderNotificationConsumer(app(CommunicationServiceInterface::class)));
 

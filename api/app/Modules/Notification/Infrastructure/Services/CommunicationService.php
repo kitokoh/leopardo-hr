@@ -22,7 +22,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CommunicationService implements EmployeeNotifier, CommunicationServiceInterface
+class CommunicationService implements CommunicationServiceInterface, EmployeeNotifier
 {
     public function __construct(
         private readonly PushNotificationService $pushNotifications,
@@ -462,6 +462,4 @@ class CommunicationService implements EmployeeNotifier, CommunicationServiceInte
             'occurred_at' => now(),
         ]);
     }
-
-
 }

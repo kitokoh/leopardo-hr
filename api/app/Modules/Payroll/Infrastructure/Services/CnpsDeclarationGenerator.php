@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Support\CsvCellSanitizer;
-
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
+use App\Support\CsvCellSanitizer;
 
 /**
  * CEMAC/CM (#1823) — déclaration CNPS mensuelle camerounaise (format DAS).

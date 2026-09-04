@@ -22,8 +22,7 @@ class RestaurantReportController extends Controller
 {
     public function __construct(
         private readonly RestaurantReportService $reports,
-    ) {
-    }
+    ) {}
 
     public function sales(Request $request): JsonResponse
     {

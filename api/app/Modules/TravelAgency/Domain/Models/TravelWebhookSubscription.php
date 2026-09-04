@@ -9,10 +9,8 @@ use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelWebhookSubscriptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * TRAVEL-806 (#6097) — Abonnement webhook d'un transporteur.
@@ -83,7 +81,6 @@ class TravelWebhookSubscription extends Model
     {
         return $this->belongsTo(TravelCarrier::class, 'carrier_id');
     }
-
 
     public function subscribesTo(string $eventType): bool
     {

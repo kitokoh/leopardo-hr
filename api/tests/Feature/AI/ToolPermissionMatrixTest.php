@@ -9,16 +9,16 @@ use App\AI\DTOs\ToolCall;
 use App\AI\IntentEngine;
 use App\AI\LLMClient;
 use App\AI\Models\AIToolRegistryEntry;
+use App\AI\ToolPermissionPolicy;
 use App\AI\ToolRegistry;
+use App\AI\WriteActionRunner;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\Absence;
 use Database\Seeders\AIToolRegistrySeeder;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use App\AI\ToolPermissionPolicy;
-use App\AI\WriteActionRunner;
-use App\Modules\Planning\Domain\Models\Absence;
 
 /**
  * BC-23-D05 (issue #6237) — matrice de permissions par outil AI versionnée.
@@ -316,7 +316,6 @@ class ToolPermissionMatrixTest extends TestCase
         $this->assertNotContains('search_employees', $names);
     }
 
-
     public function test_employee_cannot_use_pii_read_tools(): void
     {
         $policy = app(ToolPermissionPolicy::class);
@@ -337,7 +336,6 @@ class ToolPermissionMatrixTest extends TestCase
         }
     }
 
-
     public function test_manager_can_use_pii_read_tools(): void
     {
         $policy = app(ToolPermissionPolicy::class);
@@ -346,7 +344,6 @@ class ToolPermissionMatrixTest extends TestCase
             $this->assertTrue($policy->canUse($tool, 'manager'), "L'outil '{$tool}' doit être autorisé au manager");
         }
     }
-
 
     public function test_employee_cannot_create_absence_for_another_employee(): void
     {
@@ -364,7 +361,6 @@ class ToolPermissionMatrixTest extends TestCase
         $this->assertStringContainsString('PERMISSION_DENIED', (string) $result['error'], '#6533 : employee ne crée pas d\'absence pour autrui');
     }
 
-
     public function test_employee_can_create_absence_for_self(): void
     {
         [$company, $employee] = $this->aiFixture(role: 'employee');
@@ -378,7 +374,6 @@ class ToolPermissionMatrixTest extends TestCase
         $this->assertArrayNotHasKey('error', $result, 'l\'employé crée sa propre absence');
         $this->assertSame($employee->id, $result['employee_id'] ?? null);
     }
-
 
     public function test_employee_cannot_approve_absence_via_runner(): void
     {

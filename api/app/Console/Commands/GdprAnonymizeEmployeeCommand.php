@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
+use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
 use Illuminate\Console\Command;
-use App\Core\Auth\Domain\Models\AuditLog;use App\Core\Tenant\TenantManager;use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;use Illuminate\Support\Facades\DB;use Illuminate\Support\Facades\Hash;use Illuminate\Support\Facades\Storage;use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * Programme FOCUS — F-18 (#1548) : droit à l'effacement (RGPD).
@@ -97,7 +102,6 @@ class GdprAnonymizeEmployeeCommand extends Command
 
         return self::SUCCESS;
     }
-
 
     private function anonymize(Employee $employee, bool $dryRun): int
     {

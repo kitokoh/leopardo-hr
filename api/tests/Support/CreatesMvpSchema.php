@@ -2513,7 +2513,6 @@ trait CreatesMvpSchema
             });
         }
 
-
         // ── BC-26 DELIVERY (delivery_exports) ─────────────────────────────────────────
         if (! Schema::hasTable($this->moduleTable('delivery_exports'))) {
             Schema::create($this->moduleTable('delivery_exports'), function (Blueprint $table): void {
@@ -2884,13 +2883,6 @@ trait CreatesMvpSchema
                 $table->unique(['company_id', 'route_id'], 'delivery_cod_settlements_company_route_unique');
             });
         }
-
-
-
-
-
-
-
 
     }
 

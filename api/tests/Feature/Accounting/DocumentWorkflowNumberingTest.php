@@ -8,21 +8,20 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Enums\DocumentType;
+use App\Modules\Accounting\Domain\Enums\PaymentMethod;
 use App\Modules\Accounting\Domain\Exceptions\CreditNoteRequiresSourceInvoiceException;
 use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
+use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
+use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Support\Facades\DB;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\Accounting\Domain\Enums\PaymentMethod;
-use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
-use App\Modules\Accounting\Domain\Models\AccountingContact;
-use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 
 /**
  * Issue #5223 — Workflow documents + numérotation paramétrable.
@@ -285,12 +284,10 @@ class DocumentWorkflowNumberingTest extends TestCase
         $this->assertSame(DocumentStatus::Sent->value, $future->refresh()->status);
     }
 
-
     private function workflow(): DocumentWorkflowService
     {
         return new DocumentWorkflowService(new SequentialDocumentNumbering);
     }
-
 
     private function addLine(AccountingDocument $document, string $description = 'Prestation workflow', float $unitPrice = 1900.0): void
     {
@@ -315,7 +312,6 @@ class DocumentWorkflowNumberingTest extends TestCase
         return $document->refresh();
     }
 
-
     public function test_workflow_send_requires_lines(): void
     {
         $document = $this->makeDocument(DocumentType::Invoice, ['contact_id' => $this->contact->id]);
@@ -323,7 +319,6 @@ class DocumentWorkflowNumberingTest extends TestCase
         $this->expectException(DocumentWorkflowException::class);
         $this->workflow()->send($document);
     }
-
 
     public function test_partially_paid_with_partial_payment(): void
     {
@@ -337,7 +332,6 @@ class DocumentWorkflowNumberingTest extends TestCase
         $this->assertSame(DocumentStatus::PartiallyPaid->value, $document->refresh()->status);
     }
 
-
     public function test_credit_note_requires_invoice_source(): void
     {
         $quote = $this->makeDocument(DocumentType::Quote);
@@ -347,7 +341,6 @@ class DocumentWorkflowNumberingTest extends TestCase
             'lines' => [['description' => 'Avoir', 'quantity' => 1.0, 'unit_price' => 500.0]],
         ]);
     }
-
 
     public function test_cancel_rejects_paid_document(): void
     {

@@ -9,13 +9,15 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
+use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
+use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier;use App\Modules\TravelAgency\Domain\Models\TravelCity;use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 
 /**
  * TRAVEL-1007 (#6120) — Golden journey GJ-TRAVEL-01.
@@ -137,7 +139,6 @@ class TravelGoldenJourneyTest extends TestCase
         self::assertSame('travelagency', $journey['solution']);
         self::assertGreaterThanOrEqual(5, count($journey['steps']));
     }
-
 
     public function test_golden_journey_gj_travel_01(): void
     {

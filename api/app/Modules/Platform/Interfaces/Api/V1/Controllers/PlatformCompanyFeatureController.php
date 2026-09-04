@@ -11,15 +11,13 @@ use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Core\Auth\Domain\Models\AuditLog;
 use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller
 {
     public function __construct(
         private readonly FeatureFlagAuditRecorder $auditRecorder,
-    ) {
-    }
+    ) {}
 
     public function show(string $companyId): JsonResponse
     {
@@ -86,8 +84,6 @@ class PlatformCompanyFeatureController extends Controller
             ],
         ]);
     }
-
-
 
     private function auditFeatureChange(Request $request, Company $company, array $previousFeatures, array $newFeatures): void
     {

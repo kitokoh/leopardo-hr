@@ -6,8 +6,16 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\FuelStationAlert;
+use App\Jobs\DispatchCommunicationJob;
+use App\Modules\FuelStation\Domain\Models\FuelAlertLog;
+use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\DispatchCommunicationJob;use App\Modules\FuelStation\Domain\Models\FuelAlertLog;use App\Modules\FuelStation\Domain\Models\FuelCashSession;use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;use Illuminate\Database\UniqueConstraintViolationException;use Illuminate\Support\Carbon;use Illuminate\Support\Facades\DB;
 
 /**
  * Notifications & alertes FuelStation — FUEL-019 (issue #5813).
@@ -195,7 +203,6 @@ final class FuelAlertService
 
         return $anomalies;
     }
-
 
     private function templateFor(string $type): string
     {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Tâche de maintenance préventive/corrective FuelStation — FUEL-010
@@ -86,6 +86,4 @@ class FuelMaintenanceTask extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
     }
-
-
 }

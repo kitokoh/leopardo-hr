@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
 use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Domain\Models\FuelOutboxEvent;
-use App\Core\Auth\Domain\Models\AuditLog;use App\Modules\FuelStation\Domain\Exceptions\FuelWorkflowTransitionException;use Illuminate\Database\Eloquent\Model;use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * Incidents, maintenance et tâches FuelStation — FUEL-010 (issue #5804).
@@ -226,7 +229,6 @@ final class FuelIncidentService
         return $task->refresh();
     }
 
-
     private function assertTransitionAllowed(FuelIncident $incident, string $target): void
     {
         $allowed = match ($incident->status) {
@@ -260,7 +262,6 @@ final class FuelIncidentService
         return mb_substr($trimmed, 0, 2000);
     }
 
-
     private function audit(Employee $actor, string $event, Model $target): void
     {
         AuditLog::record(
@@ -272,24 +273,20 @@ final class FuelIncidentService
         );
     }
 
-
     private function asString(mixed $value): string
     {
         return is_string($value) || is_numeric($value) ? (string) $value : '';
     }
-
 
     private function nullableInt(mixed $value): ?int
     {
         return is_numeric($value) ? (int) $value : null;
     }
 
-
     private function nullableDate(mixed $value): ?Carbon
     {
         return is_string($value) && $value !== '' ? Carbon::parse($value)->utc() : null;
     }
-
 
     private function companyId(Model $model, Employee $actor): string
     {

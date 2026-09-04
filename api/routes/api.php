@@ -1,11 +1,11 @@
 <?php
 
+use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
 use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
-use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
 use App\Http\Controllers\Web\PlatformCompanyController;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentWebhookController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
@@ -42,7 +42,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
@@ -55,6 +54,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
@@ -69,8 +69,8 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskC
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -324,7 +324,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/solutions.php';
     require __DIR__.'/modules/travelagency.php';
-
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

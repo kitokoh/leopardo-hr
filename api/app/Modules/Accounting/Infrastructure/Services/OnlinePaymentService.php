@@ -6,16 +6,13 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Exceptions\DomainException;
+use App\Modules\Accounting\Domain\Enums\DocumentStatus;
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotSendableException;
 use App\Modules\Accounting\Domain\Exceptions\PaymentAmountMismatchException;
 use App\Modules\Accounting\Domain\Exceptions\WebhookSignatureInvalidException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
-use App\Modules\Accounting\Infrastructure\Services\GatewayMoney;
-use App\Modules\Accounting\Infrastructure\Services\PaymentGatewayFactory;
-use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

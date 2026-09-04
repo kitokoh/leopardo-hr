@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Incident équipement FuelStation — FUEL-010 (issue #5804).

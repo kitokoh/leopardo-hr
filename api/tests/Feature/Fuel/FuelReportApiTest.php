@@ -6,12 +6,13 @@ namespace Tests\Feature\Fuel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;use App\Modules\FuelStation\Domain\Models\FuelStation;
 
 /**
  * Reporting opérationnel — FUEL-017 (issue #5811).
@@ -132,13 +133,11 @@ class FuelReportApiTest extends TestCase
             ->assertJsonPath('data', []);
     }
 
-
     public function test_unauthenticated_gets_401(): void
     {
         $this->getJson('/api/v1/fuel-station/reports/sales?station_id=1')
             ->assertStatus(401);
     }
-
 
     public function test_manager_gets_sales_snapshot_and_recompute_is_idempotent(): void
     {
@@ -164,7 +163,6 @@ class FuelReportApiTest extends TestCase
         $this->assertSame(1, FuelReportSnapshot::query()->count());
     }
 
-
     public function test_manager_gets_station_performance(): void
     {
         [$company, $manager, $station] = $this->seedSales();
@@ -181,7 +179,6 @@ class FuelReportApiTest extends TestCase
         $this->assertEqualsWithDelta(225.0, (float) ($payload['average_basket'] ?? 0), 0.01);
     }
 
-
     public function test_operator_gets_403_on_reports(): void
     {
         [$company, $manager, $station] = $this->seedSales();
@@ -195,7 +192,6 @@ class FuelReportApiTest extends TestCase
         $this->getJson('/api/v1/fuel-station/reports/sales?station_id='.$station->id)
             ->assertStatus(403);
     }
-
 
     public function test_cross_tenant_station_is_404(): void
     {
@@ -214,7 +210,6 @@ class FuelReportApiTest extends TestCase
         $this->getJson('/api/v1/fuel-station/reports/sales?station_id='.$stationB->id)
             ->assertStatus(404);
     }
-
 
     public function test_unknown_type_is_404(): void
     {

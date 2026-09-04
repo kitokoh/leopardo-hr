@@ -28,8 +28,7 @@ final class RestaurantReservationService
 
     public function __construct(
         private readonly RestaurantCancellationPolicyService $cancellationPolicy,
-    ) {
-    }
+    ) {}
 
     /** Statuts qui occupent un créneau (bloquent une table). */
     private const OCCUPYING_STATUSES = ['pending', 'confirmed', 'seated'];

@@ -14,6 +14,7 @@ namespace App\Modules\Billing\Domain\Models;
 // touchée ni par Pint ni par PHPStan.
 // See: docs/architecture/adr/0011-billing-payroll-domain-boundary.md  — Issue #1395.
 use App\Modules\Billing\Domain\Enums\InvoiceStatus;
+use App\Modules\Payroll\Domain\Models\Payment;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
-use App\Modules\Payroll\Domain\Models\Payment;
 
 /**
  * @property int $id
@@ -123,6 +123,4 @@ class Invoice extends Model
 
         return $this;
     }
-
-
 }

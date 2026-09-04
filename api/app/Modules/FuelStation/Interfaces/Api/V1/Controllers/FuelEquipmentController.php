@@ -12,13 +12,13 @@ use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelTankRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelEquipmentRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelEquipmentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelTankRequest;
 
 /**
  * Équipements FuelStation : pompes, cuves, compteurs (FUEL-011, #5805).
@@ -201,7 +201,6 @@ class FuelEquipmentController extends Controller
         return $this->paginated($pumps->items(), $pumps, fn (FuelPump $pump): array => $this->pumpPayload($pump));
     }
 
-
     public function pumpsStore(SaveFuelPumpRequest $request, FuelStation $station): JsonResponse
     {
         $actor = $this->resolve($request, $station);
@@ -217,7 +216,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->pumpPayload($pump)], 201);
     }
 
-
     public function pumpsUpdate(SaveFuelPumpRequest $request, FuelPump $pump): JsonResponse
     {
         $actor = $this->resolvePump($request, $pump);
@@ -227,7 +225,6 @@ class FuelEquipmentController extends Controller
 
         return response()->json(['data' => $this->pumpPayload($pump->refresh())]);
     }
-
 
     public function tanksIndex(Request $request, FuelStation $station): JsonResponse
     {
@@ -242,7 +239,6 @@ class FuelEquipmentController extends Controller
 
         return $this->paginated($tanks->items(), $tanks, fn (FuelTank $tank): array => $this->tankPayload($tank));
     }
-
 
     public function tanksStore(SaveFuelTankRequest $request, FuelStation $station): JsonResponse
     {
@@ -259,7 +255,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->tankPayload($tank)], 201);
     }
 
-
     public function tanksUpdate(SaveFuelTankRequest $request, FuelTank $tank): JsonResponse
     {
         $actor = $this->resolveTank($request, $tank);
@@ -269,7 +264,6 @@ class FuelEquipmentController extends Controller
 
         return response()->json(['data' => $this->tankPayload($tank->refresh())]);
     }
-
 
     public function metersIndex(Request $request, FuelStation $station): JsonResponse
     {
@@ -284,7 +278,6 @@ class FuelEquipmentController extends Controller
 
         return $this->paginated($meters->items(), $meters, fn (FuelMeterRegister $meter): array => $this->meterPayload($meter));
     }
-
 
     public function metersStore(SaveFuelMeterRegisterRequest $request, FuelStation $station): JsonResponse
     {
@@ -301,7 +294,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->meterPayload($meter)], 201);
     }
 
-
     public function metersUpdate(SaveFuelMeterRegisterRequest $request, FuelMeterRegister $meter): JsonResponse
     {
         $actor = $this->resolveMeter($request, $meter);
@@ -311,7 +303,6 @@ class FuelEquipmentController extends Controller
 
         return response()->json(['data' => $this->meterPayload($meter->refresh())]);
     }
-
 
     private function resolve(Request $request, FuelStation $station): Employee
     {
@@ -362,7 +353,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->payload($kind, $item->refresh())], 201);
     }
 
-
     private function resolvePump(Request $request, FuelPump $pump): Employee
     {
         $this->assertSolutionActive();
@@ -379,7 +369,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->payload($kind, $item->refresh())]);
     }
 
-
     private function resolveTank(Request $request, FuelTank $tank): Employee
     {
         $this->assertSolutionActive();
@@ -393,7 +382,6 @@ class FuelEquipmentController extends Controller
 
         return $actor;
     }
-
 
     private function resolveMeter(Request $request, FuelMeterRegister $meter): Employee
     {

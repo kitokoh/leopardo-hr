@@ -9,13 +9,18 @@ use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelStockEntry;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use App\Modules\FuelStation\Infrastructure\Services\FuelStockService;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\RunFuelReconciliationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStockEntryRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelTankDeliveryRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\FuelStation\Domain\Models\FuelStation;use App\Modules\FuelStation\Domain\Models\FuelTank;use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\RunFuelReconciliationRequest;use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelTankDeliveryRequest;use Illuminate\Database\Eloquent\Model;
 
 /**
  * Stocks, cuves et rapprochement (FUEL-009, issue #5803).
@@ -190,7 +195,6 @@ class FuelStockController extends Controller
         }
     }
 
-
     public function storeDelivery(StoreFuelTankDeliveryRequest $request, FuelTank $tank): JsonResponse
     {
         $this->assertSolutionActive();
@@ -204,7 +208,6 @@ class FuelStockController extends Controller
 
         return response()->json(['data' => $this->deliveryPayload($delivery)], 201);
     }
-
 
     public function stocks(Request $request): JsonResponse
     {
@@ -233,7 +236,6 @@ class FuelStockController extends Controller
         ]);
     }
 
-
     public function runReconciliation(RunFuelReconciliationRequest $request, FuelStation $station): JsonResponse
     {
         $this->assertSolutionActive();
@@ -252,7 +254,6 @@ class FuelStockController extends Controller
             'meta' => ['replayed' => $result['replayed']],
         ]);
     }
-
 
     public function reconciliations(Request $request): JsonResponse
     {
@@ -287,7 +288,6 @@ class FuelStockController extends Controller
             ],
         ]);
     }
-
 
     public function showReconciliation(Request $request, FuelReconciliationRun $run): JsonResponse
     {
@@ -332,7 +332,6 @@ class FuelStockController extends Controller
                 : 0.0,
         ];
     }
-
 
     private function assertTenantOwned(Model $model, Employee $actor): void
     {

@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Mail\CommunicationMail;
+use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
@@ -17,8 +18,6 @@ use App\Shared\Contracts\Notification\EmployeeNotifier;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
-use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
 
 /**
  * TRAVEL-415 (#6067) — Notifications voyageur (confirmation/annulation/
@@ -162,8 +161,4 @@ final class TravelNotificationConsumer implements TravelOutboxConsumer
 
         return ['travel_booking_status', 'Mise à jour de votre réservation'];
     }
-
-
-
-
 }

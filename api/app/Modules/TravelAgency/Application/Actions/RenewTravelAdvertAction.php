@@ -7,7 +7,6 @@ namespace App\Modules\TravelAgency\Application\Actions;
 use App\Modules\TravelAgency\Domain\Enums\AdvertStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use Illuminate\Support\Str;
-use App\Core\Auth\Domain\Models\Employee;use App\Modules\TravelAgency\Domain\Enums\PaymentProvider;use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;use App\Modules\TravelAgency\Domain\Models\TravelPayment;use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-908 (#6111) — Renouvellement d'une annonce.
@@ -38,6 +37,4 @@ final class RenewTravelAdvertAction
 
         return $advert->refresh();
     }
-
-
 }

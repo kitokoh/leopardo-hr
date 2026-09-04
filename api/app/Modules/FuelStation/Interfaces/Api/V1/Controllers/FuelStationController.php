@@ -8,14 +8,13 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
+use App\Modules\FuelStation\Domain\Models\FuelSite;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelStationRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelStationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Domain\Models\FuelSite;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelSiteRequest;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelStationRequest;
 
 /**
  * CRUD des stations FuelStation (FUEL-011, issue #5805).
@@ -161,7 +160,6 @@ class FuelStationController extends Controller
             throw new FuelSolutionInactiveException;
         }
     }
-
 
     public function sitesStore(SaveFuelSiteRequest $request, FuelStation $station): JsonResponse
     {
