@@ -29,6 +29,15 @@ final class TwoFactorAuthService
 {
     public const CHALLENGE_TTL_SECONDS = 300;
 
+    // #6538 (audit-secu M1) — brute-force du code TOTP : 5 essais max par
+    // challenge, 10 essais max par compte sur 15 minutes (le challenge 300 s
+    // et le bucket IP 10/min étaient contournables en rotant les IP).
+    public const MAX_CHALLENGE_ATTEMPTS = 5;
+
+    public const MAX_EMPLOYEE_ATTEMPTS = 10;
+
+    public const EMPLOYEE_FAILURE_WINDOW_SECONDS = 900;
+
     public function __construct(private readonly TotpService $totp) {}
 
     /**
@@ -235,6 +244,8 @@ final class TwoFactorAuthService
             }
 
             if (! $verified) {
+                $this->recordFailedAttempt($challengeToken, (int) $context['employee_id']);
+
                 throw TwoFactorException::invalidCode();
             }
 
@@ -242,6 +253,8 @@ final class TwoFactorAuthService
             // brûler le challenge (l'utilisateur peut retenter avec le même
             // token). Le challenge est consommé ici, après vérification.
             Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget("mfa:challenge_failures:{$challengeToken}");
+            Cache::forget("mfa:employee_failures:{$context['employee_id']}");
 
             /** @var Company|null $company */
             $company = Company::query()->find($context['company_id']);
@@ -284,6 +297,42 @@ final class TwoFactorAuthService
     public function rememberCookieValue(Employee $employee): string
     {
         return hash('sha256', $employee->id.'|'.(string) config('app.key').'|mfa-remember');
+    }
+
+    /**
+     * #6538 — compteurs d'échecs anti brute-force du code TOTP.
+     *
+     * - Par challenge : 5 essais → le challenge est invalidé (429) ;
+     * - Par compte : 10 essais / 15 min → tous les challenges sont refusés
+     *   (429) jusqu'à l'expiration naturelle de la fenêtre (le compteur
+     *   n'est PAS remis à zéro au verrouillage : l'attaquant ne peut pas
+     *   rejouer en créant un nouveau challenge).
+     *
+     * Les compteurs sont remis à zéro au succès uniquement.
+     */
+    private function recordFailedAttempt(string $challengeToken, int $employeeId): void
+    {
+        if (! Cache::add("mfa:challenge_failures:{$challengeToken}", 1, self::CHALLENGE_TTL_SECONDS)) {
+            Cache::increment("mfa:challenge_failures:{$challengeToken}");
+        }
+
+        if ((int) Cache::get("mfa:challenge_failures:{$challengeToken}") >= self::MAX_CHALLENGE_ATTEMPTS) {
+            Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget("mfa:challenge_failures:{$challengeToken}");
+
+            throw TwoFactorException::tooManyAttempts();
+        }
+
+        if (! Cache::add("mfa:employee_failures:{$employeeId}", 1, self::EMPLOYEE_FAILURE_WINDOW_SECONDS)) {
+            Cache::increment("mfa:employee_failures:{$employeeId}");
+        }
+
+        if ((int) Cache::get("mfa:employee_failures:{$employeeId}") >= self::MAX_EMPLOYEE_ATTEMPTS) {
+            Cache::forget('mfa:challenge:'.$challengeToken);
+            Cache::forget("mfa:challenge_failures:{$challengeToken}");
+
+            throw TwoFactorException::tooManyAttempts();
+        }
     }
 
     /**
