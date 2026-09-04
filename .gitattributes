@@ -41,5 +41,6 @@ front/web/public/og/*.png       !filter !diff !merge -text
 front/web/public/screenshots/*.png !filter !diff !merge -text
 front/web/public/videos/*       !filter !diff !merge -text
 front/web-offline/public/*.png  !filter !diff !merge -text
+front/mobile_apps/**/*.png        !filter !diff !merge -text
 
 # Assets design/screenshots (assets/) : restent en VRAI Git LFS (pointeurs).
