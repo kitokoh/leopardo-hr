@@ -13,6 +13,7 @@ declare(strict_types=1);
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\AttendanceController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
 use App\Modules\Attendance\Interfaces\Api\V1\Controllers\KioskController;
+use App\Modules\Attendance\Interfaces\Api\V1\KioskEnrollmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CareerEventController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartmentController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\DepartureController;
@@ -269,4 +270,22 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
+
+    // ── ATT-004 (#6769) : surface kiosque versionnée ─────────────────────────
+    // `kiosk.device` authentifie l'appareil (X-Kiosk-Token) et pose
+    // `kiosk_device` ; `kiosk.idempotency` exige l'Idempotency-Key sur les
+    // écritures d'enrôlement (rejeu 24 h à l'identique).
+    Route::middleware(['kiosk.device'])->group(function (): void {
+        // BIO-007 (#6772) : état de synchronisation visible (compteur
+        // acquitté, heure serveur, politique offline).
+        Route::get('/kiosks/{deviceCode}/sync-status', [KioskController::class, 'syncStatus']);
+
+        Route::middleware(['kiosk.idempotency'])->group(function (): void {
+            Route::post('/kiosks/{deviceCode}/enrollments', [KioskEnrollmentController::class, 'start']);
+            Route::post('/kiosks/{deviceCode}/enrollments/{enrollment}/activate', [KioskEnrollmentController::class, 'activate'])->whereNumber('enrollment');
+            Route::post('/kiosks/{deviceCode}/enrollments/{enrollment}/revoke', [KioskEnrollmentController::class, 'revoke'])->whereNumber('enrollment');
+        });
+
+        Route::get('/kiosks/{deviceCode}/enrollments/status', [KioskEnrollmentController::class, 'status']);
+    });
 });

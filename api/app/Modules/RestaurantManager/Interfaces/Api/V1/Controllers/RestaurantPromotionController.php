@@ -25,8 +25,7 @@ class RestaurantPromotionController extends Controller
 {
     public function __construct(
         private readonly RestaurantPromotionService $promotions,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -108,46 +107,6 @@ class RestaurantPromotionController extends Controller
         $restaurantPromotion->delete();
 
         return new JsonResponse(null, 204);
-    }
-
-    /**
-     * Validation serveur d'un code promo sur un montant de commande.
-     */
-    public function validate(Request $request): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        $request->validate([
-            'code' => ['required', 'string', 'max:40'],
-            'order_total_minor' => ['required', 'integer', 'min:0'],
-        ]);
-
-        /** @var RestaurantPromotion|null $promo */
-        $promo = RestaurantPromotion::query()
-            ->where('company_id', $actor->company_id)
-            ->where('code', (string) $request->input('code'))
-            ->first();
-
-        if ($promo === null) {
-            return response()->json(['message' => 'Code promo inconnu.'], 404);
-        }
-
-        try {
-            $result = $this->promotions->validateAndCompute($promo, (int) $request->input('order_total_minor'), $actor->company_id);
-        } catch (RuntimeException $exception) {
-            return response()->json(['message' => $exception->getMessage()], 422);
-        }
-
-        return response()->json([
-            'data' => [
-                'code' => $promo->code,
-                'title' => $promo->title,
-                'discount_type' => $promo->discount_type,
-                'discount_minor' => $result['discount_minor'],
-                'valid' => $result['valid'],
-            ],
-        ]);
     }
 
     public function validateCode(Request $request): JsonResponse

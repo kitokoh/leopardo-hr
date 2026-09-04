@@ -16,22 +16,28 @@ declare(strict_types=1);
  */
 
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAssessmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAttendanceController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCampusController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassEnrollmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduDashboardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduImportExportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMarketingController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduMeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduNotificationController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportCardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduReportController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduRetentionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduStudentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduSubjectController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherInterfaceController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduTeacherWorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -107,6 +113,24 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/edu-manager/report-cards/{card}/validate', [EduReportCardController::class, 'validateCard'])->whereNumber('card');
     Route::post('/edu-manager/report-cards/{card}/publish', [EduReportCardController::class, 'publish'])->whereNumber('card');
 
+    // EDU-011 (#5827) — tableau de bord de l'administration scolaire.
+    Route::get('/edu-manager/dashboard', [EduDashboardController::class, 'index']);
+
+    // EDU-011 (#5827) — profil rôle-aware (navigation direction/enseignant).
+    Route::get('/edu-manager/me', [EduMeController::class, 'show']);
+
+    // EDU-011 (#5827) — inscriptions d'élèves dans les classes (idempotentes).
+    Route::get('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'index'])->whereNumber('class');
+    Route::post('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'store'])->whereNumber('class');
+    Route::delete('/edu-manager/class-enrollments/{enrollment}', [EduClassEnrollmentController::class, 'destroy'])->whereNumber('enrollment');
+
+    // EDU-012 (#5828) — espace enseignant (workspace, classes/effectifs, saisie).
+    Route::get('/edu-manager/teacher/workspace', [EduTeacherWorkspaceController::class, 'index']);
+    Route::get('/edu-manager/teacher/classes', [EduTeacherInterfaceController::class, 'classes']);
+    Route::get('/edu-manager/teacher/classes/{class}/students', [EduTeacherInterfaceController::class, 'students'])->whereNumber('class');
+    Route::get('/edu-manager/teacher/classes/{class}/assessments', [EduTeacherInterfaceController::class, 'assessments'])->whereNumber('class');
+    Route::post('/edu-manager/teacher/grades/{grade}/submit', [EduTeacherInterfaceController::class, 'submitGrade'])->whereNumber('grade');
+
     // EDU-017 (#5833) — import/export sécurisé (direction).
     Route::post('/edu-manager/imports/preview', [EduImportExportController::class, 'preview']);
     Route::post('/edu-manager/imports/{import}/commit', [EduImportExportController::class, 'commit'])->whereNumber('import');
@@ -131,8 +155,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/edu-manager/fees/{fee}/cancel', [EduFeeController::class, 'cancel'])->whereNumber('fee');
     Route::post('/edu-manager/fees/{fee}/waive', [EduFeeController::class, 'waive'])->whereNumber('fee');
 
-    // EDU-015 (#5831) — marketing admissions (segments consentis + opt-out).
+    // EDU-015 (#5831) — marketing admissions : relances consenties + opt-out.
     Route::get('/edu-manager/marketing/eligible-prospects', [EduMarketingController::class, 'eligibleProspects']);
+    Route::post('/edu-manager/admissions/{admission}/follow-ups', [EduAdmissionCampaignController::class, 'followUp'])->whereNumber('admission');
     Route::post('/edu-manager/admissions/{admission}/opt-out', [EduMarketingController::class, 'optOut'])->whereNumber('admission');
 
     // EDU-014 (#5830) — notifications EduManager (lecture direction).
