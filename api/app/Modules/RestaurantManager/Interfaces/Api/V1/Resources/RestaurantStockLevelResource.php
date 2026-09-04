@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 /**
  * RESTO-501 (#6200) — Ressource API d'un niveau de stock.
  */
+/**
+ * @mixin RestaurantStockLevel
+ */
 class RestaurantStockLevelResource extends JsonResource
 {
     /**

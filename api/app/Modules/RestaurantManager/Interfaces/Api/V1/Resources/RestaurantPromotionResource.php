@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPromotion;
 /**
  * RESTO-607 (#6212) — Ressource API d'une promotion.
  */
+/**
+ * @mixin RestaurantPromotion
+ */
 class RestaurantPromotionResource extends JsonResource
 {
     /**

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Core\Tenant\Domain\Models\CompanySetting;
+
+use App\Core\Tenant\Domain\Models\Company;
+
 use App\Modules\Attendance\Domain\Enums\VerificationMethod;
 
 use App\Shared\Traits\BelongsToCompany;
@@ -71,4 +75,59 @@ class AttendanceKiosk extends Model
         'last_seen_at' => 'datetime',
         'last_sync_at' => 'datetime',
     ];
+
+
+    public function isRevoked(): bool
+    {
+        return $this->status === 'revoked' || $this->revoked_at !== null;
+    }
+
+    public function isPunchMethodAllowed(string $method): bool
+    {
+        return in_array($method, $this->resolvedPunchMethods(), true);
+    }
+
+    public function resolvedPunchMethods(): array
+    {
+        $configured = $this->normalizeMethods($this->punch_methods ?? []);
+        if ($configured !== []) {
+            return $configured;
+        }
+
+        // La relation `company` est posée manuellement (PlatformCompanyLookup) :
+        // on ne consulte le défaut entreprise que lorsqu'elle est chargée.
+        $company = $this->relationLoaded('company') ? $this->company : null;
+        if ($company !== null) {
+            $setting = CompanySetting::query()
+                ->where('key', 'kiosk.punch_methods.default')
+                ->first();
+
+            if ($setting !== null && ! empty($setting->value)) {
+                $decoded = json_decode((string) $setting->value, true);
+                if (is_array($decoded)) {
+                    $configured = $this->normalizeMethods($decoded);
+                    if ($configured !== []) {
+                        return $configured;
+                    }
+                }
+            }
+        }
+
+        return self::KIOSK_PUNCH_METHODS_ALL;
+    }
+    private function normalizeMethods(array $methods): array
+    {
+        $normalized = [];
+        foreach ($methods as $method) {
+            if (! is_string($method)) {
+                continue;
+            }
+            $normalized[] = $method === 'card' ? VerificationMethod::Badge->value : $method;
+        }
+
+        return array_values(array_unique(array_filter(
+            $normalized,
+            static fn (string $method): bool => in_array($method, self::KIOSK_PUNCH_METHODS_ALL, true)
+        )));
+    }
 }

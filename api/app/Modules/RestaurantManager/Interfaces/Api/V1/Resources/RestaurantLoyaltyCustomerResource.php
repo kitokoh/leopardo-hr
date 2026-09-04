@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantLoyaltyCustomer;
 /**
  * RESTO-606 (#6211) — Ressource API d'un client fidélité.
  */
+/**
+ * @mixin RestaurantLoyaltyCustomer
+ */
 class RestaurantLoyaltyCustomerResource extends JsonResource
 {
     /**

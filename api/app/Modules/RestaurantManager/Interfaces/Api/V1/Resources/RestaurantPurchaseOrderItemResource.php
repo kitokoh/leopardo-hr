@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrderItem;
 /**
  * RESTO-502 (#6201) — Ressource API d'une ligne de bon de commande.
  */
+/**
+ * @mixin RestaurantPurchaseOrderItem
+ */
 class RestaurantPurchaseOrderItemResource extends JsonResource
 {
     /**

@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 /**
  * RESTO-605 (#6210) — Ressource API d'un livreur.
  */
+/**
+ * @mixin RestaurantDeliveryRider
+ */
 class RestaurantDeliveryRiderResource extends JsonResource
 {
     /**

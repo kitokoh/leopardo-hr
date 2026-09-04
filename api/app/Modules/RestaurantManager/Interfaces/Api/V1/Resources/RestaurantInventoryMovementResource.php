@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 /**
  * RESTO-501 (#6200) — Ressource API d'un mouvement de stock.
  */
+/**
+ * @mixin RestaurantInventoryMovement
+ */
 class RestaurantInventoryMovementResource extends JsonResource
 {
     /**

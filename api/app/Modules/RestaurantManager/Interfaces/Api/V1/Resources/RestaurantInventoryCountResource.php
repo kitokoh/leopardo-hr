@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 /**
  * RESTO-504 (#6203) — Ressource API d'un inventaire physique.
  */
+/**
+ * @mixin RestaurantInventoryCount
+ */
 class RestaurantInventoryCountResource extends JsonResource
 {
     /**

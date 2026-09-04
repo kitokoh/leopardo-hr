@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 /**
  * RESTO-504 (#6203) — Ressource API d'une ligne de comptage d'inventaire.
  */
+/**
+ * @mixin RestaurantInventoryCountItem
+ */
 class RestaurantInventoryCountItemResource extends JsonResource
 {
     /**

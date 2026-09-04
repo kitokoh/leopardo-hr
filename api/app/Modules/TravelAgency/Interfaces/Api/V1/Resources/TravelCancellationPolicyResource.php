@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * TRAVEL-813 (#6103) — Ressource API d'une politique d'annulation.
  */
+/**
+ * @mixin TravelCancellationPolicy
+ */
 class TravelCancellationPolicyResource extends JsonResource
 {
     /**

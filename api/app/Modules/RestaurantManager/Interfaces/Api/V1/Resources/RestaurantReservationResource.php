@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 /**
  * RESTO-601 (#6206) — Ressource API d'une réservation.
  */
+/**
+ * @mixin RestaurantReservation
+ */
 class RestaurantReservationResource extends JsonResource
 {
     /**

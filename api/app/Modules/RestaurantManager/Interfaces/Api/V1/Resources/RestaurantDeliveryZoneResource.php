@@ -6,9 +6,13 @@ namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryZone;
 
 /**
  * RESTO-604 (#6209) — Ressource API d'une zone de livraison.
+ */
+/**
+ * @mixin RestaurantDeliveryZone
  */
 class RestaurantDeliveryZoneResource extends JsonResource
 {

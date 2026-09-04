@@ -11,6 +11,9 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 /**
  * RESTO-503 (#6202) — Ressource API d'une réception de marchandises.
  */
+/**
+ * @mixin RestaurantReceiving
+ */
 class RestaurantReceivingResource extends JsonResource
 {
     /**
