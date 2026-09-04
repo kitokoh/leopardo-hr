@@ -7,6 +7,7 @@ namespace App\Modules\Accounting\Infrastructure\Services;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Domain\Enums\DocumentStatus;
+use App\Exceptions\DomainException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotSendableException;
 use App\Modules\Accounting\Domain\Exceptions\PaymentAmountMismatchException;
 use App\Modules\Accounting\Domain\Exceptions\WebhookSignatureInvalidException;
@@ -62,7 +63,7 @@ final class OnlinePaymentService
             $locked = AccountingDocument::query()->lockForUpdate()->find($document->id);
 
             if ($locked === null) {
-                throw new DocumentNotSendableException('not_found');
+                throw new DomainException('PAYMENT_DOCUMENT_MISSING', 404, 'PAYMENT_DOCUMENT_MISSING');
             }
 
             $this->assertPayable($locked);
