@@ -358,11 +358,15 @@ jobs:
       - name: Install Vercel CLI (pinned)
         run: npm install --global vercel@59.11.2
 
+      # Commandes lancées depuis la racine du repo (sans --cwd) : le projet
+      # Vercel leopardo-prod a rootDirectory: front/web, la CLI l'applique
+      # donc une seule fois. Avec --cwd front/web le chemin était doublé
+      # (front/web/front/web/package.json, ENOENT — fix #6810).
       - name: Pull Vercel environment (production)
-        run: vercel pull --yes --environment=production --cwd front/web
+        run: vercel pull --yes --environment=production
 
       - name: Build (production)
-        run: vercel build --prod --cwd front/web
+        run: vercel build --prod
 
       # --prebuilt : pas de rebuild côté Vercel — on uploade le build local du
       # TAG. Un échec sur une étape précédente laisse le déploiement prod
@@ -370,7 +374,7 @@ jobs:
       - name: Deploy to production (Vercel)
         run: |
           set -euo pipefail
-          URL="$(vercel deploy --prebuilt --prod --cwd front/web | tail -n 1)"
+          URL="$(vercel deploy --prebuilt --prod | tail -n 1)"
           echo "Vercel prod deployment URL: ${URL}"
           echo "::notice::Vercel prod deploy: ${URL}"
 
