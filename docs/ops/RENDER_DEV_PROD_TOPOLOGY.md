@@ -20,12 +20,31 @@ qui a permis de le requalifier sans opération de bascule à chaud.
 | Tier | Déclencheur | Fichier | Workflow | Surfaces | Coût |
 |------|-------------|---------|----------|----------|------|
 | **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | API Render `gestionemployerbackend` + web Vercel `leopardo` (intégration Git) + admin CF Pages `leo-admin` | Plan existant (Starter), inchangé |
-| **prod** (stable) | tag `vX.Y.Z` validé | `render.prod.yaml` | `deploy-prod.yml` | API Render `leopardo-prod` + Neon + web Vercel `leopardo-prod` + admin CF Pages `leo-admin-prod` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
+| **prod** (stable) | **GitHub Release publiée** (tag `vX.Y.Z` poussé → `release.yml` crée la Release → `deploy-prod.yml` sur `release: published`) | `render.prod.yaml` | `deploy-prod.yml` | API Render `leopardo-prod` + Neon + web Vercel `leopardo-prod` + admin CF Pages `leo-admin-prod` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
 
-> Les jobs `deploy-web-prod` (Vercel) et `deploy-admin-prod` (Cloudflare
-> Pages) s'exécutent APRÈS le job API (`deploy-prod`) : un frontend qui cible
-> l'API prod n'est promu que si l'API prod est saine sur le tag. Voir
-> `.github/workflows/deploy-prod.yml` et `docs/ops/DOMAINS.md` (registre).
+> Le déclencheur « Release publiée » (au lieu du push de tag brut) rend la
+> livraison prod visible dans l'UI GitHub (une Release = une livraison) et
+> évite les doubles runs. Les jobs `deploy-web-prod` (Vercel) et
+> `deploy-admin-prod` (Cloudflare Pages) s'exécutent APRÈS le job API : un
+> frontend qui cible l'API prod n'est promu que si l'API prod est saine.
+>
+> ⚠️ **Sémantique du code déployé (limite API Render)** : `POST
+> /services/{id}/deploys` déploie la HEAD de `main`, pas le commit du tag. Le
+> gate `verify` exige donc **tag == HEAD de `main`** en déclenchement
+> automatique ; en `workflow_dispatch` sur un tag plus ancien, un
+> avertissement est émis (l'API recevra le code de main, les frontends le
+> commit du tag). Toujours créer la Release sur le commit HEAD de `main`.
+>
+> **Migrations DB au boot (vérifié 2026-09-04)** : `Dockerfile.prod` pose
+> `RUN_MIGRATIONS=true` ; `docker-entrypoint.sh` migre `public` puis
+> `shared_tenants` au démarrage (bootstrap idempotent, retries 3×, verrou
+> `--isolated`, catch-up course 42P07). Avant un tag sur schéma sensible :
+> backup Neon (plan payant) puis healthcheck post-déploiement (déjà câblé).
+>
+> **Rollback** : API → rollback Render vers le deploy live précédent (HTTP
+> 400/409 = warning : cible déjà live, non bloquant). Frontends (Vercel/CF
+> Pages) : pas de rollback auto — un échec avant promote laisse l'ancien
+> déploiement en place ; après promote, re-publier la Release précédente.
 
 ### ⚠️ Dérive constatée entre `render.yaml` (dev) et la config réelle
 

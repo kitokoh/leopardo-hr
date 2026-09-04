@@ -53,6 +53,13 @@ Côté API prod, `CORS_EXTRA_ORIGIN`/`ADMIN_DASHBOARD_URL` =
 
 ## Déclenchement d'un déploiement
 
+**Prod (3 surfaces)** : pousser le tag `vX.Y.Z` sur HEAD de `main` →
+`release.yml` crée la GitHub Release → `deploy-prod.yml` (événement
+`release: published`) déploie API Render + web Vercel + admin CF Pages avec
+healthchecks. Alternative : `workflow_dispatch` de `deploy-prod.yml` avec un
+tag existant (gate : checks verts ; tag ≠ HEAD de main → avertissement).
+
+
 ```bash
 # Déploiement API/Web (Render) — via le hook secret (depuis GitHub Actions)
 curl -X POST "$RENDER_DEPLOY_HOOK_URL"

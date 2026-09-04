@@ -1,16 +1,26 @@
 name: Deploy Production - Leopardo RH
 
-# Déploiement PRODUCTION : déclenché UNIQUEMENT par un tag git validé
-# (vX.Y.Z), jamais par un push direct sur main (contrairement à
-# deploy-main.yml, qui reste le déploiement continu dev/test). Réutilise la
-# même logique de vérification que release.yml (tag ancêtre de main +
-# checks requis verts) avant de déclencher les trois surfaces prod :
+# Déploiement PRODUCTION : déclenché par la PUBLICATION d'une GitHub Release
+# (chaîne : push d'un tag vX.Y.Z → release.yml crée la Release → cet
+# événement `release: published` → déploiement des trois surfaces prod).
+# Jamais par un push direct sur main (deploy-main.yml reste le tier
+# dev/continu). Le workflow_dispatch reste disponible pour (re)déployer un
+# tag existant après validation manuelle.
+# Réutilise la même logique de vérification que release.yml (checks requis
+# verts) AVANT de déclencher les trois surfaces prod :
 #   1. API Laravel      → Render prod  (service leopardo-prod)
 #   2. Web client       → Vercel prod  (projet leopardo-prod, front/web)
 #   3. Admin dashboard  → Cloudflare Pages prod (projet leo-admin-prod)
 # Les jobs web/admin sont exécutés seulement après le job API (l'admin et le
 # portail web pointent vers l'API prod ; un échec API ne doit pas promouvoir
 # un frontend qui le cible). Voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md.
+#
+# ⚠️ Limite connue de l'API Render (vérifiée en réel 2026-09-04) :
+# POST /services/{id}/deploys déploie la HEAD de la branche du service
+# (main), PAS le commit du tag. Pour garantir « prod = exactement le code
+# vérifié », le job verify exige donc que le tag pointe sur HEAD de main
+# (release automatique). En workflow_dispatch sur un tag plus ancien, un
+# avertissement explicite est émis (l'API recevra le code de main).
 #
 # Variable intentionnellement distincte de la `vars.PROD_API_BASE_URL`
 # utilisée ailleurs dans ce repo (qui cible en réalité l'environnement
@@ -25,9 +35,10 @@ name: Deploy Production - Leopardo RH
 # /services/{serviceId}/rollback), ce qu'un deploy hook seul ne permet pas.
 
 on:
-  push:
-    tags:
-      - "v*"
+  # Publiée = chaîne tag vX.Y.Z → release.yml → release publiée (évite les
+  # doubles runs tag+release, rend le déclenchement visible dans l'UI GitHub).
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       tag:
@@ -68,7 +79,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             TAG="${{ github.event.inputs.tag }}"
           else
-            TAG="${GITHUB_REF_NAME}"
+            TAG="${{ github.event.release.tag_name }}"
           fi
 
           # Refus des tags invalides (injection / typos), même garde que release.yml.
@@ -96,6 +107,23 @@ jobs:
             exit 1
           fi
           echo "Tag ${TAG} -> ${TAG_COMMIT} (sur main) : OK"
+
+          # ⚠️ L'API Render déploie la HEAD de main, pas le commit du tag
+          # (limite API, voir en-tête). En déclenchement automatique
+          # (release), on exige donc tag == HEAD de main : le code vérifié
+          # est exactement le code déployé. En dispatch manuel d'un tag plus
+          # ancien, on avertit (l'API recevra le code de main).
+          MAIN_HEAD=$(git rev-parse "origin/main")
+          if [[ "${TAG_COMMIT}" != "${MAIN_HEAD}" ]]; then
+            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+              echo "::warning::Tag ${TAG} != HEAD de main (${MAIN_HEAD:0:8}). L'API Render déploiera le code de main, pas celui du tag (limite API Render). Les frontends Vercel/CF déploient eux le commit du tag."
+            else
+              echo "::error::Le tag ${TAG} (${TAG_COMMIT:0:8}) n'est pas sur HEAD de main (${MAIN_HEAD:0:8}) — la Release doit être créée sur le commit HEAD (le code API déployé par Render = HEAD de main)."
+              exit 1
+            fi
+          else
+            echo "Tag ${TAG} == HEAD de main : OK"
+          fi
 
       - name: Verify required checks on the release commit
         shell: bash
@@ -156,11 +184,9 @@ jobs:
     # supplémentaire est souhaitée avant le déploiement.
     environment:
       name: production
-      # environment.url n'accepte pas le contexte `secrets` — si
-      # PROD_RENDER_API_BASE_URL est stockée en secret (pas en variable),
-      # ce lien reste vide dans l'UI GitHub (cosmétique uniquement, la
-      # logique fonctionnelle plus bas utilise bien `secrets.*`).
-      url: ${{ vars.PROD_RENDER_API_BASE_URL }}
+      # environment.url n'accepte pas le contexte `secrets` : la variable
+      # PROD_RENDER_SERVICE_URL (URL publique du service) alimente le lien.
+      url: ${{ vars.PROD_RENDER_SERVICE_URL }}
     permissions:
       contents: read
     steps:
@@ -295,11 +321,22 @@ jobs:
           set -euo pipefail
           if [[ -n "${PREVIOUS_DEPLOY_ID}" ]]; then
             echo "Prod deployment failed. Rolling back to ${PREVIOUS_DEPLOY_ID}..."
-            curl --fail --silent --show-error -X POST \
+            HTTP_CODE=$(curl --silent --show-error -o /tmp/rollback.out -w '%{http_code}' -X POST \
               -H "Authorization: Bearer ${RENDER_PROD_API_KEY}" \
               -H "Content-Type: application/json" \
               "https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/rollback" \
-              -d "{\"deployId\": \"${PREVIOUS_DEPLOY_ID}\"}"
+              -d "{\"deployId\": \"${PREVIOUS_DEPLOY_ID}\"}")
+            if [[ "${HTTP_CODE}" == "200" || "${HTTP_CODE}" == "201" || "${HTTP_CODE}" == "202" ]]; then
+              echo "Rollback triggered (HTTP ${HTTP_CODE})."
+            elif [[ "${HTTP_CODE}" == "400" || "${HTTP_CODE}" == "409" ]]; then
+              # Constat réel 2026-09-04 : Render renvoie 400 quand la cible du
+              # rollback est déjà le deploy live (rien à faire) — warning, pas
+              # un échec (le déploiement précédent reste en place).
+              echo "::warning::Rollback ignoré (HTTP ${HTTP_CODE}) — la cible ${PREVIOUS_DEPLOY_ID} est déjà le deploy live ou invalide : $(cat /tmp/rollback.out)"
+            else
+              echo "::error::Rollback failed (HTTP ${HTTP_CODE}) : $(cat /tmp/rollback.out)"
+              exit 1
+            fi
           else
             echo "::warning::Prod deployment failed and no previous live deploy was found. Cannot auto-rollback (first deploy?)."
           fi
