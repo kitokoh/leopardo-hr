@@ -1,5 +1,8 @@
 <?php
 
+use App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter;
+use App\Core\AI\Infrastructure\Adapters\UnavailableModelInferenceAdapter;
+
 return [
     'enabled' => env('AI_ENABLED', false),
     'provider' => env('AI_PROVIDER', 'openai'),
@@ -160,5 +163,41 @@ return [
             'absences.approve',
             'payroll.view',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modèles IA de vision (face / liveness / OCR) — AI-001 #6770, BIO-001 #6762
+    |--------------------------------------------------------------------------
+    |
+    | Résolution des contrats Core\AI par configuration. Le défaut est
+    | FAIL-CLOSED : aucun fournisseur branché → `provider_unavailable` /
+    | `unavailable`. Les adaptateurs FAKE sont réservés aux tests.
+    |
+    */
+
+    'models' => [
+        // Contrat FaceVerificationPort (vérification faciale 1:1).
+        'face_verification' => [
+            'adapter' => env(
+                'FACE_VERIFICATION_ADAPTER',
+                UnavailableFaceVerificationAdapter::class
+            ),
+        ],
+        // Contrat ModelInferencePort (OCR, liveness, modèles génériques).
+        'inference' => [
+            'adapter' => env(
+                'MODEL_INFERENCE_ADAPTER',
+                UnavailableModelInferenceAdapter::class
+            ),
+        ],
+    ],
+
+    // AI-002 (#6771) — OCR des compteurs FuelStation : seuil de confiance
+    // sous lequel un relevé n'est JAMAIS auto-enregistré (revue humaine
+    // obligatoire, statut needs_review). Sur-seuil SANS anomalie (unité,
+    // valeur décroissante) requis pour l'enregistrement automatique.
+    'meter_ocr' => [
+        'confidence_threshold' => (float) env('METER_OCR_CONFIDENCE_THRESHOLD', 0.92),
     ],
 ];

@@ -175,6 +175,17 @@ return [
             'formatter' => JsonFormatter::class,
         ],
 
+        // BIO-008 (#6773) : observabilité biométrique — canal dédié avec les
+        // mêmes garanties de rédaction que l'audit (aucun payload biométrique).
+        'biometric' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/biometric.log'),
+            'level' => 'info',
+            'days' => 90,
+            'replace_placeholders' => true,
+            'formatter' => JsonFormatter::class,
+        ],
+
         'discord' => [
             'driver' => 'monolog',
             'level' => env('LOG_DISCORD_LEVEL', 'error'),
