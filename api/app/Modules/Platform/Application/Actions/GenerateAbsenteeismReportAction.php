@@ -12,13 +12,14 @@ use RuntimeException;
  * Rapport RH absentéisme — jours approuvés par type d'absence, toutes
  * tables tenant (schéma shared_tenants). Logique extraite de
  * PlatformHrReportController (issue #6569, audit DDD M1).
- *
- * @return array{columns: string[], rows: array<int, array<string, mixed>>}
  */
 final class GenerateAbsenteeismReportAction
 {
     private const TENANT_SCHEMA = 'shared_tenants';
 
+    /**
+     * @return array{columns: string[], rows: array<int, array<string, mixed>>}
+     */
     public function execute(string $start, string $end): array
     {
         try {

@@ -59,7 +59,8 @@ class HrReportActionsTest extends TestCase
         $this->assertSame(['Statut', 'Effectif'], $report['columns']);
         $this->assertNotEmpty($report['rows']);
 
-        $totals = array_column($report['rows'], 'Effectif');
+        $statusRows = array_slice($report['rows'], 0, -1);
+        $totals = array_column($statusRows, 'Effectif');
         $this->assertSame(3, array_sum($totals));
         $this->assertSame('TOTAL', $report['rows'][count($report['rows']) - 1]['Statut']);
     }

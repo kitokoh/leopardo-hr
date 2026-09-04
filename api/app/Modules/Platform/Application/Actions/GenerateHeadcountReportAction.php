@@ -12,13 +12,14 @@ use RuntimeException;
  * Rapport RH headcount — effectif par statut, toutes tables tenant
  * (schéma shared_tenants). Logique extraite de PlatformHrReportController
  * (issue #6569, audit DDD M1).
- *
- * @return array{columns: string[], rows: array<int, array<string, mixed>>}
  */
 final class GenerateHeadcountReportAction
 {
     private const TENANT_SCHEMA = 'shared_tenants';
 
+    /**
+     * @return array{columns: string[], rows: array<int, array<string, mixed>>}
+     */
     public function execute(): array
     {
         try {
