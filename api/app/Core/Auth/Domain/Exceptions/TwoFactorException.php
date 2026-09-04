@@ -37,4 +37,9 @@ final class TwoFactorException extends DomainException
     {
         return new self('Two-factor challenge expired or missing', 401, 'TWO_FACTOR_CHALLENGE_EXPIRED');
     }
+
+    public static function tooManyAttempts(): self
+    {
+        return new self('Too many invalid two-factor attempts', 429, 'TWO_FACTOR_TOO_MANY_ATTEMPTS');
+    }
 }

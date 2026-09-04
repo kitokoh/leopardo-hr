@@ -46,7 +46,8 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `deploy-main.yml` | Push → main | Déploiement production (Render) |
+| `deploy-main.yml` | Push → main | Déploiement continu dev/test (Render `gestionemployerbackend` via hook) |
+| `deploy-prod.yml` | GitHub Release publiée (tag `vX.Y.Z` → `release.yml` → `release: published`) + `workflow_dispatch` | Déploiement PROD des trois surfaces : API Render `leopardo-prod` (job `deploy-prod`, rollback API), web Vercel `leopardo-prod` (job `deploy-web-prod`), admin Cloudflare Pages `leo-admin-prod` (job `deploy-admin-prod`) — voir `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` |
 | `deploy-staging.yml` | Push → main + dispatch (`push` est l'unique déclencheur direct depuis #3545/#4359 ; `workflow_run` reste géré en défense en profondeur dans le script) | Déploiement staging — **fail-fast si `STAGING_API_URL`/`RENDER_STAGING_DEPLOY_HOOK_URL` absents** (plus aucun fallback prod, issue #1485) |
 | `e2e-staging.yml` | `workflow_run` de « Deploy - Leopardo RH » (`deploy-main.yml`) | Tests E2E post-déploiement **prod** (nom de fichier historique ; contenu : `E2E - Playwright Prod Smoke`) |
 | `mobile-distribute.yml` | Manuel + tags | Distribution APK/IPA |
@@ -119,7 +120,7 @@ ci-dessous.
 | `cleanup-orphan-runs.yml` | Schedule + PR close | Annule les runs orphelins (cf. `dev-hub/tools/cancel-orphan-runs.sh`) |
 | `country-catalog-check.yml` | PR → api | Garde catalogue pays (double du check dans `architecture-check.yml`) |
 | `crm-branch-protocol.yml` | PR bc/crm* | Protocole de branche du BC CRM |
-| `deploy-admin-dashboard.yml` | Push → main | Déploie l'admin dashboard sur Cloudflare Pages |
+| `deploy-admin-dashboard.yml` | Push → main (chemin DEV — projet `leo-admin`, compte Cloudflare dev) | Déploie l'admin dashboard sur Cloudflare Pages ; la PROD (projet `leo-admin-prod`) passe par `deploy-prod.yml` (tag) |
 | `e2e-isolated.yml` | PR → web/admin | E2E isolés (sandbox) |
 | `fix-feat-ratio-guard.yml` | PR → main | Ratio fix/feat (signal fort, non requis) |
 | `issue-governance-guard.yml` | Issues | Garde de gouvernance des issues |
