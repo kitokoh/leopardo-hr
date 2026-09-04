@@ -10,6 +10,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Support\CountryDefaults;
+use App\Support\CsvCellSanitizer;
 use Illuminate\Support\Collection;
 use Throwable;
 
@@ -209,8 +210,8 @@ class BankExportGenerator
         $seq = 1;
         foreach ($slips as $slip) {
             $employee = $slip->employee;
-            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $ccp = $employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT);
+            $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
+            $ccp = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? str_pad((string) $employee->id, 20, '0', STR_PAD_LEFT));
             $amount = str_pad(number_format($slip->net_salary, 2, '', ''), 12, '0', STR_PAD_LEFT);
 
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT).str_pad($ccp, 20).str_pad($name, 30).$amount;
@@ -267,8 +268,8 @@ class BankExportGenerator
         $seq = 1;
         foreach ($slips as $slip) {
             $employee = $slip->employee;
-            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $account = $employee->bank_account ?? $employee->iban ?? '';
+            $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
+            $account = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? '');
 
             $lines[] = implode('|', [
                 'DETAIL',
@@ -324,8 +325,8 @@ class BankExportGenerator
         $seq = 1;
         foreach ($slips as $slip) {
             $employee = $slip->employee;
-            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $rib = $employee->bank_account ?? $employee->iban ?? '';
+            $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
+            $rib = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? '');
 
             $lines[] = implode('|', [
                 'DETAIL',
@@ -377,8 +378,8 @@ class BankExportGenerator
         $seq = 1;
         foreach ($slips as $slip) {
             $employee = $slip->employee;
-            $name = mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? '')));
-            $rib = $employee->bank_account ?? $employee->iban ?? '';
+            $name = CsvCellSanitizer::neutralize(mb_strtoupper(trim(($employee->last_name ?? '').' '.($employee->first_name ?? ''))));
+            $rib = CsvCellSanitizer::neutralize($employee->bank_account ?? $employee->iban ?? '');
 
             // Détail : D + séquence (6) + RIB (20) + nom (30) + net (12,2) + référence (20).
             $lines[] = 'D'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT)
@@ -403,6 +404,10 @@ class BankExportGenerator
 
     private function csvEscape(string $value): string
     {
+        // Audit #6556 — neutralisation OWASP des formules CSV (= + - @ TAB CR)
+        // avant l'échappement structurel (noms/IBAN fournis par l'employé).
+        $value = CsvCellSanitizer::neutralize($value);
+
         if (str_contains($value, ',') || str_contains($value, '"') || str_contains($value, "\n")) {
             return '"'.str_replace('"', '""', $value).'"';
         }
