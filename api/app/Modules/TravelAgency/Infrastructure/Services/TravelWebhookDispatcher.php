@@ -56,7 +56,7 @@ final class TravelWebhookDispatcher
                 'body' => $body,
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    self::SIGNATURE_HEADER => $this->signature($body, $subscription->secret()),
+                    self::SIGNATURE_HEADER => $this->signature($body, app(TravelWebhookSecretService::class)->get($subscription)),
                     'X-Leopardo-Event' => $delivery->event_type,
                     'X-Leopardo-Delivery-Id' => $delivery->id,
                 ],

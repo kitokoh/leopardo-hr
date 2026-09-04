@@ -14,13 +14,12 @@ import { RestaurantCrudTable, type CrudConfig } from '@/components/restaurant/Re
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 
-const STATUS_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
-];
-
 export default function RestaurantReferentialPage() {
   const locale = getPreferredLocale();
+  const STATUS_OPTIONS = [
+    { value: 'active', label: 'Active' },
+    { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
+  ];
   const [tab, setTab] = useState('branches');
 
   const configs: Record<string, CrudConfig> = {

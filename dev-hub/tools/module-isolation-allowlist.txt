@@ -10,6 +10,7 @@ Core/Auth -> Modules/Notification
 Core/Auth -> Modules/Planning
 Core/Feature -> Modules/Billing
 Core/Tenant -> Modules/Attendance
+Modules/Absence -> Modules/Planning
 Modules/Accounting -> Modules/Marketing
 Modules/Accounting -> Modules/Notification
 Modules/Attendance -> Modules/Fleet
@@ -18,6 +19,7 @@ Modules/Attendance -> Modules/Notification
 Modules/Attendance -> Modules/Planning
 Modules/Billing -> Modules/Payroll
 Modules/Billing -> Modules/Platform
+Modules/Cabinet -> Modules/HR
 Modules/Expense -> Modules/Planning
 Modules/Fleet -> Modules/Attendance
 Modules/Growth -> Modules/Billing
@@ -52,8 +54,21 @@ Modules/Platform -> Modules/Onboarding
 Modules/Platform -> Modules/Payroll
 Modules/Platform -> Modules/Planning
 Modules/Recruitment -> Modules/HR
-# RESTO-808 (#6229) — les consommateurs d'outbox cuisine/service notifient via
-# CommunicationService (BC-13), pattern identique à Accounting/Payroll/Planning
-# -> Notification. Ajouté lors de la consolidation BC-25 (PR #6659) ; à
-# refactorer vers Events Shared si la revue d'architecture l'exige.
+
+# Consolidation 2026-09-04 (PR #6816) : nouveaux modules intégrés qui
+# s'appuient sur le hub de notifications partagé (même couplage que les
+# modules existants) et sur les services HR (imports/exports référentiel).
+# Décision de la session de consolidation ; à revisiter si le hub expose un
+# contrat découplé plus large que App\Contracts\Communication\...Interface.
+Modules/EduManager -> Modules/Notification
+Modules/TravelAgency -> Modules/Notification
+Modules/FuelStation -> Modules/HR
+
+# Consolidation 2026-09-04 (PR #6816) — modules intégrés depuis les branches
+# BC (absents de main avant la consolidation). Couplage au hub de
+# notifications partagé, même pattern que les modules historiques
+# (Accounting/Attendance/HR/Platform -> Notification, voir PR #6659 BC-25).
 Modules/RestaurantManager -> Modules/Notification
+Modules/EduManager -> Modules/Notification
+Modules/TravelAgency -> Modules/Notification
+Modules/FuelStation -> Modules/HR

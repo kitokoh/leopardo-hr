@@ -16,7 +16,7 @@ export type ClientModuleKey =
   | 'accounting'
   | 'crm'
   | 'restaurant'
-  | 'edu_manager';
+  | 'edu_manager'
   | 'restaurant_kitchen';
 export type FeatureState = 'available' | 'trial' | 'locked';
 export type ClientModule = {
@@ -247,9 +247,18 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/crm/leads': 'crm',
   '/crm/pipeline': 'crm',
   '/restaurant': 'restaurant',
-  '/restaurant/kitchen': 'restaurant',
   '/restaurant/pos': 'restaurant',
   '/restaurant/kitchen': 'restaurant_kitchen',
+  '/edu-manager': 'edu_manager',
+  '/edu-manager/campuses': 'edu_manager',
+  '/edu-manager/academic-years': 'edu_manager',
+  '/edu-manager/subjects': 'edu_manager',
+  '/edu-manager/classes': 'edu_manager',
+  '/edu-manager/students': 'edu_manager',
+  '/edu-manager/admissions': 'edu_manager',
+  '/edu-manager/assessments': 'edu_manager',
+  '/edu-manager/report-cards': 'edu_manager',
+  '/edu-manager/teacher': 'edu_manager',
 };
 function normalizedRole(user?: StoredAuthUser | null): string {
   if (!user?.role) {
@@ -384,13 +393,3 @@ export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser |
   }
   return getClientModuleAccess(user).find((module) => module.key === moduleKey) ?? null;
 }
-  '/edu-manager': 'edu_manager',
-  '/edu-manager/campuses': 'edu_manager',
-  '/edu-manager/academic-years': 'edu_manager',
-  '/edu-manager/subjects': 'edu_manager',
-  '/edu-manager/classes': 'edu_manager',
-  '/edu-manager/students': 'edu_manager',
-  '/edu-manager/admissions': 'edu_manager',
-  '/edu-manager/assessments': 'edu_manager',
-  '/edu-manager/report-cards': 'edu_manager',
-  '/edu-manager/teacher': 'edu_manager',

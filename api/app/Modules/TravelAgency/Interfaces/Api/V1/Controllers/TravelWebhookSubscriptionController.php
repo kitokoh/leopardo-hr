@@ -12,7 +12,7 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelWebhookSubsc
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Crypt;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 
 /**
  * TRAVEL-806 (#6097) — Abonnements webhook transporteurs (CRUD tenant-scoped).
@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\Crypt;
  */
 class TravelWebhookSubscriptionController extends Controller
 {
+    public function __construct(private readonly TravelWebhookSecretService $secretService)
+    {
+    }
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -72,7 +76,7 @@ class TravelWebhookSubscriptionController extends Controller
             'events' => $request->validated('events'),
             'active' => (bool) ($request->validated('active') ?? true),
         ]);
-        $subscription->setSecret($plainSecret);
+        $this->secretService->set($subscription, $plainSecret);
         $subscription->save();
 
         return response()->json([
@@ -131,7 +135,7 @@ class TravelWebhookSubscriptionController extends Controller
             'carrier_id' => $subscription->carrier_id,
             'carrier_code' => $subscription->carrier?->code,
             'url' => $subscription->url,
-            'secret_prefix' => $subscription->secretPrefix(),
+            'secret_prefix' => $this->secretService->prefix($subscription),
             'events' => $subscription->events,
             'active' => $subscription->active,
             'created_at' => $subscription->created_at?->toIso8601String(),

@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Jobs;
 
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSigner;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -65,7 +66,7 @@ class DeliverTravelWebhookJob implements ShouldQueue
             'delivered_at' => $timestamp,
         ]);
         $canonical = $signer->canonicalPayload($payload);
-        $signature = $signer->sign($payload, $subscription->secret());
+        $signature = $signer->sign($payload, app(TravelWebhookSecretService::class)->get($subscription));
 
         try {
             $response = Http::timeout(10)
