@@ -77,7 +77,7 @@ class AbsenceService
                     : $this->currentAvailableBalance($employee, $typeId, $year);
 
                 if ($balance < $daysCount) {
-                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', $balance, $daysCount));
+                    throw new InsufficientLeaveBalanceException((float) $balance, (float) $daysCount);
                 }
             }
 
@@ -207,7 +207,7 @@ class AbsenceService
                 $available = (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending;
 
                 if ($available < $days) {
-                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', max(0.0, $available), $days));
+                    throw new InsufficientLeaveBalanceException(max(0.0, $available), $days);
                 }
 
                 $snapshot->update([

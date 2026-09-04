@@ -286,18 +286,5 @@ final class FuelImportService
 
 
 
-    private function stationInTenant(Employee $actor, string $stationId): ?FuelStation
-    {
-        if (! ctype_digit($stationId)) {
-            return null;
-        }
-
-        /** @var FuelStation|null $station */
-        $station = FuelStation::query()
-            ->where('company_id', $actor->company_id)
-            ->find((int) $stationId);
-
-        return $station;
-    }
 
 }

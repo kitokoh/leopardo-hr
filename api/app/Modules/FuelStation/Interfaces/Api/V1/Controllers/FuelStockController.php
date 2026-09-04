@@ -246,12 +246,15 @@ class FuelStockController extends Controller
         $this->authorize('runReconciliation', FuelReconciliationRun::class);
 
         $runDateRaw = $request->validated()['run_date'] ?? now()->toDateString();
-        $runDate = is_string($runDateRaw) ? $runDateRaw : now()->toDateString();
-        $result = $this->stocks->reconcile($station, $runDate, $actor);
+        $date = Carbon::parse(is_string($runDateRaw) ? $runDateRaw : now()->toDateString());
+
+        $result = $this->stocks->reconcile((string) $actor->company_id, (int) $station->getAttribute('id'), $date, $actor->id);
 
         return response()->json([
-            'data' => $this->runPayload($result['run']),
-            'meta' => ['replayed' => $result['replayed']],
+            'data' => [
+                'run' => $this->runPayload($result['run']),
+                'variances' => $result['variances'],
+            ],
         ]);
     }
 
