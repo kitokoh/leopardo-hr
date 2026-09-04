@@ -94,7 +94,14 @@ class EmployeeResource extends JsonResource
             'postal_code' => $this->employeeAttribute('postal_code'),
             'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),
             'emergency_contact_phone' => $this->employeeAttribute('emergency_contact_phone'),
-            'extra_data' => $this->employeeAttribute('extra_data') ?? [],
+            // #6546 (audit-secu M3) — extra_data : masquage RGPD des clés
+            // sensibles (NID, identifiant fiscal, groupe sanguin) appliqué
+            // comme pour les salaires (#5262) : seuls l'employé lui-même,
+            // les managers principal/rh/comptable et le manager d'équipe
+            // scopé (pour ses collaborateurs) voient ces clés. Les clés
+            // non sensibles (department, job_title, work_location, …)
+            // restent exposées pour les écrans équipe mobiles/web.
+            'extra_data' => $this->maskedExtraData($canViewSalary),
             'language' => $resolvedLanguage,
             'is_rtl' => Language::isRtl($resolvedLanguage),
             'capabilities' => $this->capabilities(),
@@ -135,6 +142,42 @@ class EmployeeResource extends JsonResource
         }
 
         return $employee->getAttributeValue($key);
+    }
+
+    /**
+     * #6546 — clés d'extra_data considérées sensibles (RGPD) : pièce
+     * d'identité, identifiant fiscal et donnée de santé. Masquées pour
+     * tout viewer non autorisé, comme les salaires (#5262).
+     *
+     * @var list<string>
+     */
+    private const SENSITIVE_EXTRA_DATA_KEYS = ['national_id', 'tax_identifier', 'blood_group'];
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function maskedExtraData(bool $canViewSensitive): array
+    {
+        $extraData = $this->employeeAttribute('extra_data');
+
+        if (! is_array($extraData)) {
+            return $extraData ?? [];
+        }
+
+        if ($canViewSensitive) {
+            return $extraData;
+        }
+
+        $masked = [];
+        foreach ($extraData as $key => $value) {
+            if (in_array((string) $key, self::SENSITIVE_EXTRA_DATA_KEYS, true)) {
+                continue;
+            }
+
+            $masked[$key] = $value;
+        }
+
+        return $masked;
     }
 
     private function capabilities(): array
