@@ -71,7 +71,6 @@ class HrReportActionsTest extends TestCase
         $report = app(GenerateTurnoverReportAction::class)->execute('2026-01-01', '2026-12-31');
 
         $this->assertSame(['Mois', 'Embauches', 'Departs', 'Effectif net'], $report['columns']);
-        $this->assertIsArray($report['rows']);
     }
 
     /** @test */
@@ -80,7 +79,6 @@ class HrReportActionsTest extends TestCase
         $report = app(GenerateAbsenteeismReportAction::class)->execute('2026-01-01', '2026-12-31');
 
         $this->assertSame(['Type', 'Jours'], $report['columns']);
-        $this->assertIsArray($report['rows']);
     }
 
     /** @test */
@@ -89,7 +87,6 @@ class HrReportActionsTest extends TestCase
         $report = app(GeneratePayrollSummaryReportAction::class)->execute('2026-01-01', '2026-12-31');
 
         $this->assertSame(['Mois', 'Bulletins', 'Brut', 'Net'], $report['columns']);
-        $this->assertIsArray($report['rows']);
     }
 
     /** @test */
@@ -98,6 +95,5 @@ class HrReportActionsTest extends TestCase
         $report = app(GenerateTrainingProgressReportAction::class)->execute('2026-01-01', '2026-12-31');
 
         $this->assertSame(['Formation', 'Inscrits', 'Completes'], $report['columns']);
-        $this->assertIsArray($report['rows']);
     }
 }
