@@ -72,6 +72,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   File? _selectedFaceImage;
   BiometricEnrollment? _latestEnrollment;
   String _selectedLanguage = 'fr';
+  int _selectedSection = 0;
 
   @override
   void initState() {
@@ -209,34 +210,89 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 20),
           _buildAccountOverviewSection(context),
           const SizedBox(height: 20),
-          _buildProfileSection(context, authState),
+          _buildAccountNavigation(),
           const SizedBox(height: 20),
-          _buildQrOnboardingSection(context),
-          const SizedBox(height: 20),
-          _buildCareerSection(),
-          const SizedBox(height: 20),
-          _buildCabinetSection(),
-          const SizedBox(height: 20),
-          _buildLanguageSection(context, authState),
-          const SizedBox(height: 20),
-          // Issue #5624 — réglage thème in-app
-          _buildThemeSection(context),
-          const SizedBox(height: 20),
-          _buildNotificationSection(context),
-          const SizedBox(height: 20),
-          _buildPasswordSection(context, authState),
-          const SizedBox(height: 20),
-          _buildTwoFactorSection(context),
-          const SizedBox(height: 20),
-          _buildBiometricSection(context),
-          const SizedBox(height: 20),
-          _buildEdgeSection(context),
+          ..._buildSelectedAccountSection(context, authState),
           const SizedBox(height: 28),
           _buildLogoutSection(context),
           SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
         ],
       ),
     );
+  }
+
+  Widget _buildAccountNavigation() {
+    const sections = [
+      (icon: Icons.person_outline_rounded, label: 'Profil'),
+      (icon: Icons.badge_outlined, label: 'Parcours'),
+      (icon: Icons.tune_rounded, label: 'Preferences'),
+      (icon: Icons.security_rounded, label: 'Securite'),
+    ];
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        for (var index = 0; index < sections.length; index++)
+          ChoiceChip(
+            selected: _selectedSection == index,
+            avatar: Icon(sections[index].icon, size: 18),
+            label: Text(sections[index].label),
+            onSelected: (_) => setState(() => _selectedSection = index),
+            labelStyle: TextStyle(
+              color:
+                  _selectedSection == index
+                      ? Colors.white
+                      : MobileSurface.secondary,
+              fontWeight: FontWeight.w700,
+            ),
+            selectedColor: AppColors.rh,
+            backgroundColor: MobileSurface.surface,
+            side: const BorderSide(color: MobileSurface.border),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+      ],
+    );
+  }
+
+  List<Widget> _buildSelectedAccountSection(
+    BuildContext context,
+    AuthState authState,
+  ) {
+    final spacing = <Widget>[const SizedBox(height: 20)];
+    switch (_selectedSection) {
+      case 1:
+        return [
+          _buildQrOnboardingSection(context),
+          ...spacing,
+          _buildCareerSection(),
+          ...spacing,
+          _buildCabinetSection(),
+        ];
+      case 2:
+        return [
+          _buildLanguageSection(context, authState),
+          ...spacing,
+          _buildThemeSection(context),
+          ...spacing,
+          _buildNotificationSection(context),
+        ];
+      case 3:
+        return [
+          _buildPasswordSection(context, authState),
+          ...spacing,
+          _buildTwoFactorSection(context),
+          ...spacing,
+          _buildBiometricSection(context),
+          ...spacing,
+          _buildEdgeSection(context),
+        ];
+      case 0:
+      default:
+        return [_buildProfileSection(context, authState)];
+    }
   }
 
   Widget _buildIdentityGlassCard(BuildContext context) {

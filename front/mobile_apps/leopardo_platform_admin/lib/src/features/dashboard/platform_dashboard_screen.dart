@@ -30,10 +30,9 @@ class PlatformDashboardScreen extends ConsumerWidget {
         subtitle: auth.user?.email ?? context.l10n.dashboardSuperAdmin,
         actions: [
           IconButton(
-            tooltip: context.l10n.navigationLogout,
-            onPressed: () =>
-                ref.read(platformAuthControllerProvider.notifier).logout(),
-            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Mon compte',
+            onPressed: () => context.push('/platform/account'),
+            icon: const Icon(Icons.account_circle_rounded),
           ),
         ],
       ),
@@ -152,6 +151,14 @@ class PlatformDashboardScreen extends ConsumerWidget {
           subtitle: context.l10n.dashboardEdgeNodesHint,
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/edge-nodes'),
+        ),
+        MobileListGlassCard(
+          icon: Icons.account_circle_rounded,
+          iconColor: AppColors.success,
+          title: 'Mon compte',
+          subtitle: 'Session super-admin, securite et perimetre plateforme.',
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push('/platform/account'),
         ),
       ],
     );

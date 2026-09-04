@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 import 'core/platform_providers.dart';
+import 'features/account/platform_account_screen.dart';
 import 'features/auth/platform_auth_controller.dart';
 import 'features/auth/platform_login_screen.dart';
 import 'features/companies/company_create_screen.dart';
@@ -58,6 +59,10 @@ final platformRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/platform',
         builder: (context, state) => const PlatformDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/platform/account',
+        builder: (context, state) => const PlatformAccountScreen(),
       ),
       GoRoute(
         path: '/platform/companies',

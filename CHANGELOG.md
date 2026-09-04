@@ -1,4 +1,5 @@
 ## [Unreleased]
+- **feat(mobile): espace Compte employee en sections + route `/platform/account` super-admin.** L'app employee garde les blocs existants (profil, parcours, preferences, securite, 2FA, biometrie, Edge) mais les affiche par sections compactes ; Platform Admin ajoute une page `Mon compte` separee des workflows tenant et le garde Plan 29 couvre la route.
 - **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 - **fix(gouvernance): Gate::policy CRM au point unique (PA2-ARCH-008) + BC-25 RESTAURANT au registre canonique (Closes #6575, #6602).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via

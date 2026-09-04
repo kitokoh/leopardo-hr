@@ -61,6 +61,7 @@ if (Test-Path -LiteralPath $appRoot) {
 
     foreach ($route in @(
         "/platform/login",
+        "/platform/account",
         "/platform/companies/new",
         "/platform/company-requests"
     )) {
