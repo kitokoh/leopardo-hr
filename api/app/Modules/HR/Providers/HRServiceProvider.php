@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Providers;
 
 use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
+use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
+use App\Modules\HR\Infrastructure\Services\ContractPdfGenerator;
 use App\Modules\Recruitment\Infrastructure\Services\ApplicantPipelineReader;
 use Illuminate\Support\ServiceProvider;
 

@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+- **refactor(isolation): paires #1-2 — facade Absence fusionnée dans Planning + ContractPdfGenerator rejoint HR (Part of #6588).** Paire #1 : la facade HTTP `Modules/Absence` est fusionnée dans son module canonique — `AbsenceController` et les 3 Requests déplacés dans `Modules/Planning/Interfaces`, routes `absence.php` repointées vers `Planning\...\AbsenceController`, `AbsenceServiceProvider` supprimé, registrations bootstrap nettoyées, entrée d'allowlist d'isolation retirée. Paire #2 : `ContractPdfGenerator` quitte `Modules/Cabinet` pour `Modules/HR` (module propriétaire du contrat) avec le binding déplacé dans `HRServiceProvider` (uses corrigés) ; `CabinetServiceProvider` supprimé. Requests Planning typées (`@return array<string, mixed>`, accès `company_id` typé). Répertoire `Providers/` de Cabinet conservé (structure canonique).
 - **test(e2e): suites Playwright admin-dashboard désambiguïsées (Closes #6592).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 - **fix(gouvernance): Gate::policy CRM au point unique (PA2-ARCH-008) + BC-25 RESTAURANT au registre canonique (Closes #6575, #6602).**> ⚠️ **En attente de merge** : les entrées `[Unreleased]` décrivent du travail livré sur
 > les branches BC — certaines peuvent ne pas encore être sur `main` (elles y arrivent via

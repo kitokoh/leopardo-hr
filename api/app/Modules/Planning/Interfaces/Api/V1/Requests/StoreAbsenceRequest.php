@@ -17,6 +17,9 @@ class StoreAbsenceRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         /** @var Employee|null $actor */
