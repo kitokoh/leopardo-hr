@@ -221,10 +221,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     });
 
-// ── Formulaire de contact PUBLIC (TRAVEL-913/#6425) ──────────────────────
-// Hors groupe auth : URL signée (pattern restaurant/public/*, RESTO-805) —
-// le `company` est un paramètre signé (forger un lien pour un autre tenant
-// est impossible) ; throttle dédié anti-spam.
+// ── Formulaire de contact PUBLIC (TRAVEL-913/#6425) — hors groupe auth :
+// URL signée (pattern restaurant/public/*, RESTO-805) — le `company` est un
+// paramètre signé (forger un lien pour un autre tenant est impossible) ;
+// throttle dédié anti-spam.
 Route::post('/travel/public/contact', [TravelPublicContactController::class, 'store'])
     ->middleware(['signed', 'throttle:60,1'])
     ->name('travel.public.contact.store');

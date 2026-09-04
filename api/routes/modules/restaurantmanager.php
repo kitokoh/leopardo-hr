@@ -82,6 +82,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/branches/{restaurantBranch}', [RestaurantBranchController::class, 'destroy']);
         Route::get('/branches/{restaurantBranch}/zones', [RestaurantZoneController::class, 'indexForBranch']);
 
+        // ── Commande en ligne publique (RESTO-805/#6226) — lien signé ──────
+        // Génère le lien public signé (menu + commande) d'une branche ; les
+        // routes publiques correspondantes sont déclarées plus bas dans ce
+        // fichier (middleware `signed`).
+        Route::post('/branches/{restaurantBranch}/public-menu-link', [RestaurantPublicMenuLinkController::class, 'store']);
+
         Route::get('/zones', [RestaurantZoneController::class, 'index']);
         Route::post('/zones', [RestaurantZoneController::class, 'store']);
         Route::get('/zones/{restaurantZone}', [RestaurantZoneController::class, 'show']);
@@ -231,12 +237,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // ── Boutique publique : gestion du jeton (RESTO-805/#6226) ─────────
         Route::get('/shop/token', [RestaurantPublicShopController::class, 'token']);
         Route::post('/shop/token/rotate', [RestaurantPublicShopController::class, 'rotateToken']);
-
-        // ── Commande en ligne publique (RESTO-805/#6226) — lien signé ──────
-        // Génère le lien public signé (menu + commande) d'une branche ; les
-        // routes publiques correspondantes sont déclarées plus bas dans ce
-        // fichier (middleware `signed`).
-        Route::post('/branches/{restaurantBranch}/public-menu-link', [RestaurantPublicMenuLinkController::class, 'store']);
 
         // ── Mobile (RESTO-801..804/#6222..#6225) — surfaces des apps ───────
         Route::prefix('mobile')->group(function (): void {

@@ -66,8 +66,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('pump')
         ->whereNumber('meter');
 
-    // AI-002 (#6771) — OCR des compteurs : soumission photo (multipart, tout
-    // employé authentifié) → 202 asynchrone ; suivi ; revue humaine manager.
+    // AI-002 (#6771) — OCR des compteurs (image -> relevé) : soumission,
+    // consultation et revue d'une demande de reconnaissance.
     Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings/ocr', [FuelMeterOcrController::class, 'submit'])
         ->whereNumber('station')
         ->whereNumber('pump')
@@ -75,8 +75,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/meter-ocr-requests/{ocr}', [FuelMeterOcrController::class, 'show'])
         ->whereNumber('ocr');
     Route::post('/fuel-station/meter-ocr-requests/{ocr}/review', [FuelMeterOcrController::class, 'review'])
-        ->middleware('api.manager')
-        ->whereNumber('ocr');
+        ->whereNumber('ocr')
+        ->middleware('api.manager');
 
     // Corrections et revues — manager principal/rh (Policy).
     Route::post('/fuel-station/meter-readings/{reading}/corrections', [FuelMeterReadingController::class, 'correct'])
