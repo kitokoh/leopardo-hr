@@ -35,7 +35,10 @@ return [
     'breadcrumbs' => [
         'logs' => true,
         'sql_queries' => true,
-        'sql_bindings' => true,
+        // #6551 (audit-secu M5) : les bindings SQL (bcrypt, montants, tokens)
+        // partaient en breadcrumbs Sentry — PII en clair dans la console
+        // Sentry. Les requêtes restent tracées (sql_queries) sans leurs valeurs.
+        'sql_bindings' => false,
         'queue_info' => true,
         'command_info' => true,
     ],
