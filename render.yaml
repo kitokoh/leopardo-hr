@@ -1,6 +1,19 @@
 # render.yaml — Leopardo RH infrastructure on Render
 # https://render.com/docs/infrastructure-as-code
 #
+# ⚠️ RÔLE DE CE BLUEPRINT (chantier CI/CD dev/prod) :
+# Ce blueprint est déployé automatiquement à CHAQUE push sur `main`
+# (.github/workflows/deploy-main.yml) — c'est donc le tier CONTINU
+# dev/test, pas la production. Les noms de service physiques et
+# APP_ENV=production ci-dessous sont laissés inchangés intentionnellement :
+# les renommer ferait perdre à Render le mapping avec les services déjà
+# déployés (recréation au lieu d'un renommage, risque de doublon/orphelin).
+# La vraie production, promue uniquement sur tag git validé (vX.Y.Z), vit
+# dans render.prod.yaml + .github/workflows/deploy-prod.yml — voir
+# docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie et
+# le plan de bascule (renommage progressif, une fois le domaine et le plan
+# payant confirmés).
+#
 # Modèle de confiance proxy (issue #4494) :
 # Render est l'unique proxy de bord devant l'API (web service
 # gestionemployerbackend). Le middleware trustProxies de l'app ne fait
