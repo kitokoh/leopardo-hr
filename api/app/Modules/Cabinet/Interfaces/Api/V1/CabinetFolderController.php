@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
-use App\Http\Controller;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Cabinet\Domain\Models\CabinetFolder;
+use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\StoreFolderRequest;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\UpdateFolderRequest;
-use App\Modules\Cabinet\Domain\Models\CabinetFolder;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -123,4 +123,3 @@ class CabinetFolderController extends Controller
         ];
     }
 }
-

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 /**
  * Conversations IA — vue cross-tenant super-admin (contrat SPA admin,
@@ -60,7 +61,7 @@ class PlatformAdminAiConversationController extends Controller
         } catch (QueryException $exception) {
             // Filet pour les races hasTable/query : table disparue entre les
             // deux → 404, sinon vraie erreur serveur.
-            if ($this->isMissingAiTable($exception)) {
+            if ($this->isFeatureUnavailable($exception)) {
                 return response()->json([
                     'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
                     'message' => __('platform.conversations_unavailable'),
@@ -158,7 +159,7 @@ class PlatformAdminAiConversationController extends Controller
             return response()->json(['data' => $enriched]);
         } catch (QueryException $exception) {
             // Issue #6690 : même état métier que l'index — 404, pas 500.
-            if ($this->isMissingAiTable($exception)) {
+            if ($this->isFeatureUnavailable($exception)) {
                 return response()->json([
                     'error' => 'AI_MESSAGES_UNAVAILABLE',
                     'message' => __('platform.conversations_unavailable'),
@@ -188,8 +189,33 @@ class PlatformAdminAiConversationController extends Controller
      * erreurs réelles (42883 fonction absente, 42703 colonne absente, …).
      * Seul le SQLSTATE 42P01 correspond à l'état métier attendu.
      */
-    private function isMissingAiTable(QueryException $exception): bool
+    /**
+     * Issue #6690 — classifieur « feature indisponible » (pur, sans base).
+     *
+     * La table tenant `ai_conversations` n'existe pas quand l'IA n'a jamais
+     * été provisionnée : état métier ATTENDU (feature indisponible), pas une
+     * erreur serveur. Reconnu par SQLSTATE :
+     *  - 42P01 (pgsql) / 42S02 (mysql) : table absente ;
+     *  - HY000 (sqlite) : « no such table ».
+     * Toute autre erreur (42703 colonne absente, 42883 fonction absente,
+     * non-DB) reste une vraie erreur serveur → false.
+     *
+     * Ne PAS matcher sur le message (« ai_conversations » apparaît dans le
+     * SQL de TOUTE requête de ce contrôleur) : cela masquerait en 404 des
+     * erreurs réelles.
+     */
+    public function isFeatureUnavailable(Throwable $exception): bool
     {
-        return str_contains((string) $exception->getCode(), '42P01');
+        if (! $exception instanceof QueryException) {
+            return false;
+        }
+
+        $code = (string) $exception->getCode();
+
+        if (in_array($code, ['42P01', '42S02'], true)) {
+            return true;
+        }
+
+        return $code === 'HY000' && str_contains($exception->getMessage(), 'no such table');
     }
 }

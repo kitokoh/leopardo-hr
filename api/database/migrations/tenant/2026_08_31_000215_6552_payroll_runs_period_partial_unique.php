@@ -25,11 +25,14 @@ return new class extends Migration
             return;
         }
 
-        // Fail loud si des doublons (company_id, période) non-cancelled
+        // Fail loud si des doublons (company_id, pays, période) non-cancelled
         // existent déjà : on ne supprime jamais de lignes silencieusement.
+        // Le pays fait partie de la clé : une société multi-pays peut exécuter
+        // une paie CI et une paie SN sur la même période (StorePayrollRunRequest
+        // accepte un country_code explicite), mais jamais deux fois le même.
         DB::statement(
             'CREATE UNIQUE INDEX IF NOT EXISTS payroll_runs_company_period_partial_unique
-            ON payroll_runs (company_id, period_start, period_end)
+            ON payroll_runs (company_id, period_start, period_end, country_code)
             WHERE status <> \'cancelled\''
         );
     }

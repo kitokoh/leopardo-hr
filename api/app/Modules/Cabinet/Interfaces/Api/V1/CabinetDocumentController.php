@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Cabinet\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Http\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\CabinetDocumentResource;
 use App\Modules\Cabinet\Domain\Models\CabinetDocument;
 use App\Modules\Cabinet\Infrastructure\Services\CabinetAuditLogger;

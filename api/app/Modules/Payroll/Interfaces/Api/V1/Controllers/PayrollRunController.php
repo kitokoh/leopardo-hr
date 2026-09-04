@@ -77,6 +77,7 @@ class PayrollRunController extends Controller
             ->where('company_id', $actor->company_id)
             ->where('period_start', $validated['period_start'])
             ->where('period_end', $validated['period_end'])
+            ->where('country_code', $validated['country_code'])
             ->where('status', '!=', 'cancelled')
             ->exists();
 
