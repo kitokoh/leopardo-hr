@@ -215,11 +215,7 @@ class FuelIncidentController extends Controller
         $actor = $request->user();
         $this->authorize('createTask', FuelMaintenanceTask::class);
 
-        $task = $this->incidents->createTask(
-            FuelMaintenanceTask::query()->make(),
-            $actor,
-            $request->validated(),
-        );
+        $task = $this->incidents->createTask($actor, $request->validated());
 
         return response()->json(['data' => $this->taskPayload($task)], 201);
     }
@@ -280,29 +276,6 @@ class FuelIncidentController extends Controller
         return response()->json(['data' => $this->taskPayload($task)]);
     }
 
-    private function incidentPayload(FuelIncident $incident): array
-    {
-        return [
-            'id' => $incident->id,
-            'station_id' => $incident->station_id,
-            'category' => $incident->category,
-            'severity' => $incident->severity,
-            'description_redacted' => $incident->description_redacted,
-            'status' => $incident->status,
-            'reported_by' => $incident->reported_by,
-            'reported_at' => $incident->reported_at->toIso8601String(),
-            'assigned_to' => $incident->assigned_to,
-            'assigned_at' => $incident->assigned_at?->toIso8601String(),
-            'resolved_by' => $incident->resolved_by,
-            'resolved_at' => $incident->resolved_at?->toIso8601String(),
-            'closed_by' => $incident->closed_by,
-            'closed_at' => $incident->closed_at?->toIso8601String(),
-            'attachments_metadata' => $incident->attachments_metadata,
-            'external_id' => $incident->external_id,
-            'tasks_count' => $incident->relationLoaded('tasks') ? $incident->tasks->count() : null,
-            'created_at' => $incident->created_at?->toIso8601String(),
-        ];
-    }
 
     private function taskPayload(FuelMaintenanceTask $task): array
     {

@@ -123,20 +123,6 @@ final class ClosePosSessionAction
         return $sum;
     }
 
-    private function redactedPayload(RestaurantPosSession $session): array
-    {
-        return [
-            'pos_session_id' => $session->id,
-            'branch_id' => $session->branch_id,
-            'opened_at' => $session->opened_at->toIso8601String(),
-            'closed_at' => $session->closed_at?->toIso8601String(),
-            'opening_cash_minor' => $session->opening_cash_minor,
-            'expected_cash_minor' => $session->expected_cash_minor,
-            'counted_cash_minor' => $session->counted_cash_minor,
-            'variance_minor' => $session->variance_minor,
-            'payments_confirmed_minor' => $this->confirmedByProvider($session),
-        ];
-    }
 
     private function confirmedByProvider(RestaurantPosSession $session): array
     {

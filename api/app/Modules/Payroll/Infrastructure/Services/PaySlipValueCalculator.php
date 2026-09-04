@@ -1049,32 +1049,4 @@ class PaySlipValueCalculator
         return is_numeric($parts) ? (float) $parts : 1.0;
     }
 
-    private function progressiveSlabs(CountryRulesContract $rules, float $taxBase, float $periods): array
-    {
-        $base = $taxBase * $periods;
-        $bySlab = [];
-
-        foreach ($rules->taxSlabs() as $slab) {
-            $lowerBound = (float) $slab['min'];
-            if ($lowerBound > 0) {
-                $lowerBound -= 1;
-            }
-            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
-            $taxableInSlab = min($base, $upperBound) - $lowerBound;
-            if ($taxableInSlab <= 0) {
-                continue;
-            }
-            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
-
-            $bySlab[] = [
-                'min' => (float) $slab['min'],
-                'max' => $slab['max'],
-                'rate' => (float) $slab['rate'],
-                'taxable_amount' => round($taxableInSlab / $periods, 2),
-                'tax' => round($slabTax / $periods, 2),
-            ];
-        }
-
-        return $bySlab;
-    }
 }

@@ -285,64 +285,6 @@ final class FuelImportService
 
 
 
-    private function applyEquipment(Employee $actor, array $data): void
-    {
-        $station = $this->stationInTenant($actor, (string) $data['station_id']);
-
-        if (! $station instanceof FuelStation) {
-            return;
-        }
-
-        $type = $data['equipment_type'];
-
-        if ($type === 'pump') {
-            FuelPump::query()->create([
-                'company_id' => $actor->company_id,
-                'station_id' => $station->id,
-                'code' => $data['code'],
-                'product_types' => array_values(array_filter(array_map('trim', explode('|', (string) ($data['product_types'] ?? ''))))),
-                'status' => $data['status'] ?? FuelPump::STATUS_ACTIVE,
-            ]);
-
-            return;
-        }
-
-        if ($type === 'tank') {
-            FuelTank::query()->create([
-                'company_id' => $actor->company_id,
-                'station_id' => $station->id,
-                'code' => $data['code'],
-                'product_type' => $data['product_type'] ?? '',
-                'capacity_minor' => (int) ($data['capacity_minor'] ?? 0),
-                'current_level_minor' => isset($data['current_level_minor']) && $data['current_level_minor'] !== '' ? (int) $data['current_level_minor'] : null,
-                'status' => $data['status'] ?? FuelTank::STATUS_ACTIVE,
-            ]);
-
-            return;
-        }
-
-        if ($type === 'meter') {
-            $pump = FuelPump::query()
-                ->where('company_id', $actor->company_id)
-                ->where('station_id', $station->id)
-                ->where('code', $data['pump_code'] ?? '')
-                ->first();
-
-            if ($pump instanceof FuelPump) {
-                FuelMeterRegister::query()->create([
-                    'company_id' => $actor->company_id,
-                    'station_id' => $station->id,
-                    'pump_id' => $pump->id,
-                    'meter_code' => $data['code'],
-                    'meter_type' => $data['meter_type'] ?? FuelMeterRegister::TYPE_MECHANICAL,
-                    'product_code' => $data['product_code'] ?? '',
-                    'unit_code' => $data['unit_code'] ?? 'l',
-                    'precision_scale' => isset($data['precision_scale']) && $data['precision_scale'] !== '' ? (int) $data['precision_scale'] : 2,
-                    'status' => $data['status'] ?? FuelMeterRegister::STATUS_ACTIVE,
-                ]);
-            }
-        }
-    }
 
     private function stationInTenant(Employee $actor, string $stationId): ?FuelStation
     {
@@ -358,32 +300,4 @@ final class FuelImportService
         return $station;
     }
 
-    private function meterInTenant(Employee $actor, string $stationId, string $pumpCode, string $meterCode): ?FuelMeterRegister
-    {
-        $station = $this->stationInTenant($actor, $stationId);
-
-        if (! $station instanceof FuelStation) {
-            return null;
-        }
-
-        $pump = FuelPump::query()
-            ->where('company_id', $actor->company_id)
-            ->where('station_id', $station->id)
-            ->where('code', $pumpCode)
-            ->first();
-
-        if (! $pump instanceof FuelPump) {
-            return null;
-        }
-
-        /** @var FuelMeterRegister|null $meter */
-        $meter = FuelMeterRegister::query()
-            ->where('company_id', $actor->company_id)
-            ->where('station_id', $station->id)
-            ->where('pump_id', $pump->id)
-            ->where('meter_code', $meterCode)
-            ->first();
-
-        return $meter;
-    }
 }

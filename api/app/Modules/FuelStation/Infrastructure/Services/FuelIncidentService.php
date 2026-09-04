@@ -229,38 +229,7 @@ final class FuelIncidentService
         return $task->refresh();
     }
 
-    private function assertTransitionAllowed(FuelIncident $incident, string $target): void
-    {
-        $allowed = match ($incident->status) {
-            FuelIncident::STATUS_REPORTED => [
-                FuelIncident::STATUS_ASSIGNED,
-                FuelIncident::STATUS_RESOLVED,
-            ],
-            FuelIncident::STATUS_ASSIGNED => [
-                FuelIncident::STATUS_RESOLVED,
-            ],
-            FuelIncident::STATUS_RESOLVED => [
-                FuelIncident::STATUS_CLOSED,
-            ],
-            default => [],
-        };
 
-        if (! in_array($target, $allowed, true)) {
-            throw new FuelWorkflowTransitionException(
-                "Transition {$incident->status} → {$target} interdite"
-            );
-        }
-    }
-
-    private function redact(string $description): string
-    {
-        $trimmed = trim($description);
-        if ($trimmed === '') {
-            return '—';
-        }
-
-        return mb_substr($trimmed, 0, 2000);
-    }
 
     private function audit(Employee $actor, string $event, Model $target): void
     {
@@ -273,25 +242,7 @@ final class FuelIncidentService
         );
     }
 
-    private function asString(mixed $value): string
-    {
-        return is_string($value) || is_numeric($value) ? (string) $value : '';
-    }
 
-    private function nullableInt(mixed $value): ?int
-    {
-        return is_numeric($value) ? (int) $value : null;
-    }
 
-    private function nullableDate(mixed $value): ?Carbon
-    {
-        return is_string($value) && $value !== '' ? Carbon::parse($value)->utc() : null;
-    }
 
-    private function companyId(Model $model, Employee $actor): string
-    {
-        $existing = $model->getAttribute('company_id');
-
-        return is_string($existing) && $existing !== '' ? $existing : (string) $actor->company_id;
-    }
 }

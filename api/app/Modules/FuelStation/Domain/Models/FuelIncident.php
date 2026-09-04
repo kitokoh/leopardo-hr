@@ -115,6 +115,8 @@ class FuelIncident extends Model
             'reported_by' => 'integer',
             'assigned_to' => 'integer',
             'occurred_at' => 'datetime',
+            'reported_at' => 'datetime',
+            'assigned_at' => 'datetime',
             'resolved_at' => 'datetime',
             'resolved_by' => 'integer',
             'closed_at' => 'datetime',

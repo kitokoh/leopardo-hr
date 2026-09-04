@@ -126,17 +126,4 @@ class TravelWebhookSubscriptionController extends Controller
         ];
     }
 
-    private function present(TravelWebhookSubscription $subscription): array
-    {
-        return [
-            'id' => $subscription->id,
-            'carrier_id' => $subscription->carrier_id,
-            'carrier_code' => $subscription->carrier?->code,
-            'url' => $subscription->url,
-            'secret_prefix' => $this->secretService->prefix($subscription),
-            'events' => $subscription->events,
-            'active' => $subscription->active,
-            'created_at' => $subscription->created_at?->toIso8601String(),
-        ];
-    }
 }

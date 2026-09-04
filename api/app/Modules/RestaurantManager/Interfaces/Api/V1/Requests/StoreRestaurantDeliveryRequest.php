@@ -37,13 +37,4 @@ class StoreRestaurantDeliveryRequest extends FormRequest
     }
 
 
-    private function companyId(): ?string
-    {
-        $user = $this->user();
-        if ($user instanceof Employee && $user->company_id !== null) {
-            return $user->company_id;
-        }
-
-        return app()->bound('current_company') ? currentCompany()->id : null;
-    }
 }

@@ -140,17 +140,4 @@ class TravelCommentController extends Controller
         return $this->moderate($request, $comment, 'rejected');
     }
 
-    private function payload(TravelComment $comment): array
-    {
-        return [
-            'id' => $comment->id,
-            'article_id' => $comment->article_id,
-            'author_name' => $comment->author_name ?? 'Employé',
-            'body' => $comment->body,
-            'status' => $comment->status,
-            'report_reason' => $comment->report_reason,
-            'reported_at' => $comment->reported_at?->toIso8601String(),
-            'created_at' => $comment->created_at?->toIso8601String(),
-        ];
-    }
 }

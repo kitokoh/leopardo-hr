@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;

@@ -74,6 +74,8 @@ class FuelMaintenanceTask extends Model
             'incident_id' => 'integer',
             'assigned_to' => 'integer',
             'scheduled_for' => 'date',
+            'due_at' => 'datetime',
+            'started_at' => 'datetime',
             'completed_at' => 'date',
             'completed_by' => 'integer',
         ];

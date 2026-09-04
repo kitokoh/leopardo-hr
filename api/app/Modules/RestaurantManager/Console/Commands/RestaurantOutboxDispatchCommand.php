@@ -172,23 +172,4 @@ class RestaurantOutboxDispatchCommand extends Command
     }
 
 
-    private function processTenant(int $limit): int
-    {
-        $processed = 0;
-
-        while ($processed < $limit) {
-            $claimed = $this->claimBatch($limit - $processed);
-
-            if ($claimed === []) {
-                break;
-            }
-
-            foreach ($claimed as $eventId) {
-                $this->processEvent((int) $eventId);
-                $processed++;
-            }
-        }
-
-        return $processed;
-    }
 }
