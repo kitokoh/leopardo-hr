@@ -10,7 +10,7 @@
   "syncIntervalSeconds": 60,
   "listenHost": "127.0.0.1",
   "listenPort": 8037,
-  "_punch_methods_comment": "#5120 — Méthodes de pointage autorisées : null = toutes (fingerprint, face, card). Synchroniser avec ZktecoDevice.punch_methods côté API.",
+  "_punch_methods_comment": "#5120/#6774 — Méthodes de pointage autorisées : null = toutes (fingerprint, face, badge, pin, manager). Vocabulaire domaine BIO-009 : `card` (ancien vocabulaire ZKTeco) est accepté et normalisé en `badge`. La matrice autoritative reste GET /api/v1/kiosks/{deviceCode}/config (BIO-006) ; ce champ sert de repli local hors-ligne (le bridge l'expose via /local/status).",
   "punch_methods": null,
   "_demo_mode_comment": "#5619 — demoMode active le bouton d'accès démo (données fictives pour test/démo). Ne jamais activer en production : le bridge injecte window.__KIOSK_DEMO_MODE dans les pages HTML quand ce champ est true.",
   "demoMode": false,

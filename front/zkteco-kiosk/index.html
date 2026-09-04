@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr" dir="ltr">
 <head>
   <meta charset="utf-8">
@@ -640,6 +640,180 @@
     [dir="rtl"] .emp-meta,
     [dir="rtl"] .demo-user-role { float: left; }
 
+    /* ── BIO-009 #6774 — interface kiosque de pointage multi-methodes ── */
+    .punch-flow { display: grid; gap: 16px; }
+
+    .punch-stage { min-height: 420px; }
+
+    .flow-screen { animation: flowIn .22s ease; }
+    @keyframes flowIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .flow-nav { display: flex; gap: 10px; margin-bottom: 16px; }
+
+    .nav-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(23, 43, 68, .6);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: var(--text);
+      font-weight: 800;
+      font-size: .95rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .2);
+    }
+    .nav-chip:hover { border-color: rgba(16, 185, 129, .55); }
+
+    .method-grid, .punch-method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 18px 0 4px;
+    }
+
+    .method-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 158px;
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: linear-gradient(160deg, rgba(23, 43, 68, .55), rgba(9, 20, 37, .65));
+      color: var(--text);
+      text-align: left;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, .25);
+    }
+    .method-btn:hover { border-color: rgba(16, 185, 129, .55); transform: translateY(-2px); }
+    .method-btn:active { transform: scale(.985); }
+
+    .m-icon { font-size: 36px; line-height: 1; color: var(--accent); filter: drop-shadow(0 0 14px rgba(16, 185, 129, .25)); }
+    .method-btn[data-method="face"] .m-icon { color: #38bdf8; filter: drop-shadow(0 0 14px rgba(56, 189, 248, .3)); }
+    .method-btn[data-method="badge"] .m-icon { color: #f59e0b; filter: drop-shadow(0 0 14px rgba(245, 158, 11, .3)); }
+    .method-btn[data-method="pin"] .m-icon { color: #a78bfa; filter: drop-shadow(0 0 14px rgba(167, 139, 250, .3)); }
+    .method-btn[data-method="manager"] .m-icon { color: #f472b6; filter: drop-shadow(0 0 14px rgba(244, 114, 182, .3)); }
+
+    .m-name { font-size: 1.28rem; font-weight: 900; letter-spacing: -.01em; margin-top: 4px; }
+    .m-tag { color: var(--muted); font-size: .86rem; font-weight: 700; line-height: 1.45; }
+
+    .punch-split {
+      display: grid;
+      grid-template-columns: minmax(260px, .9fr) minmax(280px, 1.1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    @media (max-width: 980px) { .punch-split { grid-template-columns: 1fr; } }
+
+    .h-screen { margin: 2px 0 6px; font-size: clamp(22px, 3vw, 32px); font-weight: 900; letter-spacing: -.03em; }
+    .screen-copy { margin: 0 0 18px; max-width: 620px; }
+
+    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .action-row .btn-action { min-height: 62px; font-size: 1.15rem; border-radius: 20px; }
+
+    .roster-panel { margin-top: 16px; border-top: 1px dashed var(--line); padding-top: 14px; }
+    .roster-list { display: grid; gap: 8px; max-height: 240px; overflow: auto; padding: 2px; }
+    .roster-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 54px;
+      padding: 10px 16px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #091425;
+      color: var(--text);
+      text-align: left;
+      font-weight: 800;
+    }
+    .roster-item small { color: var(--muted); font-weight: 700; }
+    .roster-item:hover { border-color: rgba(16, 185, 129, .6); }
+
+    .face-cam {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 2px solid rgba(16, 185, 129, .35);
+      background: #04101f;
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, .5);
+    }
+    .face-cam video { display: block; width: 100%; max-height: 340px; min-height: 250px; object-fit: cover; background: #04101f; }
+    .face-frame {
+      position: absolute;
+      inset: 12% 20%;
+      border: 2px dashed rgba(125, 211, 252, .55);
+      border-radius: 44% 44% 48% 48% / 40% 40% 58% 58%;
+      pointer-events: none;
+    }
+    .face-cam-busy .face-cam video { filter: brightness(.55) blur(1px); }
+    .face-cam-busy-tip {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 2;
+      color: #e0f2fe;
+      font-weight: 900;
+      font-size: 1.15rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .8);
+      pointer-events: none;
+    }
+    .face-cam-error {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      text-align: center;
+      color: #fecaca;
+      font-weight: 800;
+      background: rgba(2, 6, 23, .85);
+      z-index: 3;
+    }
+    .face-emp-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, .3);
+      background: rgba(56, 189, 248, .08);
+      color: #e0f2fe;
+      font-weight: 800;
+    }
+    .face-emp-banner .dot-id { color: #7dd3fc; }
+
+    .fallback-methods { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 4px; }
+    .fallback-method {
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: rgba(23, 43, 68, .65);
+      border: 1px solid rgba(255, 255, 255, .12);
+      color: var(--text);
+      font-weight: 800;
+    }
+    .fallback-method:hover { border-color: rgba(16, 185, 129, .6); }
+
+    .big-icon { width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center; margin: 4px auto 14px; font-size: 44px; }
+    .big-icon.ok { background: rgba(16, 185, 129, .15); color: #6ee7b7; box-shadow: 0 0 0 18px rgba(16, 185, 129, .06); }
+    .big-icon.ko { background: rgba(239, 68, 68, .15); color: #fca5a5; box-shadow: 0 0 0 18px rgba(239, 68, 68, .05); }
+
+    .center-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 20px; }
+
+    #demoAccessWrap { margin-top: 16px; }
+    #demoAccessWrap .info { min-height: 48px; border-radius: 999px; padding: 0 20px; font-size: .95rem; }
+
+    .kbd-hint { color: var(--muted); font-size: 12px; font-weight: 700; margin-top: 10px; text-align: center; }
+
     @media (max-width: 980px) {
       .layout, .punch-grid { grid-template-columns: 1fr; }
       .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -653,7 +827,7 @@
   </style>
 </head>
 <body>
-  <a href="#identifier" class="sr-only" data-i18n="skip.punch">Aller au formulaire de pointage</a>
+  <a href="#punchStage" class="sr-only" data-i18n="skip.punch">Aller au formulaire de pointage</a>
   <div class="shell" role="main" data-i18n-aria-label="app.landmark" aria-label="Borne de pointage Leopardo RH">
     <header class="topbar">
       <div class="brand">
@@ -677,7 +851,7 @@
 
     <div class="layout">
       <nav class="tabs" role="tablist" data-i18n-aria-label="nav.sections" aria-label="Sections du kiosk">
-        <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch"><span data-i18n="tab.punch">Pointage</span> <span data-i18n="tab.punch.sub">doigt / visage</span></button>
+        <button class="tab active" role="tab" aria-selected="true" data-tab="punch" aria-controls="panel-punch"><span data-i18n="tab.punch">Pointage</span> <span data-i18n="tab.punch.sub">multi-methodes</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="info" aria-controls="panel-info"><span data-i18n="tab.info">Employe</span> <span data-i18n="tab.info.sub">infos jour</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="announcements" aria-controls="panel-announcements"><span data-i18n="tab.announcements">Annonces</span> <span data-i18n="tab.announcements.sub">entreprise</span></button>
         <button class="tab" role="tab" aria-selected="false" data-tab="leave" aria-controls="panel-leave"><span data-i18n="tab.leave">Conges</span> <span data-i18n="tab.leave.sub">soldes</span></button>
@@ -686,52 +860,22 @@
 
       <main class="content">
         <section id="panel-punch" class="tab-panel active" role="tabpanel">
-          <div class="punch-grid">
-            <div class="biometric-stage">
-              <div class="fingerprint" aria-hidden="true">
-                <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M60 64c0 15-6 25-15 34" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-                  <path d="M60 64c0 15 6 25 15 34" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".7"/>
-                  <path d="M40 58c0-12 9-21 20-21s20 9 20 21" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-                  <path d="M29 69c-2-6-3-12-2-18 3-18 17-31 33-31s30 13 33 31c1 6 0 12-2 18" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".62"/>
-                  <path d="M21 87c-8-16-9-32-3-47C25 22 41 10 60 10s35 12 42 30c6 15 5 31-3 47" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity=".4"/>
-                  <path d="M47 78c3-5 4-10 4-16 0-6 4-10 9-10s9 4 9 10c0 6 1 11 4 16" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-                </svg>
+          <!-- BIO-009 #6774 : flux de pointage multi-methodes pilote par la
+               config serveur (GET /kiosks/{deviceCode}/config → punch_methods).
+               Les ecrans autres que l'accueil sont generes par app.js. -->
+          <div class="punch-flow">
+            <div id="punchStage" class="punch-stage">
+              <div id="punchScreenHome" class="flow-screen" data-screen="home">
+                <h2 class="h-screen" data-i18n="bio.methods.title">Choisissez votre mode de pointage</h2>
+                <p class="stage-copy" data-i18n="bio.methods.copy">Appuyez sur une methode, puis choisissez Arrivee ou Depart.</p>
+                <div id="methodGrid" class="punch-method-grid" data-i18n-aria-label="bio.methods.title" aria-label="Methodes de pointage"></div>
+                <div id="noMethodWarning" class="status error hidden" role="alert" data-i18n="error.noMethodAvailable">Aucune methode de pointage disponible sur ce kiosque.</div>
+                <div id="demoAccessWrap">
+                  <button class="info" id="demoAccessBtn" data-i18n-aria-label="demoAccess.aria" aria-label="Acces demo"><span data-i18n="demoAccess.label">Choisir un employe demo</span></button>
+                </div>
               </div>
-              <h2 class="stage-title" data-i18n="stage.title">Posez le doigt</h2>
-              <p class="stage-copy" data-i18n="stage.copy">Le capteur ZKTeco reconnait l'employe. En fallback, scannez le visage, le QR ou saisissez le matricule.</p>
             </div>
-
-            <div class="card">
-              <div class="field-stack">
-                <!-- #5123 — champ identifiant biometrique (masque si methode carte) -->
-                <div id="identifierField">
-                  <label for="identifier" data-i18n="identifier.label">Identifiant employe / zkteco_id / matricule</label>
-                  <input id="identifier" name="identifier" autocomplete="off" data-i18n-placeholder="identifier.placeholder" placeholder="Scanner ou saisir l'identifiant" data-i18n-aria-label="identifier.aria" aria-label="Identifiant employe">
-                </div>
-                <!-- #5123 — champ badge/carte (visible si methode carte) -->
-                <div id="badgeNumberField" class="hidden">
-                  <label for="badgeNumber" data-i18n="card.badge.label">Numero de badge / carte</label>
-                  <input id="badgeNumber" name="badge_number" type="text" inputmode="numeric" autocomplete="off" data-i18n-placeholder="card.badge.placeholder" placeholder="Saisir le numero de badge" data-i18n-aria-label="card.badge.aria" aria-label="Numero de badge">
-                </div>
-                <div>
-                  <label for="biometricType" data-i18n="biometricType.label">Mode de reconnaissance</label>
-                  <select id="biometricType" data-i18n-aria-label="biometricType.aria" aria-label="Type de biometrie">
-                    <option value="fingerprint" data-i18n="biometricType.fingerprint">Empreinte</option>
-                    <option value="face" data-i18n="biometricType.face">Visage</option>
-                    <option value="mixed" data-i18n="biometricType.mixed">Mixte</option>
-                  </select>
-                </div>
-                <!-- #5123 — etat : aucune methode autorisee -->
-                <div id="noMethodWarning" class="status hidden" role="alert" data-i18n="error.noMethodAvailable" style="font-size:14px;">Aucune methode de pointage disponible.</div>
-              </div>
-              <div class="actions">
-                <button class="primary" id="checkInButton" data-i18n-aria-label="checkIn.aria" aria-label="Pointer entree"><span data-i18n="checkIn.label">Arrivee</span></button>
-                <button class="secondary" id="checkOutButton" data-i18n-aria-label="checkOut.aria" aria-label="Pointer sortie"><span data-i18n="checkOut.label">Depart</span></button>
-              </div>
-              <button class="info" id="demoAccessBtn" style="margin-top:12px;" data-i18n-aria-label="demoAccess.aria" aria-label="Acces demo"><span data-i18n="demoAccess.label">Choisir un employe demo</span></button>
-              <div id="statusBox" class="status" role="alert" aria-live="polite" data-i18n="statusBox.ready">Pret a recevoir un pointage.</div>
-            </div>
+            <div id="statusBox" class="status" role="alert" aria-live="polite" data-i18n="statusBox.ready">Pret a recevoir un pointage.</div>
           </div>
 
           <aside class="card" style="margin-top:18px;">
