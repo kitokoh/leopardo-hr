@@ -17,10 +17,15 @@ qui a permis de le requalifier sans opération de bascule à chaud.
 
 ## Nouvelle topologie
 
-| Tier | Déclencheur | Fichier | Workflow | Coût |
-|------|-------------|---------|----------|------|
-| **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | Plan existant (Starter), inchangé |
-| **prod** (stable) | tag `vX.Y.Z` validé | `render.prod.yaml` | `deploy-prod.yml` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
+| Tier | Déclencheur | Fichier | Workflow | Surfaces | Coût |
+|------|-------------|---------|----------|----------|------|
+| **dev** (continu) | push sur `main` | `render.yaml` | `deploy-main.yml` | API Render `gestionemployerbackend` + web Vercel `leopardo` (intégration Git) + admin CF Pages `leo-admin` | Plan existant (Starter), inchangé |
+| **prod** (stable) | tag `vX.Y.Z` validé | `render.prod.yaml` | `deploy-prod.yml` | API Render `leopardo-prod` + Neon + web Vercel `leopardo-prod` + admin CF Pages `leo-admin-prod` | Phase 1 : tier gratuit (web + Key Value) + Neon Postgres |
+
+> Les jobs `deploy-web-prod` (Vercel) et `deploy-admin-prod` (Cloudflare
+> Pages) s'exécutent APRÈS le job API (`deploy-prod`) : un frontend qui cible
+> l'API prod n'est promu que si l'API prod est saine sur le tag. Voir
+> `.github/workflows/deploy-prod.yml` et `docs/ops/DOMAINS.md` (registre).
 
 ### ⚠️ Dérive constatée entre `render.yaml` (dev) et la config réelle
 
@@ -77,8 +82,10 @@ n'auront pas été ajoutés sur un plan payant (Starter, ~7 $/mois chacun).
 
 ### Suite recommandée avant un vrai lancement client
 
-1. Valider que `deploy-prod.yml` déclenche correctement le déploiement et
-   le healthcheck sur un tag de test (ex. `v0.0.1-rc1`).
+1. Valider que `deploy-prod.yml` déclenche correctement le déploiement des
+   trois surfaces (API Render + web Vercel + admin CF Pages) et les
+   healthchecks sur un tag (le run du 2026-09-04 sur `v4.27.2` sert de
+   recette ; ensuite un tag de test `vX.Y.Z-rc*` à chaque évolution).
 2. Acheter le nom de domaine et le plan Render payant.
 3. Ajouter `leopardo-queue-worker` et `leopardo-scheduler` à
    `render.prod.yaml` sur un plan payant.
@@ -102,6 +109,14 @@ rotation des clés Render déjà partagées en clair dans ce chat.
 | Secret | Rôle |
 |---|---|
 | `RENDER_PROD_API_KEY` | Clé API Render du workspace prod ("ALI MAHADI's workspace") — utilisée pour déclencher le déploiement, interroger son statut et effectuer un rollback réel via l'API (pas un simple deploy hook) |
+| `RENDER_PROD_SERVICE_ID` | (ajout 2026-09-03, #6807) ID du service web `leopardo-prod` — lu en secret (l'onglet Variables ne l'avait pas) |
+| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (`https://leopardo-prod.onrender.com`), healthcheck post-déploiement + base `VITE_API_URL` du build admin |
+| `VERCEL_PROD_TOKEN` | Jeton API Vercel du compte prod (ibrahimkoubaye) — CLI `vercel` (pull/build/deploy) |
+| `VERCEL_PROD_ORG_ID` | ID d'équipe Vercel prod (`team_EWSaydzjiTNOT4JlQEXRyrpa`) |
+| `VERCEL_PROD_PROJECT_ID` | Projet Vercel prod (`prj_Q2UQ7h5SeozRB2fVttHRAAq8PTdc`, `leopardo-prod`) |
+| `CLOUDFLARE_PROD_API_TOKEN` | Jeton API Cloudflare du compte prod (Pages:Edit) |
+| `CLOUDFLARE_PROD_ACCOUNT_ID` | Compte Cloudflare prod (`30540c0bc96ca1925a0d4d041b98d098`) |
+| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` | (dev, ajout 2026-09-04) compte Cloudflare dev (`28a39f5640d9a5b9a5f0a86ec7ef5111`) — active le chemin GitHub Actions de `deploy-admin-dashboard.yml` (leo-admin) |
 
 Le `DB_URL` (connexion Neon) est configuré directement comme variable
 d'environnement `sync: false` sur le service Render (pas un secret GitHub
@@ -112,8 +127,9 @@ Actions) — valeur dans Pulumi ESC `solarnyxss/leopardo-hr/prod`
 
 | Variable | Rôle |
 |---|---|
-| `RENDER_PROD_SERVICE_ID` | ID du service web `leopardo-prod` (`srv-dacsr6gae00c73ddk150`) |
-| `PROD_RENDER_API_BASE_URL` | URL publique du service prod (`https://leopardo-prod.onrender.com`), utilisée pour le healthcheck post-déploiement |
+| `RENDER_PROD_SERVICE_ID` | (doublon historique, lu désormais en secret) ID du service web `leopardo-prod` (`srv-dacsr6gae00c73ddk150`) |
+| `PROD_WEB_PROD_URL` | URL web prod (`https://leopardo-prod.vercel.app`) — lien `environment.url` |
+| `PROD_ADMIN_PROD_URL` | URL admin prod (`https://leo-admin-prod.pages.dev`) — lien `environment.url` |
 
 Ces noms sont volontairement distincts des secrets/variables déjà utilisés
 par `deploy-main.yml` (`RENDER_DEPLOY_HOOK_URL`, `RENDER_ROLLBACK_HOOK_URL`,
@@ -138,6 +154,30 @@ dev/continu existant.
 Les clés Render et Neon partagées en clair dans la conversation ont été
 utilisées pour cette création initiale ; elles doivent être régénérées
 avant tout lancement public, conformément au plan de bascule ci-dessus.
+
+### Surfaces web prod provisionnées (2026-09-04, issue #6808)
+
+- **Web client (Vercel)** — projet `leopardo-prod`
+  (`prj_Q2UQ7h5SeozRB2fVttHRAAq8PTdc`, équipe `ibrahimkoubaye-6514`,
+  `team_EWSaydzjiTNOT4JlQEXRyrpa`, racine `front/web`). Variables posées
+  (target production) : `NEXT_PUBLIC_API_URL=https://leopardo-prod.onrender.com/api/v1`,
+  `LEOPARDO_API_URL=https://leopardo-prod.onrender.com`,
+  `NEXT_PUBLIC_SITE_URL=https://leopardo-prod.vercel.app`,
+  `NEXT_PUBLIC_ENVIRONMENT=production`, `NEXT_PUBLIC_ENABLE_BLOG=true`.
+  Déploiement piloté par la CLI Vercel dans `deploy-prod.yml` (pull → build
+  → deploy `--prebuilt --prod`) — l'intégration Git du projet n'est pas
+  utilisée (prod = tags uniquement).
+- **Admin dashboard (Cloudflare Pages)** — projet `leo-admin-prod`
+  (compte Cloudflare prod `30540c0bc96ca1925a0d4d041b98d098`, domaine
+  `leo-admin-prod.pages.dev`), build `VITE_API_URL` → API prod, upload
+  direct wrangler dans `deploy-prod.yml` (même mécanique que `leo-admin`
+  côté dev).
+- **CORS/Sanctum API prod** (posés sur le service Render `leopardo-prod`,
+  valeurs `sync: false` côté dashboard) :
+  `CORS_EXTRA_ORIGIN`/`ADMIN_DASHBOARD_URL=https://leo-admin-prod.pages.dev`,
+  `FRONTEND_URL=https://leopardo-prod.vercel.app`,
+  `SANCTUM_STATEFUL_DOMAINS` incluant `leopardo-prod.onrender.com`,
+  `leopardo-prod.vercel.app`, `leo-admin-prod.pages.dev` + localhost.
 
 **Source de vérité recommandée :** l'environnement Pulumi ESC
 `solarnyxss/leopardo-hr/prod` (créé dans ce chantier) contient déjà la
