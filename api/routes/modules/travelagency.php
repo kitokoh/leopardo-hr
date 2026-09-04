@@ -18,6 +18,9 @@
  */
 
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPositionController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertPriceController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelAdvertTypeController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelArticleController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelBookingController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCancellationPolicyController;
@@ -259,18 +262,18 @@ Route::middleware(['throttle:api', 'travel.partner'])
         Route::get('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'show']);
         Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
-        Route::get('/advert-types', [TravelAdvertController::class, 'indexAdvertTypes']);
-        Route::post('/advert-types', [TravelAdvertController::class, 'storeAdvertType']);
-        Route::put('/advert-types/{travelAdvertType}', [TravelAdvertController::class, 'updateAdvertType']);
-        Route::delete('/advert-types/{travelAdvertType}', [TravelAdvertController::class, 'destroyAdvertType']);
-        Route::get('/advert-positions', [TravelAdvertController::class, 'indexAdvertPositions']);
-        Route::post('/advert-positions', [TravelAdvertController::class, 'storeAdvertPosition']);
-        Route::put('/advert-positions/{travelAdvertPosition}', [TravelAdvertController::class, 'updateAdvertPosition']);
-        Route::delete('/advert-positions/{travelAdvertPosition}', [TravelAdvertController::class, 'destroyAdvertPosition']);
-        Route::get('/advert-prices', [TravelAdvertController::class, 'indexAdvertPrices']);
-        Route::post('/advert-prices', [TravelAdvertController::class, 'storeAdvertPrice']);
-        Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertController::class, 'updateAdvertPrice']);
-        Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertController::class, 'destroyAdvertPrice']);
+        Route::get('/advert-types', [TravelAdvertTypeController::class, 'index']);
+        Route::post('/advert-types', [TravelAdvertTypeController::class, 'store']);
+        Route::put('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'update']);
+        Route::delete('/advert-types/{travelAdvertType}', [TravelAdvertTypeController::class, 'destroy']);
+        Route::get('/advert-positions', [TravelAdvertPositionController::class, 'index']);
+        Route::post('/advert-positions', [TravelAdvertPositionController::class, 'store']);
+        Route::put('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'update']);
+        Route::delete('/advert-positions/{travelAdvertPosition}', [TravelAdvertPositionController::class, 'destroy']);
+        Route::get('/advert-prices', [TravelAdvertPriceController::class, 'index']);
+        Route::post('/advert-prices', [TravelAdvertPriceController::class, 'store']);
+        Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']);
+        Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
         Route::get('/adverts', [TravelAdvertController::class, 'indexAdverts']);
         Route::post('/adverts', [TravelAdvertController::class, 'storeAdvert']);
         Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'showAdvert']);

@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCustomerController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
@@ -132,6 +133,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/sync/outbox', [FuelSyncController::class, 'outbox']);
     Route::post('/fuel-station/sync/readings', [FuelSyncController::class, 'readings']);
     Route::post('/fuel-station/sync/sales', [FuelSyncController::class, 'sales']);
+
+    // FUEL-016 (#5810) — comptes professionnels & visites CRM (manager).
+    Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);
+    Route::post('/fuel-station/accounts', [FuelCrmController::class, 'store']);
+    Route::get('/fuel-station/accounts/{account}', [FuelCrmController::class, 'show'])
+        ->whereNumber('account');
+    Route::get('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'visits'])
+        ->whereNumber('account');
+    Route::post('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'recordVisit'])
+        ->whereNumber('account');
+    Route::put('/fuel-station/accounts/{account}/consents', [FuelCrmController::class, 'updateConsents'])
+        ->whereNumber('account');
 
     // FUEL-011 (#5805) — référentiel : stations/sites/équipements/produits.
     Route::get('/fuel-station/stations', [FuelStationController::class, 'index']);
