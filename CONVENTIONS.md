@@ -13,7 +13,9 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
-│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_accounting, leopardo_platform_admin
+│   ├── web-offline/        # PWA offline-first (bridge Edge)
+│   ├── zkteco-kiosk/       # Kiosque HTML/JS (pointage biométrique)
+│   └── mobile_apps/        # Apps Flutter (melos.yaml) : leopardo_core (package partagé), leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_accounting, leopardo_platform_admin, leopardo_travel_agent
 ├── docs/                   # Documentation technique
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── docker-compose.yml      # Dev environment
@@ -52,7 +54,7 @@ leopardo-hr/
 
 ```
 app/
-├── Modules/<Nom>/              # Monolithe modulaire DDD (18 modules actifs)
+├── Modules/<Nom>/              # Monolithe modulaire DDD (25 modules actifs)
 │   ├── Application/            # Actions, DTOs, Queries (orchestration)
 │   ├── Domain/                 # Models, Contracts, Exceptions (règles métier)
 │   ├── Infrastructure/         # Services, Repositories (implémentation)
@@ -89,7 +91,6 @@ Modules actifs : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `C
 - **PostgreSQL only** — ne pas utiliser de syntaxe MySQL-specifique
 - Champs obligatoires : `id`, `company_id` (sauf modeles globaux), `created_at`, `updated_at`
 
-D
 #### Règle search_path — migrations tenant (#1613, bug F-17 #1595)
 
 `Schema::hasTable('x')` / `Schema::table('x', ...)` interrogent **`current_schema()` uniquement**,
@@ -140,7 +141,7 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 > **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : les classes `JsonResource` restent **centralisees** dans `app/Http/Resources/Api/V1/`, y compris pour les nouveaux modules, plutot que placees dans `Interfaces/Api/V1/Resources/` de chaque module. Raison : plusieurs Resources sont partagees entre modules (ex. `LoanResource` par `HR`+`Payroll`), et les placer dans le module createur forcerait les autres modules consommateurs a faire un import inter-module, ce qui viole l'interdiction §2.7/§2.3 (« un module n'importe jamais directement les classes d'un autre module »). Voir `api/ARCHITECTURE.md` pour le detail. Une Resource strictement interne a un seul module et jamais partagee peut exceptionnellement rester dans `Interfaces/Api/V1/Resources/` du module.
 
 
-### 2.9 Convention des verbes HTTP API (issue #4930)
+### 2.8 Convention des verbes HTTP API (issue #4930)
 
 Une seule règle, appliquée partout :
 
@@ -157,18 +158,18 @@ Une seule règle, appliquée partout :
 Règle de migration : ne jamais changer un verbe sans vérifier les clients (apps Flutter, admin, web) ; ajouter d'abord le nouveau verbe en parallèle, déprécier l'ancien (commentaire de route + OpenAPI), puis supprimer après transition.
 
 
-### 2.10 Unicité des routes API (issue #4932)
+### 2.9 Unicité des routes API (issue #4932)
 
 - Un concept métier = **un seul chemin canonique** + au plus un alias de compatibilité, marqué `// DÉPRÉCIÉ` (commentaire de route) avec la cible canonique.
 - Doublons connus à déprécier (2026-08-18) : `POST /notifications/mark-all-read` (→ `POST /notifications/read-all`), `/social-account` (→ `/social-accounts`), `/posts` (→ `/social-posts`), ressource legacy `payrolls` (→ `payroll-runs`), `GET /hr/employees` (→ `GET /employees`), double namespace super-admin `/platform/*` vs `/admin/*` (décision à acter).
 - **Throttle : ne pas re-déclarer `throttle:api` dans les groupes internes** — le groupe `api` par défaut de Laravel 12 (via `withRouting(api:)`) l'applique déjà ; une re-déclaration consomme le compteur deux fois par requête (limite effective divisée par deux). Vérifier avec `php artisan route:list` avant de retirer les déclarations existantes (issue #4932, point 7).
 
-### 2.8 i18n
+### 2.10 i18n
 
 - **Utiliser `__()` ou `trans()`** — jamais de chaines hardcodees en francais/anglais
 - 4 langues supportees : FR, EN, AR, TR
 - Support RTL pour l'arabe
-- Fichiers de traduction dans `resources/lang/{fr,en,ar,tr}/`
+- Fichiers de traduction backend dans `api/lang/{fr,en,ar,tr}/` (propagés depuis `shared/i18n/locales/{fr,en,ar,tr}.json` par `shared/i18n/sync/` — voir `ARCHITECTURE.md` §i18n)
 - **Garde CI (PA2-I18N-007 + issue #5432)** : `check-hardcoded-accented-messages.sh` refuse toute ligne AJOUTÉE avec un littéral accentué (proxy « texte français ») hors `__()`/`trans()` sur les surfaces à risque :
   - `*Controller.php` (historique) — `api/app/Modules/*/Application/**` (Services/Actions) — `api/app/Modules/*/Domain/Exceptions/**` — `api/app/Modules/*/Console/**`
   - Les lignes `__('catalogue.cle')` et les codes techniques sans accent ne déclenchent jamais.
@@ -308,17 +309,4 @@ $this->artisan('my:command')->assertSuccessful();
 - [docs/security/](./docs/security/) — Audits securite
 
 
-## Verbes HTTP — actions métier (issue #4930)
 
-Convention unique, appliquée à toutes les routes API :
-
-- **POST** — créer une ressource ET déclencher une action métier
-  (approve/reject/disburse/validate/complete/skip/activate…).
-- **PUT/PATCH** — modifier une ressource existante (mise à jour d'état
-  de la ressource elle-même).
-- **GET** — lecture pure, sans effet de bord (exceptions documentées :
-  magic links email, exports idempotents).
-
-Rétrocompatibilité : les anciens verbes restent acceptés comme **alias
-dépréciés** le temps de la migration des clients Flutter — listés dans
-`dev-hub/tools/openapi-coverage-allowlist.txt` (#4930).
