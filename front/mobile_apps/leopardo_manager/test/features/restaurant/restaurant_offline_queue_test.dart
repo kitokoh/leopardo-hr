@@ -22,17 +22,31 @@ void main() {
     tempDir.deleteSync(recursive: true);
   });
 
-  ApiClient clientWithSyncResponse(List<Map<String, dynamic>> results) {
+  ApiClient clientWithSyncResponse(List<Map<String, dynamic>> statuses) {
     final client = ApiClient(FakeSecureStorage(), FakeAppPreferences());
     client.dio.interceptors.insert(
       0,
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          // Le serveur répond idempotemment : il reprend les CLÉS envoyées par
+          // le client (mobile-<ts>-<n>) et associe un statut à chacune, dans
+          // l'ordre de la liste fournie par le test.
+          final body = (options.data as Map<String, dynamic>);
+          final ops = (body['operations'] as List<dynamic>? ?? const []);
+          final data = <Map<String, dynamic>>[];
+          for (var i = 0; i < ops.length; i++) {
+            final op = ops[i] as Map<String, dynamic>;
+            final status = i < statuses.length ? statuses[i]['status'] : 'error';
+            data.add({
+              'idempotency_key': op['idempotency_key'],
+              'status': status,
+            });
+          }
           handler.resolve(
             Response(
               requestOptions: options,
               statusCode: 200,
-              data: {'data': results},
+              data: {'data': data},
             ),
           );
         },
@@ -67,18 +81,9 @@ void main() {
       final queue = RestaurantOfflineQueue(
         RestaurantRepository(
           clientWithSyncResponse(const [
-            {'type': 'order.pay', 'idempotency_key': 'k1', 'status': 'created'},
-            {
-              'type': 'order.pay',
-              'idempotency_key': 'k2',
-              'status': 'duplicate',
-            },
-            {
-              'type': 'order.pay',
-              'idempotency_key': 'k3',
-              'status': 'error',
-              'message': 'CONFLICT',
-            },
+            {'status': 'created'},
+            {'status': 'duplicate'},
+            {'status': 'error', 'message': 'CONFLICT'},
           ]),
         ),
       );
@@ -105,11 +110,7 @@ void main() {
       final queue = RestaurantOfflineQueue(
         RestaurantRepository(
           clientWithSyncResponse(const [
-            {
-              'type': 'order.pay',
-              'idempotency_key': 'k1',
-              'status': 'duplicate',
-            },
+            {'status': 'duplicate'},
           ]),
         ),
       );

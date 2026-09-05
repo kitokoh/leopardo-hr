@@ -11845,4 +11845,41 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelportalStatuscompleted => 'Terminée';
+
+  @override
+  String get fuelPumpistActiveShift => 'Shift actif';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Retour';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Impossible de charger les shifts';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Vos affectations du jour apparaîtront ici.';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aucun shift actif';
+
+  @override
+  String get fuelPumpistReadingHint => 'ex. 12500';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Valeur relevé (unités mineures)';
+
+  @override
+  String get fuelPumpistSubmit => 'Enregistrer le relevé';
+
+  @override
+  String get fuelPumpistTitle => 'Pompiste';
+
+  @override
+  String get crmAccounts => 'Comptes CRM';
+
+  @override
+  String get crmContacts => 'Contacts CRM';
+
+  @override
+  String get crmLeads => 'Leads CRM';
 }

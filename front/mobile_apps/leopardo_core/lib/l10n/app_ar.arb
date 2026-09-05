@@ -3667,5 +3667,17 @@
   "travelportalStatuspending": "قيد الانتظار",
   "travelportalStatusconfirmed": "مؤكدة",
   "travelportalStatusrefunded": "مستردة",
-  "travelportalStatuscompleted": "مكتملة"
+  "travelportalStatuscompleted": "مكتملة",
+  "fuelPumpistActiveShift": "الوردية النشطة",
+  "fuelPumpistBackTooltip": "رجوع",
+  "fuelPumpistErrorTitle": "تعذر تحميل الورديات",
+  "fuelPumpistNoShiftDescription": "ستظهر مهامك اليوم هنا.",
+  "fuelPumpistNoShiftTitle": "لا توجد وردية نشطة",
+  "fuelPumpistReadingHint": "مثال 12500",
+  "fuelPumpistReadingLabel": "قيمة القراءة (وحدات صغرى)",
+  "fuelPumpistSubmit": "حفظ القراءة",
+  "fuelPumpistTitle": "عامل المضخة",
+  "crmAccounts": "حسابات إدارة العلاقات",
+  "crmContacts": "جهات اتصال إدارة العلاقات",
+  "crmLeads": "عملاء إدارة العلاقات المحتملون"
 }

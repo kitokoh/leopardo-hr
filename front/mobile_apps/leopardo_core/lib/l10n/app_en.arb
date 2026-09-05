@@ -3667,5 +3667,17 @@
   "travelportalStatuspending": "Pending",
   "travelportalStatusconfirmed": "Confirmed",
   "travelportalStatusrefunded": "Refunded",
-  "travelportalStatuscompleted": "Completed"
+  "travelportalStatuscompleted": "Completed",
+  "fuelPumpistActiveShift": "Active shift",
+  "fuelPumpistBackTooltip": "Back",
+  "fuelPumpistErrorTitle": "Unable to load shifts",
+  "fuelPumpistNoShiftDescription": "Your assignments for today will appear here.",
+  "fuelPumpistNoShiftTitle": "No active shift",
+  "fuelPumpistReadingHint": "e.g. 12500",
+  "fuelPumpistReadingLabel": "Reading value (minor units)",
+  "fuelPumpistSubmit": "Submit reading",
+  "fuelPumpistTitle": "Pump attendant",
+  "crmAccounts": "CRM accounts",
+  "crmContacts": "CRM contacts",
+  "crmLeads": "CRM leads"
 }

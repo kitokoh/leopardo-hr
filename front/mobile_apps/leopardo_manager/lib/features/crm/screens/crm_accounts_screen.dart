@@ -43,7 +43,8 @@ class CrmAccountsScreen extends ConsumerWidget {
                             ),
                             subtitle: Text(
                               account.ownerName ?? '',
-                              style: const TextStyle(color: MobileSurface.muted),
+                              style:
+                                  const TextStyle(color: MobileSurface.muted),
                             ),
                             trailing: const Icon(
                               Icons.chevron_right,

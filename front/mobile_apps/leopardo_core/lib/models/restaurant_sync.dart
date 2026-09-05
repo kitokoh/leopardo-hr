@@ -18,10 +18,10 @@ class RestaurantSyncOperation {
   final Map<String, dynamic> payload;
 
   Map<String, dynamic> toJson() => {
-    'type': type,
-    'idempotency_key': idempotencyKey,
-    if (payload.isNotEmpty) 'payload': payload,
-  };
+        'type': type,
+        'idempotency_key': idempotencyKey,
+        if (payload.isNotEmpty) 'payload': payload,
+      };
 }
 
 /// Résultat d'une opération rejouée par le serveur.

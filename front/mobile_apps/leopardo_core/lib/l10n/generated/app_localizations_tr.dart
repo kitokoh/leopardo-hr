@@ -11734,4 +11734,41 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelportalStatuscompleted => 'Tamamlandı';
+
+  @override
+  String get fuelPumpistActiveShift => 'Aktif vardiya';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Geri';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Vardiyalar yüklenemedi';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Bugünkü atamalarınız burada görünecek.';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aktif vardiya yok';
+
+  @override
+  String get fuelPumpistReadingHint => 'örn. 12500';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Okuma değeri (alt birim)';
+
+  @override
+  String get fuelPumpistSubmit => 'Okumayı kaydet';
+
+  @override
+  String get fuelPumpistTitle => 'Pompacı';
+
+  @override
+  String get crmAccounts => 'CRM hesapları';
+
+  @override
+  String get crmContacts => 'CRM kişileri';
+
+  @override
+  String get crmLeads => 'CRM potansiyel müşterileri';
 }

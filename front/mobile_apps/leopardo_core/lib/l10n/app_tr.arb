@@ -3667,5 +3667,17 @@
   "travelportalStatuspending": "Beklemede",
   "travelportalStatusconfirmed": "Onaylandı",
   "travelportalStatusrefunded": "İade edildi",
-  "travelportalStatuscompleted": "Tamamlandı"
+  "travelportalStatuscompleted": "Tamamlandı",
+  "fuelPumpistActiveShift": "Aktif vardiya",
+  "fuelPumpistBackTooltip": "Geri",
+  "fuelPumpistErrorTitle": "Vardiyalar yüklenemedi",
+  "fuelPumpistNoShiftDescription": "Bugünkü atamalarınız burada görünecek.",
+  "fuelPumpistNoShiftTitle": "Aktif vardiya yok",
+  "fuelPumpistReadingHint": "örn. 12500",
+  "fuelPumpistReadingLabel": "Okuma değeri (alt birim)",
+  "fuelPumpistSubmit": "Okumayı kaydet",
+  "fuelPumpistTitle": "Pompacı",
+  "crmAccounts": "CRM hesapları",
+  "crmContacts": "CRM kişileri",
+  "crmLeads": "CRM potansiyel müşterileri"
 }

@@ -192,9 +192,8 @@ class _RestaurantManagerScreenState
                           : session.status,
                       trailing: session.isOpen
                           ? FilledButton(
-                              onPressed: _busy
-                                  ? null
-                                  : () => _closeSession(session),
+                              onPressed:
+                                  _busy ? null : () => _closeSession(session),
                               child: Text(l10n.restaurantMobileManagerClose),
                             )
                           : null,
@@ -223,8 +222,7 @@ class _RestaurantManagerScreenState
                         return MobileListCard(
                           icon: Icons.warning_amber_outlined,
                           iconColor: AppColors.warning,
-                          title:
-                              alert.ingredient ??
+                          title: alert.ingredient ??
                               l10n.restaurantMobileManagerIngredient(alert.id),
                           subtitle: l10n.restaurantMobileManagerStockLevel(
                             alert.quantity,

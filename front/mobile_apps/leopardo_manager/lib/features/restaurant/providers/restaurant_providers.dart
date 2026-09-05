@@ -21,34 +21,34 @@ final restaurantOfflineQueueProvider = Provider<RestaurantOfflineQueue>((ref) {
 
 final restaurantServerOrdersProvider =
     FutureProvider.autoDispose<List<RestaurantOrder>>((ref) {
-      return ref.watch(restaurantRepositoryProvider).serverOrders();
-    });
+  return ref.watch(restaurantRepositoryProvider).serverOrders();
+});
 
 final restaurantServerTablesProvider =
     FutureProvider.autoDispose<List<RestaurantTable>>((ref) {
-      return ref.watch(restaurantRepositoryProvider).serverTables();
-    });
+  return ref.watch(restaurantRepositoryProvider).serverTables();
+});
 
 // ── Livreur (RESTO-802/#6223) ────────────────────────────────────────────
 
 final restaurantRiderDeliveriesProvider =
     FutureProvider.autoDispose<List<RestaurantDelivery>>((ref) {
-      return ref.watch(restaurantRepositoryProvider).riderDeliveries();
-    });
+  return ref.watch(restaurantRepositoryProvider).riderDeliveries();
+});
 
 // ── Gérant (RESTO-803/#6224) ─────────────────────────────────────────────
 
 final restaurantManagerKpisProvider =
     FutureProvider.autoDispose<RestaurantKpis>((ref) {
-      return ref.watch(restaurantRepositoryProvider).managerKpis();
-    });
+  return ref.watch(restaurantRepositoryProvider).managerKpis();
+});
 
 final restaurantManagerStockAlertsProvider =
     FutureProvider.autoDispose<List<RestaurantStockAlert>>((ref) {
-      return ref.watch(restaurantRepositoryProvider).managerStockAlerts();
-    });
+  return ref.watch(restaurantRepositoryProvider).managerStockAlerts();
+});
 
 final restaurantManagerPosSessionProvider =
     FutureProvider.autoDispose<RestaurantPosSession?>((ref) {
-      return ref.watch(restaurantRepositoryProvider).currentPosSession();
-    });
+  return ref.watch(restaurantRepositoryProvider).currentPosSession();
+});

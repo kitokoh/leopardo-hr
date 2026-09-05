@@ -22110,6 +22110,78 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Terminée'**
   String get travelportalStatuscompleted;
+
+  /// No description provided for @fuelPumpistActiveShift.
+  ///
+  /// In fr, this message translates to:
+  /// **'Shift actif'**
+  String get fuelPumpistActiveShift;
+
+  /// No description provided for @fuelPumpistBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get fuelPumpistBackTooltip;
+
+  /// No description provided for @fuelPumpistErrorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les shifts'**
+  String get fuelPumpistErrorTitle;
+
+  /// No description provided for @fuelPumpistNoShiftDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos affectations du jour apparaîtront ici.'**
+  String get fuelPumpistNoShiftDescription;
+
+  /// No description provided for @fuelPumpistNoShiftTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun shift actif'**
+  String get fuelPumpistNoShiftTitle;
+
+  /// No description provided for @fuelPumpistReadingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. 12500'**
+  String get fuelPumpistReadingHint;
+
+  /// No description provided for @fuelPumpistReadingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur relevé (unités mineures)'**
+  String get fuelPumpistReadingLabel;
+
+  /// No description provided for @fuelPumpistSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer le relevé'**
+  String get fuelPumpistSubmit;
+
+  /// No description provided for @fuelPumpistTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pompiste'**
+  String get fuelPumpistTitle;
+
+  /// No description provided for @crmAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes CRM'**
+  String get crmAccounts;
+
+  /// No description provided for @crmContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts CRM'**
+  String get crmContacts;
+
+  /// No description provided for @crmLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Leads CRM'**
+  String get crmLeads;
 }
 
 class _AppLocalizationsDelegate

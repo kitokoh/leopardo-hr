@@ -11631,4 +11631,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelportalStatuscompleted => 'مكتملة';
+
+  @override
+  String get fuelPumpistActiveShift => 'الوردية النشطة';
+
+  @override
+  String get fuelPumpistBackTooltip => 'رجوع';
+
+  @override
+  String get fuelPumpistErrorTitle => 'تعذر تحميل الورديات';
+
+  @override
+  String get fuelPumpistNoShiftDescription => 'ستظهر مهامك اليوم هنا.';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'لا توجد وردية نشطة';
+
+  @override
+  String get fuelPumpistReadingHint => 'مثال 12500';
+
+  @override
+  String get fuelPumpistReadingLabel => 'قيمة القراءة (وحدات صغرى)';
+
+  @override
+  String get fuelPumpistSubmit => 'حفظ القراءة';
+
+  @override
+  String get fuelPumpistTitle => 'عامل المضخة';
+
+  @override
+  String get crmAccounts => 'حسابات إدارة العلاقات';
+
+  @override
+  String get crmContacts => 'جهات اتصال إدارة العلاقات';
+
+  @override
+  String get crmLeads => 'عملاء إدارة العلاقات المحتملون';
 }

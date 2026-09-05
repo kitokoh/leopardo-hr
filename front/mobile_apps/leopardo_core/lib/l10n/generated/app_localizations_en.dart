@@ -11717,4 +11717,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get travelportalStatuscompleted => 'Completed';
+
+  @override
+  String get fuelPumpistActiveShift => 'Active shift';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Back';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Unable to load shifts';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Your assignments for today will appear here.';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'No active shift';
+
+  @override
+  String get fuelPumpistReadingHint => 'e.g. 12500';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Reading value (minor units)';
+
+  @override
+  String get fuelPumpistSubmit => 'Submit reading';
+
+  @override
+  String get fuelPumpistTitle => 'Pump attendant';
+
+  @override
+  String get crmAccounts => 'CRM accounts';
+
+  @override
+  String get crmContacts => 'CRM contacts';
+
+  @override
+  String get crmLeads => 'CRM leads';
 }

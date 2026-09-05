@@ -3667,5 +3667,17 @@
   "travelportalStatuspending": "En attente",
   "travelportalStatusconfirmed": "Confirmée",
   "travelportalStatusrefunded": "Remboursée",
-  "travelportalStatuscompleted": "Terminée"
+  "travelportalStatuscompleted": "Terminée",
+  "fuelPumpistActiveShift": "Shift actif",
+  "fuelPumpistBackTooltip": "Retour",
+  "fuelPumpistErrorTitle": "Impossible de charger les shifts",
+  "fuelPumpistNoShiftDescription": "Vos affectations du jour apparaîtront ici.",
+  "fuelPumpistNoShiftTitle": "Aucun shift actif",
+  "fuelPumpistReadingHint": "ex. 12500",
+  "fuelPumpistReadingLabel": "Valeur relevé (unités mineures)",
+  "fuelPumpistSubmit": "Enregistrer le relevé",
+  "fuelPumpistTitle": "Pompiste",
+  "crmAccounts": "Comptes CRM",
+  "crmContacts": "Contacts CRM",
+  "crmLeads": "Leads CRM"
 }
