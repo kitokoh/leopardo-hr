@@ -28,12 +28,12 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `tests.yml` | PR → main + push (api/**, front/admin-dashboard/**) | Tests backend (PHPUnit/Pest, sécurité, qualité, gouvernance) — aucun job front/mobile |
-| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (65%) |
+| `tests.yml` | PR + push → main (paths api/**, front/admin-dashboard/**) | Tests backend (PHPUnit/Pest, sécurité, qualité, gouvernance) — aucun job front/mobile |
+| `coverage-gate.yml` | PR (tous chemins) + push main + merge_group (filtre paths retiré, #2032) | Seuil de couverture PHP (65 %) — skip si api/ inchangé |
 | `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
 | `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
-| `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (8 apps, matrix) |
+| `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (8 packages, matrix — cf. melos.yaml) |
 | `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
 | `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
 | `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |

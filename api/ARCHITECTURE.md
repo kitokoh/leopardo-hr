@@ -63,13 +63,11 @@ job Module Structure Validator) bloque TOUT nouvel import croisé :
 - `use App\Modules\<X>\...` dans un module ≠ X ;
 - `use App\Modules\<X>\...` dans `Core/`.
 
-La dette héritée (23 modules sources, 55 paires source→cible — vérifié
-2026-09-05) est **actée** dans
+La dette héritée (55 paires source→cible, sortie de la garde le 2026-09-05 ; +4 paires justifiées le 2026-09-04 via #6816) est **actée** dans
 `dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
-ligne ajoutée exige une justification (issue de refactor), aucune n'est
+ligne ajoutée exige une justification (issue de refactor), aucune nest
 rajoutée « pour passer ». Dérogations structurelles déjà documentées :
-`Modules/Absence` est une façade sur `Planning` ; `Modules/Expense` a évolué en module DDD partiel depuis #5235 (voir dérogation PA2-ARCH-011, à jour plus bas)
-(PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
+`Modules/Absence` est une façade sur `Planning` ; `Modules/Expense` est un module DDD partiel depuis #5235 (couche `Application/` absente — voir PA2-ARCH-011, à jour plus bas).(PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
 (PayrollCalculator → extraire `Planning`) ; déplacement de l'`Employee`
 canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
 consommateurs).
@@ -98,8 +96,7 @@ restent libres. La garde est **active** — `Modules/CRM` existe et est complet 
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet (8/8 sous-couches) | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) — Actions/DTOs absents (Application = squelettes) | `EduManagerServiceProvider` |
-| `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 — Application/Actions, Domain, Infrastructure, Interfaces, Providers ; DTOs absents | `RestaurantManagerServiceProvider` |
-| `Modules/Restaurant` | — (pas de routes propres : webhooks livraison publics et shop inline dans `routes/api.php` via `RestaurantManager` ; surveys publics via `Core\Solutions` / `routes/modules/solutions.php`) | 🔶 fournisseur de contenu Solutions : Domain (`Domain/Solution`, `Domain/Survey`) + Providers ; Application/Infrastructure/Interfaces = squelettes `.gitkeep` | `RestaurantServiceProvider` |
+| `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 — Application/Actions, Domain, Infrastructure, Interfaces, Providers ; DTOs absents | `RestaurantManagerServiceProvider` || `Modules/Restaurant` | — (pas de routes propres : webhooks livraison publics et shop inline dans `routes/api.php` via `RestaurantManager` ; surveys publics via `Core\Solutions` / `routes/modules/solutions.php`) | 🔶 fournisseur de contenu Solutions : Domain (`Domain/Solution`, `Domain/Survey`) + Providers ; Application/Infrastructure/Interfaces = squelettes `.gitkeep` | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet — DTOs absents | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet (8/8 sous-couches) | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | 🔶 Application et Infrastructure vides (0 PHP) — Domain + Interfaces seuls | `FleetServiceProvider` |
@@ -128,15 +125,15 @@ restent libres. La garde est **active** — `Modules/CRM` existe et est complet 
 > 8 modules ont les 8 sous-couches canoniques peuplées (Accounting, Attendance,
 > Cabinet, CRM, HR, Marketing, Notification, Platform) ; la plupart des autres
 > modules (dont les verticales récentes Delivery, EduManager, FuelStation,
-> RestaurantManager, TravelAgency) n'ont pas d'`Application/Actions`+`DTOs`
-> peuplés ; `Cameras` garde ses modèles Eloquent à la racine de `Domain/`
+> Delivery, EduManager, FuelStation n'ont ni Actions ni DTOs ; RestaurantManager
+> (22 Actions) et TravelAgency (35 Actions) ont des Actions mais pas de
+> `Application/DTOs` ; `Cameras` garde ses modèles Eloquent à la racine de `Domain/`
 > (pas de `Domain/Models`).
 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 >
 > **Historique — `Modules/Expense` (PA2-ARCH-011, issue #1414, évolution #5235)** : la dérogation initiale (2024-2026) documentait un module « façade HTTP » ne possédant que `Interfaces/` (`ExpenseClaimController`) et `Providers/`, les modèles métier (`ExpenseClaim`, `ExpenseItem`) vivant canoniquement dans `Planning\Domain\Models` (le controller routé consommait `Planning\...\ExpenseClaim` directement ; la policy enregistrée sur le modèle mort avait été corrigée).
-> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD **partiel** — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense **pour les couches Domain/Infrastructure/Interfaces** : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique). **La couche `Application/` (cas d'usage) reste à créer** — la CI exempte toujours `Expense` de l'exigence des couches Application/Domain/Infrastructure (`FACADE_ONLY_MODULES="Absence Expense"`, `architecture-check.yml`).
-
+> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD **partiel** — la couche `Application/` n'existe pas (constat 2026-09-05, chantier ouvert). Présents : `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique).
 ---
 
 > **Dérogation documentée — `app/Http/Controllers/Web/` (surface session, audit #6578)** : les
@@ -225,7 +222,6 @@ _Issue #1413, complétant le suivi de la ligne ci-dessus._
 
 **Baseline `phpstan-strict` (1667 entrées / 3317 erreurs, vérifié 2026-09-05) :**
 le fichier `api/phpstan-strict-baseline.neon` fait foi — la baseline est réduite module par module, dans des PR dédiées.
-
 Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas censés converger vers un seul niveau à court terme — `phpstan-modules` reste le gate rapide et bloquant sur tout PR touchant `app/Core`/`app/Modules`/`app/Shared`, tandis que `phpstan-strict` sert de garde anti-régression progressive sur le typage strict (niveau 8) sans bloquer sur la dette existante. Toute réduction de la baseline (fichier corrigé et retiré de `phpstan-strict-baseline.neon`) doit être faite module par module, dans des PR dédiées, pour rester revuable.
 
 ### ✅ Nettoyage complet — bilan cumulé (PR #824 + phase2)
@@ -267,8 +263,7 @@ cat bootstrap/providers.php
 # Expense (Application absente — PA2-ARCH-011 partielle, modèles de notes de
 # frais canoniques dans Planning) sont exemptées de l'exigence
 # Application/Domain/Infrastructure (FACADE_ONLY_EXEMPT_LAYERS).
-FACADE_ONLY_MODULES="Absence Expense"
-for MOD in $(ls app/Modules); do
+FACADE_ONLY_MODULES="Absence Expense"for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     if echo "$FACADE_ONLY_MODULES" | grep -qw "$MOD" && echo "Application Domain Infrastructure" | grep -qw "$LAYER"; then
       continue

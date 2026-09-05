@@ -11,7 +11,7 @@
    "reason": "Infrastructure HTTP partagée (middleware, bootstrap) — aucun BC propriétaire unique."
   },
   {
-   "path": "api/app/Core/Shared",
+   "path": "api/app/Shared",
    "reason": "Building blocks partagés (DTOs, Enums, Events, Models, Traits) — volontairement hors BC."
   },
   {
