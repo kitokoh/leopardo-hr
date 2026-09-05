@@ -98,6 +98,12 @@ n'ont pas été rejoués localement — ils tourneront sur la branche à la proc
 
 ### 6.1 Gardes d'architecture annoncées mais non branchées en CI (priorité haute)
 
+> **Traitement P0/P1 effectué le 2026-09-05 (plan d'action) :** matrice
+> `bounded-context-dependencies.json` rebaselinée sur le graphe réel (+24 arêtes,
+> 106 au total, `updated 2026-09-05`) et **MAT-002 branchée** dans
+> `architecture-check.yml` ; **garde CRM branchée** dans `architecture-check.yml`
+> (module actif, 0 hard block). Constats ci-dessous conservés pour traçabilité.
+
 | Constat | Preuve | Recommandation |
 |---|---|---|
 | **Garde MAT-002** (`dev-hub/tools/check-bounded-context-dependencies.sh`) **absente de tous les workflows** et de `scripts/pre-push-checks.sh` ; exécutée sur main elle **échoue (566 violations, exit 1)** car `dev-hub/governance/bounded-context-dependencies.json` est figé au 2026-08-28 (7 BC absents : 15/16/17/22/24/25/26 ; 4 paires d'allowlist postérieures sans arête) | `grep -r check-bounded-context-dependencies .github/workflows/ scripts/` = 0 ; exécution locale | Rebaseler la matrice sur main puis **brancher MAT-002 en CI** (job du `architecture-check.yml`, même pattern que MAT-001) — tant qu'elle n'est pas branchée, la dette n'est jamais mesurée |
