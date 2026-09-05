@@ -14,6 +14,7 @@ use App\Modules\Accounting\Domain\Exceptions\DeliveryNoteRequiresDeliveryDateExc
 use App\Modules\Accounting\Domain\Exceptions\DocumentNotFullyPaidException;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Exceptions\InvalidDocumentTransitionException;
+use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
@@ -37,6 +38,9 @@ class DocumentWorkflowNumberingTest extends TestCase
 
     private Company $company;
 
+    /** @var AccountingContact */
+    protected $contact;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -46,6 +50,16 @@ class DocumentWorkflowNumberingTest extends TestCase
         $this->company = $company;
 
         app()->instance('current_company', $company);
+
+        /** @var AccountingContact $contact */
+        $contact = AccountingContact::query()->create([
+            'company_id' => $company->id,
+            'type' => 'customer',
+            'name' => 'Client test numérotation',
+            'email' => 'client-num@example.com',
+            'source' => 'manual',
+        ]);
+        $this->contact = $contact;
     }
 
     /**
