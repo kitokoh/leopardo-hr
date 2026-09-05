@@ -138,7 +138,7 @@ final class KioskEnrollmentService
                 $enrollment = $enrollments->get($method->value);
                 $statuses[] = [
                     'method' => $method->value,
-                    'status' => $enrollment?->status?->value ?? 'none',
+                    'status' => $enrollment?->status->value ?? 'none',
                     'version' => $enrollment?->version,
                     'enrolled_at' => $enrollment?->enrolled_at?->toIso8601String(),
                     'enabled' => $method === VerificationMethod::Face

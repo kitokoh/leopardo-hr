@@ -128,7 +128,7 @@ class WebAuthController extends Controller
                 'employee_id' => $employee->id,
                 'company_id' => (string) $employee->company_id,
                 'tenant_schema' => null,
-                'email' => $employee->email,
+                'email' => $employee->email ?? '',
                 'device_name' => 'web-session',
             ]);
 

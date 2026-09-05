@@ -114,9 +114,7 @@ final class KioskEnrollmentController extends Controller
             abort(401, 'INVALID_KIOSK_TOKEN');
         }
 
-        if ($kiosk->company_id !== null) {
-            $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
-        }
+        $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
 
         return $kiosk;
     }
@@ -158,7 +156,7 @@ final class KioskEnrollmentController extends Controller
             'provider' => $enrollment->provider,
             'enrolled_via' => $enrollment->enrolled_via,
             'correlation_id' => $enrollment->correlation_id,
-            'created_at' => $enrollment->created_at?->toIso8601String(),
+            'created_at' => $enrollment->created_at->toIso8601String(),
             'activated_at' => $enrollment->enrolled_at?->toIso8601String(),
             'revoked_at' => $enrollment->revoked_at?->toIso8601String(),
         ];

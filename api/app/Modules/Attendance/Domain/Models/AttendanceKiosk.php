@@ -24,6 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sync_token_hash
  * @property \Carbon\Carbon|null $last_seen_at
  * @property \Carbon\Carbon|null $last_sync_at
+ * @property int|null $site_id
+ * @property \Carbon\Carbon|null $revoked_at
+ * @property int|null $acked_event_counter
+ * @property array<int, string>|null $punch_methods
  *
  * @mixin Builder<static>
  */
@@ -82,6 +86,9 @@ class AttendanceKiosk extends Model
         return in_array($method, $this->resolvedPunchMethods(), true);
     }
 
+    /**
+     * @return list<string>
+     */
     public function resolvedPunchMethods(): array
     {
         $configured = $this->normalizeMethods($this->punch_methods ?? []);
@@ -111,6 +118,10 @@ class AttendanceKiosk extends Model
         return self::KIOSK_PUNCH_METHODS_ALL;
     }
 
+    /**
+     * @param  array<int, mixed>  $methods
+     * @return list<string>
+     */
     private function normalizeMethods(array $methods): array
     {
         $normalized = [];

@@ -69,7 +69,6 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
-    
     public function handle(): void
     {
         if ($this->company->status !== 'trial') {
@@ -93,7 +92,7 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         }
 
         $name = trim($manager->first_name.' '.$manager->last_name);
-        $email = $manager->email;
+        $email = $manager->email ?? '';
         $locale = $manager->preferred_language;
 
         $mailable = match ($this->dayNumber) {

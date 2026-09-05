@@ -36,9 +36,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int|null $schedule_id
+ * @property string|null $external_event_id
  * @property-read int $distinct_days
  * @property-read \App\Core\Auth\Domain\Models\Employee|null $employee
  * @property-read \App\Modules\Planning\Domain\Models\Schedule|null $schedule
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class AttendanceLog extends Model
@@ -74,17 +76,17 @@ class AttendanceLog extends Model
     ];
 
     protected $casts = [
-        'date'                 => 'date',
-        'check_in'             => 'datetime',
-        'check_out'            => 'datetime',
-        'synced_from_offline'  => 'boolean',
-        'punch_meta'           => 'array',
-        'hours_worked'         => 'decimal:2',
-        'overtime_hours'       => 'decimal:2',
-        'late_minutes'         => 'integer',
-        'gps_lat'              => 'decimal:8',
-        'gps_lng'              => 'decimal:8',
-        'gps_accuracy'         => 'float',
+        'date' => 'date',
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
+        'synced_from_offline' => 'boolean',
+        'punch_meta' => 'array',
+        'hours_worked' => 'decimal:2',
+        'overtime_hours' => 'decimal:2',
+        'late_minutes' => 'integer',
+        'gps_lat' => 'decimal:8',
+        'gps_lng' => 'decimal:8',
+        'gps_accuracy' => 'float',
     ];
 
     /** @return BelongsTo<Employee, $this> */
@@ -99,4 +101,3 @@ class AttendanceLog extends Model
         return $this->belongsTo(Schedule::class);
     }
 }
-
