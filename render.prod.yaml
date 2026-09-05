@@ -12,17 +12,19 @@
 #   - Base de données : Neon Postgres (projet "LEOPARDO", branche
 #     "production"), PAS le Postgres Render — le Postgres gratuit Render
 #     expire après 30 jours et a été abandonné après test (même schéma
-#     que le dev, qui utilise déjà Neon en pratique malgré ce que
-#     render.yaml déclare). DB_URL est donc `sync: false` ci-dessous :
-#     valeur à saisir dans le dashboard Render (ou via Pulumi ESC
-#     solarnyxss/leopardo-hr/prod, clé render.databaseUrl).
+#     que le dev, qui utilise déjà Neon en pratique). DB_URL est donc
+#     `sync: false` ci-dessous : valeur à saisir dans le dashboard Render
+#     (ou via Pulumi ESC solarnyxss/leopardo-hr/prod, clé render.databaseUrl).
 #   - Key Value (Redis) gratuit Render : en mémoire uniquement, perdu au
 #     redémarrage — suffisant pour cache/session en Phase 1.
 #   - Les Background Workers ne sont PAS éligibles au tier gratuit Render :
 #     `leopardo-queue-worker` et `leopardo-scheduler` ne sont donc PAS
-#     répliqués ici. QUEUE_CONNECTION=database fonctionne quand même (les
-#     jobs s'accumulent sans être traités tant qu'aucun worker ne tourne) —
-#     à ajouter dès le passage à un plan payant.
+#     répliqués ici. Nuance (vérifiée 2026-09-05) : la queue est drainée en
+#     mono-conteneur par le web service (docker-entrypoint.sh → queue:work
+#     en arrière-plan, connexion database) — les jobs asynchrones SONT donc
+#     traités en Phase 1. En revanche les tâches planifiées (schedule:run)
+#     ne tournent pas sans `leopardo-scheduler` : à ajouter dès le passage à
+#     un plan payant.
 
 services:
   # ──────────────────────────────────────────────────────────────────────────
@@ -81,7 +83,8 @@ services:
           property: password
       - key: APP_KEY
         generateValue: true
-      # Pas de worker en Phase 1 : les jobs s'accumulent sans être drainés.
+      # Queue drainée en mono-conteneur par le web service (voir en-tête) —
+      # scheduler seul manquant en Phase 1.
       - key: QUEUE_CONNECTION
         value: database
       - key: CACHE_STORE
