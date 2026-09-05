@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\FuelStation\Domain\Models\FuelProduct;
-use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use App\Modules\FuelStation\Domain\Models\FuelReportExport;
 use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
@@ -289,13 +289,13 @@ final class FuelReportingService
             ],
             FuelReportSnapshot::TYPE_STOCK_STATUS => [
                 'station_id' => $station->id,
-                'as_of' => now()->toISOString(),
+                'as_of' => now()->toIso8601String(),
                 'tanks' => $this->tankLevels($station),
                 'movements_today' => $this->movementsToday($station),
             ],
             FuelReportSnapshot::TYPE_VARIANCE_SUMMARY => [
                 'station_id' => $station->id,
-                'as_of' => now()->toISOString(),
+                'as_of' => now()->toIso8601String(),
                 'reconciliations' => $this->latestReconciliations($station),
             ],
             FuelReportSnapshot::TYPE_SHIFT_SUMMARY => [

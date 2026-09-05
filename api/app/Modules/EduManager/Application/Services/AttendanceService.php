@@ -39,9 +39,9 @@ final class AttendanceService
      *                                      attendance_date (Y-m-d), status,
      *                                      reason_code?, note?, recorded_by?
      *
-     * @throws InvalidArgumentException  statut inconnu / company_id manquant /
-     *                                   reason_code trop long
-     * @throws ModelNotFoundException    élève (ou classe) introuvable dans le tenant
+     * @throws InvalidArgumentException statut inconnu / company_id manquant /
+     *                                  reason_code trop long
+     * @throws ModelNotFoundException élève (ou classe) introuvable dans le tenant
      */
     public function record(array $data): EduAttendanceRecord
     {
@@ -112,7 +112,7 @@ final class AttendanceService
      * new_status + motif) AVANT de mettre à jour le record, le tout dans une
      * transaction : l'historique des corrections est complet et rejouable.
      *
-     * @throws InvalidArgumentException  statut de correction inconnu
+     * @throws InvalidArgumentException statut de correction inconnu
      */
     public function correct(EduAttendanceRecord $record, string $newStatus, string $reason, int $actorId): EduAttendanceRecord
     {

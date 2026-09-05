@@ -144,8 +144,8 @@ class FuelCustomerController extends Controller
             'full_name' => $customer->full_name,
             'marketing_consent' => $customer->marketing_consent,
             'loyalty_points' => $customer->loyalty_points,
-            'created_at' => $customer->created_at?->toISOString(),
-            'updated_at' => $customer->updated_at?->toISOString(),
+            'created_at' => $customer->created_at?->toIso8601String(),
+            'updated_at' => $customer->updated_at?->toIso8601String(),
         ];
     }
 

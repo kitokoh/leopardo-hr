@@ -6,8 +6,8 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Infrastructure\Services\FuelSaleService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelSaleRequest;
@@ -163,16 +163,14 @@ class FuelSaleController extends Controller
             'quantity' => $sale->quantity,
             'unit_price' => $sale->unit_price,
             'amount' => $sale->amount,
-            'sale_time' => $sale->sale_time->toISOString(),
+            'sale_time' => $sale->sale_time->toIso8601String(),
             'source' => $sale->source,
             'external_id' => $sale->external_id,
             'notes' => $sale->notes,
-            'created_at' => $sale->created_at?->toISOString(),
-            'updated_at' => $sale->updated_at?->toISOString(),
+            'created_at' => $sale->created_at?->toIso8601String(),
+            'updated_at' => $sale->updated_at?->toIso8601String(),
         ];
     }
-
-
 
     private function assertSolutionActive(): void
     {

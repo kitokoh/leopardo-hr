@@ -1,12 +1,5 @@
 # Registre canonique des domaines — Leopardo RH (source de vérité)
 
-> Source unique de vérité sur les domaines du projet (issue #3706).
-> Toute référence first-party (code, config, docs, CI, collections, README)
-> doit correspondre à une ligne du tableau « Registre » ci-dessous.
-> Garde CI : `dev-hub/tools/check-canonical-domains.sh` (échoue si un domaine
-> hors registre apparaît ou si le registre doc/garde désynchronise).
-> Vérification DNS/HTTP : **2026-08-15** (audit qa-expert11).
-
 ## Domaines actuellement joignables (`live`)
 
 | Surface | Domaine | Usage |

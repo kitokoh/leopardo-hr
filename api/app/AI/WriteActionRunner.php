@@ -226,8 +226,4 @@ class WriteActionRunner
         return is_scalar($value) ? (string) $value : $default;
     }
 
-    private function actorIsManager(string $companyId, int $userId): bool
-    {
-        return $this->toolPermissionPolicy->resolveRole($userId, $companyId) === 'manager';
-    }
 }

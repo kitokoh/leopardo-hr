@@ -95,8 +95,8 @@ class FuelProductController extends Controller
             'name' => $product->name,
             'unit_code' => $product->unit_code,
             'status' => $product->status,
-            'created_at' => $product->created_at?->toISOString(),
-            'updated_at' => $product->updated_at?->toISOString(),
+            'created_at' => $product->created_at?->toIso8601String(),
+            'updated_at' => $product->updated_at?->toIso8601String(),
         ];
     }
 

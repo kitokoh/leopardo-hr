@@ -335,7 +335,4 @@ final class TravelNotificationService
 
         return $payload;
     }
-
-
-
 }

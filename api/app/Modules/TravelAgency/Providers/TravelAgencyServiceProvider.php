@@ -8,49 +8,10 @@ use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
-use App\Modules\TravelAgency\Domain\Models\TravelBooking;
-use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrierApiKey;
-use App\Modules\TravelAgency\Domain\Models\TravelClass;
-use App\Modules\TravelAgency\Domain\Models\TravelCurrencyRate;
-use App\Modules\TravelAgency\Domain\Models\TravelHotel;
-use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
-use App\Modules\TravelAgency\Domain\Models\TravelOffice;
-use App\Modules\TravelAgency\Domain\Models\TravelQuote;
-use App\Modules\TravelAgency\Domain\Models\TravelRentalBooking;
-use App\Modules\TravelAgency\Domain\Models\TravelRentalVehicle;
-use App\Modules\TravelAgency\Domain\Models\TravelRoundTrip;
-use App\Modules\TravelAgency\Domain\Models\TravelRoute;
-use App\Modules\TravelAgency\Domain\Models\TravelStation;
-use App\Modules\TravelAgency\Domain\Models\TravelTicket;
-use App\Modules\TravelAgency\Domain\Models\TravelTrip;
-use App\Modules\TravelAgency\Domain\Models\TravelVehicle;
-use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
-use App\Modules\TravelAgency\Policies\TravelBookingPolicy;
-use App\Modules\TravelAgency\Policies\TravelCancellationPolicyPolicy;
-use App\Modules\TravelAgency\Policies\TravelCarrierApiKeyPolicy;
-use App\Modules\TravelAgency\Policies\TravelCarrierPolicy;
-use App\Modules\TravelAgency\Policies\TravelClassPolicy;
-use App\Modules\TravelAgency\Policies\TravelCurrencyRatePolicy;
-use App\Modules\TravelAgency\Policies\TravelHotelPolicy;
-use App\Modules\TravelAgency\Policies\TravelLoyaltyPolicy;
-use App\Modules\TravelAgency\Policies\TravelOfficePolicy;
-use App\Modules\TravelAgency\Policies\TravelQuotePolicy;
-use App\Modules\TravelAgency\Policies\TravelRentalBookingPolicy;
-use App\Modules\TravelAgency\Policies\TravelRentalVehiclePolicy;
-use App\Modules\TravelAgency\Policies\TravelRoundTripPolicy;
-use App\Modules\TravelAgency\Policies\TravelRoutePolicy;
-use App\Modules\TravelAgency\Policies\TravelStationPolicy;
-use App\Modules\TravelAgency\Policies\TravelTicketPolicy;
-use App\Modules\TravelAgency\Policies\TravelTripPolicy;
-use App\Modules\TravelAgency\Policies\TravelVehiclePolicy;
-use App\Modules\TravelAgency\Policies\TravelWebhookSubscriptionPolicy;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -99,26 +60,5 @@ class TravelAgencyServiceProvider extends ServiceProvider
         ]);
     }
 
-    public function boot(): void
-    {
-        Gate::policy(TravelStation::class, TravelStationPolicy::class);
-        Gate::policy(TravelWebhookSubscription::class, TravelWebhookSubscriptionPolicy::class);
-        Gate::policy(TravelOffice::class, TravelOfficePolicy::class);
-        Gate::policy(TravelCarrier::class, TravelCarrierPolicy::class);
-        Gate::policy(TravelClass::class, TravelClassPolicy::class);
-        Gate::policy(TravelVehicle::class, TravelVehiclePolicy::class);
-        Gate::policy(TravelRoute::class, TravelRoutePolicy::class);
-        Gate::policy(TravelTrip::class, TravelTripPolicy::class);
-        Gate::policy(TravelBooking::class, TravelBookingPolicy::class);
-        Gate::policy(TravelTicket::class, TravelTicketPolicy::class);
-        Gate::policy(TravelRentalVehicle::class, TravelRentalVehiclePolicy::class);
-        Gate::policy(TravelRentalBooking::class, TravelRentalBookingPolicy::class);
-        Gate::policy(TravelHotel::class, TravelHotelPolicy::class);
-        Gate::policy(TravelRoundTrip::class, TravelRoundTripPolicy::class);
-        Gate::policy(TravelQuote::class, TravelQuotePolicy::class);
-        Gate::policy(TravelCurrencyRate::class, TravelCurrencyRatePolicy::class);
-        Gate::policy(TravelCarrierApiKey::class, TravelCarrierApiKeyPolicy::class);
-        Gate::policy(TravelCancellationPolicy::class, TravelCancellationPolicyPolicy::class);
-        Gate::policy(TravelLoyaltyAccount::class, TravelLoyaltyPolicy::class);
-    }
+    public function boot(): void {}
 }

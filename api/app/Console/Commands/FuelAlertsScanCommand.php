@@ -85,7 +85,7 @@ class FuelAlertsScanCommand extends Command
                     'interval_id' => $interval->id,
                     'meter_id' => $interval->meter_id,
                     'delta_minor' => $interval->delta_minor,
-                    'calculated_at' => $interval->calculated_at?->toISOString(),
+                    'calculated_at' => $interval->calculated_at->toIso8601String(),
                 ],
             );
 
@@ -112,7 +112,7 @@ class FuelAlertsScanCommand extends Command
                 payload: [
                     'session_id' => $session->id,
                     'station_id' => $session->station_id,
-                    'opened_at' => $session->opened_at?->toISOString(),
+                    'opened_at' => $session->opened_at->toIso8601String(),
                 ],
             );
 
@@ -142,7 +142,7 @@ class FuelAlertsScanCommand extends Command
                     'task_id' => $task->id,
                     'title' => $task->title,
                     'priority' => $task->priority,
-                    'due_at' => $task->due_at?->toISOString(),
+                    'due_at' => $task->due_at?->toIso8601String(),
                 ],
             );
 

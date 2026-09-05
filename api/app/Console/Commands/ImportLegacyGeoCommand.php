@@ -77,7 +77,7 @@ class ImportLegacyGeoCommand extends Command
 
         $this->line(sprintf('  Pays : %d · Villes : %d', $report['countries'], $report['cities']));
 
-        foreach ((array) ($report['skipped'] ?? []) as $skipped) {
+        foreach ($report['skipped'] as $skipped) {
             $this->warn('  ⚠ ignoré : '.$skipped);
         }
 

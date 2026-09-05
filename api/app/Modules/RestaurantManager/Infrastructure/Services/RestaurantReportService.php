@@ -7,10 +7,10 @@ namespace App\Modules\RestaurantManager\Infrastructure\Services;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -192,8 +192,6 @@ final class RestaurantReportService
     /**
      * Sérialisation CSV déterministe (RESTO-702) : mêmes filtres → mêmes
      * octets. Colonnes allowlistées par type de rapport.
-     *
-     * @return string
      */
     public function toCsv(string $companyId, string $reportType, Carbon $from, Carbon $to, ?int $branchId = null): string
     {

@@ -132,8 +132,8 @@ final class MeterOcrService
      * Établit le contexte tenant de la demande (search_path + current_company
      * via TenantManager) : le job ne dépend d'aucun contexte d'authentification.
      *
-     * @throws RuntimeException  fournisseur indisponible/timeout/erreur de
-     *                           transport — la queue réessaie avec backoff
+     * @throws RuntimeException fournisseur indisponible/timeout/erreur de
+     *                          transport — la queue réessaie avec backoff
      */
     public function process(FuelMeterOcrRequest $request): FuelMeterOcrRequest
     {
@@ -163,7 +163,8 @@ final class MeterOcrService
      *                                      (sinon unité extraite si elle
      *                                      correspond au compteur, sinon
      *                                      unité du compteur)
-     * @throws FuelOcrNotReviewableException      statut ≠ needs_review
+     *
+     * @throws FuelOcrNotReviewableException statut ≠ needs_review
      * @throws FuelOcrReviewValueRejectedException valeur refusée par MeterReadingService
      */
     public function review(
@@ -280,7 +281,7 @@ final class MeterOcrService
      * Unavailable/Timeout sont TRANSITOIRES (retry queue) ; InvalidInput et
      * Rejected sont définitifs (aucun rethrow).
      *
-     * @throws RuntimeException  uniquement pour Unavailable/Timeout
+     * @throws RuntimeException uniquement pour Unavailable/Timeout
      */
     private function handleUnusableResult(FuelMeterOcrRequest $row, ModelResult $result): FuelMeterOcrRequest
     {

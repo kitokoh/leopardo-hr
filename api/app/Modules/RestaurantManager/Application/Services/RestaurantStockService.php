@@ -8,8 +8,8 @@ use App\Modules\RestaurantManager\Domain\Enums\OrderItemStatus;
 use App\Modules\RestaurantManager\Domain\Enums\StockMovementReason;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -60,7 +60,7 @@ final class RestaurantStockService
                     continue;
                 }
 
-                                /** @var RestaurantProductIngredient $composition */
+                /** @var RestaurantProductIngredient $composition */
                 foreach ($product->ingredients as $composition) {
                     $this->decrementIngredient(
                         ingredientId: (int) $composition->ingredient_id,
@@ -78,7 +78,7 @@ final class RestaurantStockService
      * Décrémente un ingrédient avec verrou de ligne (SELECT ... FOR UPDATE).
      *
      * @throws \Symfony\Component\HttpKernel\Exception\HttpException 422 en
-     *         politique 'block' quand le stock est insuffisant.
+     *                                                               politique 'block' quand le stock est insuffisant.
      */
     public function decrementIngredient(
         int $ingredientId,

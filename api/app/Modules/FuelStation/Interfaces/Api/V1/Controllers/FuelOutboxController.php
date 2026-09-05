@@ -98,10 +98,10 @@ class FuelOutboxController extends Controller
             'aggregate_id' => $event->aggregate_id,
             'status' => $event->status,
             'attempts' => $event->attempts,
-            'available_at' => $event->available_at?->toISOString(),
+            'available_at' => $event->available_at?->toIso8601String(),
             'last_error' => $event->last_error,
-            'processed_at' => $event->processed_at?->toISOString(),
-            'created_at' => $event->created_at?->toISOString(),
+            'processed_at' => $event->processed_at?->toIso8601String(),
+            'created_at' => $event->created_at?->toIso8601String(),
         ];
     }
 }

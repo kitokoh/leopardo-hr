@@ -120,8 +120,8 @@ class FuelMaintenanceTaskController extends Controller
             'completed_at' => $task->completed_at?->toDateString(),
             'completed_by' => $task->completed_by,
             'completion_notes' => $task->completion_notes,
-            'created_at' => $task->created_at?->toISOString(),
-            'updated_at' => $task->updated_at?->toISOString(),
+            'created_at' => $task->created_at?->toIso8601String(),
+            'updated_at' => $task->updated_at?->toIso8601String(),
         ];
     }
 

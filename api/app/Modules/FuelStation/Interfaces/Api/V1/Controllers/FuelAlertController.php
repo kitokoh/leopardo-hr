@@ -156,8 +156,8 @@ class FuelAlertController extends Controller
             'alert_key' => $alert->alert_key,
             'payload' => $alert->payload,
             'status' => $alert->status,
-            'resolved_at' => $alert->resolved_at?->toISOString(),
-            'created_at' => $alert->created_at?->toISOString(),
+            'resolved_at' => $alert->resolved_at?->toIso8601String(),
+            'created_at' => $alert->created_at?->toIso8601String(),
         ];
     }
 }

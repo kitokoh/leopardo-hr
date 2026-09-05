@@ -7,11 +7,12 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\FuelStationAlert;
 use App\Jobs\DispatchCommunicationJob;
+use App\Modules\FuelStation\Domain\Models\FuelAlert;
 use App\Modules\FuelStation\Domain\Models\FuelAlertLog;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
-use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
@@ -38,6 +39,57 @@ use Illuminate\Support\Facades\Log;
  */
 final class FuelAlertService
 {
+    /**
+     * Crée une alerte dédupliquée (fuel_alerts) — consommé par le scan
+     * planifié fuel:alerts-scan (#5813). `alert_key` unique par tenant : un
+     * re-scan ou un rejeu d'événement ne crée jamais deux alertes. La
+     * notification des managers reste pilotée par le journal quotidien
+     * (dispatchDaily/FuelAlertLog) — jamais de double diffusion ici.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array{alert: FuelAlert, created: bool, notified: int}
+     */
+    public function createAlert(
+        string $companyId,
+        ?int $stationId,
+        string $eventType,
+        string $severity,
+        string $alertKey,
+        array $payload,
+    ): array {
+        $existing = FuelAlert::query()
+            ->where('company_id', $companyId)
+            ->where('alert_key', $alertKey)
+            ->first();
+
+        if ($existing instanceof FuelAlert) {
+            return ['alert' => $existing, 'created' => false, 'notified' => 0];
+        }
+
+        try {
+            /** @var FuelAlert $alert */
+            $alert = FuelAlert::query()->create([
+                'company_id' => $companyId,
+                'station_id' => $stationId,
+                'event_type' => $eventType,
+                'severity' => $severity,
+                'alert_key' => $alertKey,
+                'payload' => $payload,
+                'status' => FuelAlert::STATUS_OPEN,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // Course entre deux workers : la contrainte unique a arbitré.
+            $alert = FuelAlert::query()
+                ->where('company_id', $companyId)
+                ->where('alert_key', $alertKey)
+                ->firstOrFail();
+
+            return ['alert' => $alert, 'created' => false, 'notified' => 0];
+        }
+
+        return ['alert' => $alert, 'created' => true, 'notified' => 0];
+    }
+
     /**
      * @param  array<string, mixed>  $payload
      */

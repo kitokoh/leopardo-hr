@@ -22,30 +22,7 @@ use App\Modules\RestaurantManager\Domain\Contracts\RestaurantReservationReposito
 use App\Modules\RestaurantManager\Domain\Contracts\RestaurantStockLevelRepositoryInterface;
 use App\Modules\RestaurantManager\Domain\Contracts\SolutionManifest;
 use App\Modules\RestaurantManager\Domain\Manifests\RestaurantManagerManifest;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantCategory;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantHour;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantIngredient;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantMenu;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantMenuItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderPayment;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantPurchaseOrder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantRefund;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantTaxRate;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantUnit;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantZone;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantBranchRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantOrderRepository;
 use App\Modules\RestaurantManager\Infrastructure\Repositories\RestaurantPosSessionRepository;
@@ -62,31 +39,6 @@ use App\Modules\RestaurantManager\Infrastructure\Services\ReceivingService;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxConsumerRegistry;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use App\Modules\RestaurantManager\Infrastructure\Services\StockMovementService;
-use App\Modules\RestaurantManager\Policies\RestaurantBranchPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantCategoryPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantHourPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantIngredientPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantInventoryCountPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantInventoryMovementPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantMenuItemPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantMenuPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantOrderPaymentPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantOrderPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantPosSessionPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantProductIngredientPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantProductPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantPurchaseOrderPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantReceivingPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantRefundPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantReservationPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantStockLevelPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantSupplierPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantTablePolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantTableSessionPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantTaxRatePolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
-use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -143,15 +95,15 @@ class RestaurantManagerServiceProvider extends ServiceProvider
                 new GlovoDeliveryAppAdapter,
             ]);
 
-        // Flux marketplace (webhooks secret-tenant + statut sortant) — génération
-        // distincte (MarketplaceAdapter) : adapters Uber Eats / Glovo complets.
-        $this->app->singleton(\App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry::class, function (): \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry {
-            $registry = new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
-            $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter);
-            $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter);
+            // Flux marketplace (webhooks secret-tenant + statut sortant) — génération
+            // distincte (MarketplaceAdapter) : adapters Uber Eats / Glovo complets.
+            $this->app->singleton(\App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry::class, function (): \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry {
+                $registry = new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
+                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter);
+                $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter);
 
-            return $registry;
-        });
+                return $registry;
+            });
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
@@ -201,41 +153,13 @@ class RestaurantManagerServiceProvider extends ServiceProvider
         // Policies du référentiel branches/zones/tables (RESTO-301, #6182) :
         // enregistrement explicite des modèles métier vers leurs policies,
         // même pattern que TravelAgencyServiceProvider::boot().
-        Gate::policy(RestaurantBranch::class, RestaurantBranchPolicy::class);
-        Gate::policy(RestaurantZone::class, RestaurantZonePolicy::class);
-        Gate::policy(RestaurantTable::class, RestaurantTablePolicy::class);
-
         // Policies du référentiel catalogue/recettes + matières/fiscalité
         // (RESTO-302/303, #6183/#6184) — même pattern d'enregistrement.
-        Gate::policy(RestaurantCategory::class, RestaurantCategoryPolicy::class);
-        Gate::policy(RestaurantProduct::class, RestaurantProductPolicy::class);
-        Gate::policy(RestaurantProductIngredient::class, RestaurantProductIngredientPolicy::class);
-        Gate::policy(RestaurantIngredient::class, RestaurantIngredientPolicy::class);
-        Gate::policy(RestaurantUnit::class, RestaurantUnitPolicy::class);
-        Gate::policy(RestaurantTaxRate::class, RestaurantTaxRatePolicy::class);
-
         // Policies du référentiel menus/items/horaires (RESTO-304, #6185) et
         // fournisseurs (RESTO-305, #6186) — même pattern d'enregistrement.
-        Gate::policy(RestaurantMenu::class, RestaurantMenuPolicy::class);
-        Gate::policy(RestaurantMenuItem::class, RestaurantMenuItemPolicy::class);
-        Gate::policy(RestaurantHour::class, RestaurantHourPolicy::class);
-        Gate::policy(RestaurantSupplier::class, RestaurantSupplierPolicy::class);
-
         // Policies du POS & des commandes (RESTO-401..408, #6188..#6195) et
         // des sessions de table (RESTO-409, #6196) — mêmes patterns.
-        Gate::policy(RestaurantPosSession::class, RestaurantPosSessionPolicy::class);
-        Gate::policy(RestaurantOrder::class, RestaurantOrderPolicy::class);
-        Gate::policy(RestaurantOrderPayment::class, RestaurantOrderPaymentPolicy::class);
-        Gate::policy(RestaurantRefund::class, RestaurantRefundPolicy::class);
-        Gate::policy(RestaurantTableSession::class, RestaurantTableSessionPolicy::class);
-
         // Policies stock/achats/inventaires (RESTO-501..505, #6200..#6204)
         // et réservations (RESTO-601, #6206) — mêmes patterns.
-        Gate::policy(RestaurantStockLevel::class, RestaurantStockLevelPolicy::class);
-        Gate::policy(RestaurantInventoryMovement::class, RestaurantInventoryMovementPolicy::class);
-        Gate::policy(RestaurantPurchaseOrder::class, RestaurantPurchaseOrderPolicy::class);
-        Gate::policy(RestaurantReceiving::class, RestaurantReceivingPolicy::class);
-        Gate::policy(RestaurantInventoryCount::class, RestaurantInventoryCountPolicy::class);
-        Gate::policy(RestaurantReservation::class, RestaurantReservationPolicy::class);
     }
 }

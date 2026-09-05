@@ -210,6 +210,6 @@ class TimetableService
             return currentCompany()->id;
         }
 
-        throw new TenantContextMissingException();
+        throw new TenantContextMissingException;
     }
 }

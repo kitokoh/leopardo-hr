@@ -40,7 +40,8 @@ class PilotSeedCommand extends Command
 
     public function handle(): int
     {
-        $solution = (string) $this->option('solution');
+        $solutionRaw = $this->option('solution');
+        $solution = is_string($solutionRaw) ? $solutionRaw : '';
 
         if (! isset(self::SOLUTIONS[$solution])) {
             $this->error("Solution inconnue '{$solution}' — attendu : fuel|edu.");

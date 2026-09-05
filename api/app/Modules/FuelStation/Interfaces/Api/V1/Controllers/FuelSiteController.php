@@ -96,8 +96,8 @@ class FuelSiteController extends Controller
             'name' => $site->name,
             'address' => $site->address,
             'status' => $site->status,
-            'created_at' => $site->created_at?->toISOString(),
-            'updated_at' => $site->updated_at?->toISOString(),
+            'created_at' => $site->created_at?->toIso8601String(),
+            'updated_at' => $site->updated_at?->toIso8601String(),
         ];
     }
 

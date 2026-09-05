@@ -149,8 +149,8 @@ class FuelStationController extends Controller
             'timezone' => $station->timezone,
             'currency' => $station->currency,
             'status' => $station->status,
-            'created_at' => $station->created_at?->toISOString(),
-            'updated_at' => $station->updated_at?->toISOString(),
+            'created_at' => $station->created_at?->toIso8601String(),
+            'updated_at' => $station->updated_at?->toIso8601String(),
         ];
     }
 
@@ -193,7 +193,7 @@ class FuelStationController extends Controller
             'name' => $site->name,
             'address' => $site->address,
             'status' => $site->status,
-            'created_at' => $site->created_at?->toISOString(),
+            'created_at' => $site->created_at?->toIso8601String(),
         ];
     }
 }

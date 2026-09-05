@@ -175,8 +175,8 @@ class FuelEquipmentController extends Controller
                 ? (string) ($item->getAttribute('meter_code') ?? $item->getAttribute('code'))
                 : (string) $item->getAttribute('code'),
             'status' => $item->status,
-            'created_at' => $item->created_at?->toISOString(),
-            'updated_at' => $item->updated_at?->toISOString(),
+            'created_at' => $item->created_at?->toIso8601String(),
+            'updated_at' => $item->updated_at?->toIso8601String(),
         ];
     }
 
@@ -318,7 +318,6 @@ class FuelEquipmentController extends Controller
         return $actor;
     }
 
-
     private function resolvePump(Request $request, FuelPump $pump): Employee
     {
         $this->assertSolutionActive();
@@ -332,7 +331,6 @@ class FuelEquipmentController extends Controller
 
         return $actor;
     }
-
 
     private function resolveTank(Request $request, FuelTank $tank): Employee
     {
@@ -382,7 +380,7 @@ class FuelEquipmentController extends Controller
             'code' => $pump->code,
             'product_types' => $pump->product_types,
             'status' => $pump->status,
-            'created_at' => $pump->created_at?->toISOString(),
+            'created_at' => $pump->created_at?->toIso8601String(),
         ];
     }
 
@@ -396,7 +394,7 @@ class FuelEquipmentController extends Controller
             'capacity_minor' => $tank->capacity_minor,
             'current_level_minor' => $tank->current_level_minor,
             'status' => $tank->status,
-            'created_at' => $tank->created_at?->toISOString(),
+            'created_at' => $tank->created_at?->toIso8601String(),
         ];
     }
 
@@ -412,10 +410,10 @@ class FuelEquipmentController extends Controller
             'unit_code' => $meter->unit_code,
             'precision_scale' => $meter->precision_scale,
             'rollover_limit' => $meter->rollover_limit,
-            'installed_at' => $meter->installed_at?->toISOString(),
-            'retired_at' => $meter->retired_at?->toISOString(),
+            'installed_at' => $meter->installed_at?->toIso8601String(),
+            'retired_at' => $meter->retired_at?->toIso8601String(),
             'status' => $meter->status,
-            'created_at' => $meter->created_at?->toISOString(),
+            'created_at' => $meter->created_at?->toIso8601String(),
         ];
     }
 }

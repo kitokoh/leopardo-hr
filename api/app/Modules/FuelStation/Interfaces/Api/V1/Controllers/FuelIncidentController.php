@@ -188,15 +188,15 @@ class FuelIncidentController extends Controller
             'description' => $incident->description,
             'reported_by' => $incident->reported_by,
             'assigned_to' => $incident->assigned_to,
-            'occurred_at' => $incident->occurred_at->toISOString(),
-            'resolved_at' => $incident->resolved_at?->toISOString(),
+            'occurred_at' => $incident->occurred_at->toIso8601String(),
+            'resolved_at' => $incident->resolved_at?->toIso8601String(),
             'resolved_by' => $incident->resolved_by,
             'resolution_notes' => $incident->resolution_notes,
-            'closed_at' => $incident->closed_at?->toISOString(),
+            'closed_at' => $incident->closed_at?->toIso8601String(),
             'closed_by' => $incident->closed_by,
             'closure_notes' => $incident->closure_notes,
-            'created_at' => $incident->created_at?->toISOString(),
-            'updated_at' => $incident->updated_at?->toISOString(),
+            'created_at' => $incident->created_at?->toIso8601String(),
+            'updated_at' => $incident->updated_at?->toIso8601String(),
         ];
     }
 
@@ -275,7 +275,6 @@ class FuelIncidentController extends Controller
 
         return response()->json(['data' => $this->taskPayload($task)]);
     }
-
 
     private function taskPayload(FuelMaintenanceTask $task): array
     {

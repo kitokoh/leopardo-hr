@@ -6,14 +6,11 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelImport;
-use App\Modules\FuelStation\Domain\Models\FuelMeterReading;
-use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -282,9 +279,4 @@ final class FuelImportService
     {
         return is_numeric($value) ? (int) $value : null;
     }
-
-
-
-
-
 }

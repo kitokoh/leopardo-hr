@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Domain\Contracts;
 
 use App\Modules\RestaurantManager\Domain\DeliveryApps\DeliveryAppOrderPayload;
-use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
-
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
+use App\Modules\RestaurantManager\Domain\ValueObjects\MarketplaceInboundOrder;
 
 /**
  * RESTO-105/106 (#6162/6163) — contrat d'adaptateur marketplace (flux webhook

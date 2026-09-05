@@ -13,6 +13,6 @@ final class CreditNoteRequiresSourceInvoiceException extends DomainException
 {
     public function __construct()
     {
-        parent::__construct('CREDIT_NOTE_REQUIRES_SOURCE_INVOICE: une note de crédit doit référencer une facture source.', 422, 'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE');
+        parent::__construct('CREDIT_NOTE_REQUIRES_SOURCE_INVOICE: a credit note must reference a source document.', 422, 'CREDIT_NOTE_REQUIRES_SOURCE_INVOICE');
     }
 }

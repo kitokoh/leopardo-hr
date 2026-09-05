@@ -166,7 +166,7 @@ class FuelStockController extends Controller
             'reference' => $entry->reference,
             'entry_date' => $entry->entry_date->toDateString(),
             'created_by' => $entry->created_by,
-            'created_at' => $entry->created_at?->toISOString(),
+            'created_at' => $entry->created_at?->toIso8601String(),
         ];
     }
 
@@ -183,8 +183,8 @@ class FuelStockController extends Controller
             'status' => $run->status,
             'summary' => $run->summary,
             'last_error' => $run->last_error,
-            'started_at' => $run->started_at?->toISOString(),
-            'finished_at' => $run->finished_at?->toISOString(),
+            'started_at' => $run->started_at?->toIso8601String(),
+            'finished_at' => $run->finished_at?->toIso8601String(),
         ];
     }
 
