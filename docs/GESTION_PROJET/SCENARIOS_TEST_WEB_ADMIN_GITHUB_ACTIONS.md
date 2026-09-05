@@ -87,6 +87,12 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - La vue `/leaves` charge `GET /api/v1/absences`, `GET /api/v1/leave-balances`, `GET /api/v1/leave-policies`
 - Approbation / refus utilisent `PUT /api/v1/absences/{id}/approve` et `PUT .../reject` avec corps `{ rejected_reason }`
 
+### 9. Fuel — stations-service (tenant manager, bc15)
+
+- La vue `/fuel-station` (FuelStationView) charge la vue d'ensemble multi-stations (stats stations/caisses/incidents/rapprochements) et pilote les onglets stations, équipements, shifts, incidents, rapprochements via les endpoints `GET /api/v1/fuel-station/*` réels
+- La vue `FuelManagerView` (route historique même path) est shadowée par FuelStationView (doublon de path issu d'un merge union — suivi séparé, ne pas supprimer sans décision)
+- Rendu vérifié après restauration de la version bc15 (608 l) : template SFC valide, clés i18n `fuel.*` cohérentes avec `FuelManagerView` et les catalogues fr/en/ar/tr
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright

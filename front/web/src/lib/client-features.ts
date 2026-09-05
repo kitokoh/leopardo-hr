@@ -16,8 +16,8 @@ export type ClientModuleKey =
   | 'accounting'
   | 'crm'
   | 'restaurant'
-  | 'edu_manager'
-  | 'restaurant_kitchen';
+  | 'restaurant_kitchen'
+  | 'edu_manager';
 export type FeatureState = 'available' | 'trial' | 'locked';
 export type ClientModule = {
   key: ClientModuleKey;

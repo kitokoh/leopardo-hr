@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { test } from './fixtures/authenticated';
+import { installAuthenticatedSession, test, type AuthenticatedUser } from './fixtures/authenticated';
 
 import { installAuthenticatedSession, type AuthenticatedUser } from './fixtures/authenticated';
 
@@ -56,7 +56,29 @@ const KITCHEN_ORDERS = {
   ],
 };
 
+// Utilisateur manager avec le flag restaurantmanager actif (RESTO-902) :
+// sans feature/capability restaurant, le portail masque le module
+// (« Restaurant Module non inclus ») et l'écran cuisine ne se monte pas.
+const kitchenUser: AuthenticatedUser = {
+  id: 101,
+  first_name: 'Fatima',
+  last_name: 'Meziane',
+  email: 'fatima.meziane@techcorp-algerie.dz',
+  role: 'manager',
+  manager_role: 'principal',
+  language: 'fr',
+  is_rtl: false,
+  capabilities: { can_view_dashboard: true, restaurant: true, 'restaurant.kitchen': true },
+  features: { restaurantmanager: true },
+  company: { id: 'company-resto-e2e', name: 'Restaurant E2E', features: { restaurantmanager: true } },
+  plan: { features: { restaurantmanager: true } },
+};
+
 async function mockKitchenApi(page: Page) {
+  // Session requise depuis que /restaurant/* est protégé par le middleware
+  // (PROTECTED_PREFIXES #3377, split /restaurant → /restaurateur) : la page
+  // /restaurant/kitchen est redirigée vers /auth/login sans cookie valide.
+  await installAuthenticatedSession(page, { user: kitchenUser });
   await page.route('**/api/v1/restaurant/branches**', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(BRANCHES) });
   });

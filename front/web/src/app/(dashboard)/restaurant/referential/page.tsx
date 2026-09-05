@@ -22,6 +22,13 @@ export default function RestaurantReferentialPage() {
   ];
   const [tab, setTab] = useState('branches');
 
+  // Options génériques du champ `status` (configs ci-dessous) — le fallback
+  // i18n exige `locale` : le tableau est donc construit dans le composant.
+  const STATUS_OPTIONS = [
+    { value: 'active', label: 'Active' },
+    { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
+  ];
+
   const configs: Record<string, CrudConfig> = {
     branches: {
       endpoint: '/restaurant/branches',
