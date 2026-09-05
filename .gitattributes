@@ -19,6 +19,12 @@ CHANGELOG.md merge=union
 # assets/branding : PNG commités en binaire (pas de pointers LFS) — même
 # exception que front/web/public/*.png (#5698, valide-and-sync git diff).
 assets/branding/*.png !filter !diff !merge -text
+# site/gh-pages (Pages #6827) : images commitées en binaire — même exception
+# (sans elle, git-lfs clean les convertit en pointers -> validate-and-sync rouge)
+site/gh-pages/assets/*.png !filter !diff !merge -text
+site/gh-pages/assets/*.jpg !filter !diff !merge -text
+site/gh-pages/assets/*.jpeg !filter !diff !merge -text
+site/gh-pages/assets/*.webp !filter !diff !merge -text
 *.jpg   filter=lfs diff=lfs merge=lfs -text
 *.jpeg  filter=lfs diff=lfs merge=lfs -text
 *.webp  filter=lfs diff=lfs merge=lfs -text
