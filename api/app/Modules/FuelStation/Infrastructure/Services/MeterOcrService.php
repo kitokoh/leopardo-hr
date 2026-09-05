@@ -363,7 +363,7 @@ final class MeterOcrService
                 [
                     'reading_value_minor' => $valueMinor,
                     'reading_unit' => $unit,
-                    'captured_at' => Carbon::now('UTC'),
+                    'captured_at' => Carbon::now('UTC')->toIso8601String(),
                     'timezone' => (string) ($station->getAttribute('timezone') ?? 'UTC'),
                     'shift_id' => $row->getAttribute('shift_id') !== null ? (int) $row->getAttribute('shift_id') : null,
                     'device_reference' => 'ocr:'.(int) $row->getAttribute('id'),
@@ -451,7 +451,7 @@ final class MeterOcrService
                 [
                     'reading_value_minor' => (int) $valueMinor,
                     'reading_unit' => $unit,
-                    'captured_at' => Carbon::now('UTC'),
+                    'captured_at' => Carbon::now('UTC')->toIso8601String(),
                     'timezone' => (string) ($station->getAttribute('timezone') ?? 'UTC'),
                     'shift_id' => $request->getAttribute('shift_id') !== null ? (int) $request->getAttribute('shift_id') : null,
                     'device_reference' => 'ocr-review:'.(int) $request->getAttribute('id'),

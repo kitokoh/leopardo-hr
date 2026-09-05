@@ -27,7 +27,7 @@ interface DeliveryAppAdapter
      */
     /**
      * @param  array<mixed>  $items
-     * @return list<array{product_id: int, quantity: float}>
+     * @return list<array{product_code: string, quantity: float|string}>
      */
     public function normalizeItems(array $items): array;
 

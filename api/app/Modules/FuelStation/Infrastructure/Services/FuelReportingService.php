@@ -145,10 +145,10 @@ final class FuelReportingService
             'period_end' => $end,
             'sales' => $rows->map(function (object $row): array {
                 return [
-                    'product' => is_string($row->product) ? $row->product : '',
-                    'sale_count' => is_numeric($row->sale_count) ? (int) $row->sale_count : 0,
-                    'quantity_total' => is_numeric($row->quantity_total) ? (float) $row->quantity_total : 0.0,
-                    'amount_total' => is_numeric($row->amount_total) ? (float) $row->amount_total : 0.0,
+                    'product' => (string) $row->product,
+                    'sale_count' => (int) $row->sale_count,
+                    'quantity_total' => (float) $row->quantity_total,
+                    'amount_total' => (float) $row->amount_total,
                 ];
             })->all(),
             'totals' => [
@@ -354,24 +354,24 @@ final class FuelReportingService
             ->where('company_id', $station->company_id)
             ->where('station_id', $station->id)
             ->whereBetween('sale_time', [$date->copy()->startOfDay(), $date->copy()->endOfDay()])
-            ->selectRaw('product, COUNT(*) as count, SUM(quantity) as quantity, SUM(amount) as amount')
+            ->selectRaw('product, COUNT(*) as sale_count, SUM(quantity) as quantity_total, SUM(amount) as amount_total')
             ->groupBy('product')
             ->orderBy('product')
             ->get();
 
-        $saleCount = is_numeric($rows->sum('sale_count')) ? (int) $rows->sum('sale_count') : 0;
-        $quantityTotal = is_numeric($rows->sum('quantity_total')) ? (float) $rows->sum('quantity_total') : 0.0;
-        $amountTotal = is_numeric($rows->sum('amount_total')) ? (float) $rows->sum('amount_total') : 0.0;
+        $saleCount = (int) $rows->sum('sale_count');
+        $quantityTotal = (float) $rows->sum('quantity_total');
+        $amountTotal = (float) $rows->sum('amount_total');
 
         return [
-            'period_start' => $start,
-            'period_end' => $end,
+            'period_start' => $date->copy()->startOfDay()->toIso8601String(),
+            'period_end' => $date->copy()->endOfDay()->toIso8601String(),
             'sales' => $rows->map(function (object $row): array {
                 return [
-                    'product' => is_string($row->product) ? $row->product : '',
-                    'sale_count' => is_numeric($row->sale_count) ? (int) $row->sale_count : 0,
-                    'quantity_total' => is_numeric($row->quantity_total) ? (float) $row->quantity_total : 0.0,
-                    'amount_total' => is_numeric($row->amount_total) ? (float) $row->amount_total : 0.0,
+                    'product' => (string) $row->product,
+                    'sale_count' => (int) $row->sale_count,
+                    'quantity_total' => (float) $row->quantity_total,
+                    'amount_total' => (float) $row->amount_total,
                 ];
             })->all(),
             'totals' => [

@@ -10,6 +10,7 @@ use App\Jobs\DispatchCommunicationJob;
 use App\Modules\FuelStation\Domain\Models\FuelAlertLog;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -225,6 +226,30 @@ final class FuelAlertService
             ->limit(10)
             ->get()
             ->all();
+    }
+
+    /**
+     * @param  list<array{event_type: string, channel: string, enabled: bool, station_id?: int|null}>  $preferences
+     */
+    public function upsertPreferences(string $companyId, array $preferences): int
+    {
+        $updated = 0;
+
+        foreach ($preferences as $preference) {
+            FuelNotificationPreference::updateOrCreate(
+                [
+                    'company_id' => $companyId,
+                    'station_id' => isset($preference['station_id']) ? (int) $preference['station_id'] : null,
+                    'event_type' => (string) $preference['event_type'],
+                    'channel' => (string) $preference['channel'],
+                ],
+                ['enabled' => (bool) $preference['enabled']]
+            );
+
+            $updated++;
+        }
+
+        return $updated;
     }
 
     public function stats(string $companyId, string $since): array

@@ -59,6 +59,8 @@ final class RestaurantStockService
                     continue;
                 }
 
+                /** @var RestaurantProductIngredient $composition */
+                /** @var RestaurantProductIngredient $composition */
                 foreach ($product->ingredients as $composition) {
                     $this->decrementIngredient(
                         ingredientId: (int) $composition->ingredient_id,

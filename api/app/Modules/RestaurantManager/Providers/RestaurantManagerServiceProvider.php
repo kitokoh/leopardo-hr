@@ -142,6 +142,16 @@ class RestaurantManagerServiceProvider extends ServiceProvider
                 new UberEatsDeliveryAppAdapter,
                 new GlovoDeliveryAppAdapter,
             ]);
+
+        // Flux marketplace (webhooks secret-tenant + statut sortant) — génération
+        // distincte (MarketplaceAdapter) : adapters Uber Eats / Glovo complets.
+        $this->app->singleton(\App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry::class, function (): \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry {
+            $registry = new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\DeliveryAppRegistry;
+            $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\UberEatsAdapter);
+            $registry->register(new \App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps\GlovoAdapter);
+
+            return $registry;
+        });
         });
 
         // RESTO-105 (#6162) — activation tenant (flag + référentiel) ;
