@@ -59,7 +59,7 @@ async function stubReservationApi(page: import('@playwright/test').Page) {
 }
 
 test.describe('Restaurant réservations (RESTO-902)', () => {
-  test.skip('liste les réservations du jour', async ({ page }) => {
+  test.skip('liste les réservations du jour', async ({ authenticatedPage: page }) => {
     await installAuthenticatedSession(page, { user: managerUser });
     await stubReservationApi(page);
     await page.goto('/restaurant/reservations');
@@ -67,7 +67,7 @@ test.describe('Restaurant réservations (RESTO-902)', () => {
     await expect(page.getByText('RES-2026-0042')).toBeVisible();
   });
 
-  test.skip('crée une réservation et gère le conflit 409', async ({ page }) => {
+  test.skip('crée une réservation et gère le conflit 409', async ({ authenticatedPage: page }) => {
     await installAuthenticatedSession(page, { user: managerUser });
     await stubReservationApi(page);
     await page.goto('/restaurant/reservations');

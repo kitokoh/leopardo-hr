@@ -85,7 +85,7 @@ test.describe('Kiosque libre-service (RESTO-807)', () => {
     // Panier : 2 × Burger XL.
     await page.getByLabel('Ajouter').first().click();
     await page.getByLabel('Ajouter').first().click();
-    await expect(page.getByText('70.00 XAF')).toBeVisible();
+    await expect(page.getByText('70.00 XAF').first()).toBeVisible();
 
     // Commande puis paiement espèces.
     await page.getByText('Valider la commande').click();

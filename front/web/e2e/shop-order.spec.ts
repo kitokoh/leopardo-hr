@@ -55,7 +55,7 @@ test.describe('Commande en ligne publique (RESTO-805-front)', () => {
 
     await page.getByLabel('Ajouter').first().click();
     await page.getByLabel('Ajouter').first().click();
-    await expect(page.getByText('70.00 XAF')).toBeVisible();
+    await expect(page.getByText('70.00 XAF').first()).toBeVisible();
 
     await page.getByText('Valider la commande').click();
     await expect(page.getByText('Commande enregistrée !')).toBeVisible();

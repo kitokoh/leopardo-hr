@@ -36,13 +36,13 @@ const managerUser: AuthenticatedUser = {
 };
 
 test.describe('TravelAgency admin (TRAVEL-1008)', () => {
-  test.skip('navigation travel is gated by feature flag', async ({ page }) => {
+  test.skip('navigation travel is gated by feature flag', async ({ authenticatedPage: page }) => {
     await installAuthenticatedSession(page, { user: managerUser });
     await page.goto('/');
     await expect(page.getByRole('link', { name: /agence de voyage/i })).toBeVisible();
   });
 
-  test.skip('referential screen lists published trips', async ({ page }) => {
+  test.skip('referential screen lists published trips', async ({ authenticatedPage: page }) => {
     await installAuthenticatedSession(page, { user: managerUser });
     // Intercepte le contrat API référentiel (stable, testé côté Feature).
     await page.route('**/api/v1/travel/trips**', (route) =>

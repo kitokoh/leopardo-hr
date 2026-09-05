@@ -31,6 +31,11 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL,
+    /* Les assertions des specs sont rédigées en français (cf. config
+       front/admin-dashboard) — force navigator.language fr-FR, sinon le
+       headless par défaut (en-US) rend les pages publiques en anglais et
+       fait échouer tous les getByText/CTAs français. */
+    locale: 'fr-FR',
     /* Issue #2746 — le service worker (public/sw.js) intercepte TOUTES les
        requêtes /api/* via fetch() côté SW : les réponses mockées par
        page.route() ne sont plus vues par la page (le fetch du SW contourne

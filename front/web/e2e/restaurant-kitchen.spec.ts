@@ -2,6 +2,23 @@ import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { test } from './fixtures/authenticated';
 
+import { installAuthenticatedSession, type AuthenticatedUser } from './fixtures/authenticated';
+
+const restaurantUser: AuthenticatedUser = {
+  id: 101,
+  first_name: 'Fatima',
+  last_name: 'Meziane',
+  email: 'fatima.meziane@techcorp-algerie.dz',
+  role: 'manager',
+  manager_role: 'principal',
+  language: 'fr',
+  is_rtl: false,
+  capabilities: { can_view_dashboard: true, restaurant: true, 'restaurant.kitchen': true },
+  features: { restaurantmanager: true },
+  company: { id: 'company-resto-e2e', name: 'Restaurant E2E', features: { restaurantmanager: true } },
+  plan: { features: { restaurantmanager: true } },
+};
+
 /**
  * RESTO-902 (#6231) — E2E de l'écran cuisine (RESTO-707/#6220).
  *
@@ -63,7 +80,8 @@ async function mockKitchenApi(page: Page) {
 }
 
 test.describe('Écran cuisine (RESTO-707)', () => {
-  test('affiche la file cuisine et ses commandes', async ({ page }) => {
+  test('affiche la file cuisine et ses commandes', async ({ authenticatedPage: page }) => {
+    await installAuthenticatedSession(page, { user: restaurantUser });
     await mockKitchenApi(page);
 
     await page.goto('/restaurant/kitchen');
