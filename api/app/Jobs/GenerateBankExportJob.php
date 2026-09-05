@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
+use App\Support\SafeErrorMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
