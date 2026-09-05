@@ -235,9 +235,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const CrmAccountsScreen(),
           ),
           GoRoute(
-            path: '/crm/accounts/:accountId',
+            path: '/crm/accounts/:id',
             builder: (context, state) => CrmAccountDetailScreen(
-              accountId: int.tryParse(state.pathParameters['accountId'] ?? '') ?? 0,
+              accountId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0,
             ),
           ),
           GoRoute(

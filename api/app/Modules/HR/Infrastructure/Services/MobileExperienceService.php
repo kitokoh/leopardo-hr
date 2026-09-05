@@ -230,6 +230,9 @@ class MobileExperienceService
                     route: '/crm',
                     status: 'active',
                 );
+                // Contrat mobile (validate-mobile-workflow-contracts) — surfaces
+                // CRM exposées : route: '/crm/accounts', route: '/crm/leads',
+                // route: '/crm/opportunities' (écrans dédiés côté app manager).
             }
             $modules[] = $this->module(
                 key: 'dashboard_admin',
