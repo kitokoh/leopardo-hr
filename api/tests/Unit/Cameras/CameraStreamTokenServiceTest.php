@@ -41,7 +41,8 @@ class CameraStreamTokenServiceTest extends TestCase
         $service = new CameraStreamTokenService;
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('CAMERAS_STREAM_TOKEN_SECRET is not configured');
+        // #6560 : en production, le message explicite est « is required in production ».
+        $this->expectExceptionMessage('CAMERAS_STREAM_TOKEN_SECRET is required in production');
 
         $service->secret();
     }
