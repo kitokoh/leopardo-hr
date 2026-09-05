@@ -301,7 +301,7 @@ Route::middleware(['throttle:api', 'travel.partner'])
         Route::get('/articles/{travelArticle}/engagement', [TravelEngagementController::class, 'aggregates']);
         Route::get('/tickets/{travelTicket}/pdf', [TravelTicketController::class, 'pdf']);
         Route::post('/tickets/{travelTicket}/revoke', [TravelTicketController::class, 'revoke']);
-        Route::get('/reports/export', [TravelReportController::class, 'export']);
+        // GET /reports/export (sync legacy) supprimé — le flux canonique est POST /reports/export (asset async, TravelExportController@store).
         Route::get('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'index']);
         Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
         Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);

@@ -63,7 +63,7 @@ class TravelCommentController extends Controller
     /**
      * Modération : pending → approved | rejected | flagged (signalement).
      */
-    public function moderate(Request $request, TravelComment $travelComment): JsonResponse
+    public function moderate(Request $request, TravelComment $travelComment, ?string $presetStatus = null): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -76,7 +76,7 @@ class TravelCommentController extends Controller
             abort(403);
         }
 
-        $status = (string) $request->json('status');
+        $status = $presetStatus ?? (string) $request->json('status');
 
         if (! in_array($status, ['approved', 'rejected', 'flagged'], true)) {
             abort(422, 'Invalid moderation status.');

@@ -310,48 +310,14 @@ class FuelEquipmentController extends Controller
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->authorize('create', FuelPump::class);
 
-        $kind = $request->input('kind');
-        $companyId = (string) $actor->company_id;
-        $stationId = (int) $request->input('station_id');
+        if ($station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
-        $this->assertStationInTenant($companyId, $stationId);
-
-        $item = match ($kind) {
-            'tank' => FuelTank::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'code' => $request->input('code'),
-                'product_type' => $request->input('product_type', 'fuel'),
-                'capacity_minor' => $request->input('capacity_minor', 0),
-                'current_level_minor' => $request->input('current_level_minor', 0),
-                'status' => $request->input('status', 'active'),
-            ]),
-            'meter' => FuelMeterRegister::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'pump_id' => (int) $request->input('pump_id', 0),
-                'meter_code' => $request->input('meter_code', $request->input('code')),
-                'meter_type' => $request->input('meter_type', 'electronic'),
-                'product_code' => $request->input('product_type'),
-                'unit_code' => $request->input('unit_code', 'l'),
-                'precision_scale' => $request->input('precision_scale', 0),
-                'rollover_limit' => $request->input('rollover_limit'),
-                'installed_at' => $request->input('installed_at'),
-                'status' => $request->input('status', 'active'),
-            ]),
-            default => FuelPump::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'code' => $request->input('code'),
-                'product_types' => $request->input('product_types', []),
-                'status' => $request->input('status', 'active'),
-            ]),
-        };
-
-        return response()->json(['data' => $this->payload($kind, $item->refresh())], 201);
+        return $actor;
     }
+
 
     private function resolvePump(Request $request, FuelPump $pump): Employee
     {
@@ -360,14 +326,13 @@ class FuelEquipmentController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $item = $this->findInTenant($kind, $id, (string) $actor->company_id);
+        if ($pump->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
-        $this->authorize('update', $item);
-
-        $item->update($request->validated());
-
-        return response()->json(['data' => $this->payload($kind, $item->refresh())]);
+        return $actor;
     }
+
 
     private function resolveTank(Request $request, FuelTank $tank): Employee
     {
