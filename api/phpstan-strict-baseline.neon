@@ -1,6 +1,18 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Parameter \#1 \$string of method Illuminate\\Console\\Command\:\:line\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Console/Commands/BackfillNotificationPreferences.php
+
+		-
+			message: '#^Variable \$managerName on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: app/Console/Commands/SendOnboardingRemindersCommand.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
@@ -341,6 +353,1038 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: app/Core/Tenant/Infrastructure/Services/TenantCacheService.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 9
+			path: app/Exceptions/FeatureSynchronizationException.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Web/DashboardController.php
+
+		-
+			message: '#^Parameter \$company of method App\\Modules\\HR\\Infrastructure\\Services\\UserInvitationService\:\:createAndSend\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Web/InvitationManagementController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>timezone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Web/MyDashboardController.php
+
+		-
+			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Web/PlatformAuthController.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Core\\Tenant\\Domain\\Models\\Company\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Web/WebEmployeeController.php
+
+		-
+			message: '#^Parameter \#1 \$dto of method App\\Modules\\HR\\Infrastructure\\Services\\EmployeeService\:\:create\(\) expects App\\Modules\\HR\\Application\\DTOs\\CreateEmployeeDTO, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Web/WebEmployeeManagementController.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/AI/AIRateLimiter.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/AI/AITenantInjector.php
+
+		-
+			message: '#^Call to function method_exists\(\) with App\\Core\\Tenant\\Domain\\Models\\Company and ''hasFeature'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Middleware/Cameras/EnsureCameraModuleMiddleware.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>language" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/SetLocale.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/StructuredLogging.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>company_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Middleware/StructuredLogging.php
+
+		-
+			message: '#^Instanceof between Laravel\\Sanctum\\PersonalAccessToken and Laravel\\Sanctum\\PersonalAccessToken will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Http/Middleware/TokenAutoRefreshMiddleware.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between Carbon\\Carbon and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Middleware/TokenAutoRefreshMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/Web/EnsureEmployeeMiddleware.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$manager_role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Middleware/Web/EnsureManagerRoleMiddleware.php
+
+		-
+			message: '#^Cannot access property \$code on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$deducts_leave on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Modules\\Planning\\Domain\\Models\\AbsenceType\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Core\\Tenant\\Domain\\Models\\Company\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AbsenceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ApplicantResource\:\:\$resume_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ApplicantResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ApplicantResource\:\:\$stage\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ApplicantResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ApplicantResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ApplicantResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/ApprovalRequestResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/ApprovalRequestResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/ApprovalRequestResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/ApprovalRequestResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ApprovalWorkflowResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ApprovalWorkflowResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
+
+		-
+			message: '#^Cannot access property \$matricule on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
+
+		-
+			message: '#^Cannot access property \$photo_path on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceLogResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>late_minutes" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>session_number" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>work_type" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AuditLogResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AuditLogResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/AuditLogResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\BankExportResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/BankExportResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\CabinetDocumentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetDocumentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\CabinetFolderResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetFolderResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\CabinetShareResource\:\:\$document_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetShareResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\CabinetShareResource\:\:\$permission\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetShareResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\CabinetShareResource\:\:\$shared_with_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetShareResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\CabinetShareResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/CabinetShareResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\CompanyAnnouncementResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/CompanyAnnouncementResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ContractAmendmentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ContractAmendmentResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/ContractAmendmentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ContractResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ContractResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/ContractResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/ConversationMessageResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\DashboardSummaryResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/DashboardSummaryResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\HR\\Domain\\Models\\Position\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Modules\\HR\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Modules\\HR\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Modules\\HR\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\HR\\Domain\\Models\\Position\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Modules\\HR\\Domain\\Models\\Position\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Resources/Api/V1/DepartmentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$work_state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EmployeeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$work_state_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EmployeeResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:capabilities\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/EmployeeResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>language" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/EmployeeResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\EvaluationResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/EvaluationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ExpenseClaimResource\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ExpenseClaimResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ExpenseClaimResource\:\:\$expense_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ExpenseClaimResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ExpenseClaimResource\:\:\$receipt_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ExpenseClaimResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ExpenseClaimResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ExpenseClaimResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:\$enabled\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:\$feature_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:\$limit_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:\$plan\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\FeaturePlanMatrixResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/FeaturePlanMatrixResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\InterviewResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/InterviewResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/InvoiceResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\JobPostingResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/JobPostingResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\LeaveAccrualResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/LeaveAccrualResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/LeaveAccrualResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\LeaveBalanceResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/LeaveBalanceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LeavePolicyResource\:\:\$max_carry_forward\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LeavePolicyResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\LeavePolicyResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/LeavePolicyResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$approved_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$monthly_deduction\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$reason\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$remaining\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$repayment_months\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\LoanResource\:\:\$total_repaid\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\LoanResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/LoanResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\NotificationPreferenceResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/NotificationPreferenceResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\OnboardingStepResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/OnboardingStepResource.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Resources/Api/V1/PaySlipResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\PaySlipResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/PaySlipResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/PaySlipResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\PaymentDocumentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/PaymentDocumentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PayrollResource\:\:\$base_salary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PayrollResource\:\:\$month\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PayrollResource\:\:\$total_additions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PayrollResource\:\:\$total_deductions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PayrollResource\:\:\$year\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Cannot access property \$matricule on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\PayrollRunResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/PayrollRunResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/PayrollRunResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Modules\\HR\\Domain\\Models\\Department\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PositionResource.php
+
+		-
+			message: '#^Cannot access property \$name on App\\Modules\\HR\\Domain\\Models\\Department\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/PositionResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\ProjectResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/ProjectResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/ProjectResource.php
+
+		-
+			message: '#^Cannot access property \$company_id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Cannot access property \$first_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Cannot access property \$last_name on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\SalaryAdvanceResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>currency" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Core\\Tenant\\Domain\\Models\\Company\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/SalaryAdvanceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\SalaryComponentResource\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryComponentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\SalaryComponentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryComponentResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\SalaryStructureResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryStructureResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\SalaryStructureResource\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryStructureResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\SalaryStructureResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/SalaryStructureResource.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Http/Resources/Api/V1/ScheduleResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\SocialContributionResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/SocialContributionResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\SubscriptionResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/SubscriptionResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TaskCommentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TaskCommentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TaskResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TaskResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/TaskResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TaxSlabResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TaxSlabResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/TaxSlabResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TrainingCourseResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TrainingCourseResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TrainingEnrollmentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TrainingEnrollmentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\TrainingSessionResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/TrainingSessionResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/TrainingSessionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:\$resolved_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleAlertResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:\$severity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleAlertResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleAlertResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleAlertResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleAssignmentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleAssignmentResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleAssignmentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleMaintenanceResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleMaintenanceResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/VehicleMaintenanceResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$end_location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$purpose\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleTripResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:\$start_location\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleTripResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\Api\\V1\\VehicleTripResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/Api/V1/VehicleTripResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Http/Resources/Api/V1/VehicleTripResource.php
+
+		-
+			message: '#^Method App\\Jobs\\DispatchWebhook\:\:__construct\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Jobs/DispatchWebhook.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/DispatchWebhook.php
+
+		-
+			message: '#^Parameter \#1 \$url of function parse_url expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/DispatchWebhook.php
+
+		-
+			message: '#^Parameter \#1 \$url of method Illuminate\\Http\\Client\\PendingRequest\<false\>\:\:post\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/DispatchWebhook.php
+
+		-
+			message: '#^Property App\\Jobs\\DispatchWebhook\:\:\$backoff type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Jobs/DispatchWebhook.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Jobs/GeneratePaymentDocumentJob.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>preferred_language" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Jobs/GeneratePaymentDocumentJob.php
+
+		-
+			message: '#^Parameter \#2 \$employeeId of job class App\\Jobs\\GeneratePaySlipPdfJob constructor expects int in App\\Jobs\\GeneratePaySlipPdfJob\:\:dispatch\(\), int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Jobs/ProcessBulkPaymentJob.php
+
+		-
+			message: '#^Method App\\Jobs\\ProcessPayrollBatchJob\:\:tags\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Jobs/ProcessPayrollBatchJob.php
+
+		-
+			message: '#^Method App\\Jobs\\SendPushNotificationJob\:\:__construct\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Jobs/SendPushNotificationJob.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 5
+			path: app/Listeners/AuditLogger.php
+
+		-
+			message: '#^Cannot access property \$email on App\\Core\\Auth\\Domain\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Listeners/LinkPartnerToNewCompany.php
+
+		-
+			message: '#^Call to an undefined method object\:\:toArray\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Listeners/WebhookListener.php
+
+		-
+			message: '#^Property App\\Mail\\RoleAssignmentMail\:\:\$appLinks type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Mail/RoleAssignmentMail.php
+
+		-
+			message: '#^Method App\\Mail\\TrialDripMail\:\:build\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Mail/TrialDripMail.php
+
+		-
+			message: '#^Parameter \#1 \$view of method Illuminate\\Mail\\Mailable\:\:view\(\) expects view\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mail/TrialDripMail.php
 
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
@@ -3673,6 +4717,42 @@ parameters:
 			path: app/Modules/TravelAgency/Interfaces/Api/V1/Resources/TravelQuoteResource.php
 
 		-
+			message: '#^Method App\\Notifications\\EdgeNodeSilentAlert\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/EdgeNodeSilentAlert.php
+
+		-
+			message: '#^Method App\\Notifications\\EdgeNodeSilentAlert\:\:via\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Notifications/EdgeNodeSilentAlert.php
+
+		-
+			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Method App\\Providers\\FeatureDetectionServiceProvider\:\:provides\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Providers/FeatureDetectionServiceProvider.php
+
+		-
+			message: '#^Method App\\Providers\\FeatureRegistryServiceProvider\:\:provides\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Providers/FeatureRegistryServiceProvider.php
+
+		-
 			message: '#^Method App\\Shared\\DTOs\\PaginationDTO\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3701,6 +4781,18 @@ parameters:
 			identifier: trait.unused
 			count: 1
 			path: app/Shared/Traits/Approvable.php
+
+		-
+			message: '#^Method App\\Support\\I18nCatalog\:\:readLocale\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/I18nCatalog.php
+
+		-
+			message: '#^Method App\\Support\\I18nCatalog\:\:readVersions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/I18nCatalog.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
