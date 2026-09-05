@@ -1,0 +1,26 @@
+{
+  "_comment": "Exceptions UNITAIRES au cliquet PA2-ARCH-005 (check-phpstan-baseline-delta.sh) — autorisation PM explicite, datée, bornée. Une entrée ne couvre QUE l'augmentation du compte ignored-error d'un module dans UN fichier baseline, jusqu'à allowed_count. Au-delà, ou après expires, le cliquet redevient bloquant. Aucune entrée ici = comportement historique inchangé.",
+  "_context": "Consolidation 2026-09-04 (PR #6816, 11 754 commits) : les modules EduManager, FuelStation, RestaurantManager et TravelAgency ont rejoint main par le fold des branches BC — absents du main pré-consolidation, ils n'avaient aucune entrée dans la baseline strict (0). Leur analyse level-8 réelle (régénération miroir round 27, scope Core/Modules/Shared, issue #6818) exige des entrées : EduManager 24, FuelStation 58, RestaurantManager 88, TravelAgency 74. La réduction de cette dette est suivie par l'EPIC #6528 (audit & mise en ordre) ; les campagnes de correction par module doivent ramener ces comptes vers 0.",
+  "phpstan-strict-baseline.neon": {
+    "app/Modules/EduManager": {
+      "allowed_count": 24,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/FuelStation": {
+      "allowed_count": 58,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/RestaurantManager": {
+      "allowed_count": 88,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/TravelAgency": {
+      "allowed_count": 74,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    }
+  }
+}

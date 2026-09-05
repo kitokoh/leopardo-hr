@@ -55,20 +55,15 @@ Modules/Platform -> Modules/Payroll
 Modules/Platform -> Modules/Planning
 Modules/Recruitment -> Modules/HR
 
-# Consolidation 2026-09-04 (PR #6816) : nouveaux modules intégrés qui
-# s'appuient sur le hub de notifications partagé (même couplage que les
-# modules existants) et sur les services HR (imports/exports référentiel).
-# Décision de la session de consolidation ; à revisiter si le hub expose un
-# contrat découplé plus large que App\Contracts\Communication\...Interface.
-Modules/EduManager -> Modules/Notification
-Modules/TravelAgency -> Modules/Notification
-Modules/FuelStation -> Modules/HR
-
 # Consolidation 2026-09-04 (PR #6816) — modules intégrés depuis les branches
-# BC (absents de main avant la consolidation). Couplage au hub de
-# notifications partagé, même pattern que les modules historiques
-# (Accounting/Attendance/HR/Platform -> Notification, voir PR #6659 BC-25).
-Modules/RestaurantManager -> Modules/Notification
+# BC (absents de main avant la consolidation). Couplage au hub de notifications
+# partagé (même pattern que les modules historiques Accounting/Attendance/HR/
+# Platform/RestaurantManager -> Notification, cf. PR #6659 BC-25) et aux services
+# HR (imports/exports référentiel). Décision documentée de la session de
+# consolidation ; dette suivie par l'EPIC #6528 / issue #6588 (résorption à 0).
+# À revisiter si le hub expose un contrat découplé plus large que
+# App\Contracts\Communication\...Interface.
 Modules/EduManager -> Modules/Notification
 Modules/TravelAgency -> Modules/Notification
 Modules/FuelStation -> Modules/HR
+Modules/RestaurantManager -> Modules/Notification
