@@ -31,7 +31,7 @@ l'accès base (les valeurs sont alors réelles).
 | 6 | MRR | > 0 | Stripe API `GET /v1/subscriptions?status=active` (nécessite `STRIPE_SECRET_KEY` — jamais commitée) | instantané |
 | 7 | Issues non-dependabot | ≤ 10 | GitHub Issues API : issues ouvertes, hors PR, hors titre `dependabot`, hors label `dependencies` | instantané |
 | 8 | Ratio fix/feat | ≤ 2,5 | `git log --since="60 days ago" --pretty=%s` → count `^fix|hotfix|bugfix` / `^feat|feature` | 60 j |
-| 9 | Coût agents | ≤ budget | `docs/OPS/BUDGET_AGENTS.md` — colonne « Consommé (mois courant) » (tableau rempli chaque vendredi, issue #5148) | mois courant |
+| 9 | Coût agents | ≤ budget | `docs/ops/BUDGET_AGENTS.md` — colonne « Consommé (mois courant) » (tableau rempli chaque vendredi, issue #5148) | mois courant |
 
 ## Pièges connus
 

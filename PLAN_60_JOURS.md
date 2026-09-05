@@ -4,7 +4,7 @@
 **Statut** : consolidé par l'agent PM depuis les issues #5144→#5160 et `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` — à valider par le fondateur (les écarts se signalent par une issue `[FREEZE-EXCEPTION]`, jamais par un agent seul).
 
 > ⚠️ **Pourquoi ce fichier existe** : il est cité comme référence canonique par
-> `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` (#5147) et `docs/OPS/BUDGET_AGENTS.md` (#5148),
+> `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` (#5147) et `docs/ops/BUDGET_AGENTS.md` (#5148),
 > mais était absent du dépôt au J2. C'est la consolidation opérationnelle du plan :
 > chronologie, gates, KPI, critères de sortie, issues, risques. Il prime sur toute
 > planification antérieure (dossiers `docs/PLAN_ACTION*/` sont obsolètes — voir AGENTS.md).
@@ -54,7 +54,7 @@ Tout ce qui n'est pas listé dans `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` est **r
 ### Batch 2 — Pilotes + paie DZ (J2-J30)
 | Issue | Sujet | Statut 2026-08-20 |
 |---|---|---|
-| #5148 | Budget & cadence agents | ✅ clos (`docs/OPS/BUDGET_AGENTS.md` — **tableau à chiffrer par le fondateur**) |
+| #5148 | Budget & cadence agents | ✅ clos (`docs/ops/BUDGET_AGENTS.md` — **tableau à chiffrer par le fondateur**) |
 | #5149 | Golden tests paie DZ ≥ 40 (inventaire des 38) | 🟡 ouvert |
 | #5150 | Clôture DZ bout en bout + benchmark 10 000 employés | 🟡 ouvert |
 | #5151 | Onboarding pilote < 30 min — checklist + instrumentation | 🟡 ouvert |
@@ -95,7 +95,7 @@ Chaque KPI doit être extractible par un moyen **reproductible** (commande/scrip
 | 6 | MRR | > 0 | Stripe API |
 | 7 | Issues non-dependabot | ≤ 10 | GitHub API |
 | 8 | Ratio fix/feat (60 j) | ≤ 2,5 | `git log` |
-| 9 | Coût agents cumulé | ≤ budget | `docs/OPS/BUDGET_AGENTS.md` |
+| 9 | Coût agents cumulé | ≤ budget | `docs/ops/BUDGET_AGENTS.md` |
 
 ## 6. Les 6 critères de sortie (source : #5159)
 
@@ -116,7 +116,7 @@ Chaque KPI doit être extractible par un moyen **reproductible** (commande/scrip
 | Rétrospective J46 | #5157 | `docs/pilotes/RETRO_<date>.md` |
 | Snapshot KPI daté | #5158 | `docs/pilotes/KPI_GATE_<date>.md` |
 | Bilan 60 jours (décision A/B/C) | #5159 | `docs/pilotes/BILAN_60J_<date>.md` |
-| Handoff opérationnel | #5160 | `docs/OPS/HANDOFF_<date>.md` |
+| Handoff opérationnel | #5160 | `docs/ops/HANDOFF_<date>.md` |
 
 ## 8. Dépendances & risques
 
