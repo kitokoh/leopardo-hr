@@ -1,0 +1,77 @@
+name: zz-gen-strict-baseline (temporary)
+
+# OUTIL TEMPORAIRE — round 27 PM 2026-09-05 (issue #6818). Régénère
+# UNIQUEMENT api/phpstan-strict-baseline.neon en MIROIR EXACT du job
+# « PHPStan — Strict » (architecture-check.yml) : config
+# api/phpstan-strict-gen2.neon = includes phpstan.neon (donc
+# phpstan-baseline.neon) + level 8 + paths app/Core+Modules+Shared, SANS
+# l'inclusion de la baseline strict elle-même.
+#
+# Contexte : une régénération « pleine portée » précédente (app+routes+
+# tests, sans phpstan-baseline.neon) avait artificiellement gonflé les
+# comptes par-module → garde PA2-ARCH-005 rouge (EduManager,
+# RestaurantManager, TravelAgency, FuelStation). Le miroir redonne les
+# comptes de dette réelle (0 pour ces modules, code identique à main).
+#
+# Déclenchement AUTO par push sur CE fichier (workflow_dispatch inutilisable
+# ici : le registre GitHub ne voit que la branche par défaut). La suppression
+# finale (auto-commit) re-déclenche un run qui sort immédiatement (garde
+# early-exit) — usage unique garanti. Le push GITHUB_TOKEN n'enclenche pas
+# les autres workflows ; relancer la CI ensuite (empty commit).
+
+on:
+  push:
+    paths:
+      - '.github/workflows/zz-gen-strict-baseline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  gen:
+    timeout-minutes: 40
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 0
+          ref: fix/ci-main-green-2026-09-04
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: '8.4'
+          tools: composer
+          coverage: none
+
+      - name: Install dependencies
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Early exit si déjà consommé
+        working-directory: api
+        run: test -f phpstan-strict-gen2.neon || { echo 'Outil déjà consommé — rien à faire.'; exit 0; }
+
+      - name: Regenerate strict baseline (job mirror)
+        working-directory: api
+        run: vendor/bin/phpstan analyse --configuration=phpstan-strict-gen2.neon --generate-baseline=phpstan-strict-baseline.neon --memory-limit=1G --no-progress
+
+      - name: Commit baseline and remove this workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "kitokoh (pm-agent)"
+          git config user.email "pm-agent@leopardo-hr.local"
+          rm -f .github/workflows/zz-gen-strict-baseline.yml api/phpstan-strict-gen2.neon
+          git add -A
+          if git status --porcelain | grep -q .; then
+            git commit -m "chore(phpstan): baseline strict miroir du job (scope reel Core/Modules/Shared, incl. phpstan-baseline) - round 27, issue #6818"
+            git push origin HEAD:fix/ci-main-green-2026-09-04
+          else
+            echo "RIEN_A_COMMITTER"
+          fi
