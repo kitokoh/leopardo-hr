@@ -10,10 +10,16 @@
 
 | Surface | URL | Service | Vérifié |
 |---|---|---|---|
-| API Laravel (base `/api/v1`) | `https://gestionemployerbackend.onrender.com` | Render (gratuit) | HTTP 200 2026-08-15 |
-| Santé API | `https://gestionemployerbackend.onrender.com/api/v1/health` | Render | — |
-| Vitrine / portail web | `https://gestionemployer-backend.vercel.app` | Vercel (gratuit) | HTTP 200 2026-08-15 |
-| Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Cloudflare Pages | CORS/Sanctum de référence (#3766) |
+| API Laravel (base `/api/v1`) | `https://gestionemployerbackend.onrender.com` | Render (Starter) | HTTP 200 2026-09-05 |
+| Santé API | `https://gestionemployerbackend.onrender.com/api/v1/health` | Render | 200, DB ok, redis pong, queue database — 2026-09-05 |
+| Vitrine / portail web | `https://gestionemployer-backend.vercel.app` | Vercel | HTTP 200 2026-09-05 |
+| Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Cloudflare Pages | HTTP 200 2026-09-05 |
+| Site marketing | `https://kitokoh.github.io/leopardo-hr/` | GitHub Pages (depuis main, #6827) | HTTP 200 2026-09-05 |
+
+> ⚠️ `https://leopardo.vercel.app` répond aussi HTTP 200 (2026-09-05) —
+> projet Vercel distinct à clarifier/rationaliser avec
+> `gestionemployer-backend.vercel.app` (la variable `PROD_WEB_URL` désigne
+> ce dernier comme web dev de référence).
 
 ## Services Render (backend)
 
@@ -36,9 +42,14 @@ verts, tag ancêtre de `main`). Registre : `docs/ops/DOMAINS.md`.
 
 | Surface | URL | Service | Déployé par |
 |---|---|---|---|
-| API Laravel prod (base `/api/v1`) | `https://leopardo-prod.onrender.com` | Render prod (web service `leopardo-prod`, `srv-dacsr6gae00c73ddk150`) + Neon (projet `LEOPARDO`, branche `production`) | job `deploy-prod` |
-| Vitrine / portail web prod | `https://leopardo-prod.vercel.app` | Vercel prod (projet `leopardo-prod`, équipe ibrahimkoubaye-6514) — `front/web` buildé avec `NEXT_PUBLIC_API_URL` → API prod | job `deploy-web-prod` |
-| Admin plateforme prod | `https://leo-admin-prod.pages.dev` | Cloudflare Pages prod (projet `leo-admin-prod`, compte prod) — `front/admin-dashboard` buildé avec `VITE_API_URL` → API prod | job `deploy-admin-prod` |
+| API Laravel prod (base `/api/v1`) | `https://leopardo-prod.onrender.com` | Render prod (web service `leopardo-prod`, `srv-dacsr6gae00c73ddk150`) + Neon (projet `LEOPARDO`, branche `production`) | HTTP 200, DB ok, redis pong, queue database (0 job, 0 failed) — 2026-09-05 |
+| Vitrine / portail web prod | `https://leopardo-prod.vercel.app` | Vercel prod (projet `leopardo-prod`, équipe ibrahimkoubaye-6514) — `front/web` buildé avec `NEXT_PUBLIC_API_URL` → API prod | HTTP 200 2026-09-05 |
+| Admin plateforme prod | `https://leo-admin-prod.pages.dev` | Cloudflare Pages prod (projet `leo-admin-prod`, compte prod) — `front/admin-dashboard` buildé avec `VITE_API_URL` → API prod | HTTP 200 2026-09-05 |
+
+Dernière livraison prod des 3 surfaces : workflow_dispatch `deploy-prod.yml`
+du 2026-09-04 06:05 (recette). La chaîne automatique par Release (tag
+vX.Y.Z sur HEAD de main) reste à valider de bout en bout (run release.yml
+du tag v4.27.2 annulé). Voir `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md`.
 
 Secrets GitHub requis (fail-closed) : `RENDER_PROD_API_KEY`,
 `RENDER_PROD_SERVICE_ID`, `PROD_RENDER_API_BASE_URL`,

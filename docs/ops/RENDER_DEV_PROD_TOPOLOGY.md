@@ -48,24 +48,32 @@ qui a permis de le requalifier sans opération de bascule à chaud.
 
 ### ⚠️ Dérive constatée entre `render.yaml` (dev) et la config réelle
 
+> ✅ **Corrigée le 2026-09-05 (PR #6831)** : `render.yaml` a été réécrit
+> pour refléter la réalité (entrée Postgres `leopardo-db` supprimée,
+> `DB_URL` sync: false, CACHE/SESSION `file` par défaut avec probe
+> d'entrypoint, Redis branché dans le dashboard). Les constats ci-dessous
+> sont conservés pour l'historique.
+
 En vérifiant la config live du service dev (`gestionemployerBackend`,
 workspace Render `africanovatech`) avant de répliquer son schéma en prod,
 constat empirique (pas une supposition) :
 
-- `render.yaml` déclare un Postgres géré par Render (`databases:
+- `render.yaml` déclarait un Postgres géré par Render (`databases:
   leopardo-db`) — **ce Postgres n'existe pas** dans le workspace dev
   (`GET /v1/postgres` → liste vide). La base réelle est `DB_URL` pointé
   manuellement vers **Neon** (projet `leopardorh`, host
   `...eu-west-2.aws.neon.tech`).
-- `render.yaml` déclare Redis (`CACHE_STORE=redis`, `SESSION_DRIVER=redis`,
-  `fromDatabase: leopardo-redis`) — la config live utilise en réalité
+- `render.yaml` déclarait Redis (`CACHE_STORE=redis`, `SESSION_DRIVER=redis`,
+  `fromDatabase: leopardo-redis`) — la config live utilisait en réalité
   `CACHE_STORE=file` et `SESSION_DRIVER=file` (pas de Redis actif),
-  bien qu'une instance Key Value existe (`leopardoai`, apparemment inutilisée
-  pour ça).
+  bien qu'une instance Key Value existe (`leopardoai`). Re-vérification
+  2026-09-05 (healthcheck public) : le check `redis` répond `pong` sur le
+  dev → un Redis est configuré côté dashboard (latence ~94 ms, type
+  d'instance à confirmer — interne ou externe).
 
-`render.yaml` (dev) n'a pas été corrigé dans ce chantier (hors périmètre
-initial), mais cette dérive doit être traitée séparément pour que le
-fichier redevienne une source de vérité fiable.
+`render.yaml` (dev) n'avait pas été corrigé dans le chantier initial (hors
+périmètre), laissant le fichier non fiable comme source de vérité ; c'est
+désormais fait (PR #6831).
 
 ### Pourquoi `render.yaml` n'a pas été renommé
 
@@ -95,9 +103,15 @@ Le Postgres Render initialement créé pour Phase 1 a été supprimé après
 validation croisée (healthcheck OK sur Neon).
 
 **`leopardo-queue-worker` et `leopardo-scheduler` ne sont pas encore
-répliqués en prod** — la paie, les notifications asynchrones et les tâches
-planifiées ne fonctionneront pas sur cette prod tant que ces deux services
-n'auront pas été ajoutés sur un plan payant (Starter, ~7 $/mois chacun).
+répliqués en prod** — nuance importante (vérifiée code + healthchecks
+2026-09-05) : le conteneur web (Dockerfile.prod → docker-entrypoint.sh)
+draine la queue en **mono-conteneur** (`php artisan queue:work` en
+arrière-plan, connexion `database`) : les jobs asynchrones (notifications,
+emails, PDF, paie) SONT traités en Phase 1, y compris côté prod. Ce qui ne
+tourne PAS en Phase 1, faute de service `leopardo-scheduler` (inéligible au
+tier gratuit) : les **tâches planifiées** (`schedule:run` — accrual congés,
+relances contrat/billing, réconciliation recouvrement…). À provisionner sur
+un plan payant (Starter, ~7 $/mois) avant tout trafic client réel.
 
 ### Suite recommandée avant un vrai lancement client
 
@@ -211,3 +225,65 @@ pulumi env open solarnyxss/leopardo-hr/prod
 puis les recopier dans les secrets/variables GitHub ci-dessus. Une
 synchronisation automatisée ESC → secrets GitHub (script ou action dédiée)
 pourra être ajoutée une fois ces valeurs réelles disponibles.
+
+## État vérifié le 2026-09-05 (audit déploiement dev/prod)
+
+Revue indépendante des surfaces live + de la cohérence déclaratif/réel.
+Constat : **les deux tiers sont en ligne et sains**, avec des écarts
+d'architecture résiduels listés ci-dessous.
+
+### Surfaces vérifiées (HTTP, 2026-09-05 ~18:41 UTC)
+
+| Surface | URL | État |
+|---|---|---|
+| API dev (continu) | `https://gestionemployerbackend.onrender.com/api/v1/health` | HTTP 200 — DB ok, redis pong (~94 ms), storage ok, queue `database` (driver), version 4.24.0 |
+| API prod | `https://leopardo-prod.onrender.com/api/v1/health` | HTTP 200 — DB ok (Neon), redis pong (~3 ms, KeyValue interne), queue vide, `failed_jobs` 0 |
+| Web dev | `https://gestionemployer-backend.vercel.app` (+ `https://leopardo.vercel.app`, 200 aussi — doublon Vercel à clarifier) | 200 |
+| Web prod | `https://leopardo-prod.vercel.app` | 200 |
+| Admin dev | `https://leo-admin.pages.dev` | 200 |
+| Admin prod | `https://leo-admin-prod.pages.dev` | 200 |
+| Site marketing | `https://kitokoh.github.io/leopardo-hr/` (Pages depuis main, #6827) | 200 |
+| Domaine réservé | `https://leopardo-rh.com` | injoignable (non acheté/pointé — attendu Phase 1) |
+
+### Chaîne de déploiement
+
+- **dev** (`deploy-main.yml`) : gate fonctionnel (poll des runs Tests/Web CI
+  du SHA + garde anti-SHA-stale). Dernier déploiement API réel : 2026-09-02
+  21:20 (commit 760f79d4). Depuis, les merges rapides + tests longs font
+  skiper le job `deploy-api` (SHA dépassé par un push plus récent, ou
+  pushes sans changement `api/**` → skip légitime). **L'API dev accumule du
+  retard sur main** ; rattrapage possible via `workflow_dispatch` de
+  `deploy-main.yml` sur main (le gate contourné en dispatch).
+- **prod** (`deploy-prod.yml`) : recette validée en workflow_dispatch le
+  2026-09-04 06:05 (3 surfaces déployées + healthchecks OK). La chaîne
+  automatique « tag vX.Y.Z → release.yml → Release publiée → deploy-prod »
+  n'a PAS encore tourné de bout en bout (run release.yml du tag v4.27.2
+  annulé le 2026-09-03 21:00, pas de Release créée). À valider sur un
+  prochain tag (créer la Release sur HEAD de main, checks requis verts).
+- Secrets prod : présents dans l'environnement GitHub `production`
+  (8 secrets RENDER_PROD_*/VERCEL_PROD_*/CLOUDFLARE_PROD_* + base URL).
+
+### Écarts résiduels (actions humaines requises)
+
+1. **Sauvegardes DB : désactivées** — `database-backup.yml` tourne chaque
+   nuit mais l'étape `pg_dump` est skippée (secrets `DATABASE_URL`,
+   `BACKUP_S3_BUCKET`, `AWS_*` absents). Neon étant sur plan gratuit (pas de
+   sauvegarde intégrée), la base prod n'a **aucune protection** → poser les
+   secrets ou passer Neon en plan payant (backups PITR). P0.
+2. **Drain de secours GH** (`queue-worker-fallback.yml`, toutes les 5 min) :
+   inerte (mêmes secrets DB/APP_KEY absents) ; garde anti-faux-vert ajoutée
+   (PR #6831) → skip explicite au lieu d'un faux succès. Les workers
+   mono-conteneur Render drainent en conditions normales.
+3. **Supervision queue prod** (`queue-supervision.yml`) : skip explicite
+   (secrets absents) — activer avec les mêmes secrets une fois posés.
+4. **Plan payant + scheduler prod** : ajouter `leopardo-scheduler` (+
+   `leopardo-queue-worker` si on sort du mono-conteneur) sur plan Starter.
+5. **Neon prod** : passer le projet `LEOPARDO` en plan payant avant trafic
+   réel.
+6. **Rotation des clés** Render/Neon/Stripe/Chargily partagées en clair
+   dans les conversations (cf. section Secrets) — P0 sécurité.
+7. **SUPER_ADMIN_PASSWORD** : vérifier qu'il est posé sur les services
+   Render dev et prod (sinon login admin impossible — seeder génère un mot
+   de passe aléatoire non récupérable).
+8. **Domaine** `leopardo-rh.com` : achat + DNS + plans payants Render/Vercel/
+   Cloudflare avant tout lancement client.

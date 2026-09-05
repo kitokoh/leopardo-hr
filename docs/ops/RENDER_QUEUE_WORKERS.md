@@ -1,6 +1,16 @@
 # ⚙️ Runbook — Workers de queue & scheduler sur Render (issue #5172)
 
-**Version** : 1.0 · **Date** : 2026-08-20 · **Statut** : à exécuter par un humain (ops / fondateur)
+**Version** : 1.0 · **Date** : 2026-08-20 · **Statut** : ⚠️ **DÉPASSÉ /
+HISTORIQUE** — la stratégie a changé le 2026-08-19/21 (décisions #4948/#5578/
+#5206) : la queue est drainée en **mono-conteneur** par le web service
+(`docker-entrypoint.sh` lance `php artisan queue:work` en arrière-plan,
+connexion `database`), plus besoin d'un service worker séparé en conditions
+normales. Les sections ci-dessous (provisionnement des workers dédiés,
+Redis, `leopardo-db`) ne s'appliquent qu'à une éventuelle sortie du
+mono-conteneur ou au provisionnement futur d'un scheduler. Voir
+`docs/ops/RENDER_DEV_PROD_TOPOLOGY.md` (état vérifié 2026-09-05) pour la
+topologie à jour ; `render.yaml` a été réécrit en conséquence (PR #6831).
+
 **Portée** : compte Render `africanovatech`, service web `gestionemployerbackend` (prod)
 
 > ⚠️ **Action humaine requise** : le provisioning des services Render se fait depuis le
