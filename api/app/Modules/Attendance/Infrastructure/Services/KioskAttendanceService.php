@@ -336,6 +336,7 @@ class KioskAttendanceService
      *
      * @param  array<string, mixed>  $event
      */
+    /** @param array<string, mixed> $event */
     private function eventExternalId(array $event): ?string
     {
         $deviceEventId = $event['device_event_id'] ?? null;

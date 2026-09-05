@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $late_minutes
  * @property string|null $method
  * @property string|null $source_device_code
+ * @property string|null $external_event_id
  * @property float|null $gps_lat
  * @property float|null $gps_lng
  * @property float|null $gps_accuracy
