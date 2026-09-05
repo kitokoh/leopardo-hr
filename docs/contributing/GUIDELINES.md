@@ -97,7 +97,7 @@ docs/                   # Documentation projet
 - **TypeScript** : ESLint + Prettier
 - **Tests** : Chaque feature doit avoir des tests. Ne pas modifier les tests existants sans raison.
 - **Migrations** : Idempotentes sur PostgreSQL (voir [AGENTS.md](../../AGENTS.md))
-- **API** : Documenter les endpoints dans `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`
+- **API** : Documenter les endpoints dans `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md`
 - **Changelog** : Ajouter une entree dans `CHANGELOG.md` pour chaque changement visible
 
 ## Good First Issues
