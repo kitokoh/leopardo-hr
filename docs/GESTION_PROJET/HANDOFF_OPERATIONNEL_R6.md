@@ -70,7 +70,7 @@
 
 ## 5. Coûts & budget (cadence agents)
 
-- **Budget agents** : `docs/OPS/BUDGET_AGENTS.md` (#5148) — plafond mensuel, arrêt au plafond, cadence 1 agent feature + 50 % traîne, tableau hebdo à remplir chaque vendredi.
+- **Budget agents** : `docs/ops/BUDGET_AGENTS.md` (#5148) — plafond mensuel, arrêt au plafond, cadence 1 agent feature + 50 % traîne, tableau hebdo à remplir chaque vendredi.
 - **Coûts infra** : Render (web `free` — pas `starter` en réalité), Neon (Postgres externe, pas un coût Render), Redis Render (free), Vercel (quota 100 deploys/j gratuit — déploiements path-aware pour ne pas le brûler), Mailgun (sandbox → domaine), Sentry/UptimeRobot.
 - **⚠️ Leçons CI** : le quota Vercel s'épuise (~100/j) et bloque visuellement les PR (non bloquant) ; les runs GitHub Actions peuvent ne pas se créer sous rafale (leçon sweep-qa-360) — commenter la PR et attendre plutôt que merger sans checks.
 

@@ -22,7 +22,8 @@ fusionnées dans `main` par PR (branche protégée).
 PR → merge sur main (push)
     │
     ├─ push: main → deploy-staging.yml → Render staging (fail-fast si non configuré, #1485)
-    └─ push: main → deploy-main.yml → Render production (après vérification des checks requis du SHA)
+    ├─ push: main → deploy-main.yml → Render dev/test (gestionemployerbackend, checks requis du SHA)
+    └─ release tag vX.Y.Z → deploy-prod.yml → Render PROD + Vercel + Cloudflare Pages (voir workflows/README.md)
 ```
 
 ## Workflows GitHub Actions
@@ -36,7 +37,7 @@ PR → merge sur main (push)
 | `openapi-ci.yml` | PR + push (api/openapi.yaml, dev-hub/openapi/) | Validation spec OpenAPI |
 | `architecture-check.yml` | PR | Vérification DDD boundaries + PHPStan modules/strict |
 | `deploy-staging.yml` | `push: main` (unique déclencheur depuis #3545/#4359) | Deploy staging Render |
-| `deploy-main.yml` | `push: main` (unique déclencheur depuis #3545/#4359) | Deploy production Render |
+| `deploy-main.yml` | `push: main` | Deploy dev/test Render (`gestionemployerbackend`) — la PROD passe par `deploy-prod.yml` (release) |
 | `secret-scan.yml` | PR | Scan fuites secrets (TruffleHog) |
 | `codeql.yml` | schedule + PR | Analyse sécurité statique |
 
@@ -88,14 +89,12 @@ PR → merge sur main (push)
   | Config | Niveau | Job CI | Bloquant ? |
   |--------|--------|--------|------------|
   | `phpstan-modules.neon` | 5 | `architecture-check.yml` (job `phpstan-modules`) | Oui — requis en branch protection |
-  | `phpstan.neon` | `max` | non exécuté en CI actuellement | — |
-  | `phpstan-strict.neon` | 8 | `architecture-check.yml` (`continue-on-error`) | Non — informatif seulement |
+  | `phpstan.neon` | `max` | `tests.yml` via `phpstan.ci.neon` (= `phpstan.neon` + baseline legacy, #4722) | Non requis en branch protection |
+  | `phpstan-strict.neon` | 8 | `architecture-check.yml` (job `phpstan-strict`) | Oui — **bloquant sur delta** (baseline `api/phpstan-strict-baseline.neon`, 1667 entrées) |
 
-- **Coverage minimum** : `BACKEND_COVERAGE_MIN` (variable GitHub). Défaut actuel
-  (`DEFAULT_BACKEND_COVERAGE_MIN`) = **60%** à la fois dans `tests.yml` et
-  `coverage-gate.yml` (les deux workflows sont alignés depuis la résolution de
-  l'issue #1310). La cible "ratchet" (à relever progressivement) mentionnée dans
-  `coverage-gate.yml` est 65%, mais ce n'est pas (encore) la valeur par défaut appliquée.
+- **Coverage minimum** : `BACKEND_COVERAGE_MIN` (variable GitHub). Valeur par défaut
+  (`DEFAULT_BACKEND_COVERAGE_MIN`) = **65%** dans `tests.yml` comme dans `coverage-gate.yml`
+  (ratchet atteint — les deux workflows sont alignés).
 - **Tests** : PHPUnit 11 sur PostgreSQL 16
 
 ### Mobile
@@ -120,7 +119,7 @@ Voir aussi `docs/CI_CD_SECRETS.md` pour le détail complet des secrets et de leu
 
 > ⚠️ Mise à jour (2026-08-29) : cette section décrivait une instance Upstash Redis partagée.
 > Depuis #5578, la queue tourne sur `database` (table Postgres `jobs`), pas Redis — voir
-> `docs/OPS/RENDER_QUEUE_WORKERS.md` et `docs/GESTION_PROJET/RUNBOOK_RENDER_WORKERS.md`. Redis
+> `docs/ops/RENDER_QUEUE_WORKERS.md` et `docs/GESTION_PROJET/RUNBOOK_RENDER_WORKERS.md`. Redis
 > (interne Render, `leopardo-redis`) ne sert plus qu'au cache/session.
 
 Toutes les queues sont drainées par le même worker (`leopardo-queue-worker`), consommées dans

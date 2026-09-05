@@ -169,7 +169,7 @@ Règle de migration : ne jamais changer un verbe sans vérifier les clients (app
 - **Utiliser `__()` ou `trans()`** — jamais de chaines hardcodees en francais/anglais
 - 4 langues supportees : FR, EN, AR, TR
 - Support RTL pour l'arabe
-- Fichiers de traduction backend dans `api/lang/{fr,en,ar,tr}/` (propagés depuis `shared/i18n/locales/{fr,en,ar,tr}.json` par `shared/i18n/sync/` — voir `ARCHITECTURE.md` §i18n)
+- Fichiers de traduction backend dans `api/lang/{fr,en,ar,tr}/` (synchronisés depuis `shared/i18n/locales/{fr,en,ar,tr}.json` par `shared/i18n/sync/` — voir `ARCHITECTURE.md` §i18n)
 - **Garde CI (PA2-I18N-007 + issue #5432)** : `check-hardcoded-accented-messages.sh` refuse toute ligne AJOUTÉE avec un littéral accentué (proxy « texte français ») hors `__()`/`trans()` sur les surfaces à risque :
   - `*Controller.php` (historique) — `api/app/Modules/*/Application/**` (Services/Actions) — `api/app/Modules/*/Domain/Exceptions/**` — `api/app/Modules/*/Console/**`
   - Les lignes `__('catalogue.cle')` et les codes techniques sans accent ne déclenchent jamais.

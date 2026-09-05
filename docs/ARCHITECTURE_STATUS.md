@@ -46,8 +46,10 @@
 
 - **Absence** : façade HTTP sur `Planning` (Interfaces + Providers uniquement —
   dérogation PA2-ARCH-002, voir `api/ARCHITECTURE.md`). **Expense** : module DDD
-  partiel depuis #5235 (dérogation PA2-ARCH-011 résorbée) — modèles de notes de frais
-  sous contrat `Planning`.
+  partiel depuis #5235 (dérogation PA2-ARCH-011 résorbée) — couche `Application`
+  absente, modèles de notes de frais sous contrat `Planning`.
+- **EdgeSync** : structure spécialisée synchro/offline — `Domain/Contracts`,
+  `Domain/Exceptions` et `Application/DTOs` absents (acté, voir `api/ARCHITECTURE.md`).
 - **Restaurant** : module *fournisseur de contenu Solutions* — `Domain/` non vide mais
   hors sous-dossiers canoniques (`Domain/Solution/RestaurantManifest.php`,
   `Domain/Survey/RestaurantSurvey.php`) ; `Application/`, `Infrastructure/`,

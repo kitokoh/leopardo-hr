@@ -104,7 +104,11 @@ app/Shared/
     └── DomainException.php        # Exception métier de base
 ```
 
-> Les `app/Traits/`, `app/Attributes/` et `app/Enums/` résidus sont des shims de backward-compat pointant vers `Shared/`. Ne pas y écrire de nouveau code.
+> Les anciens dossiers racine `app/Traits/`, `app/Attributes/`, `app/Enums/`,
+> `app/DTOs/`, `app/Models/` et `app/Services/` ont été **supprimés** (migration DDD
+> terminée, #6565/#1728) — plus aucun shim ni alias backward-compat ne subsiste.
+> Tout nouveau code transversal va dans `app/Shared/`, tout nouveau code métier
+> dans le module DDD concerné.
 
 ### Gestion des tenants (`app/Core/Tenant/`)
 
@@ -122,23 +126,24 @@ app/Core/Tenant/
 | `hasTenant()` | True si un tenant est actif |
 | `clearTenant()` | Réinitialise sans restaurer (utile tests/artisan) |
 
-> L'alias `App\Services\TenantManager` a été supprimé (#1494/#1728). Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
+> L'ancien alias `App\Services\TenantManager` a été supprimé avec `app/Services/`
+> (#1728). Injecter `App\Core\Tenant\TenantManager`.
 
-### Migration class aliases — état au 2026-09-05 (vérifié)
+### Migration class aliases — état final (vérifié 2026-09-05)
 
-`app/Models/`, `app/DTOs/`, `app/Traits/`, `app/Attributes/`, `app/Enums/`,
-`app/Services/`, `app/Http/Controllers/Api/V1/` et `app/Http/Requests/` sont
-**intégralement supprimés** — aucun shim restant. Vérifié le 2026-09-05 :
-0 référence `use App\Traits\`, `App\Attributes\`, `App\Enums\`, `App\Models\`,
-`App\Services\`, `App\DTOs\` ou `App\Http\Controllers\Api\V1\` dans `app/`,
-`tests/` et `routes/`. Les canoniques vivent dans `app/Shared/` et dans les
-modules DDD (`App\Modules\<Nom>\...`). Tout nouveau code va directement au canonique.
+Les dossiers `app/Models/`, `app/DTOs/`, `app/Services/`, `app/Traits/`,
+`app/Attributes/`, `app/Enums/`, `app/Http/Controllers/Api/V1/` et
+`app/Http/Requests/` sont **supprimés** ; il ne reste **aucun alias ni shim
+backward-compat** (`grep -r "App\\Services\\|App\\Traits\\|App\\Attributes\\|App\\Enums\\" api/app`
+ne retourne rien — 0 référence également dans `tests/` et `routes/`). Les canoniques
+vivent dans `app/Shared/` et dans les modules DDD (`App\Modules\<Nom>\...`).
+Voir `api/ARCHITECTURE.md` §« Nettoyage complet » pour le bilan chiffré.
 
 ## Mobile — Flutter
 
 - `leopardo_core` est le package fondation partagé par toutes les apps.
 - `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- Apps présentes dans le dépôt (8 dossiers, cf. `melos.yaml` et `front/mobile_apps/README.md`) : `leopardo_core` (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`. Le mobile historique (`front/mobile/`) a été retiré du dépôt.
+- Apps présentes dans le dépôt (8 packages — 7 apps + `leopardo_core`, cf. `melos.yaml` et `front/mobile_apps/README.md`) : `leopardo_core` (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`. Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 
@@ -150,11 +155,11 @@ Des scripts de synchronisation (`shared/i18n/sync/`) propagent les clés vers le
 Voir `.github/workflows/` et `docs/ARCHITECTURE_CICD.md`.
 
 Les pipelines principaux :
-- `tests.yml` — tests backend PHPUnit/Pest + lint/build `front/admin-dashboard`
-- `web-ci.yml` — lint + build `front/admin-dashboard` (Vue.js/Vite, dashboard plateforme)
+- `tests.yml` — tests backend PHPUnit/Pest (+ sécurité, qualité, gouvernance — aucun job front)
+- `web-ci.yml` — lint + build + E2E Playwright `front/admin-dashboard` (Vue.js/Vite, dashboard plateforme)
 - `web-marketing-ci.yml` — lint + build `front/web` (Next.js, vitrine publique)
 - `mobile-apps-ci.yml` — build Flutter (`front/mobile_apps/*`)
-- `deploy-main.yml` — déploiement production
+- `deploy-main.yml` — déploiement continu dev/test sur push main (la prod passe par `deploy-prod.yml`, déclenché par release)
 
 ## Infrastructure & résilience (0 €)
 

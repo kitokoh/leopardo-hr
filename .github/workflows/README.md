@@ -10,7 +10,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Action | Rôle |
 |---|---|
 | `.github/actions/setup-backend-db` | PHP + Composer + bootstrap migrations multi-tenant (public + shared_tenants) contre postgres/redis |
-| `.github/actions/setup-flutter-android` | Java 17 + Flutter pour les builds Android (utilisee par `mobile-apps-ci.yml`, `mobile-distribute.yml`, `deploy-main.yml`) |
+| `.github/actions/setup-flutter-android` | Java 17 + Flutter pour les builds Android (utilisee par `mobile-apps-ci.yml`, `mobile-distribute.yml`, `mobile-distribute-main.yml`) |
 
 ---
 
@@ -28,12 +28,12 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
-| `tests.yml` | PR → main/develop + push | Tests backend (PHPUnit/Pest) + mobile Flutter |
-| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (60%) |
+| `tests.yml` | PR → main + push (api/**, front/admin-dashboard/**) | Tests backend (PHPUnit/Pest, sécurité, qualité, gouvernance) — aucun job front/mobile |
+| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (65%) |
 | `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
 | `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |
-| `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (7 apps, matrix) |
+| `mobile-apps-ci.yml` | PR → `front/mobile_apps/**` | Build + lint + tests Flutter (8 apps, matrix) |
 | `architecture-check.yml` | PR → api | Vérifie les règles d'architecture DDD |
 | `openapi-ci.yml` | PR → openapi | Validation spec OpenAPI |
 | `codeql.yml` | Hebdomadaire + PR | Analyse de sécurité CodeQL |
@@ -122,6 +122,8 @@ ci-dessous.
 | `crm-branch-protocol.yml` | PR bc/crm* | Protocole de branche du BC CRM |
 | `deploy-admin-dashboard.yml` | Push → main (chemin DEV — projet `leo-admin`, compte Cloudflare dev) | Déploie l'admin dashboard sur Cloudflare Pages ; la PROD (projet `leo-admin-prod`) passe par `deploy-prod.yml` (tag) |
 | `e2e-isolated.yml` | PR → web/admin | E2E isolés (sandbox) |
+| `edge-ci.yml` | PR → edge/** | Tests bridge Edge (Caddy/supervisord/install) |
+| `pages-deploy.yml` | Push → main + manuel | Déploiement GitHub Pages (`site/gh-pages`) |
 | `fix-feat-ratio-guard.yml` | PR → main | Ratio fix/feat (signal fort, non requis) |
 | `issue-governance-guard.yml` | Issues | Garde de gouvernance des issues |
 | `kiosk-ci.yml` | PR → front/zkteco-kiosk | Lint + tests kiosk (JS + Python) |

@@ -5,7 +5,7 @@
 # déployé uniquement via le hook de déploiement Render déclenché par
 # .github/workflows/deploy-prod.yml, lui-même déclenché uniquement par un
 # tag git validé (vX.Y.Z, checks requis verts — voir release.yml). Voir
-# docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie
+# docs/ops/RENDER_DEV_PROD_TOPOLOGY.md pour le détail de la topologie
 # dev/prod et le plan de bascule vers un plan payant complet.
 #
 # ⚠️ PHASE 1 (tier gratuit Render, validation du pipeline) :
@@ -147,7 +147,7 @@ services:
   # Background Worker — Laravel Queue Worker (DÉSACTIVÉ, Phase 1 gratuite)
   # Les Background Workers ne sont pas éligibles au tier gratuit Render.
   # Décommenter et passer `plan: starter` (~7 $/mois) une fois le budget
-  # validé — voir docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md "Suite recommandée".
+  # validé — voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md "Suite recommandée".
   # - type: worker
   #   name: leopardo-queue-worker-prod
   #   runtime: docker
@@ -222,7 +222,7 @@ services:
 databases:
   # Pas de Postgres Render : la base de données est Neon (projet
   # "LEOPARDO", externe, gérée hors Blueprint — voir DB_URL ci-dessus et
-  # docs/OPS/RENDER_DEV_PROD_TOPOLOGY.md).
+  # docs/ops/RENDER_DEV_PROD_TOPOLOGY.md).
   #
   # Plan gratuit : en mémoire uniquement, une seule instance par workspace.
   - name: leopardo-redis-prod

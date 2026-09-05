@@ -139,4 +139,4 @@ sortant est bloqué par Render. Aligner `MAIL_MAILER`/`MAILGUN_*` sur les worker
 ---
 
 *Runbook issu du constat QA 2026-08-20 (issues #5172/#4948/#5162). Voir aussi
-`docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` et `docs/OPS/BUDGET_AGENTS.md`.*
+`docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` et `docs/ops/BUDGET_AGENTS.md`.*

@@ -26,7 +26,7 @@ desormais les seules applications mobiles actives.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_accounting`, `leopardo_marketing` et `leopardo_travel_agent`.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide les 8 packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_accounting`, `leopardo_marketing` et `leopardo_travel_agent`.
 - `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
 
 ## Garde-fous Plan 26

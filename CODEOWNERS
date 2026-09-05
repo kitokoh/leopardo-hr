@@ -32,10 +32,6 @@
 /api/app/Modules/Growth/    @kitokoh
 /api/app/Modules/Notification/ @kitokoh
 /api/app/Modules/RestaurantManager/ @kitokoh
-/api/app/Modules/CRM/       @kitokoh
-/api/app/Modules/Marketing/ @kitokoh
-/api/app/Modules/Growth/    @kitokoh
-/api/app/Modules/Notification/ @kitokoh
 /api/app/Modules/Delivery/    @kitokoh
 /api/app/Contracts/Communication/ @kitokoh
 /api/app/Jobs/              @kitokoh
@@ -74,13 +70,13 @@
 /api/config/                @kitokoh
 
 # CRM client module (bounded context tenant, issue #5745 / ADR-CRM-001)
-/api/app/Modules/CRM/       @kitokoh
 
 # Audit #1712 + issue #1730 : @kitokoh est seul propriétaire humain aujourd'hui.
-# ÉTAT RÉEL de la protection (source : dev-hub/tools/branch-protection-canonical.json,
-# vérifié via API le 2026-08-15, issue #3533) : **0 approval requis**,
-# `require_code_owner_reviews: false`, `enforce_admins: false` — les entrées
-# CODEOWNERS ci-dessous sont **documentaires** (elles n'imposent aucune revue).
+# ÉTAT RÉEL de la protection (vérifié via API GitHub le 2026-09-05) :
+# **0 approval requis** (`required_pull_request_reviews` absent), mais
+# `enforce_admins: true` et 5 checks requis (Backend Coverage, PHPStan Strict,
+# Module Structure Validator, Frontend ESLint+TS, actionlint) — les entrées
+# CODEOWNERS sont **documentaires** (`require_code_owner_reviews: false`).
 # La procédure de revue croisée (issue #1730) reste la règle volontaire :
 #   1. L'auteur auto-revues sa PR avec la checklist .github/PULL_REQUEST_TEMPLATE.md ;
 #   2. Pour les chemins sensibles (workflows, middleware, configs, seeders,
@@ -91,5 +87,4 @@
 #      (ex. @second-maintainer) ET activer `require_code_owner_reviews` pour
 #      répartir les révisions obligatoires.
 /api/app/Modules/FuelStation/ @kitokoh
-/api/app/Modules/EduManager/ @kitokoh
 /api/app/Modules/Restaurant/ @kitokoh
