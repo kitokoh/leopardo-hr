@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+// Pages PUBLIQUES (locale résolue via navigator, pas d'utilisateur) : force fr-FR.
+test.use({ locale: 'fr-FR' });
+
 /**
  * RESTO-805-front (#6404) — E2E de la commande en ligne publique.
  *

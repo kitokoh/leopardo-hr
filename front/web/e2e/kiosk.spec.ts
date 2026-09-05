@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+// Pages PUBLIQUES (locale résolue via navigator, pas d'utilisateur) : force fr-FR.
+test.use({ locale: 'fr-FR' });
+
 /**
  * RESTO-902 (#6231) — E2E du kiosque libre-service (RESTO-807/#6228).
  *

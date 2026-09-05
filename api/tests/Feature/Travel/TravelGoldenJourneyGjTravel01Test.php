@@ -231,6 +231,10 @@ class TravelGoldenJourneyGjTravel01Test extends TestCase
     {
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        // Le middleware module.travelagency gate /travel/* (403) : le tenant
+        // "autre" doit être un client travel légitime pour que l'isolation
+        // cross-tenant soit réellement exercée au niveau du contrôleur (404).
+        $otherCompany->setFeature('travelagency', true);
 
         /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create([
