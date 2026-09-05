@@ -63,7 +63,8 @@ job Module Structure Validator) bloque TOUT nouvel import croisé :
 - `use App\Modules\<X>\...` dans un module ≠ X ;
 - `use App\Modules\<X>\...` dans `Core/`.
 
-La dette héritée (23 modules sources, 55 paires source→cible — vérifié
+La dette héritée (23 dossiers sources — 20 modules + `Core/Auth`, `Core/Feature`,
+`Core/Tenant` —, 55 paires source→cible dont 7 `Core→Modules` — vérifié
 2026-09-05) est **actée** dans
 `dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
 ligne ajoutée exige une justification (issue de refactor), aucune n'est
@@ -83,7 +84,7 @@ de la garde symétrique #5584 ci-dessus. Elle interdit en HARD BLOCK tout
 direct), et exige une exemption justifiée dans
 `dev-hub/tools/crm-boundary-allowlist.txt` pour tout autre import
 inter-module. Les imports `App\Core\*`, `App\Shared\*` et intra-module
-restent libres. La garde est **active** — `Modules/CRM` existe et est complet (`CrmServiceProvider`), la garde `check-crm-boundary-imports.sh` est branchée en CI.
+restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la garde `check-crm-boundary-imports.sh` est **active et verte en local** (0 hard block, 0 exemption consommée) mais **n'est pas encore branchée en CI** (constat 2026-09-05 — branchement à faire dans `architecture-check.yml`, cf. rapport d'audit).
 
 | Module | Statut routes | Statut code | ServiceProvider |
 |--------|--------------|-------------|-----------------|

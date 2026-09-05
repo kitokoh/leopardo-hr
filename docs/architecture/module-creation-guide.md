@@ -94,6 +94,7 @@ api/app/Modules/MonNouveauModule/
 │   └── Queries/         ← Queries CQRS
 ├── Domain/
 │   ├── Models/          ← Eloquent models
+│   ├── Contracts/       ← Domain contracts (interfaces)
 │   ├── Enums/           ← Enums métier
 │   ├── Exceptions/      ← Domain exceptions
 │   ├── Events/          ← Domain events

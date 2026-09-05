@@ -88,3 +88,75 @@
 ## 5. Non vérifié (pas d'outillage local)
 PHP/Composer/Flutter absents du sandbox : les jobs CI (PHPUnit, PHPStan, Pint, builds)
 n'ont pas été rejoués localement — ils tourneront sur la branche à la prochaine PR/push.
+
+## 6. Complément — 2ᵉ passe d'audit fusionnée (constats supplémentaires vérifiés)
+
+> Section ajoutée lors de la **fusion des deux espaces d'audit** (branche unifiée
+> `audit/architecture-2026-09-05`, PR #6832 — l'ancienne branche
+> `pm/audit-architecture-2026-09-05` et sa PR #6830 ont été fermées). Ces constats
+> proviennent de la 2ᵉ passe ; chacun est vérifié (fichier : ligne / commande).
+
+### 6.1 Gardes d'architecture annoncées mais non branchées en CI (priorité haute)
+
+| Constat | Preuve | Recommandation |
+|---|---|---|
+| **Garde MAT-002** (`dev-hub/tools/check-bounded-context-dependencies.sh`) **absente de tous les workflows** et de `scripts/pre-push-checks.sh` ; exécutée sur main elle **échoue (566 violations, exit 1)** car `dev-hub/governance/bounded-context-dependencies.json` est figé au 2026-08-28 (7 BC absents : 15/16/17/22/24/25/26 ; 4 paires d'allowlist postérieures sans arête) | `grep -r check-bounded-context-dependencies .github/workflows/ scripts/` = 0 ; exécution locale | Rebaseler la matrice sur main puis **brancher MAT-002 en CI** (job du `architecture-check.yml`, même pattern que MAT-001) — tant qu'elle n'est pas branchée, la dette n'est jamais mesurée |
+| **Garde CRM** `check-crm-boundary-imports.sh` : l'ADR 0018 affirme qu'elle tourne dans `architecture-check.yml` — **0 occurrence** dans les workflows (module CRM = 196 fichiers, 0 hard block, 0 exemption — garde verte en local mais non câblée) | `docs/architecture/adr/0018-…` vs `grep -i crm .github/workflows/architecture-check.yml` | La brancher dans `architecture-check.yml` (la mention « branchée en CI » a été retirée d'`api/ARCHITECTURE.md` — c'était faux) |
+| Zones hors périmètre des gardes #5584/#5745 : `app/Http` (14 paires→Modules), `app/Jobs` (8), `app/Console` (12, dont Console→CRM ×5), `app/Shared` (1) | scans statiques | Étendre la garde d'isolation ou acter ces zones comme adaptateurs |
+
+### 6.2 Gouvernance de `main` — sources contradictoires (docs/outillage, pas de code)
+
+- **Protection de `main`** : `BRANCH_PROTECTION_REQUIRED.md` (racine) déclare `enforce_admins`
+  **true** ; `dev-hub/tools/branch-protection-canonical.json` (référentiel de la garde
+  #2011, 2026-08-15) dit **false** ; la copie `.github/BRANCH_PROTECTION_REQUIRED.md`
+  dit false ; la protection **réelle** (API GitHub 2026-09-05) : `enforce_admins`
+  **true**, 5 required checks, merge queue active. → Re-synchroniser canonique + copie
+  `.github/` sur le réel (le commentaire CODEOWNERS a été rafraîchi ; le canonique non).
+- **`dev-hub/prompts/12_MERGE_ALL_TO_MAIN.md:26,50`** enseigne `gh pr merge --admin`
+  pour **bypasser la protection** — contredit `AGENTS.md`, les protocoles CRM/BC et
+  l'incident #2011. → Neutraliser ce prompt.
+- **`.github/PULL_REQUEST_TEMPLATE.md`** autorise `Closes #N` dans le titre, alors
+  qu'`AGENTS.md` (#2512) exige le **body** ; `00_AGENT_QUICK_CARD.md:82-84` enseigne un
+  nommage `fix/issue-<N>` et un format de commit invalide `fix/feat:`. → Aligner.
+- **`CONVENTIONS.md`** (corrigé dans cette fusion) : liste des modules portée à **25**
+  (ordre alphabétique — la liste en contenait encore 18), baseline PHPStan strict
+  chiffrée (**1 667 entrées / Σ 3 317** au lieu de « ~2950 »), §4.1 : nommage
+  `fix/<issue>-<slug>` / `bc/<code>-<slug>` posé comme **verrou anti-doublon** (#2400).
+
+### 6.3 Chantier restant — constats supplémentaires (issues à ouvrir)
+
+- **[P1]** `api/app/Modules/HR/Application/Actions/ApplySectorTemplate.php` : **fichier
+  PHP corrompu** — pas de `<?php`, pas de namespace ni classe (99 lignes de `use` +
+  fonctions nues), 0 référence dans le repo, dans un module marqué « complet ».
+  → Corriger depuis l'historique ou supprimer (précédent : purge des ~140 fichiers
+  corrompus par les merges union, train #6817/#6818).
+- **[P1]** `dev-hub/governance/route-owners.json` : **6 fichiers de routes absents**
+  dont les plus gros — `travelagency.php` (389 l.), `restaurantmanager.php` (361 l.),
+  `fuel_station.php` (252 l.), `edu_manager.php` (173 l.), `delivery.php` (97 l.),
+  `solutions.php` (27 l.) ≈ 1 300 lignes (~32 %) sans owner déclaré ; BC-15 FUEL
+  déclare `routes: []` alors que `fuel_station.php` existe. → Régénérer + synchroniser.
+- **[P2]** `CHANGELOG.md` : 516 Ko (> limite 150 Ko, CONVENTIONS §4.3) et **structure
+  corrompue** — des bulletins `[Unreleased]` sont placés **au-dessus** du header
+  `## [Unreleased]` (l.1-12) et des notes « ⚠️ En attente de merge » sont collées au
+  milieu de bulletins (résidus de merges union). → Re-structurer + archiver.
+- **[P2]** Comptages périmés encore présents hors des docs canoniques :
+  `docs/architecture/COMPTABILITE_CONCEPTION.md` (« 18 modules »),
+  `docs/architecture/adr/0012-…` (« 19 modules, 6 apps », cite `Training` jamais créé),
+  `docs/CONTEXT/02_TECHNICAL_CONTEXT.md` & `docs/GOTO_MARKET/01_PRODUCT/PRODUCT_BRIEF.md`
+  (« 18 modules ») — réel : 25 modules, 8 packages mobiles.
+- **[P2]** Fichier PHP corrompu / fragments morts : 8 commentaires « Migrated from
+  App\Http\Controllers\Api\V1… » résiduels (cosmétique).
+
+### 6.4 Corrections apportées par la fusion (2ᵉ passe → branche unifiée)
+
+- `dev-hub/governance/bounded-context-registry.json` : exception partagée
+  `api/app/Core/Shared` (**dossier inexistant**) → **`api/app/Shared`** (dossier réel,
+  12 fichiers PHP) ; doublon `RestaurantManager` (`planned`) retiré du BC-25.
+- `.github/workflows/architecture-check.yml` : commentaire périmé « dette existante
+  (16/18 modules, 57 paires) » → renvoi au comptage affiché par la garde.
+- `CONVENTIONS.md`, `api/ARCHITECTURE.md`, `ARCHITECTURE.md`, `AGENTS.md`,
+  `.github/workflows/README.md` : voir §6.2 + corrections communes des deux passes
+  (25 modules, Expense partiel, statuts réels par couche, coverage 65 %, 8 packages
+  mobiles). Aucun changement de code applicatif.
+
+— Fin du complément (fusion des espaces d'audit, 2026-09-05).

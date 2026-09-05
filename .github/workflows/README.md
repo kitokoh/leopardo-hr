@@ -29,7 +29,7 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 | Fichier | Déclencheur | Rôle |
 |---|---|---|
 | `tests.yml` | PR → main + push (api/**, front/admin-dashboard/**) | Tests backend (PHPUnit/Pest, sécurité, qualité, gouvernance) — aucun job front/mobile |
-| `coverage-gate.yml` | PR → api/** | Seuil de couverture PHP (65%) |
+| `coverage-gate.yml` | PR + merge_group (required check — filtre `paths` retiré, PA2-OPS-003) | Seuil de couverture PHP (65 %) |
 | `backend-jobs-ci.yml` | PR → Jobs/Listeners | Tests des Jobs/Queues Laravel |
 | `web-ci.yml` | PR → front/admin-dashboard | Lint + test + E2E Vue.js |
 | `web-marketing-ci.yml` | PR → front/web | Lint + test + E2E Next.js |

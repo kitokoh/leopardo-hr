@@ -1,6 +1,6 @@
 # AGENTS.md - Guide de travail Leopardo RH
 
-Derniere mise a jour : 2026-08-26
+Derniere mise a jour : 2026-09-05 (audit PM architecture — liste des apps mobiles alignée sur le dépôt)
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.
 
@@ -225,16 +225,17 @@ vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
 
 Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles definis "noir sur blanc" :
 
-### Les 8 Applications Mobiles Flutter (`front/mobile_apps/`)
+### Les 7 Applications Mobiles Flutter (`front/mobile_apps/`)
 - **`leopardo_employee`** : Application employee (self-service) — pointage GPS, absences, soldes, notifications.
 - **`leopardo_manager`** : Application dediee a la gestion du tenant (entreprise). Vue globale, affectation des roles, evolution.
 - **`leopardo_hr`** : Application dediee aux Ressources Humaines. Suivi des employes, presences/absences, taches, et gestion du recrutement (ATS).
 - **`leopardo_marketing`** : Application dediee aux marketeurs. Planification et publication en "1-clic" sur les differents reseaux sociaux.
 - **`leopardo_platform_admin`** : Application ultra-securisee pour le Super-Admin (proprietaire du SaaS) pour gerer les abonnements et l'infrastructure.
-- **`leopardo_accounting`** : Application comptabilite (facturation, suivi des impayes) — Android uniquement, stats encore mock (chantier ouvert, #2661).
-- **`leopardo_travel_agent`** : Application agent/vendeur TravelAgency — vente guichet multi-passagers, encaissement cash, check-in QR, manifeste, caisse PDV (TRAVEL-701 #6088, TRAVEL-810 #6100).
+- **`leopardo_accounting`** : Application dediee a la comptabilite (facturation, suivi des impayes). Integree a melos et a la CI mobile (voir `front/mobile_apps/README.md`).
+- **`leopardo_travel_agent`** : Application dediee aux agents/vendeurs de la verticale TravelAgency — vente guichet multi-passagers, encaissement cash, check-in QR, manifeste, caisse PDV (TRAVEL-701 #6088 / TRAVEL-810 #6100).
 
 > `leopardo_core` est le package partage (design system, API client, modeles, l10n) consomme par les 7 apps.
+> La liste canonique des apps mobiles est `front/mobile_apps/README.md` (a jour avec melos.yaml).
 > Le **kiosk/biometrie n'est PAS une app Flutter** : c'est une web app offline-first (`front/zkteco-kiosk`,
 > pointage local `/local/punch` + bridge ZKTeco) — cf. `front/zkteco-kiosk/README.md`.
 
