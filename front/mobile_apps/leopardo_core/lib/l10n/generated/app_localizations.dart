@@ -15766,7 +15766,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Commande en ligne'**
+  /// **'Commander en ligne'**
   String get restaurantShopTitle;
 
   /// No description provided for @restaurantShopSubtitle.
@@ -15850,7 +15850,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopCheckout.
   ///
   /// In fr, this message translates to:
-  /// **'Commander'**
+  /// **'Valider la commande'**
   String get restaurantShopCheckout;
 
   /// No description provided for @restaurantShopOrdering.
@@ -15880,7 +15880,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopTrack.
   ///
   /// In fr, this message translates to:
-  /// **'Suivre la commande'**
+  /// **'Suivre ma commande'**
   String get restaurantShopTrack;
 
   /// No description provided for @restaurantShopPay.
@@ -15954,6 +15954,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'devise'**
   String get restaurantShopCurrency;
+
+  /// No description provided for @restaurantShopTokeninvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton de boutique invalide ou absent.'**
+  String get restaurantShopTokeninvalid;
+
+  /// No description provided for @restaurantShopOrderplaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande enregistrée !'**
+  String get restaurantShopOrderplaced;
+
+  /// No description provided for @restaurantShopTracktitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivi de commande'**
+  String get restaurantShopTracktitle;
+
+  /// No description provided for @restaurantShopOrderreference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantShopOrderreference;
+
+  /// No description provided for @restaurantShopEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre panier est vide.'**
+  String get restaurantShopEmpty;
+
+  /// No description provided for @restaurantShopEmptymenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le menu est vide pour le moment.'**
+  String get restaurantShopEmptymenu;
+
+  /// No description provided for @restaurantShopLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du menu…'**
+  String get restaurantShopLoading;
+
+  /// No description provided for @restaurantShopOrdererror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer la commande. Réessayez.'**
+  String get restaurantShopOrdererror;
+
+  /// No description provided for @restaurantShopPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement confirmé. Bon appétit !'**
+  String get restaurantShopPaid;
+
+  /// No description provided for @restaurantShopPayatpickup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer à la réception'**
+  String get restaurantShopPayatpickup;
+
+  /// No description provided for @restaurantShopPaycashatpickup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces à la réception'**
+  String get restaurantShopPaycashatpickup;
+
+  /// No description provided for @restaurantShopPaymobilemoney.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer par mobile money'**
+  String get restaurantShopPaymobilemoney;
+
+  /// No description provided for @restaurantShopPaymenterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement a échoué. Réessayez.'**
+  String get restaurantShopPaymenterror;
+
+  /// No description provided for @restaurantShopPendingpayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de paiement…'**
+  String get restaurantShopPendingpayment;
+
+  /// No description provided for @restaurantShopPhoneplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (optionnel)'**
+  String get restaurantShopPhoneplaceholder;
+
+  /// No description provided for @restaurantShopStartneworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantShopStartneworder;
+
+  /// No description provided for @restaurantShopStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantShopStatus;
+
+  /// No description provided for @restaurantShopTrackerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de retrouver la commande. Vérifiez la référence.'**
+  String get restaurantShopTrackerror;
 
   /// No description provided for @restaurantMobileHubTitle.
   ///
@@ -16747,6 +16855,96 @@ abstract class AppLocalizations {
   /// **'Horaires'**
   String get restaurantRefHours;
 
+  /// No description provided for @restaurantRefDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get restaurantRefDisabled;
+
+  /// No description provided for @restaurantRefFieldphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantRefFieldphone;
+
+  /// No description provided for @restaurantRefFieldcapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité'**
+  String get restaurantRefFieldcapacity;
+
+  /// No description provided for @restaurantRefFieldlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get restaurantRefFieldlabel;
+
+  /// No description provided for @restaurantRefFieldcapacitycovers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité (couverts)'**
+  String get restaurantRefFieldcapacitycovers;
+
+  /// No description provided for @restaurantRefFieldcategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get restaurantRefFieldcategory;
+
+  /// No description provided for @restaurantRefFieldcategoryid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get restaurantRefFieldcategoryid;
+
+  /// No description provided for @restaurantRefFieldunit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get restaurantRefFieldunit;
+
+  /// No description provided for @restaurantRefFieldavgcost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen'**
+  String get restaurantRefFieldavgcost;
+
+  /// No description provided for @restaurantRefFieldunitkg.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité (kg)'**
+  String get restaurantRefFieldunitkg;
+
+  /// No description provided for @restaurantRefFieldavgcostminor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen (minor)'**
+  String get restaurantRefFieldavgcostminor;
+
+  /// No description provided for @restaurantRefFieldstartsat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commence à'**
+  String get restaurantRefFieldstartsat;
+
+  /// No description provided for @restaurantRefFielddefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par défaut'**
+  String get restaurantRefFielddefault;
+
+  /// No description provided for @restaurantRefFieldbydefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par défaut'**
+  String get restaurantRefFieldbydefault;
+
+  /// No description provided for @restaurantRefFieldclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé'**
+  String get restaurantRefFieldclosed;
+
   /// No description provided for @restaurantResTitle.
   ///
   /// In fr, this message translates to:
@@ -17023,6 +17221,12 @@ abstract class AppLocalizations {
   /// **'Erreur de réception.'**
   String get restaurantStockRcverror;
 
+  /// No description provided for @restaurantStockSupplierplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur…'**
+  String get restaurantStockSupplierplaceholder;
+
   /// No description provided for @restaurantDelTitle.
   ///
   /// In fr, this message translates to:
@@ -17286,6 +17490,150 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Erreur lors de l\'export CSV.'**
   String get restaurantReportsExporterror;
+
+  /// No description provided for @restaurantKioskTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Borne de commande'**
+  String get restaurantKioskTitle;
+
+  /// No description provided for @restaurantKioskTokeninvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton de boutique invalide ou absent.'**
+  String get restaurantKioskTokeninvalid;
+
+  /// No description provided for @restaurantKioskLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du menu…'**
+  String get restaurantKioskLoading;
+
+  /// No description provided for @restaurantKioskLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le menu. Réessayez.'**
+  String get restaurantKioskLoaderror;
+
+  /// No description provided for @restaurantKioskEmptymenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le menu est vide pour le moment.'**
+  String get restaurantKioskEmptymenu;
+
+  /// No description provided for @restaurantKioskEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre panier est vide.'**
+  String get restaurantKioskEmpty;
+
+  /// No description provided for @restaurantKioskAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter'**
+  String get restaurantKioskAdd;
+
+  /// No description provided for @restaurantKioskRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get restaurantKioskRemove;
+
+  /// No description provided for @restaurantKioskCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier'**
+  String get restaurantKioskCart;
+
+  /// No description provided for @restaurantKioskTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get restaurantKioskTotal;
+
+  /// No description provided for @restaurantKioskItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'articles'**
+  String get restaurantKioskItems;
+
+  /// No description provided for @restaurantKioskCheckout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider la commande'**
+  String get restaurantKioskCheckout;
+
+  /// No description provided for @restaurantKioskOrdererror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer la commande. Réessayez.'**
+  String get restaurantKioskOrdererror;
+
+  /// No description provided for @restaurantKioskOrderplaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande envoyée en cuisine !'**
+  String get restaurantKioskOrderplaced;
+
+  /// No description provided for @restaurantKioskOrderreference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantKioskOrderreference;
+
+  /// No description provided for @restaurantKioskPendingpayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de paiement…'**
+  String get restaurantKioskPendingpayment;
+
+  /// No description provided for @restaurantKioskPaycash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer en espèces'**
+  String get restaurantKioskPaycash;
+
+  /// No description provided for @restaurantKioskPaymobilemoney.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer par mobile money'**
+  String get restaurantKioskPaymobilemoney;
+
+  /// No description provided for @restaurantKioskPaymenterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement a échoué. Réessayez.'**
+  String get restaurantKioskPaymenterror;
+
+  /// No description provided for @restaurantKioskPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement confirmé. Bon appétit !'**
+  String get restaurantKioskPaid;
+
+  /// No description provided for @restaurantKioskStartneworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantKioskStartneworder;
+
+  /// No description provided for @restaurantKioskTakeaway.
+  ///
+  /// In fr, this message translates to:
+  /// **'À emporter'**
+  String get restaurantKioskTakeaway;
+
+  /// No description provided for @restaurantKioskDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison'**
+  String get restaurantKioskDelivery;
+
+  /// No description provided for @restaurantKioskBranch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente'**
+  String get restaurantKioskBranch;
 
   /// No description provided for @eduNavLabel.
   ///

@@ -8449,7 +8449,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restaurantLoading => 'Loading kitchen queue…';
 
   @override
-  String get restaurantShopTitle => 'Online ordering';
+  String get restaurantShopTitle => 'Order online';
 
   @override
   String get restaurantShopSubtitle => 'Public menu — order in a few clicks.';
@@ -8492,7 +8492,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'To be notified about your order status.';
 
   @override
-  String get restaurantShopCheckout => 'Order';
+  String get restaurantShopCheckout => 'Confirm order';
 
   @override
   String get restaurantShopOrdering => 'Placing order…';
@@ -8545,6 +8545,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restaurantShopCurrency => 'currency';
+
+  @override
+  String get restaurantShopTokeninvalid => 'Invalid or missing shop token.';
+
+  @override
+  String get restaurantShopOrderplaced => 'Order saved!';
+
+  @override
+  String get restaurantShopTracktitle => 'Order tracking';
+
+  @override
+  String get restaurantShopOrderreference => 'Reference';
+
+  @override
+  String get restaurantShopEmpty => 'Your cart is empty.';
+
+  @override
+  String get restaurantShopEmptymenu => 'The menu is empty right now.';
+
+  @override
+  String get restaurantShopLoading => 'Loading menu…';
+
+  @override
+  String get restaurantShopOrdererror =>
+      'Couldn\'t place the order. Try again.';
+
+  @override
+  String get restaurantShopPaid => 'Payment confirmed!';
+
+  @override
+  String get restaurantShopPayatpickup => 'Pay on pickup';
+
+  @override
+  String get restaurantShopPaycashatpickup => 'Cash on pickup';
+
+  @override
+  String get restaurantShopPaymobilemoney => 'Pay by mobile money';
+
+  @override
+  String get restaurantShopPaymenterror => 'Payment failed. Try again.';
+
+  @override
+  String get restaurantShopPendingpayment => 'Awaiting payment…';
+
+  @override
+  String get restaurantShopPhoneplaceholder => 'Phone (optional)';
+
+  @override
+  String get restaurantShopStartneworder => 'New order';
+
+  @override
+  String get restaurantShopStatus => 'Status';
+
+  @override
+  String get restaurantShopTrackerror =>
+      'Couldn\'t find the order. Check the reference.';
 
   @override
   String get restaurantMobileHubTitle => 'Restaurant';
@@ -8969,6 +9025,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restaurantRefHours => 'Opening hours';
 
   @override
+  String get restaurantRefDisabled => 'Disabled';
+
+  @override
+  String get restaurantRefFieldphone => 'Phone';
+
+  @override
+  String get restaurantRefFieldcapacity => 'Capacity';
+
+  @override
+  String get restaurantRefFieldlabel => 'Label';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'Capacity (covers)';
+
+  @override
+  String get restaurantRefFieldcategory => 'Category';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'Category';
+
+  @override
+  String get restaurantRefFieldunit => 'Unit';
+
+  @override
+  String get restaurantRefFieldavgcost => 'Average cost';
+
+  @override
+  String get restaurantRefFieldunitkg => 'Unit (kg)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'Average cost (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'Starts at';
+
+  @override
+  String get restaurantRefFielddefault => 'Default';
+
+  @override
+  String get restaurantRefFieldbydefault => 'Default';
+
+  @override
+  String get restaurantRefFieldclosed => 'Closed';
+
+  @override
   String get restaurantResTitle => 'Reservations';
 
   @override
@@ -9108,6 +9209,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restaurantStockRcverror => 'Receiving failed.';
 
   @override
+  String get restaurantStockSupplierplaceholder => 'Supplier…';
+
+  @override
   String get restaurantDelTitle => 'Delivery & loyalty';
 
   @override
@@ -9240,6 +9344,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restaurantReportsExporterror => 'CSV export failed.';
+
+  @override
+  String get restaurantKioskTitle => 'Self-service kiosk';
+
+  @override
+  String get restaurantKioskTokeninvalid => 'Invalid or missing shop token.';
+
+  @override
+  String get restaurantKioskLoading => 'Loading menu…';
+
+  @override
+  String get restaurantKioskLoaderror => 'Couldn\'t load the menu. Try again.';
+
+  @override
+  String get restaurantKioskEmptymenu => 'The menu is empty right now.';
+
+  @override
+  String get restaurantKioskEmpty => 'Your cart is empty.';
+
+  @override
+  String get restaurantKioskAdd => 'Add';
+
+  @override
+  String get restaurantKioskRemove => 'Remove';
+
+  @override
+  String get restaurantKioskCart => 'Cart';
+
+  @override
+  String get restaurantKioskTotal => 'Total';
+
+  @override
+  String get restaurantKioskItems => 'items';
+
+  @override
+  String get restaurantKioskCheckout => 'Confirm order';
+
+  @override
+  String get restaurantKioskOrdererror =>
+      'Couldn\'t place the order. Try again.';
+
+  @override
+  String get restaurantKioskOrderplaced => 'Order sent to the kitchen!';
+
+  @override
+  String get restaurantKioskOrderreference => 'Reference';
+
+  @override
+  String get restaurantKioskPendingpayment => 'Awaiting payment…';
+
+  @override
+  String get restaurantKioskPaycash => 'Pay in cash';
+
+  @override
+  String get restaurantKioskPaymobilemoney => 'Pay by mobile money';
+
+  @override
+  String get restaurantKioskPaymenterror => 'Payment failed. Try again.';
+
+  @override
+  String get restaurantKioskPaid => 'Payment confirmed. Enjoy your meal!';
+
+  @override
+  String get restaurantKioskStartneworder => 'New order';
+
+  @override
+  String get restaurantKioskTakeaway => 'Takeaway';
+
+  @override
+  String get restaurantKioskDelivery => 'Delivery';
+
+  @override
+  String get restaurantKioskBranch => 'Outlet';
 
   @override
   String get eduNavLabel => 'EduManager';

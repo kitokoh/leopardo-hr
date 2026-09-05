@@ -8460,7 +8460,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
 
   @override
-  String get restaurantShopTitle => 'Online sipariş';
+  String get restaurantShopTitle => 'Online sipariş ver';
 
   @override
   String get restaurantShopSubtitle =>
@@ -8504,7 +8504,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Siparişinizin durumu hakkında bilgilendirilmek için.';
 
   @override
-  String get restaurantShopCheckout => 'Sipariş ver';
+  String get restaurantShopCheckout => 'Siparişi onayla';
 
   @override
   String get restaurantShopOrdering => 'Sipariş veriliyor…';
@@ -8558,6 +8558,63 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get restaurantShopCurrency => 'para birimi';
+
+  @override
+  String get restaurantShopTokeninvalid => 'Geçersiz veya eksik mağaza jetonu.';
+
+  @override
+  String get restaurantShopOrderplaced => 'Sipariş kaydedildi!';
+
+  @override
+  String get restaurantShopTracktitle => 'Sipariş takibi';
+
+  @override
+  String get restaurantShopOrderreference => 'Referans';
+
+  @override
+  String get restaurantShopEmpty => 'Sepetiniz boş.';
+
+  @override
+  String get restaurantShopEmptymenu => 'Menü şu anda boş.';
+
+  @override
+  String get restaurantShopLoading => 'Menü yükleniyor…';
+
+  @override
+  String get restaurantShopOrdererror =>
+      'Sipariş kaydedilemedi. Tekrar deneyin.';
+
+  @override
+  String get restaurantShopPaid => 'Ödeme onaylandı!';
+
+  @override
+  String get restaurantShopPayatpickup => 'Teslimatta öde';
+
+  @override
+  String get restaurantShopPaycashatpickup => 'Teslimatta nakit';
+
+  @override
+  String get restaurantShopPaymobilemoney => 'Mobil para ile öde';
+
+  @override
+  String get restaurantShopPaymenterror =>
+      'Ödeme başarısız oldu. Tekrar deneyin.';
+
+  @override
+  String get restaurantShopPendingpayment => 'Ödeme bekleniyor…';
+
+  @override
+  String get restaurantShopPhoneplaceholder => 'Telefon (isteğe bağlı)';
+
+  @override
+  String get restaurantShopStartneworder => 'Yeni sipariş';
+
+  @override
+  String get restaurantShopStatus => 'Durum';
+
+  @override
+  String get restaurantShopTrackerror =>
+      'Sipariş bulunamadı. Referansı kontrol edin.';
 
   @override
   String get restaurantMobileHubTitle => 'Restoran';
@@ -8983,6 +9040,51 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restaurantRefHours => 'Çalışma saatleri';
 
   @override
+  String get restaurantRefDisabled => 'Devre dışı';
+
+  @override
+  String get restaurantRefFieldphone => 'Telefon';
+
+  @override
+  String get restaurantRefFieldcapacity => 'Kapasite';
+
+  @override
+  String get restaurantRefFieldlabel => 'Etiket';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'Kapasite (örtü)';
+
+  @override
+  String get restaurantRefFieldcategory => 'Kategori';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'Kategori';
+
+  @override
+  String get restaurantRefFieldunit => 'Birim';
+
+  @override
+  String get restaurantRefFieldavgcost => 'Ortalama maliyet';
+
+  @override
+  String get restaurantRefFieldunitkg => 'Birim (kg)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'Ortalama maliyet (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'Başlangıç';
+
+  @override
+  String get restaurantRefFielddefault => 'Varsayılan';
+
+  @override
+  String get restaurantRefFieldbydefault => 'Varsayılan';
+
+  @override
+  String get restaurantRefFieldclosed => 'Kapalı';
+
+  @override
   String get restaurantResTitle => 'Rezervasyonlar';
 
   @override
@@ -9122,6 +9224,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restaurantStockRcverror => 'Teslim alma başarısız.';
 
   @override
+  String get restaurantStockSupplierplaceholder => 'Tedarikçi…';
+
+  @override
   String get restaurantDelTitle => 'Teslimat ve sadakat';
 
   @override
@@ -9254,6 +9359,81 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get restaurantReportsExporterror => 'CSV dışa aktarma başarısız.';
+
+  @override
+  String get restaurantKioskTitle => 'Self-servis kiosk';
+
+  @override
+  String get restaurantKioskTokeninvalid =>
+      'Geçersiz veya eksik mağaza jetonu.';
+
+  @override
+  String get restaurantKioskLoading => 'Menü yükleniyor…';
+
+  @override
+  String get restaurantKioskLoaderror => 'Menü yüklenemedi. Tekrar deneyin.';
+
+  @override
+  String get restaurantKioskEmptymenu => 'Menü şu anda boş.';
+
+  @override
+  String get restaurantKioskEmpty => 'Sepetiniz boş.';
+
+  @override
+  String get restaurantKioskAdd => 'Ekle';
+
+  @override
+  String get restaurantKioskRemove => 'Kaldır';
+
+  @override
+  String get restaurantKioskCart => 'Sepet';
+
+  @override
+  String get restaurantKioskTotal => 'Toplam';
+
+  @override
+  String get restaurantKioskItems => 'ürün';
+
+  @override
+  String get restaurantKioskCheckout => 'Siparişi onayla';
+
+  @override
+  String get restaurantKioskOrdererror =>
+      'Sipariş kaydedilemedi. Tekrar deneyin.';
+
+  @override
+  String get restaurantKioskOrderplaced => 'Sipariş mutfağa gönderildi!';
+
+  @override
+  String get restaurantKioskOrderreference => 'Referans';
+
+  @override
+  String get restaurantKioskPendingpayment => 'Ödeme bekleniyor…';
+
+  @override
+  String get restaurantKioskPaycash => 'Nakit öde';
+
+  @override
+  String get restaurantKioskPaymobilemoney => 'Mobil para ile öde';
+
+  @override
+  String get restaurantKioskPaymenterror =>
+      'Ödeme başarısız oldu. Tekrar deneyin.';
+
+  @override
+  String get restaurantKioskPaid => 'Ödeme onaylandı. Afiyet olsun!';
+
+  @override
+  String get restaurantKioskStartneworder => 'Yeni sipariş';
+
+  @override
+  String get restaurantKioskTakeaway => 'Paket servis';
+
+  @override
+  String get restaurantKioskDelivery => 'Teslimat';
+
+  @override
+  String get restaurantKioskBranch => 'Satış noktası';
 
   @override
   String get eduNavLabel => 'EduManager';

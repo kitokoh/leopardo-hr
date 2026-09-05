@@ -8370,7 +8370,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
 
   @override
-  String get restaurantShopTitle => 'الطلب عبر الإنترنت';
+  String get restaurantShopTitle => 'اطلب عبر الإنترنت';
 
   @override
   String get restaurantShopSubtitle => 'قائمة عامة — اطلب بنقرات قليلة.';
@@ -8412,7 +8412,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantShopPhonehint => 'لإعلامك بحالة طلبك.';
 
   @override
-  String get restaurantShopCheckout => 'اطلب';
+  String get restaurantShopCheckout => 'تأكيد الطلب';
 
   @override
   String get restaurantShopOrdering => 'جارٍ الطلب…';
@@ -8467,6 +8467,61 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get restaurantShopCurrency => 'العملة';
+
+  @override
+  String get restaurantShopTokeninvalid => 'رمز المتجر غير صالح أو مفقود.';
+
+  @override
+  String get restaurantShopOrderplaced => 'تم حفظ الطلب!';
+
+  @override
+  String get restaurantShopTracktitle => 'تتبع الطلب';
+
+  @override
+  String get restaurantShopOrderreference => 'المرجع';
+
+  @override
+  String get restaurantShopEmpty => 'سلتك فارغة.';
+
+  @override
+  String get restaurantShopEmptymenu => 'القائمة فارغة حالياً.';
+
+  @override
+  String get restaurantShopLoading => 'جارٍ تحميل القائمة…';
+
+  @override
+  String get restaurantShopOrdererror => 'تعذّر حفظ الطلب. حاول مرة أخرى.';
+
+  @override
+  String get restaurantShopPaid => 'تم تأكيد الدفع!';
+
+  @override
+  String get restaurantShopPayatpickup => 'ادفع عند الاستلام';
+
+  @override
+  String get restaurantShopPaycashatpickup => 'نقداً عند الاستلام';
+
+  @override
+  String get restaurantShopPaymobilemoney => 'ادفع بالمال عبر الهاتف';
+
+  @override
+  String get restaurantShopPaymenterror => 'فشل الدفع. حاول مرة أخرى.';
+
+  @override
+  String get restaurantShopPendingpayment => 'في انتظار الدفع…';
+
+  @override
+  String get restaurantShopPhoneplaceholder => 'الهاتف (اختياري)';
+
+  @override
+  String get restaurantShopStartneworder => 'طلب جديد';
+
+  @override
+  String get restaurantShopStatus => 'الحالة';
+
+  @override
+  String get restaurantShopTrackerror =>
+      'تعذّر العثور على الطلب. تحقق من المرجع.';
 
   @override
   String get restaurantMobileHubTitle => 'مطعم';
@@ -8890,6 +8945,51 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantRefHours => 'ساعات العمل';
 
   @override
+  String get restaurantRefDisabled => 'معطّل';
+
+  @override
+  String get restaurantRefFieldphone => 'الهاتف';
+
+  @override
+  String get restaurantRefFieldcapacity => 'السعة';
+
+  @override
+  String get restaurantRefFieldlabel => 'التسمية';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'السعة (أغطية)';
+
+  @override
+  String get restaurantRefFieldcategory => 'الفئة';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'الفئة';
+
+  @override
+  String get restaurantRefFieldunit => 'الوحدة';
+
+  @override
+  String get restaurantRefFieldavgcost => 'متوسط التكلفة';
+
+  @override
+  String get restaurantRefFieldunitkg => 'الوحدة (كغ)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'متوسط التكلفة (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'يبدأ في';
+
+  @override
+  String get restaurantRefFielddefault => 'افتراضي';
+
+  @override
+  String get restaurantRefFieldbydefault => 'افتراضي';
+
+  @override
+  String get restaurantRefFieldclosed => 'مغلق';
+
+  @override
   String get restaurantResTitle => 'الحجوزات';
 
   @override
@@ -9030,6 +9130,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantStockRcverror => 'فشل الاستلام.';
 
   @override
+  String get restaurantStockSupplierplaceholder => 'المورد…';
+
+  @override
   String get restaurantDelTitle => 'التوصيل والولاء';
 
   @override
@@ -9162,6 +9265,78 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get restaurantReportsExporterror => 'فشل تصدير CSV.';
+
+  @override
+  String get restaurantKioskTitle => 'شاشة الطلب الذاتي';
+
+  @override
+  String get restaurantKioskTokeninvalid => 'رمز المتجر غير صالح أو مفقود.';
+
+  @override
+  String get restaurantKioskLoading => 'جارٍ تحميل القائمة…';
+
+  @override
+  String get restaurantKioskLoaderror => 'تعذّر تحميل القائمة. حاول مرة أخرى.';
+
+  @override
+  String get restaurantKioskEmptymenu => 'القائمة فارغة حالياً.';
+
+  @override
+  String get restaurantKioskEmpty => 'سلتك فارغة.';
+
+  @override
+  String get restaurantKioskAdd => 'أضف';
+
+  @override
+  String get restaurantKioskRemove => 'إزالة';
+
+  @override
+  String get restaurantKioskCart => 'السلة';
+
+  @override
+  String get restaurantKioskTotal => 'الإجمالي';
+
+  @override
+  String get restaurantKioskItems => 'أصناف';
+
+  @override
+  String get restaurantKioskCheckout => 'تأكيد الطلب';
+
+  @override
+  String get restaurantKioskOrdererror => 'تعذّر حفظ الطلب. حاول مرة أخرى.';
+
+  @override
+  String get restaurantKioskOrderplaced => 'تم إرسال الطلب إلى المطبخ!';
+
+  @override
+  String get restaurantKioskOrderreference => 'المرجع';
+
+  @override
+  String get restaurantKioskPendingpayment => 'في انتظار الدفع…';
+
+  @override
+  String get restaurantKioskPaycash => 'ادفع نقداً';
+
+  @override
+  String get restaurantKioskPaymobilemoney => 'ادفع بالمال عبر الهاتف';
+
+  @override
+  String get restaurantKioskPaymenterror => 'فشل الدفع. حاول مرة أخرى.';
+
+  @override
+  String get restaurantKioskPaid => 'تم تأكيد الدفع. بالهناء والشفاء!';
+
+  @override
+  String get restaurantKioskStartneworder => 'طلب جديد';
+
+  @override
+  String get restaurantKioskTakeaway => 'وجبة جاهزة';
+
+  @override
+  String get restaurantKioskDelivery => 'توصيل';
+
+  @override
+  String get restaurantKioskBranch => 'نقطة البيع';
 
   @override
   String get eduNavLabel => 'EduManager — الإدارة المدرسية';
