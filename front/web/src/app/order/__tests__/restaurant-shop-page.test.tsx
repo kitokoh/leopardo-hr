@@ -62,7 +62,7 @@ describe('RestaurantShopPage (RESTO-805-front #6404)', () => {
     });
     expect(screen.getByText('Burger XL')).toBeInTheDocument();
     expect(screen.getByText('Salade César')).toBeInTheDocument();
-    expect(screen.getByText('Commander en ligne')).toBeInTheDocument();
+    expect(screen.getByText('Commande en ligne')).toBeInTheDocument();
   });
 
   it('passe une commande complète puis la suit', async () => {
@@ -104,14 +104,14 @@ describe('RestaurantShopPage (RESTO-805-front #6404)', () => {
 
     await screen.findByText('Burger XL');
     await userEvent.click(screen.getAllByLabelText('Ajouter')[0]);
-    await userEvent.click(screen.getByText('Valider la commande'));
+    await userEvent.click(screen.getByText('Commander', { exact: true }));
 
     await waitFor(() => {
       expect(screen.getByText('Commande enregistrée !')).toBeInTheDocument();
       expect(screen.getByText('RST-SHOP1')).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText('Suivre ma commande'));
+    await userEvent.click(screen.getByText('Suivre la commande', { exact: true }));
 
     await waitFor(() => {
       expect(screen.getByText('Suivi de commande')).toBeInTheDocument();
@@ -125,7 +125,7 @@ describe('RestaurantShopPage (RESTO-805-front #6404)', () => {
     render(<RestaurantShopPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Jeton de boutique invalide ou absent.')).toBeInTheDocument();
+      expect(screen.getByText("Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.")).toBeInTheDocument();
     });
   });
 });

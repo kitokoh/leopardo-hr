@@ -94,7 +94,7 @@ export default function RestaurantShopPage() {
     setToken(raw);
 
     if (raw === '') {
-      setTokenError(t(locale, 'restaurant.shop.tokenInvalid'));
+      setTokenError(t(locale, 'restaurant.shop.missingToken'));
     }
   }, [locale]);
 

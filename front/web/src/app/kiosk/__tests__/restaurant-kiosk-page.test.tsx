@@ -66,7 +66,7 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
     });
 
     expect(screen.getByText('Salade César')).toBeInTheDocument();
-    expect(screen.getByText('Borne de commande')).toBeInTheDocument();
+    expect(screen.getByText('Kiosque')).toBeInTheDocument();
   });
 
   it('ajoute un article au panier et met à jour le total', async () => {
@@ -106,17 +106,17 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
 
     await screen.findByText('Burger XL');
     await userEvent.click(screen.getAllByLabelText('Ajouter')[0]);
-    await userEvent.click(screen.getByText('Valider la commande'));
+    await userEvent.click(screen.getByText('Commander', { exact: true }));
 
     await waitFor(() => {
-      expect(screen.getByText('Commande envoyée en cuisine !')).toBeInTheDocument();
+      expect(screen.getByText('Commande envoyée au restaurant.')).toBeInTheDocument();
       expect(screen.getByText('RST-KIOSK1')).toBeInTheDocument();
     });
 
     await userEvent.click(screen.getByText('Payer en espèces'));
 
     await waitFor(() => {
-      expect(screen.getByText('Paiement confirmé. Bon appétit !')).toBeInTheDocument();
+      expect(screen.getByText('Payé')).toBeInTheDocument();
     });
   });
 
@@ -126,7 +126,7 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
     render(<RestaurantKioskPage />);
 
     await waitFor(() => {
-      expect(screen.getByText('Jeton de boutique invalide ou absent.')).toBeInTheDocument();
+      expect(screen.getByText('Jeton boutique invalide ou expiré.')).toBeInTheDocument();
     });
   });
 });

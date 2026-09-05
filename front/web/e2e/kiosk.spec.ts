@@ -8,6 +8,9 @@ import type { Page } from '@playwright/test';
  * sans aucune authentification utilisateur (jeton de boutique `?token=`).
  * Les endpoints publics sont mockés (pattern route interception, cf.
  * e2e/manager-workday-smoke.spec.ts).
+ *
+ * Locale forcée en français (catalogue i18n `restaurant.kiosk.*`) pour un
+ * rendu déterministe (issue #6826).
  */
 
 const MENU_FIXTURE = {
@@ -37,14 +40,22 @@ async function mockPublicApi(page: Page) {
   });
 }
 
+async function forceFrench(page: Page) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('preferred_locale', 'fr');
+  });
+}
+
 test.describe('Kiosque libre-service (RESTO-807)', () => {
   test('affiche une erreur explicite sans jeton', async ({ page }) => {
+    await forceFrench(page);
     await page.goto('/kiosk');
 
-    await expect(page.getByText('Jeton de boutique invalide ou absent.')).toBeVisible();
+    await expect(page.getByText('Jeton boutique invalide ou expiré.')).toBeVisible();
   });
 
   test('flux complet : menu → panier → commande → paiement espèces', async ({ page }) => {
+    await forceFrench(page);
     await mockPublicApi(page);
 
     await page.route('**/api/v1/public/restaurant/orders', async (route) => {
@@ -88,11 +99,11 @@ test.describe('Kiosque libre-service (RESTO-807)', () => {
     await expect(page.getByText('70.00 XAF')).toBeVisible();
 
     // Commande puis paiement espèces.
-    await page.getByText('Valider la commande').click();
-    await expect(page.getByText('Commande envoyée en cuisine !')).toBeVisible();
+    await page.getByText('Commander', { exact: true }).click();
+    await expect(page.getByText('Commande envoyée au restaurant.')).toBeVisible();
     await expect(page.getByText('RST-KIOSK-E2E')).toBeVisible();
 
     await page.getByText('Payer en espèces').click();
-    await expect(page.getByText('Paiement confirmé. Bon appétit !')).toBeVisible();
+    await expect(page.getByText('Payé')).toBeVisible();
   });
 });

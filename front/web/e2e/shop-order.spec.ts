@@ -7,6 +7,9 @@ import type { Page } from '@playwright/test';
  * Flux public complet : menu → panier → commande → suivi → paiement
  * (cash à l'encaissement), sans authentification utilisateur (jeton
  * boutique `?token=`). Endpoints shop mockés (route interception).
+ *
+ * Locale forcée en français (catalogue i18n `restaurant.shop.*`) pour un
+ * rendu déterministe (issue #6826).
  */
 
 const MENU = {
@@ -38,14 +41,26 @@ const MENU = {
   },
 };
 
+async function forceFrench(page: Page) {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('preferred_locale', 'fr');
+  });
+}
+
 test.describe('Commande en ligne publique (RESTO-805-front)', () => {
   test('affiche une erreur explicite sans jeton', async ({ page }) => {
+    await forceFrench(page);
     await page.goto('/order');
 
-    await expect(page.getByText('Jeton de boutique invalide ou absent.')).toBeVisible();
+    await expect(
+      page.getByText(
+        "Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.",
+      ),
+    ).toBeVisible();
   });
 
   test('flux complet : menu → panier → commande → suivi → paiement', async ({ page }) => {
+    await forceFrench(page);
     await mockShopApi(page);
 
     await page.goto('/order?token=rshop_e2e');
@@ -57,16 +72,16 @@ test.describe('Commande en ligne publique (RESTO-805-front)', () => {
     await page.getByLabel('Ajouter').first().click();
     await expect(page.getByText('70.00 XAF')).toBeVisible();
 
-    await page.getByText('Valider la commande').click();
+    await page.getByText('Commander', { exact: true }).click();
     await expect(page.getByText('Commande enregistrée !')).toBeVisible();
     await expect(page.getByText('RST-SHOP-E2E')).toBeVisible();
 
-    await page.getByText('Suivre ma commande').click();
+    await page.getByText('Suivre la commande', { exact: true }).click();
     await expect(page.getByText('Suivi de commande')).toBeVisible();
     await expect(page.getByText('open')).toBeVisible();
 
     await page.getByText('Retour au menu').click();
-    await expect(page.getByText('Commander en ligne')).toBeVisible();
+    await expect(page.getByText('Commande en ligne')).toBeVisible();
   });
 });
 
