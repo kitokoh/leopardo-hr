@@ -50,7 +50,7 @@ leopardo-hr/
 ├── .devcontainer/          # VS Code DevContainer
 └── docs/
     ├── archive/PLAN_ACTION/ # Plans d'action historiques (clos, voir PLAN_ACTION2/)
-    └── API/                # Documentation OpenAPI
+    └── api/                # Documentation OpenAPI
 ```
 
 ## Backend (Laravel)
