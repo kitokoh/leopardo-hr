@@ -213,9 +213,16 @@ class TravelGoldenJourneyGjTravel01Test extends TestCase
                 ->where('status', '!=', SeatStatus::SOLD->value)
                 ->count());
 
-            // Les événements outbox jalonnent le parcours, sans doublon.
-            foreach (['travel.booking.pending.v1', 'travel.booking.confirmed.v1', 'travel.ticket.issued.v1', 'travel.ticket.checked_in.v1'] as $eventType) {
+            // Les événements outbox jalonnent le parcours, sans doublon. Les
+            // événements de billetterie sont émis PAR BILLET (payload
+            // ticket_number/passenger_id, design originel TRAVEL-312/318) :
+            // 2 voyageurs → 2 issued + 2 checked_in ; pending/confirmed sont
+            // au niveau réservation (1).
+            foreach (['travel.booking.pending.v1', 'travel.booking.confirmed.v1'] as $eventType) {
                 $this->assertSame(1, TravelOutboxEvent::query()->where('event_type', $eventType)->count(), "événement {$eventType} attendu");
+            }
+            foreach (['travel.ticket.issued.v1', 'travel.ticket.checked_in.v1'] as $eventType) {
+                $this->assertSame(2, TravelOutboxEvent::query()->where('event_type', $eventType)->count(), "événement {$eventType} attendu (1 par billet)");
             }
         });
     }

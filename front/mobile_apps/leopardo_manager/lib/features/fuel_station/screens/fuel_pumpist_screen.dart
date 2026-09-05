@@ -58,8 +58,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
       _lastResult = result.replayed
           ? 'Relevé déjà enregistré (rejeu) — aucun doublon.'
           : result.isAnomaly
-          ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
-          : 'Relevé enregistré (delta ${result.deltaMinor}).';
+              ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
+              : 'Relevé enregistré (delta ${result.deltaMinor}).';
     });
     _readingController.clear();
   }
@@ -92,7 +92,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
           children: [
             Text(
               l10n.fuelPumpistActiveShift,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style:
+                  AppTypography.bodySmall.copyWith(color: AppColors.textDark),
             ),
             const SizedBox(height: 8),
             shiftsAsync.when(
@@ -130,11 +131,10 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                           ),
                                           Text(
                                             s.assignmentDate ?? '',
-                                            style: AppTypography.caption
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.textMutedDark,
-                                                ),
+                                            style:
+                                                AppTypography.caption.copyWith(
+                                              color: AppColors.textMutedDark,
+                                            ),
                                           ),
                                         ],
                                       ),

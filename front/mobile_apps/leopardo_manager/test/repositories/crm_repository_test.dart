@@ -187,7 +187,8 @@ void main() {
       relatedType: 'account',
       relatedId: 1,
     );
-    expect(activity.subject, ''); // mock par défaut — le contrat POST est vérifié ci-dessous.
+    expect(activity.subject,
+        ''); // mock par défaut — le contrat POST est vérifié ci-dessous.
 
     await repo.createTask(
       subject: 'Préparer la proposition',

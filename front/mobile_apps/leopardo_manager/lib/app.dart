@@ -301,8 +301,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) =>
-                const TwoFactorSettingsScreen(),
+            builder: (context, state) => const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/ai-chat',
