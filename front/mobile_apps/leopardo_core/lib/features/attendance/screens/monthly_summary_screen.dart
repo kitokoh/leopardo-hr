@@ -97,7 +97,15 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
           icon: const Icon(Icons.chevron_left),
           tooltip: context.l10n.attendancePreviousMonth,
         ),
-        Text(label, style: Theme.of(context).textTheme.titleLarge),
+        Expanded(
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         IconButton(
           onPressed: _isCurrentOrFutureMonth() ? null : () => _shiftMonth(1),
           icon: const Icon(Icons.chevron_right),

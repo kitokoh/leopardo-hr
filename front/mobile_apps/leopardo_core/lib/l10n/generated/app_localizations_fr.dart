@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -325,7 +324,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get modulesEvaluations => 'Evaluations';
 
   @override
-  String get modulesRestaurant => 'Point de vente (POS)';
+  String get modulesRestaurant => 'Écran cuisine';
 
   @override
   String get emailsInvitationSubject =>
@@ -1266,11 +1265,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return 'Journée du $date, statut $status, $range, $hours.';
   }
 
@@ -8388,74 +8383,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get crmPipelineStageLost => 'Perdu';
 
   @override
-  String get restaurantPosTitle => 'Point de vente (POS)';
-
-  @override
-  String get restaurantPosSubtitle => 'Prise de commande et encaissement';
-
-  @override
-  String get restaurantPosProducts => 'Catalogue';
-
-  @override
-  String get restaurantPosCart => 'Commande en cours';
-
-  @override
-  String get restaurantPosNoproducts => 'Aucun produit disponible.';
-
-  @override
-  String get restaurantPosNosession =>
-      'Aucune caisse ouverte pour cette branche.';
-
-  @override
-  String get restaurantPosOpensession => 'Ouvrir la caisse';
-
-  @override
-  String get restaurantPosNoorder => 'Aucune commande en cours.';
-
-  @override
-  String get restaurantPosNeworder => 'Nouvelle commande';
-
-  @override
-  String get restaurantPosSubmit => 'Soumettre';
-
-  @override
-  String get restaurantPosConfirm => 'Confirmer (cuisine)';
-
-  @override
-  String get restaurantPosBill => 'Addition';
-
-  @override
-  String get restaurantPosPaycash => 'Encaisser espèces';
-
-  @override
-  String get restaurantPosPaid => 'Commande payée';
-
-  @override
-  String get restaurantPosSubtotal => 'Sous-total';
-
-  @override
-  String get restaurantPosTax => 'TVA';
-
-  @override
-  String get restaurantPosTotal => 'Total';
-
-  @override
-  String get restaurantPosRemoveitem => 'Retirer';
-
-  @override
-  String get restaurantPosUncategorized => 'Sans catégorie';
-
-  @override
-  String get restaurantPosLoaderror =>
-      'Impossible de charger le point de vente.';
-
-  @override
-  String get restaurantPosLoading => 'Chargement du point de vente…';
-
-  @override
-  String get restaurantPosActionerror => 'Action impossible, réessayez.';
-
-  @override
   String get restaurantKitchentitle => 'Écran cuisine';
 
   @override
@@ -8511,105 +8438,103 @@ class AppLocalizationsFr extends AppLocalizations {
   String get restaurantLoading => 'Chargement de la file cuisine…';
 
   @override
-  String get restaurantShopTitle => 'Commande en ligne';
+  String get restaurantPostitle => 'Point de vente';
 
   @override
-  String get restaurantShopSubtitle =>
-      'Menu public — commandez en quelques clics.';
+  String get restaurantPossubtitle => 'Prise de commande et encaissement';
 
   @override
-  String get restaurantShopMenu => 'Menu';
+  String get restaurantNeworder => 'Nouvelle commande';
 
   @override
-  String get restaurantShopCart => 'Panier';
+  String get restaurantOrderitems => 'Articles de la commande';
 
   @override
-  String get restaurantShopEmptycart => 'Votre panier est vide.';
+  String get restaurantAdditem => 'Ajouter un article';
 
   @override
-  String get restaurantShopAdd => 'Ajouter';
+  String get restaurantBill => 'Addition';
 
   @override
-  String get restaurantShopAdded => 'Ajouté';
+  String get restaurantPaycash => 'Encaisser en espèces';
 
   @override
-  String get restaurantShopCategoryall => 'Tout';
+  String get restaurantPaid => 'Payée';
 
   @override
-  String get restaurantShopPrice => 'Prix';
+  String get restaurantOpensession => 'Ouvrir la caisse';
 
   @override
-  String get restaurantShopSubtotal => 'Sous-total';
+  String get restaurantClosesession => 'Clôturer la caisse';
 
   @override
-  String get restaurantShopTax => 'Taxe';
+  String get restaurantSessionopen => 'Caisse ouverte';
 
   @override
-  String get restaurantShopTotal => 'Total';
+  String get restaurantSessionclosed => 'Caisse clôturée';
 
   @override
-  String get restaurantShopPhone => 'Téléphone (optionnel)';
+  String get restaurantReservations => 'Réservations';
 
   @override
-  String get restaurantShopPhonehint =>
-      'Pour être prévenu de l\'état de votre commande.';
+  String get restaurantReservationnew => 'Nouvelle réservation';
 
   @override
-  String get restaurantShopCheckout => 'Commander';
+  String get restaurantCustomername => 'Nom du client';
 
   @override
-  String get restaurantShopOrdering => 'Commande en cours…';
+  String get restaurantGuests => 'Couverts';
 
   @override
-  String get restaurantShopOrdercreated => 'Commande confirmée';
+  String get restaurantCheckin => 'Enregistrer';
 
   @override
-  String get restaurantShopOrderref => 'Référence';
+  String get restaurantNoshow => 'No-show';
 
   @override
-  String get restaurantShopOrderstatus => 'Statut';
+  String get restaurantShoptitle => 'Commande en ligne';
 
   @override
-  String get restaurantShopTrack => 'Suivre la commande';
+  String get restaurantKiosktitle => 'Kiosque libre-service';
 
   @override
-  String get restaurantShopPay => 'Payer';
+  String get restaurantStatusdraft => 'Brouillon';
 
   @override
-  String get restaurantShopPaying => 'Paiement…';
+  String get restaurantStatusopen => 'Ouverte';
 
   @override
-  String get restaurantShopPayhint =>
-      'Paiement à l\'encaissement ou mobile money.';
+  String get restaurantStatusinpreparation => 'En préparation';
 
   @override
-  String get restaurantShopMissingtoken =>
-      'Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.';
+  String get restaurantStatusready => 'Prête';
 
   @override
-  String get restaurantShopLoaderror =>
-      'Impossible de charger le menu. Réessayez.';
+  String get restaurantStatusserved => 'Servie';
 
   @override
-  String get restaurantShopRetry => 'Réessayer';
+  String get restaurantStatuspaid => 'Payée';
 
   @override
-  String get restaurantShopBacktomenu => 'Retour au menu';
+  String get restaurantStatusclosed => 'Clôturée';
 
   @override
-  String get restaurantShopInvalidtoken => 'Jeton boutique invalide ou expiré.';
+  String get restaurantStatuscancelled => 'Annulée';
 
   @override
-  String get restaurantShopItems => 'articles';
+  String get restaurantStatusrefunded => 'Remboursée';
 
   @override
-  String get restaurantShopQuantity => 'Qté';
+  String get restaurantSubtotal => 'Sous-total';
 
   @override
-  String get restaurantShopRemove => 'Retirer';
+  String get restaurantTax => 'TVA';
 
   @override
-  String get restaurantShopCurrency => 'devise';
+  String get restaurantDiscount => 'Remise';
+
+  @override
+  String get restaurantTotal => 'Total';
 
   @override
   String get restaurantMobileHubTitle => 'Restaurant';
@@ -8853,6 +8778,288 @@ class AppLocalizationsFr extends AppLocalizations {
   String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
     return 'Stock : $quantity / seuil : $threshold';
   }
+
+  @override
+  String get restaurantHomeLoaderror =>
+      'Impossible de charger le tableau de bord restaurant.';
+
+  @override
+  String get restaurantHomeReferential => 'Référentiel';
+
+  @override
+  String get restaurantHomeReferentialdesc =>
+      'Branches, plan de salle, catalogue, matières, menus, fournisseurs';
+
+  @override
+  String get restaurantHomeReservations => 'Réservations';
+
+  @override
+  String get restaurantHomeReservationsdesc => 'Créneaux, check-in, dépôts';
+
+  @override
+  String get restaurantHomeStock => 'Stock & achats';
+
+  @override
+  String get restaurantHomeStockdesc =>
+      'Niveaux, bons de commande, réceptions, inventaires';
+
+  @override
+  String get restaurantHomeDelivery => 'Livraison & fidélité';
+
+  @override
+  String get restaurantHomeDeliverydesc =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantHomeReports => 'Rapports';
+
+  @override
+  String get restaurantHomeReportsdesc =>
+      'Ventes, occupation, produits, COGS, export CSV';
+
+  @override
+  String get restaurantHomeTitle => 'Restaurant Manager';
+
+  @override
+  String get restaurantHomeSubtitle =>
+      'Point de vente, réservations, stock et livraison';
+
+  @override
+  String get restaurantHomeKpiorders => 'Commandes du jour';
+
+  @override
+  String get restaurantHomeKpibasket => 'Panier moyen';
+
+  @override
+  String get restaurantHomeKpirotation => 'Rotation des tables';
+
+  @override
+  String get restaurantHomeAlerts => 'Alertes de stock';
+
+  @override
+  String get restaurantHomeAlertline => 'Ingrédient';
+
+  @override
+  String get restaurantHomeOpen => 'Ouvrir';
+
+  @override
+  String get restaurantHomeKpirevenue => 'Chiffre d\'affaires du jour';
+
+  @override
+  String get restaurantDelLoaderror =>
+      'Impossible de charger les données livraison/fidélité.';
+
+  @override
+  String get restaurantDelCreateerror => 'Erreur de création de la livraison.';
+
+  @override
+  String get restaurantDelRiderprompt => 'ID du livreur à assigner :';
+
+  @override
+  String get restaurantDelActionerror => 'Action impossible.';
+
+  @override
+  String get restaurantDelTabzones => 'Zones';
+
+  @override
+  String get restaurantDelTabriders => 'Livreurs';
+
+  @override
+  String get restaurantDelTabdeliveries => 'Livraisons';
+
+  @override
+  String get restaurantDelTabloyalty => 'Fidélité';
+
+  @override
+  String get restaurantDelTabpromos => 'Promotions';
+
+  @override
+  String get restaurantDelTitle => 'Livraison & fidélité';
+
+  @override
+  String get restaurantDelSubtitle =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantDelColname => 'Nom';
+
+  @override
+  String get restaurantDelColfees => 'Frais & minimum';
+
+  @override
+  String get restaurantDelFee => 'Frais';
+
+  @override
+  String get restaurantDelColphone => 'Téléphone';
+
+  @override
+  String get restaurantDelColvehicle => 'Véhicule';
+
+  @override
+  String get restaurantDelColactive => 'Actif';
+
+  @override
+  String get restaurantDelNewdelivery => 'Nouvelle livraison';
+
+  @override
+  String get restaurantDelCreate => 'Créer';
+
+  @override
+  String get restaurantDelColstatus => 'Statut';
+
+  @override
+  String get restaurantDelAssign => 'Assigner';
+
+  @override
+  String get restaurantDelOut => 'En tournée';
+
+  @override
+  String get restaurantDelDeliver => 'Livrée';
+
+  @override
+  String get restaurantDelCancel => 'Annuler';
+
+  @override
+  String get restaurantDelColpoints => 'Points';
+
+  @override
+  String get restaurantDelColtier => 'Palier';
+
+  @override
+  String get restaurantDelColcode => 'Code';
+
+  @override
+  String get restaurantDelColtitle => 'Titre';
+
+  @override
+  String get restaurantDelColtype => 'Type';
+
+  @override
+  String get restaurantDelColvalue => 'Valeur';
+
+  @override
+  String get restaurantDelColuses => 'Utilisations';
+
+  @override
+  String get restaurantDelLoading => 'Chargement...';
+
+  @override
+  String get restaurantRefBranches => 'Branches (établissements)';
+
+  @override
+  String get restaurantRefZones => 'Zones (salles)';
+
+  @override
+  String get restaurantRefTables => 'Tables (plan de salle)';
+
+  @override
+  String get restaurantRefCategories => 'Catégories';
+
+  @override
+  String get restaurantRefProducts => 'Produits (catalogue & recettes)';
+
+  @override
+  String get restaurantRefIngredients => 'Ingrédients (matières)';
+
+  @override
+  String get restaurantRefUnits => 'Unités';
+
+  @override
+  String get restaurantRefMenus => 'Menus (formules)';
+
+  @override
+  String get restaurantRefTaxrates => 'Taux de TVA';
+
+  @override
+  String get restaurantRefSuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefHours => 'Horaires';
+
+  @override
+  String get restaurantRefTabbranches => 'Branches';
+
+  @override
+  String get restaurantRefTabzones => 'Zones';
+
+  @override
+  String get restaurantRefTabtables => 'Tables';
+
+  @override
+  String get restaurantRefTabcategories => 'Catégories';
+
+  @override
+  String get restaurantRefTabproducts => 'Produits';
+
+  @override
+  String get restaurantRefTabingredients => 'Ingrédients';
+
+  @override
+  String get restaurantRefTabunits => 'Unités';
+
+  @override
+  String get restaurantRefTabmenus => 'Menus';
+
+  @override
+  String get restaurantRefTabtaxrates => 'TVA';
+
+  @override
+  String get restaurantRefTabsuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefTabhours => 'Horaires';
+
+  @override
+  String get restaurantRefTitle => 'Référentiel restaurant';
+
+  @override
+  String get restaurantRefSubtitle =>
+      'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs';
+
+  @override
+  String get restaurantRefDisabled => 'Désactivée';
+
+  @override
+  String get restaurantRefFieldphone => 'Téléphone';
+
+  @override
+  String get restaurantRefFieldcapacity => 'Capacité';
+
+  @override
+  String get restaurantRefFieldlabel => 'Libellé';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'Capacité (couverts)';
+
+  @override
+  String get restaurantRefFieldcategory => 'Catégorie';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'Catégorie ID';
+
+  @override
+  String get restaurantRefFieldunit => 'Unité';
+
+  @override
+  String get restaurantRefFieldavgcost => 'Coût moyen';
+
+  @override
+  String get restaurantRefFieldunitkg => 'Unité (kg/l/u/pce)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'Coût moyen (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'Début';
+
+  @override
+  String get restaurantRefFielddefault => 'Défaut';
+
+  @override
+  String get restaurantRefFieldbydefault => 'Par défaut';
+
+  @override
+  String get restaurantRefFieldclosed => 'Fermé';
 
   @override
   String get travelLoading => 'Chargement…';
@@ -9867,4 +10074,594 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get travelAdvertstatusArchived => 'Archivée';
+
+  @override
+  String get eduNavLabel => 'EduManager';
+
+  @override
+  String get eduNavAdmin => 'Administration scolaire';
+
+  @override
+  String get eduNavTeacher => 'Mon espace enseignant';
+
+  @override
+  String get eduHomeTitle => 'EduManager';
+
+  @override
+  String get eduHomeSubtitle =>
+      'Pilotage scolaire : campus, années, classes, élèves, admissions, évaluations et bulletins.';
+
+  @override
+  String get eduHomeCampuses => 'Campus';
+
+  @override
+  String get eduHomeClasses => 'Classes';
+
+  @override
+  String get eduHomeStudents => 'Élèves';
+
+  @override
+  String get eduHomeAdmissions => 'Admissions';
+
+  @override
+  String get eduHomeReportcards => 'Bulletins';
+
+  @override
+  String get eduHomePendingreportcards => 'bulletins à valider';
+
+  @override
+  String get eduHomeQuicklinks => 'Accès rapides';
+
+  @override
+  String get eduHomeManagecampuses => 'Gérer les campus';
+
+  @override
+  String get eduHomeManageclasses => 'Gérer les classes';
+
+  @override
+  String get eduHomeManagestudents => 'Gérer les élèves';
+
+  @override
+  String get eduHomeManageassessments => 'Évaluations & notes';
+
+  @override
+  String get eduHomeManagereportcards => 'Bulletins';
+
+  @override
+  String get eduHomeTeacherspace => 'Espace enseignant';
+
+  @override
+  String get eduCampusesTitle => 'Campus';
+
+  @override
+  String get eduCampusesSubtitle => 'Sites scolaires de l\'établissement.';
+
+  @override
+  String get eduCampusesEmpty =>
+      'Aucun campus. Créez le premier campus de l\'établissement.';
+
+  @override
+  String get eduCampusesCreate => 'Nouveau campus';
+
+  @override
+  String get eduCampusesEdit => 'Modifier le campus';
+
+  @override
+  String get eduCampusesCode => 'Code';
+
+  @override
+  String get eduCampusesName => 'Nom';
+
+  @override
+  String get eduCampusesAddress => 'Adresse';
+
+  @override
+  String get eduCampusesTimezone => 'Fuseau';
+
+  @override
+  String get eduCampusesStatus => 'Statut';
+
+  @override
+  String get eduCampusesSaveerror => 'Impossible d\'enregistrer le campus.';
+
+  @override
+  String get eduCampusesDeleteconfirm => 'Supprimer ce campus ?';
+
+  @override
+  String get eduCampusesDeleted => 'Campus supprimé.';
+
+  @override
+  String get eduAcademicyearsTitle => 'Années scolaires';
+
+  @override
+  String get eduAcademicyearsSubtitle =>
+      'Périodes scolaires de l\'établissement (chevauchements refusés).';
+
+  @override
+  String get eduAcademicyearsEmpty => 'Aucune année scolaire.';
+
+  @override
+  String get eduAcademicyearsCreate => 'Nouvelle année';
+
+  @override
+  String get eduAcademicyearsEdit => 'Modifier l\'année';
+
+  @override
+  String get eduAcademicyearsName => 'Libellé';
+
+  @override
+  String get eduAcademicyearsStartdate => 'Début';
+
+  @override
+  String get eduAcademicyearsEnddate => 'Fin';
+
+  @override
+  String get eduAcademicyearsStatus => 'Statut';
+
+  @override
+  String get eduSubjectsTitle => 'Matières';
+
+  @override
+  String get eduSubjectsSubtitle => 'Catalogue des matières enseignées.';
+
+  @override
+  String get eduSubjectsEmpty => 'Aucune matière.';
+
+  @override
+  String get eduSubjectsCreate => 'Nouvelle matière';
+
+  @override
+  String get eduSubjectsEdit => 'Modifier la matière';
+
+  @override
+  String get eduSubjectsCode => 'Code';
+
+  @override
+  String get eduSubjectsName => 'Libellé';
+
+  @override
+  String get eduSubjectsDefaultcoefficient => 'Coefficient par défaut';
+
+  @override
+  String get eduClassesTitle => 'Classes';
+
+  @override
+  String get eduClassesSubtitle =>
+      'Classes, niveaux, enseignants référents et affectations par matière.';
+
+  @override
+  String get eduClassesEmpty => 'Aucune classe.';
+
+  @override
+  String get eduClassesCreate => 'Nouvelle classe';
+
+  @override
+  String get eduClassesEdit => 'Modifier la classe';
+
+  @override
+  String get eduClassesCode => 'Code';
+
+  @override
+  String get eduClassesName => 'Nom';
+
+  @override
+  String get eduClassesLevel => 'Niveau';
+
+  @override
+  String get eduClassesCapacity => 'Effectif max';
+
+  @override
+  String get eduClassesTeacher => 'Enseignant référent';
+
+  @override
+  String get eduClassesCampus => 'Campus';
+
+  @override
+  String get eduClassesYear => 'Année scolaire';
+
+  @override
+  String get eduClassesAssignteacher => 'Affecter un enseignant';
+
+  @override
+  String get eduClassesRemoveteacher => 'Retirer';
+
+  @override
+  String get eduClassesTeacherplaceholder => 'Sélectionner un enseignant…';
+
+  @override
+  String get eduStudentsTitle => 'Élèves';
+
+  @override
+  String get eduStudentsSubtitle =>
+      'Dossiers élèves (données personnelles protégées).';
+
+  @override
+  String get eduStudentsEmpty => 'Aucun élève.';
+
+  @override
+  String get eduStudentsCreate => 'Nouvel élève';
+
+  @override
+  String get eduStudentsEdit => 'Modifier l\'élève';
+
+  @override
+  String get eduStudentsNumber => 'N° matricule';
+
+  @override
+  String get eduStudentsName => 'Nom affiché';
+
+  @override
+  String get eduStudentsStatus => 'Statut';
+
+  @override
+  String get eduStudentsBirthdate => 'Date de naissance (chiffrée)';
+
+  @override
+  String get eduStudentsPiihint =>
+      'Les données sensibles sont chiffrées au repos et jamais exposées hors tenant.';
+
+  @override
+  String get eduAdmissionsTitle => 'Admissions';
+
+  @override
+  String get eduAdmissionsSubtitle =>
+      'Pipeline d\'admission avec consentement RGPD et conversion en élève.';
+
+  @override
+  String get eduAdmissionsEmpty => 'Aucun dossier d\'admission.';
+
+  @override
+  String get eduAdmissionsCreate => 'Nouveau dossier';
+
+  @override
+  String get eduAdmissionsFirstname => 'Prénom';
+
+  @override
+  String get eduAdmissionsLastname => 'Nom';
+
+  @override
+  String get eduAdmissionsStatus => 'Statut';
+
+  @override
+  String get eduAdmissionsConvert => 'Convertir en élève';
+
+  @override
+  String get eduAdmissionsConverted => 'Converti';
+
+  @override
+  String get eduAdmissionsConverting => 'Conversion…';
+
+  @override
+  String get eduAdmissionsConvertconfirm =>
+      'Convertir ce dossier en élève ? L\'opération est idempotente.';
+
+  @override
+  String get eduAssessmentsTitle => 'Intitulé';
+
+  @override
+  String get eduAssessmentsSubtitle =>
+      'Évaluations, barèmes, saisie de notes et publication.';
+
+  @override
+  String get eduAssessmentsEmpty => 'Aucune évaluation.';
+
+  @override
+  String get eduAssessmentsCreate => 'Nouvelle évaluation';
+
+  @override
+  String get eduAssessmentsEdit => 'Modifier l\'évaluation';
+
+  @override
+  String get eduAssessmentsType => 'Type';
+
+  @override
+  String get eduAssessmentsCoefficient => 'Coefficient';
+
+  @override
+  String get eduAssessmentsMaxscore => 'Barème (max)';
+
+  @override
+  String get eduAssessmentsDate => 'Date';
+
+  @override
+  String get eduAssessmentsClass => 'Classe';
+
+  @override
+  String get eduAssessmentsSubject => 'Matière';
+
+  @override
+  String get eduAssessmentsGrades => 'Notes';
+
+  @override
+  String get eduAssessmentsEntergrades => 'Saisir les notes';
+
+  @override
+  String get eduAssessmentsPublish => 'Publier';
+
+  @override
+  String get eduAssessmentsPublished => 'Publiée';
+
+  @override
+  String get eduAssessmentsDraft => 'Brouillon';
+
+  @override
+  String get eduAssessmentsNostudents =>
+      'Aucun élève inscrit dans cette classe.';
+
+  @override
+  String get eduAssessmentsScore => 'Note';
+
+  @override
+  String get eduAssessmentsComment => 'Commentaire';
+
+  @override
+  String get eduAssessmentsSavegrades => 'Enregistrer les notes';
+
+  @override
+  String get eduReportcardsTitle => 'Bulletins';
+
+  @override
+  String get eduReportcardsSubtitle =>
+      'Génération, validation direction et publication verrouillante.';
+
+  @override
+  String get eduReportcardsEmpty => 'Aucun bulletin.';
+
+  @override
+  String get eduReportcardsGenerate => 'Générer';
+
+  @override
+  String get eduReportcardsValidate => 'Valider';
+
+  @override
+  String get eduReportcardsPublish => 'Publier';
+
+  @override
+  String get eduReportcardsStudent => 'Élève';
+
+  @override
+  String get eduReportcardsAverage => 'Moyenne';
+
+  @override
+  String get eduReportcardsStatus => 'Statut';
+
+  @override
+  String get eduReportcardsGenerated => 'Généré';
+
+  @override
+  String get eduReportcardsValidated => 'Validé';
+
+  @override
+  String get eduReportcardsPeriod => 'Période';
+
+  @override
+  String get eduTeacherTitle => 'Espace enseignant';
+
+  @override
+  String get eduTeacherSubtitle =>
+      'Mes classes : présence, notes et soumission pour validation.';
+
+  @override
+  String get eduTeacherMyclasses => 'Mes classes';
+
+  @override
+  String get eduTeacherEmpty => 'Aucune classe ne vous est affectée.';
+
+  @override
+  String get eduTeacherAttendance => 'Présence';
+
+  @override
+  String get eduTeacherGrades => 'Notes';
+
+  @override
+  String get eduTeacherDate => 'Date';
+
+  @override
+  String get eduTeacherPresent => 'Présent';
+
+  @override
+  String get eduTeacherAbsent => 'Absent';
+
+  @override
+  String get eduTeacherLate => 'Retard';
+
+  @override
+  String get eduTeacherExcused => 'Excusé';
+
+  @override
+  String get eduTeacherSaveattendance => 'Enregistrer la présence';
+
+  @override
+  String get eduTeacherAttendancesaved => 'Présence enregistrée.';
+
+  @override
+  String get eduTeacherAssessments => 'Mes évaluations';
+
+  @override
+  String get eduTeacherSubmit => 'Soumettre pour validation';
+
+  @override
+  String get eduTeacherSubmithint =>
+      'La publication verrouille la note ; l\'historique des corrections est conservé.';
+
+  @override
+  String get eduTeacherNoassessments => 'Aucune évaluation pour cette classe.';
+
+  @override
+  String get eduTeacherStudents => 'Élèves de la classe';
+
+  @override
+  String get eduGuardianTitle => 'Portail responsable légal';
+
+  @override
+  String get eduGuardianSubtitle =>
+      'Consultez la scolarité des enfants qui vous sont confiés.';
+
+  @override
+  String get eduGuardianChildren => 'Mes enfants';
+
+  @override
+  String get eduGuardianPresence => 'Présence';
+
+  @override
+  String get eduGuardianReportcards => 'Bulletins';
+
+  @override
+  String get eduGuardianCommunications => 'Communications';
+
+  @override
+  String get eduGuardianConsent =>
+      'En accédant au portail, vous consentez à la consultation des données scolaires de vos enfants.';
+
+  @override
+  String get eduGuardianInvalid => 'Lien d\'accès invalide.';
+
+  @override
+  String get eduGuardianExpired =>
+      'Ce lien d\'accès a expiré. Contactez l\'établissement.';
+
+  @override
+  String get eduGuardianUsed =>
+      'Ce lien a déjà été utilisé et n\'est plus valide.';
+
+  @override
+  String get eduGuardianEmptychildren => 'Aucun enfant ne vous est rattaché.';
+
+  @override
+  String get eduGuardianToday => 'Aujourd\'hui';
+
+  @override
+  String get eduGuardianLast30days => '30 derniers jours';
+
+  @override
+  String get eduGuardianPublishedonly => 'Bulletins publiés uniquement.';
+
+  @override
+  String get eduGuardianAccessnote =>
+      'Lien à usage unique et à durée limitée. Toute consultation est tracée.';
+
+  @override
+  String get eduCommonSave => 'Enregistrer';
+
+  @override
+  String get eduCommonCancel => 'Annuler';
+
+  @override
+  String get eduCommonLoading => 'Chargement…';
+
+  @override
+  String get eduCommonError => 'Une erreur est survenue.';
+
+  @override
+  String get eduCommonRetry => 'Réessayer';
+
+  @override
+  String get eduCommonActions => 'Actions';
+
+  @override
+  String get eduCommonClose => 'Fermer';
+
+  @override
+  String get eduCommonDelete => 'Supprimer';
+
+  @override
+  String get eduCommonEdit => 'Modifier';
+
+  @override
+  String get eduCommonNodata => 'Aucune donnée.';
+
+  @override
+  String get eduCommonView => 'Voir';
+
+  @override
+  String get eduCommonBack => 'Retour';
+
+  @override
+  String get eduCommonDeleteconfirm => 'Supprimer cet élément ?';
+
+  @override
+  String get fuelPumpistTitle => 'Pompiste';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Retour';
+
+  @override
+  String get fuelPumpistActiveShift => 'Quart en cours';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aucun quart en cours';
+
+  @override
+  String get fuelPumpistNoShiftDescription =>
+      'Vous n\'avez aucun quart de travail en cours.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Impossible de charger vos quarts';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Relevé compteur';
+
+  @override
+  String get fuelPumpistReadingHint => 'Volume relevé (L)';
+
+  @override
+  String get fuelPumpistSubmit => 'Valider le relevé';
+
+  @override
+  String get crmHubTitle => 'CRM';
+
+  @override
+  String get crmHubSubtitle =>
+      'Comptes, prospects et opportunités de votre entreprise.';
+
+  @override
+  String get crmAccounts => 'Comptes';
+
+  @override
+  String get crmContacts => 'Contacts';
+
+  @override
+  String get crmLeads => 'Prospects';
+
+  @override
+  String get crmOpportunities => 'Opportunités';
+
+  @override
+  String get crmAccountDetail => 'Détail du compte';
+
+  @override
+  String get crmTasks => 'Tâches';
+
+  @override
+  String get crmActivities => 'Activités';
+
+  @override
+  String get crmStatus => 'Statut';
+
+  @override
+  String get crmStage => 'Étape';
+
+  @override
+  String get crmTaskCompleted => 'Terminée';
+
+  @override
+  String get crmEmptyAccounts => 'Aucun compte';
+
+  @override
+  String get crmEmptyContacts => 'Aucun contact';
+
+  @override
+  String get crmEmptyLeads => 'Aucun prospect';
+
+  @override
+  String get crmEmptyOpportunities => 'Aucune opportunité';
+
+  @override
+  String get crmEmptyTasks => 'Aucune tâche';
+
+  @override
+  String get crmEmptyActivities => 'Aucune activité';
+
+  @override
+  String get crmLoadError => 'Impossible de charger les données.';
 }

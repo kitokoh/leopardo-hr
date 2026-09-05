@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr'),
+    Locale('tr')
   ];
 
   /// No description provided for @appTitle.
@@ -705,7 +705,7 @@ abstract class AppLocalizations {
   /// No description provided for @modulesRestaurant.
   ///
   /// In fr, this message translates to:
-  /// **'Point de vente (POS)'**
+  /// **'Écran cuisine'**
   String get modulesRestaurant;
 
   /// No description provided for @emailsInvitationSubject.
@@ -2429,11 +2429,7 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  );
+      Object date, Object hours, Object range, Object status);
 
   /// No description provided for @attendanceDayToday.
   ///
@@ -15431,138 +15427,6 @@ abstract class AppLocalizations {
   /// **'Perdu'**
   String get crmPipelineStageLost;
 
-  /// No description provided for @restaurantPosTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Point de vente (POS)'**
-  String get restaurantPosTitle;
-
-  /// No description provided for @restaurantPosSubtitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Prise de commande et encaissement'**
-  String get restaurantPosSubtitle;
-
-  /// No description provided for @restaurantPosProducts.
-  ///
-  /// In fr, this message translates to:
-  /// **'Catalogue'**
-  String get restaurantPosProducts;
-
-  /// No description provided for @restaurantPosCart.
-  ///
-  /// In fr, this message translates to:
-  /// **'Commande en cours'**
-  String get restaurantPosCart;
-
-  /// No description provided for @restaurantPosNoproducts.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucun produit disponible.'**
-  String get restaurantPosNoproducts;
-
-  /// No description provided for @restaurantPosNosession.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune caisse ouverte pour cette branche.'**
-  String get restaurantPosNosession;
-
-  /// No description provided for @restaurantPosOpensession.
-  ///
-  /// In fr, this message translates to:
-  /// **'Ouvrir la caisse'**
-  String get restaurantPosOpensession;
-
-  /// No description provided for @restaurantPosNoorder.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune commande en cours.'**
-  String get restaurantPosNoorder;
-
-  /// No description provided for @restaurantPosNeworder.
-  ///
-  /// In fr, this message translates to:
-  /// **'Nouvelle commande'**
-  String get restaurantPosNeworder;
-
-  /// No description provided for @restaurantPosSubmit.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soumettre'**
-  String get restaurantPosSubmit;
-
-  /// No description provided for @restaurantPosConfirm.
-  ///
-  /// In fr, this message translates to:
-  /// **'Confirmer (cuisine)'**
-  String get restaurantPosConfirm;
-
-  /// No description provided for @restaurantPosBill.
-  ///
-  /// In fr, this message translates to:
-  /// **'Addition'**
-  String get restaurantPosBill;
-
-  /// No description provided for @restaurantPosPaycash.
-  ///
-  /// In fr, this message translates to:
-  /// **'Encaisser espèces'**
-  String get restaurantPosPaycash;
-
-  /// No description provided for @restaurantPosPaid.
-  ///
-  /// In fr, this message translates to:
-  /// **'Commande payée'**
-  String get restaurantPosPaid;
-
-  /// No description provided for @restaurantPosSubtotal.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sous-total'**
-  String get restaurantPosSubtotal;
-
-  /// No description provided for @restaurantPosTax.
-  ///
-  /// In fr, this message translates to:
-  /// **'TVA'**
-  String get restaurantPosTax;
-
-  /// No description provided for @restaurantPosTotal.
-  ///
-  /// In fr, this message translates to:
-  /// **'Total'**
-  String get restaurantPosTotal;
-
-  /// No description provided for @restaurantPosRemoveitem.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retirer'**
-  String get restaurantPosRemoveitem;
-
-  /// No description provided for @restaurantPosUncategorized.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sans catégorie'**
-  String get restaurantPosUncategorized;
-
-  /// No description provided for @restaurantPosLoaderror.
-  ///
-  /// In fr, this message translates to:
-  /// **'Impossible de charger le point de vente.'**
-  String get restaurantPosLoaderror;
-
-  /// No description provided for @restaurantPosLoading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement du point de vente…'**
-  String get restaurantPosLoading;
-
-  /// No description provided for @restaurantPosActionerror.
-  ///
-  /// In fr, this message translates to:
-  /// **'Action impossible, réessayez.'**
-  String get restaurantPosActionerror;
-
   /// No description provided for @restaurantKitchentitle.
   ///
   /// In fr, this message translates to:
@@ -15671,197 +15535,203 @@ abstract class AppLocalizations {
   /// **'Chargement de la file cuisine…'**
   String get restaurantLoading;
 
-  /// No description provided for @restaurantShopTitle.
+  /// No description provided for @restaurantPostitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente'**
+  String get restaurantPostitle;
+
+  /// No description provided for @restaurantPossubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prise de commande et encaissement'**
+  String get restaurantPossubtitle;
+
+  /// No description provided for @restaurantNeworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantNeworder;
+
+  /// No description provided for @restaurantOrderitems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Articles de la commande'**
+  String get restaurantOrderitems;
+
+  /// No description provided for @restaurantAdditem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un article'**
+  String get restaurantAdditem;
+
+  /// No description provided for @restaurantBill.
+  ///
+  /// In fr, this message translates to:
+  /// **'Addition'**
+  String get restaurantBill;
+
+  /// No description provided for @restaurantPaycash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisser en espèces'**
+  String get restaurantPaycash;
+
+  /// No description provided for @restaurantPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payée'**
+  String get restaurantPaid;
+
+  /// No description provided for @restaurantOpensession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir la caisse'**
+  String get restaurantOpensession;
+
+  /// No description provided for @restaurantClosesession.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturer la caisse'**
+  String get restaurantClosesession;
+
+  /// No description provided for @restaurantSessionopen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Caisse ouverte'**
+  String get restaurantSessionopen;
+
+  /// No description provided for @restaurantSessionclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Caisse clôturée'**
+  String get restaurantSessionclosed;
+
+  /// No description provided for @restaurantReservations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get restaurantReservations;
+
+  /// No description provided for @restaurantReservationnew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle réservation'**
+  String get restaurantReservationnew;
+
+  /// No description provided for @restaurantCustomername.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du client'**
+  String get restaurantCustomername;
+
+  /// No description provided for @restaurantGuests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couverts'**
+  String get restaurantGuests;
+
+  /// No description provided for @restaurantCheckin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get restaurantCheckin;
+
+  /// No description provided for @restaurantNoshow.
+  ///
+  /// In fr, this message translates to:
+  /// **'No-show'**
+  String get restaurantNoshow;
+
+  /// No description provided for @restaurantShoptitle.
   ///
   /// In fr, this message translates to:
   /// **'Commande en ligne'**
-  String get restaurantShopTitle;
+  String get restaurantShoptitle;
 
-  /// No description provided for @restaurantShopSubtitle.
+  /// No description provided for @restaurantKiosktitle.
   ///
   /// In fr, this message translates to:
-  /// **'Menu public — commandez en quelques clics.'**
-  String get restaurantShopSubtitle;
+  /// **'Kiosque libre-service'**
+  String get restaurantKiosktitle;
 
-  /// No description provided for @restaurantShopMenu.
+  /// No description provided for @restaurantStatusdraft.
   ///
   /// In fr, this message translates to:
-  /// **'Menu'**
-  String get restaurantShopMenu;
+  /// **'Brouillon'**
+  String get restaurantStatusdraft;
 
-  /// No description provided for @restaurantShopCart.
+  /// No description provided for @restaurantStatusopen.
   ///
   /// In fr, this message translates to:
-  /// **'Panier'**
-  String get restaurantShopCart;
+  /// **'Ouverte'**
+  String get restaurantStatusopen;
 
-  /// No description provided for @restaurantShopEmptycart.
+  /// No description provided for @restaurantStatusinpreparation.
   ///
   /// In fr, this message translates to:
-  /// **'Votre panier est vide.'**
-  String get restaurantShopEmptycart;
+  /// **'En préparation'**
+  String get restaurantStatusinpreparation;
 
-  /// No description provided for @restaurantShopAdd.
+  /// No description provided for @restaurantStatusready.
   ///
   /// In fr, this message translates to:
-  /// **'Ajouter'**
-  String get restaurantShopAdd;
+  /// **'Prête'**
+  String get restaurantStatusready;
 
-  /// No description provided for @restaurantShopAdded.
+  /// No description provided for @restaurantStatusserved.
   ///
   /// In fr, this message translates to:
-  /// **'Ajouté'**
-  String get restaurantShopAdded;
+  /// **'Servie'**
+  String get restaurantStatusserved;
 
-  /// No description provided for @restaurantShopCategoryall.
+  /// No description provided for @restaurantStatuspaid.
   ///
   /// In fr, this message translates to:
-  /// **'Tout'**
-  String get restaurantShopCategoryall;
+  /// **'Payée'**
+  String get restaurantStatuspaid;
 
-  /// No description provided for @restaurantShopPrice.
+  /// No description provided for @restaurantStatusclosed.
   ///
   /// In fr, this message translates to:
-  /// **'Prix'**
-  String get restaurantShopPrice;
+  /// **'Clôturée'**
+  String get restaurantStatusclosed;
 
-  /// No description provided for @restaurantShopSubtotal.
+  /// No description provided for @restaurantStatuscancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get restaurantStatuscancelled;
+
+  /// No description provided for @restaurantStatusrefunded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remboursée'**
+  String get restaurantStatusrefunded;
+
+  /// No description provided for @restaurantSubtotal.
   ///
   /// In fr, this message translates to:
   /// **'Sous-total'**
-  String get restaurantShopSubtotal;
+  String get restaurantSubtotal;
 
-  /// No description provided for @restaurantShopTax.
+  /// No description provided for @restaurantTax.
   ///
   /// In fr, this message translates to:
-  /// **'Taxe'**
-  String get restaurantShopTax;
+  /// **'TVA'**
+  String get restaurantTax;
 
-  /// No description provided for @restaurantShopTotal.
+  /// No description provided for @restaurantDiscount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remise'**
+  String get restaurantDiscount;
+
+  /// No description provided for @restaurantTotal.
   ///
   /// In fr, this message translates to:
   /// **'Total'**
-  String get restaurantShopTotal;
-
-  /// No description provided for @restaurantShopPhone.
-  ///
-  /// In fr, this message translates to:
-  /// **'Téléphone (optionnel)'**
-  String get restaurantShopPhone;
-
-  /// No description provided for @restaurantShopPhonehint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pour être prévenu de l\'état de votre commande.'**
-  String get restaurantShopPhonehint;
-
-  /// No description provided for @restaurantShopCheckout.
-  ///
-  /// In fr, this message translates to:
-  /// **'Commander'**
-  String get restaurantShopCheckout;
-
-  /// No description provided for @restaurantShopOrdering.
-  ///
-  /// In fr, this message translates to:
-  /// **'Commande en cours…'**
-  String get restaurantShopOrdering;
-
-  /// No description provided for @restaurantShopOrdercreated.
-  ///
-  /// In fr, this message translates to:
-  /// **'Commande confirmée'**
-  String get restaurantShopOrdercreated;
-
-  /// No description provided for @restaurantShopOrderref.
-  ///
-  /// In fr, this message translates to:
-  /// **'Référence'**
-  String get restaurantShopOrderref;
-
-  /// No description provided for @restaurantShopOrderstatus.
-  ///
-  /// In fr, this message translates to:
-  /// **'Statut'**
-  String get restaurantShopOrderstatus;
-
-  /// No description provided for @restaurantShopTrack.
-  ///
-  /// In fr, this message translates to:
-  /// **'Suivre la commande'**
-  String get restaurantShopTrack;
-
-  /// No description provided for @restaurantShopPay.
-  ///
-  /// In fr, this message translates to:
-  /// **'Payer'**
-  String get restaurantShopPay;
-
-  /// No description provided for @restaurantShopPaying.
-  ///
-  /// In fr, this message translates to:
-  /// **'Paiement…'**
-  String get restaurantShopPaying;
-
-  /// No description provided for @restaurantShopPayhint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Paiement à l\'encaissement ou mobile money.'**
-  String get restaurantShopPayhint;
-
-  /// No description provided for @restaurantShopMissingtoken.
-  ///
-  /// In fr, this message translates to:
-  /// **'Lien de boutique invalide ou manquant. Utilisez le lien fourni par le restaurant.'**
-  String get restaurantShopMissingtoken;
-
-  /// No description provided for @restaurantShopLoaderror.
-  ///
-  /// In fr, this message translates to:
-  /// **'Impossible de charger le menu. Réessayez.'**
-  String get restaurantShopLoaderror;
-
-  /// No description provided for @restaurantShopRetry.
-  ///
-  /// In fr, this message translates to:
-  /// **'Réessayer'**
-  String get restaurantShopRetry;
-
-  /// No description provided for @restaurantShopBacktomenu.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retour au menu'**
-  String get restaurantShopBacktomenu;
-
-  /// No description provided for @restaurantShopInvalidtoken.
-  ///
-  /// In fr, this message translates to:
-  /// **'Jeton boutique invalide ou expiré.'**
-  String get restaurantShopInvalidtoken;
-
-  /// No description provided for @restaurantShopItems.
-  ///
-  /// In fr, this message translates to:
-  /// **'articles'**
-  String get restaurantShopItems;
-
-  /// No description provided for @restaurantShopQuantity.
-  ///
-  /// In fr, this message translates to:
-  /// **'Qté'**
-  String get restaurantShopQuantity;
-
-  /// No description provided for @restaurantShopRemove.
-  ///
-  /// In fr, this message translates to:
-  /// **'Retirer'**
-  String get restaurantShopRemove;
-
-  /// No description provided for @restaurantShopCurrency.
-  ///
-  /// In fr, this message translates to:
-  /// **'devise'**
-  String get restaurantShopCurrency;
+  String get restaurantTotal;
 
   /// No description provided for @restaurantMobileHubTitle.
   ///
@@ -16300,6 +16170,552 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Stock : {quantity} / seuil : {threshold}'**
   String restaurantMobileManagerStockLevel(Object quantity, Object threshold);
+
+  /// No description provided for @restaurantHomeLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le tableau de bord restaurant.'**
+  String get restaurantHomeLoaderror;
+
+  /// No description provided for @restaurantHomeReferential.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel'**
+  String get restaurantHomeReferential;
+
+  /// No description provided for @restaurantHomeReferentialdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches, plan de salle, catalogue, matières, menus, fournisseurs'**
+  String get restaurantHomeReferentialdesc;
+
+  /// No description provided for @restaurantHomeReservations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get restaurantHomeReservations;
+
+  /// No description provided for @restaurantHomeReservationsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneaux, check-in, dépôts'**
+  String get restaurantHomeReservationsdesc;
+
+  /// No description provided for @restaurantHomeStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock & achats'**
+  String get restaurantHomeStock;
+
+  /// No description provided for @restaurantHomeStockdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveaux, bons de commande, réceptions, inventaires'**
+  String get restaurantHomeStockdesc;
+
+  /// No description provided for @restaurantHomeDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison & fidélité'**
+  String get restaurantHomeDelivery;
+
+  /// No description provided for @restaurantHomeDeliverydesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones, livreurs, tournées, points, promotions'**
+  String get restaurantHomeDeliverydesc;
+
+  /// No description provided for @restaurantHomeReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get restaurantHomeReports;
+
+  /// No description provided for @restaurantHomeReportsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes, occupation, produits, COGS, export CSV'**
+  String get restaurantHomeReportsdesc;
+
+  /// No description provided for @restaurantHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurant Manager'**
+  String get restaurantHomeTitle;
+
+  /// No description provided for @restaurantHomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente, réservations, stock et livraison'**
+  String get restaurantHomeSubtitle;
+
+  /// No description provided for @restaurantHomeKpiorders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandes du jour'**
+  String get restaurantHomeKpiorders;
+
+  /// No description provided for @restaurantHomeKpibasket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier moyen'**
+  String get restaurantHomeKpibasket;
+
+  /// No description provided for @restaurantHomeKpirotation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rotation des tables'**
+  String get restaurantHomeKpirotation;
+
+  /// No description provided for @restaurantHomeAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes de stock'**
+  String get restaurantHomeAlerts;
+
+  /// No description provided for @restaurantHomeAlertline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédient'**
+  String get restaurantHomeAlertline;
+
+  /// No description provided for @restaurantHomeOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir'**
+  String get restaurantHomeOpen;
+
+  /// No description provided for @restaurantHomeKpirevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chiffre d\'affaires du jour'**
+  String get restaurantHomeKpirevenue;
+
+  /// No description provided for @restaurantDelLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données livraison/fidélité.'**
+  String get restaurantDelLoaderror;
+
+  /// No description provided for @restaurantDelCreateerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de création de la livraison.'**
+  String get restaurantDelCreateerror;
+
+  /// No description provided for @restaurantDelRiderprompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID du livreur à assigner :'**
+  String get restaurantDelRiderprompt;
+
+  /// No description provided for @restaurantDelActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible.'**
+  String get restaurantDelActionerror;
+
+  /// No description provided for @restaurantDelTabzones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones'**
+  String get restaurantDelTabzones;
+
+  /// No description provided for @restaurantDelTabriders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livreurs'**
+  String get restaurantDelTabriders;
+
+  /// No description provided for @restaurantDelTabdeliveries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons'**
+  String get restaurantDelTabdeliveries;
+
+  /// No description provided for @restaurantDelTabloyalty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fidélité'**
+  String get restaurantDelTabloyalty;
+
+  /// No description provided for @restaurantDelTabpromos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Promotions'**
+  String get restaurantDelTabpromos;
+
+  /// No description provided for @restaurantDelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison & fidélité'**
+  String get restaurantDelTitle;
+
+  /// No description provided for @restaurantDelSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones, livreurs, tournées, points, promotions'**
+  String get restaurantDelSubtitle;
+
+  /// No description provided for @restaurantDelColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get restaurantDelColname;
+
+  /// No description provided for @restaurantDelColfees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais & minimum'**
+  String get restaurantDelColfees;
+
+  /// No description provided for @restaurantDelFee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais'**
+  String get restaurantDelFee;
+
+  /// No description provided for @restaurantDelColphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantDelColphone;
+
+  /// No description provided for @restaurantDelColvehicle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Véhicule'**
+  String get restaurantDelColvehicle;
+
+  /// No description provided for @restaurantDelColactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get restaurantDelColactive;
+
+  /// No description provided for @restaurantDelNewdelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle livraison'**
+  String get restaurantDelNewdelivery;
+
+  /// No description provided for @restaurantDelCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get restaurantDelCreate;
+
+  /// No description provided for @restaurantDelColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantDelColstatus;
+
+  /// No description provided for @restaurantDelAssign.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assigner'**
+  String get restaurantDelAssign;
+
+  /// No description provided for @restaurantDelOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'En tournée'**
+  String get restaurantDelOut;
+
+  /// No description provided for @restaurantDelDeliver.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livrée'**
+  String get restaurantDelDeliver;
+
+  /// No description provided for @restaurantDelCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get restaurantDelCancel;
+
+  /// No description provided for @restaurantDelColpoints.
+  ///
+  /// In fr, this message translates to:
+  /// **'Points'**
+  String get restaurantDelColpoints;
+
+  /// No description provided for @restaurantDelColtier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Palier'**
+  String get restaurantDelColtier;
+
+  /// No description provided for @restaurantDelColcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get restaurantDelColcode;
+
+  /// No description provided for @restaurantDelColtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get restaurantDelColtitle;
+
+  /// No description provided for @restaurantDelColtype.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get restaurantDelColtype;
+
+  /// No description provided for @restaurantDelColvalue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur'**
+  String get restaurantDelColvalue;
+
+  /// No description provided for @restaurantDelColuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisations'**
+  String get restaurantDelColuses;
+
+  /// No description provided for @restaurantDelLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantDelLoading;
+
+  /// No description provided for @restaurantRefBranches.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches (établissements)'**
+  String get restaurantRefBranches;
+
+  /// No description provided for @restaurantRefZones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones (salles)'**
+  String get restaurantRefZones;
+
+  /// No description provided for @restaurantRefTables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables (plan de salle)'**
+  String get restaurantRefTables;
+
+  /// No description provided for @restaurantRefCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories'**
+  String get restaurantRefCategories;
+
+  /// No description provided for @restaurantRefProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits (catalogue & recettes)'**
+  String get restaurantRefProducts;
+
+  /// No description provided for @restaurantRefIngredients.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédients (matières)'**
+  String get restaurantRefIngredients;
+
+  /// No description provided for @restaurantRefUnits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unités'**
+  String get restaurantRefUnits;
+
+  /// No description provided for @restaurantRefMenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menus (formules)'**
+  String get restaurantRefMenus;
+
+  /// No description provided for @restaurantRefTaxrates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de TVA'**
+  String get restaurantRefTaxrates;
+
+  /// No description provided for @restaurantRefSuppliers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseurs'**
+  String get restaurantRefSuppliers;
+
+  /// No description provided for @restaurantRefHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires'**
+  String get restaurantRefHours;
+
+  /// No description provided for @restaurantRefTabbranches.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches'**
+  String get restaurantRefTabbranches;
+
+  /// No description provided for @restaurantRefTabzones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones'**
+  String get restaurantRefTabzones;
+
+  /// No description provided for @restaurantRefTabtables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables'**
+  String get restaurantRefTabtables;
+
+  /// No description provided for @restaurantRefTabcategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories'**
+  String get restaurantRefTabcategories;
+
+  /// No description provided for @restaurantRefTabproducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits'**
+  String get restaurantRefTabproducts;
+
+  /// No description provided for @restaurantRefTabingredients.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédients'**
+  String get restaurantRefTabingredients;
+
+  /// No description provided for @restaurantRefTabunits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unités'**
+  String get restaurantRefTabunits;
+
+  /// No description provided for @restaurantRefTabmenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menus'**
+  String get restaurantRefTabmenus;
+
+  /// No description provided for @restaurantRefTabtaxrates.
+  ///
+  /// In fr, this message translates to:
+  /// **'TVA'**
+  String get restaurantRefTabtaxrates;
+
+  /// No description provided for @restaurantRefTabsuppliers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseurs'**
+  String get restaurantRefTabsuppliers;
+
+  /// No description provided for @restaurantRefTabhours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires'**
+  String get restaurantRefTabhours;
+
+  /// No description provided for @restaurantRefTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel restaurant'**
+  String get restaurantRefTitle;
+
+  /// No description provided for @restaurantRefSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs'**
+  String get restaurantRefSubtitle;
+
+  /// No description provided for @restaurantRefDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivée'**
+  String get restaurantRefDisabled;
+
+  /// No description provided for @restaurantRefFieldphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantRefFieldphone;
+
+  /// No description provided for @restaurantRefFieldcapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité'**
+  String get restaurantRefFieldcapacity;
+
+  /// No description provided for @restaurantRefFieldlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get restaurantRefFieldlabel;
+
+  /// No description provided for @restaurantRefFieldcapacitycovers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité (couverts)'**
+  String get restaurantRefFieldcapacitycovers;
+
+  /// No description provided for @restaurantRefFieldcategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get restaurantRefFieldcategory;
+
+  /// No description provided for @restaurantRefFieldcategoryid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie ID'**
+  String get restaurantRefFieldcategoryid;
+
+  /// No description provided for @restaurantRefFieldunit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get restaurantRefFieldunit;
+
+  /// No description provided for @restaurantRefFieldavgcost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen'**
+  String get restaurantRefFieldavgcost;
+
+  /// No description provided for @restaurantRefFieldunitkg.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité (kg/l/u/pce)'**
+  String get restaurantRefFieldunitkg;
+
+  /// No description provided for @restaurantRefFieldavgcostminor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen (minor)'**
+  String get restaurantRefFieldavgcostminor;
+
+  /// No description provided for @restaurantRefFieldstartsat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get restaurantRefFieldstartsat;
+
+  /// No description provided for @restaurantRefFielddefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Défaut'**
+  String get restaurantRefFielddefault;
+
+  /// No description provided for @restaurantRefFieldbydefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par défaut'**
+  String get restaurantRefFieldbydefault;
+
+  /// No description provided for @restaurantRefFieldclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé'**
+  String get restaurantRefFieldclosed;
 
   /// No description provided for @travelLoading.
   ///
@@ -18286,6 +18702,1146 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Archivée'**
   String get travelAdvertstatusArchived;
+
+  /// No description provided for @eduNavLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'EduManager'**
+  String get eduNavLabel;
+
+  /// No description provided for @eduNavAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administration scolaire'**
+  String get eduNavAdmin;
+
+  /// No description provided for @eduNavTeacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon espace enseignant'**
+  String get eduNavTeacher;
+
+  /// No description provided for @eduHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'EduManager'**
+  String get eduHomeTitle;
+
+  /// No description provided for @eduHomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pilotage scolaire : campus, années, classes, élèves, admissions, évaluations et bulletins.'**
+  String get eduHomeSubtitle;
+
+  /// No description provided for @eduHomeCampuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduHomeCampuses;
+
+  /// No description provided for @eduHomeClasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes'**
+  String get eduHomeClasses;
+
+  /// No description provided for @eduHomeStudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves'**
+  String get eduHomeStudents;
+
+  /// No description provided for @eduHomeAdmissions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Admissions'**
+  String get eduHomeAdmissions;
+
+  /// No description provided for @eduHomeReportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduHomeReportcards;
+
+  /// No description provided for @eduHomePendingreportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'bulletins à valider'**
+  String get eduHomePendingreportcards;
+
+  /// No description provided for @eduHomeQuicklinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès rapides'**
+  String get eduHomeQuicklinks;
+
+  /// No description provided for @eduHomeManagecampuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les campus'**
+  String get eduHomeManagecampuses;
+
+  /// No description provided for @eduHomeManageclasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les classes'**
+  String get eduHomeManageclasses;
+
+  /// No description provided for @eduHomeManagestudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les élèves'**
+  String get eduHomeManagestudents;
+
+  /// No description provided for @eduHomeManageassessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évaluations & notes'**
+  String get eduHomeManageassessments;
+
+  /// No description provided for @eduHomeManagereportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduHomeManagereportcards;
+
+  /// No description provided for @eduHomeTeacherspace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace enseignant'**
+  String get eduHomeTeacherspace;
+
+  /// No description provided for @eduCampusesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduCampusesTitle;
+
+  /// No description provided for @eduCampusesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites scolaires de l\'établissement.'**
+  String get eduCampusesSubtitle;
+
+  /// No description provided for @eduCampusesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun campus. Créez le premier campus de l\'établissement.'**
+  String get eduCampusesEmpty;
+
+  /// No description provided for @eduCampusesCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau campus'**
+  String get eduCampusesCreate;
+
+  /// No description provided for @eduCampusesEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le campus'**
+  String get eduCampusesEdit;
+
+  /// No description provided for @eduCampusesCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduCampusesCode;
+
+  /// No description provided for @eduCampusesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduCampusesName;
+
+  /// No description provided for @eduCampusesAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get eduCampusesAddress;
+
+  /// No description provided for @eduCampusesTimezone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fuseau'**
+  String get eduCampusesTimezone;
+
+  /// No description provided for @eduCampusesStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduCampusesStatus;
+
+  /// No description provided for @eduCampusesSaveerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer le campus.'**
+  String get eduCampusesSaveerror;
+
+  /// No description provided for @eduCampusesDeleteconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce campus ?'**
+  String get eduCampusesDeleteconfirm;
+
+  /// No description provided for @eduCampusesDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus supprimé.'**
+  String get eduCampusesDeleted;
+
+  /// No description provided for @eduAcademicyearsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Années scolaires'**
+  String get eduAcademicyearsTitle;
+
+  /// No description provided for @eduAcademicyearsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Périodes scolaires de l\'établissement (chevauchements refusés).'**
+  String get eduAcademicyearsSubtitle;
+
+  /// No description provided for @eduAcademicyearsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune année scolaire.'**
+  String get eduAcademicyearsEmpty;
+
+  /// No description provided for @eduAcademicyearsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle année'**
+  String get eduAcademicyearsCreate;
+
+  /// No description provided for @eduAcademicyearsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'année'**
+  String get eduAcademicyearsEdit;
+
+  /// No description provided for @eduAcademicyearsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get eduAcademicyearsName;
+
+  /// No description provided for @eduAcademicyearsStartdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get eduAcademicyearsStartdate;
+
+  /// No description provided for @eduAcademicyearsEnddate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get eduAcademicyearsEnddate;
+
+  /// No description provided for @eduAcademicyearsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduAcademicyearsStatus;
+
+  /// No description provided for @eduSubjectsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matières'**
+  String get eduSubjectsTitle;
+
+  /// No description provided for @eduSubjectsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catalogue des matières enseignées.'**
+  String get eduSubjectsSubtitle;
+
+  /// No description provided for @eduSubjectsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune matière.'**
+  String get eduSubjectsEmpty;
+
+  /// No description provided for @eduSubjectsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle matière'**
+  String get eduSubjectsCreate;
+
+  /// No description provided for @eduSubjectsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la matière'**
+  String get eduSubjectsEdit;
+
+  /// No description provided for @eduSubjectsCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduSubjectsCode;
+
+  /// No description provided for @eduSubjectsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get eduSubjectsName;
+
+  /// No description provided for @eduSubjectsDefaultcoefficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coefficient par défaut'**
+  String get eduSubjectsDefaultcoefficient;
+
+  /// No description provided for @eduClassesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes'**
+  String get eduClassesTitle;
+
+  /// No description provided for @eduClassesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes, niveaux, enseignants référents et affectations par matière.'**
+  String get eduClassesSubtitle;
+
+  /// No description provided for @eduClassesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune classe.'**
+  String get eduClassesEmpty;
+
+  /// No description provided for @eduClassesCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle classe'**
+  String get eduClassesCreate;
+
+  /// No description provided for @eduClassesEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la classe'**
+  String get eduClassesEdit;
+
+  /// No description provided for @eduClassesCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduClassesCode;
+
+  /// No description provided for @eduClassesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduClassesName;
+
+  /// No description provided for @eduClassesLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau'**
+  String get eduClassesLevel;
+
+  /// No description provided for @eduClassesCapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effectif max'**
+  String get eduClassesCapacity;
+
+  /// No description provided for @eduClassesTeacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enseignant référent'**
+  String get eduClassesTeacher;
+
+  /// No description provided for @eduClassesCampus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduClassesCampus;
+
+  /// No description provided for @eduClassesYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Année scolaire'**
+  String get eduClassesYear;
+
+  /// No description provided for @eduClassesAssignteacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affecter un enseignant'**
+  String get eduClassesAssignteacher;
+
+  /// No description provided for @eduClassesRemoveteacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get eduClassesRemoveteacher;
+
+  /// No description provided for @eduClassesTeacherplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un enseignant…'**
+  String get eduClassesTeacherplaceholder;
+
+  /// No description provided for @eduStudentsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves'**
+  String get eduStudentsTitle;
+
+  /// No description provided for @eduStudentsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dossiers élèves (données personnelles protégées).'**
+  String get eduStudentsSubtitle;
+
+  /// No description provided for @eduStudentsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun élève.'**
+  String get eduStudentsEmpty;
+
+  /// No description provided for @eduStudentsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel élève'**
+  String get eduStudentsCreate;
+
+  /// No description provided for @eduStudentsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'élève'**
+  String get eduStudentsEdit;
+
+  /// No description provided for @eduStudentsNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° matricule'**
+  String get eduStudentsNumber;
+
+  /// No description provided for @eduStudentsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom affiché'**
+  String get eduStudentsName;
+
+  /// No description provided for @eduStudentsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduStudentsStatus;
+
+  /// No description provided for @eduStudentsBirthdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de naissance (chiffrée)'**
+  String get eduStudentsBirthdate;
+
+  /// No description provided for @eduStudentsPiihint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données sensibles sont chiffrées au repos et jamais exposées hors tenant.'**
+  String get eduStudentsPiihint;
+
+  /// No description provided for @eduAdmissionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Admissions'**
+  String get eduAdmissionsTitle;
+
+  /// No description provided for @eduAdmissionsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pipeline d\'admission avec consentement RGPD et conversion en élève.'**
+  String get eduAdmissionsSubtitle;
+
+  /// No description provided for @eduAdmissionsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun dossier d\'admission.'**
+  String get eduAdmissionsEmpty;
+
+  /// No description provided for @eduAdmissionsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau dossier'**
+  String get eduAdmissionsCreate;
+
+  /// No description provided for @eduAdmissionsFirstname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get eduAdmissionsFirstname;
+
+  /// No description provided for @eduAdmissionsLastname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduAdmissionsLastname;
+
+  /// No description provided for @eduAdmissionsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduAdmissionsStatus;
+
+  /// No description provided for @eduAdmissionsConvert.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir en élève'**
+  String get eduAdmissionsConvert;
+
+  /// No description provided for @eduAdmissionsConverted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Converti'**
+  String get eduAdmissionsConverted;
+
+  /// No description provided for @eduAdmissionsConverting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversion…'**
+  String get eduAdmissionsConverting;
+
+  /// No description provided for @eduAdmissionsConvertconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir ce dossier en élève ? L\'opération est idempotente.'**
+  String get eduAdmissionsConvertconfirm;
+
+  /// No description provided for @eduAssessmentsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intitulé'**
+  String get eduAssessmentsTitle;
+
+  /// No description provided for @eduAssessmentsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évaluations, barèmes, saisie de notes et publication.'**
+  String get eduAssessmentsSubtitle;
+
+  /// No description provided for @eduAssessmentsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune évaluation.'**
+  String get eduAssessmentsEmpty;
+
+  /// No description provided for @eduAssessmentsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle évaluation'**
+  String get eduAssessmentsCreate;
+
+  /// No description provided for @eduAssessmentsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'évaluation'**
+  String get eduAssessmentsEdit;
+
+  /// No description provided for @eduAssessmentsType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get eduAssessmentsType;
+
+  /// No description provided for @eduAssessmentsCoefficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coefficient'**
+  String get eduAssessmentsCoefficient;
+
+  /// No description provided for @eduAssessmentsMaxscore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Barème (max)'**
+  String get eduAssessmentsMaxscore;
+
+  /// No description provided for @eduAssessmentsDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get eduAssessmentsDate;
+
+  /// No description provided for @eduAssessmentsClass.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classe'**
+  String get eduAssessmentsClass;
+
+  /// No description provided for @eduAssessmentsSubject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matière'**
+  String get eduAssessmentsSubject;
+
+  /// No description provided for @eduAssessmentsGrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get eduAssessmentsGrades;
+
+  /// No description provided for @eduAssessmentsEntergrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisir les notes'**
+  String get eduAssessmentsEntergrades;
+
+  /// No description provided for @eduAssessmentsPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get eduAssessmentsPublish;
+
+  /// No description provided for @eduAssessmentsPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publiée'**
+  String get eduAssessmentsPublished;
+
+  /// No description provided for @eduAssessmentsDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get eduAssessmentsDraft;
+
+  /// No description provided for @eduAssessmentsNostudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun élève inscrit dans cette classe.'**
+  String get eduAssessmentsNostudents;
+
+  /// No description provided for @eduAssessmentsScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note'**
+  String get eduAssessmentsScore;
+
+  /// No description provided for @eduAssessmentsComment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commentaire'**
+  String get eduAssessmentsComment;
+
+  /// No description provided for @eduAssessmentsSavegrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer les notes'**
+  String get eduAssessmentsSavegrades;
+
+  /// No description provided for @eduReportcardsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduReportcardsTitle;
+
+  /// No description provided for @eduReportcardsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Génération, validation direction et publication verrouillante.'**
+  String get eduReportcardsSubtitle;
+
+  /// No description provided for @eduReportcardsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun bulletin.'**
+  String get eduReportcardsEmpty;
+
+  /// No description provided for @eduReportcardsGenerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Générer'**
+  String get eduReportcardsGenerate;
+
+  /// No description provided for @eduReportcardsValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get eduReportcardsValidate;
+
+  /// No description provided for @eduReportcardsPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get eduReportcardsPublish;
+
+  /// No description provided for @eduReportcardsStudent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élève'**
+  String get eduReportcardsStudent;
+
+  /// No description provided for @eduReportcardsAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne'**
+  String get eduReportcardsAverage;
+
+  /// No description provided for @eduReportcardsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduReportcardsStatus;
+
+  /// No description provided for @eduReportcardsGenerated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Généré'**
+  String get eduReportcardsGenerated;
+
+  /// No description provided for @eduReportcardsValidated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validé'**
+  String get eduReportcardsValidated;
+
+  /// No description provided for @eduReportcardsPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get eduReportcardsPeriod;
+
+  /// No description provided for @eduTeacherTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace enseignant'**
+  String get eduTeacherTitle;
+
+  /// No description provided for @eduTeacherSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes classes : présence, notes et soumission pour validation.'**
+  String get eduTeacherSubtitle;
+
+  /// No description provided for @eduTeacherMyclasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes classes'**
+  String get eduTeacherMyclasses;
+
+  /// No description provided for @eduTeacherEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune classe ne vous est affectée.'**
+  String get eduTeacherEmpty;
+
+  /// No description provided for @eduTeacherAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence'**
+  String get eduTeacherAttendance;
+
+  /// No description provided for @eduTeacherGrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get eduTeacherGrades;
+
+  /// No description provided for @eduTeacherDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get eduTeacherDate;
+
+  /// No description provided for @eduTeacherPresent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présent'**
+  String get eduTeacherPresent;
+
+  /// No description provided for @eduTeacherAbsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absent'**
+  String get eduTeacherAbsent;
+
+  /// No description provided for @eduTeacherLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retard'**
+  String get eduTeacherLate;
+
+  /// No description provided for @eduTeacherExcused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excusé'**
+  String get eduTeacherExcused;
+
+  /// No description provided for @eduTeacherSaveattendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer la présence'**
+  String get eduTeacherSaveattendance;
+
+  /// No description provided for @eduTeacherAttendancesaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence enregistrée.'**
+  String get eduTeacherAttendancesaved;
+
+  /// No description provided for @eduTeacherAssessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes évaluations'**
+  String get eduTeacherAssessments;
+
+  /// No description provided for @eduTeacherSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre pour validation'**
+  String get eduTeacherSubmit;
+
+  /// No description provided for @eduTeacherSubmithint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La publication verrouille la note ; l\'historique des corrections est conservé.'**
+  String get eduTeacherSubmithint;
+
+  /// No description provided for @eduTeacherNoassessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune évaluation pour cette classe.'**
+  String get eduTeacherNoassessments;
+
+  /// No description provided for @eduTeacherStudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves de la classe'**
+  String get eduTeacherStudents;
+
+  /// No description provided for @eduGuardianTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portail responsable légal'**
+  String get eduGuardianTitle;
+
+  /// No description provided for @eduGuardianSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consultez la scolarité des enfants qui vous sont confiés.'**
+  String get eduGuardianSubtitle;
+
+  /// No description provided for @eduGuardianChildren.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes enfants'**
+  String get eduGuardianChildren;
+
+  /// No description provided for @eduGuardianPresence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence'**
+  String get eduGuardianPresence;
+
+  /// No description provided for @eduGuardianReportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduGuardianReportcards;
+
+  /// No description provided for @eduGuardianCommunications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Communications'**
+  String get eduGuardianCommunications;
+
+  /// No description provided for @eduGuardianConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'En accédant au portail, vous consentez à la consultation des données scolaires de vos enfants.'**
+  String get eduGuardianConsent;
+
+  /// No description provided for @eduGuardianInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien d\'accès invalide.'**
+  String get eduGuardianInvalid;
+
+  /// No description provided for @eduGuardianExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce lien d\'accès a expiré. Contactez l\'établissement.'**
+  String get eduGuardianExpired;
+
+  /// No description provided for @eduGuardianUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce lien a déjà été utilisé et n\'est plus valide.'**
+  String get eduGuardianUsed;
+
+  /// No description provided for @eduGuardianEmptychildren.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun enfant ne vous est rattaché.'**
+  String get eduGuardianEmptychildren;
+
+  /// No description provided for @eduGuardianToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get eduGuardianToday;
+
+  /// No description provided for @eduGuardianLast30days.
+  ///
+  /// In fr, this message translates to:
+  /// **'30 derniers jours'**
+  String get eduGuardianLast30days;
+
+  /// No description provided for @eduGuardianPublishedonly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins publiés uniquement.'**
+  String get eduGuardianPublishedonly;
+
+  /// No description provided for @eduGuardianAccessnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien à usage unique et à durée limitée. Toute consultation est tracée.'**
+  String get eduGuardianAccessnote;
+
+  /// No description provided for @eduCommonSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get eduCommonSave;
+
+  /// No description provided for @eduCommonCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get eduCommonCancel;
+
+  /// No description provided for @eduCommonLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get eduCommonLoading;
+
+  /// No description provided for @eduCommonError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue.'**
+  String get eduCommonError;
+
+  /// No description provided for @eduCommonRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get eduCommonRetry;
+
+  /// No description provided for @eduCommonActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions'**
+  String get eduCommonActions;
+
+  /// No description provided for @eduCommonClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get eduCommonClose;
+
+  /// No description provided for @eduCommonDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get eduCommonDelete;
+
+  /// No description provided for @eduCommonEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get eduCommonEdit;
+
+  /// No description provided for @eduCommonNodata.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée.'**
+  String get eduCommonNodata;
+
+  /// No description provided for @eduCommonView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir'**
+  String get eduCommonView;
+
+  /// No description provided for @eduCommonBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get eduCommonBack;
+
+  /// No description provided for @eduCommonDeleteconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet élément ?'**
+  String get eduCommonDeleteconfirm;
+
+  /// No description provided for @fuelPumpistTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pompiste'**
+  String get fuelPumpistTitle;
+
+  /// No description provided for @fuelPumpistBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get fuelPumpistBackTooltip;
+
+  /// No description provided for @fuelPumpistActiveShift.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quart en cours'**
+  String get fuelPumpistActiveShift;
+
+  /// No description provided for @fuelPumpistNoShiftTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun quart en cours'**
+  String get fuelPumpistNoShiftTitle;
+
+  /// No description provided for @fuelPumpistNoShiftDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez aucun quart de travail en cours.'**
+  String get fuelPumpistNoShiftDescription;
+
+  /// No description provided for @fuelPumpistErrorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger vos quarts'**
+  String get fuelPumpistErrorTitle;
+
+  /// No description provided for @fuelPumpistReadingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relevé compteur'**
+  String get fuelPumpistReadingLabel;
+
+  /// No description provided for @fuelPumpistReadingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Volume relevé (L)'**
+  String get fuelPumpistReadingHint;
+
+  /// No description provided for @fuelPumpistSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider le relevé'**
+  String get fuelPumpistSubmit;
+
+  /// No description provided for @crmHubTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CRM'**
+  String get crmHubTitle;
+
+  /// No description provided for @crmHubSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes, prospects et opportunités de votre entreprise.'**
+  String get crmHubSubtitle;
+
+  /// No description provided for @crmAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes'**
+  String get crmAccounts;
+
+  /// No description provided for @crmContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get crmContacts;
+
+  /// No description provided for @crmLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prospects'**
+  String get crmLeads;
+
+  /// No description provided for @crmOpportunities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opportunités'**
+  String get crmOpportunities;
+
+  /// No description provided for @crmAccountDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détail du compte'**
+  String get crmAccountDetail;
+
+  /// No description provided for @crmTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get crmTasks;
+
+  /// No description provided for @crmActivities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activités'**
+  String get crmActivities;
+
+  /// No description provided for @crmStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmStatus;
+
+  /// No description provided for @crmStage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape'**
+  String get crmStage;
+
+  /// No description provided for @crmTaskCompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminée'**
+  String get crmTaskCompleted;
+
+  /// No description provided for @crmEmptyAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte'**
+  String get crmEmptyAccounts;
+
+  /// No description provided for @crmEmptyContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contact'**
+  String get crmEmptyContacts;
+
+  /// No description provided for @crmEmptyLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun prospect'**
+  String get crmEmptyLeads;
+
+  /// No description provided for @crmEmptyOpportunities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune opportunité'**
+  String get crmEmptyOpportunities;
+
+  /// No description provided for @crmEmptyTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune tâche'**
+  String get crmEmptyTasks;
+
+  /// No description provided for @crmEmptyActivities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune activité'**
+  String get crmEmptyActivities;
+
+  /// No description provided for @crmLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données.'**
+  String get crmLoadError;
 }
 
 class _AppLocalizationsDelegate
@@ -18319,9 +19875,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

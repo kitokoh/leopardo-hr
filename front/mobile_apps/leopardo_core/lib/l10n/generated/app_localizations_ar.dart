@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -320,7 +319,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modulesEvaluations => 'التقييمات';
 
   @override
-  String get modulesRestaurant => 'المطعم';
+  String get modulesRestaurant => 'المطبخ';
 
   @override
   String get emailsInvitationSubject =>
@@ -1235,11 +1234,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
@@ -8205,72 +8200,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get crmPipelineStageLost => 'خاسرة';
 
   @override
-  String get restaurantPosTitle => 'نقطة البيع';
-
-  @override
-  String get restaurantPosSubtitle => 'أخذ الطلبات والتحصيل';
-
-  @override
-  String get restaurantPosProducts => 'قائمة المنتجات';
-
-  @override
-  String get restaurantPosCart => 'الطلب الحالي';
-
-  @override
-  String get restaurantPosNoproducts => 'لا توجد منتجات متاحة.';
-
-  @override
-  String get restaurantPosNosession => 'لا توجد جلسة نقدية مفتوحة لهذا الفرع.';
-
-  @override
-  String get restaurantPosOpensession => 'فتح الجلسة النقدية';
-
-  @override
-  String get restaurantPosNoorder => 'لا يوجد طلب حالي.';
-
-  @override
-  String get restaurantPosNeworder => 'طلب جديد';
-
-  @override
-  String get restaurantPosSubmit => 'إرسال';
-
-  @override
-  String get restaurantPosConfirm => 'تأكيد (المطبخ)';
-
-  @override
-  String get restaurantPosBill => 'الفاتورة';
-
-  @override
-  String get restaurantPosPaycash => 'الدفع نقدًا';
-
-  @override
-  String get restaurantPosPaid => 'تم دفع الطلب';
-
-  @override
-  String get restaurantPosSubtotal => 'المجموع الفرعي';
-
-  @override
-  String get restaurantPosTax => 'الضريبة';
-
-  @override
-  String get restaurantPosTotal => 'الإجمالي';
-
-  @override
-  String get restaurantPosRemoveitem => 'إزالة';
-
-  @override
-  String get restaurantPosUncategorized => 'بدون تصنيف';
-
-  @override
-  String get restaurantPosLoaderror => 'تعذر تحميل نقطة البيع.';
-
-  @override
-  String get restaurantPosLoading => 'جارٍ تحميل نقطة البيع…';
-
-  @override
-  String get restaurantPosActionerror => 'تعذر تنفيذ الإجراء، حاول مجددًا.';
-
-  @override
   String get restaurantKitchentitle => 'شاشة المطبخ';
 
   @override
@@ -8326,103 +8255,103 @@ class AppLocalizationsAr extends AppLocalizations {
   String get restaurantLoading => 'جارٍ تحميل قائمة المطبخ…';
 
   @override
-  String get restaurantShopTitle => 'الطلب عبر الإنترنت';
+  String get restaurantPostitle => 'نقطة البيع';
 
   @override
-  String get restaurantShopSubtitle => 'قائمة عامة — اطلب بنقرات قليلة.';
+  String get restaurantPossubtitle => 'تسجيل الطلبات والتحصيل';
 
   @override
-  String get restaurantShopMenu => 'القائمة';
+  String get restaurantNeworder => 'طلب جديد';
 
   @override
-  String get restaurantShopCart => 'السلة';
+  String get restaurantOrderitems => 'عناصر الطلب';
 
   @override
-  String get restaurantShopEmptycart => 'سلتك فارغة.';
+  String get restaurantAdditem => 'إضافة عنصر';
 
   @override
-  String get restaurantShopAdd => 'أضف';
+  String get restaurantBill => 'الفاتورة';
 
   @override
-  String get restaurantShopAdded => 'تمت الإضافة';
+  String get restaurantPaycash => 'الدفع نقداً';
 
   @override
-  String get restaurantShopCategoryall => 'الكل';
+  String get restaurantPaid => 'مدفوع';
 
   @override
-  String get restaurantShopPrice => 'السعر';
+  String get restaurantOpensession => 'فتح الصندوق';
 
   @override
-  String get restaurantShopSubtotal => 'المجموع الفرعي';
+  String get restaurantClosesession => 'إغلاق الصندوق';
 
   @override
-  String get restaurantShopTax => 'الضريبة';
+  String get restaurantSessionopen => 'الصندوق مفتوح';
 
   @override
-  String get restaurantShopTotal => 'المجموع';
+  String get restaurantSessionclosed => 'الصندوق مغلق';
 
   @override
-  String get restaurantShopPhone => 'الهاتف (اختياري)';
+  String get restaurantReservations => 'الحجوزات';
 
   @override
-  String get restaurantShopPhonehint => 'لإعلامك بحالة طلبك.';
+  String get restaurantReservationnew => 'حجز جديد';
 
   @override
-  String get restaurantShopCheckout => 'اطلب';
+  String get restaurantCustomername => 'اسم العميل';
 
   @override
-  String get restaurantShopOrdering => 'جارٍ الطلب…';
+  String get restaurantGuests => 'عدد الأشخاص';
 
   @override
-  String get restaurantShopOrdercreated => 'تم تأكيد الطلب';
+  String get restaurantCheckin => 'تسجيل الوصول';
 
   @override
-  String get restaurantShopOrderref => 'المرجع';
+  String get restaurantNoshow => 'عدم الحضور';
 
   @override
-  String get restaurantShopOrderstatus => 'الحالة';
+  String get restaurantShoptitle => 'الطلب عبر الإنترنت';
 
   @override
-  String get restaurantShopTrack => 'تتبع الطلب';
+  String get restaurantKiosktitle => 'كشك الخدمة الذاتية';
 
   @override
-  String get restaurantShopPay => 'ادفع';
+  String get restaurantStatusdraft => 'مسودة';
 
   @override
-  String get restaurantShopPaying => 'جارٍ الدفع…';
+  String get restaurantStatusopen => 'مفتوح';
 
   @override
-  String get restaurantShopPayhint =>
-      'الدفع عند الاستلام أو عبر المال المحمول.';
+  String get restaurantStatusinpreparation => 'قيد التحضير';
 
   @override
-  String get restaurantShopMissingtoken =>
-      'رابط المتجر غير صالح أو مفقود. استخدم الرابط الذي قدمه المطعم.';
+  String get restaurantStatusready => 'جاهز';
 
   @override
-  String get restaurantShopLoaderror => 'تعذّر تحميل القائمة. حاول مجددًا.';
+  String get restaurantStatusserved => 'تم التقديم';
 
   @override
-  String get restaurantShopRetry => 'إعادة المحاولة';
+  String get restaurantStatuspaid => 'مدفوع';
 
   @override
-  String get restaurantShopBacktomenu => 'العودة إلى القائمة';
+  String get restaurantStatusclosed => 'مغلق';
 
   @override
-  String get restaurantShopInvalidtoken =>
-      'رمز المتجر غير صالح أو منتهي الصلاحية.';
+  String get restaurantStatuscancelled => 'ملغي';
 
   @override
-  String get restaurantShopItems => 'أصناف';
+  String get restaurantStatusrefunded => 'مسترجع';
 
   @override
-  String get restaurantShopQuantity => 'الكمية';
+  String get restaurantSubtotal => 'المجموع الفرعي';
 
   @override
-  String get restaurantShopRemove => 'إزالة';
+  String get restaurantTax => 'الضريبة';
 
   @override
-  String get restaurantShopCurrency => 'العملة';
+  String get restaurantDiscount => 'الخصم';
+
+  @override
+  String get restaurantTotal => 'المجموع';
 
   @override
   String get restaurantMobileHubTitle => 'مطعم';
@@ -8661,6 +8590,288 @@ class AppLocalizationsAr extends AppLocalizations {
   String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
     return 'المخزون: $quantity / الحد: $threshold';
   }
+
+  @override
+  String get restaurantHomeLoaderror =>
+      'Impossible de charger le tableau de bord restaurant.';
+
+  @override
+  String get restaurantHomeReferential => 'Référentiel';
+
+  @override
+  String get restaurantHomeReferentialdesc =>
+      'Branches, plan de salle, catalogue, matières, menus, fournisseurs';
+
+  @override
+  String get restaurantHomeReservations => 'Réservations';
+
+  @override
+  String get restaurantHomeReservationsdesc => 'Créneaux, check-in, dépôts';
+
+  @override
+  String get restaurantHomeStock => 'Stock & achats';
+
+  @override
+  String get restaurantHomeStockdesc =>
+      'Niveaux, bons de commande, réceptions, inventaires';
+
+  @override
+  String get restaurantHomeDelivery => 'Livraison & fidélité';
+
+  @override
+  String get restaurantHomeDeliverydesc =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantHomeReports => 'Rapports';
+
+  @override
+  String get restaurantHomeReportsdesc =>
+      'Ventes, occupation, produits, COGS, export CSV';
+
+  @override
+  String get restaurantHomeTitle => 'Restaurant Manager';
+
+  @override
+  String get restaurantHomeSubtitle =>
+      'Point de vente, réservations, stock et livraison';
+
+  @override
+  String get restaurantHomeKpiorders => 'Commandes du jour';
+
+  @override
+  String get restaurantHomeKpibasket => 'Panier moyen';
+
+  @override
+  String get restaurantHomeKpirotation => 'Rotation des tables';
+
+  @override
+  String get restaurantHomeAlerts => 'Alertes de stock';
+
+  @override
+  String get restaurantHomeAlertline => 'Ingrédient';
+
+  @override
+  String get restaurantHomeOpen => 'Ouvrir';
+
+  @override
+  String get restaurantHomeKpirevenue => 'إيرادات اليوم';
+
+  @override
+  String get restaurantDelLoaderror =>
+      'Impossible de charger les données livraison/fidélité.';
+
+  @override
+  String get restaurantDelCreateerror => 'Erreur de création de la livraison.';
+
+  @override
+  String get restaurantDelRiderprompt => 'ID du livreur à assigner :';
+
+  @override
+  String get restaurantDelActionerror => 'Action impossible.';
+
+  @override
+  String get restaurantDelTabzones => 'Zones';
+
+  @override
+  String get restaurantDelTabriders => 'Livreurs';
+
+  @override
+  String get restaurantDelTabdeliveries => 'Livraisons';
+
+  @override
+  String get restaurantDelTabloyalty => 'Fidélité';
+
+  @override
+  String get restaurantDelTabpromos => 'Promotions';
+
+  @override
+  String get restaurantDelTitle => 'Livraison & fidélité';
+
+  @override
+  String get restaurantDelSubtitle =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantDelColname => 'Nom';
+
+  @override
+  String get restaurantDelColfees => 'Frais & minimum';
+
+  @override
+  String get restaurantDelFee => 'Frais';
+
+  @override
+  String get restaurantDelColphone => 'الهاتف';
+
+  @override
+  String get restaurantDelColvehicle => 'Véhicule';
+
+  @override
+  String get restaurantDelColactive => 'Actif';
+
+  @override
+  String get restaurantDelNewdelivery => 'Nouvelle livraison';
+
+  @override
+  String get restaurantDelCreate => 'Créer';
+
+  @override
+  String get restaurantDelColstatus => 'Statut';
+
+  @override
+  String get restaurantDelAssign => 'Assigner';
+
+  @override
+  String get restaurantDelOut => 'En tournée';
+
+  @override
+  String get restaurantDelDeliver => 'Livrée';
+
+  @override
+  String get restaurantDelCancel => 'Annuler';
+
+  @override
+  String get restaurantDelColpoints => 'Points';
+
+  @override
+  String get restaurantDelColtier => 'Palier';
+
+  @override
+  String get restaurantDelColcode => 'Code';
+
+  @override
+  String get restaurantDelColtitle => 'Titre';
+
+  @override
+  String get restaurantDelColtype => 'Type';
+
+  @override
+  String get restaurantDelColvalue => 'Valeur';
+
+  @override
+  String get restaurantDelColuses => 'Utilisations';
+
+  @override
+  String get restaurantDelLoading => 'Chargement...';
+
+  @override
+  String get restaurantRefBranches => 'Branches (établissements)';
+
+  @override
+  String get restaurantRefZones => 'Zones (salles)';
+
+  @override
+  String get restaurantRefTables => 'Tables (plan de salle)';
+
+  @override
+  String get restaurantRefCategories => 'Catégories';
+
+  @override
+  String get restaurantRefProducts => 'Produits (catalogue & recettes)';
+
+  @override
+  String get restaurantRefIngredients => 'Ingrédients (matières)';
+
+  @override
+  String get restaurantRefUnits => 'Unités';
+
+  @override
+  String get restaurantRefMenus => 'Menus (formules)';
+
+  @override
+  String get restaurantRefTaxrates => 'Taux de TVA';
+
+  @override
+  String get restaurantRefSuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefHours => 'Horaires';
+
+  @override
+  String get restaurantRefTabbranches => 'Branches';
+
+  @override
+  String get restaurantRefTabzones => 'Zones';
+
+  @override
+  String get restaurantRefTabtables => 'Tables';
+
+  @override
+  String get restaurantRefTabcategories => 'Catégories';
+
+  @override
+  String get restaurantRefTabproducts => 'Produits';
+
+  @override
+  String get restaurantRefTabingredients => 'Ingrédients';
+
+  @override
+  String get restaurantRefTabunits => 'Unités';
+
+  @override
+  String get restaurantRefTabmenus => 'Menus';
+
+  @override
+  String get restaurantRefTabtaxrates => 'TVA';
+
+  @override
+  String get restaurantRefTabsuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefTabhours => 'Horaires';
+
+  @override
+  String get restaurantRefTitle => 'Référentiel restaurant';
+
+  @override
+  String get restaurantRefSubtitle =>
+      'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs';
+
+  @override
+  String get restaurantRefDisabled => 'معطل';
+
+  @override
+  String get restaurantRefFieldphone => 'الهاتف';
+
+  @override
+  String get restaurantRefFieldcapacity => 'السعة';
+
+  @override
+  String get restaurantRefFieldlabel => 'التسمية';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'Capacité (couverts)';
+
+  @override
+  String get restaurantRefFieldcategory => 'Catégorie';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'Catégorie ID';
+
+  @override
+  String get restaurantRefFieldunit => 'الوحدة';
+
+  @override
+  String get restaurantRefFieldavgcost => 'Coût moyen';
+
+  @override
+  String get restaurantRefFieldunitkg => 'Unité (kg/l/u/pce)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'Coût moyen (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'البداية';
+
+  @override
+  String get restaurantRefFielddefault => 'الافتراضي';
+
+  @override
+  String get restaurantRefFieldbydefault => 'Par défaut';
+
+  @override
+  String get restaurantRefFieldclosed => 'مغلق';
 
   @override
   String get travelLoading => 'جارٍ التحميل…';
@@ -9671,4 +9882,586 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get travelAdvertstatusArchived => 'مؤرشفة';
+
+  @override
+  String get eduNavLabel => 'EduManager — الإدارة المدرسية';
+
+  @override
+  String get eduNavAdmin => 'الإدارة المدرسية';
+
+  @override
+  String get eduNavTeacher => 'فضاء المعلّم';
+
+  @override
+  String get eduHomeTitle => 'EduManager — الإدارة المدرسية';
+
+  @override
+  String get eduHomeSubtitle =>
+      'الإدارة المدرسية: الحرم الجامعي، السنوات الدراسية، الأقسام، التلاميذ، التسجيلات، التقييمات وكشوف النقاط.';
+
+  @override
+  String get eduHomeCampuses => 'الحرم الجامعي';
+
+  @override
+  String get eduHomeClasses => 'الأقسام';
+
+  @override
+  String get eduHomeStudents => 'التلاميذ';
+
+  @override
+  String get eduHomeAdmissions => 'التسجيلات';
+
+  @override
+  String get eduHomeReportcards => 'كشوف النقاط';
+
+  @override
+  String get eduHomePendingreportcards => 'كشف نقاط بانتظار التحقق';
+
+  @override
+  String get eduHomeQuicklinks => 'وصول سريع';
+
+  @override
+  String get eduHomeManagecampuses => 'إدارة الحرم الجامعي';
+
+  @override
+  String get eduHomeManageclasses => 'إدارة الأقسام';
+
+  @override
+  String get eduHomeManagestudents => 'إدارة التلاميذ';
+
+  @override
+  String get eduHomeManageassessments => 'التقييمات والنقاط';
+
+  @override
+  String get eduHomeManagereportcards => 'كشوف النقاط';
+
+  @override
+  String get eduHomeTeacherspace => 'فضاء المعلّم';
+
+  @override
+  String get eduCampusesTitle => 'الحرم الجامعي';
+
+  @override
+  String get eduCampusesSubtitle => 'مواقع المؤسسة المدرسية.';
+
+  @override
+  String get eduCampusesEmpty => 'لا يوجد حرم جامعي بعد. أنشئ أول حرم.';
+
+  @override
+  String get eduCampusesCreate => 'حرم جديد';
+
+  @override
+  String get eduCampusesEdit => 'تعديل الحرم';
+
+  @override
+  String get eduCampusesCode => 'الرمز';
+
+  @override
+  String get eduCampusesName => 'الاسم';
+
+  @override
+  String get eduCampusesAddress => 'العنوان';
+
+  @override
+  String get eduCampusesTimezone => 'المنطقة الزمنية';
+
+  @override
+  String get eduCampusesStatus => 'الحالة';
+
+  @override
+  String get eduCampusesSaveerror => 'تعذّر حفظ الحرم.';
+
+  @override
+  String get eduCampusesDeleteconfirm => 'حذف هذا الحرم؟';
+
+  @override
+  String get eduCampusesDeleted => 'تم حذف الحرم.';
+
+  @override
+  String get eduAcademicyearsTitle => 'السنوات الدراسية';
+
+  @override
+  String get eduAcademicyearsSubtitle =>
+      'الفترات الدراسية للمؤسسة (تُرفض الفترات المتداخلة).';
+
+  @override
+  String get eduAcademicyearsEmpty => 'لا توجد سنة دراسية.';
+
+  @override
+  String get eduAcademicyearsCreate => 'سنة جديدة';
+
+  @override
+  String get eduAcademicyearsEdit => 'تعديل السنة';
+
+  @override
+  String get eduAcademicyearsName => 'الاسم';
+
+  @override
+  String get eduAcademicyearsStartdate => 'البداية';
+
+  @override
+  String get eduAcademicyearsEnddate => 'النهاية';
+
+  @override
+  String get eduAcademicyearsStatus => 'الحالة';
+
+  @override
+  String get eduSubjectsTitle => 'المواد';
+
+  @override
+  String get eduSubjectsSubtitle => 'فهرس المواد المدرّسة.';
+
+  @override
+  String get eduSubjectsEmpty => 'لا توجد مادة.';
+
+  @override
+  String get eduSubjectsCreate => 'مادة جديدة';
+
+  @override
+  String get eduSubjectsEdit => 'تعديل المادة';
+
+  @override
+  String get eduSubjectsCode => 'الرمز';
+
+  @override
+  String get eduSubjectsName => 'الاسم';
+
+  @override
+  String get eduSubjectsDefaultcoefficient => 'المعامل الافتراضي';
+
+  @override
+  String get eduClassesTitle => 'الأقسام';
+
+  @override
+  String get eduClassesSubtitle =>
+      'الأقسام والمستويات والأساتذة الرئيسيون وتعيينات المواد.';
+
+  @override
+  String get eduClassesEmpty => 'لا يوجد قسم.';
+
+  @override
+  String get eduClassesCreate => 'قسم جديد';
+
+  @override
+  String get eduClassesEdit => 'تعديل القسم';
+
+  @override
+  String get eduClassesCode => 'الرمز';
+
+  @override
+  String get eduClassesName => 'الاسم';
+
+  @override
+  String get eduClassesLevel => 'المستوى';
+
+  @override
+  String get eduClassesCapacity => 'الطاقة القصوى';
+
+  @override
+  String get eduClassesTeacher => 'الأستاذ الرئيسي';
+
+  @override
+  String get eduClassesCampus => 'الحرم';
+
+  @override
+  String get eduClassesYear => 'السنة الدراسية';
+
+  @override
+  String get eduClassesAssignteacher => 'تعيين أستاذ';
+
+  @override
+  String get eduClassesRemoveteacher => 'إزالة';
+
+  @override
+  String get eduClassesTeacherplaceholder => 'اختر أستاذًا…';
+
+  @override
+  String get eduStudentsTitle => 'التلاميذ';
+
+  @override
+  String get eduStudentsSubtitle => 'ملفات التلاميذ (البيانات الشخصية محمية).';
+
+  @override
+  String get eduStudentsEmpty => 'لا يوجد تلميذ.';
+
+  @override
+  String get eduStudentsCreate => 'تلميذ جديد';
+
+  @override
+  String get eduStudentsEdit => 'تعديل التلميذ';
+
+  @override
+  String get eduStudentsNumber => 'رقم التسجيل';
+
+  @override
+  String get eduStudentsName => 'الاسم المعروض';
+
+  @override
+  String get eduStudentsStatus => 'الحالة';
+
+  @override
+  String get eduStudentsBirthdate => 'تاريخ الميلاد (مشفّر)';
+
+  @override
+  String get eduStudentsPiihint =>
+      'تُشفّر البيانات الحساسة ولا تُعرض خارج نطاق المؤسسة.';
+
+  @override
+  String get eduAdmissionsTitle => 'التسجيلات';
+
+  @override
+  String get eduAdmissionsSubtitle =>
+      'مسار التسجيل بموافقة RGPD والتحويل إلى تلميذ.';
+
+  @override
+  String get eduAdmissionsEmpty => 'لا يوجد ملف تسجيل.';
+
+  @override
+  String get eduAdmissionsCreate => 'ملف جديد';
+
+  @override
+  String get eduAdmissionsFirstname => 'الاسم';
+
+  @override
+  String get eduAdmissionsLastname => 'اللقب';
+
+  @override
+  String get eduAdmissionsStatus => 'الحالة';
+
+  @override
+  String get eduAdmissionsConvert => 'تحويل إلى تلميذ';
+
+  @override
+  String get eduAdmissionsConverted => 'تم التحويل';
+
+  @override
+  String get eduAdmissionsConverting => 'جارٍ التحويل…';
+
+  @override
+  String get eduAdmissionsConvertconfirm =>
+      'تحويل هذا الملف إلى تلميذ؟ العملية آمنة التكرار.';
+
+  @override
+  String get eduAssessmentsTitle => 'العنوان';
+
+  @override
+  String get eduAssessmentsSubtitle =>
+      'التقييمات وسلالم التنقيط وإدخال النقاط والنشر.';
+
+  @override
+  String get eduAssessmentsEmpty => 'لا يوجد تقييم.';
+
+  @override
+  String get eduAssessmentsCreate => 'تقييم جديد';
+
+  @override
+  String get eduAssessmentsEdit => 'تعديل التقييم';
+
+  @override
+  String get eduAssessmentsType => 'النوع';
+
+  @override
+  String get eduAssessmentsCoefficient => 'المعامل';
+
+  @override
+  String get eduAssessmentsMaxscore => 'السلم (الأقصى)';
+
+  @override
+  String get eduAssessmentsDate => 'التاريخ';
+
+  @override
+  String get eduAssessmentsClass => 'القسم';
+
+  @override
+  String get eduAssessmentsSubject => 'المادة';
+
+  @override
+  String get eduAssessmentsGrades => 'النقاط';
+
+  @override
+  String get eduAssessmentsEntergrades => 'إدخال النقاط';
+
+  @override
+  String get eduAssessmentsPublish => 'نشر';
+
+  @override
+  String get eduAssessmentsPublished => 'منشور';
+
+  @override
+  String get eduAssessmentsDraft => 'مسودة';
+
+  @override
+  String get eduAssessmentsNostudents => 'لا يوجد تلاميذ مسجلون في هذا القسم.';
+
+  @override
+  String get eduAssessmentsScore => 'النقطة';
+
+  @override
+  String get eduAssessmentsComment => 'تعليق';
+
+  @override
+  String get eduAssessmentsSavegrades => 'حفظ النقاط';
+
+  @override
+  String get eduReportcardsTitle => 'كشوف النقاط';
+
+  @override
+  String get eduReportcardsSubtitle => 'الإصدار وتحقق الإدارة والنشر المقفل.';
+
+  @override
+  String get eduReportcardsEmpty => 'لا يوجد كشف نقاط.';
+
+  @override
+  String get eduReportcardsGenerate => 'إصدار';
+
+  @override
+  String get eduReportcardsValidate => 'تحقق';
+
+  @override
+  String get eduReportcardsPublish => 'نشر';
+
+  @override
+  String get eduReportcardsStudent => 'التلميذ';
+
+  @override
+  String get eduReportcardsAverage => 'المعدل';
+
+  @override
+  String get eduReportcardsStatus => 'الحالة';
+
+  @override
+  String get eduReportcardsGenerated => 'صدر';
+
+  @override
+  String get eduReportcardsValidated => 'تم التحقق';
+
+  @override
+  String get eduReportcardsPeriod => 'الفترة';
+
+  @override
+  String get eduTeacherTitle => 'فضاء المعلّم';
+
+  @override
+  String get eduTeacherSubtitle => 'أقسامي: الحضور والنقاط والإرسال للتحقق.';
+
+  @override
+  String get eduTeacherMyclasses => 'أقسامي';
+
+  @override
+  String get eduTeacherEmpty => 'لا يوجد قسم مخصص لك.';
+
+  @override
+  String get eduTeacherAttendance => 'الحضور';
+
+  @override
+  String get eduTeacherGrades => 'النقاط';
+
+  @override
+  String get eduTeacherDate => 'التاريخ';
+
+  @override
+  String get eduTeacherPresent => 'حاضر';
+
+  @override
+  String get eduTeacherAbsent => 'غائب';
+
+  @override
+  String get eduTeacherLate => 'متأخر';
+
+  @override
+  String get eduTeacherExcused => 'مُعذَّر';
+
+  @override
+  String get eduTeacherSaveattendance => 'حفظ الحضور';
+
+  @override
+  String get eduTeacherAttendancesaved => 'تم حفظ الحضور.';
+
+  @override
+  String get eduTeacherAssessments => 'تقييماتي';
+
+  @override
+  String get eduTeacherSubmit => 'إرسال للتحقق';
+
+  @override
+  String get eduTeacherSubmithint =>
+      'النشر يقفل النقطة؛ ويُحتفظ بسجل التصحيحات.';
+
+  @override
+  String get eduTeacherNoassessments => 'لا يوجد تقييم لهذا القسم.';
+
+  @override
+  String get eduTeacherStudents => 'تلاميذ القسم';
+
+  @override
+  String get eduGuardianTitle => 'بوابة ولي الأمر';
+
+  @override
+  String get eduGuardianSubtitle =>
+      'اطّلع على السجل المدرسي للأطفال الموكولين إليك.';
+
+  @override
+  String get eduGuardianChildren => 'أطفالي';
+
+  @override
+  String get eduGuardianPresence => 'الحضور';
+
+  @override
+  String get eduGuardianReportcards => 'كشوف النقاط';
+
+  @override
+  String get eduGuardianCommunications => 'التواصل';
+
+  @override
+  String get eduGuardianConsent =>
+      'بدخولك إلى البوابة، توافق على الاطلاع على البيانات المدرسية لأطفالك.';
+
+  @override
+  String get eduGuardianInvalid => 'رابط وصول غير صالح.';
+
+  @override
+  String get eduGuardianExpired =>
+      'انتهت صلاحية رابط الوصول. تواصل مع المؤسسة.';
+
+  @override
+  String get eduGuardianUsed => 'سبق استخدام هذا الرابط ولم يعد صالحًا.';
+
+  @override
+  String get eduGuardianEmptychildren => 'لا يوجد طفل مرتبط بك.';
+
+  @override
+  String get eduGuardianToday => 'اليوم';
+
+  @override
+  String get eduGuardianLast30days => 'آخر 30 يومًا';
+
+  @override
+  String get eduGuardianPublishedonly => 'كشوف النقاط المنشورة فقط.';
+
+  @override
+  String get eduGuardianAccessnote =>
+      'رابط أحادي الاستخدام ومحدد المدة. كل وصول يُسجَّل.';
+
+  @override
+  String get eduCommonSave => 'حفظ';
+
+  @override
+  String get eduCommonCancel => 'إلغاء';
+
+  @override
+  String get eduCommonLoading => 'جارٍ التحميل…';
+
+  @override
+  String get eduCommonError => 'حدث خطأ.';
+
+  @override
+  String get eduCommonRetry => 'إعادة المحاولة';
+
+  @override
+  String get eduCommonActions => 'إجراءات';
+
+  @override
+  String get eduCommonClose => 'إغلاق';
+
+  @override
+  String get eduCommonDelete => 'حذف';
+
+  @override
+  String get eduCommonEdit => 'تعديل';
+
+  @override
+  String get eduCommonNodata => 'لا توجد بيانات.';
+
+  @override
+  String get eduCommonView => 'عرض';
+
+  @override
+  String get eduCommonBack => 'رجوع';
+
+  @override
+  String get eduCommonDeleteconfirm => 'حذف هذا العنصر؟';
+
+  @override
+  String get fuelPumpistTitle => 'عامل المضخة';
+
+  @override
+  String get fuelPumpistBackTooltip => 'رجوع';
+
+  @override
+  String get fuelPumpistActiveShift => 'الوردية الحالية';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'لا توجد وردية حالية';
+
+  @override
+  String get fuelPumpistNoShiftDescription => 'ليس لديك أي وردية عمل حالية.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'تعذّر تحميل الورديات';
+
+  @override
+  String get fuelPumpistReadingLabel => 'قراءة العداد';
+
+  @override
+  String get fuelPumpistReadingHint => 'الكمية المسجلة (لتر)';
+
+  @override
+  String get fuelPumpistSubmit => 'إرسال القراءة';
+
+  @override
+  String get crmHubTitle => 'CRM';
+
+  @override
+  String get crmHubSubtitle => 'حسابات وعملاء محتملون وفرص شركتك.';
+
+  @override
+  String get crmAccounts => 'الحسابات';
+
+  @override
+  String get crmContacts => 'جهات الاتصال';
+
+  @override
+  String get crmLeads => 'العملاء المحتملون';
+
+  @override
+  String get crmOpportunities => 'الفرص';
+
+  @override
+  String get crmAccountDetail => 'تفاصيل الحساب';
+
+  @override
+  String get crmTasks => 'المهام';
+
+  @override
+  String get crmActivities => 'الأنشطة';
+
+  @override
+  String get crmStatus => 'الحالة';
+
+  @override
+  String get crmStage => 'المرحلة';
+
+  @override
+  String get crmTaskCompleted => 'مكتملة';
+
+  @override
+  String get crmEmptyAccounts => 'لا توجد حسابات';
+
+  @override
+  String get crmEmptyContacts => 'لا توجد جهات اتصال';
+
+  @override
+  String get crmEmptyLeads => 'لا يوجد عملاء محتملون';
+
+  @override
+  String get crmEmptyOpportunities => 'لا توجد فرص';
+
+  @override
+  String get crmEmptyTasks => 'لا توجد مهام';
+
+  @override
+  String get crmEmptyActivities => 'لا توجد أنشطة';
+
+  @override
+  String get crmLoadError => 'تعذّر تحميل البيانات.';
 }

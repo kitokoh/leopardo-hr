@@ -31,6 +31,8 @@ Voir `docs/REFERENTIEL_PRODUIT/STATUTS.md` pour l'association statut ↔ couleur
 | Avertissement / retard | `#F59E0B` | `AppColors.warning` | `amber-500` |
 | Danger / absent | `#EF4444` | `AppColors.danger` | `red-500` |
 | Info / neutre | `#3B82F6` | `AppColors.info` | `blue-500` |
+| Danger — variante sombre (bgDark) | `#F87171` | `AppColors.dangerDark` | `red-400` |
+| Accent — variante sombre (bgDark) | `#34D399` | `AppColors.accentDark` | `emerald-400` |
 
 ## Neutres (fonds, textes, bordures)
 

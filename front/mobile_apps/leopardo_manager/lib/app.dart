@@ -41,6 +41,10 @@ import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.
 import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/fuel_station/screens/fuel_pumpist_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_accounts_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_hub_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_leads_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_opportunities_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
@@ -287,6 +291,23 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/fuel-pumpist',
             builder: (context, state) => const FuelPumpistScreen(),
+          ),
+
+          GoRoute(
+            path: '/crm',
+            builder: (context, state) => const CrmHubScreen(),
+          ),
+          GoRoute(
+            path: '/crm/accounts',
+            builder: (context, state) => const CrmAccountsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/leads',
+            builder: (context, state) => const CrmLeadsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/opportunities',
+            builder: (context, state) => const CrmOpportunitiesScreen(),
           ),
           GoRoute(
             path: '/approvals',

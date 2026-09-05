@@ -63,7 +63,9 @@ class _HubTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: MobilePanel(
-        child: ListTile(
+        child: Material(
+          type: MaterialType.transparency,
+          child: ListTile(
           contentPadding: EdgeInsets.zero,
           leading: Container(
             width: 44,
@@ -86,6 +88,7 @@ class _HubTile extends StatelessWidget {
             color: MobileSurface.muted,
           ),
           onTap: onTap,
+          ),
         ),
       ),
     );

@@ -42,6 +42,11 @@ class AppColors {
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color danger = Color(0xFFEF4444);
+  /// Variante [danger] lisible sur fond sombre (bgDark slate-900) — rouge-400.
+  static const Color dangerDark = Color(0xFFF87171); // red-400
+  /// Accent générique lisible sur fond sombre (bgDark slate-900) — émeraude-400,
+  /// aligné sur la famille [success]/[rh] (doc: docs/REFERENTIEL_PRODUIT/COULEURS.md).
+  static const Color accentDark = Color(0xFF34D399); // emerald-400
   static const Color info = Color(0xFF3B82F6);
 
   // â”€â”€â”€ Neutres â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

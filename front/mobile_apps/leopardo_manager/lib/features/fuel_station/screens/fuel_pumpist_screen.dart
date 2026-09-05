@@ -6,7 +6,6 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
-import 'package:leopardo_manager/features/fuel_station/data/fuel_station_repository.dart';
 import 'package:leopardo_manager/features/fuel_station/providers/fuel_station_provider.dart';
 
 /// Parcours pompiste FuelStation (FUEL-013, #5807) : shift actif → saisie

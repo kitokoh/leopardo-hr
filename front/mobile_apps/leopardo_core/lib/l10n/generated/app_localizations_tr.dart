@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -323,7 +322,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get modulesEvaluations => 'Degerlendirmeler';
 
   @override
-  String get modulesRestaurant => 'Satış noktası (POS)';
+  String get modulesRestaurant => 'Mutfak ekranı';
 
   @override
   String get emailsInvitationSubject =>
@@ -1250,11 +1249,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  ) {
+      Object date, Object hours, Object range, Object status) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
@@ -8295,72 +8290,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get crmPipelineStageLost => 'Kaybedildi';
 
   @override
-  String get restaurantPosTitle => 'Satış noktası (POS)';
-
-  @override
-  String get restaurantPosSubtitle => 'Sipariş alma ve tahsilat';
-
-  @override
-  String get restaurantPosProducts => 'Katalog';
-
-  @override
-  String get restaurantPosCart => 'Güncel sipariş';
-
-  @override
-  String get restaurantPosNoproducts => 'Uygun ürün yok.';
-
-  @override
-  String get restaurantPosNosession => 'Bu şube için açık kasa oturumu yok.';
-
-  @override
-  String get restaurantPosOpensession => 'Kasa oturumu aç';
-
-  @override
-  String get restaurantPosNoorder => 'Güncel sipariş yok.';
-
-  @override
-  String get restaurantPosNeworder => 'Yeni sipariş';
-
-  @override
-  String get restaurantPosSubmit => 'Gönder';
-
-  @override
-  String get restaurantPosConfirm => 'Onayla (mutfak)';
-
-  @override
-  String get restaurantPosBill => 'Hesap';
-
-  @override
-  String get restaurantPosPaycash => 'Nakit tahsil';
-
-  @override
-  String get restaurantPosPaid => 'Sipariş ödendi';
-
-  @override
-  String get restaurantPosSubtotal => 'Ara toplam';
-
-  @override
-  String get restaurantPosTax => 'Vergi';
-
-  @override
-  String get restaurantPosTotal => 'Toplam';
-
-  @override
-  String get restaurantPosRemoveitem => 'Kaldır';
-
-  @override
-  String get restaurantPosUncategorized => 'Kategorisiz';
-
-  @override
-  String get restaurantPosLoaderror => 'Satış noktası yüklenemedi.';
-
-  @override
-  String get restaurantPosLoading => 'Satış noktası yükleniyor…';
-
-  @override
-  String get restaurantPosActionerror => 'İşlem başarısız, tekrar deneyin.';
-
-  @override
   String get restaurantKitchentitle => 'Mutfak ekranı';
 
   @override
@@ -8416,104 +8345,103 @@ class AppLocalizationsTr extends AppLocalizations {
   String get restaurantLoading => 'Mutfak kuyruğu yükleniyor…';
 
   @override
-  String get restaurantShopTitle => 'Online sipariş';
+  String get restaurantPostitle => 'Satış noktası';
 
   @override
-  String get restaurantShopSubtitle =>
-      'Halka açık menü — birkaç tıklamayla sipariş verin.';
+  String get restaurantPossubtitle => 'Sipariş alma ve tahsilat';
 
   @override
-  String get restaurantShopMenu => 'Menü';
+  String get restaurantNeworder => 'Yeni sipariş';
 
   @override
-  String get restaurantShopCart => 'Sepet';
+  String get restaurantOrderitems => 'Sipariş kalemleri';
 
   @override
-  String get restaurantShopEmptycart => 'Sepetiniz boş.';
+  String get restaurantAdditem => 'Ürün ekle';
 
   @override
-  String get restaurantShopAdd => 'Ekle';
+  String get restaurantBill => 'Hesap';
 
   @override
-  String get restaurantShopAdded => 'Eklendi';
+  String get restaurantPaycash => 'Nakit tahsil et';
 
   @override
-  String get restaurantShopCategoryall => 'Tümü';
+  String get restaurantPaid => 'Ödendi';
 
   @override
-  String get restaurantShopPrice => 'Fiyat';
+  String get restaurantOpensession => 'Kasayı aç';
 
   @override
-  String get restaurantShopSubtotal => 'Ara toplam';
+  String get restaurantClosesession => 'Kasayı kapat';
 
   @override
-  String get restaurantShopTax => 'Vergi';
+  String get restaurantSessionopen => 'Kasa açık';
 
   @override
-  String get restaurantShopTotal => 'Toplam';
+  String get restaurantSessionclosed => 'Kasa kapalı';
 
   @override
-  String get restaurantShopPhone => 'Telefon (isteğe bağlı)';
+  String get restaurantReservations => 'Rezervasyonlar';
 
   @override
-  String get restaurantShopPhonehint =>
-      'Siparişinizin durumu hakkında bilgilendirilmek için.';
+  String get restaurantReservationnew => 'Yeni rezervasyon';
 
   @override
-  String get restaurantShopCheckout => 'Sipariş ver';
+  String get restaurantCustomername => 'Müşteri adı';
 
   @override
-  String get restaurantShopOrdering => 'Sipariş veriliyor…';
+  String get restaurantGuests => 'Kişi sayısı';
 
   @override
-  String get restaurantShopOrdercreated => 'Sipariş onaylandı';
+  String get restaurantCheckin => 'Giriş yap';
 
   @override
-  String get restaurantShopOrderref => 'Referans';
+  String get restaurantNoshow => 'Gelmeme';
 
   @override
-  String get restaurantShopOrderstatus => 'Durum';
+  String get restaurantShoptitle => 'Online sipariş';
 
   @override
-  String get restaurantShopTrack => 'Siparişi takip et';
+  String get restaurantKiosktitle => 'Self servis kiosk';
 
   @override
-  String get restaurantShopPay => 'Öde';
+  String get restaurantStatusdraft => 'Taslak';
 
   @override
-  String get restaurantShopPaying => 'Ödeniyor…';
+  String get restaurantStatusopen => 'Açık';
 
   @override
-  String get restaurantShopPayhint => 'Teslimatta ödeme veya mobil para.';
+  String get restaurantStatusinpreparation => 'Hazırlanıyor';
 
   @override
-  String get restaurantShopMissingtoken =>
-      'Geçersiz veya eksik mağaza bağlantısı. Restoranın sağladığı bağlantıyı kullanın.';
+  String get restaurantStatusready => 'Hazır';
 
   @override
-  String get restaurantShopLoaderror => 'Menü yüklenemedi. Yeniden deneyin.';
+  String get restaurantStatusserved => 'Servis edildi';
 
   @override
-  String get restaurantShopRetry => 'Yeniden dene';
+  String get restaurantStatuspaid => 'Ödendi';
 
   @override
-  String get restaurantShopBacktomenu => 'Menüye dön';
+  String get restaurantStatusclosed => 'Kapatıldı';
 
   @override
-  String get restaurantShopInvalidtoken =>
-      'Geçersiz veya süresi dolmuş mağaza jetonu.';
+  String get restaurantStatuscancelled => 'İptal edildi';
 
   @override
-  String get restaurantShopItems => 'ürün';
+  String get restaurantStatusrefunded => 'İade edildi';
 
   @override
-  String get restaurantShopQuantity => 'Adet';
+  String get restaurantSubtotal => 'Ara toplam';
 
   @override
-  String get restaurantShopRemove => 'Kaldır';
+  String get restaurantTax => 'KDV';
 
   @override
-  String get restaurantShopCurrency => 'para birimi';
+  String get restaurantDiscount => 'İndirim';
+
+  @override
+  String get restaurantTotal => 'Toplam';
 
   @override
   String get restaurantMobileHubTitle => 'Restoran';
@@ -8754,6 +8682,288 @@ class AppLocalizationsTr extends AppLocalizations {
   String restaurantMobileManagerStockLevel(Object quantity, Object threshold) {
     return 'Stok: $quantity / eşik: $threshold';
   }
+
+  @override
+  String get restaurantHomeLoaderror =>
+      'Impossible de charger le tableau de bord restaurant.';
+
+  @override
+  String get restaurantHomeReferential => 'Référentiel';
+
+  @override
+  String get restaurantHomeReferentialdesc =>
+      'Branches, plan de salle, catalogue, matières, menus, fournisseurs';
+
+  @override
+  String get restaurantHomeReservations => 'Réservations';
+
+  @override
+  String get restaurantHomeReservationsdesc => 'Créneaux, check-in, dépôts';
+
+  @override
+  String get restaurantHomeStock => 'Stock & achats';
+
+  @override
+  String get restaurantHomeStockdesc =>
+      'Niveaux, bons de commande, réceptions, inventaires';
+
+  @override
+  String get restaurantHomeDelivery => 'Livraison & fidélité';
+
+  @override
+  String get restaurantHomeDeliverydesc =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantHomeReports => 'Rapports';
+
+  @override
+  String get restaurantHomeReportsdesc =>
+      'Ventes, occupation, produits, COGS, export CSV';
+
+  @override
+  String get restaurantHomeTitle => 'Restaurant Manager';
+
+  @override
+  String get restaurantHomeSubtitle =>
+      'Point de vente, réservations, stock et livraison';
+
+  @override
+  String get restaurantHomeKpiorders => 'Commandes du jour';
+
+  @override
+  String get restaurantHomeKpibasket => 'Panier moyen';
+
+  @override
+  String get restaurantHomeKpirotation => 'Rotation des tables';
+
+  @override
+  String get restaurantHomeAlerts => 'Alertes de stock';
+
+  @override
+  String get restaurantHomeAlertline => 'Ingrédient';
+
+  @override
+  String get restaurantHomeOpen => 'Ouvrir';
+
+  @override
+  String get restaurantHomeKpirevenue => 'Günlük ciro';
+
+  @override
+  String get restaurantDelLoaderror =>
+      'Impossible de charger les données livraison/fidélité.';
+
+  @override
+  String get restaurantDelCreateerror => 'Erreur de création de la livraison.';
+
+  @override
+  String get restaurantDelRiderprompt => 'ID du livreur à assigner :';
+
+  @override
+  String get restaurantDelActionerror => 'Action impossible.';
+
+  @override
+  String get restaurantDelTabzones => 'Zones';
+
+  @override
+  String get restaurantDelTabriders => 'Livreurs';
+
+  @override
+  String get restaurantDelTabdeliveries => 'Livraisons';
+
+  @override
+  String get restaurantDelTabloyalty => 'Fidélité';
+
+  @override
+  String get restaurantDelTabpromos => 'Promotions';
+
+  @override
+  String get restaurantDelTitle => 'Livraison & fidélité';
+
+  @override
+  String get restaurantDelSubtitle =>
+      'Zones, livreurs, tournées, points, promotions';
+
+  @override
+  String get restaurantDelColname => 'Nom';
+
+  @override
+  String get restaurantDelColfees => 'Frais & minimum';
+
+  @override
+  String get restaurantDelFee => 'Frais';
+
+  @override
+  String get restaurantDelColphone => 'Telefon';
+
+  @override
+  String get restaurantDelColvehicle => 'Véhicule';
+
+  @override
+  String get restaurantDelColactive => 'Actif';
+
+  @override
+  String get restaurantDelNewdelivery => 'Nouvelle livraison';
+
+  @override
+  String get restaurantDelCreate => 'Créer';
+
+  @override
+  String get restaurantDelColstatus => 'Statut';
+
+  @override
+  String get restaurantDelAssign => 'Assigner';
+
+  @override
+  String get restaurantDelOut => 'En tournée';
+
+  @override
+  String get restaurantDelDeliver => 'Livrée';
+
+  @override
+  String get restaurantDelCancel => 'Annuler';
+
+  @override
+  String get restaurantDelColpoints => 'Points';
+
+  @override
+  String get restaurantDelColtier => 'Palier';
+
+  @override
+  String get restaurantDelColcode => 'Code';
+
+  @override
+  String get restaurantDelColtitle => 'Titre';
+
+  @override
+  String get restaurantDelColtype => 'Type';
+
+  @override
+  String get restaurantDelColvalue => 'Valeur';
+
+  @override
+  String get restaurantDelColuses => 'Utilisations';
+
+  @override
+  String get restaurantDelLoading => 'Chargement...';
+
+  @override
+  String get restaurantRefBranches => 'Branches (établissements)';
+
+  @override
+  String get restaurantRefZones => 'Zones (salles)';
+
+  @override
+  String get restaurantRefTables => 'Tables (plan de salle)';
+
+  @override
+  String get restaurantRefCategories => 'Catégories';
+
+  @override
+  String get restaurantRefProducts => 'Produits (catalogue & recettes)';
+
+  @override
+  String get restaurantRefIngredients => 'Ingrédients (matières)';
+
+  @override
+  String get restaurantRefUnits => 'Unités';
+
+  @override
+  String get restaurantRefMenus => 'Menus (formules)';
+
+  @override
+  String get restaurantRefTaxrates => 'Taux de TVA';
+
+  @override
+  String get restaurantRefSuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefHours => 'Horaires';
+
+  @override
+  String get restaurantRefTabbranches => 'Branches';
+
+  @override
+  String get restaurantRefTabzones => 'Zones';
+
+  @override
+  String get restaurantRefTabtables => 'Tables';
+
+  @override
+  String get restaurantRefTabcategories => 'Catégories';
+
+  @override
+  String get restaurantRefTabproducts => 'Produits';
+
+  @override
+  String get restaurantRefTabingredients => 'Ingrédients';
+
+  @override
+  String get restaurantRefTabunits => 'Unités';
+
+  @override
+  String get restaurantRefTabmenus => 'Menus';
+
+  @override
+  String get restaurantRefTabtaxrates => 'TVA';
+
+  @override
+  String get restaurantRefTabsuppliers => 'Fournisseurs';
+
+  @override
+  String get restaurantRefTabhours => 'Horaires';
+
+  @override
+  String get restaurantRefTitle => 'Référentiel restaurant';
+
+  @override
+  String get restaurantRefSubtitle =>
+      'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs';
+
+  @override
+  String get restaurantRefDisabled => 'Devre dışı';
+
+  @override
+  String get restaurantRefFieldphone => 'Telefon';
+
+  @override
+  String get restaurantRefFieldcapacity => 'Kapasite';
+
+  @override
+  String get restaurantRefFieldlabel => 'Etiket';
+
+  @override
+  String get restaurantRefFieldcapacitycovers => 'Capacité (couverts)';
+
+  @override
+  String get restaurantRefFieldcategory => 'Catégorie';
+
+  @override
+  String get restaurantRefFieldcategoryid => 'Catégorie ID';
+
+  @override
+  String get restaurantRefFieldunit => 'Birim';
+
+  @override
+  String get restaurantRefFieldavgcost => 'Coût moyen';
+
+  @override
+  String get restaurantRefFieldunitkg => 'Unité (kg/l/u/pce)';
+
+  @override
+  String get restaurantRefFieldavgcostminor => 'Coût moyen (minor)';
+
+  @override
+  String get restaurantRefFieldstartsat => 'Başlangıç';
+
+  @override
+  String get restaurantRefFielddefault => 'Varsayılan';
+
+  @override
+  String get restaurantRefFieldbydefault => 'Par défaut';
+
+  @override
+  String get restaurantRefFieldclosed => 'Kapalı';
 
   @override
   String get travelLoading => 'Yükleniyor…';
@@ -9764,4 +9974,591 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get travelAdvertstatusArchived => 'Arşivlendi';
+
+  @override
+  String get eduNavLabel => 'EduManager';
+
+  @override
+  String get eduNavAdmin => 'Okul yönetimi';
+
+  @override
+  String get eduNavTeacher => 'Öğretmen alanım';
+
+  @override
+  String get eduHomeTitle => 'EduManager';
+
+  @override
+  String get eduHomeSubtitle =>
+      'Okul yönetimi: kampüsler, öğretim yılları, sınıflar, öğrenciler, kayıtlar, değerlendirmeler ve karne.';
+
+  @override
+  String get eduHomeCampuses => 'Kampüsler';
+
+  @override
+  String get eduHomeClasses => 'Sınıflar';
+
+  @override
+  String get eduHomeStudents => 'Öğrenciler';
+
+  @override
+  String get eduHomeAdmissions => 'Kayıtlar';
+
+  @override
+  String get eduHomeReportcards => 'Karneler';
+
+  @override
+  String get eduHomePendingreportcards => 'onaylanacak karne';
+
+  @override
+  String get eduHomeQuicklinks => 'Hızlı erişim';
+
+  @override
+  String get eduHomeManagecampuses => 'Kampüsleri yönet';
+
+  @override
+  String get eduHomeManageclasses => 'Sınıfları yönet';
+
+  @override
+  String get eduHomeManagestudents => 'Öğrencileri yönet';
+
+  @override
+  String get eduHomeManageassessments => 'Değerlendirme ve notlar';
+
+  @override
+  String get eduHomeManagereportcards => 'Karneler';
+
+  @override
+  String get eduHomeTeacherspace => 'Öğretmen alanı';
+
+  @override
+  String get eduCampusesTitle => 'Kampüsler';
+
+  @override
+  String get eduCampusesSubtitle => 'Kurumun okul yerleşkeleri.';
+
+  @override
+  String get eduCampusesEmpty => 'Henüz kampüs yok. İlk kampüsü oluşturun.';
+
+  @override
+  String get eduCampusesCreate => 'Yeni kampüs';
+
+  @override
+  String get eduCampusesEdit => 'Kampüsü düzenle';
+
+  @override
+  String get eduCampusesCode => 'Kod';
+
+  @override
+  String get eduCampusesName => 'Ad';
+
+  @override
+  String get eduCampusesAddress => 'Adres';
+
+  @override
+  String get eduCampusesTimezone => 'Saat dilimi';
+
+  @override
+  String get eduCampusesStatus => 'Durum';
+
+  @override
+  String get eduCampusesSaveerror => 'Kampüs kaydedilemedi.';
+
+  @override
+  String get eduCampusesDeleteconfirm => 'Bu kampüs silinsin mi?';
+
+  @override
+  String get eduCampusesDeleted => 'Kampüs silindi.';
+
+  @override
+  String get eduAcademicyearsTitle => 'Öğretim yılları';
+
+  @override
+  String get eduAcademicyearsSubtitle =>
+      'Kurumun öğretim dönemleri (çakışan dönemler reddedilir).';
+
+  @override
+  String get eduAcademicyearsEmpty => 'Öğretim yılı yok.';
+
+  @override
+  String get eduAcademicyearsCreate => 'Yeni öğretim yılı';
+
+  @override
+  String get eduAcademicyearsEdit => 'Öğretim yılını düzenle';
+
+  @override
+  String get eduAcademicyearsName => 'Ad';
+
+  @override
+  String get eduAcademicyearsStartdate => 'Başlangıç';
+
+  @override
+  String get eduAcademicyearsEnddate => 'Bitiş';
+
+  @override
+  String get eduAcademicyearsStatus => 'Durum';
+
+  @override
+  String get eduSubjectsTitle => 'Dersler';
+
+  @override
+  String get eduSubjectsSubtitle => 'Okutulan derslerin kataloğu.';
+
+  @override
+  String get eduSubjectsEmpty => 'Ders yok.';
+
+  @override
+  String get eduSubjectsCreate => 'Yeni ders';
+
+  @override
+  String get eduSubjectsEdit => 'Dersi düzenle';
+
+  @override
+  String get eduSubjectsCode => 'Kod';
+
+  @override
+  String get eduSubjectsName => 'Ad';
+
+  @override
+  String get eduSubjectsDefaultcoefficient => 'Varsayılan katsayı';
+
+  @override
+  String get eduClassesTitle => 'Sınıflar';
+
+  @override
+  String get eduClassesSubtitle =>
+      'Sınıflar, seviyeler, sınıf öğretmenleri ve ders atamaları.';
+
+  @override
+  String get eduClassesEmpty => 'Sınıf yok.';
+
+  @override
+  String get eduClassesCreate => 'Yeni sınıf';
+
+  @override
+  String get eduClassesEdit => 'Sınıfı düzenle';
+
+  @override
+  String get eduClassesCode => 'Kod';
+
+  @override
+  String get eduClassesName => 'Ad';
+
+  @override
+  String get eduClassesLevel => 'Seviye';
+
+  @override
+  String get eduClassesCapacity => 'Azami kapasite';
+
+  @override
+  String get eduClassesTeacher => 'Sınıf öğretmeni';
+
+  @override
+  String get eduClassesCampus => 'Kampüs';
+
+  @override
+  String get eduClassesYear => 'Öğretim yılı';
+
+  @override
+  String get eduClassesAssignteacher => 'Öğretmen ata';
+
+  @override
+  String get eduClassesRemoveteacher => 'Kaldır';
+
+  @override
+  String get eduClassesTeacherplaceholder => 'Bir öğretmen seçin…';
+
+  @override
+  String get eduStudentsTitle => 'Öğrenciler';
+
+  @override
+  String get eduStudentsSubtitle =>
+      'Öğrenci dosyaları (kişisel veriler korunur).';
+
+  @override
+  String get eduStudentsEmpty => 'Öğrenci yok.';
+
+  @override
+  String get eduStudentsCreate => 'Yeni öğrenci';
+
+  @override
+  String get eduStudentsEdit => 'Öğrenciyi düzenle';
+
+  @override
+  String get eduStudentsNumber => 'Kayıt no';
+
+  @override
+  String get eduStudentsName => 'Görünen ad';
+
+  @override
+  String get eduStudentsStatus => 'Durum';
+
+  @override
+  String get eduStudentsBirthdate => 'Doğum tarihi (şifreli)';
+
+  @override
+  String get eduStudentsPiihint =>
+      'Hassas veriler beklemede şifrelenir ve asla kiracı dışına çıkmaz.';
+
+  @override
+  String get eduAdmissionsTitle => 'Kayıtlar';
+
+  @override
+  String get eduAdmissionsSubtitle =>
+      'KVKK onaylı kayıt süreci ve öğrenciye dönüştürme.';
+
+  @override
+  String get eduAdmissionsEmpty => 'Kayıt dosyası yok.';
+
+  @override
+  String get eduAdmissionsCreate => 'Yeni dosya';
+
+  @override
+  String get eduAdmissionsFirstname => 'Ad';
+
+  @override
+  String get eduAdmissionsLastname => 'Soyad';
+
+  @override
+  String get eduAdmissionsStatus => 'Durum';
+
+  @override
+  String get eduAdmissionsConvert => 'Öğrenciye dönüştür';
+
+  @override
+  String get eduAdmissionsConverted => 'Dönüştürüldü';
+
+  @override
+  String get eduAdmissionsConverting => 'Dönüştürülüyor…';
+
+  @override
+  String get eduAdmissionsConvertconfirm =>
+      'Bu dosya öğrenciye dönüştürülsün mü? İşlem tekrarlanabilir (idempotent).';
+
+  @override
+  String get eduAssessmentsTitle => 'Başlık';
+
+  @override
+  String get eduAssessmentsSubtitle =>
+      'Değerlendirmeler, not ölçekleri, not girişi ve yayınlama.';
+
+  @override
+  String get eduAssessmentsEmpty => 'Değerlendirme yok.';
+
+  @override
+  String get eduAssessmentsCreate => 'Yeni değerlendirme';
+
+  @override
+  String get eduAssessmentsEdit => 'Değerlendirmeyi düzenle';
+
+  @override
+  String get eduAssessmentsType => 'Tür';
+
+  @override
+  String get eduAssessmentsCoefficient => 'Katsayı';
+
+  @override
+  String get eduAssessmentsMaxscore => 'Ölçek (azami)';
+
+  @override
+  String get eduAssessmentsDate => 'Tarih';
+
+  @override
+  String get eduAssessmentsClass => 'Sınıf';
+
+  @override
+  String get eduAssessmentsSubject => 'Ders';
+
+  @override
+  String get eduAssessmentsGrades => 'Notlar';
+
+  @override
+  String get eduAssessmentsEntergrades => 'Notları gir';
+
+  @override
+  String get eduAssessmentsPublish => 'Yayınla';
+
+  @override
+  String get eduAssessmentsPublished => 'Yayınlandı';
+
+  @override
+  String get eduAssessmentsDraft => 'Taslak';
+
+  @override
+  String get eduAssessmentsNostudents => 'Bu sınıfta kayıtlı öğrenci yok.';
+
+  @override
+  String get eduAssessmentsScore => 'Not';
+
+  @override
+  String get eduAssessmentsComment => 'Yorum';
+
+  @override
+  String get eduAssessmentsSavegrades => 'Notları kaydet';
+
+  @override
+  String get eduReportcardsTitle => 'Karneler';
+
+  @override
+  String get eduReportcardsSubtitle =>
+      'Oluşturma, yönetim onayı ve kilitleyerek yayınlama.';
+
+  @override
+  String get eduReportcardsEmpty => 'Karne yok.';
+
+  @override
+  String get eduReportcardsGenerate => 'Oluştur';
+
+  @override
+  String get eduReportcardsValidate => 'Onayla';
+
+  @override
+  String get eduReportcardsPublish => 'Yayınla';
+
+  @override
+  String get eduReportcardsStudent => 'Öğrenci';
+
+  @override
+  String get eduReportcardsAverage => 'Ortalama';
+
+  @override
+  String get eduReportcardsStatus => 'Durum';
+
+  @override
+  String get eduReportcardsGenerated => 'Oluşturuldu';
+
+  @override
+  String get eduReportcardsValidated => 'Onaylandı';
+
+  @override
+  String get eduReportcardsPeriod => 'Dönem';
+
+  @override
+  String get eduTeacherTitle => 'Öğretmen alanı';
+
+  @override
+  String get eduTeacherSubtitle =>
+      'Sınıflarım: yoklama, notlar ve onay için gönderim.';
+
+  @override
+  String get eduTeacherMyclasses => 'Sınıflarım';
+
+  @override
+  String get eduTeacherEmpty => 'Size atanmış sınıf yok.';
+
+  @override
+  String get eduTeacherAttendance => 'Yoklama';
+
+  @override
+  String get eduTeacherGrades => 'Notlar';
+
+  @override
+  String get eduTeacherDate => 'Tarih';
+
+  @override
+  String get eduTeacherPresent => 'Mevcut';
+
+  @override
+  String get eduTeacherAbsent => 'Yok';
+
+  @override
+  String get eduTeacherLate => 'Geç';
+
+  @override
+  String get eduTeacherExcused => 'Mazeretli';
+
+  @override
+  String get eduTeacherSaveattendance => 'Yoklamayı kaydet';
+
+  @override
+  String get eduTeacherAttendancesaved => 'Yoklama kaydedildi.';
+
+  @override
+  String get eduTeacherAssessments => 'Değerlendirmelerim';
+
+  @override
+  String get eduTeacherSubmit => 'Onay için gönder';
+
+  @override
+  String get eduTeacherSubmithint =>
+      'Yayınlama notu kilitler; düzeltme geçmişi korunur.';
+
+  @override
+  String get eduTeacherNoassessments => 'Bu sınıf için değerlendirme yok.';
+
+  @override
+  String get eduTeacherStudents => 'Sınıf öğrencileri';
+
+  @override
+  String get eduGuardianTitle => 'Veli portalı';
+
+  @override
+  String get eduGuardianSubtitle =>
+      'Size emanet edilen çocukların okul kayıtlarını görüntüleyin.';
+
+  @override
+  String get eduGuardianChildren => 'Çocuklarım';
+
+  @override
+  String get eduGuardianPresence => 'Yoklama';
+
+  @override
+  String get eduGuardianReportcards => 'Karneler';
+
+  @override
+  String get eduGuardianCommunications => 'İletişim';
+
+  @override
+  String get eduGuardianConsent =>
+      'Portala erişerek çocuklarınızın okul verilerini görüntülemeyi kabul etmiş olursunuz.';
+
+  @override
+  String get eduGuardianInvalid => 'Geçersiz erişim bağlantısı.';
+
+  @override
+  String get eduGuardianExpired =>
+      'Bu erişim bağlantısının süresi dolmuş. Okulla iletişime geçin.';
+
+  @override
+  String get eduGuardianUsed =>
+      'Bu bağlantı zaten kullanıldı ve artık geçerli değil.';
+
+  @override
+  String get eduGuardianEmptychildren => 'Size bağlı çocuk yok.';
+
+  @override
+  String get eduGuardianToday => 'Bugün';
+
+  @override
+  String get eduGuardianLast30days => 'Son 30 gün';
+
+  @override
+  String get eduGuardianPublishedonly => 'Yalnızca yayınlanmış karneler.';
+
+  @override
+  String get eduGuardianAccessnote =>
+      'Tek kullanımlık ve süreli bağlantı. Her erişim kayıt altına alınır.';
+
+  @override
+  String get eduCommonSave => 'Kaydet';
+
+  @override
+  String get eduCommonCancel => 'İptal';
+
+  @override
+  String get eduCommonLoading => 'Yükleniyor…';
+
+  @override
+  String get eduCommonError => 'Bir hata oluştu.';
+
+  @override
+  String get eduCommonRetry => 'Yeniden dene';
+
+  @override
+  String get eduCommonActions => 'İşlemler';
+
+  @override
+  String get eduCommonClose => 'Kapat';
+
+  @override
+  String get eduCommonDelete => 'Sil';
+
+  @override
+  String get eduCommonEdit => 'Düzenle';
+
+  @override
+  String get eduCommonNodata => 'Veri yok.';
+
+  @override
+  String get eduCommonView => 'Görüntüle';
+
+  @override
+  String get eduCommonBack => 'Geri';
+
+  @override
+  String get eduCommonDeleteconfirm => 'Bu öğe silinsin mi?';
+
+  @override
+  String get fuelPumpistTitle => 'Pompacı';
+
+  @override
+  String get fuelPumpistBackTooltip => 'Geri';
+
+  @override
+  String get fuelPumpistActiveShift => 'Aktif vardiya';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aktif vardiya yok';
+
+  @override
+  String get fuelPumpistNoShiftDescription => 'Aktif iş vardiyanız bulunmuyor.';
+
+  @override
+  String get fuelPumpistErrorTitle => 'Vardiyalarınız yüklenemedi';
+
+  @override
+  String get fuelPumpistReadingLabel => 'Sayaç okuması';
+
+  @override
+  String get fuelPumpistReadingHint => 'Kaydedilen hacim (L)';
+
+  @override
+  String get fuelPumpistSubmit => 'Okumayı gönder';
+
+  @override
+  String get crmHubTitle => 'CRM';
+
+  @override
+  String get crmHubSubtitle =>
+      'Şirketinizin hesapları, adayları ve fırsatları.';
+
+  @override
+  String get crmAccounts => 'Hesaplar';
+
+  @override
+  String get crmContacts => 'Kişiler';
+
+  @override
+  String get crmLeads => 'Adaylar';
+
+  @override
+  String get crmOpportunities => 'Fırsatlar';
+
+  @override
+  String get crmAccountDetail => 'Hesap detayı';
+
+  @override
+  String get crmTasks => 'Görevler';
+
+  @override
+  String get crmActivities => 'Etkinlikler';
+
+  @override
+  String get crmStatus => 'Durum';
+
+  @override
+  String get crmStage => 'Aşama';
+
+  @override
+  String get crmTaskCompleted => 'Tamamlandı';
+
+  @override
+  String get crmEmptyAccounts => 'Hesap yok';
+
+  @override
+  String get crmEmptyContacts => 'Kişi yok';
+
+  @override
+  String get crmEmptyLeads => 'Aday yok';
+
+  @override
+  String get crmEmptyOpportunities => 'Fırsat yok';
+
+  @override
+  String get crmEmptyTasks => 'Görev yok';
+
+  @override
+  String get crmEmptyActivities => 'Etkinlik yok';
+
+  @override
+  String get crmLoadError => 'Veriler yüklenemedi.';
 }
