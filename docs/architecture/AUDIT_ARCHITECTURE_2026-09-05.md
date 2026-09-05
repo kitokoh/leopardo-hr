@@ -120,4 +120,89 @@ ont été vérifiées par `ls`/`find`/`grep` avant correction.
 `.github/workflows/README.md`, `dev-hub/governance/bounded-context-registry.json`,
 `CODEOWNERS`, `CHANGELOG.md`.
 
-— Fin du rapport PM Architecture (2026-09-05). Prochaines passes PM : voir §3.
+## 6. Complément d'audit — 2ᵉ passe (constats vérifiés supplémentaires, 2026-09-05)
+
+> Passe complémentaire du même audit, **fichiers : ligne** à l'appui. Rien de
+> ce qui suit n'était couvert par les §1-3. Aucun changement de code applicatif.
+
+### 6.1 Gardes d'architecture annoncées mais NON branchées en CI (à corriger en priorité)
+
+| Constat | Preuve | Recommandation |
+|---|---|---|
+| **Garde MAT-002** (`check-bounded-context-dependencies.sh`) **jamais branchée** en CI ni dans `scripts/pre-push-checks.sh` ; exécutée sur main elle échoue (**566 violations**, exit 1) car `bounded-context-dependencies.json` est figé au 2026-08-28 (7 BC absents : 15/16/17/22/24/25/26 ; 4 paires d'allowlist postérieures sans arête) | `dev-hub/governance/bounded-context-dependencies.json` (`_meta`), `grep` workflows | Rebaseler la matrice sur main, puis **brancher MAT-002 en CI** — tant qu'elle n'est pas branchée, la dette n'est jamais mesurée |
+| **Garde CRM** `check-crm-boundary-imports.sh` : l'ADR 0018 affirme qu'elle tourne dans `architecture-check.yml` — **0 occurrence** dans les workflows ; elle est verte en local (module CRM = 196 fichiers, 0 hard block, 0 exemption) mais **personne ne la fait tourner en CI** | `docs/architecture/adr/0018-…:66` | Brancher dans `architecture-check.yml` (l'ADR le promet déjà) |
+| **Zones hors périmètre** des gardes #5584/#5745 : `app/Http` (14 paires→Modules), `app/Jobs` (8), `app/Console` (12, dont Console→CRM ×5), `app/Shared` (1) | scans statiques | Étendre la garde d'isolation ou acter ces zones comme adaptateurs |
+
+### 6.2 Gouvernance de `main` — sources contradictoires (aucune modif code)
+
+- `BRANCH_PROTECTION_REQUIRED.md:12` (racine) déclare `enforce_admins` **true** ;
+  `dev-hub/tools/branch-protection-canonical.json` (référentiel de la garde #2011,
+  commit 2026-08-15) dit **false** ; la copie `.github/BRANCH_PROTECTION_REQUIRED.md`
+  dit false ; la protection **réelle** (API GitHub 2026-09-05) : `enforce_admins`
+  **true**, 5 required checks, merge queue active. → Re-synchroniser canonique +
+  copies sur le réel.
+- `dev-hub/prompts/12_MERGE_ALL_TO_MAIN.md:26,50` enseigne `gh pr merge --admin`
+  pour **bypasser la protection** — contredit `AGENTS.md`, `CRM_BRANCH_PROTOCOL.md`
+  et l'incident #2011. → Neutraliser ce prompt.
+- `CONVENTIONS.md` §2.1 déclarait les jobs `phpstan-modules`/`phpstan.neon max`
+  « bloquants » : seul « PHPStan — Strict » est un required check (corrigé cette
+  passe). `PILOTAGE.md` (archivé) se contredit en interne sur le seuil de
+  coverage (65 % l.142 vs 60 % l.226) ; `.github/workflows/README.md` disait
+  « 60 % » (corrigé cette passe : 65 %).
+- `.github/PULL_REQUEST_TEMPLATE.md` autorise `Closes #N` dans le titre, alors
+  qu'`AGENTS.md` (#2512) exige le **body** ; `00_AGENT_QUICK_CARD.md` enseigne un
+  format de commit invalide (`fix/feat:`) et un nommage `fix/issue-<N>` hors
+  protocole. → Aligner template + QUICK CARD sur AGENTS.md.
+
+### 6.3 Textes faux/périmés corrigés dans cette 2ᵉ passe
+
+- `CONVENTIONS.md` : liste « Modules actifs : (18 noms) » → **liste complète des
+  25** (le §2.3 disait déjà 25) ; « ~2950 erreurs » PHPStan → **1 667 messages /
+  Σ 3 317 (mesuré 2026-09-05)** ; §4.1 : nommage `fix/<issue>-<slug>` posé comme
+  **verrou anti-doublon** (#2400) ; chemin du template DDD → `api/stubs/module-template/`.
+- `api/ARCHITECTURE.md` : dette d'isolation « 19 sources / 51 paires » →
+  **20 sources / 55 paires** (sortie garde 2026-09-05, +4 justifiées #6816) ;
+  baseline PHPStan strict « 1297 » → **1 667 / Σ 3 317** ; module `Expense`
+  requalifié « 🟡 partiel » (**couche `Application/` absente**) ; note de
+  complétude précisée (RestaurantManager 22 Actions / TravelAgency 35 Actions,
+  sans `Application/DTOs` — la formulation antérieure les rangeait à tort parmi
+  les modules sans Actions).
+- `.github/workflows/architecture-check.yml:362` : commentaire « dette existante
+  (16/18 modules, 57 paires) » → renvoi au comptage de la garde.
+- `dev-hub/governance/bounded-context-registry.json` : exception partagée
+  `api/app/Core/Shared` (**dossier inexistant**) → **`api/app/Shared`** (dossier
+  réel, 12 fichiers PHP). (Les autres corrections du registre — EdgeSync→BC-19,
+  BC-25, Core/AI, exceptions Core/* — sont du commit gouvernance précédent.)
+
+### 6.4 Constats supplémentaires pour le chantier (non corrigés — issues)
+
+- **[P1]** `api/app/Modules/HR/Application/Actions/ApplySectorTemplate.php` :
+  **fichier PHP corrompu** — pas de `<?php`, pas de namespace ni classe
+  (99 lignes de `use` + fonctions nues), 0 référence dans le repo, dans un
+  module marqué « ✅ complet ». Corriger depuis l'historique ou supprimer.
+- **[P1]** `route-owners.json` (registre machine) : **6 fichiers de routes
+  absents**, dont les plus gros — `travelagency.php` (389 l.),
+  `restaurantmanager.php` (361 l.), `fuel_station.php` (252 l.),
+  `edu_manager.php` (173 l.), `delivery.php` (97 l.), `solutions.php` (27 l.)
+  ≈ 1 300 lignes (~32 %) sans owner déclaré ; BC-15 FUEL déclare `routes: []`
+  alors que `fuel_station.php` existe. → Régénérer + synchroniser registres.
+- **[P2]** `docs/architecture/COMPTABILITE_CONCEPTION.md` (« 18 modules »),
+  `docs/architecture/adr/0012-…` (« 19 modules, 6 apps », cite `Training` jamais
+  créé), `docs/CONTEXT/02_TECHNICAL_CONTEXT.md`, `docs/GOTO_MARKET/01_PRODUCT/
+  PRODUCT_BRIEF.md` (« 18 modules ») : comptages périmés (réel 25/8).
+- **[P2]** Références `docs/OPS/BUDGET_AGENTS.md` (≥ 9 fichiers, dont
+  `docs/ops/MESURE_KPI.md:34` auto-contradictoire) : le dossier réel est
+  `docs/ops/` — casse cassée sur Linux/CI.
+- **[P2]** `CHANGELOG.md` (516 Ko > limite 150 Ko de CONVENTIONS §4.3) + structure
+  : entrées `[Unreleased]` placées **au-dessus** du header `## [Unreleased]`
+  (l.1-12) et notes « ⚠️ En attente de merge » collées au milieu de bulletins
+  (résidus de merges union). → Re-structurer + archiver.
+- **[P3]** 8 commentaires « Migrated from App\Http\Controllers\Api\V1… »
+  résiduels dans des controllers de modules (cosmétique).
+- **[P3]** `docs/ARCHITECTURE_STATUS.md` (table reconstruite) : vérifier le
+  comptage « tests » par module sur la CI (la colonne repose sur un grep local
+  des namespaces).
+
+— Fin du complément (2ᵉ passe, 2026-09-05).
+
+
