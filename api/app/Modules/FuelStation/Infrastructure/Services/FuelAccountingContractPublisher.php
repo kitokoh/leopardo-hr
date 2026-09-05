@@ -55,7 +55,7 @@ final class FuelAccountingContractPublisher
                 'external_id' => $sale->external_id,
             ],
             aggregateType: 'fuel_sale',
-            aggregateId: $sale->id,
+            aggregateId: (string) $sale->id,
         );
     }
 
@@ -77,7 +77,7 @@ final class FuelAccountingContractPublisher
                 'closed_at' => $session->closed_at?->toISOString(),
             ],
             aggregateType: 'fuel_cash_session',
-            aggregateId: $session->id,
+            aggregateId: (string) $session->id,
         );
     }
 
@@ -98,7 +98,7 @@ final class FuelAccountingContractPublisher
                 'delivered_at' => $delivery->delivered_at?->toISOString(),
             ],
             aggregateType: 'fuel_delivery',
-            aggregateId: $delivery->id,
+            aggregateId: (string) $delivery->id,
         );
     }
 
@@ -124,7 +124,7 @@ final class FuelAccountingContractPublisher
                 'completed_at' => $reconciliation->completed_at?->toISOString(),
             ],
             aggregateType: 'fuel_stock_reconciliation',
-            aggregateId: $reconciliation->id,
+            aggregateId: (string) $reconciliation->id,
         );
     }
 
@@ -145,7 +145,7 @@ final class FuelAccountingContractPublisher
                 'resolved_at' => $incident->resolved_at?->toISOString(),
             ],
             aggregateType: 'fuel_incident',
-            aggregateId: $incident->id,
+            aggregateId: (string) $incident->id,
         );
     }
 }
