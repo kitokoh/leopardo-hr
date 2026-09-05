@@ -75,9 +75,10 @@ jobs:
           echo "Web changed: ${{ steps.changes.outputs.web }}"
 
   backend-tests:
-    # Train #6817 (2026-09-05) : suite complete > 45 min — tests restaurés
-    # (cf. coverage-gate.yml) — timeout porte a 75 min.
-    timeout-minutes: 75
+    # Train #6817 (2026-09-05) : la suite complete (unit ~40 min + feature
+    # ~40 min, tests restaurés) DEPASSE 75 min — run annulé a ~75 min le
+    # 2026-09-05 14:06 (2e constat). Timeout porte a 120 min.
+    timeout-minutes: 120
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
     needs: detect-changes

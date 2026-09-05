@@ -86,13 +86,11 @@ jobs:
     # Issue #4111 : timeout déterministe — un job bloqué (infra, saturation CI,
     # test bloquant) doit échouer explicitement au lieu de rester pending
     # indéfiniment et de masquer le verdict de couverture.
-    # Issue #4251 : 45 min < duree reelle (~62 min, run 31907534549) -> le check
-    # requis Backend Coverage etait impossible a passer (0 success depuis #4111).
-    # 75 min = marge sur la duree mesuree (le job inclut la suite complete pcov).
-    # Train #6817 (2026-09-05) : duree > 75 min — la restauration des fichiers
-    # corrompus a REMIS EN MARCHE des centaines de tests travel qui échouaient
-    # avant d'avoir pu s'exécuter (404/parse). Timeout porte a 100 min.
-    timeout-minutes: 100
+    # Train #6817 (2026-09-05) : suite complète pcov mesurée > 100 min (run
+    # annulé à ~101 min, toujours dans les tests) — check REQUIS sur main.
+    # Timeout porté à 180 min (marge sur la durée réelle).
+    timeout-minutes: 180
+
 
     services:
       postgres:
