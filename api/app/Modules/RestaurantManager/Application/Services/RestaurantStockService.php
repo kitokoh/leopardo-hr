@@ -9,6 +9,7 @@ use App\Modules\RestaurantManager\Domain\Enums\StockMovementReason;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryMovement;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -59,8 +60,7 @@ final class RestaurantStockService
                     continue;
                 }
 
-                /** @var RestaurantProductIngredient $composition */
-                /** @var RestaurantProductIngredient $composition */
+                                /** @var RestaurantProductIngredient $composition */
                 foreach ($product->ingredients as $composition) {
                     $this->decrementIngredient(
                         ingredientId: (int) $composition->ingredient_id,

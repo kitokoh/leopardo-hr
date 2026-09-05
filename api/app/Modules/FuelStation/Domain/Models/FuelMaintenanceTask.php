@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property string $priority low|medium|high
  * @property string $status todo|in_progress|done|cancelled
  * @property int|null $assigned_to
+ * @property Carbon|null $due_at
+ * @property Carbon|null $started_at
  * @property Carbon|null $scheduled_for
  * @property Carbon|null $completed_at
  * @property int|null $completed_by

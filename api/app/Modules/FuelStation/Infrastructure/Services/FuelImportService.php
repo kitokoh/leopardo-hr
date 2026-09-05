@@ -101,13 +101,13 @@ final class FuelImportService
             return $import->refresh();
         }
 
-        $rows = is_array($import->raw_rows) ? $import->raw_rows : [];
+        $rows = $import->raw_rows;
         $created = 0;
 
         try {
             DB::transaction(function () use ($import, $rows, &$created): void {
                 foreach ($rows as $row) {
-                    if (is_array($row) && $this->isStringKeyed($row)) {
+                    if ($this->isStringKeyed($row)) {
                         $this->persistRow($import->entity_type, (string) $import->company_id, $row);
                         $created++;
                     }

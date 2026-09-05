@@ -8,6 +8,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 
 /**
  * RESTO-506 (#6205) — COGS : calcul serveur à la clôture de caisse.
@@ -96,13 +97,9 @@ final class RestaurantCogsService
     {
         $cogs = 0;
 
-        foreach ($product->ingredients as $ingredient) {
+        /** @var RestaurantProductIngredient $ingredient */
+                foreach ($product->ingredients as $ingredient) {
             $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
-
-            if ($avgCost === null) {
-                continue;
-            }
-
             $cogs += (int) round((float) $ingredient->quantity * (int) $avgCost);
         }
 

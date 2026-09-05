@@ -206,7 +206,7 @@ class TimetableService
             return $data['company_id'];
         }
 
-        if (app()->bound('current_company') && currentCompany() instanceof Company) {
+        if (app()->bound('current_company')) {
             return currentCompany()->id;
         }
 

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\EdgeSync\Infrastructure\Services\EdgeLicenseService;
-use App\Modules\EdgeSync\Infrastructure\Services\SyncEngineService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -46,11 +44,6 @@ use Illuminate\Support\Facades\Log;
  */
 class EdgeController extends Controller
 {
-    public function __construct(
-        private readonly SyncEngineService $syncEngine,
-        private readonly EdgeLicenseService $licenseService,
-    ) {}
-
     // =========================================================================
     // Script d'installation & téléchargements
     // =========================================================================

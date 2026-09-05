@@ -125,7 +125,7 @@ class EduOutboxDispatchCommand extends Command
         }
 
         try {
-            $consumer->handle($event, is_array($event->payload) ? $event->payload : []);
+            $consumer->handle($event, $event->payload);
 
             $event->forceFill([
                 'status' => EduOutboxEvent::STATUS_SENT,

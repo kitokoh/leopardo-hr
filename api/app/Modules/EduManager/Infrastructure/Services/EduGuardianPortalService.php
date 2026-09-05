@@ -174,7 +174,7 @@ final class EduGuardianPortalService
     }
 
     /**
-     * @return array<string, int>
+     * @return array<string, int|string>
      */
     private function attendanceSummary(EduStudent $student, string $companyId): array
     {

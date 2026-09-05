@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
+use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
@@ -31,7 +32,7 @@ final class TravelQuizService
         string $participantIdentifier,
         array $answers,
     ): TravelQuizParticipation {
-        if ($quiz->status !== 'published') {
+        if ($quiz->status !== QuizStatus::PUBLISHED) {
             abort(422, 'Ce quiz n\'est pas ouvert à la participation.');
         }
 

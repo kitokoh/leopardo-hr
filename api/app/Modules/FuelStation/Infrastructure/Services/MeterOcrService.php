@@ -621,7 +621,7 @@ final class MeterOcrService
             return null;
         }
 
-        if (! is_string($decimal) || preg_match('/^([0-9]+)(?:\.([0-9]+))?$/', $decimal, $matches) !== 1) {
+        if (preg_match('/^([0-9]+)(?:\.([0-9]+))?$/', $decimal, $matches) !== 1) {
             return null;
         }
 

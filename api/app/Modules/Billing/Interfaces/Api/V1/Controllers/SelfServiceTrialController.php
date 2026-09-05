@@ -83,8 +83,7 @@ class SelfServiceTrialController extends Controller
             'solution' => ['nullable', 'string', 'max:60', Rule::in($this->solutionCatalogue->codes())],
         ]);
 
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null} $validated */
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solution?: string|null} $validated */
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Mail\CommunicationMail;
-use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationConsent;
 use App\Modules\TravelAgency\Domain\Models\TravelNotificationLog;
@@ -336,8 +335,6 @@ final class TravelNotificationService
 
         return $payload;
     }
-
-    public function __construct(private readonly TravelCustomerContactResolver $contacts) {}
 
 
 

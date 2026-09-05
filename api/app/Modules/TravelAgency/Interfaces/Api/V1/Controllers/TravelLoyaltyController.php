@@ -139,7 +139,7 @@ class TravelLoyaltyController extends Controller
                 'points' => $entry->points,
                 'type' => $entry->type,
                 'reason' => $entry->reason,
-                'created_at' => $entry->created_at?->toIso8601String(),
+                'created_at' => $entry->created_at->toIso8601String(),
             ], $entries),
         ]);
     }

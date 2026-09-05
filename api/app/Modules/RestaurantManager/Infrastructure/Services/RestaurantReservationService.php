@@ -104,7 +104,7 @@ final class RestaurantReservationService
                 $reservation->company_id,
                 $reservation->branch_id,
                 $tableId,
-                $reservation->reserved_at,
+                Carbon::parse($reservation->reserved_at),
                 $reservation->id,
             );
             $reservation->table_id = $tableId;

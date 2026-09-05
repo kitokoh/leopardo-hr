@@ -26,7 +26,7 @@ class RestaurantLoyaltyPointsMovementResource extends JsonResource
             'id' => $this->id,
             'customer_id' => $this->customer_id,
             'delta' => $this->delta,
-            'reason_code' => $this->reason_code instanceof \BackedEnum ? $this->reason_code->value : $this->reason_code,
+            'reason_code' => $this->reason_code->value,
             'order_id' => $this->order_id,
             'reference_id' => $this->reference_id,
             'created_at' => $this->created_at,

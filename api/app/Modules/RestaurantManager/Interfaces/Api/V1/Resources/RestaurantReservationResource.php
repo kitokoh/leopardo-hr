@@ -29,7 +29,7 @@ class RestaurantReservationResource extends JsonResource
             'customer_contact_id' => $this->customer_contact_id,
             'contact_name' => $this->contact_name,
             'contact_phone' => $this->contact_phone,
-            'reserved_at' => $this->reserved_at?->toIso8601String(),
+            'reserved_at' => $this->reserved_at->toIso8601String(),
             'covers' => $this->covers,
             'table_id' => $this->table_id,
             'zone_id' => $this->zone_id,

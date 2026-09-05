@@ -255,7 +255,7 @@ class RestaurantLoyaltyController extends Controller
             abort(403);
         }
 
-        $this->redeemLoyaltyPoints->redeem($restaurantLoyaltyCustomer, (int) $request->validated('points'));
+        $this->loyalty->redeem($restaurantLoyaltyCustomer, (int) $request->validated('points'));
         $restaurantLoyaltyCustomer->refresh();
 
         return (new RestaurantLoyaltyCustomerResource($restaurantLoyaltyCustomer))->response();

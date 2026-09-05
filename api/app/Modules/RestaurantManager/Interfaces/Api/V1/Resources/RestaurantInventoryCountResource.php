@@ -25,7 +25,7 @@ class RestaurantInventoryCountResource extends JsonResource
             'id' => $this->id,
             'company_id' => $this->company_id,
             'branch_id' => $this->branch_id,
-            'counted_at' => $this->counted_at?->toIso8601String(),
+            'counted_at' => $this->counted_at->toIso8601String(),
             'status' => $this->status,
             'counted_by_user_id' => $this->counted_by_user_id,
             'approved_by' => $this->approved_by,

@@ -153,7 +153,7 @@ final class KioskEnrollmentController extends Controller
             'enrollment_id' => $enrollment->id,
             'employee_id' => $enrollment->employee_id,
             'method' => $enrollment->method,
-            'status' => $enrollment->status?->value,
+            'status' => $enrollment->status->value,
             'version' => $enrollment->version,
             'provider' => $enrollment->provider,
             'enrolled_via' => $enrollment->enrolled_via,

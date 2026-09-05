@@ -76,7 +76,7 @@ final class PlatformSolutionSurveyStatsController extends Controller
                 'window_days' => $days,
                 'total_responses' => $totalResponses,
                 'per_solution' => $perSolution,
-                'top_packages' => array_values($topPackages),
+                'top_packages' => $topPackages,
                 'conversion' => [
                     'survey_responses' => $totalResponses,
                     'companies_with_solution' => $converted,

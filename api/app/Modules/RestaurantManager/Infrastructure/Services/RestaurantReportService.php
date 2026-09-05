@@ -10,6 +10,7 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -151,6 +152,7 @@ final class RestaurantReportService
                 }
 
                 $productCogs = 0;
+                /** @var RestaurantProductIngredient $ingredient */
                 foreach ($product->ingredients as $ingredient) {
                     $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
                     $productCogs += (int) round((float) $ingredient->quantity * (int) $avgCost);

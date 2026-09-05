@@ -38,7 +38,8 @@ final class FuelStationReferentialController extends Controller
         $stations = $query
             ->orderBy('name')
             ->paginate(min(max($request->integer('per_page', 100), 1), 200))
-            ->through(fn (object $station): array => [
+            ->through(function ($station): array {
+                return [
                 'id' => $station->id,
                 'code' => $station->code,
                 'name' => $station->name,
@@ -48,7 +49,8 @@ final class FuelStationReferentialController extends Controller
                 'currency' => $station->currency,
                 'status' => $station->status,
                 'created_at' => $station->created_at,
-            ]);
+            ];
+            });
 
         return new JsonResponse(['data' => $stations->items()]);
     }
@@ -110,7 +112,8 @@ final class FuelStationReferentialController extends Controller
         $reconciliations = $query
             ->orderByDesc('closed_at')
             ->paginate(min(max($request->integer('per_page', 100), 1), 200))
-            ->through(fn (object $session): array => [
+            ->through(function ($session): array {
+                return [
                 'id' => $session->id,
                 'station_id' => $session->station_id,
                 'status' => $session->status,
@@ -122,7 +125,8 @@ final class FuelStationReferentialController extends Controller
                 'variance' => $session->variance,
                 'report_date' => $session->closed_at ?? $session->opened_at,
                 'approved_by' => $session->approved_by,
-            ]);
+            ];
+            });
 
         return new JsonResponse(['data' => $reconciliations->items()]);
     }

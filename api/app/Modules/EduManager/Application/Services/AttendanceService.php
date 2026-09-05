@@ -55,7 +55,7 @@ final class AttendanceService
             throw new InvalidArgumentException(sprintf('Statut de présence invalide : %s.', $status));
         }
 
-        $reasonCode = isset($data['reason_code']) && $data['reason_code'] !== null
+        $reasonCode = isset($data['reason_code'])
             ? (string) $data['reason_code']
             : null;
         if ($reasonCode !== null && mb_strlen($reasonCode) > 30) {
@@ -98,7 +98,7 @@ final class AttendanceService
                 'status' => $status,
                 'reason_code' => $reasonCode,
                 'note' => isset($data['note']) && $data['note'] !== '' ? (string) $data['note'] : null,
-                'recorded_by' => isset($data['recorded_by']) && $data['recorded_by'] !== null
+                'recorded_by' => isset($data['recorded_by'])
                     ? (int) $data['recorded_by']
                     : null,
             ]

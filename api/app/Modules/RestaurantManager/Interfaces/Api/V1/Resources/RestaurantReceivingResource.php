@@ -28,9 +28,9 @@ class RestaurantReceivingResource extends JsonResource
             'purchase_order_id' => $this->purchase_order_id,
             'supplier_id' => $this->supplier_id,
             'reference' => $this->reference,
-            'received_at' => $this->received_at?->toIso8601String(),
+            'received_at' => $this->received_at->toIso8601String(),
             'note_redacted' => $this->note_redacted,
-            'created_at' => $this->created_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ];
     }
 
