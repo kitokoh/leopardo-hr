@@ -27,6 +27,7 @@ trait CreatesMvpSchema
             $this->preparePostgresSchemas();
             $this->loadPostgresFixtureSchema();
             $this->createPostSprintModuleTables();
+            $this->createVerticalParityTables();
             $this->restoreDefaultSearchPath();
 
             return;
@@ -1029,6 +1030,7 @@ trait CreatesMvpSchema
         });
 
         $this->createPostSprintModuleTables();
+        $this->createVerticalParityTables();
         $this->restoreDefaultSearchPath();
     }
 
@@ -2884,6 +2886,880 @@ trait CreatesMvpSchema
             });
         }
 
+    }
+
+    private function createVerticalParityTables(): void
+    {
+
+        if (! Schema::hasTable($this->moduleTable('crm_automations'))) {
+            Schema::create($this->moduleTable('crm_automations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('crm_automation_states'))) {
+            Schema::create($this->moduleTable('crm_automation_states'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_accounting_entries'))) {
+            Schema::create($this->moduleTable('edu_accounting_entries'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_admission_followups'))) {
+            Schema::create($this->moduleTable('edu_admission_followups'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_class_enrollments'))) {
+            Schema::create($this->moduleTable('edu_class_enrollments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_charges'))) {
+            Schema::create($this->moduleTable('edu_fee_charges'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_payments'))) {
+            Schema::create($this->moduleTable('edu_fee_payments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_fee_types'))) {
+            Schema::create($this->moduleTable('edu_fee_types'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardian_access_links'))) {
+            Schema::create($this->moduleTable('edu_guardian_access_links'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardian_access_tokens'))) {
+            Schema::create($this->moduleTable('edu_guardian_access_tokens'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_guardian_portal_links'))) {
+            Schema::create($this->moduleTable('edu_guardian_portal_links'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_outbox_events'))) {
+            Schema::create($this->moduleTable('edu_outbox_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('edu_portal_access_logs'))) {
+            Schema::create($this->moduleTable('edu_portal_access_logs'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_account_visits'))) {
+            Schema::create($this->moduleTable('fuel_account_visits'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_reconciliation_runs'))) {
+            Schema::create($this->moduleTable('fuel_reconciliation_runs'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_report_exports'))) {
+            Schema::create($this->moduleTable('fuel_report_exports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_report_snapshots'))) {
+            Schema::create($this->moduleTable('fuel_report_snapshots'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_daily_openings'))) {
+            Schema::create($this->moduleTable('fuel_stock_daily_openings'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('fuel_stock_entries'))) {
+            Schema::create($this->moduleTable('fuel_stock_entries'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_delivery_app_configs'))) {
+            Schema::create($this->moduleTable('restaurant_delivery_app_configs'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('restaurant_public_shop_tokens'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_advert_positions'))) {
+            Schema::create($this->moduleTable('travel_advert_positions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_advert_prices'))) {
+            Schema::create($this->moduleTable('travel_advert_prices'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_adverts'))) {
+            Schema::create($this->moduleTable('travel_adverts'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_article_categories'))) {
+            Schema::create($this->moduleTable('travel_article_categories'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_articles'))) {
+            Schema::create($this->moduleTable('travel_articles'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_bookings'))) {
+            Schema::create($this->moduleTable('travel_bookings'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cancellation_policies'))) {
+            Schema::create($this->moduleTable('travel_cancellation_policies'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_carrier_api_keys'))) {
+            Schema::create($this->moduleTable('travel_carrier_api_keys'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_classes'))) {
+            Schema::create($this->moduleTable('travel_classes'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_currency_rates'))) {
+            Schema::create($this->moduleTable('travel_currency_rates'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_hotels'))) {
+            Schema::create($this->moduleTable('travel_hotels'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_accounts'))) {
+            Schema::create($this->moduleTable('travel_loyalty_accounts'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_movements'))) {
+            Schema::create($this->moduleTable('travel_loyalty_movements'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_offices'))) {
+            Schema::create($this->moduleTable('travel_offices'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_outbox_events'))) {
+            Schema::create($this->moduleTable('travel_outbox_events'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_payments'))) {
+            Schema::create($this->moduleTable('travel_payments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_payment_methods'))) {
+            Schema::create($this->moduleTable('travel_payment_methods'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_answers'))) {
+            Schema::create($this->moduleTable('travel_quiz_answers'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_options'))) {
+            Schema::create($this->moduleTable('travel_quiz_options'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_participations'))) {
+            Schema::create($this->moduleTable('travel_quiz_participations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_questions'))) {
+            Schema::create($this->moduleTable('travel_quiz_questions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quiz_sites'))) {
+            Schema::create($this->moduleTable('travel_quiz_sites'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quizzes'))) {
+            Schema::create($this->moduleTable('travel_quizzes'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_rental_bookings'))) {
+            Schema::create($this->moduleTable('travel_rental_bookings'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicles'))) {
+            Schema::create($this->moduleTable('travel_rental_vehicles'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_reviews'))) {
+            Schema::create($this->moduleTable('travel_reviews'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_round_trips'))) {
+            Schema::create($this->moduleTable('travel_round_trips'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_site_contacts'))) {
+            Schema::create($this->moduleTable('travel_site_contacts'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_site_photos'))) {
+            Schema::create($this->moduleTable('travel_site_photos'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_sites'))) {
+            Schema::create($this->moduleTable('travel_sites'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_stations'))) {
+            Schema::create($this->moduleTable('travel_stations'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_webhook_subscriptions'))) {
+            Schema::create($this->moduleTable('travel_webhook_subscriptions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_carriers'))) {
+            Schema::create($this->moduleTable('travel_carriers'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_routes'))) {
+            Schema::create($this->moduleTable('travel_routes'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_trips'))) {
+            Schema::create($this->moduleTable('travel_trips'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_tickets'))) {
+            Schema::create($this->moduleTable('travel_tickets'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_quotes'))) {
+            Schema::create($this->moduleTable('travel_quotes'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_advert_bookings'))) {
+            Schema::create($this->moduleTable('travel_advert_bookings'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_carrier_tokens'))) {
+            Schema::create($this->moduleTable('travel_carrier_tokens'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cash_sessions'))) {
+            Schema::create($this->moduleTable('travel_cash_sessions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_cities'))) {
+            Schema::create($this->moduleTable('travel_cities'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_comments'))) {
+            Schema::create($this->moduleTable('travel_comments'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_corporate_accounts'))) {
+            Schema::create($this->moduleTable('travel_corporate_accounts'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_countries'))) {
+            Schema::create($this->moduleTable('travel_countries'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_daily_sales'))) {
+            Schema::create($this->moduleTable('travel_daily_sales'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_export_assets'))) {
+            Schema::create($this->moduleTable('travel_export_assets'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_hotel_rooms'))) {
+            Schema::create($this->moduleTable('travel_hotel_rooms'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_likes'))) {
+            Schema::create($this->moduleTable('travel_likes'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_entries'))) {
+            Schema::create($this->moduleTable('travel_loyalty_entries'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_rewards'))) {
+            Schema::create($this->moduleTable('travel_loyalty_rewards'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
+            Schema::create($this->moduleTable('travel_loyalty_transactions'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_notification_consents'))) {
+            Schema::create($this->moduleTable('travel_notification_consents'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_notification_logs'))) {
+            Schema::create($this->moduleTable('travel_notification_logs'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_public_shop_tokens'))) {
+            Schema::create($this->moduleTable('travel_public_shop_tokens'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_ratings'))) {
+            Schema::create($this->moduleTable('travel_ratings'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_refunds'))) {
+            Schema::create($this->moduleTable('travel_refunds'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_rental_vehicle_images'))) {
+            Schema::create($this->moduleTable('travel_rental_vehicle_images'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_report_exports'))) {
+            Schema::create($this->moduleTable('travel_report_exports'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_route_stops'))) {
+            Schema::create($this->moduleTable('travel_route_stops'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_sales_settlements'))) {
+            Schema::create($this->moduleTable('travel_sales_settlements'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_shares'))) {
+            Schema::create($this->moduleTable('travel_shares'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_tourist_sites'))) {
+            Schema::create($this->moduleTable('travel_tourist_sites'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_trip_occupancy'))) {
+            Schema::create($this->moduleTable('travel_trip_occupancy'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_trip_prices'))) {
+            Schema::create($this->moduleTable('travel_trip_prices'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_trip_seats'))) {
+            Schema::create($this->moduleTable('travel_trip_seats'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_vehicles'))) {
+            Schema::create($this->moduleTable('travel_vehicles'), function (Blueprint $table): void {
+                $table->bigIncrements('id');
+                $table->uuid('company_id')->index();
+                $table->timestamps();
+
+                $table->index(['company_id', 'id']);
+            });
+        }
     }
 
     private function dropMvpTables(): void
