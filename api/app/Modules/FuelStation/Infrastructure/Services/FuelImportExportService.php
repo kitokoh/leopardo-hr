@@ -60,19 +60,6 @@ final class FuelImportExportService
         ];
     }
 
-    /**
-     * Crée le journal d'import (état uploaded) avant traitement asynchrone.
-     */
-    public function startImport(Employee $actor, string $kind, string $fileName): FuelImport
-    {
-        return FuelImport::query()->create([
-            'company_id' => (string) $actor->company_id,
-            'kind' => $kind,
-            'file_name' => basename($fileName),
-            'status' => FuelImport::STATUS_UPLOADED,
-            'created_by' => $actor->id,
-        ]);
-    }
 
     /**
      * @param  Collection<int, mixed>  $collection

@@ -19,16 +19,24 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string $company_id
- * @property string $kind meter_readings|stock_entries|products
- * @property string $file_name
- * @property string $status uploaded|processing|completed|failed
+ * @property string $entity_type products|pumps|tanks|shifts|readings
+ * @property string $filename
+ * @property string $status previewed|committing|committed|cancelled|failed
  * @property int $total_rows
- * @property int $processed_rows
- * @property int $failed_rows
- * @property array<string, mixed>|null $error_summary
+ * @property int $valid_rows
+ * @property int $error_rows
+ * @property array<int, string>|null $columns
+ * @property array<int, array<string, mixed>>|null $preview_data
+ * @property array<int, array<string, mixed>>|null $errors
+ * @property array<int, array<string, mixed>>|null $raw_rows
+ * @property array<string, mixed>|null $result
  * @property int|null $created_by
- * @property Carbon|null $started_at
- * @property Carbon|null $finished_at
+ * @property int|null $committed_by
+ * @property int|null $cancelled_by
+ * @property Carbon|null $committed_at
+ * @property Carbon|null $cancelled_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @mixin Builder<static>
  */
@@ -38,48 +46,37 @@ class FuelImport extends Model
 
     protected $table = 'fuel_imports';
 
-    public const KIND_METER_READINGS = 'meter_readings';
+    public const ENTITY_PRODUCTS = 'products';
 
-    public const KIND_STOCK_ENTRIES = 'stock_entries';
+    public const ENTITY_PUMPS = 'pumps';
 
-    public const KIND_PRODUCTS = 'products';
+    public const ENTITY_TANKS = 'tanks';
 
-    public const STATUS_UPLOADED = 'uploaded';
+    public const ENTITY_SHIFTS = 'shifts';
 
-    public const STATUS_PROCESSING = 'processing';
+    public const ENTITY_READINGS = 'readings';
 
-    public const STATUS_COMPLETED = 'completed';
+    public const ENTITIES = [
+        self::ENTITY_PRODUCTS,
+        self::ENTITY_PUMPS,
+        self::ENTITY_TANKS,
+        self::ENTITY_SHIFTS,
+        self::ENTITY_READINGS,
+    ];
+
+    public const STATUS_PREVIEWED = 'previewed';
+
+    public const STATUS_COMMITTING = 'committing';
+
+    public const STATUS_COMMITTED = 'committed';
+
+    public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUS_FAILED = 'failed';
-    public const ENTITIES = [
-            self::ENTITY_PRODUCTS,
-            self::ENTITY_PUMPS,
-            self::ENTITY_TANKS,
-            self::ENTITY_SHIFTS,
-            self::ENTITY_READINGS,
-        ];
-    public const ENTITY_PRODUCTS = 'products';
-    public const ENTITY_PUMPS = 'pumps';
-    public const ENTITY_READINGS = 'readings';
-    public const ENTITY_SHIFTS = 'shifts';
-    public const ENTITY_TANKS = 'tanks';
+
     public const MAX_FILE_BYTES = 2 * 1024 * 1024;
+
     public const MAX_LINES = 5000;
-    public const STATUS_CANCELLED = 'cancelled';
-    public const STATUS_COMMITTED = 'committed';
-    public const STATUS_COMMITTING = 'committing';
-    public const STATUS_PREVIEWED = 'previewed';
-    public const STATUS_VALIDATED = 'validated';
-    public const TYPES = [
-            self::TYPE_PRODUCTS,
-            self::TYPE_EQUIPMENT,
-            self::TYPE_SHIFTS,
-            self::TYPE_READINGS,
-        ];
-    public const TYPE_EQUIPMENT = 'equipment';
-    public const TYPE_PRODUCTS = 'products';
-    public const TYPE_READINGS = 'readings';
-    public const TYPE_SHIFTS = 'shifts';
 
     protected $fillable = [
         'company_id',
@@ -106,13 +103,20 @@ class FuelImport extends Model
     {
         return [
             'raw_rows' => 'array',
+            'result' => 'array',
+            'committed_at' => 'datetime',
+            'cancelled_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'total_rows' => 'integer',
-            'processed_rows' => 'integer',
-            'failed_rows' => 'integer',
-            'error_summary' => 'array',
+            'valid_rows' => 'integer',
+            'error_rows' => 'integer',
+            'columns' => 'array',
+            'preview_data' => 'array',
+            'errors' => 'array',
             'created_by' => 'integer',
-            'started_at' => 'datetime',
-            'finished_at' => 'datetime',
+            'committed_by' => 'integer',
+            'cancelled_by' => 'integer',
         ];
     }
 

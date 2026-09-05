@@ -27,7 +27,7 @@ class StoreFuelImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'import_type' => ['required', Rule::in(FuelImport::TYPES)],
+            'entity_type' => ['required', Rule::in(FuelImport::ENTITIES)],
             'file' => ['required', 'file', 'max:2048', 'mimes:csv,txt'],
             'dry_run' => ['nullable', 'boolean'],
         ];

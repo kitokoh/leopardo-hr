@@ -95,13 +95,12 @@ class FuelImportExportController extends Controller
         return response()->json([
             'data' => collect($imports->items())->map(fn (FuelImport $i): array => [
                 'id' => $i->id,
-                'kind' => $i->kind,
-                'file_name' => $i->file_name,
+                'entity_type' => $i->entity_type,
+                'filename' => $i->filename,
                 'status' => $i->status,
                 'total_rows' => $i->total_rows,
-                'processed_rows' => $i->processed_rows,
-                'failed_rows' => $i->failed_rows,
-                'error_summary' => $i->error_summary,
+                'valid_rows' => $i->valid_rows,
+                'error_rows' => $i->error_rows,
                 'created_at' => $i->created_at?->toISOString(),
             ]),
             'meta' => [

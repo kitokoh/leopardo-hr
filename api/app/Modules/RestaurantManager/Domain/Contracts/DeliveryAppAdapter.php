@@ -25,5 +25,11 @@ interface DeliveryAppAdapter
     /**
      * @param  array<mixed>  $payload
      */
+    /**
+     * @param  array<mixed>  $items
+     * @return list<array{product_id: int, quantity: float}>
+     */
+    public function normalizeItems(array $items): array;
+
     public function parseInbound(array $payload): DeliveryAppOrderPayload;
 }

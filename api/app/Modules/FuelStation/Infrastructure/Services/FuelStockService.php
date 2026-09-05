@@ -359,19 +359,5 @@ final class FuelStockService
         ]);
     }
 
-    private function dayOpening(FuelTank $tank, string $date): ?int
-    {
-        if (! Schema::hasTable('fuel_stock_daily_openings')) {
-            return null;
-        }
-
-        $opening = DB::table('fuel_stock_daily_openings')
-            ->where('company_id', $tank->company_id)
-            ->where('tank_id', $tank->id)
-            ->where('open_date', $date)
-            ->value('opening_level_minor');
-
-        return is_numeric($opening) ? (int) $opening : null;
-    }
 
 }

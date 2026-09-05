@@ -86,8 +86,4 @@ class PlatformCompanyFeatureController extends Controller
     }
 
 
-    private function tenantTable(string $table): string
-    {
-        return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
-    }
 }
