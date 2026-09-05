@@ -239,7 +239,21 @@ Route::post('/travel/public/contact', [TravelPublicContactController::class, 'st
 Route::middleware(['throttle:api', 'travel.partner'])
     ->prefix('travel/partner')
     ->group(function (): void {
+        // TRAVEL-807/#6086 : API entrante transporteurs — sync uniquement.
+        // (Les rapports TravelReportController exigent un Employee auth:sanctum
+        // + policy travel.reports — surfaces internes, pas partner.)
         Route::post('/sync', [TravelPartnerController::class, 'sync']);
+    });
+
+
+// ── Boutique en ligne (TRAVEL-401..404/#6053..#6056), PDV (TRAVEL-301/#6031),
+// corporate, articles, quiz & adverts — surfaces INTERNES du portail tenant
+// (auth:sanctum). Groupe principal restauré (le fold-merge avait fait tomber
+// ces routes sous le groupe transporteur travel/partner — leçon train #6817).
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.travelagency'])
+    ->prefix('travel')
+    ->group(function (): void {
+        // Rapports d'exploitation (TRAVEL-401..404/#6053..#6056) — internes.
         Route::get('/reports/sales', [TravelReportController::class, 'sales']);
         Route::get('/reports/occupancy', [TravelReportController::class, 'occupancy']);
         Route::get('/reports/revenue', [TravelReportController::class, 'revenue']);

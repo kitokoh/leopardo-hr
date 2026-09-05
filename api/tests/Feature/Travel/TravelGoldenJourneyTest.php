@@ -229,7 +229,7 @@ class TravelGoldenJourneyTest extends TestCase
             ->assertOk()
             ->assertJsonCount(2, 'data');
 
-        $this->getJson('/api/v1/travel/reports/sales?date_from='.now()->toDateString().'&date_to='.now()->addDays(7)->toDateString())
+        $this->getJson('/api/v1/travel/reports/sales?from='.now()->toDateString().'&to='.now()->addDays(7)->toDateString())
             ->assertOk();
     }
 }

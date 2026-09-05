@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Providers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
@@ -12,6 +13,8 @@ use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PvitPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxConsumerRegistry;
+use App\Modules\TravelAgency\Policies\TravelReportPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -60,5 +63,13 @@ class TravelAgencyServiceProvider extends ServiceProvider
         ]);
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        // Permission `travel.reports` (rapports d'exploitation internes) — le
+        // câblage Gate::define manquait (perdu dans les merges de la
+        // consolidation) : `cannot('travel.reports')` retournait 403 pour
+        // TOUS les rôles. Ouverte aux rôles opérationnels de l'agence
+        // (TravelReportPolicy::authorize — principal/rh/manager/agent/checkin).
+        Gate::define('travel.reports', static fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
+    }
 }
