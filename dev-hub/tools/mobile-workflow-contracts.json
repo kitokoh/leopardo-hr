@@ -454,7 +454,8 @@
           ],
           "screenFiles": [
             "lib/src/features/auth/platform_login_screen.dart",
-            "lib/src/features/dashboard/platform_dashboard_screen.dart"
+            "lib/src/features/dashboard/platform_dashboard_screen.dart",
+            "lib/src/features/account/platform_account_screen.dart"
           ],
           "sourceTokens": [
             "platformAuthControllerProvider",
@@ -792,7 +793,9 @@
             "lib/features/crm/screens/crm_accounts_screen.dart",
             "lib/features/crm/screens/crm_account_detail_screen.dart",
             "lib/features/crm/screens/crm_leads_screen.dart",
-            "lib/features/crm/screens/crm_opportunities_screen.dart"
+            "lib/features/crm/screens/crm_opportunities_screen.dart",
+            "lib/features/crm/data/crm_repository.dart",
+            "lib/features/crm/providers/crm_providers.dart"
           ],
           "sourceTokens": [
             "CrmRepository",
