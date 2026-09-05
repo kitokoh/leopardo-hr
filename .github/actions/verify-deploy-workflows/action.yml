@@ -34,14 +34,22 @@ runs:
     - name: Verify required workflow conclusions for deployment SHA
       id: gate
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      # Audit CodeQL #30 (2026-08-17) : les valeurs transitent par les inputs
+      # de l'action et sont lues au runtime (core.getInput) — plus AUCUNE
+      # interpolation ${{ }} dans le source du script (le vecteur « cache
+      # poisoning / code injection » signalé par CodeQL disparaît).
+      #
+      # Fix 2026-09-05 (constat runs deploy-main) : ces trois valeurs étaient
+      # passées via `with:` à github-script, qui ne les déclare pas → warning
+      # runner « Unexpected input(s) » à CHAQUE run et livraison non garantie
+      # (dépendante du comportement du runner). Passées en variables
+      # d'environnement INPUT_* (convention lue par core.getInput), la
+      # livraison est explicite et le warning disparaît.
+      env:
+        INPUT_SHA: ${{ inputs.sha }}
+        INPUT_REQUIRED_WORKFLOWS: ${{ inputs.required_workflows }}
+        INPUT_WEB_CHANGED: ${{ inputs.web_changed }}
       with:
-        # Audit CodeQL #30 (2026-08-17) : les valeurs transitent par les
-        # inputs de l'action et sont lues au runtime (core.getInput) — plus
-        # AUCUNE interpolation ${{ }} dans le source du script (le vecteur
-        # « cache poisoning / code injection » signalé par CodeQL disparaît).
-        sha: ${{ inputs.sha }}
-        required_workflows: '${{ inputs.required_workflows }}'
-        web_changed: ${{ inputs.web_changed }}
         script: |
           const EVENT = process.env.GITHUB_EVENT_NAME;
           const shaRaw = core.getInput('sha');
