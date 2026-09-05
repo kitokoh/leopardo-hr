@@ -32,8 +32,7 @@ leopardo-hr/
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/              # Visuels marketing/README en archive (Git LFS — voir assets/README.md)
-├── marketing/              # (legacy — contenu à migrer vers docs/GOTO_MARKET/, voir #6603)
-└── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
+└── .github/workflows/      # 54 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -103,7 +102,11 @@ app/Shared/
     └── DomainException.php        # Exception métier de base
 ```
 
-> Les `app/Traits/`, `app/Attributes/` et `app/Enums/` résidus sont des shims de backward-compat pointant vers `Shared/`. Ne pas y écrire de nouveau code.
+> Les anciens dossiers racine `app/Traits/`, `app/Attributes/`, `app/Enums/`,
+> `app/DTOs/`, `app/Models/` et `app/Services/` ont été **supprimés** (migration DDD
+> terminée, #6565/#1728) — plus aucun shim ni alias backward-compat ne subsiste.
+> Tout nouveau code transversal va dans `app/Shared/`, tout nouveau code métier
+> dans le module DDD concerné.
 
 ### Gestion des tenants (`app/Core/Tenant/`)
 
@@ -121,25 +124,22 @@ app/Core/Tenant/
 | `hasTenant()` | True si un tenant est actif |
 | `clearTenant()` | Réinitialise sans restaurer (utile tests/artisan) |
 
-> `App\Services\TenantManager` est un alias de backward-compat. Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
+> L'ancien alias `App\Services\TenantManager` a été supprimé avec `app/Services/`
+> (#1728). Injecter `App\Core\Tenant\TenantManager`.
 
-### Migration class aliases — état au 2026-07-19
+### Migration class aliases — état final (vérifié 2026-09-05)
 
-`app/Models/` et `app/DTOs/` sont maintenant vides/supprimés (migration DDD terminée pour ces deux dossiers).
-Shims backward-compat : `app/Traits/` ne conserve plus que `BelongsToCompany`
-(les shims `Approvable`/`Auditable` ont été supprimés — #6565) ;
-`app/Attributes/` et `app/Enums/ApiError` ont été supprimés (#6565). Tous
-pointent/utilisaient leur équivalent canonique sous `app/Shared/`.
-
-Pour supprimer un alias restant :
-1. `grep -r "App\\Traits\\NomDuTrait" app/` (ou `Attributes`/`Enums`) → remplacer par le namespace canonique `App\Shared\...`
-2. Supprimer le fichier shim correspondant.
+Les dossiers `app/Models/`, `app/DTOs/`, `app/Services/`, `app/Traits/`,
+`app/Attributes/`, `app/Enums/` et `app/Http/Controllers/Api/V1/` sont
+**supprimés** ; il ne reste **aucun alias ni shim backward-compat**
+(`grep -r "App\\Services\\|App\\Traits\\|App\\Attributes\\|App\\Enums\\" api/app`
+ne retourne rien). Voir `api/ARCHITECTURE.md` §« Nettoyage complet » pour le bilan chiffré.
 
 ## Mobile — Flutter
 
 - `leopardo_core` est le package fondation partagé par toutes les apps.
 - `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- Apps actives : `leopardo_core` (package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing` (voir `front/mobile_apps/README.md`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
+- Apps actives : `leopardo_core` (package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_travel_agent` (8 packages, voir `front/mobile_apps/README.md` et `melos.yaml`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 
@@ -151,11 +151,11 @@ Des scripts de synchronisation (`shared/i18n/sync/`) propagent les clés vers le
 Voir `.github/workflows/` et `docs/ARCHITECTURE_CICD.md`.
 
 Les pipelines principaux :
-- `tests.yml` — tests backend PHPUnit/Pest + lint/build `front/admin-dashboard`
-- `web-ci.yml` — lint + build `front/admin-dashboard` (Vue.js/Vite, dashboard plateforme)
+- `tests.yml` — tests backend PHPUnit/Pest (+ sécurité, qualité, gouvernance — aucun job front)
+- `web-ci.yml` — lint + build + E2E Playwright `front/admin-dashboard` (Vue.js/Vite, dashboard plateforme)
 - `web-marketing-ci.yml` — lint + build `front/web` (Next.js, vitrine publique)
 - `mobile-apps-ci.yml` — build Flutter (`front/mobile_apps/*`)
-- `deploy-main.yml` — déploiement production
+- `deploy-main.yml` — déploiement continu dev/test sur push main (la prod passe par `deploy-prod.yml`, déclenché par release)
 
 ## Infrastructure & résilience (0 €)
 
