@@ -13,14 +13,15 @@ leopardo-hr/
 │   ├── web/                # Next.js 16 — landing page + dashboard SaaS (déployé sur Vercel)
 │   ├── web-offline/        # Next.js — PWA offline-first pour le bridge Edge (http://leopardo.local)
 │   ├── admin-dashboard/    # Vue.js 3 — interface super-admin plateforme
-│   ├── mobile_apps/        # Flutter — 7 applications mobiles (voir melos.yaml)
-│   │   ├── leopardo_core/       # Package partagé (design system, services)
-│   │   ├── leopardo_employee/   # App employé
-│   │   ├── leopardo_manager/    # App manager/RH
-│   │   ├── leopardo_hr/         # App RH dédiée
-│   │   ├── leopardo_marketing/  # App marketing/communication
-│   │   ├── leopardo_accounting/ # App comptabilité
-│   │   └── leopardo_platform_admin/ # App admin plateforme
+│   ├── mobile_apps/        # Flutter — 7 apps + 1 package partagé (voir melos.yaml)
+│   │   ├── leopardo_core/            # Package partagé (design system, services)
+│   │   ├── leopardo_employee/        # App employé
+│   │   ├── leopardo_manager/         # App manager/RH
+│   │   ├── leopardo_hr/              # App RH dédiée
+│   │   ├── leopardo_marketing/       # App marketing/communication
+│   │   ├── leopardo_accounting/      # App comptabilité
+│   │   ├── leopardo_platform_admin/  # App admin plateforme
+│   │   └── leopardo_travel_agent/    # App agent/vendeur TravelAgency (TRAVEL-701/810)
 │   └── zkteco-kiosk/       # Kiosque HTML/JS pour pointage biométrique
 ├── edge/                   # Bridge on-prem ZKTeco <-> cloud (Caddy, supervisord, install.sh)
 ├── shared/
@@ -32,8 +33,8 @@ leopardo-hr/
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/              # Visuels marketing/README en archive (Git LFS — voir assets/README.md)
-├── marketing/              # (legacy — contenu à migrer vers docs/GOTO_MARKET/, voir #6603)
-└── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
+├── site/                   # (statique GitHub Pages versionné dans main — site/gh-pages, cf. pages-deploy.yml)
+└── .github/workflows/      # 54 pipelines CI/CD (vérifié 2026-09-05 — cartographie dans .github/workflows/README.md)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -61,7 +62,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (25, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `CRM`, `Cabinet`, `Cameras`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (25, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
 
 
 
@@ -121,25 +122,23 @@ app/Core/Tenant/
 | `hasTenant()` | True si un tenant est actif |
 | `clearTenant()` | Réinitialise sans restaurer (utile tests/artisan) |
 
-> `App\Services\TenantManager` est un alias de backward-compat. Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
+> L'alias `App\Services\TenantManager` a été supprimé (#1494/#1728). Injecter `App\Core\Tenant\TenantManager` dans le nouveau code.
 
-### Migration class aliases — état au 2026-07-19
+### Migration class aliases — état au 2026-09-05 (vérifié)
 
-`app/Models/` et `app/DTOs/` sont maintenant vides/supprimés (migration DDD terminée pour ces deux dossiers).
-Shims backward-compat : `app/Traits/` ne conserve plus que `BelongsToCompany`
-(les shims `Approvable`/`Auditable` ont été supprimés — #6565) ;
-`app/Attributes/` et `app/Enums/ApiError` ont été supprimés (#6565). Tous
-pointent/utilisaient leur équivalent canonique sous `app/Shared/`.
-
-Pour supprimer un alias restant :
-1. `grep -r "App\\Traits\\NomDuTrait" app/` (ou `Attributes`/`Enums`) → remplacer par le namespace canonique `App\Shared\...`
-2. Supprimer le fichier shim correspondant.
+`app/Models/`, `app/DTOs/`, `app/Traits/`, `app/Attributes/`, `app/Enums/`,
+`app/Services/`, `app/Http/Controllers/Api/V1/` et `app/Http/Requests/` sont
+**intégralement supprimés** — aucun shim restant. Vérifié le 2026-09-05 :
+0 référence `use App\Traits\`, `App\Attributes\`, `App\Enums\`, `App\Models\`,
+`App\Services\`, `App\DTOs\` ou `App\Http\Controllers\Api\V1\` dans `app/`,
+`tests/` et `routes/`. Les canoniques vivent dans `app/Shared/` et dans les
+modules DDD (`App\Modules\<Nom>\...`). Tout nouveau code va directement au canonique.
 
 ## Mobile — Flutter
 
 - `leopardo_core` est le package fondation partagé par toutes les apps.
 - `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- Apps actives : `leopardo_core` (package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing` (voir `front/mobile_apps/README.md`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
+- Apps présentes dans le dépôt (8 dossiers, cf. `melos.yaml` et `front/mobile_apps/README.md`) : `leopardo_core` (package partagé), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`. Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 

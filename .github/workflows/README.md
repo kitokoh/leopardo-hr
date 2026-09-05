@@ -134,6 +134,8 @@ ci-dessous.
 | `queue-worker-fallback.yml` | Schedule | Fallback worker de files |
 | `secret-history-scan.yml` | Schedule | Scan d'historique git pour secrets |
 | `web-offline-ci.yml` | PR → front/web-offline | Lint + test + build PWA offline + manifest |
+| `edge-ci.yml` | PR + push → main (paths `edge/**`, `front/web-offline/**`, migrations) | Gardes de la stack Edge (lint + validations edge/zkteco) |
+| `pages-deploy.yml` | Push → main (paths `site/gh-pages/**` + workflow) + dispatch | Déploie le site statique GitHub Pages versionné dans `site/gh-pages` (migration branche gh-pages → main, #6815) |
 
 ## Règles de contribution CI
 
