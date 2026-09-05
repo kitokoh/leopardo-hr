@@ -334,6 +334,7 @@ class KioskAttendanceService
      * Identifiant de réconciliation d'un événement offline : `device_event_id`
      * (BIO-007) puis `external_event_id` (hérité).
      */
+    /** @param array<string, mixed> $event */
     private function eventExternalId(array $event): ?string
     {
         $deviceEventId = $event['device_event_id'] ?? null;

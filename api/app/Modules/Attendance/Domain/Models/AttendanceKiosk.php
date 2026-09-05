@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
- * @property string $company_id
+ * @property string|null $company_id
  * @property \App\Core\Tenant\Domain\Models\Company $company
  * @property string $name
  * @property string|null $location_label
@@ -28,6 +28,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $sync_token_hash
  * @property \Carbon\Carbon|null $last_seen_at
  * @property \Carbon\Carbon|null $last_sync_at
+ * @property int|null $site_id
+ * @property array<int, string>|null $punch_methods
+ * @property \Carbon\Carbon|null $revoked_at
+ * @property int|null $revoked_by_employee_id
+ * @property int $acked_event_counter
  *
  * @mixin Builder<static>
  */
@@ -67,11 +72,19 @@ class AttendanceKiosk extends Model
         'biometric_mode',
         'trusted_device_label',
         'sync_token_hash',
+        'site_id',
+        'punch_methods',
+        'revoked_at',
+        'revoked_by_employee_id',
+        'acked_event_counter',
         'last_seen_at',
         'last_sync_at',
     ];
 
     protected $casts = [
+        'punch_methods' => 'array',
+        'revoked_at' => 'datetime',
+        'acked_event_counter' => 'integer',
         'last_seen_at' => 'datetime',
         'last_sync_at' => 'datetime',
     ];
@@ -87,6 +100,7 @@ class AttendanceKiosk extends Model
         return in_array($method, $this->resolvedPunchMethods(), true);
     }
 
+    /** @return array<int, string> */
     public function resolvedPunchMethods(): array
     {
         $configured = $this->normalizeMethods($this->punch_methods ?? []);
@@ -115,13 +129,12 @@ class AttendanceKiosk extends Model
 
         return self::KIOSK_PUNCH_METHODS_ALL;
     }
+    /** @param array<int, string> $methods
+     *  @return array<int, string> */
     private function normalizeMethods(array $methods): array
     {
         $normalized = [];
         foreach ($methods as $method) {
-            if (! is_string($method)) {
-                continue;
-            }
             $normalized[] = $method === 'card' ? VerificationMethod::Badge->value : $method;
         }
 
