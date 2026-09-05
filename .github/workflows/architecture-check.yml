@@ -363,6 +363,21 @@ jobs:
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
+      - name: Bounded context dependencies guard (MAT-002 / issue #5860)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        # Deny-by-default : toute arête cross-BC (fichier→import) absente de
+        # dev-hub/governance/bounded-context-dependencies.json fait échouer la CI.
+        # Baseline v2 régénérée le 2026-09-05 (audit PM) — ne pas ajouter d'arête
+        # « pour passer » sans justification (même règle que l'allowlist #5584).
+        run: dev-hub/tools/check-bounded-context-dependencies.sh .
+
+      - name: CRM boundary imports guard (issue #5745, ADR 0018)
+        if: needs.detect-changes.outputs.api_changed == 'true'
+        # HARD BLOCK : aucun import Modules/{Platform,Marketing,Payroll,Accounting}
+        # depuis Modules/CRM ; toute autre import inter-module exige une exemption
+        # justifiée dans dev-hub/tools/crm-boundary-allowlist.txt.
+        run: dev-hub/tools/check-crm-boundary-imports.sh
+
       - name: Event catalogue guard self-test (MAT-006 / issue #5864)
         run: python3 dev-hub/tools/check-event-catalogue-test.py
 
