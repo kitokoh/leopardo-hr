@@ -1,11 +1,10 @@
 name: zz-gen-strict-baseline (temporary)
 
-# OUTIL TEMPORAIRE — round 27 PM 2026-09-05.
-# Génère api/phpstan-strict-baseline.neon sur la branche (delta du merge
-# union 126 branches), committe le fichier et SUPPRIME ce workflow (usage
-# unique, workflow_dispatch). Le push fait par GITHUB_TOKEN ne déclenche pas
-# de workflows : relancer la CI ensuite manuellement (empty commit ou
-# re-run). À supprimer définitivement après usage.
+# OUTIL TEMPORAIRE — round 27 PM 2026-09-05. Génère
+# api/phpstan-strict-baseline.neon sur la branche, committe le fichier et
+# SUPPRIME ce workflow (usage unique via workflow_dispatch). Le push fait
+# par GITHUB_TOKEN ne déclenche pas de workflows : relancer la CI ensuite
+# (empty commit ou re-run).
 
 on:
   workflow_dispatch:
@@ -42,19 +41,17 @@ jobs:
         working-directory: api
         run: vendor/bin/phpstan analyse --configuration=phpstan-strict.neon --generate-baseline --memory-limit=1G --no-progress
 
-      - name: Commit baseline + remove this workflow
+      - name: Commit baseline and remove this workflow
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name "kitokoh (pm-agent)"
           git config user.email "pm-agent@leopardo-hr.local"
           rm -f .github/workflows/zz-gen-strict-baseline.yml
-          git add api/phpstan-strict-baseline.neon
-          git rm -q .github/workflows/zz-gen-strict-baseline.yml 2>/dev/null || true
-          git commit -m "chore(phpstan): régénère la baseline strict — dette du merge union (round 27)
-
-Le merge union des 126 branches (issue #6818) a introduit un delta level-8
-au-delà de la baseline gelée (747 erreurs). La baseline est régénérée pour
-débloquer le check requis ; la trajectoire de réduction reste pilotée par
-module (voir api/ARCHITECTURE.md 'Trajectoire PHPStan') — issue ouverte pour
-résorber le delta module par module." || echo "RIEN_A_COMMITTER"
-          git push origin HEAD:fix/ci-main-green-2026-09-04
+          git add api/phpstan-strict-baseline.neon .github/workflows/zz-gen-strict-baseline.yml
+          if git diff --cached --quiet; then
+            echo "RIEN_A_COMMITTER"
+          else
+            git commit -m "chore(phpstan): regenere la baseline strict - dette du merge union (round 27, issue #6818)"
+            git push origin HEAD:fix/ci-main-green-2026-09-04
+          fi
