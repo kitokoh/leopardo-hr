@@ -64,7 +64,8 @@ class CameraAccessTokensTest extends TestCase
         $revoke = $this->withHeaders($this->authHeaders($principal, 't3'))
             ->deleteJson('/api/v1/cameras/'.$cam->id.'/access-tokens/'.$tokenId);
         $revoke->assertOk();
-        $this->assertTrue((bool) CameraAccessToken::query()->find($tokenId)->is_revoked);
+        $token = CameraAccessToken::query()->findOrFail($tokenId);
+        $this->assertTrue((bool) $token->is_revoked);
     }
 
     public function test_disallowed_duration_is_rejected(): void

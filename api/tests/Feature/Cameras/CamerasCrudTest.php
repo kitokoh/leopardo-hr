@@ -78,7 +78,7 @@ class CamerasCrudTest extends TestCase
         $this->assertStringNotContainsString('secret', (string) $raw->rtsp_url);
 
         // Le modèle déchiffre à la lecture.
-        $camera = Camera::query()->first();
+        $camera = Camera::query()->firstOrFail();
         $this->assertSame('rtsp://user:secret@10.0.0.1:554/live', $camera->rtsp_url);
     }
 
@@ -155,7 +155,7 @@ class CamerasCrudTest extends TestCase
         $upd = $this->withHeaders($this->authHeaders($principal))
             ->patchJson('/api/v1/cameras/'.$cam->id, ['name' => 'Cam Renamed']);
         $upd->assertOk();
-        $this->assertSame('Cam Renamed', Camera::query()->find($cam->id)->name);
+        $this->assertSame('Cam Renamed', Camera::query()->findOrFail($cam->id)->name);
 
         $del = $this->withHeaders($this->authHeaders($principal, 't2'))
             ->deleteJson('/api/v1/cameras/'.$cam->id);
