@@ -38,6 +38,27 @@ Nouveau code à créer ?
     └── → app/AI/
 ```
 
+**Zones transverses réelles (complément 2026-09-05, audit PM)** — où vit le code qui
+n'est ni module, ni Core, ni Shared :
+
+| Zone | Rôle | Propriétaire / BC |
+|---|---|---|
+| `app/Http/Controllers/Web/` | Surface session/blade (kiosque, dashboard, invitations) — dérogation actée (audit #6578) | transverse (hors API DDD) |
+| `app/Http/Resources/Api/V1/` | **67 JsonResource centralisées** (dérogation PA2-ARCH-010 — partage inter-modules) | transverse |
+| `app/Http/Middleware/` | Middlewares HTTP (tenant, RBAC, structured logging…) | transverse |
+| `app/Jobs/` | Jobs/queues transverses (drain, purge…) — les jobs métier vivent dans les modules | BC-14 INTEGRATION (registre) |
+| `app/Console/` | Commandes artisan (72 fichiers) — trier : les commandes métier doivent migrer vers les modules | registre BC (par domaine) |
+| `app/Policies/` | Policies RBAC partagées (41 classes) — les policies de module vivent dans le module | BC-03 IDENTITY (registre) |
+| `app/Contracts/` | Contrats transverses (Queue, Communication, Feature) | BC-13/BC-14 (registre) |
+| `app/Events/`, `app/Listeners/` | Events/écouteurs transverses — catalogue `dev-hub/governance/event-catalogue.json` (MAT-006) | par BC (registre) |
+| `app/Exceptions/`, `app/Mail/`, `app/Notifications/` | Infrastructure applicative partagée | transverse |
+| `app/Shared/Models/` | Modèles réellement partagés (ex. `Language`) | exception partagée (registre) |
+| `app/AI/` | Module IA autonome (orienté agent, non DDD classique) | BC-23 AI (registre) |
+
+> Règle : **tout nouveau code métier va dans `app/Modules/<BC>/`** ; les zones
+> ci-dessus ne reçoivent que de l'infrastructure réellement partagée, avec un
+> propriétaire déclaré au registre BC (MAT-001).
+
 ---
 
 ## Règle des dépendances
