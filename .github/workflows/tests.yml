@@ -384,9 +384,21 @@ jobs:
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          # Gate diff-scopé « Backend Quality » : analyse des fichiers CHANGÉS au
+          # niveau 8 avec TOUTES les baselines (legacy + modules + strict) —
+          # aligné sur les jobs backend requis (PHPStan Strict L8, Modules
+          # Architecture). Le niveau max de phpstan.neon seul (baseline legacy
+          # uniquement) rendait tout PR touchant un module avec dette level-8
+          # baselinée rouge (dette gérée par les baselines au niveau 8 ; leçon
+          # train #6817 : 1 038 findings max-only sur les fichiers restaurés).
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
+              - phpstan-strict-baseline.neon
+              - phpstan-modules-baseline.neon
+
+          parameters:
+              level: 8
           EOF
           mkdir -p storage/test-results
           base_sha="${DIFF_BASE_SHA:-}"
