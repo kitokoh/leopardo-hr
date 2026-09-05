@@ -40,7 +40,7 @@ jobs:
 
       - name: Regenerate strict baseline only
         working-directory: api
-        run: vendor/bin/phpstan analyse --configuration=phpstan-strict-gen.neon --generate-baseline --baseline=phpstan-strict-baseline.neon --memory-limit=1G --no-progress
+        run: vendor/bin/phpstan analyse --configuration=phpstan-strict-gen.neon --generate-baseline=phpstan-strict-baseline.neon --memory-limit=1G --no-progress
 
       - name: Commit baseline and remove this workflow
         shell: bash
