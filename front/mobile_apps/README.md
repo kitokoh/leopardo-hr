@@ -12,7 +12,7 @@ desormais les seules applications mobiles actives.
 - `leopardo_hr/` : app mobile RH dediee, issue d'un split de `leopardo_manager`. Integree a la matrice CI canonique `mobile-distribute.yml` pour le deploiement Firebase (voir `CHANGELOG.md`).
 - `leopardo_platform_admin/` : app mobile super-admin plateforme. Elle consomme uniquement les API `/platform/*` pour piloter les tenants, creer une entreprise cliente, traiter les demandes clients et suivre les metriques globales.
 - `leopardo_accounting/` : app mobile comptabilité (facturation, suivi des impayés). Intégrée à melos et à la CI (QA 2026-08-15, #2661) ; Android uniquement, son écran stats est encore un mock — chantier ouvert (périmètre documenté dans `leopardo_accounting/README.md`).
-- `leopardo_accounting/` : app mobile marketing/communication (vitrine). Intégrée à melos et à la CI (QA 2026-08-15, #2661) ; son écran stats est encore un mock — chantier ouvert.
+- `leopardo_marketing/` : app mobile marketing/communication (vitrine). Intégrée à melos et à la CI (QA 2026-08-15, #2661) ; son écran stats est encore un mock — chantier ouvert.
 - `leopardo_travel_agent/` : app mobile agent/vendeur TravelAgency (TRAVEL-701 #6088 + TRAVEL-810 #6100) — vente guichet multi-passagers, encaissement cash, check-in QR, manifeste, caisse PDV. Basée sur `leopardo_core`, intégrée à melos et à la CI mobile.
 ## Regles de contribution
 
@@ -26,7 +26,7 @@ desormais les seules applications mobiles actives.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin` et `leopardo_accounting`.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide les 8 packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin` et `leopardo_travel_agent`.
 - `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
 
 ## Garde-fous Plan 26

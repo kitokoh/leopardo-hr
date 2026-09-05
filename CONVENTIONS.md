@@ -13,7 +13,7 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
-│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_accounting, leopardo_platform_admin
+│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_accounting, leopardo_platform_admin, leopardo_travel_agent
 ├── docs/                   # Documentation technique
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── docker-compose.yml      # Dev environment
@@ -168,7 +168,7 @@ Règle de migration : ne jamais changer un verbe sans vérifier les clients (app
 - **Utiliser `__()` ou `trans()`** — jamais de chaines hardcodees en francais/anglais
 - 4 langues supportees : FR, EN, AR, TR
 - Support RTL pour l'arabe
-- Fichiers de traduction dans `resources/lang/{fr,en,ar,tr}/`
+- Fichiers de traduction backend dans `api/lang/{fr,en,ar,tr}/` (synchronisés depuis `shared/i18n/locales/`)
 - **Garde CI (PA2-I18N-007 + issue #5432)** : `check-hardcoded-accented-messages.sh` refuse toute ligne AJOUTÉE avec un littéral accentué (proxy « texte français ») hors `__()`/`trans()` sur les surfaces à risque :
   - `*Controller.php` (historique) — `api/app/Modules/*/Application/**` (Services/Actions) — `api/app/Modules/*/Domain/Exceptions/**` — `api/app/Modules/*/Console/**`
   - Les lignes `__('catalogue.cle')` et les codes techniques sans accent ne déclenchent jamais.
