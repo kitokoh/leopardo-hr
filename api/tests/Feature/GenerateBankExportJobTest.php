@@ -185,10 +185,10 @@ class GenerateBankExportJobTest extends TestCase
         $export->refresh();
 
         $this->assertSame(BankExport::STATUS_FAILED, $export->status);
-        // #6559 : on persiste un code métier stable (pas le message brut du
-        // throwable, qui contient des détails internes) ; le détail technique
-        // reste dans les logs via report().
-        $this->assertSame('BANK_EXPORT_GENERATION_FAILED', (string) $export->error_message);
+        // #6559 : SafeErrorMessage conserve le message métier volontairement
+        // exposé (« Configuration bancaire entreprise manquante ») tout en
+        // scrubant les fragments internes (SQLSTATE, chemins).
+        $this->assertStringContainsString('Configuration bancaire entreprise manquante', (string) $export->error_message);
         $this->assertNull($export->file_path);
     }
 

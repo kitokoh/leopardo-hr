@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\CompanySetting;
-
 use App\Core\Tenant\Domain\Models\Company;
-
 use App\Modules\Attendance\Domain\Enums\VerificationMethod;
-
 use App\Shared\Traits\BelongsToCompany;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
