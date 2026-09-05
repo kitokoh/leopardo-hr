@@ -1,6 +1,6 @@
 
 use App\Core\Tenant\Domain\Models\Company
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Connection;
     public function execute(Company $company, string $sector): void
     {
         if ($sector === 'btp') {
@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\DB;
 
     private function applyBtpTemplate(string $companyId): void
     {
-        DB::transaction(function () use ($companyId) {
+        $this->db->transaction(function () use ($companyId) {
             // Horaires de chantier (par ex: 7h-15h)
-            $scheduleId = DB::table('schedules')->insertGetId([
+            $scheduleId = $this->db->table('schedules')->insertGetId([
                 'company_id' => $companyId,
                 'name' => 'Horaires de Chantier (BTP)',
                 'work_days' => json_encode([1, 2, 3, 4, 5]), // lundi→vendredi (schéma réel work_days jsonb [1-7])
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\DB;
             ]);
 
             // Prime de panier et salissure
-            DB::table('salary_components')->insert([
+            $this->db->table('salary_components')->insert([
                 [
                     'company_id' => $companyId,
                     'name' => 'Prime de panier',
@@ -48,7 +48,7 @@ use Illuminate\Support\Facades\DB;
             ]);
 
             // Absence intemperies
-            DB::table('absence_types')->insert([
+            $this->db->table('absence_types')->insert([
                 'company_id' => $companyId,
                 'name' => 'Intempéries',
                 'is_paid' => true,
@@ -62,9 +62,9 @@ use Illuminate\Support\Facades\DB;
 
     private function applySecurityTemplate(string $companyId): void
     {
-        DB::transaction(function () use ($companyId) {
+        $this->db->transaction(function () use ($companyId) {
             // Horaires de nuit
-            $scheduleId = DB::table('schedules')->insertGetId([
+            $scheduleId = $this->db->table('schedules')->insertGetId([
                 'company_id' => $companyId,
                 'name' => 'Horaires de Nuit (Sécurité)',
                 'work_days' => json_encode([1, 2, 3, 4, 5, 6, 7]),
@@ -75,7 +75,7 @@ use Illuminate\Support\Facades\DB;
             ]);
 
             // Prime de risque
-            DB::table('salary_components')->insert([
+            $this->db->table('salary_components')->insert([
                 [
                     'company_id' => $companyId,
                     'name' => 'Prime de risque',

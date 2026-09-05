@@ -55,7 +55,6 @@ api/app/Modules/EduManager/Application/Services/AttendanceService.php:12:use Ill
 api/app/Modules/EduManager/Application/Services/GradeService.php:14:use Illuminate\Support\Facades\DB;
 api/app/Modules/EduManager/Application/Services/ReportCardService.php:12:use Illuminate\Support\Facades\DB;
 api/app/Modules/Growth/Application/Actions/ApplyAsPartner.php:10:use Illuminate\Support\Facades\DB;
-api/app/Modules/HR/Application/Actions/ApplySectorTemplate.php:3:use Illuminate\Support\Facades\DB;
 api/app/Modules/HR/Domain/Models/UserInvitation.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Marketing/Application/Actions/ConnectSocialAccount.php:10:use Illuminate\Support\Facades\DB;
 api/app/Modules/Marketing/Application/Actions/CreateSocialPost.php:11:use Illuminate\Support\Facades\DB;
