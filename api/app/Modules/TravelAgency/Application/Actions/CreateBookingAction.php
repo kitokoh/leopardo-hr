@@ -52,9 +52,16 @@ final class CreateBookingAction
         TravelTrip $trip,
         array $passengers,
         BookingSource $source,
-        Employee $actor,
-        string $idempotencyKey,
+        ?Employee $actor = null,
+        string $idempotencyKey = '',
         ?int $customerContactId = null,
+        ?int $corporateAccountId = null,
+        ?int $quoteId = null,
+        bool $billingDeferred = false,
+        ?string $contactEmail = null,
+        ?string $contactPhone = null,
+        bool $notifyConsent = false,
+        ?string $connectionGroupId = null,
     ): TravelBooking {
         $existing = TravelBooking::query()
             ->where('trip_id', $trip->id)
@@ -69,7 +76,7 @@ final class CreateBookingAction
             abort(409, 'Ce trajet n\'est pas ouvert a la reservation.');
         }
 
-        $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId): TravelBooking {
+        $booking = DB::transaction(function () use ($trip, $passengers, $source, $actor, $idempotencyKey, $customerContactId, $corporateAccountId, $quoteId, $billingDeferred, $contactEmail, $contactPhone, $notifyConsent, $connectionGroupId): TravelBooking {
             // Verrouille le trajet : empeche deux reservations concurrentes
             // de lire le meme inventaire.
             /** @var TravelTrip $lockedTrip */
@@ -91,10 +98,18 @@ final class CreateBookingAction
                 'currency' => $this->resolveCurrency($lockedTrip),
                 'booking_source' => $source,
                 'customer_contact_id' => $customerContactId,
-                'booked_by_user_id' => $actor->id,
+                'booked_by_user_id' => $actor?->id,
                 'payment_status' => PaymentStatus::PENDING,
                 'expires_at' => now()->addMinutes(15),
                 'idempotency_key' => $idempotencyKey,
+                'corporate_account_id' => $corporateAccountId,
+                'quote_id' => $quoteId,
+                'billing_deferred' => $billingDeferred,
+                'contact_email' => $contactEmail,
+                'contact_phone' => $contactPhone,
+                'notify_consent' => $notifyConsent,
+                'consent_recorded_at' => $notifyConsent ? now() : null,
+                'connection_group_id' => $connectionGroupId,
             ]);
 
             foreach ($passengers as $index => $passengerData) {

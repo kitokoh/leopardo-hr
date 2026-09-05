@@ -8,6 +8,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\CancelBookingAction;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelRoundTripResource;
+use App\Modules\TravelAgency\Application\Actions\CreateRoundTripAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
@@ -236,18 +238,40 @@ class TravelShopController extends Controller
             abort(409, 'Ce trajet n\'est pas ouvert à la réservation en ligne.');
         }
 
+        $passengers = $request->validated('passengers');
+        $idempotencyKey = (string) $request->validated('idempotency_key');
+
+        $returnTripId = $request->validated('return_trip_id');
+        if ($returnTripId !== null) {
+            /** @var TravelTrip $returnTrip */
+            $returnTrip = TravelTrip::query()->findOrFail((int) $returnTripId);
+
+            if ($returnTrip->company_id !== $actor->company_id) {
+                abort(404);
+            }
+
+            $roundTrip = app(CreateRoundTripAction::class)->execute(
+                outboundTrip: $trip,
+                returnTrip: $returnTrip,
+                passengers: $passengers,
+                source: BookingSource::ONLINE,
+                actor: $actor,
+                idempotencyKey: $idempotencyKey,
+            );
+
+            return (new TravelRoundTripResource($roundTrip))->response()->setStatusCode(201);
+        }
+
         $booking = app(CreateBookingAction::class)->execute(
             trip: $trip,
-            passengers: $request->validated('passengers'),
+            passengers: $passengers,
             source: BookingSource::ONLINE,
             actor: $actor,
-            idempotencyKey: $request->validated('idempotency_key'),
+            idempotencyKey: $idempotencyKey,
             customerContactId: $request->validated('customer_contact_id'),
             contactEmail: $request->validated('contact_email'),
             contactPhone: $request->validated('contact_phone'),
             notifyConsent: (bool) $request->validated('notify_consent', false),
-            returnTripId: $request->validated('return_trip_id'),
-            returnPassengers: $request->validated('return_passengers'),
         );
 
         return (new TravelBookingResource($booking))->response()->setStatusCode(201);

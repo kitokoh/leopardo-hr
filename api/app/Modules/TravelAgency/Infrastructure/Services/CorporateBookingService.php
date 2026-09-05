@@ -10,6 +10,7 @@ use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCorporateAccount;
+use App\Modules\TravelAgency\Domain\Enums\QuoteStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuote;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
@@ -69,28 +70,28 @@ final class CorporateBookingService
 
     public function acceptQuote(TravelQuote $quote, Employee $actor): TravelQuote
     {
-        if ($quote->status !== TravelQuote::STATUS_DRAFT) {
+        if ($quote->status !== QuoteStatus::DRAFT) {
             abort(422, 'Seul un devis en brouillon peut être accepté.');
         }
 
         if ($quote->expires_at !== null && $quote->expires_at->isPast()) {
-            $quote->forceFill(['status' => TravelQuote::STATUS_EXPIRED])->save();
+            $quote->forceFill(['status' => QuoteStatus::EXPIRED])->save();
 
             abort(422, 'Ce devis est expiré.');
         }
 
-        $quote->forceFill(['status' => TravelQuote::STATUS_ACCEPTED])->save();
+        $quote->forceFill(['status' => QuoteStatus::CONFIRMED])->save();
 
         return $quote->refresh();
     }
 
     public function cancelQuote(TravelQuote $quote): TravelQuote
     {
-        if (in_array($quote->status, [TravelQuote::STATUS_CANCELLED, TravelQuote::STATUS_EXPIRED], true)) {
+        if (in_array($quote->status, [QuoteStatus::CANCELLED, QuoteStatus::EXPIRED], true)) {
             return $quote;
         }
 
-        $quote->forceFill(['status' => TravelQuote::STATUS_CANCELLED])->save();
+        $quote->forceFill(['status' => QuoteStatus::CANCELLED])->save();
 
         return $quote->refresh();
     }
@@ -125,8 +126,8 @@ final class CorporateBookingService
                 abort(422, 'Devis incohérent avec le compte corporate.');
             }
 
-            if ($quote->status !== TravelQuote::STATUS_ACCEPTED) {
-                abort(422, 'Devis non accepté.');
+            if ($quote->status !== QuoteStatus::CONFIRMED) {
+                abort(422, 'Devis non confirmé.');
             }
 
             if ($quote->trip_id !== $trip->id || $quote->passengers_count !== count($passengers)) {
