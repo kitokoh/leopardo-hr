@@ -16,10 +16,6 @@ import { t } from '@/lib/i18n/locale-catalog';
 
 export default function RestaurantReferentialPage() {
   const locale = getPreferredLocale();
-  const STATUS_OPTIONS = [
-    { value: 'active', label: 'Active' },
-    { value: 'disabled', label: t(locale, 'restaurant.ref.disabled') },
-  ];
   const [tab, setTab] = useState('branches');
 
   // Options génériques du champ `status` (configs ci-dessous) — le fallback
