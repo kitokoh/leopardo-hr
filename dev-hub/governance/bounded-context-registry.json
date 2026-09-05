@@ -3,7 +3,7 @@
   "title": "Bounded Context Registry — Leopardo HR",
   "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
   "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-  "updated": "2026-09-02"
+  "updated": "2026-09-05"
  },
  "_shared_exceptions": [
   {
@@ -13,6 +13,22 @@
   {
    "path": "api/app/Core/Shared",
    "reason": "Building blocks partagés (DTOs, Enums, Events, Models, Traits) — volontairement hors BC."
+  },
+  {
+   "path": "api/app/Core/Solutions",
+   "reason": "Moteur transversal Solution Pack (enquêtes, surveys publics, PDF) partagé entre modules solutions — aucun BC propriétaire unique."
+  },
+  {
+   "path": "api/app/Core/Notifications",
+   "reason": "Contrats de notification partagés (EmployeeNotifier) — consommés par plusieurs BC."
+  },
+  {
+   "path": "api/app/Core/Privacy",
+   "reason": "RGPD / vie privée transversal (registre, demandes) — partagé entre BC."
+  },
+  {
+   "path": "api/app/Core/Seed",
+   "reason": "Infrastructure de seeding partagée — aucun BC propriétaire unique."
   }
  ],
  "bounded_contexts": [
@@ -418,10 +434,6 @@
     {
      "path": "api/app/Contracts/Queue",
      "status": "active"
-    },
-    {
-     "path": "api/app/Modules/EdgeSync",
-     "status": "active"
     }
    ],
    "routes": [
@@ -431,8 +443,7 @@
     "api/database/migrations/tenant"
    ],
    "events": [
-    "App\\Contracts\\Queue",
-    "App\\Modules\\EdgeSync\\Domain\\Events"
+    "App\\Contracts\\Queue"
    ],
    "dependencies": [
     "BC-02",
@@ -692,6 +703,10 @@
     {
      "path": "api/app/AI",
      "status": "active"
+    },
+    {
+     "path": "api/app/Core/AI",
+     "status": "active"
     }
    ],
    "routes": [],
@@ -755,10 +770,6 @@
     {
      "path": "api/app/Modules/Restaurant",
      "status": "active"
-    },
-    {
-     "path": "api/app/Modules/RestaurantManager",
-     "status": "planned"
     },
     {
      "path": "front/web/src/app/restaurant",

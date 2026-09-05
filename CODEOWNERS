@@ -47,6 +47,7 @@
 /api/app/Modules/Fleet/     @kitokoh
 /api/app/Modules/Delivery/  @kitokoh
 /api/app/AI/                @kitokoh
+/api/app/Core/AI/           @kitokoh
 
 # Frontend web (Next.js)
 /front/web/                 @kitokoh
