@@ -33,4 +33,3 @@ class ContractPdfGenerator implements ContractDocumentGeneratorInterface
         return $pdf->output();
     }
 }
-

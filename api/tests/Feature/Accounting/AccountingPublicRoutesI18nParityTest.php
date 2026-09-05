@@ -24,8 +24,8 @@ class AccountingPublicRoutesI18nParityTest extends TestCase
         $this->withHeader('Accept-Language', 'fr')
             ->getJson('/api/v1/accounting/documents/shared/unknown-token')
             ->assertStatus(404)
-            ->assertJsonPath('error', 'RESOURCE_NOT_FOUND')
-            ->assertJsonPath('localized_message', 'Ressource introuvable.');
+            ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
+            ->assertJsonPath('localized_message', 'Lien de partage introuvable ou expiré.');
     }
 
     public function test_shared_document_error_is_localized_with_accept_language_en(): void
@@ -33,8 +33,8 @@ class AccountingPublicRoutesI18nParityTest extends TestCase
         $this->withHeader('Accept-Language', 'en')
             ->getJson('/api/v1/accounting/documents/shared/unknown-token')
             ->assertStatus(404)
-            ->assertJsonPath('error', 'RESOURCE_NOT_FOUND')
-            ->assertJsonPath('localized_message', 'Resource not found.');
+            ->assertJsonPath('error', 'DOCUMENT_SHARE_NOT_FOUND')
+            ->assertJsonPath('localized_message', 'Share link not found or expired.');
     }
 
     public function test_payment_webhook_unknown_gateway_is_localized_fr(): void
