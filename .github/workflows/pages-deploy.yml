@@ -1,0 +1,45 @@
+name: Deploy Landing - GitHub Pages
+
+# Migration du site produit statique (kitokoh.github.io/leopardo-hr) :
+# branche `gh-pages` (legacy build) → Actions, contenu versionné sur `main`
+# sous `site/gh-pages/`. Objectif fondateur : « ne garder que main » (#6815).
+# Contenu identique à l'ancienne branche (mêmes chemins relatifs).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/gh-pages/**'
+      - '.github/workflows/pages-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/gh-pages
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
