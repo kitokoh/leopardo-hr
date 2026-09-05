@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 
 /**
  * RESTO-607 (#6212) — Création d'une promotion (code unique par tenant).
@@ -41,6 +40,4 @@ class StoreRestaurantPromotionRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
         ];
     }
-
-
 }

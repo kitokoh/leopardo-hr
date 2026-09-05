@@ -103,5 +103,4 @@ class TravelReportController extends Controller
 
         return new JsonResponse(['data' => $payload]);
     }
-
 }

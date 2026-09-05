@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
-use App\Core\Tenant\Domain\Models\CompanySetting;
-
 use App\Core\Tenant\Domain\Models\Company;
-
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use App\Modules\Attendance\Domain\Enums\VerificationMethod;
-
 use App\Shared\Traits\BelongsToCompany;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -76,7 +72,6 @@ class AttendanceKiosk extends Model
         'last_sync_at' => 'datetime',
     ];
 
-
     public function isRevoked(): bool
     {
         return $this->status === 'revoked' || $this->revoked_at !== null;
@@ -115,6 +110,7 @@ class AttendanceKiosk extends Model
 
         return self::KIOSK_PUNCH_METHODS_ALL;
     }
+
     private function normalizeMethods(array $methods): array
     {
         $normalized = [];

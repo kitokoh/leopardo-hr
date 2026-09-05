@@ -13,7 +13,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantOutboxPublisher;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
-use App\Modules\RestaurantManager\Domain\Enums\PaymentProvider;
 
 /**
  * RESTO-401 (#6188) / RESTO-412 (#6199) — Clôture d'une session de caisse POS.
@@ -122,6 +121,4 @@ final class ClosePosSessionAction
 
         return $sum;
     }
-
-
 }

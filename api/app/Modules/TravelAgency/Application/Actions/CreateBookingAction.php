@@ -18,7 +18,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * TRAVEL-312 (#6042) — Creation d'une reservation guichet (multi-passagers).
@@ -326,6 +325,4 @@ final class CreateBookingAction
             ? ($price->child_price_minor ?? $price->adult_price_minor)
             : $price->adult_price_minor;
     }
-
-
 }

@@ -6,14 +6,8 @@ namespace App\Modules\TravelAgency\Infrastructure\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
 use App\Jobs\Middleware\EnsureTenantContext;
-use App\Modules\TravelAgency\Application\Queries\CancellationsReportQuery;
-use App\Modules\TravelAgency\Application\Queries\OccupancyReportQuery;
-use App\Modules\TravelAgency\Application\Queries\RevenueReportQuery;
-use App\Modules\TravelAgency\Application\Queries\SalesReportQuery;
 use App\Modules\TravelAgency\Domain\Models\TravelExportAsset;
-use App\Modules\TravelAgency\Domain\Models\TravelReportExport;
 use App\Modules\TravelAgency\Infrastructure\Exports\TravelCsvExporter;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelReportExportStorage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,8 +24,8 @@ use Throwable;
  */
 class ExportTravelReportJob implements ShouldQueue, TenantScopedJob
 {
-
     public const TYPES = ['sales', 'occupancy', 'revenue', 'cancellations'];
+
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;

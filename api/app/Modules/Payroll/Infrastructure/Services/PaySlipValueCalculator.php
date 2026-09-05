@@ -1048,5 +1048,4 @@ class PaySlipValueCalculator
 
         return is_numeric($parts) ? (float) $parts : 1.0;
     }
-
 }

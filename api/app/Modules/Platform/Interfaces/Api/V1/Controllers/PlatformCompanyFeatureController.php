@@ -11,7 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureController extends Controller
 {
@@ -84,6 +83,4 @@ class PlatformCompanyFeatureController extends Controller
             ],
         ]);
     }
-
-
 }

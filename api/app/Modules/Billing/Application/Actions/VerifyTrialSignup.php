@@ -517,5 +517,4 @@ class VerifyTrialSignup
 
         return \is_int($days) ? $days : 14;
     }
-
 }

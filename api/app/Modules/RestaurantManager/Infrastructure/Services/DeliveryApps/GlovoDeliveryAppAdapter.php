@@ -97,5 +97,4 @@ final class GlovoDeliveryAppAdapter implements DeliveryAppAdapter
             note: isset($payload['comments']) ? (string) $payload['comments'] : null,
         );
     }
-
 }

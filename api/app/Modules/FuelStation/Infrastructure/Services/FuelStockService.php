@@ -358,6 +358,4 @@ final class FuelStockService
             'updated_at' => now(),
         ]);
     }
-
-
 }

@@ -98,5 +98,4 @@ final class UberEatsDeliveryAppAdapter implements DeliveryAppAdapter
             note: isset($payload['note']) ? (string) $payload['note'] : null,
         );
     }
-
 }

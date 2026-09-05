@@ -121,5 +121,4 @@ class GenerateMonthlyInvoices extends Command
 
         return self::SUCCESS;
     }
-
 }

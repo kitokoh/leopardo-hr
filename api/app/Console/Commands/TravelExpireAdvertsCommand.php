@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

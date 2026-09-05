@@ -56,10 +56,15 @@ class FuelReportSnapshot extends Model
         self::TYPE_STOCK,
         self::TYPE_STATION_PERFORMANCE,
     ];
+
     public const TYPE_DAILY_VOLUMES = 'daily_volumes';
+
     public const TYPE_SALES_SUMMARY = 'sales_summary';
+
     public const TYPE_SHIFT_SUMMARY = 'shift_summary';
+
     public const TYPE_STOCK_STATUS = 'stock_status';
+
     public const TYPE_VARIANCE_SUMMARY = 'variance_summary';
 
     protected $fillable = [

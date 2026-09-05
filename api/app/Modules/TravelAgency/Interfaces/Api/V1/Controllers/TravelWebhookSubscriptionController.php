@@ -125,5 +125,4 @@ class TravelWebhookSubscriptionController extends Controller
             'updated_at' => $subscription->updated_at?->toIso8601String(),
         ];
     }
-
 }

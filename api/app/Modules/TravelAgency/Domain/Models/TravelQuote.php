@@ -28,9 +28,13 @@ class TravelQuote extends Model
 
     /** Taille minimale d'un groupe (spec §12, TRAVEL-803). */
     public const MIN_GROUP_SIZE = 5;
+
     public const STATUS_ACCEPTED = 'accepted';
+
     public const STATUS_CANCELLED = 'cancelled';
+
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_EXPIRED = 'expired';
 
     protected $fillable = [

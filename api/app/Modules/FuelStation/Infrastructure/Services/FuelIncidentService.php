@@ -229,8 +229,6 @@ final class FuelIncidentService
         return $task->refresh();
     }
 
-
-
     private function audit(Employee $actor, string $event, Model $target): void
     {
         AuditLog::record(
@@ -241,8 +239,4 @@ final class FuelIncidentService
             newValues: ['status' => $target->getAttribute('status')],
         );
     }
-
-
-
-
 }

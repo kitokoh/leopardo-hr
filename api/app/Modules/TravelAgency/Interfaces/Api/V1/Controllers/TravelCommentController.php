@@ -11,7 +11,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelCommentReques
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelCommentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Domain\Models\TravelArticle;
 
 /**
  * TRAVEL-902 (#6105) — Commentaires (CRUD, modération, signalement).
@@ -128,16 +127,13 @@ class TravelCommentController extends Controller
         return new JsonResponse(null, 204);
     }
 
-
     public function approve(Request $request, TravelComment $comment): JsonResponse
     {
         return $this->moderate($request, $comment, 'approved');
     }
 
-
     public function reject(Request $request, TravelComment $comment): JsonResponse
     {
         return $this->moderate($request, $comment, 'rejected');
     }
-
 }

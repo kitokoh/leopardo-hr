@@ -170,6 +170,4 @@ class RestaurantOutboxDispatchCommand extends Command
 
         $this->error("[restaurant:outbox-dispatch] #{$event->id} dead-letter : {$error}");
     }
-
-
 }

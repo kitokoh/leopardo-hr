@@ -179,8 +179,6 @@ class TravelEngagementController extends Controller
         ];
     }
 
-
-
     public function summary(Request $request, TravelArticle $article): JsonResponse
     {
         /** @var Employee $actor */
@@ -201,7 +199,6 @@ class TravelEngagementController extends Controller
         ]]);
     }
 
-
     private function likesCount(TravelArticle $article): int
     {
         return TravelLike::query()
@@ -209,7 +206,6 @@ class TravelEngagementController extends Controller
             ->where('article_id', $article->id)
             ->count();
     }
-
 
     private function ratingAverage(TravelArticle $article): ?float
     {
@@ -221,7 +217,6 @@ class TravelEngagementController extends Controller
         return $avg === null ? null : round((float) $avg, 2);
     }
 
-
     private function ratingsCount(TravelArticle $article): int
     {
         return TravelRating::query()
@@ -229,5 +224,4 @@ class TravelEngagementController extends Controller
             ->where('article_id', $article->id)
             ->count();
     }
-
 }

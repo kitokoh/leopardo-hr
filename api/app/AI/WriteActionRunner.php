@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\AI;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
-use App\AI\ToolPermissionPolicy;
 
 class WriteActionRunner
 {
@@ -225,5 +224,4 @@ class WriteActionRunner
 
         return is_scalar($value) ? (string) $value : $default;
     }
-
 }

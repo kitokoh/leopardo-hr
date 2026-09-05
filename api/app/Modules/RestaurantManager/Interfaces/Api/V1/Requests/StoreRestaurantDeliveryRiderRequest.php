@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 
 /**
  * RESTO-605 (#6210) — Validation stricte de création d'un livreur.
@@ -37,6 +36,4 @@ class StoreRestaurantDeliveryRiderRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
         ];
     }
-
-
 }
