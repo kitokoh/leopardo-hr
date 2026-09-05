@@ -221,7 +221,11 @@ class MobileExperienceService
             );
             // CRM client (issue #5730) — feature-flagged, opt-in par tenant
             // (ADR-CRM-004). L'app employee n'expose aucune route CRM.
-            if (FeatureFlag::enabled('crm', currentCompany())) {
+            // Le login (EmployeeResource) n'a PAS de `current_company` bindé
+            // (route publique) : on retombe sur la company de l'employé —
+            // FeatureFlag accepte null (flag absent → non activé).
+            $crmCompany = app()->bound('current_company') ? currentCompany() : $employee->company;
+            if ($crmCompany !== null && FeatureFlag::enabled('crm', $crmCompany)) {
                 $modules[] = $this->module(
                     key: 'crm',
                     title: 'CRM',
