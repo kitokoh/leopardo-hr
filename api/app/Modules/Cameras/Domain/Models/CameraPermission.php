@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Cameras\Domain;
+namespace App\Modules\Cameras\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -36,7 +35,6 @@ use Illuminate\Support\Carbon;
 class CameraPermission extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
 
     protected $table = 'camera_permissions';
 

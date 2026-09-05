@@ -7,9 +7,9 @@ namespace App\Modules\Cameras\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Exceptions\DomainException;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessLog;
-use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessLog;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
 use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Carbon;
@@ -58,7 +58,7 @@ class CameraService
             metadata: ['name' => $camera->name]
         );
 
-        return $camera->fresh();
+        return $camera->fresh() ?? $camera;
     }
 
     /**
@@ -89,7 +89,7 @@ class CameraService
             metadata: ['fields' => array_keys($data)]
         );
 
-        return $camera->fresh();
+        return $camera->fresh() ?? $camera;
     }
 
     public function softDelete(Camera $camera, Employee $actor): void
@@ -181,7 +181,7 @@ class CameraService
             metadata: ['label' => $token->label, 'expires_at' => $token->expires_at->toIso8601ZuluString()]
         );
 
-        return $token->fresh();
+        return $token->fresh() ?? $token;
     }
 
     public function revokeAccessToken(CameraAccessToken $token, Employee $actor): CameraAccessToken
@@ -191,7 +191,7 @@ class CameraService
             $token->save();
 
             $this->log(
-                company: $token->camera->company,
+                company: $token->camera?->company,
                 camera: $token->camera,
                 actor: $actor,
                 action: 'revoke',
@@ -202,7 +202,7 @@ class CameraService
             );
         }
 
-        return $token->fresh();
+        return $token->fresh() ?? $token;
     }
 
     /**
@@ -461,7 +461,11 @@ class CameraService
     ): void {
         $log = new CameraAccessLog;
         $log->company_id = $company?->id ?? $camera?->company_id;
-        $log->camera_id = $camera?->id;
+        if ($camera === null) {
+            // camera_id est NOT NULL en base (migration create_cameras_module_tables)
+            throw new \InvalidArgumentException("camera requise pour un log d'accès (camera_id NOT NULL)");
+        }
+        $log->camera_id = $camera->id;
         $log->employee_id = $actor?->id;
         $log->access_token_id = $accessTokenId;
         $log->actor_type = match (true) {

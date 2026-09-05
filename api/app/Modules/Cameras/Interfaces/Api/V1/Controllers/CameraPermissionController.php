@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraPermission;
+use App\Http\Controllers\Controller;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraPermission;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraPermissionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -74,7 +74,7 @@ class CameraPermissionController extends Controller
             ]
         );
 
-        return new JsonResponse(['data' => $this->present($permission->fresh())], 201);
+        return new JsonResponse(['data' => $this->present($permission->fresh() ?? $permission)], 201);
     }
 
     public function destroy(int $cameraId, int $permissionId): JsonResponse

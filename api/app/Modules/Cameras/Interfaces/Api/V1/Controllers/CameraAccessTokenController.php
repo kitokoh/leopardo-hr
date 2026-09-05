@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Http\Controllers\Controller;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraAccessTokenRequest;
 use Illuminate\Http\JsonResponse;

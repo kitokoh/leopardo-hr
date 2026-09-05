@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Cameras;
 
-use Tests\TestCase;
 use Tests\Support\CreatesCameraFixtures;
 use Tests\Support\CreatesMvpSchema;
+use Tests\TestCase;
 
 /**
  * Issue #3147 — SSRF : POST /cameras/test-rtsp ne doit jamais sonder le

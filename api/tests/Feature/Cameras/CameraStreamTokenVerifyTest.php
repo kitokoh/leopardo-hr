@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Cameras;
 
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
 use Illuminate\Support\Carbon;
 use Tests\Support\CreatesCameraFixtures;

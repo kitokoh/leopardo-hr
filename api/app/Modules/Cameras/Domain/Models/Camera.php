@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Cameras\Domain;
+namespace App\Modules\Cameras\Domain\Models;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,7 +43,6 @@ use Illuminate\Support\Carbon;
 class Camera extends Model
 {
     use BelongsToCompany;
-    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'cameras';
@@ -109,4 +107,3 @@ class Camera extends Model
         return $this->hasMany(CameraAccessLog::class, 'camera_id');
     }
 }
-

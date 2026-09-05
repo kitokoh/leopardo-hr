@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Cameras;
 
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
-use App\Modules\Cameras\Domain\CameraPermission;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\CameraPermission;
 use Illuminate\Support\Carbon;
 use Tests\Support\CreatesCameraFixtures;
 use Tests\Support\CreatesMvpSchema;
