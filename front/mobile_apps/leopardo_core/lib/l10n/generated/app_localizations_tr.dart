@@ -8158,77 +8158,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Şirketinizin hesapları, kişileri, potansiyel müşterileri ve fırsatları.';
 
   @override
-  String get crmAccountsTitle => 'Hesaplar';
+  String get crmAccounts => 'CRM hesapları';
 
   @override
-  String get crmAccountsDescription => 'Şirketinizin müşteri kuruluşları';
+  String get crmContacts => 'CRM kişileri';
 
   @override
-  String get crmAccountsSubtitle => 'Hesap listesi (tenant kapsamlı).';
-
-  @override
-  String get crmAccountsEmpty => 'Henüz hesap yok.';
-
-  @override
-  String get crmAccountsColname => 'Ad';
-
-  @override
-  String get crmAccountsColstatus => 'Durum';
-
-  @override
-  String get crmAccountsColemail => 'E-posta';
-
-  @override
-  String get crmAccountsColphone => 'Telefon';
-
-  @override
-  String get crmAccountsColcreated => 'Oluşturulma';
-
-  @override
-  String get crmContactsTitle => 'Kişiler';
-
-  @override
-  String get crmContactsDescription => 'Hesaplarınıza bağlı kişiler';
-
-  @override
-  String get crmContactsSubtitle => 'Kişi listesi (tenant kapsamlı).';
-
-  @override
-  String get crmContactsEmpty => 'Henüz kişi yok.';
-
-  @override
-  String get crmContactsPrimary => 'Birincil';
-
-  @override
-  String get crmLeadsTitle => 'Potansiyel Müşteriler';
-
-  @override
-  String get crmLeadsDescription => 'Nitelendirilecek iş fırsatları';
-
-  @override
-  String get crmLeadsSubtitle =>
-      'Potansiyel müşteri listesi (tenant kapsamlı).';
-
-  @override
-  String get crmLeadsEmpty => 'Henüz potansiyel müşteri yok.';
-
-  @override
-  String get crmLeadsColname => 'Ad';
-
-  @override
-  String get crmLeadsColcompany => 'Şirket';
-
-  @override
-  String get crmLeadsColstatus => 'Durum';
-
-  @override
-  String get crmLeadsColsource => 'Kaynak';
-
-  @override
-  String get crmLeadsColemail => 'E-posta';
-
-  @override
-  String get crmLeadsColcreated => 'Oluşturulma';
+  String get crmLeads => 'CRM potansiyel müşterileri';
 
   @override
   String get crmOpportunities => 'Fırsatlar';
@@ -11736,39 +11672,30 @@ class AppLocalizationsTr extends AppLocalizations {
   String get travelportalStatuscompleted => 'Tamamlandı';
 
   @override
-  String get fuelPumpistActiveShift => 'Aktif vardiya';
+  String get fuelPumpistTitle => 'Pompacı';
 
   @override
   String get fuelPumpistBackTooltip => 'Geri';
 
   @override
-  String get fuelPumpistErrorTitle => 'Vardiyalar yüklenemedi';
+  String get fuelPumpistActiveShift => 'Aktif vardiya';
+
+  @override
+  String get fuelPumpistNoShiftTitle => 'Aktif vardiya yok';
 
   @override
   String get fuelPumpistNoShiftDescription =>
       'Bugünkü atamalarınız burada görünecek.';
 
   @override
-  String get fuelPumpistNoShiftTitle => 'Aktif vardiya yok';
-
-  @override
-  String get fuelPumpistReadingHint => 'örn. 12500';
+  String get fuelPumpistErrorTitle => 'Vardiyalar yüklenemedi';
 
   @override
   String get fuelPumpistReadingLabel => 'Okuma değeri (alt birim)';
 
   @override
+  String get fuelPumpistReadingHint => 'örn. 12500';
+
+  @override
   String get fuelPumpistSubmit => 'Okumayı kaydet';
-
-  @override
-  String get fuelPumpistTitle => 'Pompacı';
-
-  @override
-  String get crmAccounts => 'CRM hesapları';
-
-  @override
-  String get crmContacts => 'CRM kişileri';
-
-  @override
-  String get crmLeads => 'CRM potansiyel müşterileri';
 }
