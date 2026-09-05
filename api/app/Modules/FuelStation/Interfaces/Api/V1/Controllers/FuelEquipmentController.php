@@ -12,13 +12,13 @@ use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelTankRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelEquipmentRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelEquipmentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelMeterRegisterRequest
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelPumpRequest
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\SaveFuelTankRequest;
 
 /**
  * Équipements FuelStation : pompes, cuves, compteurs (FUEL-011, #5805).
@@ -175,8 +175,8 @@ class FuelEquipmentController extends Controller
                 ? (string) ($item->getAttribute('meter_code') ?? $item->getAttribute('code'))
                 : (string) $item->getAttribute('code'),
             'status' => $item->status,
-            'created_at' => $item->created_at?->toISOString(),
-            'updated_at' => $item->updated_at?->toISOString(),
+            'created_at' => $item->created_at?->toIso8601String(),
+            'updated_at' => $item->updated_at?->toIso8601String(),
         ];
     }
 
@@ -201,7 +201,6 @@ class FuelEquipmentController extends Controller
         return $this->paginated($pumps->items(), $pumps, fn (FuelPump $pump): array => $this->pumpPayload($pump));
     }
 
-
     public function pumpsStore(SaveFuelPumpRequest $request, FuelStation $station): JsonResponse
     {
         $actor = $this->resolve($request, $station);
@@ -217,7 +216,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->pumpPayload($pump)], 201);
     }
 
-
     public function pumpsUpdate(SaveFuelPumpRequest $request, FuelPump $pump): JsonResponse
     {
         $actor = $this->resolvePump($request, $pump);
@@ -227,7 +225,6 @@ class FuelEquipmentController extends Controller
 
         return response()->json(['data' => $this->pumpPayload($pump->refresh())]);
     }
-
 
     public function tanksIndex(Request $request, FuelStation $station): JsonResponse
     {
@@ -242,7 +239,6 @@ class FuelEquipmentController extends Controller
 
         return $this->paginated($tanks->items(), $tanks, fn (FuelTank $tank): array => $this->tankPayload($tank));
     }
-
 
     public function tanksStore(SaveFuelTankRequest $request, FuelStation $station): JsonResponse
     {
@@ -259,7 +255,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->tankPayload($tank)], 201);
     }
 
-
     public function tanksUpdate(SaveFuelTankRequest $request, FuelTank $tank): JsonResponse
     {
         $actor = $this->resolveTank($request, $tank);
@@ -269,7 +264,6 @@ class FuelEquipmentController extends Controller
 
         return response()->json(['data' => $this->tankPayload($tank->refresh())]);
     }
-
 
     public function metersIndex(Request $request, FuelStation $station): JsonResponse
     {
@@ -284,7 +278,6 @@ class FuelEquipmentController extends Controller
 
         return $this->paginated($meters->items(), $meters, fn (FuelMeterRegister $meter): array => $this->meterPayload($meter));
     }
-
 
     public function metersStore(SaveFuelMeterRegisterRequest $request, FuelStation $station): JsonResponse
     {
@@ -301,7 +294,6 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->meterPayload($meter)], 201);
     }
 
-
     public function metersUpdate(SaveFuelMeterRegisterRequest $request, FuelMeterRegister $meter): JsonResponse
     {
         $actor = $this->resolveMeter($request, $meter);
@@ -312,56 +304,19 @@ class FuelEquipmentController extends Controller
         return response()->json(['data' => $this->meterPayload($meter->refresh())]);
     }
 
-
     private function resolve(Request $request, FuelStation $station): Employee
     {
         $this->assertSolutionActive();
 
         /** @var Employee $actor */
         $actor = $request->user();
-        $this->authorize('create', FuelPump::class);
 
-        $kind = $request->input('kind');
-        $companyId = (string) $actor->company_id;
-        $stationId = (int) $request->input('station_id');
+        if ($station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
-        $this->assertStationInTenant($companyId, $stationId);
-
-        $item = match ($kind) {
-            'tank' => FuelTank::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'code' => $request->input('code'),
-                'product_type' => $request->input('product_type', 'fuel'),
-                'capacity_minor' => $request->input('capacity_minor', 0),
-                'current_level_minor' => $request->input('current_level_minor', 0),
-                'status' => $request->input('status', 'active'),
-            ]),
-            'meter' => FuelMeterRegister::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'pump_id' => (int) $request->input('pump_id', 0),
-                'meter_code' => $request->input('meter_code', $request->input('code')),
-                'meter_type' => $request->input('meter_type', 'electronic'),
-                'product_code' => $request->input('product_type'),
-                'unit_code' => $request->input('unit_code', 'l'),
-                'precision_scale' => $request->input('precision_scale', 0),
-                'rollover_limit' => $request->input('rollover_limit'),
-                'installed_at' => $request->input('installed_at'),
-                'status' => $request->input('status', 'active'),
-            ]),
-            default => FuelPump::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'code' => $request->input('code'),
-                'product_types' => $request->input('product_types', []),
-                'status' => $request->input('status', 'active'),
-            ]),
-        };
-
-        return response()->json(['data' => $this->payload($kind, $item->refresh())], 201);
+        return $actor;
     }
-
 
     private function resolvePump(Request $request, FuelPump $pump): Employee
     {
@@ -370,15 +325,12 @@ class FuelEquipmentController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $item = $this->findInTenant($kind, $id, (string) $actor->company_id);
+        if ($pump->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
 
-        $this->authorize('update', $item);
-
-        $item->update($request->validated());
-
-        return response()->json(['data' => $this->payload($kind, $item->refresh())]);
+        return $actor;
     }
-
 
     private function resolveTank(Request $request, FuelTank $tank): Employee
     {
@@ -393,7 +345,6 @@ class FuelEquipmentController extends Controller
 
         return $actor;
     }
-
 
     private function resolveMeter(Request $request, FuelMeterRegister $meter): Employee
     {
@@ -429,7 +380,7 @@ class FuelEquipmentController extends Controller
             'code' => $pump->code,
             'product_types' => $pump->product_types,
             'status' => $pump->status,
-            'created_at' => $pump->created_at?->toISOString(),
+            'created_at' => $pump->created_at?->toIso8601String(),
         ];
     }
 
@@ -443,7 +394,7 @@ class FuelEquipmentController extends Controller
             'capacity_minor' => $tank->capacity_minor,
             'current_level_minor' => $tank->current_level_minor,
             'status' => $tank->status,
-            'created_at' => $tank->created_at?->toISOString(),
+            'created_at' => $tank->created_at?->toIso8601String(),
         ];
     }
 
@@ -459,10 +410,10 @@ class FuelEquipmentController extends Controller
             'unit_code' => $meter->unit_code,
             'precision_scale' => $meter->precision_scale,
             'rollover_limit' => $meter->rollover_limit,
-            'installed_at' => $meter->installed_at?->toISOString(),
-            'retired_at' => $meter->retired_at?->toISOString(),
+            'installed_at' => $meter->installed_at?->toIso8601String(),
+            'retired_at' => $meter->retired_at?->toIso8601String(),
             'status' => $meter->status,
-            'created_at' => $meter->created_at?->toISOString(),
+            'created_at' => $meter->created_at?->toIso8601String(),
         ];
     }
 }

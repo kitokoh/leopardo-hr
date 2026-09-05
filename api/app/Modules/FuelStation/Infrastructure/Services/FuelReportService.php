@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\FuelStation\Domain\Models\FuelStation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -64,7 +67,7 @@ final class FuelReportService
             'total_quantity' => round($totalQuantity, 3),
             'average_basket' => $count > 0 ? round($totalAmount / $count, 2) : 0.0,
             'top_products' => $byProduct,
-            'generated_at' => now()->toISOString(),
+            'generated_at' => now()->toIso8601String(),
         ];
     }
 
@@ -132,9 +135,56 @@ final class FuelReportService
                 'meter_id' => $interval->meter_id,
                 'delta_minor' => $interval->delta_minor,
                 'calculation_status' => $interval->calculation_status,
-                'calculated_at' => $interval->calculated_at->toISOString(),
+                'calculated_at' => $interval->calculated_at->toIso8601String(),
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * Instantané pré-agrégé (dashboard) — idempotent par (station, type, période).
+     *
+     * @return array{snapshot: FuelReportSnapshot, recomputed: bool}
+     */
+    public function snapshot(FuelStation $station, string $type, string $periodStart, string $periodEnd, Employee $actor): array
+    {
+        $companyId = (string) $station->company_id;
+        $stationId = (int) $station->getAttribute('id');
+        $from = Carbon::parse($periodStart);
+        $to = Carbon::parse($periodEnd);
+
+        $existing = FuelReportSnapshot::query()
+            ->where('company_id', $companyId)
+            ->where('station_id', $stationId)
+            ->where('snapshot_type', $type)
+            ->where('period_start', $from->toDateString())
+            ->where('period_end', $to->toDateString())
+            ->first();
+
+        if ($existing instanceof FuelReportSnapshot) {
+            return ['snapshot' => $existing, 'recomputed' => false];
+        }
+
+        // Agrégats journaliers par date (réutilise les read models existants).
+        $payload = [];
+        $day = $from->copy();
+
+        while (! $day->greaterThan($to)) {
+            $payload[$day->toDateString()] = $this->dailySales($companyId, $stationId, $day);
+            $day->addDay();
+        }
+
+        $snapshot = FuelReportSnapshot::query()->create([
+            'company_id' => $companyId,
+            'station_id' => $stationId,
+            'snapshot_type' => $type,
+            'period_start' => $from->toDateString(),
+            'period_end' => $to->toDateString(),
+            'payload' => $payload,
+            'generated_by' => $actor->id,
+            'generated_at' => Carbon::now('UTC'),
+        ]);
+
+        return ['snapshot' => $snapshot, 'recomputed' => true];
     }
 }

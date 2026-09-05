@@ -1,21 +1,21 @@
 <?php
 
-use App\Core\Auth\Interfaces\Api\V1\AuthController;
-use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
-use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
-use App\Core\Auth\Interfaces\Api\V1\TwoFactorAuthController;
-use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\AI\Interfaces\Api\V1\Controllers\VoiceController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\PasswordResetController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\PlatformAuthController;
+use App\Core\Auth\Interfaces\Api\V1\Controllers\TwoFactorAuthController;
+use App\Core\Feature\Interfaces\Api\V1\Controllers\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
-use App\Modules\Accounting\Interfaces\Api\V1\AccountingPaymentWebhookController;
-use App\Modules\Attendance\Interfaces\Api\V1\BiometricEnrollmentController;
-use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
-use App\Modules\Billing\Interfaces\Api\V1\PaymentWebhookController;
-use App\Modules\Billing\Interfaces\Api\V1\PlatformCompanySubscriptionController;
-use App\Modules\Billing\Interfaces\Api\V1\PlatformPlanController;
-use App\Modules\Billing\Interfaces\Api\V1\SelfServiceTrialController;
-use App\Modules\Billing\Interfaces\Api\V1\StripeWebhookController;
-use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\AccountingPaymentWebhookController;
+use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PaymentWebhookController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformCompanySubscriptionController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPlanController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\SelfServiceTrialController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\StripeWebhookController;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
@@ -24,13 +24,13 @@ use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookCon
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\NotificationPreferenceController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingChecklistController;
 use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingController;
-use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollAuditController;
-use App\Modules\Payroll\Interfaces\Api\V1\PayrollSimulationController;
-use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
-use App\Modules\Payroll\Interfaces\Api\V1\RateValidationAdminController;
-use App\Modules\Payroll\Interfaces\Api\V1\SocialContributionAdminController;
-use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\IslamicCalendarController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollAuditController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PayrollSimulationController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\PublicHolidayController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\RateValidationAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\SocialContributionAdminController;
+use App\Modules\Payroll\Interfaces\Api\V1\Controllers\TaxSlabAdminController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\ClientEventController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\CommunicationAnalyticsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
@@ -42,7 +42,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
@@ -55,6 +54,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSolutionSurveyStatsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
@@ -62,15 +62,15 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityControl
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
-use App\Modules\Recruitment\Interfaces\Api\V1\CandidateApplicationController;
-use App\Modules\Recruitment\Interfaces\Api\V1\PublicCareerController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\CandidateApplicationController;
+use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareerController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantDeliveryAppWebhookController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use Illuminate\Support\Facades\Route;
 
 // Edge routes are now registered by EdgeSyncServiceProvider
@@ -323,8 +323,6 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
     require __DIR__.'/modules/solutions.php';
-    require __DIR__.'/modules/travelagency.php';
-
 
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';

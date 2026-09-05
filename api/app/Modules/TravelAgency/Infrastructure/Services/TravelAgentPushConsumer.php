@@ -7,7 +7,6 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
-use App\Modules\TravelAgency\Domain\Contracts\CompanyPushNotifier;
 
 /**
  * TRAVEL-703 (#6090) — Notifications push agents (FCM).
@@ -34,7 +33,7 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $companyId = isset($payload['company_id']) ? (string) $payload['company_id'] : '';
         $eventType = isset($payload['event_type']) ? (string) $payload['event_type'] : '';
@@ -70,6 +69,4 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
             ]);
         }
     }
-
-
 }

@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\FuelStation\Domain\Models\FuelImport;
 use App\Modules\FuelStation\Domain\Models\FuelSale;
+use App\Modules\HR\Domain\Models\ExportHistory;
 use App\Support\CsvCellSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Modules\HR\Domain\Models\ExportHistory;
 
 /**
  * Import/export sécurisé FuelStation — FUEL-018 (issue #5812).
@@ -58,20 +57,6 @@ final class FuelImportExportService
             'filename' => $filename,
             'count' => $records->count(),
         ];
-    }
-
-    /**
-     * Crée le journal d'import (état uploaded) avant traitement asynchrone.
-     */
-    public function startImport(Employee $actor, string $kind, string $fileName): FuelImport
-    {
-        return FuelImport::query()->create([
-            'company_id' => (string) $actor->company_id,
-            'kind' => $kind,
-            'file_name' => basename($fileName),
-            'status' => FuelImport::STATUS_UPLOADED,
-            'created_by' => $actor->id,
-        ]);
     }
 
     /**
@@ -123,13 +108,11 @@ final class FuelImportExportService
                 'quantity' => $sale->quantity,
                 'unit_price' => $sale->unit_price,
                 'amount' => $sale->amount,
-                'sale_time' => $sale->sale_time->toISOString(),
+                'sale_time' => $sale->sale_time->toIso8601String(),
                 'source' => $sale->source,
                 'external_id' => $sale->external_id,
             ])
             ->values()
             ->all();
     }
-
-
 }

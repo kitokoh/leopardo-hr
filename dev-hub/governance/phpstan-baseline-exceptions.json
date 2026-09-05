@@ -1,0 +1,28 @@
+{
+  "_comment": "Exceptions UNITAIRES au cliquet PA2-ARCH-005 (check-phpstan-baseline-delta.sh) et au cliquet global #5448 (check-phpstan-baseline-debt.sh) — autorisation PM explicite, datée, bornée. new_entries_allowed_until n'ouvre QUE l'ajout de NOUVELLES entrées dans un fichier baseline donné (les augmentations de count restent TOUJOURS bloquantes). Après expires, les deux cliquets redeviennent bloquants. Aucune entrée ici = comportement historique inchangé.",
+  "_context": "Consolidation 2026-09-04 (PR #6816, 11 754 commits) : des centaines de fichiers ont rejoint main dans un état corrompu (parse errors de merges union) — inanalysables par PHPStan, donc ABSENTS de la baseline. Le train de verdissement #6817/#6818 les a réparés ; leur analyse level-8 réelle révèle une dette pré-existante (module + tests) : EduManager 24 occ, FuelStation 58, RestaurantManager 88, TravelAgency 74 (scope Core/Modules/Shared) + entrées tests associées (~504 nouvelles entrées vs main, vérifié 2026-09-05). Aucun code nouveau n'a ajouté de dette : elle existait mais était invisible. La réduction est suivie par l'EPIC #6528 (audit & mise en ordre) ; les campagnes par module doivent ramener ces comptes vers 0.",
+  "phpstan-strict-baseline.neon": {
+    "new_entries_allowed_until": "2026-10-05",
+    "issue": "6818",
+    "app/Modules/EduManager": {
+      "allowed_count": 24,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/FuelStation": {
+      "allowed_count": 58,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/RestaurantManager": {
+      "allowed_count": 88,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    },
+    "app/Modules/TravelAgency": {
+      "allowed_count": 74,
+      "issue": "6818",
+      "expires": "2026-10-05"
+    }
+  }
+}

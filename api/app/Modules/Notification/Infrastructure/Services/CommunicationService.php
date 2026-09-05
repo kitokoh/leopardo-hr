@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Services;
 
+use App\Contracts\Communication\CommunicationServiceInterface;
 use App\Contracts\Communication\MessageProviderInterface;
 use App\Contracts\Communication\RetryableMessageProviderInterface;
 use App\Core\Auth\Domain\Models\Employee;
@@ -20,9 +21,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use App\Contracts\Communication\CommunicationServiceInterface;
 
-class CommunicationService implements EmployeeNotifier
+class CommunicationService implements CommunicationServiceInterface, EmployeeNotifier
 {
     public function __construct(
         private readonly PushNotificationService $pushNotifications,
@@ -462,6 +462,4 @@ class CommunicationService implements EmployeeNotifier
             'occurred_at' => now(),
         ]);
     }
-
-
 }

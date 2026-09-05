@@ -41,6 +41,10 @@ BASE_SHA="${1:-}"
 HEAD_SHA="${2:-}"
 API_DIR="${3:-api}"
 
+# Répertoire du script (dev-hub/tools) — les exceptions de gouvernance vivent
+# dans dev-hub/governance/ (PA2-ARCH-005).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 if [ -z "$BASE_SHA" ] || [ -z "$HEAD_SHA" ]; then
   echo "Usage: $0 <base_sha> <head_sha> [api_dir]" >&2
   exit 1
@@ -126,6 +130,40 @@ if [ ${#touched_modules[@]} -eq 0 ]; then
   exit 0
 fi
 
+# Exceptions unitaires PM (dev-hub/governance/phpstan-baseline-exceptions.json) :
+# une augmentation de compte tolerated jusqu'à allowed_count, datée et bornée
+# (issue + expires). Hors exception → comportement historique (échec).
+get_exception_allowed() {
+  local baseline_file="$1"
+  local module="$2"
+  python3 - "$SCRIPT_DIR/../governance/phpstan-baseline-exceptions.json" "$baseline_file" "$module" <<'PYEOF' || true
+import json, os, sys, datetime
+
+try:
+    data = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(0)
+
+base_entry = data.get(sys.argv[2])
+if not base_entry:
+    sys.exit(0)
+entry = base_entry.get(sys.argv[3])
+if not entry:
+    sys.exit(0)
+
+allowed = int(entry.get("allowed_count", -1))
+expires = entry.get("expires", "")
+if expires:
+    try:
+        if datetime.date.today() > datetime.date.fromisoformat(expires):
+            print("EXPIRED")
+            sys.exit(0)
+    except ValueError:
+        pass
+print(allowed)
+PYEOF
+}
+
 VIOLATIONS=0
 
 for baseline_file in "${BASELINE_FILES[@]}"; do
@@ -139,6 +177,11 @@ for baseline_file in "${BASELINE_FILES[@]}"; do
     head_count="${head_count:-0}"
 
     if [ "$head_count" -gt "$base_count" ]; then
+      exception_allowed="$(get_exception_allowed "$baseline_file" "$module")"
+      if [ -n "$exception_allowed" ] && [ "$exception_allowed" != "EXPIRED" ] && [ "$head_count" -le "$exception_allowed" ]; then
+        echo "⚠️  ${baseline_file}: ${module} ignored-error count ${base_count} -> ${head_count} — toléré (exception unitaire datée, issue #6818 — dette suivie par #6528/#6588)."
+        continue
+      fi
       echo "❌ ${baseline_file}: ${module} ignored-error count increased (${base_count} -> ${head_count})."
       VIOLATIONS=$((VIOLATIONS + 1))
     else

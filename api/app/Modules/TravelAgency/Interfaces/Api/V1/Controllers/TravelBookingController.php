@@ -13,11 +13,11 @@ use App\Modules\TravelAgency\Application\Actions\IssueTicketsAction;
 use App\Modules\TravelAgency\Application\Actions\RefundBookingAction;
 use App\Modules\TravelAgency\Application\Actions\RefundPassengerAction;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
-use App\Modules\TravelAgency\Domain\Models\TravelCorporateAccount;
-use App\Modules\TravelAgency\Infrastructure\Services\CorporateBookingService;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCorporateAccount;
 use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use App\Modules\TravelAgency\Infrastructure\Services\CorporateBookingService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\CancelTravelBookingRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelPassengerRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelBookingRequest;
@@ -26,9 +26,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelRefundResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelTicketResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Application\Actions\RefundPassengersAction
-use App\Modules\TravelAgency\Domain\Models\TravelQuote
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RefundTravelBookingRequest;
 
 /**
  * TRAVEL-312..316 (#6042..#6046) — Réservations & billetterie guichet.
@@ -239,8 +236,4 @@ class TravelBookingController extends Controller
 
         return TravelTicketResource::collection($tickets)->response();
     }
-
-
-
-
 }

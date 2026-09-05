@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Core\Auth\Domain\Models\Employee
-use Illuminate\Database\Query\Builder
-use Illuminate\Validation\Rule;
 
 /**
  * Déclenchement d'un rapprochement stock (FUEL-009, issue #5803).

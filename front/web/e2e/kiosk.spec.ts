@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
+// Pages PUBLIQUES (locale résolue via navigator, pas d'utilisateur) : force fr-FR.
+test.use({ locale: 'fr-FR' });
+
 /**
  * RESTO-902 (#6231) — E2E du kiosque libre-service (RESTO-807/#6228).
  *
@@ -85,7 +88,7 @@ test.describe('Kiosque libre-service (RESTO-807)', () => {
     // Panier : 2 × Burger XL.
     await page.getByLabel('Ajouter').first().click();
     await page.getByLabel('Ajouter').first().click();
-    await expect(page.getByText('70.00 XAF')).toBeVisible();
+    await expect(page.getByText('70.00 XAF').first()).toBeVisible();
 
     // Commande puis paiement espèces.
     await page.getByText('Valider la commande').click();

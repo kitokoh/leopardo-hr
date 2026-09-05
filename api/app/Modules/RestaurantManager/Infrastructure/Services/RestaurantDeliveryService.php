@@ -6,12 +6,12 @@ namespace App\Modules\RestaurantManager\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\RestaurantManager\Domain\Enums\DeliveryStatus;
+use App\Modules\RestaurantManager\Domain\Enums\OrderStatus;
+use App\Modules\RestaurantManager\Domain\Enums\OrderType;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDelivery;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantDeliveryRider;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use RuntimeException;
-use App\Modules\RestaurantManager\Domain\Enums\OrderStatus
-use App\Modules\RestaurantManager\Domain\Enums\OrderType;
 
 /**
  * RESTO-605 (#6210) — Cycle de vie d'une livraison.
@@ -34,7 +34,7 @@ final class RestaurantDeliveryService
             ->where('company_id', $actor->company_id)
             ->findOrFail($orderId);
 
-        if ($order->order_type !== 'delivery') {
+        if ($order->order_type !== OrderType::DELIVERY) {
             throw new RuntimeException('La commande n\'est pas de type livraison.');
         }
 
@@ -93,7 +93,7 @@ final class RestaurantDeliveryService
         // La commande livrée est clôturée (cycle complet tracé).
         $order = $delivery->order;
         if ($order !== null && in_array($order->status->value, ['ready', 'paid'], true)) {
-            $order->status = 'closed';
+            $order->status = OrderStatus::CLOSED;
             $order->save();
         }
 
@@ -112,12 +112,10 @@ final class RestaurantDeliveryService
         // Livraison annulée → la commande retourne à `ready` (critère d'acceptation).
         $order = $delivery->order;
         if ($order !== null && in_array($order->status->value, ['in_preparation', 'ready', 'open'], true)) {
-            $order->status = 'ready';
+            $order->status = OrderStatus::READY;
             $order->save();
         }
 
         return $delivery;
     }
-
-
 }

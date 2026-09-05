@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelCashSession;
 use App\Modules\FuelStation\Domain\Models\FuelCashSessionMovement;
 use App\Modules\FuelStation\Infrastructure\Services\FuelCashSessionService;
@@ -206,23 +206,23 @@ class FuelCashSessionController extends Controller
             'company_id' => $session->company_id,
             'station_id' => $session->station_id,
             'opened_by' => $session->opened_by,
-            'opened_at' => $session->opened_at->toISOString(),
+            'opened_at' => $session->opened_at->toIso8601String(),
             'closed_by' => $session->closed_by,
-            'closed_at' => $session->closed_at?->toISOString(),
+            'closed_at' => $session->closed_at?->toIso8601String(),
             'opening_balance' => $session->opening_balance,
             'closing_balance' => $session->closing_balance,
             'expected_balance' => $session->expected_balance,
             'variance' => $session->variance,
             'status' => $session->status,
             'approved_by' => $session->approved_by,
-            'approved_at' => $session->approved_at?->toISOString(),
+            'approved_at' => $session->approved_at?->toIso8601String(),
             'notes' => $session->notes,
             'movements_count' => $session->movements_count ?? null,
             'movements' => $session->relationLoaded('movements')
                 ? $session->movements->map(fn (FuelCashSessionMovement $movement): array => $this->movementPayload($movement))->values()
                 : null,
-            'created_at' => $session->created_at?->toISOString(),
-            'updated_at' => $session->updated_at?->toISOString(),
+            'created_at' => $session->created_at?->toIso8601String(),
+            'updated_at' => $session->updated_at?->toIso8601String(),
         ];
     }
 
@@ -238,11 +238,9 @@ class FuelCashSessionController extends Controller
             'amount' => $movement->amount,
             'reason' => $movement->reason,
             'created_by' => $movement->created_by,
-            'created_at' => $movement->created_at->toISOString(),
+            'created_at' => $movement->created_at->toIso8601String(),
         ];
     }
-
-
 
     private function assertSolutionActive(): void
     {

@@ -94,7 +94,7 @@ class PayrollClosingService
                 [
                     'status' => PayrollRun::STATUS_VALIDATED,
                     'validated_by' => $validator->id,
-                    'validated_at' => $run->validated_at?->toISOString(),
+                    'validated_at' => $run->validated_at?->toIso8601String(),
                 ]
             );
 
@@ -153,7 +153,7 @@ class PayrollClosingService
                 [
                     'status' => PayrollRun::STATUS_LOCKED,
                     'locked_by' => $validator->id,
-                    'locked_at' => $run->locked_at?->toISOString(),
+                    'locked_at' => $run->locked_at?->toIso8601String(),
                 ]
             );
 
@@ -245,7 +245,7 @@ class PayrollClosingService
                 $run,
                 $actor,
                 'payroll_run_unlocked',
-                ['status' => PayrollRun::STATUS_LOCKED, 'locked_by' => $lockedBy, 'locked_at' => $lockedAt?->toISOString()],
+                ['status' => PayrollRun::STATUS_LOCKED, 'locked_by' => $lockedBy, 'locked_at' => $lockedAt?->toIso8601String()],
                 ['status' => PayrollRun::STATUS_VALIDATED, 'locked_by' => null, 'locked_at' => null],
                 $reason
             );

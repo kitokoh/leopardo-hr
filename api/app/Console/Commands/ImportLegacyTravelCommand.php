@@ -84,7 +84,7 @@ class ImportLegacyTravelCommand extends Command
             $report['bookings'],
         ));
 
-        foreach ((array) ($report['skipped'] ?? []) as $skipped) {
+        foreach ($report['skipped'] as $skipped) {
             $this->warn('  ⚠ ignoré : '.$skipped);
         }
 

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCount;
 
 /**
  * RESTO-504 (#6203) — Ressource API d'un inventaire physique.
+ */
+/**
+ * @mixin RestaurantInventoryCount
  */
 class RestaurantInventoryCountResource extends JsonResource
 {
@@ -22,7 +25,7 @@ class RestaurantInventoryCountResource extends JsonResource
             'id' => $this->id,
             'company_id' => $this->company_id,
             'branch_id' => $this->branch_id,
-            'counted_at' => $this->counted_at?->toIso8601String(),
+            'counted_at' => $this->counted_at->toIso8601String(),
             'status' => $this->status,
             'counted_by_user_id' => $this->counted_by_user_id,
             'approved_by' => $this->approved_by,
@@ -31,6 +34,4 @@ class RestaurantInventoryCountResource extends JsonResource
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
-
-
 }

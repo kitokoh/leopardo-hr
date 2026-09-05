@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencyResolver;
 use App\Modules\Accounting\Domain\Enums\ContactType;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use App\Modules\Accounting\Infrastructure\Services\AccountingCurrencyResolver;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\StoreContactRequest;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\UpdateContactRequest;
 use Illuminate\Http\JsonResponse;
@@ -220,8 +220,8 @@ class AccountingContactController extends Controller
             'marketing_lead_id' => $contact->marketing_lead_id,
             'metadata' => $contact->metadata,
             'documents_count' => $contact->documents_count ?? 0,
-            'created_at' => $contact->created_at?->toISOString(),
-            'updated_at' => $contact->updated_at?->toISOString(),
+            'created_at' => $contact->created_at?->toIso8601String(),
+            'updated_at' => $contact->updated_at?->toIso8601String(),
         ];
     }
 }

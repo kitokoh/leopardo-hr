@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch;
 
 /**
  * RESTO-607 (#6212) — Création d'une promotion (code unique par tenant).
@@ -40,16 +39,5 @@ class StoreRestaurantPromotionRequest extends FormRequest
             'max_uses' => ['nullable', 'integer', 'min:1'],
             'is_active' => ['sometimes', 'boolean'],
         ];
-    }
-
-
-    private function companyId(): ?string
-    {
-        $user = $this->user();
-        if ($user instanceof Employee && $user->company_id !== null) {
-            return $user->company_id;
-        }
-
-        return app()->bound('current_company') ? currentCompany()->id : null;
     }
 }

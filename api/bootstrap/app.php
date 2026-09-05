@@ -9,8 +9,8 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiVersionMiddleware;
 use App\Http\Middleware\AuthenticateZktecoDevice;
 use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
-use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
+use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\EnsureKioskSearchPathReset;
@@ -25,8 +25,8 @@ use App\Http\Middleware\SentryContextMiddleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\StructuredLogging;
 use App\Http\Middleware\TenantMiddleware;
-use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\TokenAutoRefreshMiddleware;
+use App\Http\Middleware\Travel\EnsureTravelAgencyModuleMiddleware;
 use App\Http\Middleware\Travel\TravelPartnerAuthMiddleware;
 use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
@@ -46,9 +46,6 @@ use Illuminate\Validation\ValidationException;
 use Sentry\Laravel\Integration;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use App\Http\Middleware\Crm\EnsureCrmEnabledMiddleware;
-use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware
-use App\Http\Middleware\Delivery\EnsureDeliveryRoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
@@ -77,7 +74,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('attendance:auto-close')->hourly();
         $schedule->command('accounting:purge-expired-shares')->daily();
         // BC-24 TRAVEL — outbox événementielle + expiration des réservations.
-        $schedule->command('travel:outbox-dispatch --limit=100')->everyMinute()->withoutOverlapping();
+        // (doublon de planification travel:outbox-dispatch supprimé lors de la
+        // consolidation CI 2026-09-04 : une seule passe/minute, limit par défaut 100.)
         $schedule->command('travel:expire-bookings --limit=100')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('travel:rebuild-report-readmodels')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
@@ -508,10 +506,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 'localized_message' => __('errors.SERVER_ERROR'),
             ], 500);
         });
-    
 
-
-
-
-
-})->create();
+    })->create();

@@ -74,7 +74,7 @@ class FuelMetricsController extends Controller
                 'readings_today' => $readingsToday,
                 'snapshots_stale' => $snapshotsStale,
                 'reconciliations_exception' => $reconciliationsException,
-                'generated_at' => now()->toISOString(),
+                'generated_at' => now()->toIso8601String(),
             ],
         ]);
     }

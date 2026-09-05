@@ -25,8 +25,10 @@ final class CloseDeliveryRouteCommand extends Command
 
     public function handle(): int
     {
-        $routeId = (int) $this->argument('route');
-        $companyId = (string) $this->argument('company');
+        $routeRaw = $this->argument('route');
+        $companyRaw = $this->argument('company');
+        $routeId = is_numeric($routeRaw) ? (int) $routeRaw : 0;
+        $companyId = is_string($companyRaw) ? $companyRaw : '';
 
         $route = DeliveryRoute::query()
             ->where('company_id', $companyId)

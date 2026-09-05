@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\FuelStation\Domain\Models\FuelProduct;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Infrastructure\Services\FuelStockService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -62,30 +62,18 @@ class FuelStockReconcileCommand extends Command
                         ->where('status', FuelStation::STATUS_ACTIVE)
                         ->get();
 
-                    $products = FuelProduct::query()
-                        ->where('company_id', $company->id)
-                        ->where('status', FuelProduct::STATUS_ACTIVE)
-                        ->get();
-
                     $ran = 0;
 
                     foreach ($stations as $station) {
-                        foreach ($products as $product) {
-                            $this->service->runReconciliation(
-                                actor: null,
-                                station: $station,
-                                data: [
-                                    'product_type' => (string) $product->code,
-                                    'period_start' => $date,
-                                    'period_end' => $date,
-                                    'idempotency_key' => "scheduled:{$date}:{$station->id}:{$product->code}",
-                                    // Période passée : pas de repli sur les niveaux
-                                    // de cuves du jour (FUEL-009/C3).
-                                    'fallback_to_tank_levels' => false,
-                                ],
-                            );
-                            ++$ran;
-                        }
+                        // Le rapprochement couvre tous les produits actifs de la
+                        // station (FUEL-009) ; idempotent par clé `scheduled:{date}:{station}`
+                        // côté service — rejouable sans doublon.
+                        $this->service->reconcile(
+                            companyId: (string) $company->id,
+                            stationId: (int) $station->getAttribute('id'),
+                            date: Carbon::parse($date),
+                        );
+                        $ran++;
                     }
 
                     return $ran;

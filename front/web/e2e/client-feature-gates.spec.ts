@@ -50,7 +50,7 @@ async function analyticsEvents(page: Page) {
 }
 
 test.describe('Client web feature gates', () => {
-  test('included module stays accessible from the client workspace', async ({ page }) => {
+  test('included module stays accessible from the client workspace', async ({ authenticatedPage: page }) => {
     await page.route('**/api/v1/employees?per_page=12', async (route) => {
       await route.fulfill({
         status: 200,
@@ -94,7 +94,7 @@ test.describe('Client web feature gates', () => {
     await expect(page.locator('body')).toContainText('Nadia Kaci');
   });
 
-  test('locked module shows an upgrade message instead of rendering a broken page', async ({ page }) => {
+  test('locked module shows an upgrade message instead of rendering a broken page', async ({ authenticatedPage: page }) => {
     await seedSession(page, {
       capabilities: {
         employees: true,
@@ -125,7 +125,7 @@ test.describe('Client web feature gates', () => {
     expect(blockedEvent?.properties.reason).toBe('feature_locked');
   });
 
-  test('trial module is visible as trial and remains usable', async ({ page }) => {
+  test('trial module is visible as trial and remains usable', async ({ authenticatedPage: page }) => {
     await seedSession(page, {
       capabilities: {
         reports: 'trial',
@@ -146,7 +146,7 @@ test.describe('Client web feature gates', () => {
     await expect(page.locator('body')).toContainText('Générez et téléchargez vos rapports RH');
   });
 
-  test('employee role cannot open manager payroll even if the feature exists', async ({ page }) => {
+  test('employee role cannot open manager payroll even if the feature exists', async ({ authenticatedPage: page }) => {
     await seedSession(page, {
       role: 'employee',
       manager_role: null,
@@ -171,7 +171,7 @@ test.describe('Client web feature gates', () => {
     expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
   });
 
-  test('marketing manager can access the marketing module', async ({ page }) => {
+  test('marketing manager can access the marketing module', async ({ authenticatedPage: page }) => {
     await page.route('**/api/v1/marketing/social-account', async (route) => {
       await route.fulfill({
         status: 404,
@@ -211,7 +211,7 @@ test.describe('Client web feature gates', () => {
     await expect(page.locator('body')).not.toContainText('Module non inclus');
   });
 
-  test('marketing manager can access the social calendar page', async ({ page }) => {
+  test('marketing manager can access the social calendar page', async ({ authenticatedPage: page }) => {
     await page.route('**/api/v1/marketing/social-account', async (route) => {
       await route.fulfill({
         status: 404,
@@ -256,7 +256,7 @@ test.describe('Client web feature gates', () => {
     await expect(page).toHaveURL(/\/social-marketing$/);
   });
 
-  test('non-marketing manager role is locked out of the marketing module', async ({ page }) => {
+  test('non-marketing manager role is locked out of the marketing module', async ({ authenticatedPage: page }) => {
     await seedSession(page, {
       manager_role: 'rh',
       capabilities: {

@@ -173,7 +173,7 @@ class TravelWebhookTest extends TestCase
 
         foreach ($events as $event) {
             app(TenantManager::class)->withinTenant($company, function () use ($event): void {
-                app(TravelWebhookConsumer::class)->handle(array_merge([
+                app(TravelWebhookConsumer::class)->handle($event->event_type, array_merge([
                     'event_id' => $event->id,
                     'event_type' => $event->event_type,
                     'company_id' => $event->company_id,
@@ -246,8 +246,8 @@ class TravelWebhookTest extends TestCase
             'company_id' => $event->company_id,
         ], $event->payload_redacted ?? []);
 
-        app(TenantManager::class)->withinTenant($company, fn () => $consumer->handle($envelope()));
-        app(TenantManager::class)->withinTenant($company, fn () => $consumer->handle($envelope()));
+        app(TenantManager::class)->withinTenant($company, fn () => $consumer->handle($event->event_type, $envelope()));
+        app(TenantManager::class)->withinTenant($company, fn () => $consumer->handle($event->event_type, $envelope()));
 
         $this->assertSame(1, app(TenantManager::class)->withinTenant($company, function (): int {
             return TravelWebhookDelivery::query()->count();
@@ -283,7 +283,7 @@ class TravelWebhookTest extends TestCase
             return TravelWebhookDelivery::query()->create([
                 'company_id' => $trip->company_id,
                 'subscription_id' => $subscription->id,
-                'event_id' => 42,
+                'outbox_event_id' => 42,
                 'event_type' => 'travel.booking.confirmed.v1',
                 'payload_redacted' => ['trip_id' => $trip->id],
                 'status' => TravelWebhookDelivery::STATUS_PENDING,

@@ -132,8 +132,8 @@ final class MeterOcrService
      * Établit le contexte tenant de la demande (search_path + current_company
      * via TenantManager) : le job ne dépend d'aucun contexte d'authentification.
      *
-     * @throws RuntimeException  fournisseur indisponible/timeout/erreur de
-     *                           transport — la queue réessaie avec backoff
+     * @throws RuntimeException fournisseur indisponible/timeout/erreur de
+     *                          transport — la queue réessaie avec backoff
      */
     public function process(FuelMeterOcrRequest $request): FuelMeterOcrRequest
     {
@@ -163,7 +163,8 @@ final class MeterOcrService
      *                                      (sinon unité extraite si elle
      *                                      correspond au compteur, sinon
      *                                      unité du compteur)
-     * @throws FuelOcrNotReviewableException      statut ≠ needs_review
+     *
+     * @throws FuelOcrNotReviewableException statut ≠ needs_review
      * @throws FuelOcrReviewValueRejectedException valeur refusée par MeterReadingService
      */
     public function review(
@@ -280,7 +281,7 @@ final class MeterOcrService
      * Unavailable/Timeout sont TRANSITOIRES (retry queue) ; InvalidInput et
      * Rejected sont définitifs (aucun rethrow).
      *
-     * @throws RuntimeException  uniquement pour Unavailable/Timeout
+     * @throws RuntimeException uniquement pour Unavailable/Timeout
      */
     private function handleUnusableResult(FuelMeterOcrRequest $row, ModelResult $result): FuelMeterOcrRequest
     {
@@ -363,7 +364,7 @@ final class MeterOcrService
                 [
                     'reading_value_minor' => $valueMinor,
                     'reading_unit' => $unit,
-                    'captured_at' => Carbon::now('UTC'),
+                    'captured_at' => Carbon::now('UTC')->toIso8601String(),
                     'timezone' => (string) ($station->getAttribute('timezone') ?? 'UTC'),
                     'shift_id' => $row->getAttribute('shift_id') !== null ? (int) $row->getAttribute('shift_id') : null,
                     'device_reference' => 'ocr:'.(int) $row->getAttribute('id'),
@@ -451,7 +452,7 @@ final class MeterOcrService
                 [
                     'reading_value_minor' => (int) $valueMinor,
                     'reading_unit' => $unit,
-                    'captured_at' => Carbon::now('UTC'),
+                    'captured_at' => Carbon::now('UTC')->toIso8601String(),
                     'timezone' => (string) ($station->getAttribute('timezone') ?? 'UTC'),
                     'shift_id' => $request->getAttribute('shift_id') !== null ? (int) $request->getAttribute('shift_id') : null,
                     'device_reference' => 'ocr-review:'.(int) $request->getAttribute('id'),
@@ -621,7 +622,7 @@ final class MeterOcrService
             return null;
         }
 
-        if (! is_string($decimal) || preg_match('/^([0-9]+)(?:\.([0-9]+))?$/', $decimal, $matches) !== 1) {
+        if (preg_match('/^([0-9]+)(?:\.([0-9]+))?$/', $decimal, $matches) !== 1) {
             return null;
         }
 

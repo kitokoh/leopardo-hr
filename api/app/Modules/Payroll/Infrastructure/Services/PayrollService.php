@@ -124,7 +124,7 @@ class PayrollService
             $payroll,
             $validator,
             ['status' => 'draft'],
-            ['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => $payroll->validated_at?->toISOString()],
+            ['status' => 'validated', 'validated_by' => $validator->id, 'validated_at' => $payroll->validated_at?->toIso8601String()],
         );
 
         return $payroll;

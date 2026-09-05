@@ -88,7 +88,7 @@ class PurgeAuditLogsCommand extends Command
                             null,
                             null,
                             [],
-                            ['cutoff' => $cutoff->toISOString(), 'retention_months' => $months, 'deleted' => $deleted, 'kept' => $kept],
+                            ['cutoff' => $cutoff->toIso8601String(), 'retention_months' => $months, 'deleted' => $deleted, 'kept' => $kept],
                         );
                     }
                 } else {

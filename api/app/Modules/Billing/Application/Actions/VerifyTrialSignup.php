@@ -517,29 +517,4 @@ class VerifyTrialSignup
 
         return \is_int($days) ? $days : 14;
     }
-
-    private function activateRequestedSolution(Company $company, Employee $manager, ?string $solutionCode): void
-    {
-        if ($solutionCode === null || $solutionCode === '') {
-            return;
-        }
-
-        try {
-            $manifest = $this->solutionCatalogue->resolve($solutionCode);
-
-            foreach ($manifest->requiredModules() as $module) {
-                $company->setFeature($module, true);
-            }
-            $company->save();
-
-            $this->solutionActivator->activate($company, $solutionCode, (int) $manager->id);
-        } catch (\Throwable $exception) {
-            Log::error('trial.signup.solution_activation_failed', [
-                'solution' => $solutionCode,
-                'company_id' => $company->id,
-                'manager_id' => $manager->id,
-                'error' => $exception->getMessage(),
-            ]);
-        }
-    }
 }

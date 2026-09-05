@@ -9,10 +9,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Events\AbsenceApproved;
 use App\Events\AbsenceRejected;
 use App\Events\AbsenceRequested;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Exceptions\AbsenceDateConflictException;
 use App\Modules\Planning\Domain\Exceptions\AbsenceNotPendingException;
 use App\Modules\Planning\Domain\Exceptions\InsufficientLeaveBalanceException;
-use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
@@ -77,7 +77,7 @@ class AbsenceService
                     : $this->currentAvailableBalance($employee, $typeId, $year);
 
                 if ($balance < $daysCount) {
-                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', $balance, $daysCount));
+                    throw new InsufficientLeaveBalanceException((float) $balance, (float) $daysCount);
                 }
             }
 
@@ -207,7 +207,7 @@ class AbsenceService
                 $available = (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending;
 
                 if ($available < $days) {
-                    throw new InsufficientLeaveBalanceException(sprintf('Solde de congés insuffisant. Solde disponible : %s jours, demandé : %s jours.', max(0.0, $available), $days));
+                    throw new InsufficientLeaveBalanceException(max(0.0, $available), $days);
                 }
 
                 $snapshot->update([

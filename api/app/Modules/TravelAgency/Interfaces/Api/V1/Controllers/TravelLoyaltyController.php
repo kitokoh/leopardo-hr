@@ -7,19 +7,14 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
+use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward;
 use App\Modules\TravelAgency\Infrastructure\Services\LoyaltyPointsService;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemTravelLoyaltyRequest;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelLoyaltyOptInRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward
-use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\LoyaltyAccountRequest
-use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest
 
 /**
  * TRAVEL-811 (#6101) — Fidélité voyageur.
@@ -125,7 +120,6 @@ class TravelLoyaltyController extends Controller
         ]);
     }
 
-
     public function entries(Request $request, TravelLoyaltyService $service): JsonResponse
     {
         /** @var Employee $actor */
@@ -145,11 +139,10 @@ class TravelLoyaltyController extends Controller
                 'points' => $entry->points,
                 'type' => $entry->type,
                 'reason' => $entry->reason,
-                'created_at' => $entry->created_at?->toIso8601String(),
+                'created_at' => $entry->created_at->toIso8601String(),
             ], $entries),
         ]);
     }
-
 
     public function rewards(Request $request): JsonResponse
     {
@@ -172,7 +165,6 @@ class TravelLoyaltyController extends Controller
         ]);
     }
 
-
     public function storeReward(StoreLoyaltyRewardRequest $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -192,6 +184,4 @@ class TravelLoyaltyController extends Controller
             'points_cost' => $reward->points_cost,
         ]])->setStatusCode(201);
     }
-
-
 }

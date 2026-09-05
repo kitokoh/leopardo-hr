@@ -158,7 +158,7 @@ final class FuelLoyaltyService
         return [
             'customer_id' => $customer->id,
             'marketing_consent' => (bool) $customer->marketing_consent,
-            'updated_at' => $customer->updated_at?->toISOString(),
+            'updated_at' => $customer->updated_at?->toIso8601String(),
         ];
     }
 }

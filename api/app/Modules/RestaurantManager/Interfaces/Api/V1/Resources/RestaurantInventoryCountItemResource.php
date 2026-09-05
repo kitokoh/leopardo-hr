@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
+use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantInventoryCountItem;
 
 /**
  * RESTO-504 (#6203) — Ressource API d'une ligne de comptage d'inventaire.
+ */
+/**
+ * @mixin RestaurantInventoryCountItem
  */
 class RestaurantInventoryCountItemResource extends JsonResource
 {
@@ -28,6 +31,4 @@ class RestaurantInventoryCountItemResource extends JsonResource
             'reason_code' => $this->reason_code,
         ];
     }
-
-
 }

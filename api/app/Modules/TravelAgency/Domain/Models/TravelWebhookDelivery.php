@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * TRAVEL-806 (#6097) — Livraison de webhook (journal idempotent).
@@ -37,6 +36,20 @@ use Illuminate\Database\Eloquent\Builder;
 class TravelWebhookDelivery extends Model
 {
     use BelongsToCompany;
+
+    /**
+     * Compatibilité avec le code antérieur à l'enum TravelWebhookDeliveryStatus
+     * (#6097, fusion de branches divergentes) : les consommateurs/jobs legacy
+     * référençaient des constantes de classe. Elles sont mappées sur l'enum
+     * canonique pour que les deux pipelines restent fonctionnels.
+     */
+    public const STATUS_PENDING = TravelWebhookDeliveryStatus::PENDING;
+
+    public const STATUS_DELIVERED = TravelWebhookDeliveryStatus::SENT;
+
+    public const STATUS_FAILED = TravelWebhookDeliveryStatus::FAILED;
+
+    public const MAX_ATTEMPTS = 5;
 
     /** @use HasFactory<TravelWebhookDeliveryFactory> */
     use HasFactory;
@@ -101,6 +114,4 @@ class TravelWebhookDelivery extends Model
         $delayMinutes = min(30, 2 ** max(0, $this->attempts - 1));
         $this->next_attempt_at = now()->addMinutes($delayMinutes);
     }
-
-
 }

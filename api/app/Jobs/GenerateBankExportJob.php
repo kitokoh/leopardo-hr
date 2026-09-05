@@ -9,6 +9,7 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
+use App\Support\SafeErrorMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -124,11 +125,13 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
         } catch (Throwable $e) {
             // Issue #6559 : le message brut ($e->getMessage()) contenait des
             // details internes (SQLSTATE, chemins) persistes en base et
-            // renvoyes a l'UI — on persiste un message metier stable, le
-            // detail technique reste dans les logs (report()).
+            // renvoyes a l'UI. SafeErrorMessage::summarize() scrube ces
+            // fragments tout en CONSERVANT le message metier volontairement
+            // expose (ex. « Configuration bancaire entreprise manquante ») ;
+            // le detail technique complet reste dans les logs (report()).
             $export->forceFill([
                 'status' => 'failed',
-                'error_message' => 'BANK_EXPORT_GENERATION_FAILED',
+                'error_message' => SafeErrorMessage::summarize($e),
             ])->save();
 
             report($e);
@@ -171,5 +174,4 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
             // non bloquant — le log ci-dessus reste la trace
         }
     }
-
 }

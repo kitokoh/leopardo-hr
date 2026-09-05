@@ -84,6 +84,8 @@ class EduAdmission extends Model
         self::STATUS_CANCELLED,
     ];
 
+    public const STATUS_ENROLLED = 'enrolled';
+
     protected $table = 'edu_admissions';
 
     protected $fillable = [

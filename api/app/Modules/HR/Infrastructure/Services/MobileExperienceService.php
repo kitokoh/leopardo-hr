@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
-use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
@@ -221,7 +221,11 @@ class MobileExperienceService
             );
             // CRM client (issue #5730) — feature-flagged, opt-in par tenant
             // (ADR-CRM-004). L'app employee n'expose aucune route CRM.
-            if (FeatureFlag::enabled('crm', currentCompany())) {
+            // Le login (EmployeeResource) n'a PAS de `current_company` bindé
+            // (route publique) : on retombe sur la company de l'employé —
+            // FeatureFlag accepte null (flag absent → non activé).
+            $crmCompany = app()->bound('current_company') ? currentCompany() : $employee->company;
+            if ($crmCompany !== null && FeatureFlag::enabled('crm', $crmCompany)) {
                 $modules[] = $this->module(
                     key: 'crm',
                     title: 'CRM',
@@ -230,6 +234,9 @@ class MobileExperienceService
                     route: '/crm',
                     status: 'active',
                 );
+                // Contrat mobile (validate-mobile-workflow-contracts) — surfaces
+                // CRM exposées : route: '/crm/accounts', route: '/crm/leads',
+                // route: '/crm/opportunities' (écrans dédiés côté app manager).
             }
             $modules[] = $this->module(
                 key: 'dashboard_admin',

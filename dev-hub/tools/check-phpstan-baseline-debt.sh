@@ -189,7 +189,35 @@ do_guard() {
       head_keys["$message|$identifier|$path"]=1
     done < "$head_entries"
 
+    # Exceptions de gouvernance (PA2-ARCH-005/#5448) : fenêtre datée autorisant
+    # les NOUVELLES entrées (consolidation #6818) — les augmentations de count
+    # restent toujours bloquantes.
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    new_entries_window_open() {
+      python3 - "$SCRIPT_DIR/../governance/phpstan-baseline-exceptions.json" "$bf" <<'PYEOF' || true
+import json, sys, datetime
+try:
+    data = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(0)
+entry = data.get(sys.argv[2])
+if not entry:
+    sys.exit(0)
+until = entry.get("new_entries_allowed_until")
+if not until:
+    sys.exit(0)
+try:
+    if datetime.date.today() <= datetime.date.fromisoformat(until):
+        print(until)
+except ValueError:
+    pass
+PYEOF
+    }
+
     local file_violations=0
+    local new_entries_tolerated=0
+    local window
+    window="$(new_entries_window_open)"
     while IFS=$'\t' read -r message identifier count path; do
       [ -z "$path" ] && continue
       local key="$message|$identifier|$path"
@@ -211,6 +239,11 @@ do_guard() {
         done
         if [ -n "$moved_path" ]; then
           echo "ℹ️  $bf : entrée déplacée (${moved_path} → ${path}, count $count) — pas de dette nouvelle"
+          continue
+        fi
+        if [ -n "$window" ]; then
+          echo "⚠️  $bf : NOUVELLE entrée tolérée (fenêtre consolidation #6818, jusqu'au ${window}) — $path ($identifier, count $count). Dette visible, suivie par #6528."
+          new_entries_tolerated=$((new_entries_tolerated + 1))
           continue
         fi
         echo "❌ $bf : NOUVELLE entrée baseline — $path ($identifier, count $count)"

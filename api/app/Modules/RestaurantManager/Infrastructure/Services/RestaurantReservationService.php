@@ -12,7 +12,6 @@ use App\Modules\RestaurantManager\Domain\Models\RestaurantReservation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use RuntimeException;
-use Carbon\Carbon;
 
 /**
  * RESTO-601 (#6206) / RESTO-602 (#6207) / RESTO-603 (#6208) — Réservations.
@@ -29,8 +28,7 @@ final class RestaurantReservationService
 
     public function __construct(
         private readonly RestaurantCancellationPolicyService $cancellationPolicy,
-    ) {
-    }
+    ) {}
 
     /** Statuts qui occupent un créneau (bloquent une table). */
     private const OCCUPYING_STATUSES = ['pending', 'confirmed', 'seated'];
@@ -106,7 +104,7 @@ final class RestaurantReservationService
                 $reservation->company_id,
                 $reservation->branch_id,
                 $tableId,
-                $reservation->reserved_at,
+                Carbon::parse($reservation->reserved_at),
                 $reservation->id,
             );
             $reservation->table_id = $tableId;
@@ -215,6 +213,4 @@ final class RestaurantReservationService
             ->whereIn('status', self::OCCUPYING_STATUSES)
             ->whereBetween('reserved_at', [$windowStart, $windowEnd]);
     }
-
-
 }

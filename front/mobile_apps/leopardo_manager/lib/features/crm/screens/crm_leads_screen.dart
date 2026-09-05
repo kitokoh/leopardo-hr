@@ -42,27 +42,30 @@ class CrmLeadsScreen extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: MobilePanel(
-                          child: ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(
-                              Icons.person_search_outlined,
-                              color: MobileSurface.secondary,
-                            ),
-                            title: Text(
-                              lead.displayName,
-                              style: const TextStyle(
-                                color: MobileSurface.text,
-                                fontWeight: FontWeight.w600,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(
+                                Icons.person_search_outlined,
+                                color: MobileSurface.secondary,
                               ),
-                            ),
-                            subtitle: Text(
-                              '${lead.companyName ?? ''} · ${lead.status}',
-                              style: const TextStyle(
-                                color: MobileSurface.muted,
-                                fontSize: 12,
+                              title: Text(
+                                lead.displayName,
+                                style: const TextStyle(
+                                  color: MobileSurface.text,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
+                              subtitle: Text(
+                                '${lead.companyName ?? ''} · ${lead.status}',
+                                style: const TextStyle(
+                                  color: MobileSurface.muted,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              trailing: _StatusPill(lead.status),
                             ),
-                            trailing: _StatusPill(lead.status),
                           ),
                         ),
                       ),

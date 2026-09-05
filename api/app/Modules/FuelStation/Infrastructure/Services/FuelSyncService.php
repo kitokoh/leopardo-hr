@@ -50,7 +50,7 @@ final class FuelSyncService
                     'id' => $r->id,
                     'meter_id' => $r->meter_id,
                     'reading_value_minor' => $r->reading_value_minor,
-                    'captured_at_utc' => $r->captured_at_utc->toISOString(),
+                    'captured_at_utc' => $r->captured_at_utc->toIso8601String(),
                     'status' => $r->status,
                     'idempotency_key' => $r->idempotency_key,
                 ])
@@ -69,7 +69,7 @@ final class FuelSyncService
                 'product' => $s->product,
                 'quantity' => $s->quantity,
                 'amount' => $s->amount,
-                'sale_time' => $s->sale_time->toISOString(),
+                'sale_time' => $s->sale_time->toIso8601String(),
                 'external_id' => $s->external_id,
             ])
             ->values()

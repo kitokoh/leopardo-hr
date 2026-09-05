@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use Illuminate\Contracts\View\View;
@@ -71,10 +71,9 @@ class InvitationManagementController extends Controller
             company: $employee->company,
             employee: $employee,
             invitedByType: 'manager',
-            invitedByEmail: $actor->email,
+            invitedByEmail: $actor->email ?? '',
         );
 
         return back()->with('status', 'Invitation renvoyee a '.$employee->email);
     }
 }
-

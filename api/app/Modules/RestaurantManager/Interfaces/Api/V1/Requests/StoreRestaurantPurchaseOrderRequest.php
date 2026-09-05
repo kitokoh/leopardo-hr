@@ -8,8 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch
-use App\Modules\RestaurantManager\Domain\Models\RestaurantSupplier;
 
 /**
  * RESTO-502 (#6201) — Validation stricte de création d'un bon de commande.
@@ -44,6 +42,4 @@ class StoreRestaurantPurchaseOrderRequest extends FormRequest
             'items.*.unit_price_minor' => ['required', 'integer', 'min:0'],
         ];
     }
-
-
 }

@@ -17,30 +17,31 @@ declare(strict_types=1);
  * ventes = policy par propriétaire (opened_by/employee_id).
  */
 
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCashSessionController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCustomerController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelEquipmentController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportExportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelIncidentController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMaintenanceTaskController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterOcrController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMeterReadingController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMetricsController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelPresenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelProductController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReportController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSaleController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelShiftController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSiteController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationController;
+use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationReferentialController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStockController;
 use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelSyncController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelStationReferentialController;
 use Illuminate\Support\Facades\Route;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelCrmController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelImportController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelReferenceController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelAlertController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelMetricsController;
-use App\Modules\FuelStation\Interfaces\Api\V1\Controllers\FuelOutboxController;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // #6712 — référentiel read-only consommé par le dashboard admin
@@ -65,6 +66,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         ->whereNumber('station')
         ->whereNumber('pump')
         ->whereNumber('meter');
+
+    // AI-002 (#6771) — OCR des compteurs (image -> relevé) : soumission,
+    // consultation et revue d'une demande de reconnaissance.
+    Route::post('/fuel-station/stations/{station}/pumps/{pump}/meters/{meter}/readings/ocr', [FuelMeterOcrController::class, 'submit'])
+        ->whereNumber('station')
+        ->whereNumber('pump')
+        ->whereNumber('meter');
+    Route::get('/fuel-station/meter-ocr-requests/{ocr}', [FuelMeterOcrController::class, 'show'])
+        ->whereNumber('ocr');
+    Route::post('/fuel-station/meter-ocr-requests/{ocr}/review', [FuelMeterOcrController::class, 'review'])
+        ->whereNumber('ocr')
+        ->middleware('api.manager');
 
     // Corrections et revues — manager principal/rh (Policy).
     Route::post('/fuel-station/meter-readings/{reading}/corrections', [FuelMeterReadingController::class, 'correct'])
@@ -120,6 +133,18 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/sync/outbox', [FuelSyncController::class, 'outbox']);
     Route::post('/fuel-station/sync/readings', [FuelSyncController::class, 'readings']);
     Route::post('/fuel-station/sync/sales', [FuelSyncController::class, 'sales']);
+
+    // FUEL-016 (#5810) — comptes professionnels & visites CRM (manager).
+    Route::get('/fuel-station/accounts', [FuelCrmController::class, 'index']);
+    Route::post('/fuel-station/accounts', [FuelCrmController::class, 'store']);
+    Route::get('/fuel-station/accounts/{account}', [FuelCrmController::class, 'show'])
+        ->whereNumber('account');
+    Route::get('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'visits'])
+        ->whereNumber('account');
+    Route::post('/fuel-station/accounts/{account}/visits', [FuelCrmController::class, 'recordVisit'])
+        ->whereNumber('account');
+    Route::put('/fuel-station/accounts/{account}/consents', [FuelCrmController::class, 'updateConsents'])
+        ->whereNumber('account');
 
     // FUEL-011 (#5805) — référentiel : stations/sites/équipements/produits.
     Route::get('/fuel-station/stations', [FuelStationController::class, 'index']);
@@ -180,48 +205,48 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/fuel-station/exports/readings', [FuelImportExportController::class, 'exportReadings']);
         Route::get('/fuel-station/imports', [FuelImportExportController::class, 'imports']);
     });
-        Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
-                    ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
-                    ->whereNumber('id');
-Route::get('/fuel-station/stocks/movements', [FuelStockController::class, 'movements']);
-Route::post('/fuel-station/stocks/adjustments', [FuelStockController::class, 'storeAdjustment'])->middleware('throttle:fuel-sensitive');
-Route::post('/fuel-station/deliveries', [FuelStockController::class, 'storeDelivery'])->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/deliveries', [FuelStockController::class, 'deliveries']);
-Route::post('/fuel-station/deliveries/{delivery}/verify', [FuelStockController::class, 'verifyDelivery'])->whereNumber('delivery')->middleware('throttle:fuel-sensitive');
-Route::post('/fuel-station/reconciliations', [FuelStockController::class, 'runReconciliation'])->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
-Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
-Route::post('/fuel-station/incidents/{incident}/attachments', [FuelIncidentController::class, 'attach'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
-Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelIncidentController::class, 'updateTask'])->whereNumber('task')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesIndex'])->whereNumber('station');
-Route::post('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsIndex'])->whereNumber('station');
-Route::post('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
-Route::put('/fuel-station/pumps/{pump}', [FuelEquipmentController::class, 'pumpsUpdate'])->whereNumber('pump')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksIndex'])->whereNumber('station');
-Route::post('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
-Route::put('/fuel-station/tanks/{tank}', [FuelEquipmentController::class, 'tanksUpdate'])->whereNumber('tank')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersIndex'])->whereNumber('station');
-Route::post('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
-Route::put('/fuel-station/meters/{meter}', [FuelEquipmentController::class, 'metersUpdate'])->whereNumber('meter')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
-Route::get('/fuel-station/outbox/events', [FuelOutboxController::class, 'index']);
-Route::post('/fuel-station/outbox/events/{event}/retry', [FuelOutboxController::class, 'retry'])->whereNumber('event')->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/reports/daily-volumes', [FuelReportController::class, 'dailyVolumes']);
-Route::get('/fuel-station/reports/sales', [FuelReportController::class, 'sales']);
-Route::get('/fuel-station/reports/stock', [FuelReportController::class, 'stock']);
-Route::get('/fuel-station/reports/variances', [FuelReportController::class, 'variances']);
-Route::get('/fuel-station/reports/shifts', [FuelReportController::class, 'shifts']);
-Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport'])->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
-Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
-Route::post('/fuel-station/imports', [FuelImportController::class, 'store'])->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
-Route::get('/fuel-station/health/metrics', [FuelMetricsController::class, 'metrics'])
-            ->middleware('throttle:metrics');
-Route::get('/fuel-station/notifications/preferences', [FuelAlertController::class, 'preferences']);
-Route::put('/fuel-station/notifications/preferences', [FuelAlertController::class, 'updatePreferences'])->middleware('throttle:fuel-sensitive');
-Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
-Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
-Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
+    Route::delete('/fuel-station/{resource}/{id}', [FuelReferenceController::class, 'destroy'])
+        ->whereIn('resource', ['stations', 'sites', 'pumps', 'tanks', 'meters', 'products'])
+        ->whereNumber('id');
+    Route::get('/fuel-station/stocks/movements', [FuelStockController::class, 'movements']);
+    Route::post('/fuel-station/stocks/adjustments', [FuelStockController::class, 'storeAdjustment'])->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/deliveries', [FuelStockController::class, 'storeDelivery'])->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/deliveries', [FuelStockController::class, 'deliveries']);
+    Route::post('/fuel-station/deliveries/{delivery}/verify', [FuelStockController::class, 'verifyDelivery'])->whereNumber('delivery')->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/reconciliations', [FuelStockController::class, 'runReconciliation'])->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
+    Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/incidents/{incident}/attachments', [FuelIncidentController::class, 'attach'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
+    Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelIncidentController::class, 'updateTask'])->whereNumber('task')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesIndex'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsIndex'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+    Route::put('/fuel-station/pumps/{pump}', [FuelEquipmentController::class, 'pumpsUpdate'])->whereNumber('pump')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksIndex'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/tanks', [FuelEquipmentController::class, 'tanksStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+    Route::put('/fuel-station/tanks/{tank}', [FuelEquipmentController::class, 'tanksUpdate'])->whereNumber('tank')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersIndex'])->whereNumber('station');
+    Route::post('/fuel-station/stations/{station}/meters', [FuelEquipmentController::class, 'metersStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
+    Route::put('/fuel-station/meters/{meter}', [FuelEquipmentController::class, 'metersUpdate'])->whereNumber('meter')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/products/{product}', [FuelProductController::class, 'show'])->whereNumber('product');
+    Route::get('/fuel-station/outbox/events', [FuelOutboxController::class, 'index']);
+    Route::post('/fuel-station/outbox/events/{event}/retry', [FuelOutboxController::class, 'retry'])->whereNumber('event')->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/reports/daily-volumes', [FuelReportController::class, 'dailyVolumes']);
+    Route::get('/fuel-station/reports/sales', [FuelReportController::class, 'sales']);
+    Route::get('/fuel-station/reports/stock', [FuelReportController::class, 'stock']);
+    Route::get('/fuel-station/reports/variances', [FuelReportController::class, 'variances']);
+    Route::get('/fuel-station/reports/shifts', [FuelReportController::class, 'shifts']);
+    Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport'])->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
+    Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
+    Route::post('/fuel-station/imports', [FuelImportController::class, 'store'])->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
+    Route::get('/fuel-station/health/metrics', [FuelMetricsController::class, 'metrics'])
+        ->middleware('throttle:metrics');
+    Route::get('/fuel-station/notifications/preferences', [FuelAlertController::class, 'preferences']);
+    Route::put('/fuel-station/notifications/preferences', [FuelAlertController::class, 'updatePreferences'])->middleware('throttle:fuel-sensitive');
+    Route::get('/fuel-station/alerts', [FuelAlertController::class, 'index']);
+    Route::post('/fuel-station/alerts/{alert}/acknowledge', [FuelAlertController::class, 'acknowledge'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
+    Route::post('/fuel-station/alerts/{alert}/resolve', [FuelAlertController::class, 'resolve'])->whereNumber('alert')->middleware('throttle:fuel-sensitive');
 });

@@ -87,7 +87,7 @@ final class RestaurantReportService
 
         foreach ($sessions as $session) {
             $totalCovers += (int) $session->covers;
-            $minutes = $session->opened_at?->diffInMinutes($session->closed_at) ?? 0;
+            $minutes = $session->opened_at->diffInMinutes($session->closed_at) ?? 0;
             $totalMinutes += max(0, $minutes);
         }
 

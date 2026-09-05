@@ -39,10 +39,19 @@ import 'package:leopardo_core/features/user_auth/screens/company_request_screen.
 // #5540
 import 'package:leopardo_core/features/user_auth/screens/personal_status_screen.dart';
 import 'package:leopardo_core/features/user_auth/screens/company_integration_request_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_hub_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_accounts_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_account_detail_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_leads_screen.dart';
+import 'package:leopardo_manager/features/crm/screens/crm_opportunities_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_manager/features/fuel_station/screens/fuel_pumpist_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
+import 'package:leopardo_manager/features/restaurant/screens/restaurant_hub_screen.dart';
+import 'package:leopardo_manager/features/restaurant/screens/restaurant_server_screen.dart';
+import 'package:leopardo_manager/features/restaurant/screens/restaurant_rider_screen.dart';
+import 'package:leopardo_manager/features/restaurant/screens/restaurant_manager_screen.dart';
 import 'package:leopardo_core/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_core/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_core/features/company_branding/providers/tenant_branding_provider.dart';
@@ -222,6 +231,29 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const NotificationListScreen(),
           ),
           GoRoute(
+            path: '/crm',
+            builder: (context, state) => const CrmHubScreen(),
+          ),
+          GoRoute(
+            path: '/crm/accounts',
+            builder: (context, state) => const CrmAccountsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/accounts/:id',
+            builder: (context, state) => CrmAccountDetailScreen(
+              accountId: int.tryParse(state.pathParameters['id'] ?? '') ?? 0,
+            ),
+          ),
+          GoRoute(
+            path: '/crm/leads',
+            builder: (context, state) => const CrmLeadsScreen(),
+          ),
+          GoRoute(
+            path: '/crm/opportunities',
+            builder: (context, state) => const CrmOpportunitiesScreen(),
+          ),
+
+          GoRoute(
             path: '/evaluations',
             builder: (context, state) => const EvaluationListScreen(),
           ),
@@ -273,8 +305,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/settings/2fa',
-            builder: (context, state) =>
-                const TwoFactorSettingsScreen(),
+            builder: (context, state) => const TwoFactorSettingsScreen(),
           ),
           GoRoute(
             path: '/ai-chat',
@@ -291,6 +322,25 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/approvals',
             builder: (context, state) => const ApprovalScreen(),
+          ),
+          // RESTO-028 (#6155/#6406) — surfaces mobiles RestaurantManager
+          // (serveur / livreur / gérant). Entrée pilotée par le backend
+          // `mobileExperience` (quick action) comme /ai-chat et /vehicle-map.
+          GoRoute(
+            path: '/restaurant',
+            builder: (context, state) => const RestaurantHubScreen(),
+          ),
+          GoRoute(
+            path: '/restaurant/server',
+            builder: (context, state) => const RestaurantServerScreen(),
+          ),
+          GoRoute(
+            path: '/restaurant/rider',
+            builder: (context, state) => const RestaurantRiderScreen(),
+          ),
+          GoRoute(
+            path: '/restaurant/manager',
+            builder: (context, state) => const RestaurantManagerScreen(),
           ),
 
           GoRoute(

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Resources;
 
+use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantReceiving;
 
 /**
  * RESTO-503 (#6202) — Ressource API d'une réception de marchandises.
+ */
+/**
+ * @mixin RestaurantReceiving
  */
 class RestaurantReceivingResource extends JsonResource
 {
@@ -25,11 +28,9 @@ class RestaurantReceivingResource extends JsonResource
             'purchase_order_id' => $this->purchase_order_id,
             'supplier_id' => $this->supplier_id,
             'reference' => $this->reference,
-            'received_at' => $this->received_at?->toIso8601String(),
+            'received_at' => $this->received_at->toIso8601String(),
             'note_redacted' => $this->note_redacted,
-            'created_at' => $this->created_at?->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
         ];
     }
-
-
 }

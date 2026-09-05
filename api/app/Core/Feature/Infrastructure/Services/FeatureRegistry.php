@@ -121,7 +121,8 @@ class FeatureRegistry implements FeatureRegistryInterface
 
     /**
      * {@inheritdoc}
-     * @param array<string, mixed> $metadata
+     *
+     * @param  array<string, mixed>  $metadata
      */
     public function updateFeature(string $key, array $metadata): void
     {
@@ -213,7 +214,7 @@ class FeatureRegistry implements FeatureRegistryInterface
 
             $data = [
                 'version' => $this->getCurrentApiVersion(),
-                'generated_at' => Carbon::now()->toISOString(),
+                'generated_at' => Carbon::now()->toIso8601String(),
                 'mobile_version_min' => $this->getMinimumMobileVersion(),
                 'mobile_version_target' => $mobileVersion,
                 'total_features' => $features->count(),
@@ -442,11 +443,12 @@ class FeatureRegistry implements FeatureRegistryInterface
     {
         $lastSync = $this->cache->get(self::CACHE_PREFIX.':last_sync');
 
-        return $lastSync ? Carbon::parse((string) $lastSync)->toISOString() : null;
+        return $lastSync ? Carbon::parse((string) $lastSync)->toIso8601String() : null;
     }
 
     /**
      * Récupère le statut du cache
+     *
      * @return array<string, mixed>
      */
     private function getCacheStatus(): array
@@ -461,4 +463,3 @@ class FeatureRegistry implements FeatureRegistryInterface
         ];
     }
 }
-

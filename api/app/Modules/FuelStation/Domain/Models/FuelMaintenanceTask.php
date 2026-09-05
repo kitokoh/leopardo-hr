@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Tâche de maintenance préventive/corrective FuelStation — FUEL-010
@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $priority low|medium|high
  * @property string $status todo|in_progress|done|cancelled
  * @property int|null $assigned_to
+ * @property Carbon|null $due_at
+ * @property Carbon|null $started_at
  * @property Carbon|null $scheduled_for
  * @property Carbon|null $completed_at
  * @property int|null $completed_by
@@ -47,6 +49,16 @@ class FuelMaintenanceTask extends Model
     public const STATUS_CANCELLED = 'cancelled';
 
     public const STATUSES = [self::STATUS_TODO, self::STATUS_IN_PROGRESS, self::STATUS_DONE, self::STATUS_CANCELLED];
+
+    public const STATUS_OPEN = 'open';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const PRIORITY_LOW = 'low';
+
+    public const PRIORITY_MEDIUM = 'medium';
+
+    public const PRIORITY_HIGH = 'high';
 
     protected $fillable = [
         'company_id',
@@ -72,6 +84,8 @@ class FuelMaintenanceTask extends Model
             'incident_id' => 'integer',
             'assigned_to' => 'integer',
             'scheduled_for' => 'date',
+            'due_at' => 'datetime',
+            'started_at' => 'datetime',
             'completed_at' => 'date',
             'completed_by' => 'integer',
         ];
@@ -86,6 +100,4 @@ class FuelMaintenanceTask extends Model
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
     }
-
-
 }

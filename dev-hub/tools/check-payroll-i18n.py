@@ -53,7 +53,7 @@ for loc, keys in catalogs.items():
         errors.append(f"payroll.php ({loc}) : clés manquantes vs les autres locales : {sorted(missing)}")
 
 # 3. Libellés du moteur → clés présentes dans les 4 catalogues
-helper = (PAYROLL / "Infrastructure" / "Services" / "PayrollLineLabels.php").read_text(encoding="utf-8")
+helper = (PAYROLL / "Domain" / "Services" / "PayrollLineLabels.php").read_text(encoding="utf-8")
 map_keys = set(re.findall(r"=>\s*'(line_[a-z_]+)'", helper))
 for key in sorted(map_keys):
     for loc in LANGS:

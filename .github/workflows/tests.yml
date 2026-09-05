@@ -75,7 +75,10 @@ jobs:
           echo "Web changed: ${{ steps.changes.outputs.web }}"
 
   backend-tests:
-    timeout-minutes: 45
+    # Train #6817 (2026-09-05) : la suite complete (unit ~40 min + feature
+    # ~40 min, tests restaurés) DEPASSE 75 min — run annulé a ~75 min le
+    # 2026-09-05 14:06 (2e constat). Timeout porte a 120 min.
+    timeout-minutes: 120
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
     needs: detect-changes
@@ -384,9 +387,21 @@ jobs:
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
+          # Gate diff-scopé « Backend Quality » : analyse des fichiers CHANGÉS au
+          # niveau 8 avec TOUTES les baselines (legacy + modules + strict) —
+          # aligné sur les jobs backend requis (PHPStan Strict L8, Modules
+          # Architecture). Le niveau max de phpstan.neon seul (baseline legacy
+          # uniquement) rendait tout PR touchant un module avec dette level-8
+          # baselinée rouge (dette gérée par les baselines au niveau 8 ; leçon
+          # train #6817 : 1 038 findings max-only sur les fichiers restaurés).
           cat > phpstan.ci.neon <<EOF
           includes:
               - phpstan.neon
+              - phpstan-strict-baseline.neon
+              - phpstan-modules-baseline.neon
+
+          parameters:
+              level: 8
           EOF
           mkdir -p storage/test-results
           base_sha="${DIFF_BASE_SHA:-}"
@@ -409,9 +424,13 @@ jobs:
             # (app/ + routes/ + tests/) — avant, seuls app/AI, Http/Middleware
             # et routes étaient analysés au niveau max ; config/ reste exclu
             # (hors paths de phpstan.neon, conventionnellement).
+            # Filtre d'existence : un fichier SUPPRIMÉ dans le diff (refactor/
+            # purge) n'existe plus dans le working tree — PHPStan refuserait le
+            # chemin inexistant (leçon train #6817, SettleTravelSalesCommand).
             git diff --name-only "${base_sha}" "${head_sha}" \
               | grep -E '^api/(app|routes|tests)/.*\.php$' \
-              | sort -u || true
+              | sort -u \
+              | while IFS= read -r f; do [[ -f "$f" ]] && echo "$f"; done || true
           )
 
           if [[ ${#changed_php_files[@]} -eq 0 ]]; then

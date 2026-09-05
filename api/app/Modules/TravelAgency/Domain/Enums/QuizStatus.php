@@ -10,14 +10,14 @@ namespace App\Modules\TravelAgency\Domain\Enums;
 enum QuizStatus: string
 {
     case DRAFT = 'draft';
-    case ACTIVE = 'active';
+    case PUBLISHED = 'published';
     case CLOSED = 'closed';
 
     public function label(): string
     {
         return match ($this) {
             self::DRAFT => 'Brouillon',
-            self::ACTIVE => 'Actif',
+            self::PUBLISHED => 'Publié',
             self::CLOSED => 'Clôturé',
         };
     }

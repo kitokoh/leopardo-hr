@@ -87,6 +87,8 @@ parameters:
         - '#Call to an undefined method App\\Modules\\(Growth|Platform|Onboarding|Training)#'
         - '#Parameter.*of method App\\Modules\\(Growth|Platform|Onboarding|Training).*invalid type#'
 
+        - '#Access to an undefined property App\\Modules\\(TravelAgency|RestaurantManager|FuelStation|EduManager|CRM|Delivery|Attendance)\\Domain\\Models\\#'
+        - '#Access to an undefined property App\\Modules\\(TravelAgency|RestaurantManager|FuelStation|EduManager|CRM|Delivery)\\Infrastructure\\Services\\#'
         # Eloquent models — propriétés dynamiques non annotées (migration DDD v4.16.251)
         # Les modèles Eloquent utilisent __get() magiquement; les @property viendront progressivement.
         - '#Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\#'

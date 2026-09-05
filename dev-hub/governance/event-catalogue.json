@@ -311,6 +311,42 @@
       "consumers": [
         "App\\Listeners\\NotifyTaxRateValidation@handleTaxRateSubmitted"
       ]
+    },
+    {
+      "name": "AttendanceRecorded",
+      "class": "App\\Events\\AttendanceRecorded",
+      "owner": "BC-05 WORKFORCE",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "companyId": "string",
+        "employeeId": "int",
+        "workplaceId": "?int",
+        "eventType": "string",
+        "occurredAtUtc": "string",
+        "verificationMethod": "string",
+        "verificationResult": "?string",
+        "kioskId": "?int",
+        "correlationId": "string",
+        "attendanceLogId": "int"
+      },
+      "consumers": []
+    },
+    {
+      "name": "FuelStationAlert",
+      "class": "App\\Events\\FuelStationAlert",
+      "owner": "BC-15 FUEL",
+      "version": 1,
+      "status": "active",
+      "payload": {
+        "managers": "Illuminate\\Support\\Collection",
+        "templateKey": "string",
+        "payload": "array",
+        "category": "string"
+      },
+      "consumers": [
+        "App\\Listeners\\FuelStationAlertListener"
+      ]
     }
   ],
   "compatibility_rules": [

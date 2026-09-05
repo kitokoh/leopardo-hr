@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import {
@@ -165,6 +165,7 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
+import { useTravelStore } from '@/stores/travel'
 
 defineProps({
   isOpen: {
@@ -181,6 +182,34 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
+const travelStore = useTravelStore()
+
+/**
+ * TRAVEL-601 (#6078) — l'entrée « Agence de voyage » n'est proposée que si le
+ * flag `travelagency` est ACTIF pour le contexte courant (sondé via le contrat
+ * réel GET /travel/ping : 200 = actif, 403 FEATURE_NOT_ENABLED = absent,
+ * 401 = hors contexte tenant). Tant que la sonde n'a pas répondu (isReady
+ * false) l'entrée reste masquée — elle apparaît uniquement sur 200, et les
+ * écrans /travel gèrent eux-mêmes les états explicites (TravelGate).
+ */
+let lastProbedUserEmail = null
+watch(
+  () => authStore.user,
+  (user) => {
+    if (!user) {
+      travelStore.reset()
+      lastProbedUserEmail = null
+      return
+    }
+    // Reprobe quand l'identité change (tenant/flag différents par utilisateur).
+    const email = user.email ?? user.id ?? ''
+    if (email !== lastProbedUserEmail) {
+      lastProbedUserEmail = email
+      travelStore.checkFlag(true)
+    }
+  },
+  { immediate: true }
+)
 
 /**
  * Comptabilité — RBAC backend (api.manager:comptable,principal) : le menu
@@ -245,12 +274,19 @@ const navigation = computed(() => [
     path: '/fleet',
     icon: TruckIcon
   },
-  {
-    name: 'travel',
-    title: t('navigation.travelAgency', 'Agence de voyage'),
-    path: '/travel',
-    icon: GlobeAltIcon
-  },
+  // TRAVEL-601 (#6078) : entrée conditionnée par le flag travelagency réel
+  // (GET /travel/ping → 200). Masquée tant que la sonde n'a pas répondu, si
+  // le flag est inactif (403) ou hors contexte tenant (401).
+  ...(travelStore.isReady && travelStore.flagActive
+    ? [
+        {
+          name: 'travel',
+          title: t('navigation.travelAgency', 'Agence de voyage'),
+          path: '/travel',
+          icon: GlobeAltIcon
+        }
+      ]
+    : []),
   {
     name: 'fuelStation',
     title: t('navigation.fuelStation', 'Stations-service'),

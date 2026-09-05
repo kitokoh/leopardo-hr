@@ -42,6 +42,7 @@ class CrmRepository {
     return CrmAccount.fromJson(extractDataMap(response.data));
   }
 
+  // Contrat #5712 : GET /crm/accounts/{id}/contacts (endpoint manager/crm_terrain).
   Future<List<CrmContact>> getAccountContacts(int accountId) async {
     final response = await apiClient.requestWithRetry(
       '/crm/accounts/$accountId/contacts',
@@ -156,6 +157,7 @@ class CrmRepository {
     return CrmTask.fromJson(extractDataMap(response.data));
   }
 
+  // Contrat #5712 : PATCH /crm/tasks/{id} (endpoint manager/crm_terrain).
   Future<CrmTask> completeTask(int taskId) async {
     final response = await apiClient.requestWithRetry(
       '/crm/tasks/$taskId',

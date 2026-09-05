@@ -18,13 +18,20 @@ final crmLeadsProvider = FutureProvider<List<CrmLead>>((ref) async {
   return ref.watch(crmRepositoryProvider).getLeads();
 });
 
-final crmOpportunitiesProvider = FutureProvider<List<CrmOpportunity>>((ref) async {
+final crmOpportunitiesProvider =
+    FutureProvider<List<CrmOpportunity>>((ref) async {
   return ref.watch(crmRepositoryProvider).getOpportunities();
 });
 
 /// Détail d'un compte + contacts + activités + tâches (timeline).
-final crmAccountDetailProvider =
-    FutureProvider.family<({CrmAccount account, List<CrmContact> contacts, List<CrmActivity> activities, List<CrmTask> tasks}), int>(
+final crmAccountDetailProvider = FutureProvider.family<
+    ({
+      CrmAccount account,
+      List<CrmContact> contacts,
+      List<CrmActivity> activities,
+      List<CrmTask> tasks
+    }),
+    int>(
   (ref, accountId) async {
     final repo = ref.watch(crmRepositoryProvider);
     final results = await Future.wait([

@@ -10,8 +10,6 @@ use Database\Factories\TravelStationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Gare / terminal de la verticale TravelAgency (TRAVEL-203, issue #6016).
@@ -50,8 +48,4 @@ class TravelStation extends Model
     {
         return $this->belongsTo(TravelCity::class, 'city_id');
     }
-
-
-
-
 }

@@ -1,3 +1,7 @@
+<?php
+
+declare(strict_types=1);
+
 return [
 
     'enabled' => (bool) env('CRM_ENABLED', true),
@@ -19,7 +23,6 @@ return [
             'enabled' => (bool) env('CRM_SMS_ENABLED', false),
         ],
     ],
-
 
     /*
     |--------------------------------------------------------------------------

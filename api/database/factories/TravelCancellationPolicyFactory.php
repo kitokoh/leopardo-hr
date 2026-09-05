@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Modules\TravelAgency\Domain\Models\TravelClass
+use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends Factory<TravelCancellationPolicy>
@@ -28,12 +28,10 @@ class TravelCancellationPolicyFactory extends Factory
         ];
     }
 
-
     public function forTrip(int $tripId): static
     {
         return $this->state(['trip_id' => $tripId]);
     }
-
 
     public function forClass(int $classId): static
     {
@@ -51,7 +49,6 @@ class TravelCancellationPolicyFactory extends Factory
         ]);
     }
 
-
     public function nonRefundable(): static
     {
         return $this->state(['refundable' => false, 'penalty_percent' => 100]);
@@ -64,6 +61,4 @@ class TravelCancellationPolicyFactory extends Factory
 
         return $this->state(['trip_id' => $tripId, 'class_id' => $classId]);
     }
-
-
 }

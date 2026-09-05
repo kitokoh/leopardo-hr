@@ -5,11 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\RestaurantManager\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use App\Core\Auth\Domain\Models\Employee
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch
-use Illuminate\Database\Query\Builder;
-use App\Modules\RestaurantManager\Domain\Models\RestaurantBranch
 
 /**
  * RESTO-605 (#6210) — Mise à jour d'un livreur.
@@ -35,17 +30,4 @@ class UpdateRestaurantDeliveryRiderRequest extends FormRequest
             'branch_id' => ['prohibited'],
         ];
     }
-
-
-    private function companyId(): ?string
-    {
-        $user = $this->user();
-        if ($user instanceof Employee && $user->company_id !== null) {
-            return $user->company_id;
-        }
-
-        return app()->bound('current_company') ? currentCompany()->id : null;
-    }
-
-
 }

@@ -62,32 +62,8 @@ return new class extends Migration
             });
         }
 
-        if (! schemaTableExists('travel_adverts')) {
-            Schema::create('travel_adverts', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('type_id');
-                $table->unsignedBigInteger('position_id');
-                $table->string('title', 200);
-                $table->text('body_redacted');
-                $table->string('image_path', 500)->nullable();
-                $table->unsignedInteger('character_count')->default(0);
-                $table->unsignedBigInteger('price_minor')->default(0);
-                $table->char('currency', 3);
-                $table->string('status', 20)->default('submitted');
-                $table->timestamp('paid_at')->nullable();
-                $table->unsignedBigInteger('payment_id')->nullable();
-                $table->timestamp('validated_at')->nullable();
-                $table->unsignedBigInteger('validated_by_user_id')->nullable();
-                $table->timestamp('published_at')->nullable();
-                $table->timestamp('valid_until')->nullable();
-                $table->string('moderation_note', 500)->nullable();
-                $table->timestamps();
-
-                $table->index(['company_id', 'status'], 'travel_adverts_company_status_idx');
-                $table->index(['company_id', 'valid_until'], 'travel_adverts_company_valid_until_idx');
-            });
-        }
+        // NB: travel_adverts est créée par la migration canonique 2026_08_30_001548 (schéma #6110 TRAVEL-907/908 — contenu_redacted/price_minor/validity_days/validated).
+        // Cette génération antérieure (000017) ne crée plus que travel_advert_types/positions/prices.
     }
 
     public function down(): void

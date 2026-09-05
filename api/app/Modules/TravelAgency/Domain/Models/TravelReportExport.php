@@ -6,8 +6,6 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Historique des exports CSV de rapports (TRAVEL-505, issue #6075).
@@ -37,6 +35,4 @@ class TravelReportExport extends Model
         'row_count' => 'integer',
         'expires_at' => 'datetime',
     ];
-
-
 }

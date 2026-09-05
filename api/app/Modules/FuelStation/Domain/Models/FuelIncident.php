@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Domain\Models;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use App\Core\Auth\Domain\Models\Employee
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Incident équipement FuelStation — FUEL-010 (issue #5804).
@@ -77,6 +77,18 @@ class FuelIncident extends Model
 
     public const EQUIPMENT_TYPES = [self::EQUIPMENT_PUMP, self::EQUIPMENT_TANK, self::EQUIPMENT_METER, self::EQUIPMENT_OTHER];
 
+    public const STATUS_ASSIGNED = 'assigned';
+
+    public const STATUS_REPORTED = 'reported';
+
+    public const TRANSITIONS = [
+        self::STATUS_REPORTED => [self::STATUS_ASSIGNED, self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+        self::STATUS_ASSIGNED => [self::STATUS_IN_PROGRESS, self::STATUS_CLOSED],
+        self::STATUS_IN_PROGRESS => [self::STATUS_RESOLVED],
+        self::STATUS_RESOLVED => [self::STATUS_CLOSED],
+        self::STATUS_CLOSED => [],
+    ];
+
     protected $fillable = [
         'company_id',
         'station_id',
@@ -106,6 +118,8 @@ class FuelIncident extends Model
             'reported_by' => 'integer',
             'assigned_to' => 'integer',
             'occurred_at' => 'datetime',
+            'reported_at' => 'datetime',
+            'assigned_at' => 'datetime',
             'resolved_at' => 'datetime',
             'resolved_by' => 'integer',
             'closed_at' => 'datetime',

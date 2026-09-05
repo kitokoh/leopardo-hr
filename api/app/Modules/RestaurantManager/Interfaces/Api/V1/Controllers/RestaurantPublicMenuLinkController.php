@@ -18,16 +18,16 @@ use Illuminate\Support\Facades\URL;
  */
 class RestaurantPublicMenuLinkController extends Controller
 {
-    public function store(Request $request, RestaurantBranch $branch): JsonResponse
+    public function store(Request $request, RestaurantBranch $restaurantBranch): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        if ($branch->company_id !== $actor->company_id) {
+        if ($restaurantBranch->company_id !== $actor->company_id) {
             abort(404);
         }
 
-        if ($actor->cannot('update', $branch)) {
+        if ($actor->cannot('update', $restaurantBranch)) {
             abort(403);
         }
 

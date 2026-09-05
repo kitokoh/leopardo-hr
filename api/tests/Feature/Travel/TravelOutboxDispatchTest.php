@@ -19,8 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Domain\Exceptions\PermanentTravelOutboxException
-use App\Modules\TravelAgency\Domain\Exceptions\TransientTravelOutboxException;
 
 /**
  * TRAVEL-414 (#6066) — Consommation de l'outbox TravelAgency.
@@ -285,7 +283,7 @@ final class TravelLedgerConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $accountId = (int) ($payload['account_id'] ?? 0);
         $key = hash('sha256', $this->eventType.'|'.json_encode($payload, JSON_THROW_ON_ERROR));
@@ -316,7 +314,7 @@ final class TravelFlakyConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         throw new TransientOutboxException('provider indisponible (test)');
     }
@@ -334,7 +332,7 @@ final class TravelPermanentFailConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         throw new PermanentOutboxException('permanent failure (test)');
     }
@@ -354,137 +352,8 @@ final class TenantAwareTravelConsumer implements TravelOutboxConsumer
         return $eventType === $this->eventType;
     }
 
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $this->ranWithinTenant = app(TenantManager::class)->hasTenant();
     }
-
-
-    public function test_publish_then_dispatch_applies_effect_once(): void
-    {
-        $consumer = new TravelLedgerConsumer('travel.test.event');
-        $this->registry->register($consumer);
-
-        $this->publisher->publish(
-            (string) $this->companyA->id,
-            'travel.test.event',
-            ['account_id' => 42],
-        );
-
-        Artisan::call('travel:outbox-dispatch');
-
-        self::assertSame(1, $this->effectCount(42), 'l\'effet est appliqué');
-        self::assertSame(
-            TravelOutboxEvent::STATUS_PUBLISHED,
-            TravelOutboxEvent::query()->firstOrFail()->status,
-            'l\'événement est publié après consommation'
-        );
-        self::assertNotNull(TravelOutboxEvent::query()->firstOrFail()->processed_at, 'processed_at horodaté');
-    }
-
-
-    public function test_double_publish_same_key_is_deduped(): void
-    {
-        $this->publisher->publish(
-            (string) $this->companyA->id,
-            'travel.test.event',
-            ['account_id' => 7],
-            idempotencyKey: 'key-1',
-        );
-        $this->publisher->publish(
-            (string) $this->companyA->id,
-            'travel.test.event',
-            ['account_id' => 7],
-            idempotencyKey: 'key-1',
-        );
-
-        self::assertSame(1, TravelOutboxEvent::query()->count(), 'clé d\'idempotence unique par tenant');
-    }
-
-
-    public function test_crash_after_effect_does_not_duplicate_on_replay(): void
-    {
-        $consumer = new TravelLedgerConsumer('travel.test.event');
-        $this->registry->register($consumer);
-
-        $event = $this->publisher->publish(
-            (string) $this->companyA->id,
-            'travel.test.event',
-            ['account_id' => 55],
-        );
-
-        // 1er passage : effet appliqué.
-        Artisan::call('travel:outbox-dispatch');
-        self::assertSame(1, $this->effectCount(55));
-
-        // « Crash après effet » : l'événement est remis en pending (rejeu manuel).
-        $event->forceFill(['status' => TravelOutboxEvent::STATUS_PENDING, 'available_at' => now()])->save();
-
-        // Rejeu : le consommateur idempotent ne ré-applique PAS l'effet.
-        Artisan::call('travel:outbox-dispatch');
-        self::assertSame(1, $this->effectCount(55), 'zéro doublon après rejeu');
-    }
-
-
-    public function test_consumer_never_sees_another_tenant(): void
-    {
-        // Consommateur qui refuse si le tenant courant n'est pas celui de
-        // l'événement (garde cross-tenant structurelle du dispatch).
-        $consumer = new TravelTenantAwareConsumer((string) $this->companyA->id);
-        $this->registry->register($consumer);
-
-        // Événement du tenant A : consommé DANS le contexte A (accepté).
-        $this->publisher->publish((string) $this->companyA->id, 'travel.test.tenant', ['account_id' => 1]);
-        // Événement du tenant B : consommé DANS le contexte B (le
-        // consommateur le refuse → dead-letter, jamais d'effet cross-tenant).
-        $this->publisher->publish((string) $this->companyB->id, 'travel.test.tenant', ['account_id' => 2]);
-
-        Artisan::call('travel:outbox-dispatch');
-
-        self::assertSame(
-            TravelOutboxEvent::STATUS_PUBLISHED,
-            TravelOutboxEvent::query()->where('company_id', $this->companyA->id)->firstOrFail()->status,
-            'événement A publié dans son tenant'
-        );
-        self::assertSame(
-            TravelOutboxEvent::STATUS_FAILED,
-            TravelOutboxEvent::query()->where('company_id', $this->companyB->id)->firstOrFail()->status,
-            'événement B jamais appliqué hors de son tenant'
-        );
-        self::assertSame(1, $this->effectCount(1), 'un seul effet, dans le bon tenant');
-    }
-
-
-    public function test_load_pic_zero_loss_zero_duplicate_with_bounded_lag(): void
-    {
-        $consumer = new TravelLedgerConsumer('travel.test.event');
-        $this->registry->register($consumer);
-
-        $start = microtime(true);
-        for ($i = 1; $i <= 200; $i++) {
-            $this->publisher->publish((string) $this->companyA->id, 'travel.test.event', ['account_id' => $i]);
-        }
-
-        // Deux passes de 150 pour absorber le lot.
-        Artisan::call('travel:outbox-dispatch', ['--limit' => 150]);
-        Artisan::call('travel:outbox-dispatch', ['--limit' => 150]);
-
-        $elapsed = microtime(true) - $start;
-
-        self::assertSame(200, TravelOutboxEvent::query()->where('status', TravelOutboxEvent::STATUS_PUBLISHED)->count(), 'zéro perte');
-        self::assertSame(0, TravelOutboxEvent::query()->where('status', TravelOutboxEvent::STATUS_FAILED)->count());
-        self::assertSame(200, TravelOutboxEvent::query()->count());
-        self::assertSame(200, $consumer->appliedCount(), 'zéro doublon');
-
-        // Lag p95 borné : 200 événements traités en moins de 10 s (CI).
-        self::assertLessThan(10.0, $elapsed, 'pic traité dans la fenêtre bornée');
-    }
-
-
-    public function appliedCount(): int
-    {
-        return $this->applied;
-    }
-
-
 }

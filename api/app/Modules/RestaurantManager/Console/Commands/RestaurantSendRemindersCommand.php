@@ -65,7 +65,7 @@ class RestaurantSendRemindersCommand extends Command
                     [
                         'reservation_id' => $reservation->id,
                         'branch_id' => $reservation->branch_id,
-                        'reserved_at' => $reservation->reserved_at?->toIso8601String(),
+                        'reserved_at' => $reservation->reserved_at->toIso8601String(),
                         'covers' => $reservation->covers,
                     ],
                 );

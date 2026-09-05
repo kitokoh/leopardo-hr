@@ -1763,3 +1763,7 @@ Note 2026-08-30 (BC-26 DELIVERY, #6281..#6304) : module DeliveryAgency — livra
 - Grace period par facture (`billing:enforce-delinquency`) : `active` avec facture due impayée → `past_due` ; `past_due` dont `due_date` + grâce dépassée → `expired` (repli `current_period_end` si aucune facture). Couverture : `InvoiceStateMachineTest`.
 
 Note 2026-08-28 (FUEL-001..008) : module FuelStation — solution verticale (manifest + stations/sites + équipements + relevés + shifts + présence + caisse + ventes).
+
+## Addendum 2026-09-04 — consolidation 126 branches (PR #6816/#6817)
+
+Consolidation du 2026-09-04 : intégration des verticales Travel/Edu/Fuel/Restaurant/CRM/Delivery + lots audit. Rounds de verdissement CI (#6817) : purge des résidus de merge (parse errors), restauration de routes orphelines (13 contrôleurs, EduManager/RestaurantManager/Attendance/Fuel/Travel), imports de namespace API corrigés, artefacts i18n/OpenAPI régénérés, restaurations de constantes de modèles perdues par les merges union (Fuel/Edu/Travel). Périmètre de tests couvert inchangé — voir registre des scénarios par domaine.

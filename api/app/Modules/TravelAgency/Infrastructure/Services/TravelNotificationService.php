@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
-use App\Modules\Notification\Domain\Models\CommunicationEvent
-use App\Modules\TravelAgency\Domain\Contracts\TravelCustomerContactResolver;
 
 /**
  * TRAVEL-415 (#6067) — Envoi des notifications voyageur.
@@ -336,42 +334,5 @@ final class TravelNotificationService
         unset($payload['contact_email'], $payload['contact_phone'], $payload['document_number']);
 
         return $payload;
-    }
-
-
-    public function __construct(private readonly TravelCustomerContactResolver $contacts)
-    {
-    }
-
-    private function configuredChannels(): array
-    {
-        $defaults = config('communication.default_channels', ['email']);
-
-        if (! is_array($defaults)) {
-            return [];
-        }
-
-        return array_values(array_filter(
-            array_map('strval', $defaults),
-            fn (string $channel): bool => in_array($channel, ['email', 'sms', 'whatsapp'], true)
-        ));
-    }
-
-    private function summary(string $eventType, TravelBooking $booking, array $payload): string
-    {
-        return match ($eventType) {
-            'travel.booking.confirmed.v1' => 'Réservation confirmée '.$booking->reference,
-            'travel.booking.cancelled.v1' => 'Réservation annulée '.$booking->reference,
-            'travel.payment.confirmed.v1' => 'Paiement confirmé '.$booking->reference,
-            'travel.payment.refunded.v1' => 'Remboursement '.$booking->reference,
-            'travel.ticket.issued.v1' => 'Billet émis '.$booking->reference,
-            default => 'Mise à jour '.$booking->reference,
-        };
-    }
-
-
-    private function templateKey(string $eventType): string
-    {
-        return str_replace('.', '_', $eventType);
     }
 }

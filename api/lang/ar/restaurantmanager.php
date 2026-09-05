@@ -7,4 +7,3 @@ return [
     'order_ready_body' => 'الطلب :reference جاهز للتقديم (الطاولة :table).',
     'reservation_reminder_title' => 'حجز قادم (J-1)',
 ];
-    'reservation_reminder_body' => 'الحجز :reference : :covers غطاء في :datetime — جهز الطاولة.',

@@ -13,3 +13,8 @@
 # État au 2026-08-14 (audit #2181) : 0 entrée — tous les chemins documentés
 # existent dans les routes. Maintenir ce fichier vide ; toute nouvelle
 # entrée doit être justifiée ici.
+# 2026-09-05 (#6818) : GET /company-integration-requests documenté dans
+# openapi.yaml mais route absente du routeur consolidé (lignée supprimée
+# pendant la purge des merges — aucun consommateur). À purger lors de la
+# régénération openapi.yaml (#6815).
+GET /company-integration-requests

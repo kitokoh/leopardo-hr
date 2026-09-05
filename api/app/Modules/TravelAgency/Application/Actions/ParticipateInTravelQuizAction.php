@@ -25,7 +25,7 @@ final class ParticipateInTravelQuizAction
      */
     public function execute(TravelQuiz $quiz, Employee $actor, array $answers): TravelQuizParticipation
     {
-        if ($quiz->status !== TravelQuiz::STATUS_PUBLISHED) {
+        if ($quiz->status !== \App\Modules\TravelAgency\Domain\Enums\QuizStatus::PUBLISHED) {
             abort(422, 'Ce quiz nest pas publie.');
         }
 

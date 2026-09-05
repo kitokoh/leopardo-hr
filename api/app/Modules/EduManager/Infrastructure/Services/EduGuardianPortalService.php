@@ -34,9 +34,7 @@ use RuntimeException;
  */
 final class EduGuardianPortalService
 {
-    public function __construct(private readonly EduOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly EduOutboxPublisher $outbox) {}
 
     public const EVENT_PORTAL_LINK_CREATED = 'edu.guardian.portal_link_created.v1';
 
@@ -174,7 +172,7 @@ final class EduGuardianPortalService
     }
 
     /**
-     * @return array<string, int>
+     * @return array<string, int|string>
      */
     private function attendanceSummary(EduStudent $student, string $companyId): array
     {

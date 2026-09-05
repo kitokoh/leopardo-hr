@@ -8,24 +8,19 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Mail\CommunicationMail;
+use App\Modules\TravelAgency\Application\Actions\ConfirmBookingAction;
+use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
+use App\Modules\TravelAgency\Domain\Enums\SeatStatus;
+use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
+use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent;
+use App\Modules\TravelAgency\Domain\Models\TravelTripSeat;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\TravelAgency\Application\Actions\ConfirmBookingAction
-use App\Modules\TravelAgency\Domain\Enums\BookingStatus
-use App\Modules\TravelAgency\Domain\Enums\SeatStatus
-use App\Modules\TravelAgency\Domain\Models\TravelBooking
-use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent
-use App\Modules\TravelAgency\Domain\Models\TravelTripSeat
-use Illuminate\Support\Facades\Artisan;
-use App\Modules\TravelAgency\Domain\Enums\BookingStatus
-use App\Modules\TravelAgency\Domain\Enums\SeatStatus
-use App\Modules\TravelAgency\Domain\Models\TravelBooking
-use App\Modules\TravelAgency\Domain\Models\TravelOutboxEvent
-use App\Modules\TravelAgency\Domain\Models\TravelTripSeat
 
 /**
  * TRAVEL-910 (#6113) — Notifications legacy gv-back → canaux plateforme.
@@ -120,7 +115,6 @@ class TravelLegacyNotificationsTest extends TestCase
         ])->assertStatus(403);
     }
 
-
     private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
@@ -135,13 +129,11 @@ class TravelLegacyNotificationsTest extends TestCase
         return $employee;
     }
 
-
     private function activateTravel(Company $company): void
     {
         $company->setFeature('travelagency', true);
         $company->save();
     }
-
 
     public function test_booking_confirmed_event_carries_notification_intent_and_consent(): void
     {
@@ -179,7 +171,6 @@ class TravelLegacyNotificationsTest extends TestCase
         self::assertSame(TravelOutboxEvent::STATUS_PUBLISHED, $event->refresh()->status);
     }
 
-
     public function test_legacy_notification_events_are_all_mapped(): void
     {
         // Chaque événement legacy notifiable doit porter une intention dans le
@@ -200,6 +191,4 @@ class TravelLegacyNotificationsTest extends TestCase
             self::assertStringStartsWith('travel.', $intent);
         }
     }
-
-
 }

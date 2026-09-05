@@ -83,7 +83,7 @@ final class SendOnboardingRemindersCommand extends Command
 
             try {
                 Mail::to($manager->email, $managerName)
-                    ->queue(new OnboardingReminderMail($company, $managerName, $manager->email));
+                    ->queue(new OnboardingReminderMail($company, $managerName ?? '', $manager->email ?? ''));
                 $sent++;
                 $this->line("Queued reminder for {$manager->email} (company: {$company->name})");
             } catch (\Throwable $e) {

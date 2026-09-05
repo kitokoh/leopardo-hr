@@ -127,7 +127,7 @@ class ApprovalController extends Controller
             abort(404);
         }
         if ($approvalRequest->status !== 'pending') {
-            return response()->json(['message' => __('attendance.request_not_pending')], 422);
+            abort(422, (string) __('attendance.request_not_pending'));
         }
         // QA #3146 — la policy enregistrée n'était jamais invoquée : tout employé
         // authentifié pouvait approuver/rejeter n'importe quelle demande. La policy
@@ -171,7 +171,7 @@ class ApprovalController extends Controller
             abort(404);
         }
         if ($approvalRequest->status !== 'pending') {
-            return response()->json(['message' => __('attendance.request_not_pending')], 422);
+            abort(422, (string) __('attendance.request_not_pending'));
         }
         // QA #3146 — même garde que approve (policy ApprovalRequestPolicy).
         $this->authorize('reject', $approvalRequest);

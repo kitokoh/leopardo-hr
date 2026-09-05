@@ -129,7 +129,7 @@ class TravelOutboxDispatchCommand extends Command
             /** @var Company $company */
             $company = Company::query()->findOrFail($event->company_id);
 
-            $this->tenants->withinTenant($company, fn () => $consumer->handle($event->payload_redacted));
+            $this->tenants->withinTenant($company, fn () => $consumer->handle($event->event_type, $event->payload_redacted));
 
             $event->forceFill([
                 'status' => TravelOutboxEvent::STATUS_PUBLISHED,

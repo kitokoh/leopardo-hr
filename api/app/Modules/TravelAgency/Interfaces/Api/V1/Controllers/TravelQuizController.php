@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Application\Actions\ParticipateQuizAction;
 use App\Modules\TravelAgency\Domain\Enums\QuizStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelQuiz;
+use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
 use App\Modules\TravelAgency\Domain\Models\TravelQuizQuestion;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\ParticipateTravelQuizRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelQuizQuestionRequest;
@@ -17,10 +18,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizQuestion
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelQuizRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\TravelAgency\Application\Actions\ParticipateInTravelQuizAction
-use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation;
-use App\Modules\TravelAgency\Domain\Models\TravelQuizParticipation
-use App\Modules\TravelAgency\Infrastructure\Services\TravelQuizService;
 
 /**
  * TRAVEL-904 (#6107) — Quiz & jeu-concours.
@@ -282,7 +279,6 @@ class TravelQuizController extends Controller
         return response()->json(['data' => $participations]);
     }
 
-
     public function destroy(Request $request, TravelQuiz $travelQuiz): JsonResponse
     {
         /** @var Employee $actor */
@@ -300,7 +296,6 @@ class TravelQuizController extends Controller
 
         return new JsonResponse(null, 204);
     }
-
 
     public function participations(Request $request, TravelQuiz $travelQuiz): JsonResponse
     {
@@ -323,7 +318,6 @@ class TravelQuizController extends Controller
 
         return new JsonResponse(['data' => $rows]);
     }
-
 
     public function publish(Request $request, TravelQuiz $quiz): JsonResponse
     {
@@ -376,13 +370,10 @@ class TravelQuizController extends Controller
         ];
     }
 
-
     private function denyUnlessManager(Employee $actor): void
     {
         if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
             abort(403);
         }
     }
-
-
 }

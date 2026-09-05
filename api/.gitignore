@@ -5,7 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/storage/phpstan
+/storage/phpstan*
 /vendor
 .env
 .env.backup

@@ -42,5 +42,14 @@ front/web/public/screenshots/*.png !filter !diff !merge -text
 front/web/public/videos/*       !filter !diff !merge -text
 front/web-offline/public/*.png  !filter !diff !merge -text
 front/mobile_apps/**/*.png        !filter !diff !merge -text
+# site/gh-pages (Pages #6827) : images commitées en binaire — même exception
+# que assets/branding et front/web/public (#5698). Doit venir APRÈS les règles
+# globales *.png/*.jpg/*.webp filter=lfs : dans .gitattributes la dernière
+# règle gagnante prime (sans cela validate-and-sync reste rouge sur les jpg).
+site/gh-pages/assets/*.png !filter !diff !merge -text
+site/gh-pages/assets/*.jpg !filter !diff !merge -text
+site/gh-pages/assets/*.jpeg !filter !diff !merge -text
+site/gh-pages/assets/*.webp !filter !diff !merge -text
+site/gh-pages/assets/*.gif !filter !diff !merge -text
 
 # Assets design/screenshots (assets/) : restent en VRAI Git LFS (pointeurs).

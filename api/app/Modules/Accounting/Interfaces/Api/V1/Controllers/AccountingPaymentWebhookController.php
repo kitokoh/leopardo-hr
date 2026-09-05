@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Application\Services\OnlinePaymentService;
 use App\Modules\Accounting\Domain\Exceptions\PaymentAmountMismatchException;
-use Illuminate\Support\Facades\Log;
+use App\Modules\Accounting\Infrastructure\Services\OnlinePaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * #5272 — Webhook public des passerelles de paiement (Chargily / Stripe).
