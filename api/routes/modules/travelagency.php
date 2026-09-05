@@ -245,7 +245,6 @@ Route::middleware(['throttle:api', 'travel.partner'])
         Route::post('/sync', [TravelPartnerController::class, 'sync']);
     });
 
-
 // ── Boutique en ligne (TRAVEL-401..404/#6053..#6056), PDV (TRAVEL-301/#6031),
 // corporate, articles, quiz & adverts — surfaces INTERNES du portail tenant
 // (auth:sanctum). Groupe principal restauré (le fold-merge avait fait tomber
