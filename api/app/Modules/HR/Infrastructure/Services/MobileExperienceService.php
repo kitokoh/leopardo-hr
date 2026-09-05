@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Absence;
-use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
