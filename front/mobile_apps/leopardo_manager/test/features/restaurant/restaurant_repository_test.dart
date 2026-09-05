@@ -24,7 +24,7 @@ void main() {
 
   ApiClient clientWithHandler(
     void Function(RequestOptions options, RequestInterceptorHandler handler)
-    onRequest,
+        onRequest,
   ) {
     final client = ApiClient(FakeSecureStorage(), FakeAppPreferences());
     client.dio.interceptors.insert(

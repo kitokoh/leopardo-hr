@@ -36,7 +36,8 @@ void main() {
           final data = <Map<String, dynamic>>[];
           for (var i = 0; i < ops.length; i++) {
             final op = ops[i] as Map<String, dynamic>;
-            final status = i < statuses.length ? statuses[i]['status'] : 'error';
+            final status =
+                i < statuses.length ? statuses[i]['status'] : 'error';
             data.add({
               'idempotency_key': op['idempotency_key'],
               'status': status,

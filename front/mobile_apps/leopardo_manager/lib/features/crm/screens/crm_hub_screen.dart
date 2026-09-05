@@ -66,28 +66,28 @@ class _HubTile extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: MobileSurface.chip,
-              borderRadius: BorderRadius.circular(12),
+            contentPadding: EdgeInsets.zero,
+            leading: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: MobileSurface.chip,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: MobileSurface.secondary, size: 22),
             ),
-            child: Icon(icon, color: MobileSurface.secondary, size: 22),
-          ),
-          title: Text(
-            label,
-            style: const TextStyle(
-              color: MobileSurface.text,
-              fontWeight: FontWeight.w600,
+            title: Text(
+              label,
+              style: const TextStyle(
+                color: MobileSurface.text,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          trailing: const Icon(
-            Icons.chevron_right,
-            color: MobileSurface.muted,
-          ),
-          onTap: onTap,
+            trailing: const Icon(
+              Icons.chevron_right,
+              color: MobileSurface.muted,
+            ),
+            onTap: onTap,
           ),
         ),
       ),
