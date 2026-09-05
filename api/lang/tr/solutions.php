@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 /**
- * Sunum çözümleri etiketleri (PDF çıktısı) — Türkçe.
- * api/lang/fr/solutions.php ile aynı anahtarlar (eşleşme zorunlu).
+ * Solutions sektörel i18n etiketleri (PDF çıktısı). #6691
+ * api/lang/fr/solutions.php ile aynı anahtarlar (tr = tam çeviri, en'e
+ * sessiz düşüş YOK).
  */
 
 return [
@@ -13,7 +14,7 @@ return [
             'mobile_employee' => 'Çalışan mobil uygulaması',
             'mobile_manager' => 'Yönetici mobil uygulaması',
             'attendance_mobile' => 'Konumlu mobil yoklama',
-            'kiosk' => 'Yoklama kiosku',
+            'kiosk' => 'Yoklama kiosku (terminal)',
             'edge' => 'Yerel Edge düğümü (çevrimdışı)',
             'planning' => 'Ekip planlaması',
             'payroll' => 'Maaş bordrosu (çok ülkeli)',
@@ -28,7 +29,7 @@ return [
             'base' => 'Temel: çalışanlarınız yoklama alır ve bordrolarını görür.',
             'manager' => 'Ekipleriniz mobil cihazdan yönetmek için yeterince büyük.',
             'attendance_mobile' => 'Mobil yoklamayı seçtiniz.',
-            'kiosk' => 'Kiosk yoklamasını seçtiniz.',
+            'kiosk' => 'Terminal üzerinden yoklamayı seçtiniz.',
             'edge' => 'Kiosk, yerel düğüm sayesinde internetsiz de çalışır.',
             'scheduling' => 'Ekip planlaması yapıyorsunuz.',
             'payroll' => 'Bordroyu şirket içinde yönetmek istiyorsunuz.',
@@ -42,19 +43,11 @@ return [
     ],
     'pdf' => [
         'title' => 'Leopardo paketiniz',
-        'empty' => 'Seçili öğe yok.',
+        'empty' => 'Hiçbir öğe seçilmedi.',
         'next_steps' => 'Sonraki adımlar',
-        'next_step_account' => 'Leopardo çalışma alanınızı oluşturun (ücretsiz deneme, kredi kartı gerekmez).',
+        'next_step_account' => 'Leopardo alanınızı oluşturun (ücretsiz deneme, kredi kartı gerekmez).',
         'next_step_install' => 'Mobil uygulamaları kurun (indirme sayfasındaki QR kodları).',
         'next_step_edge' => 'Yoklama kioskunu seçtiyseniz yerel Edge düğümünü kurun.',
-        'footer' => 'Otomatik oluşturuldu — leopardo-hr. Paketinizi istediğiniz zaman değiştirebilirsiniz.',
+        'footer' => 'Otomatik oluşturulan belge — leopardo-hr. Paket alanınızdan istediğiniz zaman değiştirilebilir.',
     ],
 ];
- * Solutions sektörel i18n etiketleri (PDF çıktısı). #6691
- * api/lang/fr/solutions.php ile aynı anahtarlar (tr = tam çeviri, en'e
- * sessiz düşüş YOK).
-            'kiosk' => 'Yoklama kiosku (terminal)',
-            'kiosk' => 'Terminal üzerinden yoklamayı seçtiniz.',
-        'empty' => 'Hiçbir öğe seçilmedi.',
-        'next_step_account' => 'Leopardo alanınızı oluşturun (ücretsiz deneme, kredi kartı gerekmez).',
-        'footer' => 'Otomatik oluşturulan belge — leopardo-hr. Paket alanınızdan istediğiniz zaman değiştirilebilir.',

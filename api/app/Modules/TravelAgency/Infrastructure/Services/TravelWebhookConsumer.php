@@ -42,7 +42,7 @@ final class TravelWebhookConsumer implements TravelOutboxConsumer
     /**
      * @param  array<string, mixed>  $payload
      */
-    public function handle(array $payload): void
+    public function handle(string $eventType, array $payload): void
     {
         $companyId = (string) ($payload['company_id'] ?? '');
         $tripId = $this->tripIdFor($payload);
@@ -72,7 +72,7 @@ final class TravelWebhookConsumer implements TravelOutboxConsumer
                 $created = TravelWebhookDelivery::query()->firstOrCreate(
                     [
                         'subscription_id' => $subscription->id,
-                        'event_id' => (int) ($payload['event_id'] ?? 0),
+                        'outbox_event_id' => (int) ($payload['outbox_event_id'] ?? $payload['event_id'] ?? 0),
                     ],
                     [
                         'company_id' => $companyId,

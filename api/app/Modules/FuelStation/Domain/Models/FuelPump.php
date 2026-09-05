@@ -36,6 +36,8 @@ class FuelPump extends Model
 
     public const STATUS_RETIRED = 'retired';
 
+    public const STATUSES = [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_RETIRED];
+
     protected $fillable = [
         'company_id',
         'station_id',

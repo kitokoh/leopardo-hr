@@ -6,7 +6,6 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
-import 'package:leopardo_manager/features/fuel_station/data/fuel_station_repository.dart';
 import 'package:leopardo_manager/features/fuel_station/providers/fuel_station_provider.dart';
 
 /// Parcours pompiste FuelStation (FUEL-013, #5807) : shift actif → saisie
@@ -59,8 +58,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
       _lastResult = result.replayed
           ? 'Relevé déjà enregistré (rejeu) — aucun doublon.'
           : result.isAnomaly
-          ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
-          : 'Relevé enregistré (delta ${result.deltaMinor}).';
+              ? 'Anomalie détectée (delta ${result.deltaMinor}) — signalée au manager.'
+              : 'Relevé enregistré (delta ${result.deltaMinor}).';
     });
     _readingController.clear();
   }
@@ -93,7 +92,8 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
           children: [
             Text(
               l10n.fuelPumpistActiveShift,
-              style: AppTypography.label.copyWith(color: AppColors.textDark),
+              style:
+                  AppTypography.bodySmall.copyWith(color: AppColors.textDark),
             ),
             const SizedBox(height: 8),
             shiftsAsync.when(
@@ -115,7 +115,7 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                   children: [
                                     Icon(
                                       Icons.schedule,
-                                      color: AppColors.accentDark,
+                                      color: AppColors.rh,
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
@@ -131,11 +131,10 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
                                           ),
                                           Text(
                                             s.assignmentDate ?? '',
-                                            style: AppTypography.caption
-                                                .copyWith(
-                                                  color:
-                                                      AppColors.textMutedDark,
-                                                ),
+                                            style:
+                                                AppTypography.caption.copyWith(
+                                              color: AppColors.textMutedDark,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -186,7 +185,7 @@ class _FuelPumpistScreenState extends ConsumerState<FuelPumpistScreen> {
             if (_lastResult != null) ...[
               const SizedBox(height: 16),
               GlassCard(
-                color: _isAnomaly ? AppColors.dangerDark : AppColors.cardDark,
+                color: _isAnomaly ? AppColors.danger : AppColors.cardDark,
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(

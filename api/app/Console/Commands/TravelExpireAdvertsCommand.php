@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -32,15 +31,15 @@ class TravelExpireAdvertsCommand extends Command
     {
         // Expiration des annonces publiées dont la validité est dépassée.
         $expired = DB::table('travel_adverts')
-            ->where('status', TravelAdvert::STATUS_PUBLISHED)
+            ->where('status', 'validated')
             ->where('expires_at', '<=', now())
-            ->update(['status' => TravelAdvert::STATUS_EXPIRED, 'updated_at' => now()]);
+            ->update(['status' => 'expired', 'updated_at' => now()]);
 
         // Archivage des annonces expirées depuis longtemps.
         $archived = DB::table('travel_adverts')
-            ->where('status', TravelAdvert::STATUS_EXPIRED)
+            ->where('status', 'expired')
             ->where('expires_at', '<', now()->subDays(self::ARCHIVE_AFTER_DAYS))
-            ->update(['status' => TravelAdvert::STATUS_ARCHIVED, 'updated_at' => now()]);
+            ->update(['status' => 'archived', 'updated_at' => now()]);
 
         $this->info("[travel:expire-adverts] {$expired} expiree(s), {$archived} archivee(s).");
 

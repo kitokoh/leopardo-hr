@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -22,27 +20,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('fuel_imports')) {
-            Schema::create('fuel_imports', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('kind', 40); // meter_readings|stock_entries|products
-                $table->string('file_name', 200);
-                $table->string('status', 20)->default('uploaded'); // uploaded|processing|completed|failed
-                $table->unsignedInteger('total_rows')->default(0);
-                $table->unsignedInteger('processed_rows')->default(0);
-                $table->unsignedInteger('failed_rows')->default(0);
-                $table->jsonb('error_summary')->nullable();
-                $table->unsignedInteger('created_by')->nullable();
-                $table->timestampTz('started_at')->nullable();
-                $table->timestampTz('finished_at')->nullable();
-                $table->timestamps();
-
-                $table->index(['company_id', 'kind', 'status'], 'fuel_imports_kind_status_idx');
-            });
-
-            DB::statement("COMMENT ON TABLE fuel_imports IS 'Journal des imports FuelStation (CSV validé, asynchrone, rejouable) — FUEL-018 (#5812).'");
-        }
+        // MIGRATION FANTÔME (merges fuel parallèles) — la table fuel_imports canonique est créée par 2026_08_30_001550_5812 (schéma entity_type, consolidation 2026-09-04). No-op volontaire.
     }
 
     public function down(): void

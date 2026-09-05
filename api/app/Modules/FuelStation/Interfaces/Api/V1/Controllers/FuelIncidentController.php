@@ -9,20 +9,14 @@ use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Infrastructure\Services\FuelIncidentService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelIncidentRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelIncidentRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest
-use Illuminate\Database\Eloquent\Model;
-use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment
-use App\Modules\FuelStation\Domain\Models\FuelStation
-use App\Modules\FuelStation\Infrastructure\Services\FuelMaintenanceService
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\TransitionFuelIncidentRequest
-use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelMaintenanceTaskRequest
 
 /**
  * Incidents équipements (FUEL-010, issue #5804).
@@ -194,15 +188,15 @@ class FuelIncidentController extends Controller
             'description' => $incident->description,
             'reported_by' => $incident->reported_by,
             'assigned_to' => $incident->assigned_to,
-            'occurred_at' => $incident->occurred_at->toISOString(),
-            'resolved_at' => $incident->resolved_at?->toISOString(),
+            'occurred_at' => $incident->occurred_at->toIso8601String(),
+            'resolved_at' => $incident->resolved_at?->toIso8601String(),
             'resolved_by' => $incident->resolved_by,
             'resolution_notes' => $incident->resolution_notes,
-            'closed_at' => $incident->closed_at?->toISOString(),
+            'closed_at' => $incident->closed_at?->toIso8601String(),
             'closed_by' => $incident->closed_by,
             'closure_notes' => $incident->closure_notes,
-            'created_at' => $incident->created_at?->toISOString(),
-            'updated_at' => $incident->updated_at?->toISOString(),
+            'created_at' => $incident->created_at?->toIso8601String(),
+            'updated_at' => $incident->updated_at?->toIso8601String(),
         ];
     }
 
@@ -213,7 +207,6 @@ class FuelIncidentController extends Controller
         }
     }
 
-
     public function storeTask(StoreFuelMaintenanceTaskRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -222,15 +215,10 @@ class FuelIncidentController extends Controller
         $actor = $request->user();
         $this->authorize('createTask', FuelMaintenanceTask::class);
 
-        $task = $this->incidents->createTask(
-            FuelMaintenanceTask::query()->make(),
-            $actor,
-            $request->validated(),
-        );
+        $task = $this->incidents->createTask($actor, $request->validated());
 
         return response()->json(['data' => $this->taskPayload($task)], 201);
     }
-
 
     public function tasks(Request $request): JsonResponse
     {
@@ -263,7 +251,6 @@ class FuelIncidentController extends Controller
         ]);
     }
 
-
     public function transitionTask(Request $request, FuelMaintenanceTask $task): JsonResponse
     {
         $this->assertSolutionActive();
@@ -289,30 +276,6 @@ class FuelIncidentController extends Controller
         return response()->json(['data' => $this->taskPayload($task)]);
     }
 
-    private function incidentPayload(FuelIncident $incident): array
-    {
-        return [
-            'id' => $incident->id,
-            'station_id' => $incident->station_id,
-            'category' => $incident->category,
-            'severity' => $incident->severity,
-            'description_redacted' => $incident->description_redacted,
-            'status' => $incident->status,
-            'reported_by' => $incident->reported_by,
-            'reported_at' => $incident->reported_at->toIso8601String(),
-            'assigned_to' => $incident->assigned_to,
-            'assigned_at' => $incident->assigned_at?->toIso8601String(),
-            'resolved_by' => $incident->resolved_by,
-            'resolved_at' => $incident->resolved_at?->toIso8601String(),
-            'closed_by' => $incident->closed_by,
-            'closed_at' => $incident->closed_at?->toIso8601String(),
-            'attachments_metadata' => $incident->attachments_metadata,
-            'external_id' => $incident->external_id,
-            'tasks_count' => $incident->relationLoaded('tasks') ? $incident->tasks->count() : null,
-            'created_at' => $incident->created_at?->toIso8601String(),
-        ];
-    }
-
     private function taskPayload(FuelMaintenanceTask $task): array
     {
         return [
@@ -335,26 +298,10 @@ class FuelIncidentController extends Controller
         ];
     }
 
-
     private function assertTenantOwned(Model $model, Employee $actor): void
     {
         if ($model->getAttribute('company_id') !== $actor->company_id) {
             abort(404);
         }
-    }
-
-
-    private function stationInTenant(int $stationId, Employee $actor): FuelStation
-    {
-        /** @var FuelStation|null $station */
-        $station = FuelStation::query()
-            ->where('company_id', $actor->company_id)
-            ->find($stationId);
-
-        if (! $station instanceof FuelStation) {
-            abort(404);
-        }
-
-        return $station;
     }
 }

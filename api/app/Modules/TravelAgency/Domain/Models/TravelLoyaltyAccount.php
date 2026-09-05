@@ -9,8 +9,6 @@ use Database\Factories\TravelLoyaltyAccountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Compte fidélité voyageur (TRAVEL-811, issue #6101).

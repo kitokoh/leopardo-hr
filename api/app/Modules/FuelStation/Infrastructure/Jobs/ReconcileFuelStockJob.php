@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -85,7 +86,12 @@ final class ReconcileFuelStockJob implements ShouldQueue, TenantScopedJob
                 ? Employee::query()->find($this->actorId)
                 : null;
 
-            $stocks->reconcile($station, $this->runDate, $actor);
+            $stocks->reconcile(
+                (string) $station->company_id,
+                (int) $station->getAttribute('id'),
+                Carbon::parse((string) $this->runDate),
+                $actor?->id,
+            );
         });
     }
 }

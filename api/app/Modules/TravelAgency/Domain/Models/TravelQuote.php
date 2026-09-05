@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Devis de groupe / corporate (TRAVEL-803, issue #6094).
@@ -30,6 +28,14 @@ class TravelQuote extends Model
 
     /** Taille minimale d'un groupe (spec §12, TRAVEL-803). */
     public const MIN_GROUP_SIZE = 5;
+
+    public const STATUS_ACCEPTED = 'accepted';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
+    public const STATUS_DRAFT = 'draft';
+
+    public const STATUS_EXPIRED = 'expired';
 
     protected $fillable = [
         'reference',
@@ -83,6 +89,4 @@ class TravelQuote extends Model
     {
         return $this->belongsTo(TravelBooking::class, 'booking_id');
     }
-
-
 }

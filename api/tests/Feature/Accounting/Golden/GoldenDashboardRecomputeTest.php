@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Accounting\Golden;
 
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Application\Actions\AccountingDashboardService;
 use App\Modules\Accounting\Domain\Models\AccountingContact;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
+use App\Modules\Accounting\Infrastructure\Services\AccountingDashboardService;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 

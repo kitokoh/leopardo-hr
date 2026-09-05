@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Travel;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
+use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
 use App\Modules\TravelAgency\Domain\Models\TravelCity;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact;
@@ -14,16 +16,12 @@ use App\Modules\TravelAgency\Domain\Models\TravelPassenger;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
+use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelLegacyImportService;
 use Illuminate\Support\Facades\Artisan;
+use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Core\Auth\Domain\Models\Employee
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier
-use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService
-use Laravel\Sanctum\Sanctum;
-use App\Modules\TravelAgency\Domain\Models\TravelCarrier
-use App\Modules\TravelAgency\Infrastructure\Services\LegacyTravelImportService
 
 /**
  * TRAVEL-1003 (#6116) — Import des données legacy gv-back.
@@ -189,7 +187,6 @@ class TravelLegacyImportTest extends TestCase
         self::assertSame('confirmed', $booking->status, 'statut importé figé');
     }
 
-
     private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
@@ -203,7 +200,6 @@ class TravelLegacyImportTest extends TestCase
 
         return $employee;
     }
-
 
     private function activateTravel(Company $company): void
     {
@@ -240,7 +236,6 @@ class TravelLegacyImportTest extends TestCase
         ];
     }
 
-
     private function seedCities(Company $company): void
     {
         app(TenantManager::class)->withinTenant($company, function (): void {
@@ -248,7 +243,6 @@ class TravelLegacyImportTest extends TestCase
             TravelCity::factory()->create(['name' => 'Yaoundé']);
         });
     }
-
 
     public function test_import_is_idempotent_and_complete(): void
     {
@@ -282,7 +276,6 @@ class TravelLegacyImportTest extends TestCase
         $this->assertSame(15000, $booking->total_amount_minor);
     }
 
-
     public function test_skipped_items_are_reported(): void
     {
         /** @var Company $company */
@@ -297,6 +290,4 @@ class TravelLegacyImportTest extends TestCase
         $this->assertSame(0, $report['routes']);
         $this->assertNotEmpty($report['skipped']);
     }
-
-
 }

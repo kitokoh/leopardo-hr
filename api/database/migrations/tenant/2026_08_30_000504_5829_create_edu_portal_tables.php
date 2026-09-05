@@ -68,7 +68,7 @@ return new class extends Migration
                     ->cascadeOnDelete();
             });
 
-            DB::statement("COMMENT ON TABLE edu_portal_access_logs IS 'Journal d'audit des consultations du portail guardian (EDU-013 #5829).'");
+            DB::statement("COMMENT ON TABLE edu_portal_access_logs IS 'Journal d''audit des consultations du portail guardian (EDU-013 #5829).'");
         }
     }
 

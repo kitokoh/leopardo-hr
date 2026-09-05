@@ -9,10 +9,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB
-use Illuminate\Testing\PendingCommand;
 
 /**
  * #6549 — GenerateMonthlyInvoices : anti-doublon par période et
@@ -38,7 +38,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_generates_one_invoice_per_subscription_for_the_period(): void
     {
-/** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $subscription = $this->activeSubscription($company);
 
@@ -59,7 +59,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_second_run_does_not_duplicate_invoices_for_the_same_period(): void
     {
-/** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $this->activeSubscription($company);
 
@@ -97,7 +97,7 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
     public function test_subscription_already_billed_for_period_is_skipped(): void
     {
-/** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
         $subscription = $this->activeSubscription($company);
 
@@ -120,7 +120,6 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $this->assertSame(1, Invoice::query()->count());
     }
 
-
     public function test_two_runs_generate_a_single_invoice_per_period(): void
     {
         $subscription = $this->activeSubscription();
@@ -139,7 +138,6 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $invoice = Invoice::query()->where('subscription_id', $subscription->getKey())->firstOrFail();
         $this->assertSame(now()->format('Y-m'), $invoice->period);
     }
-
 
     public function test_existing_invoice_for_period_is_detected_by_dedup_check(): void
     {
@@ -166,7 +164,6 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
         $this->assertSame(1, Invoice::query()->where('subscription_id', $subscription->getKey())->count());
     }
-
 
     public function test_invoice_numbers_are_contiguous_and_atomic(): void
     {
@@ -197,7 +194,6 @@ class GenerateMonthlyInvoicesTest extends TestCase
         $this->assertSame('LEO-'.now()->format('Y').'-0003', $next->number);
     }
 
-
     public function test_cancelled_plan_inactive_subscription_is_skipped(): void
     {
         /** @var Company $company */
@@ -215,7 +211,6 @@ class GenerateMonthlyInvoicesTest extends TestCase
 
         $this->assertSame(0, Invoice::query()->count());
     }
-
 
     public function test_counters_table_is_used_for_atomic_numbering(): void
     {

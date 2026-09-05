@@ -6,30 +6,18 @@ namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Events\FuelStationAlert;
-use Illuminate\Support\Facades\Log;
-use App\Jobs\DispatchCommunicationJob
-use App\Modules\FuelStation\Domain\Models\FuelAlertLog
-use App\Modules\FuelStation\Domain\Models\FuelCashSession
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
-use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
-use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun
-use Illuminate\Database\UniqueConstraintViolationException
-use Illuminate\Support\Carbon
+use App\Jobs\DispatchCommunicationJob;
+use App\Modules\FuelStation\Domain\Models\FuelAlert;
+use App\Modules\FuelStation\Domain\Models\FuelAlertLog;
+use App\Modules\FuelStation\Domain\Models\FuelCashSession;
+use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference;
+use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Core\Notifications\Contracts\InAppNotifier
-use App\Modules\FuelStation\Domain\Models\FuelAlert
-use App\Modules\FuelStation\Domain\Models\FuelAlertLog
-use App\Modules\FuelStation\Domain\Models\FuelCashSession
-use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask
-use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
-use App\Modules\FuelStation\Domain\Models\FuelNotificationPreference
-use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun
-use App\Modules\Notification\Infrastructure\Services\CommunicationService
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Database\UniqueConstraintViolationException
-use Illuminate\Support\Carbon
-use Illuminate\Support\Facades\DB
-use Throwable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Notifications & alertes FuelStation — FUEL-019 (issue #5813).
@@ -51,6 +39,57 @@ use Throwable;
  */
 final class FuelAlertService
 {
+    /**
+     * Crée une alerte dédupliquée (fuel_alerts) — consommé par le scan
+     * planifié fuel:alerts-scan (#5813). `alert_key` unique par tenant : un
+     * re-scan ou un rejeu d'événement ne crée jamais deux alertes. La
+     * notification des managers reste pilotée par le journal quotidien
+     * (dispatchDaily/FuelAlertLog) — jamais de double diffusion ici.
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array{alert: FuelAlert, created: bool, notified: int}
+     */
+    public function createAlert(
+        string $companyId,
+        ?int $stationId,
+        string $eventType,
+        string $severity,
+        string $alertKey,
+        array $payload,
+    ): array {
+        $existing = FuelAlert::query()
+            ->where('company_id', $companyId)
+            ->where('alert_key', $alertKey)
+            ->first();
+
+        if ($existing instanceof FuelAlert) {
+            return ['alert' => $existing, 'created' => false, 'notified' => 0];
+        }
+
+        try {
+            /** @var FuelAlert $alert */
+            $alert = FuelAlert::query()->create([
+                'company_id' => $companyId,
+                'station_id' => $stationId,
+                'event_type' => $eventType,
+                'severity' => $severity,
+                'alert_key' => $alertKey,
+                'payload' => $payload,
+                'status' => FuelAlert::STATUS_OPEN,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            // Course entre deux workers : la contrainte unique a arbitré.
+            $alert = FuelAlert::query()
+                ->where('company_id', $companyId)
+                ->where('alert_key', $alertKey)
+                ->firstOrFail();
+
+            return ['alert' => $alert, 'created' => false, 'notified' => 0];
+        }
+
+        return ['alert' => $alert, 'created' => true, 'notified' => 0];
+    }
+
     /**
      * @param  array<string, mixed>  $payload
      */
@@ -218,7 +257,6 @@ final class FuelAlertService
         return $anomalies;
     }
 
-
     private function templateFor(string $type): string
     {
         return match ($type) {
@@ -242,6 +280,30 @@ final class FuelAlertService
             ->all();
     }
 
+    /**
+     * @param  list<array{event_type: string, channel: string, enabled: bool, station_id?: int|null}>  $preferences
+     */
+    public function upsertPreferences(string $companyId, array $preferences): int
+    {
+        $updated = 0;
+
+        foreach ($preferences as $preference) {
+            FuelNotificationPreference::updateOrCreate(
+                [
+                    'company_id' => $companyId,
+                    'station_id' => isset($preference['station_id']) ? (int) $preference['station_id'] : null,
+                    'event_type' => (string) $preference['event_type'],
+                    'channel' => (string) $preference['channel'],
+                ],
+                ['enabled' => (bool) $preference['enabled']]
+            );
+
+            $updated++;
+        }
+
+        return $updated;
+    }
+
     public function stats(string $companyId, string $since): array
     {
         $counts = DB::table('fuel_alert_log')
@@ -256,160 +318,5 @@ final class FuelAlertService
             'total' => (int) array_sum($counts->all()),
             'by_type' => $counts->all(),
         ];
-    }
-
-    public function __construct(private readonly CommunicationService $communication) {}
-
-    public function __construct(
-        private readonly InAppNotifier $notifier,
-    ) {}
-
-    public function createAlert(
-        string $companyId,
-        ?int $stationId,
-        string $eventType,
-        string $severity,
-        string $alertKey,
-        array $payload,
-    ): array {
-        /** @var FuelAlert|null $existing */
-        $existing = FuelAlert::query()
-            ->where('company_id', $companyId)
-            ->where('alert_key', $alertKey)
-            ->first();
-
-        if ($existing instanceof FuelAlert) {
-            return ['alert' => $existing, 'created' => false, 'notified' => 0];
-        }
-
-        try {
-            /** @var FuelAlert $alert */
-            $alert = FuelAlert::query()->create([
-                'company_id' => $companyId,
-                'station_id' => $stationId,
-                'event_type' => $eventType,
-                'severity' => $severity,
-                'alert_key' => $alertKey,
-                'payload' => $payload,
-                'status' => FuelAlert::STATUS_OPEN,
-            ]);
-        } catch (Throwable) {
-            // Course entre deux workers : la contrainte unique a arbitré.
-            /** @var FuelAlert $alert */
-            $alert = FuelAlert::query()
-                ->where('company_id', $companyId)
-                ->where('alert_key', $alertKey)
-                ->firstOrFail();
-
-            return ['alert' => $alert, 'created' => false, 'notified' => 0];
-        }
-
-        try {
-            $notified = $this->notifyManagers($companyId, $stationId, $eventType, $severity, $payload);
-        } catch (Throwable) {
-            // Best-effort : une notification en échec ne casse jamais le flux
-            // métier qui a créé l'alerte.
-            $notified = 0;
-        }
-
-        return ['alert' => $alert, 'created' => true, 'notified' => $notified];
-    }
-
-    public function channelEnabled(string $companyId, ?int $stationId, string $eventType, string $channel): bool
-    {
-        $preference = FuelNotificationPreference::query()
-            ->where('company_id', $companyId)
-            ->where('event_type', $eventType)
-            ->where('channel', $channel)
-            ->where(function (Builder $query) use ($stationId): void {
-                $query->where('station_id', $stationId)->orWhereNull('station_id');
-            })
-            // ASC = NULL (global) en dernier : la préférence station-spécifique
-            // prime sur la préférence globale (PG : NULLS LAST en ASC).
-            ->orderBy('station_id')
-            ->first();
-
-        // Absence de ligne = in_app activé par défaut ; les autres canaux
-        // (email/push) sont inactifs tant qu'aucune préférence n'existe.
-        if (! $preference instanceof FuelNotificationPreference) {
-            return $channel === FuelNotificationPreference::CHANNEL_IN_APP;
-        }
-
-        return (bool) $preference->enabled;
-    }
-
-    public function upsertPreferences(string $companyId, array $preferences): int
-    {
-        $count = 0;
-
-        DB::transaction(function () use ($companyId, $preferences, &$count): void {
-            foreach ($preferences as $preference) {
-                $stationId = isset($preference['station_id']) && is_int($preference['station_id'])
-                    ? $preference['station_id']
-                    : null;
-
-                FuelNotificationPreference::query()->updateOrCreate(
-                    [
-                        'company_id' => $companyId,
-                        'station_id' => $stationId,
-                        'event_type' => $preference['event_type'],
-                        'channel' => $preference['channel'],
-                    ],
-                    ['enabled' => (bool) $preference['enabled']],
-                );
-
-                $count++;
-            }
-        });
-
-        return $count;
-    }
-
-
-    private function titleFor(string $eventType, string $severity): string
-    {
-        $titles = [
-            FuelNotificationPreference::EVENT_READING_ANOMALY => 'Anomalie de relevé de compteur',
-            FuelNotificationPreference::EVENT_STOCK_VARIANCE => 'Écart de stock détecté',
-            FuelNotificationPreference::EVENT_MISSING_CLOSE => 'Clôture de caisse manquante',
-            FuelNotificationPreference::EVENT_MAINTENANCE_DUE => 'Maintenance due',
-            FuelNotificationPreference::EVENT_INCIDENT => 'Incident signalé',
-        ];
-
-        $base = $titles[$eventType] ?? 'Alerte FuelStation';
-
-        return $severity === FuelAlert::SEVERITY_CRITICAL ? "[CRITIQUE] {$base}" : $base;
-    }
-
-    private function bodyFor(string $eventType, array $payload): string
-    {
-        return match ($eventType) {
-            FuelNotificationPreference::EVENT_STOCK_VARIANCE => sprintf(
-                'Écart de %d (tolérance %d) sur %s (%s → %s).',
-                (int) ($payload['variance_minor'] ?? 0),
-                (int) ($payload['tolerance_minor'] ?? 0),
-                (string) ($payload['product_type'] ?? '?'),
-                (string) ($payload['period_start'] ?? '?'),
-                (string) ($payload['period_end'] ?? '?'),
-            ),
-            FuelNotificationPreference::EVENT_MISSING_CLOSE => sprintf(
-                'Session de caisse #%d ouverte le %s toujours pas clôturée.',
-                (int) ($payload['session_id'] ?? 0),
-                (string) ($payload['opened_at'] ?? '?'),
-            ),
-            FuelNotificationPreference::EVENT_MAINTENANCE_DUE => sprintf(
-                'Tâche « %s » (%s) à échéance %s.',
-                (string) ($payload['title'] ?? '?'),
-                (string) ($payload['priority'] ?? '?'),
-                (string) ($payload['due_at'] ?? '?'),
-            ),
-            FuelNotificationPreference::EVENT_INCIDENT => sprintf(
-                'Incident #%d : %s (sévérité %s).',
-                (int) ($payload['incident_id'] ?? 0),
-                (string) ($payload['title'] ?? '?'),
-                (string) ($payload['severity'] ?? '?'),
-            ),
-            default => 'Alerte FuelStation — voir le détail dans l\'application.',
-        };
     }
 }

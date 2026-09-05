@@ -11,7 +11,6 @@ use App\Modules\TravelAgency\Domain\Models\TravelTouristSite;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelTouristSiteRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * TRAVEL-909 (#6112) — Annuaire des sites touristiques.
@@ -123,9 +122,6 @@ class TravelTouristSiteController extends Controller
         return response()->json(null, 204);
     }
 
-
-
-
     public function search(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -160,13 +156,5 @@ class TravelTouristSiteController extends Controller
             'status' => $site->status,
             'created_at' => $site->created_at?->toIso8601String(),
         ];
-    }
-
-
-    private function denyUnlessManager(Employee $actor): void
-    {
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager')) {
-            abort(403);
-        }
     }
 }

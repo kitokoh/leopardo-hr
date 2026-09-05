@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Domain\Models;
 
-use App\Core\Auth\Infrastructure\Services\SensitiveDataEncryptor;
 use App\Modules\TravelAgency\Domain\Enums\TravelWebhookEvent;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelWebhookSubscriptionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Database\Eloquent\Relations\BelongsTo
-use Illuminate\Support\Carbon
-use Illuminate\Support\Facades\Crypt;
 
 /**
  * TRAVEL-806 (#6097) — Abonnement webhook d'un transporteur.
@@ -70,16 +66,6 @@ class TravelWebhookSubscription extends Model
         });
     }
 
-    public function setSecret(string $plainSecret): void
-    {
-        $this->secret_encrypted = app(SensitiveDataEncryptor::class)->encrypt($plainSecret);
-    }
-
-    public function secret(): string
-    {
-        return app(SensitiveDataEncryptor::class)->decrypt($this->secret_encrypted);
-    }
-
     public function supports(string $eventType): bool
     {
         return $this->active === true && in_array($eventType, $this->events ?? [], true);
@@ -91,16 +77,10 @@ class TravelWebhookSubscription extends Model
         return TravelWebhookEvent::values();
     }
 
-    public function secretPrefix(): string
-    {
-        return substr(hash('sha256', $this->secret()), 0, 8);
-    }
-
     public function carrier(): BelongsTo
     {
         return $this->belongsTo(TravelCarrier::class, 'carrier_id');
     }
-
 
     public function subscribesTo(string $eventType): bool
     {

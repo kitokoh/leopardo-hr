@@ -31,14 +31,17 @@ const restaurantUser: AuthenticatedUser = {
 };
 
 test.describe('Restaurant — navigation par flag (RESTO-902)', () => {
-  test('le menu Restaurant est visible quand le flag restaurantmanager est actif', async ({ page }) => {
+  test('le menu Restaurant est visible quand le flag restaurantmanager est actif', async ({ authenticatedPage: page }) => {
     await installAuthenticatedSession(page, { user: restaurantUser });
-    await page.goto('/');
+    await page.goto('/dashboard');
 
-    await expect(page.getByRole('link', { name: /Restaurant/i })).toBeVisible();
+    // Deux entrées cohabitent quand le module est actif : le hub Restaurant
+    // (/restaurant) et l'écran cuisine (/restaurant/kitchen).
+    await expect(page.getByRole('link', { name: /Restaurant/i }).first()).toBeVisible();
+    await expect(page.locator('a[href="/restaurant/kitchen"]')).toBeVisible();
   });
 
-  test('le menu Restaurant est masqué sans le flag', async ({ page }) => {
+  test('le menu Restaurant est masqué sans le flag', async ({ authenticatedPage: page }) => {
     const noFeatureUser: AuthenticatedUser = {
       ...restaurantUser,
       capabilities: { can_view_dashboard: true },
@@ -46,12 +49,12 @@ test.describe('Restaurant — navigation par flag (RESTO-902)', () => {
       plan: { features: {} },
     };
     await installAuthenticatedSession(page, { user: noFeatureUser });
-    await page.goto('/');
+    await page.goto('/dashboard');
 
     await expect(page.getByRole('link', { name: /Restaurant/i })).toHaveCount(0);
   });
 
-  test('l’écran cuisine est accessible depuis la navigation', async ({ page }) => {
+  test('l’écran cuisine est accessible depuis la navigation', async ({ authenticatedPage: page }) => {
     await page.route('**/api/v1/restaurant/kitchen/orders**', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [] }) }),
     );
@@ -59,9 +62,10 @@ test.describe('Restaurant — navigation par flag (RESTO-902)', () => {
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [] }) }),
     );
     await installAuthenticatedSession(page, { user: restaurantUser });
-    await page.goto('/');
+    await page.goto('/dashboard');
 
-    await page.getByRole('link', { name: /Restaurant/i }).click();
+    // Navigation directe vers l'écran cuisine depuis le menu latéral.
+    await page.locator('a[href="/restaurant/kitchen"]').click();
     await expect(page).toHaveURL(/\/restaurant\/kitchen/);
     await expect(page.getByRole('heading', { name: /En préparation/i })).toBeVisible();
   });

@@ -68,7 +68,7 @@ class FuelImportExportController extends Controller
                     'id' => $r->id,
                     'meter_id' => $r->meter_id,
                     'reading_value_minor' => $r->reading_value_minor,
-                    'captured_at_utc' => $r->captured_at_utc->toISOString(),
+                    'captured_at_utc' => $r->captured_at_utc->toIso8601String(),
                     'status' => $r->status,
                     'source_code' => $r->source_code,
                 ]);
@@ -95,14 +95,13 @@ class FuelImportExportController extends Controller
         return response()->json([
             'data' => collect($imports->items())->map(fn (FuelImport $i): array => [
                 'id' => $i->id,
-                'kind' => $i->kind,
-                'file_name' => $i->file_name,
+                'entity_type' => $i->entity_type,
+                'filename' => $i->filename,
                 'status' => $i->status,
                 'total_rows' => $i->total_rows,
-                'processed_rows' => $i->processed_rows,
-                'failed_rows' => $i->failed_rows,
-                'error_summary' => $i->error_summary,
-                'created_at' => $i->created_at?->toISOString(),
+                'valid_rows' => $i->valid_rows,
+                'error_rows' => $i->error_rows,
+                'created_at' => $i->created_at?->toIso8601String(),
             ]),
             'meta' => [
                 'current_page' => $imports->currentPage(),

@@ -7,7 +7,6 @@ namespace App\Modules\CRM\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * #5709 — Stage d'un pipeline CRM client (tenant-scoped).
@@ -53,10 +52,4 @@ class CrmPipelineStage extends Model
         'is_won' => 'boolean',
         'is_lost' => 'boolean',
     ];
-
-    /** @return BelongsTo<CrmPipeline, $this> */
-    public function pipeline(): BelongsTo
-    {
-        return $this->belongsTo(CrmPipeline::class, 'pipeline_id');
-    }
 }

@@ -10,16 +10,6 @@ use App\Modules\RestaurantManager\Infrastructure\Services\RestaurantReportServic
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Modules\RestaurantManager\Application\Actions\ExportRestaurantReportAction
-use App\Modules\RestaurantManager\Application\Services\RestaurantReportService
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest
-use Illuminate\Support\Facades\Storage
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use App\Modules\RestaurantManager\Application\Services\RestaurantReportService
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\RestaurantReportQueryRequest
-use App\Modules\RestaurantManager\Interfaces\Api\V1\Requests\StoreRestaurantReportExportRequest
-use Illuminate\Support\Facades\Storage
 
 /**
  * RESTO-701 (#6214) — Rapports agrégés (ventes, occupation, produits, COGS,
@@ -32,8 +22,7 @@ class RestaurantReportController extends Controller
 {
     public function __construct(
         private readonly RestaurantReportService $reports,
-    ) {
-    }
+    ) {}
 
     public function sales(Request $request): JsonResponse
     {
@@ -129,79 +118,4 @@ class RestaurantReportController extends Controller
             ],
         ]);
     }
-
-
-    public function export(StoreRestaurantReportExportRequest $request): JsonResponse
-    {
-        $this->assertReportsPermission($request);
-
-        $result = $this->exportAction->export(
-            $request->string('report_type')->toString(),
-            $this->companyId($request),
-            $this->from($request),
-            $this->to($request),
-            $request->integer('branch_id') ?: null,
-        );
-
-        return response()->json(['data' => $result]);
-    }
-
-
-    public function download(Request $request): BinaryFileResponse|JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if (! $request->hasValidSignature()) {
-            abort(403, 'Invalid or expired download signature.');
-        }
-
-        $filename = basename((string) $request->query('export', ''));
-        $relative = 'restaurant/exports/'.$actor->company_id.'/'.$filename;
-        $path = Storage::disk('local')->path($relative);
-
-        if ($filename === '' || ! is_file($path)) {
-            return response()->json(['message' => 'Export not found.'], 404);
-        }
-
-        return response()->download($path, $filename, ['Content-Type' => 'text/csv']);
-    }
-
-
-    private function assertReportsPermission(Request $request): void
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if (! $actor->hasManagerRole('principal', 'rh', 'manager', 'server', 'kitchen', 'rider')) {
-            abort(403);
-        }
-    }
-
-
-    private function companyId(Request $request): string
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        return $actor->company_id;
-    }
-
-
-    private function from(Request $request): ?\Illuminate\Support\Carbon
-    {
-        $from = $request->query('from');
-
-        return is_string($from) && $from !== '' ? \Illuminate\Support\Carbon::parse($from) : null;
-    }
-
-
-    private function to(Request $request): ?\Illuminate\Support\Carbon
-    {
-        $to = $request->query('to');
-
-        return is_string($to) && $to !== '' ? \Illuminate\Support\Carbon::parse($to) : null;
-    }
-
-
 }

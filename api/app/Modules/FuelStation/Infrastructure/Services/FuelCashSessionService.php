@@ -120,7 +120,7 @@ final class FuelCashSessionService
                 'closing_balance' => $session->closing_balance,
                 'expected_balance' => $session->expected_balance,
                 'variance' => $session->variance,
-                'closed_at' => $session->closed_at?->toISOString(),
+                'closed_at' => $session->closed_at?->toIso8601String(),
             ],
             'fuel_cash_session',
             (string) $session->id,

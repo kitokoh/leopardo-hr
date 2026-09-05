@@ -9,14 +9,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
 use App\Modules\FuelStation\Domain\Models\FuelStockEntry;
+use App\Modules\FuelStation\Domain\Models\FuelTank;
+use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\FuelStation\Domain\Models\FuelTank
-use App\Modules\FuelStation\Domain\Models\FuelTankDelivery;
-use App\Modules\FuelStation\Domain\Models\FuelStockMovement
-use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation
 
 /**
  * Stocks, cuves et rapprochement — FUEL-009 (issue #5803).
@@ -191,7 +189,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(1, $events);
     }
 
-
     public function test_manager_records_idempotent_delivery(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -229,7 +226,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(15000, (int) $tank->refresh()->current_level_minor);
     }
 
-
     public function test_delivery_rejects_non_positive_quantity(): void
     {
         [, $manager, , $tank] = $this->seedTenant();
@@ -245,7 +241,6 @@ class FuelStockApiTest extends TestCase
         ])->assertStatus(422);
     }
 
-
     public function test_operator_cannot_record_delivery(): void
     {
         [, , $operator, $tank] = $this->seedTenant();
@@ -256,7 +251,6 @@ class FuelStockApiTest extends TestCase
             'quantity_minor' => 1000,
         ])->assertStatus(403);
     }
-
 
     public function test_cross_tenant_delivery_is_404(): void
     {
@@ -276,7 +270,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(0, FuelTankDelivery::query()->where('company_id', $companyA->id)->count());
     }
 
-
     public function test_manager_lists_stock_levels_with_fill_ratio(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -289,7 +282,6 @@ class FuelStockApiTest extends TestCase
             ->assertJsonPath('data.0.current_level_minor', 10000)
             ->assertJsonPath('data.0.fill_ratio', 0.5);
     }
-
 
     public function test_reconciliation_is_replayable_and_reports_variance(): void
     {
@@ -346,7 +338,6 @@ class FuelStockApiTest extends TestCase
         $this->assertTrue($tankLine['explainable']);
     }
 
-
     public function test_reconciliation_reports_unexplained_variance(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -380,7 +371,6 @@ class FuelStockApiTest extends TestCase
         $this->assertFalse($tankLine['explainable']);
     }
 
-
     public function test_reconciliation_relaunches_failed_run(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -405,7 +395,6 @@ class FuelStockApiTest extends TestCase
         $this->assertSame(1, FuelReconciliationRun::query()->count());
     }
 
-
     public function test_reconciliation_lists_and_shows(): void
     {
         [$company, $manager, , $tank] = $this->seedTenant();
@@ -426,7 +415,6 @@ class FuelStockApiTest extends TestCase
             ->assertJsonPath('data.status', 'completed');
     }
 
-
     public function test_cross_tenant_reconciliation_is_404(): void
     {
         [$companyA, $managerA] = $this->seedTenant();
@@ -438,7 +426,6 @@ class FuelStockApiTest extends TestCase
         $this->postJson("/api/v1/fuel-station/stations/{$stationB->id}/reconciliations")
             ->assertStatus(404);
     }
-
 
     public function test_solution_inactive_returns_403(): void
     {
@@ -453,7 +440,6 @@ class FuelStockApiTest extends TestCase
         $this->getJson('/api/v1/fuel-station/stocks')->assertStatus(403);
     }
 
-
     private function createStation(Company $company): FuelStation
     {
         /** @var FuelStation $station */
@@ -467,7 +453,6 @@ class FuelStockApiTest extends TestCase
 
         return $station;
     }
-
 
     private function createTank(Company $company, FuelStation $station): FuelTank
     {
@@ -501,235 +486,5 @@ class FuelStockApiTest extends TestCase
         $tank = $this->createTank($company, $station);
 
         return [$company, $manager, $operator, $tank];
-    }
-
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        /** @var Company $companyA */
-        $companyA = Company::factory()->create([
-            'country' => 'DZ',
-            'currency' => 'DZD',
-            'features' => ['fuel_station' => true],
-        ]);
-        $this->companyA = $companyA;
-
-        /** @var Company $companyB */
-        $companyB = Company::factory()->create([
-            'country' => 'MA',
-            'currency' => 'MAD',
-            'features' => ['fuel_station' => true],
-        ]);
-        $this->companyB = $companyB;
-    }
-
-
-    protected function tearDown(): void
-    {
-        app()->forgetInstance('tenant_scope_required');
-        app()->forgetInstance('current_company');
-
-        parent::tearDown();
-    }
-
-
-    public function test_operator_cannot_manage_stocks(): void
-    {
-        Sanctum::actingAs($this->operator($this->companyA));
-
-        $this->getJson('/api/v1/fuel-station/stocks/movements')->assertStatus(403);
-        $this->postJson('/api/v1/fuel-station/deliveries', [])->assertStatus(403);
-        $this->postJson('/api/v1/fuel-station/reconciliations', [])->assertStatus(403);
-    }
-
-
-    public function test_manager_records_delivery_and_movement_is_created(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        $this->postJson('/api/v1/fuel-station/deliveries', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 100000,
-            'supplier' => 'Naftal',
-            'reference_number' => 'BL-2026-001',
-            'delivered_at' => '2026-08-29T08:00:00Z',
-            'idempotency_key' => 'deliv-001',
-        ])
-            ->assertStatus(201)
-            ->assertJsonPath('data.delivery.product_type', 'essence')
-            ->assertJsonPath('data.delivery.quantity_minor', 100000)
-            ->assertJsonPath('data.delivery.status', 'received')
-            ->assertJsonPath('data.movement.direction', 'in')
-            ->assertJsonPath('data.movement.reason', 'delivery')
-            ->assertJsonPath('data.replayed', false);
-
-        $this->assertDatabaseHas('fuel_stock_movements', [
-            'company_id' => $this->companyA->id,
-            'station_id' => $station->id,
-            'direction' => FuelStockMovement::DIRECTION_IN,
-            'reason' => FuelStockMovement::REASON_DELIVERY,
-            'quantity_minor' => 100000,
-        ]);
-    }
-
-
-    public function test_delivery_replay_is_idempotent(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        $payload = [
-            'station_id' => $station->id,
-            'product_type' => 'gazole',
-            'quantity_minor' => 50000,
-            'delivered_at' => '2026-08-29T10:00:00Z',
-            'idempotency_key' => 'deliv-002',
-        ];
-
-        $this->postJson('/api/v1/fuel-station/deliveries', $payload)->assertStatus(201);
-        $this->postJson('/api/v1/fuel-station/deliveries', $payload)
-            ->assertStatus(200)
-            ->assertJsonPath('data.replayed', true)
-            ->assertJsonPath('data.delivery.id', fn ($id): bool => is_int($id));
-
-        $this->assertDatabaseCount('fuel_deliveries', 1);
-        $this->assertDatabaseCount('fuel_stock_movements', 1);
-    }
-
-
-    public function test_manager_verifies_delivery(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        $delivery = $this->postJson('/api/v1/fuel-station/deliveries', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 20000,
-            'delivered_at' => '2026-08-29T12:00:00Z',
-            'idempotency_key' => 'deliv-003',
-        ])->assertStatus(201)->json('data.delivery');
-
-        $this->postJson("/api/v1/fuel-station/deliveries/{$delivery['id']}/verify")
-            ->assertOk()
-            ->assertJsonPath('data.status', 'verified')
-            ->assertJsonPath('data.verified_at', fn ($v): bool => is_string($v));
-    }
-
-
-    public function test_reconciliation_is_replayable_and_idempotent(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        $payload = [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'measured_close_minor' => 0,
-            'idempotency_key' => 'recon-001',
-        ];
-
-        $this->postJson('/api/v1/fuel-station/reconciliations', $payload)
-            ->assertStatus(201)
-            ->assertJsonPath('data.status', 'completed')
-            ->assertJsonPath('data.variance_minor', 0);
-
-        // Rejeu : même rapport (200), aucune seconde ligne.
-        $this->postJson('/api/v1/fuel-station/reconciliations', $payload)
-            ->assertStatus(200)
-            ->assertJsonPath('data.id', fn ($id): bool => is_int($id));
-
-        $this->assertDatabaseCount('fuel_stock_reconciliations', 1);
-    }
-
-
-    public function test_reconciliation_with_variance_closes_exception(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        // Livraison de 100 000, mais jauge de clôture à 99 000 → écart 1 000
-        // (> tolérance par défaut 50) → exception, aucun ajustement silencieux.
-        $this->postJson('/api/v1/fuel-station/deliveries', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 100000,
-            'delivered_at' => '2026-08-10T08:00:00Z',
-            'idempotency_key' => 'deliv-variance',
-        ])->assertStatus(201);
-
-        $this->postJson('/api/v1/fuel-station/reconciliations', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'measured_close_minor' => 99000,
-            'idempotency_key' => 'recon-variance',
-        ])
-            ->assertStatus(201)
-            ->assertJsonPath('data.status', FuelStockReconciliation::STATUS_EXCEPTION)
-            ->assertJsonPath('data.variance_minor', -1000);
-    }
-
-
-    public function test_adjustment_requires_reason_and_is_audited(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $station = $this->station($this->companyA);
-
-        $this->postJson('/api/v1/fuel-station/stocks/adjustments', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 1000,
-            'direction' => 'out',
-            'movement_at' => '2026-08-29T14:00:00Z',
-            'idempotency_key' => 'adj-001',
-            'notes' => 'Écart constaté au rapprochement du 2026-08-29 (fuite cuve C1).',
-        ])
-            ->assertStatus(201)
-            ->assertJsonPath('data.movement.reason', 'adjustment')
-            ->assertJsonPath('data.movement.direction', 'out')
-            ->assertJsonPath('data.replayed', false);
-
-        // Motif obligatoire : un ajustement sans explication est refusé.
-        $this->postJson('/api/v1/fuel-station/stocks/adjustments', [
-            'station_id' => $station->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 1000,
-            'direction' => 'out',
-            'movement_at' => '2026-08-29T14:00:00Z',
-            'idempotency_key' => 'adj-002',
-        ])->assertStatus(422);
-    }
-
-
-    public function test_cross_tenant_station_is_404(): void
-    {
-        Sanctum::actingAs($this->manager($this->companyA));
-        $stationB = $this->station($this->companyB, 'ST-99');
-
-        // Validation tenant-scoped des FormRequests → 422 (station d'un autre
-        // tenant rejetée AVANT tout traitement).
-        $this->postJson('/api/v1/fuel-station/deliveries', [
-            'station_id' => $stationB->id,
-            'product_type' => 'essence',
-            'quantity_minor' => 100,
-            'delivered_at' => '2026-08-29T08:00:00Z',
-            'idempotency_key' => 'deliv-x-tenant',
-        ])->assertStatus(422);
-
-        $this->postJson('/api/v1/fuel-station/reconciliations', [
-            'station_id' => $stationB->id,
-            'product_type' => 'essence',
-            'period_start' => '2026-08-01',
-            'period_end' => '2026-08-31',
-            'idempotency_key' => 'recon-x-tenant',
-        ])->assertStatus(422);
     }
 }

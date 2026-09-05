@@ -13,16 +13,16 @@ final fuelMyShiftsProvider = FutureProvider<List<FuelShiftAssignmentDto>>((
 /// Enregistre un relevé de compteur et retourne le résultat (anomalie/delta).
 final fuelRecordReadingProvider = FutureProvider.autoDispose
     .family<FuelReadingResultDto, FuelReadingInput>((ref, input) async {
-      final repo = ref.watch(fuelStationRepositoryProvider);
-      return await repo.recordReading(
-        stationId: input.stationId,
-        pumpId: input.pumpId,
-        meterId: input.meterId,
-        readingValueMinor: input.readingValueMinor,
-        idempotencyKey: input.idempotencyKey,
-        shiftId: input.shiftId,
-      );
-    });
+  final repo = ref.watch(fuelStationRepositoryProvider);
+  return await repo.recordReading(
+    stationId: input.stationId,
+    pumpId: input.pumpId,
+    meterId: input.meterId,
+    readingValueMinor: input.readingValueMinor,
+    idempotencyKey: input.idempotencyKey,
+    shiftId: input.shiftId,
+  );
+});
 
 class FuelReadingInput {
   final int stationId;

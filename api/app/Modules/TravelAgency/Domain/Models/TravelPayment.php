@@ -8,13 +8,10 @@ use App\Modules\TravelAgency\Domain\Enums\PaymentProvider;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelPaymentFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder
 
 /**
  * Paiement d'une réservation (TRAVEL-210, issue #6023).
@@ -22,23 +19,6 @@ use Illuminate\Database\Eloquent\Builder
  * `callback_payload_redacted` : payload webhook provider expurgé de tout
  * secret/token avant persistance (jamais de credential en clair, cf.
  * pattern Accounting/Billing HMAC). `idempotency_key` unique par tenant.
- */
-/**
- * @property int $id
- * @property string $company_id
- * @property string $reference
- * @property string $booking_id
- * @property PaymentProvider $provider_code
- * @property int $amount_minor
- * @property string $currency
- * @property PaymentStatus $status
- * @property string $provider_reference
- * @property array<string, mixed> $callback_payload_redacted
- * @property string $idempotency_key
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @mixin Builder<static>
  */
 class TravelPayment extends Model
 {

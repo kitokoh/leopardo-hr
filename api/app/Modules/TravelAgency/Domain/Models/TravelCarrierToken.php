@@ -7,8 +7,6 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Jeton d'API entrante d'un transporteur (TRAVEL-807, issue #6086).
@@ -46,6 +44,4 @@ class TravelCarrierToken extends Model
     {
         return hash('sha256', $plainToken);
     }
-
-
 }

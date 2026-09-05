@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace App\Modules\FuelStation\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\FuelStation\Domain\Models\FuelMeterInterval;
+use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
+use App\Modules\FuelStation\Domain\Models\FuelProduct;
+use App\Modules\FuelStation\Domain\Models\FuelPump;
 use App\Modules\FuelStation\Domain\Models\FuelReconciliationRun;
+use App\Modules\FuelStation\Domain\Models\FuelReportExport;
 use App\Modules\FuelStation\Domain\Models\FuelReportSnapshot;
+use App\Modules\FuelStation\Domain\Models\FuelSale;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
+use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
 use App\Modules\FuelStation\Domain\Models\FuelStation;
+use App\Modules\FuelStation\Domain\Models\FuelStockMovement;
+use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation;
 use App\Modules\FuelStation\Domain\Models\FuelTank;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Modules\FuelStation\Domain\Models\FuelMeterInterval
-use App\Modules\FuelStation\Domain\Models\FuelMeterRegister
-use App\Modules\FuelStation\Domain\Models\FuelReportExport
-use App\Modules\FuelStation\Domain\Models\FuelSale
-use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment
-use App\Modules\FuelStation\Domain\Models\FuelStockMovement
-use App\Modules\FuelStation\Domain\Models\FuelStockReconciliation
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -143,10 +145,10 @@ final class FuelReportingService
             'period_end' => $end,
             'sales' => $rows->map(function (object $row): array {
                 return [
-                    'product' => is_string($row->product) ? $row->product : '',
-                    'sale_count' => is_numeric($row->sale_count) ? (int) $row->sale_count : 0,
-                    'quantity_total' => is_numeric($row->quantity_total) ? (float) $row->quantity_total : 0.0,
-                    'amount_total' => is_numeric($row->amount_total) ? (float) $row->amount_total : 0.0,
+                    'product' => (string) $row->product,
+                    'sale_count' => (int) $row->sale_count,
+                    'quantity_total' => (float) $row->quantity_total,
+                    'amount_total' => (float) $row->amount_total,
                 ];
             })->all(),
             'totals' => [
@@ -287,13 +289,13 @@ final class FuelReportingService
             ],
             FuelReportSnapshot::TYPE_STOCK_STATUS => [
                 'station_id' => $station->id,
-                'as_of' => now()->toISOString(),
+                'as_of' => now()->toIso8601String(),
                 'tanks' => $this->tankLevels($station),
                 'movements_today' => $this->movementsToday($station),
             ],
             FuelReportSnapshot::TYPE_VARIANCE_SUMMARY => [
                 'station_id' => $station->id,
-                'as_of' => now()->toISOString(),
+                'as_of' => now()->toIso8601String(),
                 'reconciliations' => $this->latestReconciliations($station),
             ],
             FuelReportSnapshot::TYPE_SHIFT_SUMMARY => [
@@ -352,24 +354,24 @@ final class FuelReportingService
             ->where('company_id', $station->company_id)
             ->where('station_id', $station->id)
             ->whereBetween('sale_time', [$date->copy()->startOfDay(), $date->copy()->endOfDay()])
-            ->selectRaw('product, COUNT(*) as count, SUM(quantity) as quantity, SUM(amount) as amount')
+            ->selectRaw('product, COUNT(*) as sale_count, SUM(quantity) as quantity_total, SUM(amount) as amount_total')
             ->groupBy('product')
             ->orderBy('product')
             ->get();
 
-        $saleCount = is_numeric($rows->sum('sale_count')) ? (int) $rows->sum('sale_count') : 0;
-        $quantityTotal = is_numeric($rows->sum('quantity_total')) ? (float) $rows->sum('quantity_total') : 0.0;
-        $amountTotal = is_numeric($rows->sum('amount_total')) ? (float) $rows->sum('amount_total') : 0.0;
+        $saleCount = (int) $rows->sum('sale_count');
+        $quantityTotal = (float) $rows->sum('quantity_total');
+        $amountTotal = (float) $rows->sum('amount_total');
 
         return [
-            'period_start' => $start,
-            'period_end' => $end,
+            'period_start' => $date->copy()->startOfDay()->toIso8601String(),
+            'period_end' => $date->copy()->endOfDay()->toIso8601String(),
             'sales' => $rows->map(function (object $row): array {
                 return [
-                    'product' => is_string($row->product) ? $row->product : '',
-                    'sale_count' => is_numeric($row->sale_count) ? (int) $row->sale_count : 0,
-                    'quantity_total' => is_numeric($row->quantity_total) ? (float) $row->quantity_total : 0.0,
-                    'amount_total' => is_numeric($row->amount_total) ? (float) $row->amount_total : 0.0,
+                    'product' => (string) $row->product,
+                    'sale_count' => (int) $row->sale_count,
+                    'quantity_total' => (float) $row->quantity_total,
+                    'amount_total' => (float) $row->amount_total,
                 ];
             })->all(),
             'totals' => [

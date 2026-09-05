@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leopardo RH — Open-source HR & Payroll OS</title>
+<meta name="description" content="Leopardo RH is an open-source, AI-native HR & payroll operating system for growing field-based companies. Multi-tenant, mobile-first, biometric attendance and multi-country payroll.">
+<meta property="og:title" content="Leopardo RH — Open-source HR & Payroll OS">
+<meta property="og:description" content="Multi-tenant · Mobile-first · Biometric attendance · Multi-country payroll. Open source, MIT licensed.">
+<meta property="og:image" content="assets/og-banner.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="assets/logo-240.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">LRH</span>
+      <span class="brand-name">Leopardo <span class="teal">RH</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#audiences" data-i18n="nav.audiences">Audiences</a>
+      <a href="#apps" data-i18n="nav.apps">Apps</a>
+      <a href="#demo" data-i18n="nav.demo">Live demo</a>
+      <a href="#opensource" data-i18n="nav.opensource">Open source</a>
+      <a class="btn btn-ghost" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub ★</a>
+      <button class="btn btn-solid lang-toggle" id="langToggle" aria-label="Toggle language">FR</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container">
+    <div class="hero-text">
+      <p class="hero-eyebrow" data-i18n="hero.eyebrow">Open source · MIT · Self-hostable or SaaS</p>
+      <h1 data-i18n="hero.title">The open-source HR & Payroll OS for <span class="teal">field-based companies</span></h1>
+      <p class="hero-sub" data-i18n="hero.sub">Employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics — unified across web, mobile and biometric kiosk.</p>
+      <div class="hero-cta">
+        <a class="btn btn-solid btn-lg" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener" data-i18n="hero.cta1">Star on GitHub</a>
+        <a class="btn btn-ghost btn-lg" href="https://gestionemployer-backend.vercel.app" target="_blank" rel="noopener" data-i18n="hero.cta2">See live demo</a>
+      </div>
+      <div class="hero-tags">
+        <span>Multi-tenant</span><span>Mobile-first</span><span>Biometric attendance</span><span>Multi-country payroll</span>
+      </div>
+    </div>
+    <img class="hero-shot" src="assets/og-banner.jpg" alt="Leopardo RH product banner" loading="eager">
+  </div>
+</header>
+
+<section class="stats">
+  <div class="container stats-grid">
+    <div class="stat"><strong>18</strong><span data-i18n="stats.modules">DDD business modules</span></div>
+    <div class="stat"><strong>700+</strong><span data-i18n="stats.endpoints">API endpoints (OpenAPI)</span></div>
+    <div class="stat"><strong>1,900+</strong><span data-i18n="stats.tests">Automated backend tests</span></div>
+    <div class="stat"><strong>5</strong><span data-i18n="stats.apps">Native Flutter apps</span></div>
+    <div class="stat"><strong>21</strong><span data-i18n="stats.countries">Countries in payroll catalog</span></div>
+    <div class="stat"><strong>100%</strong><span data-i18n="stats.opensource">Open source (MIT)</span></div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <h2 data-i18n="features.title">Everything your workforce operations need</h2>
+    <p class="section-sub" data-i18n="features.sub">A modular platform that grows with your company — from 10 to 10,000 employees.</p>
+    <div class="grid-3">
+      <div class="card"><h3>👩‍💼 HR core</h3><p data-i18n="features.hr">Employee records, contracts, onboarding, documents and org chart in one centralized dossier.</p></div>
+      <div class="card"><h3>🕒 Smart attendance</h3><p data-i18n="features.att">Mobile check-in, GPS geofencing, biometric kiosk (ZKTeco) and approval workflows.</p></div>
+      <div class="card"><h3>💰 Payroll engine</h3><p data-i18n="features.pay">Multi-country payroll rules, validation workflow, payslips and compliant documents.</p></div>
+      <div class="card"><h3>🤖 AI-native analytics</h3><p data-i18n="features.ai">Anomaly detection, workforce indicators and LLM-driven HR insights.</p></div>
+      <div class="card"><h3>🔐 Enterprise-grade</h3><p data-i18n="features.sec">Multi-tenant isolation, RBAC matrix, SSO (SAML/OIDC), encrypted sensitive data.</p></div>
+      <div class="card"><h3>🔌 OpenAPI & SDKs</h3><p data-i18n="features.api">Full OpenAPI spec, JS/Python SDKs, webhooks and Postman collection for integration.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="audiences">
+  <div class="container">
+    <h2 data-i18n="aud.title">Built for every role in the company</h2>
+    <div class="grid-3">
+      <div class="card"><h3>👩‍💼 HR teams</h3><p data-i18n="aud.hr">No more spreadsheet chasing — records, leave, schedules and documents in one place.</p></div>
+      <div class="card"><h3>🏗 Managers & ops</h3><p data-i18n="aud.mgr">Real-time attendance, team schedules, approvals and alerts across multiple sites.</p></div>
+      <div class="card"><h3>🧮 Accountants</h3><p data-i18n="aud.acc">Payroll preparation with multi-country rules, validation workflows and audit trail.</p></div>
+      <div class="card"><h3>💻 Developers</h3><p data-i18n="aud.dev">A clean DDD modular monolith, 700+ documented endpoints, SDKs and CI/CD.</p></div>
+      <div class="card"><h3>🎓 Students</h3><p data-i18n="aud.stu">A real-world codebase to study: architecture, testing, CI/CD and mobile apps.</p></div>
+      <div class="card"><h3>📱 Employees</h3><p data-i18n="aud.emp">Native apps for attendance, leave requests, payslips and self-service.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="apps">
+  <div class="container">
+    <h2 data-i18n="apps.title">Omnichannel by design</h2>
+    <p class="section-sub" data-i18n="apps.sub">Web dashboards, five native Flutter apps and a biometric kiosk path — all connected to one core.</p>
+    <div class="apps-row">
+      <div class="app-chip"><strong>Employee</strong><span data-i18n="apps.employee">attendance, leave, payslips</span></div>
+      <div class="app-chip"><strong>Manager</strong><span data-i18n="apps.manager">team validation, approvals</span></div>
+      <div class="app-chip"><strong>HR</strong><span data-i18n="apps.hr">records, onboarding, docs</span></div>
+      <div class="app-chip"><strong>Marketing</strong><span data-i18n="apps.marketing">leads & pipeline</span></div>
+      <div class="app-chip"><strong>Platform Admin</strong><span data-i18n="apps.admin">multi-tenant control</span></div>
+      <div class="app-chip"><strong>Kiosk</strong><span data-i18n="apps.kiosk">biometric check-in (ZKTeco)</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="demo">
+  <div class="container">
+    <h2 data-i18n="demo.title">Try the live ecosystem</h2>
+    <p class="section-sub" data-i18n="demo.sub">Official public deployments (free-tier infrastructure):</p>
+    <div class="grid-3">
+      <a class="card link-card" href="https://gestionemployerbackend.onrender.com" target="_blank" rel="noopener"><h3>⚙️ API Backend</h3><p>gestionemployerbackend.onrender.com</p></a>
+      <a class="card link-card" href="https://gestionemployer-backend.vercel.app" target="_blank" rel="noopener"><h3>🌐 Corporate Web</h3><p>gestionemployer-backend.vercel.app</p></a>
+      <a class="card link-card" href="https://leo-admin.pages.dev" target="_blank" rel="noopener"><h3>🛠 Admin Panel</h3><p>leo-admin.pages.dev</p></a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="opensource">
+  <div class="container">
+    <h2 data-i18n="os.title">Open source from day one</h2>
+    <p class="section-sub" data-i18n="os.sub">MIT licensed, self-hostable, community-driven. No vendor lock-in, no closed core.</p>
+    <div class="center-cta">
+      <a class="btn btn-solid btn-lg" href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">github.com/kitokoh/leopardo-hr ★</a>
+      <a class="btn btn-ghost btn-lg" href="https://github.com/kitokoh/leopardo-hr/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" data-i18n="os.cta2">Contributing guide</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p><strong>Leopardo RH</strong> — the open-source HR & payroll OS. Made with precision by the Leopardo RH team. <span data-i18n="footer.made">MIT licensed.</span></p>
+    <p class="foot-links">
+      <a href="https://github.com/kitokoh/leopardo-hr" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/kitokoh/leopardo-hr/tree/main/docs" target="_blank" rel="noopener" data-i18n="footer.docs">Documentation</a> ·
+      <a href="https://github.com/kitokoh/leopardo-hr/security" target="_blank" rel="noopener" data-i18n="footer.security">Security</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+const I18N = {
+  en: {
+    "nav.features":"Features","nav.audiences":"Audiences","nav.apps":"Apps","nav.demo":"Live demo","nav.opensource":"Open source",
+    "hero.eyebrow":"Open source · MIT · Self-hostable or SaaS",
+    "hero.title":"The open-source HR & Payroll OS for <span class=\"teal\">field-based companies</span>",
+    "hero.sub":"Employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics — unified across web, mobile and biometric kiosk.",
+    "hero.cta1":"Star on GitHub","hero.cta2":"See live demo",
+    "stats.modules":"DDD business modules","stats.endpoints":"API endpoints (OpenAPI)","stats.tests":"Automated backend tests",
+    "stats.apps":"Native Flutter apps","stats.countries":"Countries in payroll catalog","stats.opensource":"Open source (MIT)",
+    "features.title":"Everything your workforce operations need","features.sub":"A modular platform that grows with your company — from 10 to 10,000 employees.",
+    "features.hr":"Employee records, contracts, onboarding, documents and org chart in one centralized dossier.",
+    "features.att":"Mobile check-in, GPS geofencing, biometric kiosk (ZKTeco) and approval workflows.",
+    "features.pay":"Multi-country payroll rules, validation workflow, payslips and compliant documents.",
+    "features.ai":"Anomaly detection, workforce indicators and LLM-driven HR insights.",
+    "features.sec":"Multi-tenant isolation, RBAC matrix, SSO (SAML/OIDC), encrypted sensitive data.",
+    "features.api":"Full OpenAPI spec, JS/Python SDKs, webhooks and Postman collection for integration.",
+    "aud.title":"Built for every role in the company",
+    "aud.hr":"No more spreadsheet chasing — records, leave, schedules and documents in one place.",
+    "aud.mgr":"Real-time attendance, team schedules, approvals and alerts across multiple sites.",
+    "aud.acc":"Payroll preparation with multi-country rules, validation workflows and audit trail.",
+    "aud.dev":"A clean DDD modular monolith, 700+ documented endpoints, SDKs and CI/CD.",
+    "aud.stu":"A real-world codebase to study: architecture, testing, CI/CD and mobile apps.",
+    "aud.emp":"Native apps for attendance, leave requests, payslips and self-service.",
+    "apps.title":"Omnichannel by design","apps.sub":"Web dashboards, five native Flutter apps and a biometric kiosk path — all connected to one core.",
+    "apps.employee":"attendance, leave, payslips","apps.manager":"team validation, approvals","apps.hr":"records, onboarding, docs",
+    "apps.marketing":"leads & pipeline","apps.admin":"multi-tenant control","apps.kiosk":"biometric check-in (ZKTeco)",
+    "demo.title":"Try the live ecosystem","demo.sub":"Official public deployments (free-tier infrastructure):",
+    "os.title":"Open source from day one","os.sub":"MIT licensed, self-hostable, community-driven. No vendor lock-in, no closed core.",
+    "os.cta2":"Contributing guide","footer.made":"MIT licensed.","footer.docs":"Documentation","footer.security":"Security"
+  },
+  fr: {
+    "nav.features":"Fonctionnalités","nav.audiences":"Publics","nav.apps":"Apps","nav.demo":"Démo live","nav.opensource":"Open source",
+    "hero.eyebrow":"Open source · MIT · Auto-hébergeable ou SaaS",
+    "hero.title":"L'OS RH & Paie open source pour les <span class=\"teal\">entreprises de terrain</span>",
+    "hero.sub":"Dossiers employés, pointage, absences, horaires, documents, préparation de la paie et analyses workforce — unifiés sur web, mobile et kiosque biométrique.",
+    "hero.cta1":"Star sur GitHub","hero.cta2":"Voir la démo live",
+    "stats.modules":"modules métier DDD","stats.endpoints":"endpoints API (OpenAPI)","stats.tests":"tests backend automatisés",
+    "stats.apps":"apps mobiles natives Flutter","stats.countries":"pays au catalogue paie","stats.opensource":"open source (MIT)",
+    "features.title":"Tout ce dont vos opérations RH ont besoin","features.sub":"Une plateforme modulaire qui grandit avec votre entreprise — de 10 à 10 000 employés.",
+    "features.hr":"Dossiers employés, contrats, onboarding, documents et organigramme centralisés.",
+    "features.att":"Pointage mobile, géofencing GPS, kiosque biométrique (ZKTeco) et workflows d'approbation.",
+    "features.pay":"Règles de paie multi-pays, workflow de validation, bulletins et documents conformes.",
+    "features.ai":"Détection d'anomalies, indicateurs workforce et analyses RH assistées par LLM.",
+    "features.sec":"Isolation multi-tenant, matrice RBAC, SSO (SAML/OIDC), données sensibles chiffrées.",
+    "features.api":"Spec OpenAPI complète, SDK JS/Python, webhooks et collection Postman.",
+    "aud.title":"Conçu pour chaque rôle de l'entreprise",
+    "aud.hr":"Fini la chasse aux fichiers Excel — dossiers, congés, horaires et documents au même endroit.",
+    "aud.mgr":"Pointage en temps réel, horaires d'équipe, approbations et alertes multi-sites.",
+    "aud.acc":"Préparation de paie multi-pays, workflows de validation et piste d'audit.",
+    "aud.dev":"Un monolithe modulaire DDD propre, 700+ endpoints documentés, SDK et CI/CD.",
+    "aud.stu":"Un codebase réel à étudier : architecture, tests, CI/CD et apps mobiles.",
+    "aud.emp":"Apps natives pour le pointage, les demandes de congé, les bulletins et le self-service.",
+    "apps.title":"Omnicanal par conception","apps.sub":"Dashboards web, cinq apps natives Flutter et un kiosque biométrique — tous connectés au même cœur.",
+    "apps.employee":"pointage, congés, bulletins","apps.manager":"validation équipe, approbations","apps.hr":"dossiers, onboarding, docs",
+    "apps.marketing":"leads & pipeline","apps.admin":"contrôle multi-tenant","apps.kiosk":"pointage biométrique (ZKTeco)",
+    "demo.title":"Essayez l'écosystème live","demo.sub":"Déploiements publics officiels (infrastructure gratuite) :",
+    "os.title":"Open source depuis le premier jour","os.sub":"Licence MIT, auto-hébergeable, porté par la communauté. Aucun verrouillage, aucun cœur fermé.",
+    "os.cta2":"Guide de contribution","footer.made":"Sous licence MIT.","footer.docs":"Documentation","footer.security":"Sécurité"
+  }
+};
+let lang = "en";
+function applyLang() {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (I18N[lang] && I18N[lang][key] !== undefined) el.innerHTML = I18N[lang][key];
+  });
+  document.getElementById("langToggle").textContent = lang === "en" ? "FR" : "EN";
+  document.documentElement.lang = lang;
+}
+document.getElementById("langToggle").addEventListener("click", () => {
+  lang = lang === "en" ? "fr" : "en";
+  applyLang();
+});
+applyLang();
+</script>
+</body>
+</html>

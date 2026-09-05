@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Jobs;
 
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookDelivery;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSigner;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,8 +37,8 @@ class DeliverTravelWebhookJob implements ShouldQueue
     public int $timeout = 30;
 
     public function __construct(
-        private readonly int $deliveryId,
-        private readonly int $subscriptionId,
+        private readonly string $deliveryId,
+        private readonly string $subscriptionId,
     ) {}
 
     public function handle(TravelWebhookSigner $signer): void
@@ -65,7 +66,7 @@ class DeliverTravelWebhookJob implements ShouldQueue
             'delivered_at' => $timestamp,
         ]);
         $canonical = $signer->canonicalPayload($payload);
-        $signature = $signer->sign($payload, $subscription->secret());
+        $signature = $signer->sign($payload, app(TravelWebhookSecretService::class)->get($subscription));
 
         try {
             $response = Http::timeout(10)
@@ -79,7 +80,7 @@ class DeliverTravelWebhookJob implements ShouldQueue
 
             $delivery->forceFill([
                 'status' => $response->successful() ? TravelWebhookDelivery::STATUS_DELIVERED : TravelWebhookDelivery::STATUS_PENDING,
-                'last_http_status' => $response->status(),
+                'last_status_code' => $response->status(),
             ])->save();
 
             if (! $response->successful()) {
@@ -88,7 +89,7 @@ class DeliverTravelWebhookJob implements ShouldQueue
         } catch (Throwable $e) {
             $delivery->forceFill([
                 'status' => TravelWebhookDelivery::STATUS_PENDING,
-                'last_http_status' => null,
+                'last_status_code' => null,
             ])->save();
 
             $this->retryOrDeadLetter($delivery, $e->getMessage());

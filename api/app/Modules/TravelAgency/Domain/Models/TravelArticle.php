@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
-use Database\Factories\TravelArticleFactory
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -29,7 +27,10 @@ class TravelArticle extends Model
 
     protected $fillable = ['company_id', 'category_id', 'slug', 'title', 'body_redacted', 'status', 'author_type', 'author_id', 'moderated_by_user_id', 'moderated_at', 'published_at'];
 
-
+    protected $casts = [
+        'published_at' => 'datetime',
+        'moderated_at' => 'datetime',
+    ];
 
     public function likes(): HasMany
     {
@@ -45,6 +46,4 @@ class TravelArticle extends Model
     {
         return $this->hasMany(TravelRating::class, 'article_id');
     }
-
-
 }

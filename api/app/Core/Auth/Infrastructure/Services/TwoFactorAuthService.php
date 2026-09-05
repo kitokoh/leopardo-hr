@@ -69,7 +69,7 @@ final class TwoFactorAuthService
 
         return [
             'secret' => $secret,
-            'qr_url' => $this->totp->qrCodeUrl($employee->email, $secret),
+            'qr_url' => $this->totp->qrCodeUrl($employee->email ?? '', $secret),
         ];
     }
 

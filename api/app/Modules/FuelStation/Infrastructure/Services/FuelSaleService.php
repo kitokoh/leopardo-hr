@@ -94,7 +94,7 @@ final class FuelSaleService
                 'product' => $sale->product,
                 'quantity' => $sale->quantity,
                 'amount' => $sale->amount,
-                'sale_time' => $sale->sale_time->toISOString(),
+                'sale_time' => $sale->sale_time->toIso8601String(),
                 'source' => $sale->source,
             ],
             'fuel_sale',

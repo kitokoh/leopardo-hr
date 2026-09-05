@@ -32,7 +32,7 @@ final class ParticipateQuizAction
         ?string $participantName,
         array $answers,
     ): array {
-        if ($quiz->status !== QuizStatus::ACTIVE) {
+        if ($quiz->status !== QuizStatus::PUBLISHED) {
             abort(422, 'Ce quiz n\'est pas ouvert à la participation.');
         }
 

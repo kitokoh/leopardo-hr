@@ -598,7 +598,6 @@ CREATE TABLE shared_tenants.absence_types (
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
-CREATE UNIQUE INDEX absence_types_company_id_code_unique ON shared_tenants.absence_types (company_id, code);
 
 -- Issue #5967 : index unique composite (company_id, code) — chaque tenant a
 -- ses propres codes standards sans collision inter-tenant (remplace l'ancien

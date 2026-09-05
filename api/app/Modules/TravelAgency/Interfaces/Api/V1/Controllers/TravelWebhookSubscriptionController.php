@@ -7,12 +7,12 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelWebhookSubscription;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelWebhookSecretService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelWebhookSubscriptionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelWebhookSubscriptionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Crypt;
 
 /**
  * TRAVEL-806 (#6097) — Abonnements webhook transporteurs (CRUD tenant-scoped).
@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Crypt;
  */
 class TravelWebhookSubscriptionController extends Controller
 {
+    public function __construct(private readonly TravelWebhookSecretService $secretService) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -72,7 +74,7 @@ class TravelWebhookSubscriptionController extends Controller
             'events' => $request->validated('events'),
             'active' => (bool) ($request->validated('active') ?? true),
         ]);
-        $subscription->setSecret($plainSecret);
+        $this->secretService->set($subscription, $plainSecret);
         $subscription->save();
 
         return response()->json([
@@ -121,20 +123,6 @@ class TravelWebhookSubscriptionController extends Controller
             'has_secret' => $subscription->secret_encrypted !== '',
             'created_at' => $subscription->created_at?->toIso8601String(),
             'updated_at' => $subscription->updated_at?->toIso8601String(),
-        ];
-    }
-
-    private function present(TravelWebhookSubscription $subscription): array
-    {
-        return [
-            'id' => $subscription->id,
-            'carrier_id' => $subscription->carrier_id,
-            'carrier_code' => $subscription->carrier?->code,
-            'url' => $subscription->url,
-            'secret_prefix' => $subscription->secretPrefix(),
-            'events' => $subscription->events,
-            'active' => $subscription->active,
-            'created_at' => $subscription->created_at?->toIso8601String(),
         ];
     }
 }

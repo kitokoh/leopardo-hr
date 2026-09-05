@@ -517,7 +517,8 @@ class _SummaryCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      context.l10n.payrollOvertimeHoursTeam(summary.overtimeHours.toStringAsFixed(1)),
+                      context.l10n.payrollOvertimeHoursTeam(
+                          summary.overtimeHours.toStringAsFixed(1)),
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -551,7 +552,8 @@ class _SummaryCard extends StatelessWidget {
                               ),
                               if (item.overtimeHours > 0)
                                 Text(
-                                  context.l10n.payrollOvertimeHoursItem(item.overtimeHours.toStringAsFixed(1)),
+                                  context.l10n.payrollOvertimeHoursItem(
+                                      item.overtimeHours.toStringAsFixed(1)),
                                   style: AppTypography.caption.copyWith(
                                     color: AppColors.info,
                                     fontSize: 11,

@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Infrastructure\Services;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantProduct;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 
 /**
@@ -24,6 +25,7 @@ final class RestaurantCogsService
 {
     /** Statuts de commande pris en compte dans le COGS. */
     private const COGS_ORDER_STATUSES = ['served', 'paid', 'closed'];
+
     /**
      * @return array{
      *   pos_session_id: int,
@@ -96,13 +98,9 @@ final class RestaurantCogsService
     {
         $cogs = 0;
 
+        /** @var RestaurantProductIngredient $ingredient */
         foreach ($product->ingredients as $ingredient) {
             $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
-
-            if ($avgCost === null) {
-                continue;
-            }
-
             $cogs += (int) round((float) $ingredient->quantity * (int) $avgCost);
         }
 

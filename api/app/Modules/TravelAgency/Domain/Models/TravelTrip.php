@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Instance datée d'une route (TRAVEL-207, issue #6020).
@@ -94,8 +92,4 @@ class TravelTrip extends Model
     {
         return $this->hasMany(TravelTripSeat::class, 'trip_id');
     }
-
-
-
-
 }

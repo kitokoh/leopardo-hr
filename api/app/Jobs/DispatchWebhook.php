@@ -206,17 +206,4 @@ class DispatchWebhook implements ShouldQueue, TenantScopedJob
             sprintf('Webhook delivery failed with status %d: %s', $response->status(), mb_substr($response->body(), 0, 500))
         );
     }
-
-    private function recordFailure(string $kind, string $detail): void
-    {
-        $this->endpoint->increment('failure_count');
-        if ($this->endpoint->failure_count >= 10) {
-            $this->endpoint->update(['active' => false]);
-            Log::error('Webhook endpoint deactivated after consecutive failures', [
-                'endpoint_id' => $this->endpoint->id,
-                'kind' => $kind,
-                'detail' => mb_substr($detail, 0, 500),
-            ]);
-        }
-    }
 }

@@ -7,6 +7,7 @@ namespace App\Modules\RestaurantManager\Infrastructure\Services;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrder;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantOrderItem;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantPosSession;
+use App\Modules\RestaurantManager\Domain\Models\RestaurantProductIngredient;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantStockLevel;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTable;
 use App\Modules\RestaurantManager\Domain\Models\RestaurantTableSession;
@@ -151,6 +152,7 @@ final class RestaurantReportService
                 }
 
                 $productCogs = 0;
+                /** @var RestaurantProductIngredient $ingredient */
                 foreach ($product->ingredients as $ingredient) {
                     $avgCost = $avgCosts[$ingredient->ingredient_id] ?? 0;
                     $productCogs += (int) round((float) $ingredient->quantity * (int) $avgCost);
@@ -190,8 +192,6 @@ final class RestaurantReportService
     /**
      * Sérialisation CSV déterministe (RESTO-702) : mêmes filtres → mêmes
      * octets. Colonnes allowlistées par type de rapport.
-     *
-     * @return string
      */
     public function toCsv(string $companyId, string $reportType, Carbon $from, Carbon $to, ?int $branchId = null): string
     {

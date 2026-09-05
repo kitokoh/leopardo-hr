@@ -38,17 +38,19 @@ final class FuelStationReferentialController extends Controller
         $stations = $query
             ->orderBy('name')
             ->paginate(min(max($request->integer('per_page', 100), 1), 200))
-            ->through(fn (object $station): array => [
-                'id' => $station->id,
-                'code' => $station->code,
-                'name' => $station->name,
-                'address' => $station->address,
-                'phone' => $station->phone,
-                'timezone' => $station->timezone,
-                'currency' => $station->currency,
-                'status' => $station->status,
-                'created_at' => $station->created_at,
-            ]);
+            ->through(function ($station): array {
+                return [
+                    'id' => $station->id,
+                    'code' => $station->code,
+                    'name' => $station->name,
+                    'address' => $station->address,
+                    'phone' => $station->phone,
+                    'timezone' => $station->timezone,
+                    'currency' => $station->currency,
+                    'status' => $station->status,
+                    'created_at' => $station->created_at,
+                ];
+            });
 
         return new JsonResponse(['data' => $stations->items()]);
     }
@@ -110,19 +112,21 @@ final class FuelStationReferentialController extends Controller
         $reconciliations = $query
             ->orderByDesc('closed_at')
             ->paginate(min(max($request->integer('per_page', 100), 1), 200))
-            ->through(fn (object $session): array => [
-                'id' => $session->id,
-                'station_id' => $session->station_id,
-                'status' => $session->status,
-                'opened_at' => $session->opened_at,
-                'closed_at' => $session->closed_at,
-                'opening_balance' => $session->opening_balance,
-                'closing_balance' => $session->closing_balance,
-                'expected_balance' => $session->expected_balance,
-                'variance' => $session->variance,
-                'report_date' => $session->closed_at ?? $session->opened_at,
-                'approved_by' => $session->approved_by,
-            ]);
+            ->through(function ($session): array {
+                return [
+                    'id' => $session->id,
+                    'station_id' => $session->station_id,
+                    'status' => $session->status,
+                    'opened_at' => $session->opened_at,
+                    'closed_at' => $session->closed_at,
+                    'opening_balance' => $session->opening_balance,
+                    'closing_balance' => $session->closing_balance,
+                    'expected_balance' => $session->expected_balance,
+                    'variance' => $session->variance,
+                    'report_date' => $session->closed_at ?? $session->opened_at,
+                    'approved_by' => $session->approved_by,
+                ];
+            });
 
         return new JsonResponse(['data' => $reconciliations->items()]);
     }

@@ -37,6 +37,8 @@ class FuelProduct extends Model
 
     public const STATUS_INACTIVE = 'inactive';
 
+    public const STATUSES = [self::STATUS_ACTIVE, self::STATUS_INACTIVE];
+
     protected $fillable = [
         'company_id',
         'code',

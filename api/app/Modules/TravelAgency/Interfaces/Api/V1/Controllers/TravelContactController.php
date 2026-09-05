@@ -9,10 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelContactRequest;
 use Illuminate\Http\JsonResponse;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\TravelAgency\Domain\Models\TravelCustomerContact
-use Illuminate\Support\Facades\DB;
-use App\Modules\TravelAgency\Application\Actions\SubmitTravelContactAction
 
 /**
  * TRAVEL-416 (#6068) — Formulaire de contact → lead CRM.
@@ -51,10 +47,4 @@ class TravelContactController extends Controller
 
         return new JsonResponse(['message' => 'Demande envoyée.'], 202);
     }
-
-
-
-
-
-
 }

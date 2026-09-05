@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr'),
+    Locale('tr')
   ];
 
   /// No description provided for @appTitle.
@@ -2429,11 +2429,7 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
-    Object date,
-    Object hours,
-    Object range,
-    Object status,
-  );
+      Object date, Object hours, Object range, Object status);
 
   /// No description provided for @attendanceDayToday.
   ///
@@ -15161,71 +15157,17 @@ abstract class AppLocalizations {
   /// **'{planName} — {price}'**
   String companydetailPlanWithPrice(Object planName, Object price);
 
-  /// No description provided for @crmTitle.
+  /// No description provided for @crmHubTitle.
   ///
   /// In fr, this message translates to:
-  /// **'CRM Client'**
-  String get crmTitle;
+  /// **'CRM'**
+  String get crmHubTitle;
 
-  /// No description provided for @crmSubtitle.
+  /// No description provided for @crmHubSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).'**
-  String get crmSubtitle;
-
-  /// No description provided for @crmIsolationnote.
-  ///
-  /// In fr, this message translates to:
-  /// **'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.'**
-  String get crmIsolationnote;
-
-  /// No description provided for @crmLoading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Chargement…'**
-  String get crmLoading;
-
-  /// No description provided for @crmFeaturelocked.
-  ///
-  /// In fr, this message translates to:
-  /// **'Module CRM non activé pour votre entreprise.'**
-  String get crmFeaturelocked;
-
-  /// No description provided for @crmErrorloading.
-  ///
-  /// In fr, this message translates to:
-  /// **'Impossible de charger les données.'**
-  String get crmErrorloading;
-
-  /// No description provided for @crmSearchplaceholder.
-  ///
-  /// In fr, this message translates to:
-  /// **'Rechercher…'**
-  String get crmSearchplaceholder;
-
-  /// No description provided for @crmRefresh.
-  ///
-  /// In fr, this message translates to:
-  /// **'Actualiser'**
-  String get crmRefresh;
-
-  /// No description provided for @crmPaginationprev.
-  ///
-  /// In fr, this message translates to:
-  /// **'Précédent'**
-  String get crmPaginationprev;
-
-  /// No description provided for @crmPaginationnext.
-  ///
-  /// In fr, this message translates to:
-  /// **'Suivant'**
-  String get crmPaginationnext;
-
-  /// No description provided for @crmPaginationpage.
-  ///
-  /// In fr, this message translates to:
-  /// **'Page'**
-  String get crmPaginationpage;
+  /// **'Comptes, contacts, leads et opportunités de votre entreprise.'**
+  String get crmHubSubtitle;
 
   /// No description provided for @crmAccountsTitle.
   ///
@@ -15370,6 +15312,156 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Créé le'**
   String get crmLeadsColcreated;
+
+  /// No description provided for @crmOpportunities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opportunités'**
+  String get crmOpportunities;
+
+  /// No description provided for @crmAccountDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte'**
+  String get crmAccountDetail;
+
+  /// No description provided for @crmStage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étape'**
+  String get crmStage;
+
+  /// No description provided for @crmStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmStatus;
+
+  /// No description provided for @crmTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get crmTasks;
+
+  /// No description provided for @crmActivities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activités'**
+  String get crmActivities;
+
+  /// No description provided for @crmLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données CRM. Réessayez.'**
+  String get crmLoadError;
+
+  /// No description provided for @crmEmptyAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte pour le moment.'**
+  String get crmEmptyAccounts;
+
+  /// No description provided for @crmEmptyContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contact.'**
+  String get crmEmptyContacts;
+
+  /// No description provided for @crmEmptyTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune tâche.'**
+  String get crmEmptyTasks;
+
+  /// No description provided for @crmEmptyActivities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune activité.'**
+  String get crmEmptyActivities;
+
+  /// No description provided for @crmEmptyLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun lead pour le moment.'**
+  String get crmEmptyLeads;
+
+  /// No description provided for @crmEmptyOpportunities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune opportunité pour le moment.'**
+  String get crmEmptyOpportunities;
+
+  /// No description provided for @crmTaskCompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâche terminée.'**
+  String get crmTaskCompleted;
+
+  /// No description provided for @crmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'CRM Client'**
+  String get crmTitle;
+
+  /// No description provided for @crmSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez vos prospects, comptes, contacts et opportunités — données isolées par entreprise (tenant).'**
+  String get crmSubtitle;
+
+  /// No description provided for @crmIsolationnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données tenant-scoped : aucun accès au CRM commercial Leopardo depuis cet espace.'**
+  String get crmIsolationnote;
+
+  /// No description provided for @crmLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get crmLoading;
+
+  /// No description provided for @crmFeaturelocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Module CRM non activé pour votre entreprise.'**
+  String get crmFeaturelocked;
+
+  /// No description provided for @crmErrorloading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données.'**
+  String get crmErrorloading;
+
+  /// No description provided for @crmSearchplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher…'**
+  String get crmSearchplaceholder;
+
+  /// No description provided for @crmRefresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get crmRefresh;
+
+  /// No description provided for @crmPaginationprev.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précédent'**
+  String get crmPaginationprev;
+
+  /// No description provided for @crmPaginationnext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivant'**
+  String get crmPaginationnext;
+
+  /// No description provided for @crmPaginationpage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page'**
+  String get crmPaginationpage;
 
   /// No description provided for @crmPipelineTitle.
   ///
@@ -15674,7 +15766,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Commande en ligne'**
+  /// **'Commander en ligne'**
   String get restaurantShopTitle;
 
   /// No description provided for @restaurantShopSubtitle.
@@ -15758,7 +15850,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopCheckout.
   ///
   /// In fr, this message translates to:
-  /// **'Commander'**
+  /// **'Valider la commande'**
   String get restaurantShopCheckout;
 
   /// No description provided for @restaurantShopOrdering.
@@ -15788,7 +15880,7 @@ abstract class AppLocalizations {
   /// No description provided for @restaurantShopTrack.
   ///
   /// In fr, this message translates to:
-  /// **'Suivre la commande'**
+  /// **'Suivre ma commande'**
   String get restaurantShopTrack;
 
   /// No description provided for @restaurantShopPay.
@@ -15862,6 +15954,114 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'devise'**
   String get restaurantShopCurrency;
+
+  /// No description provided for @restaurantShopTokeninvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton de boutique invalide ou absent.'**
+  String get restaurantShopTokeninvalid;
+
+  /// No description provided for @restaurantShopOrderplaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande enregistrée !'**
+  String get restaurantShopOrderplaced;
+
+  /// No description provided for @restaurantShopTracktitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivi de commande'**
+  String get restaurantShopTracktitle;
+
+  /// No description provided for @restaurantShopOrderreference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantShopOrderreference;
+
+  /// No description provided for @restaurantShopEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre panier est vide.'**
+  String get restaurantShopEmpty;
+
+  /// No description provided for @restaurantShopEmptymenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le menu est vide pour le moment.'**
+  String get restaurantShopEmptymenu;
+
+  /// No description provided for @restaurantShopLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du menu…'**
+  String get restaurantShopLoading;
+
+  /// No description provided for @restaurantShopOrdererror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer la commande. Réessayez.'**
+  String get restaurantShopOrdererror;
+
+  /// No description provided for @restaurantShopPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement confirmé. Bon appétit !'**
+  String get restaurantShopPaid;
+
+  /// No description provided for @restaurantShopPayatpickup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer à la réception'**
+  String get restaurantShopPayatpickup;
+
+  /// No description provided for @restaurantShopPaycashatpickup.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espèces à la réception'**
+  String get restaurantShopPaycashatpickup;
+
+  /// No description provided for @restaurantShopPaymobilemoney.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer par mobile money'**
+  String get restaurantShopPaymobilemoney;
+
+  /// No description provided for @restaurantShopPaymenterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement a échoué. Réessayez.'**
+  String get restaurantShopPaymenterror;
+
+  /// No description provided for @restaurantShopPendingpayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de paiement…'**
+  String get restaurantShopPendingpayment;
+
+  /// No description provided for @restaurantShopPhoneplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (optionnel)'**
+  String get restaurantShopPhoneplaceholder;
+
+  /// No description provided for @restaurantShopStartneworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantShopStartneworder;
+
+  /// No description provided for @restaurantShopStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantShopStatus;
+
+  /// No description provided for @restaurantShopTrackerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de retrouver la commande. Vérifiez la référence.'**
+  String get restaurantShopTrackerror;
 
   /// No description provided for @restaurantMobileHubTitle.
   ///
@@ -16300,6 +16500,3366 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Stock : {quantity} / seuil : {threshold}'**
   String restaurantMobileManagerStockLevel(Object quantity, Object threshold);
+
+  /// No description provided for @restaurantHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Restaurant Manager'**
+  String get restaurantHomeTitle;
+
+  /// No description provided for @restaurantHomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente, réservations, stock et livraison'**
+  String get restaurantHomeSubtitle;
+
+  /// No description provided for @restaurantHomeLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le tableau de bord restaurant.'**
+  String get restaurantHomeLoaderror;
+
+  /// No description provided for @restaurantHomeReferential.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel'**
+  String get restaurantHomeReferential;
+
+  /// No description provided for @restaurantHomeReferentialdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches, plan de salle, catalogue, matières, menus, fournisseurs'**
+  String get restaurantHomeReferentialdesc;
+
+  /// No description provided for @restaurantHomeReservations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get restaurantHomeReservations;
+
+  /// No description provided for @restaurantHomeReservationsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneaux, check-in, dépôts'**
+  String get restaurantHomeReservationsdesc;
+
+  /// No description provided for @restaurantHomeStock.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock & achats'**
+  String get restaurantHomeStock;
+
+  /// No description provided for @restaurantHomeStockdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveaux, bons de commande, réceptions, inventaires'**
+  String get restaurantHomeStockdesc;
+
+  /// No description provided for @restaurantHomeDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison & fidélité'**
+  String get restaurantHomeDelivery;
+
+  /// No description provided for @restaurantHomeDeliverydesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones, livreurs, tournées, points, promotions'**
+  String get restaurantHomeDeliverydesc;
+
+  /// No description provided for @restaurantHomeReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get restaurantHomeReports;
+
+  /// No description provided for @restaurantHomeReportsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes, occupation, produits, COGS, export CSV'**
+  String get restaurantHomeReportsdesc;
+
+  /// No description provided for @restaurantHomeOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir'**
+  String get restaurantHomeOpen;
+
+  /// No description provided for @restaurantHomeKpirevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chiffre d\'affaires du jour'**
+  String get restaurantHomeKpirevenue;
+
+  /// No description provided for @restaurantHomeKpiorders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandes du jour'**
+  String get restaurantHomeKpiorders;
+
+  /// No description provided for @restaurantHomeKpibasket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier moyen'**
+  String get restaurantHomeKpibasket;
+
+  /// No description provided for @restaurantHomeKpirotation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rotation des tables'**
+  String get restaurantHomeKpirotation;
+
+  /// No description provided for @restaurantHomeAlerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes de stock'**
+  String get restaurantHomeAlerts;
+
+  /// No description provided for @restaurantHomeAlertline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédient'**
+  String get restaurantHomeAlertline;
+
+  /// No description provided for @restaurantCrudSearch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher...'**
+  String get restaurantCrudSearch;
+
+  /// No description provided for @restaurantCrudCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau'**
+  String get restaurantCrudCreate;
+
+  /// No description provided for @restaurantCrudEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get restaurantCrudEdit;
+
+  /// No description provided for @restaurantCrudDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get restaurantCrudDelete;
+
+  /// No description provided for @restaurantCrudLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantCrudLoading;
+
+  /// No description provided for @restaurantCrudEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun résultat.'**
+  String get restaurantCrudEmpty;
+
+  /// No description provided for @restaurantCrudLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données.'**
+  String get restaurantCrudLoaderror;
+
+  /// No description provided for @restaurantCrudSaveerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la sauvegarde.'**
+  String get restaurantCrudSaveerror;
+
+  /// No description provided for @restaurantCrudDeleteerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de supprimer.'**
+  String get restaurantCrudDeleteerror;
+
+  /// No description provided for @restaurantCrudConfirmdelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet élément ?'**
+  String get restaurantCrudConfirmdelete;
+
+  /// No description provided for @restaurantCrudCreatetitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get restaurantCrudCreatetitle;
+
+  /// No description provided for @restaurantCrudEdittitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get restaurantCrudEdittitle;
+
+  /// No description provided for @restaurantCrudCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get restaurantCrudCancel;
+
+  /// No description provided for @restaurantCrudSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get restaurantCrudSave;
+
+  /// No description provided for @restaurantCrudSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrement...'**
+  String get restaurantCrudSaving;
+
+  /// No description provided for @restaurantRefTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel restaurant'**
+  String get restaurantRefTitle;
+
+  /// No description provided for @restaurantRefSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches, plan de salle, catalogue, matières, menus, fiscalité, fournisseurs'**
+  String get restaurantRefSubtitle;
+
+  /// No description provided for @restaurantRefTabbranches.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches'**
+  String get restaurantRefTabbranches;
+
+  /// No description provided for @restaurantRefTabzones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones'**
+  String get restaurantRefTabzones;
+
+  /// No description provided for @restaurantRefTabtables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables'**
+  String get restaurantRefTabtables;
+
+  /// No description provided for @restaurantRefTabcategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories'**
+  String get restaurantRefTabcategories;
+
+  /// No description provided for @restaurantRefTabproducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits'**
+  String get restaurantRefTabproducts;
+
+  /// No description provided for @restaurantRefTabingredients.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédients'**
+  String get restaurantRefTabingredients;
+
+  /// No description provided for @restaurantRefTabunits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unités'**
+  String get restaurantRefTabunits;
+
+  /// No description provided for @restaurantRefTabmenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menus'**
+  String get restaurantRefTabmenus;
+
+  /// No description provided for @restaurantRefTabtaxrates.
+  ///
+  /// In fr, this message translates to:
+  /// **'TVA'**
+  String get restaurantRefTabtaxrates;
+
+  /// No description provided for @restaurantRefTabsuppliers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseurs'**
+  String get restaurantRefTabsuppliers;
+
+  /// No description provided for @restaurantRefTabhours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires'**
+  String get restaurantRefTabhours;
+
+  /// No description provided for @restaurantRefBranches.
+  ///
+  /// In fr, this message translates to:
+  /// **'Branches (établissements)'**
+  String get restaurantRefBranches;
+
+  /// No description provided for @restaurantRefZones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones (salles)'**
+  String get restaurantRefZones;
+
+  /// No description provided for @restaurantRefTables.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tables (plan de salle)'**
+  String get restaurantRefTables;
+
+  /// No description provided for @restaurantRefCategories.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégories'**
+  String get restaurantRefCategories;
+
+  /// No description provided for @restaurantRefProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits (catalogue & recettes)'**
+  String get restaurantRefProducts;
+
+  /// No description provided for @restaurantRefIngredients.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ingrédients (matières)'**
+  String get restaurantRefIngredients;
+
+  /// No description provided for @restaurantRefUnits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unités'**
+  String get restaurantRefUnits;
+
+  /// No description provided for @restaurantRefMenus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menus (formules)'**
+  String get restaurantRefMenus;
+
+  /// No description provided for @restaurantRefTaxrates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux de TVA'**
+  String get restaurantRefTaxrates;
+
+  /// No description provided for @restaurantRefSuppliers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseurs'**
+  String get restaurantRefSuppliers;
+
+  /// No description provided for @restaurantRefHours.
+  ///
+  /// In fr, this message translates to:
+  /// **'Horaires'**
+  String get restaurantRefHours;
+
+  /// No description provided for @restaurantRefDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get restaurantRefDisabled;
+
+  /// No description provided for @restaurantRefFieldphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantRefFieldphone;
+
+  /// No description provided for @restaurantRefFieldcapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité'**
+  String get restaurantRefFieldcapacity;
+
+  /// No description provided for @restaurantRefFieldlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get restaurantRefFieldlabel;
+
+  /// No description provided for @restaurantRefFieldcapacitycovers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité (couverts)'**
+  String get restaurantRefFieldcapacitycovers;
+
+  /// No description provided for @restaurantRefFieldcategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get restaurantRefFieldcategory;
+
+  /// No description provided for @restaurantRefFieldcategoryid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get restaurantRefFieldcategoryid;
+
+  /// No description provided for @restaurantRefFieldunit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get restaurantRefFieldunit;
+
+  /// No description provided for @restaurantRefFieldavgcost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen'**
+  String get restaurantRefFieldavgcost;
+
+  /// No description provided for @restaurantRefFieldunitkg.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité (kg)'**
+  String get restaurantRefFieldunitkg;
+
+  /// No description provided for @restaurantRefFieldavgcostminor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen (minor)'**
+  String get restaurantRefFieldavgcostminor;
+
+  /// No description provided for @restaurantRefFieldstartsat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commence à'**
+  String get restaurantRefFieldstartsat;
+
+  /// No description provided for @restaurantRefFielddefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par défaut'**
+  String get restaurantRefFielddefault;
+
+  /// No description provided for @restaurantRefFieldbydefault.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par défaut'**
+  String get restaurantRefFieldbydefault;
+
+  /// No description provided for @restaurantRefFieldclosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermé'**
+  String get restaurantRefFieldclosed;
+
+  /// No description provided for @restaurantResTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get restaurantResTitle;
+
+  /// No description provided for @restaurantResSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créneaux, check-in, no-show, dépôts'**
+  String get restaurantResSubtitle;
+
+  /// No description provided for @restaurantResNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle réservation'**
+  String get restaurantResNew;
+
+  /// No description provided for @restaurantResName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du client'**
+  String get restaurantResName;
+
+  /// No description provided for @restaurantResPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantResPhone;
+
+  /// No description provided for @restaurantResCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get restaurantResCreate;
+
+  /// No description provided for @restaurantResColref.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantResColref;
+
+  /// No description provided for @restaurantResColcontact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client'**
+  String get restaurantResColcontact;
+
+  /// No description provided for @restaurantResColwhen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quand'**
+  String get restaurantResColwhen;
+
+  /// No description provided for @restaurantResColcovers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couverts'**
+  String get restaurantResColcovers;
+
+  /// No description provided for @restaurantResColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantResColstatus;
+
+  /// No description provided for @restaurantResConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get restaurantResConfirm;
+
+  /// No description provided for @restaurantResCheckin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Check-in'**
+  String get restaurantResCheckin;
+
+  /// No description provided for @restaurantResNoshow.
+  ///
+  /// In fr, this message translates to:
+  /// **'No-show'**
+  String get restaurantResNoshow;
+
+  /// No description provided for @restaurantResCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get restaurantResCancel;
+
+  /// No description provided for @restaurantResLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantResLoading;
+
+  /// No description provided for @restaurantResEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune réservation.'**
+  String get restaurantResEmpty;
+
+  /// No description provided for @restaurantResLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les réservations.'**
+  String get restaurantResLoaderror;
+
+  /// No description provided for @restaurantResCreateerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de création.'**
+  String get restaurantResCreateerror;
+
+  /// No description provided for @restaurantResActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible.'**
+  String get restaurantResActionerror;
+
+  /// No description provided for @restaurantStockTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock & achats'**
+  String get restaurantStockTitle;
+
+  /// No description provided for @restaurantStockSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveaux, alertes, bons de commande, réceptions'**
+  String get restaurantStockSubtitle;
+
+  /// No description provided for @restaurantStockTablevels.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveaux & alertes'**
+  String get restaurantStockTablevels;
+
+  /// No description provided for @restaurantStockTabpo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bons de commande'**
+  String get restaurantStockTabpo;
+
+  /// No description provided for @restaurantStockTabreceivings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptions'**
+  String get restaurantStockTabreceivings;
+
+  /// No description provided for @restaurantStockColqty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get restaurantStockColqty;
+
+  /// No description provided for @restaurantStockColcost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coût moyen'**
+  String get restaurantStockColcost;
+
+  /// No description provided for @restaurantStockColthreshold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil'**
+  String get restaurantStockColthreshold;
+
+  /// No description provided for @restaurantStockColalert.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alerte'**
+  String get restaurantStockColalert;
+
+  /// No description provided for @restaurantStockColref.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantStockColref;
+
+  /// No description provided for @restaurantStockColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantStockColstatus;
+
+  /// No description provided for @restaurantStockColtotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get restaurantStockColtotal;
+
+  /// No description provided for @restaurantStockColdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get restaurantStockColdate;
+
+  /// No description provided for @restaurantStockAlert.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuil atteint'**
+  String get restaurantStockAlert;
+
+  /// No description provided for @restaurantStockOk.
+  ///
+  /// In fr, this message translates to:
+  /// **'OK'**
+  String get restaurantStockOk;
+
+  /// No description provided for @restaurantStockNewpo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau bon de commande'**
+  String get restaurantStockNewpo;
+
+  /// No description provided for @restaurantStockCreatepo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer le bon'**
+  String get restaurantStockCreatepo;
+
+  /// No description provided for @restaurantStockSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get restaurantStockSend;
+
+  /// No description provided for @restaurantStockReceive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionner'**
+  String get restaurantStockReceive;
+
+  /// No description provided for @restaurantStockNewreceiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle réception'**
+  String get restaurantStockNewreceiving;
+
+  /// No description provided for @restaurantStockCreatereceiving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionner'**
+  String get restaurantStockCreatereceiving;
+
+  /// No description provided for @restaurantStockLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantStockLoading;
+
+  /// No description provided for @restaurantStockLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données de stock.'**
+  String get restaurantStockLoaderror;
+
+  /// No description provided for @restaurantStockPoerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de création du bon.'**
+  String get restaurantStockPoerror;
+
+  /// No description provided for @restaurantStockActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible sur le bon.'**
+  String get restaurantStockActionerror;
+
+  /// No description provided for @restaurantStockRcverror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de réception.'**
+  String get restaurantStockRcverror;
+
+  /// No description provided for @restaurantStockSupplierplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur…'**
+  String get restaurantStockSupplierplaceholder;
+
+  /// No description provided for @restaurantDelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison & fidélité'**
+  String get restaurantDelTitle;
+
+  /// No description provided for @restaurantDelSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones, livreurs, tournées, points, promotions'**
+  String get restaurantDelSubtitle;
+
+  /// No description provided for @restaurantDelTabzones.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zones'**
+  String get restaurantDelTabzones;
+
+  /// No description provided for @restaurantDelTabriders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livreurs'**
+  String get restaurantDelTabriders;
+
+  /// No description provided for @restaurantDelTabdeliveries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons'**
+  String get restaurantDelTabdeliveries;
+
+  /// No description provided for @restaurantDelTabloyalty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fidélité'**
+  String get restaurantDelTabloyalty;
+
+  /// No description provided for @restaurantDelTabpromos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Promotions'**
+  String get restaurantDelTabpromos;
+
+  /// No description provided for @restaurantDelColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get restaurantDelColname;
+
+  /// No description provided for @restaurantDelColphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get restaurantDelColphone;
+
+  /// No description provided for @restaurantDelColvehicle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Véhicule'**
+  String get restaurantDelColvehicle;
+
+  /// No description provided for @restaurantDelColactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get restaurantDelColactive;
+
+  /// No description provided for @restaurantDelColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get restaurantDelColstatus;
+
+  /// No description provided for @restaurantDelColfees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais & minimum'**
+  String get restaurantDelColfees;
+
+  /// No description provided for @restaurantDelColpoints.
+  ///
+  /// In fr, this message translates to:
+  /// **'Points'**
+  String get restaurantDelColpoints;
+
+  /// No description provided for @restaurantDelColtier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Palier'**
+  String get restaurantDelColtier;
+
+  /// No description provided for @restaurantDelColcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get restaurantDelColcode;
+
+  /// No description provided for @restaurantDelColtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get restaurantDelColtitle;
+
+  /// No description provided for @restaurantDelColtype.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get restaurantDelColtype;
+
+  /// No description provided for @restaurantDelColvalue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur'**
+  String get restaurantDelColvalue;
+
+  /// No description provided for @restaurantDelColuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisations'**
+  String get restaurantDelColuses;
+
+  /// No description provided for @restaurantDelFee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Frais'**
+  String get restaurantDelFee;
+
+  /// No description provided for @restaurantDelNewdelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle livraison'**
+  String get restaurantDelNewdelivery;
+
+  /// No description provided for @restaurantDelCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get restaurantDelCreate;
+
+  /// No description provided for @restaurantDelAssign.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assigner'**
+  String get restaurantDelAssign;
+
+  /// No description provided for @restaurantDelOut.
+  ///
+  /// In fr, this message translates to:
+  /// **'En tournée'**
+  String get restaurantDelOut;
+
+  /// No description provided for @restaurantDelDeliver.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livrée'**
+  String get restaurantDelDeliver;
+
+  /// No description provided for @restaurantDelCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get restaurantDelCancel;
+
+  /// No description provided for @restaurantDelLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantDelLoading;
+
+  /// No description provided for @restaurantDelLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données livraison/fidélité.'**
+  String get restaurantDelLoaderror;
+
+  /// No description provided for @restaurantDelCreateerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de création de la livraison.'**
+  String get restaurantDelCreateerror;
+
+  /// No description provided for @restaurantDelActionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action impossible.'**
+  String get restaurantDelActionerror;
+
+  /// No description provided for @restaurantDelRiderprompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID du livreur à assigner :'**
+  String get restaurantDelRiderprompt;
+
+  /// No description provided for @restaurantReportsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get restaurantReportsTitle;
+
+  /// No description provided for @restaurantReportsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes, occupation, produits, COGS, caisses et export CSV'**
+  String get restaurantReportsSubtitle;
+
+  /// No description provided for @restaurantReportsTabsales.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes'**
+  String get restaurantReportsTabsales;
+
+  /// No description provided for @restaurantReportsTaboccupancy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Occupation'**
+  String get restaurantReportsTaboccupancy;
+
+  /// No description provided for @restaurantReportsTabproducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produits'**
+  String get restaurantReportsTabproducts;
+
+  /// No description provided for @restaurantReportsTabcogs.
+  ///
+  /// In fr, this message translates to:
+  /// **'COGS'**
+  String get restaurantReportsTabcogs;
+
+  /// No description provided for @restaurantReportsTabpos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Caisses'**
+  String get restaurantReportsTabpos;
+
+  /// No description provided for @restaurantReportsExport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export CSV'**
+  String get restaurantReportsExport;
+
+  /// No description provided for @restaurantReportsLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement...'**
+  String get restaurantReportsLoading;
+
+  /// No description provided for @restaurantReportsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée pour cette période.'**
+  String get restaurantReportsEmpty;
+
+  /// No description provided for @restaurantReportsLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le rapport.'**
+  String get restaurantReportsLoaderror;
+
+  /// No description provided for @restaurantReportsExporterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'export CSV.'**
+  String get restaurantReportsExporterror;
+
+  /// No description provided for @restaurantKioskTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Borne de commande'**
+  String get restaurantKioskTitle;
+
+  /// No description provided for @restaurantKioskTokeninvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton de boutique invalide ou absent.'**
+  String get restaurantKioskTokeninvalid;
+
+  /// No description provided for @restaurantKioskLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du menu…'**
+  String get restaurantKioskLoading;
+
+  /// No description provided for @restaurantKioskLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le menu. Réessayez.'**
+  String get restaurantKioskLoaderror;
+
+  /// No description provided for @restaurantKioskEmptymenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le menu est vide pour le moment.'**
+  String get restaurantKioskEmptymenu;
+
+  /// No description provided for @restaurantKioskEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre panier est vide.'**
+  String get restaurantKioskEmpty;
+
+  /// No description provided for @restaurantKioskAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter'**
+  String get restaurantKioskAdd;
+
+  /// No description provided for @restaurantKioskRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get restaurantKioskRemove;
+
+  /// No description provided for @restaurantKioskCart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Panier'**
+  String get restaurantKioskCart;
+
+  /// No description provided for @restaurantKioskTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get restaurantKioskTotal;
+
+  /// No description provided for @restaurantKioskItems.
+  ///
+  /// In fr, this message translates to:
+  /// **'articles'**
+  String get restaurantKioskItems;
+
+  /// No description provided for @restaurantKioskCheckout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider la commande'**
+  String get restaurantKioskCheckout;
+
+  /// No description provided for @restaurantKioskOrdererror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer la commande. Réessayez.'**
+  String get restaurantKioskOrdererror;
+
+  /// No description provided for @restaurantKioskOrderplaced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commande envoyée en cuisine !'**
+  String get restaurantKioskOrderplaced;
+
+  /// No description provided for @restaurantKioskOrderreference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get restaurantKioskOrderreference;
+
+  /// No description provided for @restaurantKioskPendingpayment.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de paiement…'**
+  String get restaurantKioskPendingpayment;
+
+  /// No description provided for @restaurantKioskPaycash.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer en espèces'**
+  String get restaurantKioskPaycash;
+
+  /// No description provided for @restaurantKioskPaymobilemoney.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payer par mobile money'**
+  String get restaurantKioskPaymobilemoney;
+
+  /// No description provided for @restaurantKioskPaymenterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement a échoué. Réessayez.'**
+  String get restaurantKioskPaymenterror;
+
+  /// No description provided for @restaurantKioskPaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement confirmé. Bon appétit !'**
+  String get restaurantKioskPaid;
+
+  /// No description provided for @restaurantKioskStartneworder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle commande'**
+  String get restaurantKioskStartneworder;
+
+  /// No description provided for @restaurantKioskTakeaway.
+  ///
+  /// In fr, this message translates to:
+  /// **'À emporter'**
+  String get restaurantKioskTakeaway;
+
+  /// No description provided for @restaurantKioskDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison'**
+  String get restaurantKioskDelivery;
+
+  /// No description provided for @restaurantKioskBranch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Point de vente'**
+  String get restaurantKioskBranch;
+
+  /// No description provided for @eduNavLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'EduManager'**
+  String get eduNavLabel;
+
+  /// No description provided for @eduNavAdmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administration scolaire'**
+  String get eduNavAdmin;
+
+  /// No description provided for @eduNavTeacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon espace enseignant'**
+  String get eduNavTeacher;
+
+  /// No description provided for @eduHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'EduManager'**
+  String get eduHomeTitle;
+
+  /// No description provided for @eduHomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pilotage scolaire : campus, années, classes, élèves, admissions, évaluations et bulletins.'**
+  String get eduHomeSubtitle;
+
+  /// No description provided for @eduHomeCampuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduHomeCampuses;
+
+  /// No description provided for @eduHomeClasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes'**
+  String get eduHomeClasses;
+
+  /// No description provided for @eduHomeStudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves'**
+  String get eduHomeStudents;
+
+  /// No description provided for @eduHomeAdmissions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Admissions'**
+  String get eduHomeAdmissions;
+
+  /// No description provided for @eduHomeReportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduHomeReportcards;
+
+  /// No description provided for @eduHomePendingreportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'bulletins à valider'**
+  String get eduHomePendingreportcards;
+
+  /// No description provided for @eduHomeQuicklinks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès rapides'**
+  String get eduHomeQuicklinks;
+
+  /// No description provided for @eduHomeManagecampuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les campus'**
+  String get eduHomeManagecampuses;
+
+  /// No description provided for @eduHomeManageclasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les classes'**
+  String get eduHomeManageclasses;
+
+  /// No description provided for @eduHomeManagestudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer les élèves'**
+  String get eduHomeManagestudents;
+
+  /// No description provided for @eduHomeManageassessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évaluations & notes'**
+  String get eduHomeManageassessments;
+
+  /// No description provided for @eduHomeManagereportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduHomeManagereportcards;
+
+  /// No description provided for @eduHomeTeacherspace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace enseignant'**
+  String get eduHomeTeacherspace;
+
+  /// No description provided for @eduCampusesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduCampusesTitle;
+
+  /// No description provided for @eduCampusesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sites scolaires de l\'établissement.'**
+  String get eduCampusesSubtitle;
+
+  /// No description provided for @eduCampusesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun campus. Créez le premier campus de l\'établissement.'**
+  String get eduCampusesEmpty;
+
+  /// No description provided for @eduCampusesCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau campus'**
+  String get eduCampusesCreate;
+
+  /// No description provided for @eduCampusesEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier le campus'**
+  String get eduCampusesEdit;
+
+  /// No description provided for @eduCampusesCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduCampusesCode;
+
+  /// No description provided for @eduCampusesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduCampusesName;
+
+  /// No description provided for @eduCampusesAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get eduCampusesAddress;
+
+  /// No description provided for @eduCampusesTimezone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fuseau'**
+  String get eduCampusesTimezone;
+
+  /// No description provided for @eduCampusesStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduCampusesStatus;
+
+  /// No description provided for @eduCampusesSaveerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'enregistrer le campus.'**
+  String get eduCampusesSaveerror;
+
+  /// No description provided for @eduCampusesDeleteconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce campus ?'**
+  String get eduCampusesDeleteconfirm;
+
+  /// No description provided for @eduCampusesDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus supprimé.'**
+  String get eduCampusesDeleted;
+
+  /// No description provided for @eduAcademicyearsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Années scolaires'**
+  String get eduAcademicyearsTitle;
+
+  /// No description provided for @eduAcademicyearsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Périodes scolaires de l\'établissement (chevauchements refusés).'**
+  String get eduAcademicyearsSubtitle;
+
+  /// No description provided for @eduAcademicyearsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune année scolaire.'**
+  String get eduAcademicyearsEmpty;
+
+  /// No description provided for @eduAcademicyearsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle année'**
+  String get eduAcademicyearsCreate;
+
+  /// No description provided for @eduAcademicyearsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'année'**
+  String get eduAcademicyearsEdit;
+
+  /// No description provided for @eduAcademicyearsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get eduAcademicyearsName;
+
+  /// No description provided for @eduAcademicyearsStartdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get eduAcademicyearsStartdate;
+
+  /// No description provided for @eduAcademicyearsEnddate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get eduAcademicyearsEnddate;
+
+  /// No description provided for @eduAcademicyearsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduAcademicyearsStatus;
+
+  /// No description provided for @eduSubjectsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matières'**
+  String get eduSubjectsTitle;
+
+  /// No description provided for @eduSubjectsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catalogue des matières enseignées.'**
+  String get eduSubjectsSubtitle;
+
+  /// No description provided for @eduSubjectsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune matière.'**
+  String get eduSubjectsEmpty;
+
+  /// No description provided for @eduSubjectsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle matière'**
+  String get eduSubjectsCreate;
+
+  /// No description provided for @eduSubjectsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la matière'**
+  String get eduSubjectsEdit;
+
+  /// No description provided for @eduSubjectsCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduSubjectsCode;
+
+  /// No description provided for @eduSubjectsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get eduSubjectsName;
+
+  /// No description provided for @eduSubjectsDefaultcoefficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coefficient par défaut'**
+  String get eduSubjectsDefaultcoefficient;
+
+  /// No description provided for @eduClassesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes'**
+  String get eduClassesTitle;
+
+  /// No description provided for @eduClassesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes, niveaux, enseignants référents et affectations par matière.'**
+  String get eduClassesSubtitle;
+
+  /// No description provided for @eduClassesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune classe.'**
+  String get eduClassesEmpty;
+
+  /// No description provided for @eduClassesCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle classe'**
+  String get eduClassesCreate;
+
+  /// No description provided for @eduClassesEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier la classe'**
+  String get eduClassesEdit;
+
+  /// No description provided for @eduClassesCode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code'**
+  String get eduClassesCode;
+
+  /// No description provided for @eduClassesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduClassesName;
+
+  /// No description provided for @eduClassesLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau'**
+  String get eduClassesLevel;
+
+  /// No description provided for @eduClassesCapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effectif max'**
+  String get eduClassesCapacity;
+
+  /// No description provided for @eduClassesTeacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enseignant référent'**
+  String get eduClassesTeacher;
+
+  /// No description provided for @eduClassesCampus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Campus'**
+  String get eduClassesCampus;
+
+  /// No description provided for @eduClassesYear.
+  ///
+  /// In fr, this message translates to:
+  /// **'Année scolaire'**
+  String get eduClassesYear;
+
+  /// No description provided for @eduClassesAssignteacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Affecter un enseignant'**
+  String get eduClassesAssignteacher;
+
+  /// No description provided for @eduClassesRemoveteacher.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get eduClassesRemoveteacher;
+
+  /// No description provided for @eduClassesTeacherplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un enseignant…'**
+  String get eduClassesTeacherplaceholder;
+
+  /// No description provided for @eduStudentsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves'**
+  String get eduStudentsTitle;
+
+  /// No description provided for @eduStudentsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dossiers élèves (données personnelles protégées).'**
+  String get eduStudentsSubtitle;
+
+  /// No description provided for @eduStudentsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun élève.'**
+  String get eduStudentsEmpty;
+
+  /// No description provided for @eduStudentsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvel élève'**
+  String get eduStudentsCreate;
+
+  /// No description provided for @eduStudentsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'élève'**
+  String get eduStudentsEdit;
+
+  /// No description provided for @eduStudentsNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° matricule'**
+  String get eduStudentsNumber;
+
+  /// No description provided for @eduStudentsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom affiché'**
+  String get eduStudentsName;
+
+  /// No description provided for @eduStudentsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduStudentsStatus;
+
+  /// No description provided for @eduStudentsBirthdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de naissance (chiffrée)'**
+  String get eduStudentsBirthdate;
+
+  /// No description provided for @eduStudentsPiihint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données sensibles sont chiffrées au repos et jamais exposées hors tenant.'**
+  String get eduStudentsPiihint;
+
+  /// No description provided for @eduAdmissionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Admissions'**
+  String get eduAdmissionsTitle;
+
+  /// No description provided for @eduAdmissionsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pipeline d\'admission avec consentement RGPD et conversion en élève.'**
+  String get eduAdmissionsSubtitle;
+
+  /// No description provided for @eduAdmissionsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun dossier d\'admission.'**
+  String get eduAdmissionsEmpty;
+
+  /// No description provided for @eduAdmissionsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau dossier'**
+  String get eduAdmissionsCreate;
+
+  /// No description provided for @eduAdmissionsFirstname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get eduAdmissionsFirstname;
+
+  /// No description provided for @eduAdmissionsLastname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eduAdmissionsLastname;
+
+  /// No description provided for @eduAdmissionsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduAdmissionsStatus;
+
+  /// No description provided for @eduAdmissionsConvert.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir en élève'**
+  String get eduAdmissionsConvert;
+
+  /// No description provided for @eduAdmissionsConverted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Converti'**
+  String get eduAdmissionsConverted;
+
+  /// No description provided for @eduAdmissionsConverting.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversion…'**
+  String get eduAdmissionsConverting;
+
+  /// No description provided for @eduAdmissionsConvertconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Convertir ce dossier en élève ? L\'opération est idempotente.'**
+  String get eduAdmissionsConvertconfirm;
+
+  /// No description provided for @eduAssessmentsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intitulé'**
+  String get eduAssessmentsTitle;
+
+  /// No description provided for @eduAssessmentsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Évaluations, barèmes, saisie de notes et publication.'**
+  String get eduAssessmentsSubtitle;
+
+  /// No description provided for @eduAssessmentsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune évaluation.'**
+  String get eduAssessmentsEmpty;
+
+  /// No description provided for @eduAssessmentsCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle évaluation'**
+  String get eduAssessmentsCreate;
+
+  /// No description provided for @eduAssessmentsEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'évaluation'**
+  String get eduAssessmentsEdit;
+
+  /// No description provided for @eduAssessmentsType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get eduAssessmentsType;
+
+  /// No description provided for @eduAssessmentsCoefficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coefficient'**
+  String get eduAssessmentsCoefficient;
+
+  /// No description provided for @eduAssessmentsMaxscore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Barème (max)'**
+  String get eduAssessmentsMaxscore;
+
+  /// No description provided for @eduAssessmentsDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get eduAssessmentsDate;
+
+  /// No description provided for @eduAssessmentsClass.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classe'**
+  String get eduAssessmentsClass;
+
+  /// No description provided for @eduAssessmentsSubject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matière'**
+  String get eduAssessmentsSubject;
+
+  /// No description provided for @eduAssessmentsGrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get eduAssessmentsGrades;
+
+  /// No description provided for @eduAssessmentsEntergrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisir les notes'**
+  String get eduAssessmentsEntergrades;
+
+  /// No description provided for @eduAssessmentsPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get eduAssessmentsPublish;
+
+  /// No description provided for @eduAssessmentsPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publiée'**
+  String get eduAssessmentsPublished;
+
+  /// No description provided for @eduAssessmentsDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get eduAssessmentsDraft;
+
+  /// No description provided for @eduAssessmentsNostudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun élève inscrit dans cette classe.'**
+  String get eduAssessmentsNostudents;
+
+  /// No description provided for @eduAssessmentsScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Note'**
+  String get eduAssessmentsScore;
+
+  /// No description provided for @eduAssessmentsComment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commentaire'**
+  String get eduAssessmentsComment;
+
+  /// No description provided for @eduAssessmentsSavegrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer les notes'**
+  String get eduAssessmentsSavegrades;
+
+  /// No description provided for @eduReportcardsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduReportcardsTitle;
+
+  /// No description provided for @eduReportcardsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Génération, validation direction et publication verrouillante.'**
+  String get eduReportcardsSubtitle;
+
+  /// No description provided for @eduReportcardsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun bulletin.'**
+  String get eduReportcardsEmpty;
+
+  /// No description provided for @eduReportcardsGenerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Générer'**
+  String get eduReportcardsGenerate;
+
+  /// No description provided for @eduReportcardsValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get eduReportcardsValidate;
+
+  /// No description provided for @eduReportcardsPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get eduReportcardsPublish;
+
+  /// No description provided for @eduReportcardsStudent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élève'**
+  String get eduReportcardsStudent;
+
+  /// No description provided for @eduReportcardsAverage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyenne'**
+  String get eduReportcardsAverage;
+
+  /// No description provided for @eduReportcardsStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get eduReportcardsStatus;
+
+  /// No description provided for @eduReportcardsGenerated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Généré'**
+  String get eduReportcardsGenerated;
+
+  /// No description provided for @eduReportcardsValidated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validé'**
+  String get eduReportcardsValidated;
+
+  /// No description provided for @eduReportcardsPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période'**
+  String get eduReportcardsPeriod;
+
+  /// No description provided for @eduTeacherTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace enseignant'**
+  String get eduTeacherTitle;
+
+  /// No description provided for @eduTeacherSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes classes : présence, notes et soumission pour validation.'**
+  String get eduTeacherSubtitle;
+
+  /// No description provided for @eduTeacherMyclasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes classes'**
+  String get eduTeacherMyclasses;
+
+  /// No description provided for @eduTeacherEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune classe ne vous est affectée.'**
+  String get eduTeacherEmpty;
+
+  /// No description provided for @eduTeacherAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence'**
+  String get eduTeacherAttendance;
+
+  /// No description provided for @eduTeacherGrades.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes'**
+  String get eduTeacherGrades;
+
+  /// No description provided for @eduTeacherDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get eduTeacherDate;
+
+  /// No description provided for @eduTeacherPresent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présent'**
+  String get eduTeacherPresent;
+
+  /// No description provided for @eduTeacherAbsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absent'**
+  String get eduTeacherAbsent;
+
+  /// No description provided for @eduTeacherLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retard'**
+  String get eduTeacherLate;
+
+  /// No description provided for @eduTeacherExcused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Excusé'**
+  String get eduTeacherExcused;
+
+  /// No description provided for @eduTeacherSaveattendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer la présence'**
+  String get eduTeacherSaveattendance;
+
+  /// No description provided for @eduTeacherAttendancesaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence enregistrée.'**
+  String get eduTeacherAttendancesaved;
+
+  /// No description provided for @eduTeacherAssessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes évaluations'**
+  String get eduTeacherAssessments;
+
+  /// No description provided for @eduTeacherSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre pour validation'**
+  String get eduTeacherSubmit;
+
+  /// No description provided for @eduTeacherSubmithint.
+  ///
+  /// In fr, this message translates to:
+  /// **'La publication verrouille la note ; l\'historique des corrections est conservé.'**
+  String get eduTeacherSubmithint;
+
+  /// No description provided for @eduTeacherNoassessments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune évaluation pour cette classe.'**
+  String get eduTeacherNoassessments;
+
+  /// No description provided for @eduTeacherStudents.
+  ///
+  /// In fr, this message translates to:
+  /// **'Élèves de la classe'**
+  String get eduTeacherStudents;
+
+  /// No description provided for @eduGuardianTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portail responsable légal'**
+  String get eduGuardianTitle;
+
+  /// No description provided for @eduGuardianSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consultez la scolarité des enfants qui vous sont confiés.'**
+  String get eduGuardianSubtitle;
+
+  /// No description provided for @eduGuardianChildren.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes enfants'**
+  String get eduGuardianChildren;
+
+  /// No description provided for @eduGuardianPresence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence'**
+  String get eduGuardianPresence;
+
+  /// No description provided for @eduGuardianReportcards.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get eduGuardianReportcards;
+
+  /// No description provided for @eduGuardianCommunications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Communications'**
+  String get eduGuardianCommunications;
+
+  /// No description provided for @eduGuardianConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'En accédant au portail, vous consentez à la consultation des données scolaires de vos enfants.'**
+  String get eduGuardianConsent;
+
+  /// No description provided for @eduGuardianInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien d\'accès invalide.'**
+  String get eduGuardianInvalid;
+
+  /// No description provided for @eduGuardianExpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce lien d\'accès a expiré. Contactez l\'établissement.'**
+  String get eduGuardianExpired;
+
+  /// No description provided for @eduGuardianUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce lien a déjà été utilisé et n\'est plus valide.'**
+  String get eduGuardianUsed;
+
+  /// No description provided for @eduGuardianEmptychildren.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun enfant ne vous est rattaché.'**
+  String get eduGuardianEmptychildren;
+
+  /// No description provided for @eduGuardianToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get eduGuardianToday;
+
+  /// No description provided for @eduGuardianLast30days.
+  ///
+  /// In fr, this message translates to:
+  /// **'30 derniers jours'**
+  String get eduGuardianLast30days;
+
+  /// No description provided for @eduGuardianPublishedonly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins publiés uniquement.'**
+  String get eduGuardianPublishedonly;
+
+  /// No description provided for @eduGuardianAccessnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien à usage unique et à durée limitée. Toute consultation est tracée.'**
+  String get eduGuardianAccessnote;
+
+  /// No description provided for @eduCommonSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get eduCommonSave;
+
+  /// No description provided for @eduCommonCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get eduCommonCancel;
+
+  /// No description provided for @eduCommonLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement…'**
+  String get eduCommonLoading;
+
+  /// No description provided for @eduCommonError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue.'**
+  String get eduCommonError;
+
+  /// No description provided for @eduCommonRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get eduCommonRetry;
+
+  /// No description provided for @eduCommonActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions'**
+  String get eduCommonActions;
+
+  /// No description provided for @eduCommonClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get eduCommonClose;
+
+  /// No description provided for @eduCommonDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get eduCommonDelete;
+
+  /// No description provided for @eduCommonEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get eduCommonEdit;
+
+  /// No description provided for @eduCommonNodata.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée.'**
+  String get eduCommonNodata;
+
+  /// No description provided for @eduCommonView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir'**
+  String get eduCommonView;
+
+  /// No description provided for @eduCommonBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get eduCommonBack;
+
+  /// No description provided for @eduCommonDeleteconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet élément ?'**
+  String get eduCommonDeleteconfirm;
+
+  /// No description provided for @travelTravelBookingsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get travelTravelBookingsTitle;
+
+  /// No description provided for @travelTravelBookingsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes au guichet, confirmation, annulation, remboursement et billets.'**
+  String get travelTravelBookingsSubtitle;
+
+  /// No description provided for @travelTravelCommonStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get travelTravelCommonStatus;
+
+  /// No description provided for @travelTravelCommonAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tous'**
+  String get travelTravelCommonAll;
+
+  /// No description provided for @travelTravelNetworkRoute.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trajet'**
+  String get travelTravelNetworkRoute;
+
+  /// No description provided for @travelTravelBookingsReference.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get travelTravelBookingsReference;
+
+  /// No description provided for @travelTravelBookingsReferenceplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. GV-2026-0001…'**
+  String get travelTravelBookingsReferenceplaceholder;
+
+  /// No description provided for @travelTravelCommonSearch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher'**
+  String get travelTravelCommonSearch;
+
+  /// No description provided for @travelTravelCommonNodata.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnée'**
+  String get travelTravelCommonNodata;
+
+  /// No description provided for @travelTravelBookingsDetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détail'**
+  String get travelTravelBookingsDetail;
+
+  /// No description provided for @travelTravelBookingsConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer'**
+  String get travelTravelBookingsConfirm;
+
+  /// No description provided for @travelTravelBookingsCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get travelTravelBookingsCancel;
+
+  /// No description provided for @travelTravelBookingsRefund.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rembourser'**
+  String get travelTravelBookingsRefund;
+
+  /// No description provided for @travelTravelBookingsIssuetickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Émettre billet'**
+  String get travelTravelBookingsIssuetickets;
+
+  /// No description provided for @travelTravelBookingsDetailtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservation'**
+  String get travelTravelBookingsDetailtitle;
+
+  /// No description provided for @travelTravelBookingsPaymentstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get travelTravelBookingsPaymentstatus;
+
+  /// No description provided for @travelTravelBookingsTrip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trajet'**
+  String get travelTravelBookingsTrip;
+
+  /// No description provided for @travelTravelBookingsSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source'**
+  String get travelTravelBookingsSource;
+
+  /// No description provided for @travelTravelBookingsPassengercount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passagers'**
+  String get travelTravelBookingsPassengercount;
+
+  /// No description provided for @travelTravelBookingsTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get travelTravelBookingsTotal;
+
+  /// No description provided for @travelTravelBookingsPassengers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passagers'**
+  String get travelTravelBookingsPassengers;
+
+  /// No description provided for @travelTravelBookingsSeat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Siège'**
+  String get travelTravelBookingsSeat;
+
+  /// No description provided for @travelTravelTicketsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Billets'**
+  String get travelTravelTicketsTitle;
+
+  /// No description provided for @travelTravelBookingsNotickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun billet émis'**
+  String get travelTravelBookingsNotickets;
+
+  /// No description provided for @travelTravelCommonClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get travelTravelCommonClose;
+
+  /// No description provided for @travelTravelBookingstatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get travelTravelBookingstatusPending;
+
+  /// No description provided for @travelTravelBookingstatusConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmée'**
+  String get travelTravelBookingstatusConfirmed;
+
+  /// No description provided for @travelTravelBookingstatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get travelTravelBookingstatusCancelled;
+
+  /// No description provided for @travelTravelBookingstatusRefunded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remboursée'**
+  String get travelTravelBookingstatusRefunded;
+
+  /// No description provided for @travelTravelBookingstatusCompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminée'**
+  String get travelTravelBookingstatusCompleted;
+
+  /// No description provided for @travelTravelPaymentstatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get travelTravelPaymentstatusPending;
+
+  /// No description provided for @travelTravelPaymentstatusConfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmé'**
+  String get travelTravelPaymentstatusConfirmed;
+
+  /// No description provided for @travelTravelPaymentstatusFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échoué'**
+  String get travelTravelPaymentstatusFailed;
+
+  /// No description provided for @travelTravelPaymentstatusRefunded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remboursé'**
+  String get travelTravelPaymentstatusRefunded;
+
+  /// No description provided for @travelTravelTicketstatusIssued.
+  ///
+  /// In fr, this message translates to:
+  /// **'Émis'**
+  String get travelTravelTicketstatusIssued;
+
+  /// No description provided for @travelTravelTicketstatusCheckedIn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistré'**
+  String get travelTravelTicketstatusCheckedIn;
+
+  /// No description provided for @travelTravelTicketstatusVoid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulé'**
+  String get travelTravelTicketstatusVoid;
+
+  /// No description provided for @travelTravelCommonCreatedat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get travelTravelCommonCreatedat;
+
+  /// No description provided for @travelTravelBookingsRefundtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rembourser la réservation'**
+  String get travelTravelBookingsRefundtitle;
+
+  /// No description provided for @travelTravelBookingsCanceltitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la réservation'**
+  String get travelTravelBookingsCanceltitle;
+
+  /// No description provided for @travelTravelBookingsourceOffice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Guichet'**
+  String get travelTravelBookingsourceOffice;
+
+  /// No description provided for @travelTravelBookingsourcePhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelTravelBookingsourcePhone;
+
+  /// No description provided for @travelTravelBookingsourceOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'En ligne'**
+  String get travelTravelBookingsourceOnline;
+
+  /// No description provided for @travelTravelAgecategoryInfant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bébé'**
+  String get travelTravelAgecategoryInfant;
+
+  /// No description provided for @travelTravelAgecategoryChild.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enfant'**
+  String get travelTravelAgecategoryChild;
+
+  /// No description provided for @travelTravelAgecategoryAdult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adulte'**
+  String get travelTravelAgecategoryAdult;
+
+  /// No description provided for @travelTravelCommonLoaderrorbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue.'**
+  String get travelTravelCommonLoaderrorbody;
+
+  /// No description provided for @travelTravelBookingsConfirmtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer la réservation'**
+  String get travelTravelBookingsConfirmtitle;
+
+  /// No description provided for @travelTravelBookingsConfirmbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer la réservation {ref} ? Les sièges seront marqués vendus.'**
+  String travelTravelBookingsConfirmbody(Object ref);
+
+  /// No description provided for @travelTravelBookingsIssueticketstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Émettre les billets'**
+  String get travelTravelBookingsIssueticketstitle;
+
+  /// No description provided for @travelTravelBookingsIssueticketsbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Émettre un billet nominatif pour chaque passager de {ref} ?'**
+  String travelTravelBookingsIssueticketsbody(Object ref);
+
+  /// No description provided for @travelTravelCatalogTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Locations & hôtels'**
+  String get travelTravelCatalogTitle;
+
+  /// No description provided for @travelTravelCatalogSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Véhicules en location, réservations et catalogue hôtelier.'**
+  String get travelTravelCatalogSubtitle;
+
+  /// No description provided for @travelTravelCommonCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get travelTravelCommonCreate;
+
+  /// No description provided for @travelTravelCatalogImages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Images'**
+  String get travelTravelCatalogImages;
+
+  /// No description provided for @travelTravelCommonEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get travelTravelCommonEdit;
+
+  /// No description provided for @travelTravelCommonDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get travelTravelCommonDelete;
+
+  /// No description provided for @travelTravelCatalogRentalimagestitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Images du véhicule'**
+  String get travelTravelCatalogRentalimagestitle;
+
+  /// No description provided for @travelTravelCatalogNoimages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune image'**
+  String get travelTravelCatalogNoimages;
+
+  /// No description provided for @travelTravelCatalogRooms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chambres'**
+  String get travelTravelCatalogRooms;
+
+  /// No description provided for @travelTravelCatalogHotelroomstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chambres de l’hôtel'**
+  String get travelTravelCatalogHotelroomstitle;
+
+  /// No description provided for @travelTravelCatalogAddroom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une chambre'**
+  String get travelTravelCatalogAddroom;
+
+  /// No description provided for @travelTravelCommonConfirmdeletetitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet élément ?'**
+  String get travelTravelCommonConfirmdeletetitle;
+
+  /// No description provided for @travelTravelCatalogTabrentals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Véhicules en location'**
+  String get travelTravelCatalogTabrentals;
+
+  /// No description provided for @travelTravelCatalogTabrentalbookings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations location'**
+  String get travelTravelCatalogTabrentalbookings;
+
+  /// No description provided for @travelTravelCatalogTabhotels.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hôtels'**
+  String get travelTravelCatalogTabhotels;
+
+  /// No description provided for @travelTravelCommonActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get travelTravelCommonActive;
+
+  /// No description provided for @travelTravelCommonDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inactif'**
+  String get travelTravelCommonDisabled;
+
+  /// No description provided for @travelTravelCommonCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get travelTravelCommonCity;
+
+  /// No description provided for @travelTravelCatalogPriceday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix / jour'**
+  String get travelTravelCatalogPriceday;
+
+  /// No description provided for @travelTravelCatalogStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get travelTravelCatalogStart;
+
+  /// No description provided for @travelTravelCatalogEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get travelTravelCatalogEnd;
+
+  /// No description provided for @travelTravelCatalogHotelname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelTravelCatalogHotelname;
+
+  /// No description provided for @travelTravelCatalogClassification.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classification'**
+  String get travelTravelCatalogClassification;
+
+  /// No description provided for @travelTravelOfficesPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelTravelOfficesPhone;
+
+  /// No description provided for @travelTravelCatalogRoomtype.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get travelTravelCatalogRoomtype;
+
+  /// No description provided for @travelTravelCatalogRoomnumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'N°'**
+  String get travelTravelCatalogRoomnumber;
+
+  /// No description provided for @travelTravelCatalogCapacity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capacité'**
+  String get travelTravelCatalogCapacity;
+
+  /// No description provided for @travelTravelCatalogPricenight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix / nuit'**
+  String get travelTravelCatalogPricenight;
+
+  /// No description provided for @travelTravelCommonConfirmdeletebody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?'**
+  String travelTravelCommonConfirmdeletebody(Object name);
+
+  /// No description provided for @travelTravelCheckinTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Check-in & manifeste'**
+  String get travelTravelCheckinTitle;
+
+  /// No description provided for @travelTravelCheckinSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Embarquement par trajet et compteur de passagers.'**
+  String get travelTravelCheckinSubtitle;
+
+  /// No description provided for @travelTravelCheckinTrip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trajet'**
+  String get travelTravelCheckinTrip;
+
+  /// No description provided for @travelTravelCheckinSelecttrip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionner un trajet…'**
+  String get travelTravelCheckinSelecttrip;
+
+  /// No description provided for @travelTravelCheckinBoarded.
+  ///
+  /// In fr, this message translates to:
+  /// **'embarqués'**
+  String get travelTravelCheckinBoarded;
+
+  /// No description provided for @travelTravelCheckinEmptymanifest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun passager pour ce trajet'**
+  String get travelTravelCheckinEmptymanifest;
+
+  /// No description provided for @travelTravelCheckinNoticket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans billet'**
+  String get travelTravelCheckinNoticket;
+
+  /// No description provided for @travelTravelCheckinCheckin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Embarquer'**
+  String get travelTravelCheckinCheckin;
+
+  /// No description provided for @travelTravelCheckinDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Embarqué'**
+  String get travelTravelCheckinDone;
+
+  /// No description provided for @travelTravelTripstatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get travelTravelTripstatusDraft;
+
+  /// No description provided for @travelTravelTripstatusScheduled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Planifié'**
+  String get travelTravelTripstatusScheduled;
+
+  /// No description provided for @travelTravelTripstatusPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publié'**
+  String get travelTravelTripstatusPublished;
+
+  /// No description provided for @travelTravelTripstatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulé'**
+  String get travelTravelTripstatusCancelled;
+
+  /// No description provided for @travelTravelCheckinSeat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Siège'**
+  String get travelTravelCheckinSeat;
+
+  /// No description provided for @travelTravelCheckinPassenger.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passager'**
+  String get travelTravelCheckinPassenger;
+
+  /// No description provided for @travelTravelCheckinAge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Age'**
+  String get travelTravelCheckinAge;
+
+  /// No description provided for @travelTravelCheckinClass.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classe'**
+  String get travelTravelCheckinClass;
+
+  /// No description provided for @travelTravelCheckinTicket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Billet'**
+  String get travelTravelCheckinTicket;
+
+  /// No description provided for @travelTravelCheckinAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Embarquement'**
+  String get travelTravelCheckinAction;
+
+  /// No description provided for @travelTravelHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Agence de voyage'**
+  String get travelTravelHomeTitle;
+
+  /// No description provided for @travelTravelHomeSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.'**
+  String get travelTravelHomeSubtitle;
+
+  /// No description provided for @travelTravelHomeFlagactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Module actif'**
+  String get travelTravelHomeFlagactive;
+
+  /// No description provided for @travelTravelHomeFlowtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flux métier'**
+  String get travelTravelHomeFlowtitle;
+
+  /// No description provided for @travelTravelHomeFlowbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports.'**
+  String get travelTravelHomeFlowbody;
+
+  /// No description provided for @travelTravelReferentialTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référentiel'**
+  String get travelTravelReferentialTitle;
+
+  /// No description provided for @travelTravelReferentialSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays, villes, gares, bureaux, compagnies, classes et véhicules.'**
+  String get travelTravelReferentialSubtitle;
+
+  /// No description provided for @travelTravelNetworkTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Routes & trajets'**
+  String get travelTravelNetworkTitle;
+
+  /// No description provided for @travelTravelNetworkSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lignes, étapes, programmation, tarifs et publication.'**
+  String get travelTravelNetworkSubtitle;
+
+  /// No description provided for @travelTravelTicketsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consultation, téléchargement PDF et révocation.'**
+  String get travelTravelTicketsSubtitle;
+
+  /// No description provided for @travelTravelReportsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get travelTravelReportsTitle;
+
+  /// No description provided for @travelTravelReportsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes, occupation, recettes, annulations et exports CSV.'**
+  String get travelTravelReportsSubtitle;
+
+  /// No description provided for @travelTravelNetworkStops.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étapes'**
+  String get travelTravelNetworkStops;
+
+  /// No description provided for @travelTravelNetworkRoutestopstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Étapes de la route'**
+  String get travelTravelNetworkRoutestopstitle;
+
+  /// No description provided for @travelTravelNetworkAddstop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une étape'**
+  String get travelTravelNetworkAddstop;
+
+  /// No description provided for @travelTravelCommonYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui'**
+  String get travelTravelCommonYes;
+
+  /// No description provided for @travelTravelCommonNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non'**
+  String get travelTravelCommonNo;
+
+  /// No description provided for @travelTravelNetworkPrices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tarifs'**
+  String get travelTravelNetworkPrices;
+
+  /// No description provided for @travelTravelNetworkPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get travelTravelNetworkPublish;
+
+  /// No description provided for @travelTravelNetworkCanceltrip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler le trajet'**
+  String get travelTravelNetworkCanceltrip;
+
+  /// No description provided for @travelTravelNetworkTrippricestitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tarifs du trajet'**
+  String get travelTravelNetworkTrippricestitle;
+
+  /// No description provided for @travelTravelNetworkAddprice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un tarif'**
+  String get travelTravelNetworkAddprice;
+
+  /// No description provided for @travelTravelNetworkRoutes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Routes & étapes'**
+  String get travelTravelNetworkRoutes;
+
+  /// No description provided for @travelTravelNetworkTrips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trajets & tarifs'**
+  String get travelTravelNetworkTrips;
+
+  /// No description provided for @travelTravelCarriertypesBus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bus'**
+  String get travelTravelCarriertypesBus;
+
+  /// No description provided for @travelTravelCarriertypesTrain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Train'**
+  String get travelTravelCarriertypesTrain;
+
+  /// No description provided for @travelTravelCarriertypesPlane.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avion'**
+  String get travelTravelCarriertypesPlane;
+
+  /// No description provided for @travelTravelCarriertypesBoat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bateau'**
+  String get travelTravelCarriertypesBoat;
+
+  /// No description provided for @travelTravelNetworkOrigin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Origine'**
+  String get travelTravelNetworkOrigin;
+
+  /// No description provided for @travelTravelNetworkDestination.
+  ///
+  /// In fr, this message translates to:
+  /// **'Destination'**
+  String get travelTravelNetworkDestination;
+
+  /// No description provided for @travelTravelNetworkDistance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Distance (km)'**
+  String get travelTravelNetworkDistance;
+
+  /// No description provided for @travelTravelNetworkDuration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée (min)'**
+  String get travelTravelNetworkDuration;
+
+  /// No description provided for @travelTravelNetworkRank.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rang'**
+  String get travelTravelNetworkRank;
+
+  /// No description provided for @travelTravelNetworkStopover.
+  ///
+  /// In fr, this message translates to:
+  /// **'Escale'**
+  String get travelTravelNetworkStopover;
+
+  /// No description provided for @travelTravelNetworkMinduration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée min (min)'**
+  String get travelTravelNetworkMinduration;
+
+  /// No description provided for @travelTravelNetworkDeparture.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départ'**
+  String get travelTravelNetworkDeparture;
+
+  /// No description provided for @travelTravelNetworkArrival.
+  ///
+  /// In fr, this message translates to:
+  /// **'Arrivée'**
+  String get travelTravelNetworkArrival;
+
+  /// No description provided for @travelTravelNetworkMeans.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyen'**
+  String get travelTravelNetworkMeans;
+
+  /// No description provided for @travelTravelVehiclesSeats.
+  ///
+  /// In fr, this message translates to:
+  /// **'Places'**
+  String get travelTravelVehiclesSeats;
+
+  /// No description provided for @travelTravelNetworkClass.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classe'**
+  String get travelTravelNetworkClass;
+
+  /// No description provided for @travelTravelNetworkAdultprice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tarif adulte'**
+  String get travelTravelNetworkAdultprice;
+
+  /// No description provided for @travelTravelNetworkChildprice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tarif enfant'**
+  String get travelTravelNetworkChildprice;
+
+  /// No description provided for @travelTravelNetworkCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise'**
+  String get travelTravelNetworkCurrency;
+
+  /// No description provided for @travelTravelReferentialCountries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays'**
+  String get travelTravelReferentialCountries;
+
+  /// No description provided for @travelTravelReferentialCities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Villes'**
+  String get travelTravelReferentialCities;
+
+  /// No description provided for @travelTravelReferentialStations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gares & terminaux'**
+  String get travelTravelReferentialStations;
+
+  /// No description provided for @travelTravelReferentialOffices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bureaux de vente'**
+  String get travelTravelReferentialOffices;
+
+  /// No description provided for @travelTravelReferentialCarriers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compagnies'**
+  String get travelTravelReferentialCarriers;
+
+  /// No description provided for @travelTravelReferentialClasses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Classes de service'**
+  String get travelTravelReferentialClasses;
+
+  /// No description provided for @travelTravelReferentialVehicles.
+  ///
+  /// In fr, this message translates to:
+  /// **'Véhicules'**
+  String get travelTravelReferentialVehicles;
+
+  /// No description provided for @travelTravelCountriesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelTravelCountriesName;
+
+  /// No description provided for @travelTravelCountriesPhonecode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indicatif'**
+  String get travelTravelCountriesPhonecode;
+
+  /// No description provided for @travelTravelCitiesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get travelTravelCitiesName;
+
+  /// No description provided for @travelTravelCitiesCountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays'**
+  String get travelTravelCitiesCountry;
+
+  /// No description provided for @travelTravelCitiesRegion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Région'**
+  String get travelTravelCitiesRegion;
+
+  /// No description provided for @travelTravelStationsName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelTravelStationsName;
+
+  /// No description provided for @travelTravelStationsPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelTravelStationsPhone;
+
+  /// No description provided for @travelTravelStationsIsterminal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminal'**
+  String get travelTravelStationsIsterminal;
+
+  /// No description provided for @travelTravelOfficesName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelTravelOfficesName;
+
+  /// No description provided for @travelTravelOfficesAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse'**
+  String get travelTravelOfficesAddress;
+
+  /// No description provided for @travelTravelCarriersName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelTravelCarriersName;
+
+  /// No description provided for @travelTravelCarriersType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get travelTravelCarriersType;
+
+  /// No description provided for @travelTravelCarriersPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelTravelCarriersPhone;
+
+  /// No description provided for @travelTravelClassesLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libellé'**
+  String get travelTravelClassesLabel;
+
+  /// No description provided for @travelTravelClassesColor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Couleur'**
+  String get travelTravelClassesColor;
+
+  /// No description provided for @travelTravelClassesPriority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Priorité'**
+  String get travelTravelClassesPriority;
+
+  /// No description provided for @travelTravelVehiclesRegistration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Immatriculation'**
+  String get travelTravelVehiclesRegistration;
+
+  /// No description provided for @travelTravelCommonCarrier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compagnie'**
+  String get travelTravelCommonCarrier;
+
+  /// No description provided for @travelTravelReportsFrom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Du'**
+  String get travelTravelReportsFrom;
+
+  /// No description provided for @travelTravelReportsTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au'**
+  String get travelTravelReportsTo;
+
+  /// No description provided for @travelTravelReportsApply.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appliquer'**
+  String get travelTravelReportsApply;
+
+  /// No description provided for @travelTravelReportsExport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exporter CSV'**
+  String get travelTravelReportsExport;
+
+  /// No description provided for @travelTravelReportsKpisales.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes'**
+  String get travelTravelReportsKpisales;
+
+  /// No description provided for @travelTravelReportsKpibookings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations'**
+  String get travelTravelReportsKpibookings;
+
+  /// No description provided for @travelTravelReportsKpioccupancy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Occupation'**
+  String get travelTravelReportsKpioccupancy;
+
+  /// No description provided for @travelTravelReportsKpicancellations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulations'**
+  String get travelTravelReportsKpicancellations;
+
+  /// No description provided for @travelTravelReportsSalescount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes'**
+  String get travelTravelReportsSalescount;
+
+  /// No description provided for @travelTravelReportsSalespassengers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passagers'**
+  String get travelTravelReportsSalespassengers;
+
+  /// No description provided for @travelTravelReportsSalesamount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant'**
+  String get travelTravelReportsSalesamount;
+
+  /// No description provided for @travelTravelReportsRevenueconfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmé'**
+  String get travelTravelReportsRevenueconfirmed;
+
+  /// No description provided for @travelTravelReportsRevenuerefunded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remboursé'**
+  String get travelTravelReportsRevenuerefunded;
+
+  /// No description provided for @travelTravelReportsRevenuenet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Net'**
+  String get travelTravelReportsRevenuenet;
+
+  /// No description provided for @travelTravelReportsCancellationscount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulations'**
+  String get travelTravelReportsCancellationscount;
+
+  /// No description provided for @travelTravelReportsCancellationsrate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux'**
+  String get travelTravelReportsCancellationsrate;
+
+  /// No description provided for @travelTravelReportsCancellationstotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservations finales'**
+  String get travelTravelReportsCancellationstotal;
+
+  /// No description provided for @travelTravelReportsByreason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par motif'**
+  String get travelTravelReportsByreason;
+
+  /// No description provided for @travelTravelReportsBysource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Par source'**
+  String get travelTravelReportsBysource;
+
+  /// No description provided for @travelTravelReportsTabsales.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ventes'**
+  String get travelTravelReportsTabsales;
+
+  /// No description provided for @travelTravelReportsTaboccupancy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Occupation'**
+  String get travelTravelReportsTaboccupancy;
+
+  /// No description provided for @travelTravelReportsTabrevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recettes'**
+  String get travelTravelReportsTabrevenue;
+
+  /// No description provided for @travelTravelReportsTabcancellations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulations'**
+  String get travelTravelReportsTabcancellations;
+
+  /// No description provided for @travelTravelReportsSold.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vendus'**
+  String get travelTravelReportsSold;
+
+  /// No description provided for @travelTravelReportsReserved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservés'**
+  String get travelTravelReportsReserved;
+
+  /// No description provided for @travelTravelReportsFree.
+  ///
+  /// In fr, this message translates to:
+  /// **'Libres'**
+  String get travelTravelReportsFree;
+
+  /// No description provided for @travelTravelCommonReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get travelTravelCommonReason;
+
+  /// No description provided for @travelTravelReportsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre'**
+  String get travelTravelReportsCount;
+
+  /// No description provided for @travelTravelTicketsDownload.
+  ///
+  /// In fr, this message translates to:
+  /// **'PDF'**
+  String get travelTravelTicketsDownload;
+
+  /// No description provided for @travelTravelTicketsRevoke.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer'**
+  String get travelTravelTicketsRevoke;
+
+  /// No description provided for @travelTravelTicketsRevoketitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer le billet'**
+  String get travelTravelTicketsRevoketitle;
+
+  /// No description provided for @travelTravelTicketsRevokebody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé.'**
+  String travelTravelTicketsRevokebody(Object number);
+
+  /// No description provided for @travelTravelCommonSelectplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'— Sélectionner —'**
+  String get travelTravelCommonSelectplaceholder;
+
+  /// No description provided for @travelTravelCommonCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get travelTravelCommonCancel;
+
+  /// No description provided for @travelTravelCommonSaving.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrement…'**
+  String get travelTravelCommonSaving;
+
+  /// No description provided for @travelTravelCommonSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get travelTravelCommonSave;
+
+  /// No description provided for @travelTravelCommonFeaturedisabledtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Module Agence de voyage inactif'**
+  String get travelTravelCommonFeaturedisabledtitle;
+
+  /// No description provided for @travelTravelCommonFeaturedisabledbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le flag travelagency n’est pas activé pour le tenant connecté. Contactez un administrateur plateforme pour l’activer.'**
+  String get travelTravelCommonFeaturedisabledbody;
+
+  /// No description provided for @travelTravelCommonTenantrequiredtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contexte tenant requis'**
+  String get travelTravelCommonTenantrequiredtitle;
+
+  /// No description provided for @travelTravelCommonTenantrequiredbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les données de l’agence de voyage sont accessibles avec une session tenant (impersonation ou compte manager).'**
+  String get travelTravelCommonTenantrequiredbody;
+
+  /// No description provided for @travelTravelCommonLoaderrortitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement impossible'**
+  String get travelTravelCommonLoaderrortitle;
+
+  /// No description provided for @travelTravelCommonRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get travelTravelCommonRetry;
 
   /// No description provided for @travelLoading.
   ///
@@ -18286,6 +21846,342 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Archivée'**
   String get travelAdvertstatusArchived;
+
+  /// No description provided for @travelPubliccontactTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contactez l’agence de voyage'**
+  String get travelPubliccontactTitle;
+
+  /// No description provided for @travelPubliccontactSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une question sur vos trajets, réservations ou billets ? Écrivez-nous.'**
+  String get travelPubliccontactSubtitle;
+
+  /// No description provided for @travelPubliccontactNolink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce formulaire nécessite le lien de contact fourni par l\'agence (lien signé).'**
+  String get travelPubliccontactNolink;
+
+  /// No description provided for @travelPubliccontactInvalidlink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien de contact invalide ou expiré. Demandez un nouveau lien à l\'agence.'**
+  String get travelPubliccontactInvalidlink;
+
+  /// No description provided for @travelPubliccontactSendfailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'envoi a échoué. Réessayez.'**
+  String get travelPubliccontactSendfailed;
+
+  /// No description provided for @travelPubliccontactAcktitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande bien reçue'**
+  String get travelPubliccontactAcktitle;
+
+  /// No description provided for @travelPubliccontactAckbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci ! L\'agence vous répondra dans les meilleurs délais.'**
+  String get travelPubliccontactAckbody;
+
+  /// No description provided for @travelPubliccontactFirstname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get travelPubliccontactFirstname;
+
+  /// No description provided for @travelPubliccontactLastname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get travelPubliccontactLastname;
+
+  /// No description provided for @travelPubliccontactEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get travelPubliccontactEmail;
+
+  /// No description provided for @travelPubliccontactPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get travelPubliccontactPhone;
+
+  /// No description provided for @travelPubliccontactMessage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message'**
+  String get travelPubliccontactMessage;
+
+  /// No description provided for @travelPubliccontactConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'accepte d\'être contacté(e) par email au sujet de ma demande.'**
+  String get travelPubliccontactConsent;
+
+  /// No description provided for @travelPubliccontactSending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi…'**
+  String get travelPubliccontactSending;
+
+  /// No description provided for @travelPubliccontactSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer la demande'**
+  String get travelPubliccontactSend;
+
+  /// No description provided for @travelportalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portail voyageur'**
+  String get travelportalTitle;
+
+  /// No description provided for @travelportalSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivez votre réservation, téléchargez vos e-billets et annulez en ligne.'**
+  String get travelportalSubtitle;
+
+  /// No description provided for @travelportalReferencelabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence de réservation'**
+  String get travelportalReferencelabel;
+
+  /// No description provided for @travelportalReferenceplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. GV-2026-0001'**
+  String get travelportalReferenceplaceholder;
+
+  /// No description provided for @travelportalCodelabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de validation'**
+  String get travelportalCodelabel;
+
+  /// No description provided for @travelportalCodeplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code figurant sur votre e-billet'**
+  String get travelportalCodeplaceholder;
+
+  /// No description provided for @travelportalTrack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivre ma réservation'**
+  String get travelportalTrack;
+
+  /// No description provided for @travelportalTracking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivi en cours…'**
+  String get travelportalTracking;
+
+  /// No description provided for @travelportalStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get travelportalStatus;
+
+  /// No description provided for @travelportalTrip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trajet'**
+  String get travelportalTrip;
+
+  /// No description provided for @travelportalPassengers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passagers'**
+  String get travelportalPassengers;
+
+  /// No description provided for @travelportalTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total'**
+  String get travelportalTotal;
+
+  /// No description provided for @travelportalTickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-billets'**
+  String get travelportalTickets;
+
+  /// No description provided for @travelportalDownloadticket.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger l\'e-billet'**
+  String get travelportalDownloadticket;
+
+  /// No description provided for @travelportalCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler en ligne'**
+  String get travelportalCancel;
+
+  /// No description provided for @travelportalCancelreason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif d\'annulation'**
+  String get travelportalCancelreason;
+
+  /// No description provided for @travelportalCancelreasonplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expliquez brièvement pourquoi vous annulez…'**
+  String get travelportalCancelreasonplaceholder;
+
+  /// No description provided for @travelportalCancelconfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer l\'annulation'**
+  String get travelportalCancelconfirm;
+
+  /// No description provided for @travelportalCancelling.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulation en cours…'**
+  String get travelportalCancelling;
+
+  /// No description provided for @travelportalCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservation annulée'**
+  String get travelportalCancelled;
+
+  /// No description provided for @travelportalNotfound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réservation introuvable pour cette référence.'**
+  String get travelportalNotfound;
+
+  /// No description provided for @travelportalInvalidcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code de validation invalide.'**
+  String get travelportalInvalidcode;
+
+  /// No description provided for @travelportalError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue. Réessayez.'**
+  String get travelportalError;
+
+  /// No description provided for @travelportalDeparturepast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le départ est déjà passé : l\'annulation en ligne n\'est plus possible.'**
+  String get travelportalDeparturepast;
+
+  /// No description provided for @travelportalEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune réservation pour le moment.'**
+  String get travelportalEmpty;
+
+  /// No description provided for @travelportalStatuspending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get travelportalStatuspending;
+
+  /// No description provided for @travelportalStatusconfirmed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmée'**
+  String get travelportalStatusconfirmed;
+
+  /// No description provided for @travelportalStatusrefunded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remboursée'**
+  String get travelportalStatusrefunded;
+
+  /// No description provided for @travelportalStatuscompleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminée'**
+  String get travelportalStatuscompleted;
+
+  /// No description provided for @fuelPumpistTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pompiste'**
+  String get fuelPumpistTitle;
+
+  /// No description provided for @fuelPumpistBackTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get fuelPumpistBackTooltip;
+
+  /// No description provided for @fuelPumpistActiveShift.
+  ///
+  /// In fr, this message translates to:
+  /// **'Shift actif'**
+  String get fuelPumpistActiveShift;
+
+  /// No description provided for @fuelPumpistNoShiftTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun shift actif'**
+  String get fuelPumpistNoShiftTitle;
+
+  /// No description provided for @fuelPumpistNoShiftDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos affectations du jour apparaîtront ici.'**
+  String get fuelPumpistNoShiftDescription;
+
+  /// No description provided for @fuelPumpistErrorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les shifts'**
+  String get fuelPumpistErrorTitle;
+
+  /// No description provided for @fuelPumpistReadingLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valeur relevé (unités mineures)'**
+  String get fuelPumpistReadingLabel;
+
+  /// No description provided for @fuelPumpistReadingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'ex. 12500'**
+  String get fuelPumpistReadingHint;
+
+  /// No description provided for @fuelPumpistSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer le relevé'**
+  String get fuelPumpistSubmit;
+
+  /// No description provided for @crmAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes CRM'**
+  String get crmAccounts;
+
+  /// No description provided for @crmContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts CRM'**
+  String get crmContacts;
+
+  /// No description provided for @crmLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Leads CRM'**
+  String get crmLeads;
 }
 
 class _AppLocalizationsDelegate
@@ -18319,9 +22215,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

@@ -9,14 +9,11 @@ use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelBookingFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder
 
 /**
  * Réservation multi-passagers (TRAVEL-209, issue #6022).
@@ -24,27 +21,6 @@ use Illuminate\Database\Eloquent\Builder
  * `reference` est générée automatiquement (`GV-…`) si absente à la création.
  * `idempotency_key` garantit qu'une requête rejouée (retry réseau, double
  * clic guichet) ne crée jamais deux réservations pour le même tenant.
- */
-/**
- * @property int $id
- * @property string $company_id
- * @property string $reference
- * @property int $trip_id
- * @property BookingStatus $status
- * @property int $passenger_count
- * @property int $total_amount_minor
- * @property string $currency
- * @property BookingSource $booking_source
- * @property int|null $customer_contact_id
- * @property int|null $booked_by_user_id
- * @property PaymentStatus $payment_status
- * @property Carbon|null $expires_at
- * @property string $idempotency_key
- * @property int $version
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @mixin Builder<static>
  */
 class TravelBooking extends Model
 {
@@ -148,6 +124,4 @@ class TravelBooking extends Model
     {
         return $this->hasMany(TravelPayment::class, 'booking_id');
     }
-
-
 }

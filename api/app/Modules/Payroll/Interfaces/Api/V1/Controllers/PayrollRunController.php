@@ -77,6 +77,7 @@ class PayrollRunController extends Controller
             ->where('company_id', $actor->company_id)
             ->where('period_start', $validated['period_start'])
             ->where('period_end', $validated['period_end'])
+            ->where('country_code', $validated['country_code'])
             ->where('status', '!=', 'cancelled')
             ->exists();
 
@@ -178,10 +179,12 @@ class PayrollRunController extends Controller
             abort(403);
         }
 
-        // #6529 : un run laissé en `error` par un échec de job asynchrone doit
-        // rester recalculable via l'API (sinon la paie reste bloquée pour
-        // toujours et aucun chemin de reprise n'existe).
-        if (in_array($payrollRun->status, ['draft', 'calculated', 'error'], true) === false) {
+        // #6529 : un run laissé en `error` ou orphelin en `processing` (worker
+        // mort entre le claim et le calcul) doit rester recalculable via l'API
+        // (sinon la paie reste bloquée pour toujours et aucun chemin de reprise
+        // n'existe). `calculated` reste permis (recalcul correctif) ; les
+        // statuts de clôture (validated, paid…) restent exclus.
+        if (in_array($payrollRun->status, ['draft', 'calculated', 'error', 'processing'], true) === false) {
             return response()->json(['message' => __('payroll.run_cannot_recalculate')], 422);
         }
 

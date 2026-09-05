@@ -73,9 +73,7 @@ final class ResolveKioskDevice
                 abort(403, 'DEVICE_REVOKED');
             }
 
-            if ($kiosk->company_id !== null) {
-                $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
-            }
+            $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
 
             $token = (string) $request->header('X-Kiosk-Token', '');
             if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {

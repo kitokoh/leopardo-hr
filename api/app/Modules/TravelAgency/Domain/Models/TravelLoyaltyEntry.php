@@ -6,8 +6,6 @@ namespace App\Modules\TravelAgency\Domain\Models;
 
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder
-use Illuminate\Support\Carbon;
 
 /**
  * Entrée du journal de fidélité (TRAVEL-811, issue #6101).
@@ -42,6 +40,4 @@ class TravelLoyaltyEntry extends Model
     ];
 
     public $timestamps = false;
-
-
 }

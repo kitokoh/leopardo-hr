@@ -129,9 +129,9 @@ class NotifyTaxRateValidation
                 // Issue #2498 — observabilité structurée (channel `structured`) :
                 // un échec de résolution du tenant doit être traçable.
                 Log::channel('structured')->warning('tax-rate.submitter-company-lookup-failed', [
-                    'event'      => $event,
+                    'event' => $event,
                     'company_id' => $model->getAttribute('company_id'),
-                    'error'      => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]);
 
                 return;
@@ -144,7 +144,7 @@ class NotifyTaxRateValidation
                 }
 
                 try {
-                    $this->sendNotification->execute(
+                    $this->sendNotification->handle(
                         (int) $submitter->id,
                         'tax_rate_validation',
                         $title,
@@ -155,21 +155,21 @@ class NotifyTaxRateValidation
                     // Issue #2498 — échec du dispatch in-app : contexte complet
                     // (événement, type de notification, destinataire, erreur).
                     Log::channel('structured')->warning('tax-rate.notification-inapp-failed', [
-                        'event'      => $event,
-                        'type'       => 'tax_rate_validation',
-                        'user_id'    => $submitter->id,
+                        'event' => $event,
+                        'type' => 'tax_rate_validation',
+                        'user_id' => $submitter->id,
                         'company_id' => $model->getAttribute('company_id'),
-                        'error'      => $e->getMessage(),
+                        'error' => $e->getMessage(),
                     ]);
                 }
 
-                $this->emailBestEffort($submitter->email, $title, $body);
+                $this->emailBestEffort($submitter->email ?? '', $title, $body);
             });
         } catch (\Throwable $e) {
             Log::channel('structured')->warning('tax-rate.notification-tenant-failed', [
-                'event'      => $event,
+                'event' => $event,
                 'company_id' => $model->getAttribute('company_id'),
-                'error'      => $e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
         } finally {
             if (is_string($previousSearchPath) && $previousSearchPath !== '') {

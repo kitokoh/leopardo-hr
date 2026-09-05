@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Accounting\Infrastructure\Services\AccountingSettingsDefaults;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use App\Modules\Accounting\Infrastructure\Services\AccountingSettingsDefaults;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\UpdateAccountingSettingsRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -160,7 +160,7 @@ class AccountingSettingsController extends Controller
             'legal_mentions' => $settings->legal_mentions,
             'tva_rates' => $this->serializeTvaRates($settings->tva_rates),
             'number_series' => $settings->number_series ?? [],
-            'updated_at' => $settings->updated_at?->toISOString(),
+            'updated_at' => $settings->updated_at?->toIso8601String(),
         ];
     }
 }

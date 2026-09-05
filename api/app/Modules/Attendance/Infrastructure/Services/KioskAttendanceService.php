@@ -6,9 +6,9 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Enums\VerificationMethod;
+use App\Modules\Attendance\Domain\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Domain\Models\BiometricAuditLog;
@@ -333,7 +333,10 @@ class KioskAttendanceService
     /**
      * Identifiant de réconciliation d'un événement offline : `device_event_id`
      * (BIO-007) puis `external_event_id` (hérité).
+     *
+     * @param  array<string, mixed>  $event
      */
+    /** @param array<string, mixed> $event */
     private function eventExternalId(array $event): ?string
     {
         $deviceEventId = $event['device_event_id'] ?? null;

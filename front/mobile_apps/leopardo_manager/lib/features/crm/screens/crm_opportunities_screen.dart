@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
-import 'package:leopardo_manager/features/crm/data/crm_repository.dart';
 import 'package:leopardo_manager/features/crm/providers/crm_providers.dart';
 
 /// Liste des opportunités CRM + transition d'étape — issue #5730.

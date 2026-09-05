@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RestaurantManager\Infrastructure\Services\DeliveryApps;
 
-use App\Modules\RestaurantManager\Domain\Contracts\DeliveryAppAdapter;
+use App\Modules\RestaurantManager\Domain\Contracts\MarketplaceAdapter;
 use RuntimeException;
 
 /**
@@ -15,10 +15,10 @@ use RuntimeException;
  */
 final class DeliveryAppRegistry
 {
-    /** @var array<string, DeliveryAppAdapter> */
+    /** @var array<string, MarketplaceAdapter> */
     private array $adapters = [];
 
-    public function register(DeliveryAppAdapter $adapter): void
+    public function register(MarketplaceAdapter $adapter): void
     {
         $this->adapters[$adapter->providerCode()] = $adapter;
     }
@@ -28,7 +28,7 @@ final class DeliveryAppRegistry
         return isset($this->adapters[$provider]);
     }
 
-    public function resolve(string $provider): DeliveryAppAdapter
+    public function resolve(string $provider): MarketplaceAdapter
     {
         if (! $this->has($provider)) {
             throw new RuntimeException(sprintf('Unsupported delivery app provider "%s".', $provider));

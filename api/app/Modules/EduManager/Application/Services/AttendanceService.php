@@ -39,9 +39,9 @@ final class AttendanceService
      *                                      attendance_date (Y-m-d), status,
      *                                      reason_code?, note?, recorded_by?
      *
-     * @throws InvalidArgumentException  statut inconnu / company_id manquant /
-     *                                   reason_code trop long
-     * @throws ModelNotFoundException    élève (ou classe) introuvable dans le tenant
+     * @throws InvalidArgumentException statut inconnu / company_id manquant /
+     *                                  reason_code trop long
+     * @throws ModelNotFoundException élève (ou classe) introuvable dans le tenant
      */
     public function record(array $data): EduAttendanceRecord
     {
@@ -55,7 +55,7 @@ final class AttendanceService
             throw new InvalidArgumentException(sprintf('Statut de présence invalide : %s.', $status));
         }
 
-        $reasonCode = isset($data['reason_code']) && $data['reason_code'] !== null
+        $reasonCode = isset($data['reason_code'])
             ? (string) $data['reason_code']
             : null;
         if ($reasonCode !== null && mb_strlen($reasonCode) > 30) {
@@ -98,7 +98,7 @@ final class AttendanceService
                 'status' => $status,
                 'reason_code' => $reasonCode,
                 'note' => isset($data['note']) && $data['note'] !== '' ? (string) $data['note'] : null,
-                'recorded_by' => isset($data['recorded_by']) && $data['recorded_by'] !== null
+                'recorded_by' => isset($data['recorded_by'])
                     ? (int) $data['recorded_by']
                     : null,
             ]
@@ -112,7 +112,7 @@ final class AttendanceService
      * new_status + motif) AVANT de mettre à jour le record, le tout dans une
      * transaction : l'historique des corrections est complet et rejouable.
      *
-     * @throws InvalidArgumentException  statut de correction inconnu
+     * @throws InvalidArgumentException statut de correction inconnu
      */
     public function correct(EduAttendanceRecord $record, string $newStatus, string $reason, int $actorId): EduAttendanceRecord
     {

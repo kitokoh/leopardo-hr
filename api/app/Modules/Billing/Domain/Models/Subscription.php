@@ -6,7 +6,7 @@ namespace App\Modules\Billing\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Enums\SubscriptionStatus;
-use App\Traits\BelongsToCompany;
+use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

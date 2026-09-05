@@ -113,7 +113,6 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $failed_login_attempts
  * @property Carbon|null $locked_until
  * @property Carbon|null $email_bounced_at
- * @property string|null $email
  * @property string|null $google_id_bounce_reason
  * @property string|null $two_fa_secret
  * @property Carbon|null $two_fa_enabled_at

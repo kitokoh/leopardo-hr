@@ -7,13 +7,10 @@ namespace App\Modules\TravelAgency\Domain\Models;
 use App\Modules\TravelAgency\Domain\Enums\TicketStatus;
 use App\Shared\Traits\BelongsToCompany;
 use Database\Factories\TravelTicketFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder
 
 /**
  * Billet nominatif (TRAVEL-210, issue #6023).
@@ -21,25 +18,6 @@ use Illuminate\Database\Eloquent\Builder
  * `validation_code` stocke un hash SHA-256 — jamais le code en clair. Le
  * code en clair (destiné au QR) n'est retourné qu'une fois, à l'émission,
  * par `issue()` ; il n'est jamais persisté.
- */
-/**
- * @property int $id
- * @property string $company_id
- * @property string $ticket_number
- * @property int $booking_id
- * @property int $passenger_id
- * @property string $validation_code
- * @property int|null $pdf_asset_id
- * @property Carbon|null $issued_at
- * @property Carbon|null $valid_from
- * @property Carbon|null $valid_until
- * @property TicketStatus $status
- * @property Carbon|null $checked_in_at
- * @property int|null $checked_in_by_user_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @mixin Builder<static>
  */
 class TravelTicket extends Model
 {
@@ -127,6 +105,4 @@ class TravelTicket extends Model
     {
         return $this->belongsTo(TravelPassenger::class, 'passenger_id');
     }
-
-
 }

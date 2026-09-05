@@ -679,12 +679,11 @@ class PayrollRunControllerTest extends TestCase
             ->assertJsonPath('data.country_code', 'CI');
     }
 
-
     public function test_duplicate_period_run_is_rejected_with_409(): void
     {
         // #6552 — index unique partiel (company_id, période) : créer un
         // second run sur la même période non-cancelled → 409
-        // PAYROLL_RUN_PERIOD_CONFLICT au lieu d'un 201 (double paie).
+        // PAYROLL_RUN_PERIOD_ALREADY_EXISTS au lieu d'un 201 (double paie).
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
         /** @var Employee $manager */
@@ -702,13 +701,12 @@ class PayrollRunControllerTest extends TestCase
 
         $second = $this->postJson('/api/v1/payroll-runs', $payload);
         $second->assertStatus(409);
-        $this->assertSame('PAYROLL_RUN_PERIOD_CONFLICT', $second->json('error'));
+        $this->assertSame('PAYROLL_RUN_PERIOD_ALREADY_EXISTS', $second->json('error'));
 
         $this->assertSame(1, PayrollRun::query()
             ->where('company_id', $company->id)
             ->count());
     }
-
 
     public function test_cancelled_run_frees_the_period(): void
     {

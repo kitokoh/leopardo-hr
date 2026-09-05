@@ -6,8 +6,8 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Exceptions\ShiftOverlapException;
 use App\Modules\FuelStation\Domain\Models\FuelShift;
 use App\Modules\FuelStation\Domain\Models\FuelShiftAssignment;
@@ -220,8 +220,8 @@ class FuelShiftController extends Controller
             'status' => $shift->status,
             'notes' => $shift->notes,
             'assignments_count' => $shift->assignments_count ?? null,
-            'created_at' => $shift->created_at?->toISOString(),
-            'updated_at' => $shift->updated_at?->toISOString(),
+            'created_at' => $shift->created_at?->toIso8601String(),
+            'updated_at' => $shift->updated_at?->toIso8601String(),
         ];
     }
 
@@ -253,8 +253,8 @@ class FuelShiftController extends Controller
             'assignment_date' => $assignment->assignment_date->toDateString(),
             'status' => $assignment->status,
             'notes' => $assignment->notes,
-            'created_at' => $assignment->created_at?->toISOString(),
-            'updated_at' => $assignment->updated_at?->toISOString(),
+            'created_at' => $assignment->created_at?->toIso8601String(),
+            'updated_at' => $assignment->updated_at?->toIso8601String(),
         ];
     }
 
@@ -272,8 +272,6 @@ class FuelShiftController extends Controller
 
         return $parsed->startOfDay();
     }
-
-
 
     private function assertSolutionActive(): void
     {
