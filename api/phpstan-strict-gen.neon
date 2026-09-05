@@ -1,0 +1,22 @@
+# Configuration de RÉGÉNÉRATION de la baseline STRICT (round 27, PM
+# 2026-09-05 — usage unique par .github/workflows/zz-gen-strict-baseline.yml).
+# Périmètre = celui du job « PHPStan — Strict » : app/Core, app/Modules,
+# app/Shared + (phpstan.neon inclus par le job → tests, routes). Niveau 8.
+# NB : n'inclut NI phpstan.neon NI les baselines — la baseline strict
+# générée doit être un SUPERSET des erreurs restantes (les baselines main
+# sont incluses par le job lui-même et ne doivent pas être modifiées ici).
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 8
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    paths:
+        - app/Core
+        - app/Modules
+        - app/Shared
+        - tests
+        - routes
+    tmpDir: storage/phpstan
+    reportUnmatchedIgnoredErrors: false
