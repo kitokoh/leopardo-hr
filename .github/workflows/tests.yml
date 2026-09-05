@@ -409,9 +409,13 @@ jobs:
             # (app/ + routes/ + tests/) — avant, seuls app/AI, Http/Middleware
             # et routes étaient analysés au niveau max ; config/ reste exclu
             # (hors paths de phpstan.neon, conventionnellement).
+            # Filtre d'existence : un fichier SUPPRIMÉ dans le diff (refactor/
+            # purge) n'existe plus dans le working tree — PHPStan refuserait le
+            # chemin inexistant (leçon train #6817, SettleTravelSalesCommand).
             git diff --name-only "${base_sha}" "${head_sha}" \
               | grep -E '^api/(app|routes|tests)/.*\.php$' \
-              | sort -u || true
+              | sort -u \
+              | while IFS= read -r f; do [[ -f "$f" ]] && echo "$f"; done || true
           )
 
           if [[ ${#changed_php_files[@]} -eq 0 ]]; then
