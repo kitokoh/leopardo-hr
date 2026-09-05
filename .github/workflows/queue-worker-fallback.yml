@@ -43,7 +43,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      # Fix 2026-09-05 (constat runs 09-04/09-05) : sans garde, ce workflow
+      # « réussissait » SANS rien drainer quand les secrets DB sont absents
+      # (artisan queue:work journalise l'échec de connexion puis sort en 0) —
+      # faux vert. Aligné sur le pattern de queue-supervision.yml : si les
+      # secrets ne sont pas posés, skip EXPLICITE avec notice (plus jamais de
+      # drain silencieux).
+      - name: Vérifier la configuration du drain
+        id: drain-config
+        shell: bash
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_URL: ${{ secrets.APP_URL }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          set -Eeuo pipefail
+          missing=()
+          for name in APP_KEY APP_URL DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("$name")
+            fi
+          done
+          if (( ${#missing[@]} > 0 )); then
+            printf '::notice title=Drain non configuré::Drain ignoré ; secrets manquants (repo Settings → Secrets → Actions) : %s\n' "${missing[*]}"
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'configured=true' >> "$GITHUB_OUTPUT"
+          echo 'Configuration présente — drain opérationnel.'
+
       - name: Setup PHP
+        if: steps.drain-config.outputs.configured == 'true'
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
         with:
           php-version: "8.4"
@@ -52,22 +86,28 @@ jobs:
           coverage: none
 
       - name: Resolve Composer cache directory
+        if: steps.drain-config.outputs.configured == 'true'
         id: composer-cache
         working-directory: ./api
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
+        if: steps.drain-config.outputs.configured == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
 
       - name: Install Composer dependencies
+        if: steps.drain-config.outputs.configured == 'true'
         working-directory: ./api
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Drain queue (database driver)
+        if: steps.drain-config.outputs.configured == 'true'
         working-directory: ./api
+        env:
+          DB_PORT: ${{ secrets.DB_PORT || '5432' }}
         run: |
           php artisan queue:work database \
             --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
