@@ -1,0 +1,19 @@
+# Configuration temporaire de RÉGÉNÉRATION de la baseline strict (round 27,
+# PM 2026-09-05 — voir .github/workflows/zz-gen-strict-baseline.yml).
+# Même périmètre que phpstan-strict.neon (phpstan.neon inclus = paths
+# app+routes+tests) : app/Core, app/Modules, app/Shared, tests, routes.
+# Niveau 8 ; baselines existantes incluses → ne fige QUE le delta courant
+# (dette du merge union, issue #6818).
+includes:
+    - phpstan.neon
+    - phpstan-strict-baseline.neon
+
+parameters:
+    level: 8
+    paths:
+        - app/Core
+        - app/Modules
+        - app/Shared
+        - tests
+        - routes
+    tmpDir: storage/phpstan

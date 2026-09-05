@@ -1,10 +1,10 @@
 name: zz-gen-strict-baseline (temporary)
 
 # OUTIL TEMPORAIRE — round 27 PM 2026-09-05. Génère
-# api/phpstan-strict-baseline.neon sur la branche, committe le fichier et
-# SUPPRIME ce workflow (usage unique via workflow_dispatch). Le push fait
-# par GITHUB_TOKEN ne déclenche pas de workflows : relancer la CI ensuite
-# (empty commit ou re-run).
+# api/phpstan-strict-baseline.neon sur la branche (régénération complète du
+# delta), committe le fichier et SUPPRIME ce workflow (usage unique via
+# workflow_dispatch). Le push fait par GITHUB_TOKEN ne déclenche pas de
+# workflows : relancer la CI ensuite (empty commit ou re-run).
 
 on:
   workflow_dispatch:
@@ -39,21 +39,7 @@ jobs:
 
       - name: Generate strict baseline
         working-directory: api
-        run: |
-          set -euo pipefail
-          cat > /tmp/phpstan.gen.neon <<'NEON'
-includes:
-    - phpstan.neon
-parameters:
-    level: 8
-    paths:
-        - app/Core
-        - app/Modules
-        - app/Shared
-        - tests
-        - routes
-NEON
-          vendor/bin/phpstan analyse --configuration=/tmp/phpstan.gen.neon --generate-baseline --memory-limit=1G --no-progress
+        run: vendor/bin/phpstan analyse --configuration=phpstan-strict-gen.neon --generate-baseline --memory-limit=1G --no-progress
 
       - name: Commit baseline and remove this workflow
         shell: bash
@@ -61,11 +47,13 @@ NEON
           set -euo pipefail
           git config user.name "kitokoh (pm-agent)"
           git config user.email "pm-agent@leopardo-hr.local"
-          rm -f .github/workflows/zz-gen-strict-baseline.yml
-          git add api/phpstan-strict-baseline.neon .github/workflows/zz-gen-strict-baseline.yml
-          if git diff --cached --quiet; then
+          rm -f .github/workflows/zz-gen-strict-baseline.yml api/phpstan-strict-gen.neon
+          git add api/phpstan-strict-baseline.neon
+          git rm -q --cached .github/workflows/zz-gen-strict-baseline.yml api/phpstan-strict-gen.neon 2>/dev/null || true
+          if git diff --cached --quiet && ! git status --porcelain | grep -q .; then
             echo "RIEN_A_COMMITTER"
           else
+            git add -A
             git commit -m "chore(phpstan): regenere la baseline strict - dette du merge union (round 27, issue #6818)"
             git push origin HEAD:fix/ci-main-green-2026-09-04
           fi
