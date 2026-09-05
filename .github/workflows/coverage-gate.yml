@@ -89,7 +89,10 @@ jobs:
     # Issue #4251 : 45 min < duree reelle (~62 min, run 31907534549) -> le check
     # requis Backend Coverage etait impossible a passer (0 success depuis #4111).
     # 75 min = marge sur la duree mesuree (le job inclut la suite complete pcov).
-    timeout-minutes: 75
+    # Train #6817 (2026-09-05) : duree > 75 min — la restauration des fichiers
+    # corrompus a REMIS EN MARCHE des centaines de tests travel qui échouaient
+    # avant d'avoir pu s'exécuter (404/parse). Timeout porte a 100 min.
+    timeout-minutes: 100
 
     services:
       postgres:
