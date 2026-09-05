@@ -1,6 +1,8 @@
 # Audit Architecture — 2026-09-05
 
-> Rapport de l'audit « vérité & conformité » du monolithe DDD (branche `main`, HEAD `357a2b040`).
+> Rapport de l'audit « vérité & conformité » du monolithe DDD. Réalisé par 4 PM travaillant sur
+> la **branche unique** `audit/architecture-2026-09-05` (PR #6832, branche canonique — `main` est
+> protégée). Mise à jour : 2026-09-05 (passe 2).
 > Réalisé par 4 PM travaillant sur une branche unique. Toute correction chiffrée a été
 > **mesurée sur le disque** (find/grep/wc), jamais déduite d'un autre document.
 
@@ -8,6 +10,10 @@
 
 | Commit | Sujet |
 |---|---|
+| `78a84148c` `ci` | Garde CRM exécutable (bit +x manquant → `Module Structure Validator` rouge, exit 126) |
+| *(PM-audit)* `f954e98ff` | Refactor code : `Cameras` → `Domain/Models` (+10 erreurs strict), contrats morts `Fleet` supprimés (implémente #6842) |
+| *(PM-audit)* `db0130d68` | Registre BC purgé (fantômes `Solutions/*`), backlog issues #6841/#6842 |
+| *(PM-audit)* `cc1d2709c` | Garde CRM branchée en CI, matrice dépendances BC rebaselinée (baseline v2) |
 | `docs(architecture)` | `ARCHITECTURE.md` : arbre mobile 8 apps (+travel_agent), `marketing/` retiré, 54 pipelines, shims/aliases supprimés, CI réelle (tests.yml backend-only, web-ci E2E, deploy-main=dev/test) |
 | `docs(architecture)` | `ARCHITECTURE_STATUS.md` : table régénérée depuis le disque (25 lignes uniques, titre dédoublonné, statuts Expense/Absence exacts) |
 | `docs(api)` | `api/ARCHITECTURE.md` : allowlist 23 sources/55 paires, garde CRM active, Expense « partiel » (Application absente), 67 JsonResource, baseline phpstan 1667 entrées/3317 erreurs |
@@ -26,15 +32,14 @@
 | Module | État mesuré | Action |
 |---|---|---|
 | `Expense` | 8 PHP ; `Application/` inexistante ; exemption CI `FACADE_ONLY_MODULES="Absence Expense"` | Créer la couche Application (PA2-ARCH-011 partiel) puis retirer de l'exemption |
-| `Fleet` | `Application/` et `Infrastructure/` vides (0 PHP) ; contrats `Domain/Contracts/{Trip,Vehicle}RepositoryInterface` sans implémenteur identifié (grep) | Peupler ou supprimer les contrats morts |
+| `Fleet` | `Application/` et `Infrastructure/` toujours vides (0 PHP) — contrats morts `{Trip,Vehicle}RepositoryInterface` **supprimés** (f954e98ff, #6842) | Peupler Application/Infrastructure |
 | `FuelStation` | `Application/` vide (0 PHP) malgré 172 PHP ailleurs | Créer les Actions |
 | `Planning` | `Application/` vide (`.gitkeep` seul) | Créer les Actions ; Planning reste propriétaire canonique des modèles Absence/Expense |
 | `Recruitment` | `Application/` vide (0 Action) | Créer les Actions |
 | `Payroll` | `Application/` = 1 Service, 0 Action (module de 133 PHP) | Créer les Actions (`Domain/Services/PayrollLineLabels.php` à déplacer ?) |
 
 ### 2.2 Placement / conventions
-- `Cameras` : 4 modèles à `Domain/` racine (namespace `…\Domain`, PSR-4 **correct** —
-  déviation cosmétique du template `Domain/Models/`). Décision : aligner ou acter.
+- ~~`Cameras` : modèles à la racine `Domain/`~~ → **fait** (f954e98ff : déplacés sous `Domain/Models/`, namespace aligné).
 - Controllers posés directement sous `Interfaces/Api/V1/` au lieu de `.../Controllers/` :
   `Cabinet/.../CabinetDocumentController.php` (+ Requests), `Attendance/.../KioskEnrollmentController.php` (mineur).
 - `Restaurant` : `Interfaces/` vide par conception — les routes publiques `solutions.php` sont servies par
@@ -173,3 +178,22 @@ n'ont pas été rejoués localement — ils tourneront sur la branche à la proc
   mobiles). Aucun changement de code applicatif.
 
 — Fin du complément (fusion des espaces d'audit, 2026-09-05).
+
+---
+
+## 6. Passe 2 (pendant CI) — documents/chemins égarés restants
+
+Corrigé ce jour (commit à venir) :
+- `DEVELOPMENT.md` : arbre `docs/API/` → `docs/api/` (chemin réel, casse).
+- `docs/architecture/TENANT_CONTEXT_CONVENTIONS.md` : « doublon legacy `api/app/Traits/BelongsToCompany.php`
+  à résorber » → doublon **supprimé** (#6565), texte mis à jour.
+- `docs/architecture/PHPSTAN_BASELINE.md` : notice de péremption ajoutée (snapshot 2026-08-25 ;
+  `SmartAttendance` supprimé #5356 ; baseline réelle = 1667 entrées au 2026-09-05).
+
+Nouveau constat (à traiter en PR dédiée — nécessite PHP pour régénérer la baseline) :
+- **Doublons de casse dans les tests CRM** : `api/tests/Feature/CRM` **et** `api/tests/Feature/Crm`
+  (idem `Unit/CRM`/`Unit/Crm`) coexistent → collision garantie sur filesystem insensible à la casse
+  (macOS/Windows) et risque de double travail (2 PM peuvent tester le CRM dans 2 dossiers).
+  Unification en `CRM` (aligné sur `api/app/Modules/CRM`) différée : `api/phpstan-strict-baseline.neon`
+  référence les chemins `Feature/Crm/*` → déplacement sans régénération de baseline casserait le check
+  phpstan-strict (reportUnmatchedIgnoredErrors).
