@@ -173,5 +173,4 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
             // non bloquant — le log ci-dessus reste la trace
         }
     }
-
 }

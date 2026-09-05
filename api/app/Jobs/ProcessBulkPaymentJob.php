@@ -58,9 +58,9 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
     /**
      * @param  array<int, int>|null  $paySlipIds  Optional subset of pay_slips.id
-     *     to pay in this batch (PA2-PAY-005 "selection multiple"). Null
-     *     (the default) preserves the previous "pay every eligible slip
-     *     in the run" behaviour.
+     *                                            to pay in this batch (PA2-PAY-005 "selection multiple"). Null
+     *                                            (the default) preserves the previous "pay every eligible slip
+     *                                            in the run" behaviour.
      */
     public function __construct(
         public readonly int $payrollRunId,
@@ -199,6 +199,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                     if (! in_array($slip->status, ['calculated', 'validated'], true) || $hasPaymentDocument) {
                         // Slip réellement déjà traité → skip légitime.
                         $done++;
+
                         continue;
                     }
 
@@ -210,6 +211,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                     $hasUnprocessedSlips = true;
                     $done++;
                     $this->updateProgress($done, 'processing', $total, $failures);
+
                     continue;
                 }
 
@@ -429,5 +431,4 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             // non bloquant
         }
     }
-
 }

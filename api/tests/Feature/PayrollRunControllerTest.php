@@ -679,7 +679,6 @@ class PayrollRunControllerTest extends TestCase
             ->assertJsonPath('data.country_code', 'CI');
     }
 
-
     public function test_duplicate_period_run_is_rejected_with_409(): void
     {
         // #6552 — index unique partiel (company_id, période) : créer un
@@ -708,7 +707,6 @@ class PayrollRunControllerTest extends TestCase
             ->where('company_id', $company->id)
             ->count());
     }
-
 
     public function test_cancelled_run_frees_the_period(): void
     {
