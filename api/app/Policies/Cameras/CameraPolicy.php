@@ -3,9 +3,9 @@
 namespace App\Policies\Cameras;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
-use App\Modules\Cameras\Domain\CameraPermission;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\CameraPermission;
 
 class CameraPolicy
 {

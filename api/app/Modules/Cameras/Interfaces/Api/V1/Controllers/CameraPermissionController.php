@@ -6,8 +6,8 @@ namespace App\Modules\Cameras\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraPermission;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraPermission;
 use App\Modules\Cameras\Interfaces\Api\V1\Requests\StoreCameraPermissionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

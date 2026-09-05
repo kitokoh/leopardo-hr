@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Cameras\Infrastructure\Streaming;
 
-use App\Modules\Cameras\Domain\Camera;
+use App\Modules\Cameras\Domain\Models\Camera;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;

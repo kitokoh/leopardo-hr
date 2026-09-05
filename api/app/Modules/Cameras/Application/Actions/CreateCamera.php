@@ -6,7 +6,7 @@ namespace App\Modules\Cameras\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Cameras\Domain\Camera;
+use App\Modules\Cameras\Domain\Models\Camera;
 use App\Modules\Cameras\Infrastructure\Services\CameraService;
 
 class CreateCamera
