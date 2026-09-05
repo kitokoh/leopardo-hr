@@ -3943,6 +3943,32 @@
       "empty": "No data for this period.",
       "loadError": "Unable to load the report.",
       "exportError": "CSV export failed."
+    },
+    "kiosk": {
+      "title": "Kiosk",
+      "tokenInvalid": "Invalid or expired shop token.",
+      "loadError": "Unable to load the kiosk menu.",
+      "loading": "Loading menu…",
+      "emptyMenu": "No products available right now.",
+      "add": "Add",
+      "remove": "Remove",
+      "cart": "Cart",
+      "total": "Total",
+      "items": "items",
+      "checkout": "Order",
+      "takeaway": "Takeaway",
+      "delivery": "Delivery",
+      "branch": "Branch",
+      "empty": "Your cart is empty.",
+      "orderPlaced": "Order sent to the restaurant.",
+      "orderReference": "Reference",
+      "startNewOrder": "New order",
+      "payCash": "Pay by cash",
+      "payMobileMoney": "Pay by mobile money",
+      "paid": "Paid",
+      "pendingPayment": "Payment pending",
+      "paymentError": "Payment error.",
+      "orderError": "Unable to place the order."
     }
   },
   "edu": {

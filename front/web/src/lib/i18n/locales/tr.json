@@ -3943,6 +3943,32 @@
       "empty": "Bu dönem için veri yok.",
       "loadError": "Rapor yüklenemedi.",
       "exportError": "CSV dışa aktarma başarısız."
+    },
+    "kiosk": {
+      "title": "Kiosk",
+      "tokenInvalid": "Geçersiz veya süresi dolmuş mağaza jetonu.",
+      "loadError": "Kiosk menüsü yüklenemedi.",
+      "loading": "Menü yükleniyor…",
+      "emptyMenu": "Şu anda ürün bulunmuyor.",
+      "add": "Ekle",
+      "remove": "Kaldır",
+      "cart": "Sepet",
+      "total": "Toplam",
+      "items": "ürün",
+      "checkout": "Sipariş ver",
+      "takeaway": "Paket servis",
+      "delivery": "Teslimat",
+      "branch": "Şube",
+      "empty": "Sepetiniz boş.",
+      "orderPlaced": "Sipariş restorana iletildi.",
+      "orderReference": "Referans",
+      "startNewOrder": "Yeni sipariş",
+      "payCash": "Nakit öde",
+      "payMobileMoney": "Mobil para ile öde",
+      "paid": "Ödendi",
+      "pendingPayment": "Ödeme bekliyor",
+      "paymentError": "Ödeme hatası.",
+      "orderError": "Sipariş verilemedi."
     }
   },
   "edu": {

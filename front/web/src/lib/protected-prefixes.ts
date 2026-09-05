@@ -29,6 +29,11 @@ export const PROTECTED_PREFIXES = [
   '/settings',
   '/social',
   '/social-marketing',
+  // BC-25 Restaurant — portail client (/restaurant + sous-routes kitchen/pos/
+  // stock/…). La vitrine « Je suis restaurateur » vit sur /restaurateur (la
+  // collision de routes est traitée dans middleware.ts : visiteurs anonymes de
+  // /restaurant redirigés vers la vitrine, session valide → hub applicatif).
+  '/restaurant',
 ] as const;
 
 /**

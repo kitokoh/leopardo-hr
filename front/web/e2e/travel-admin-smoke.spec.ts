@@ -1,20 +1,19 @@
 import { expect, test } from '@playwright/test';
-import { setSessionCookie } from './session-helpers';
+import { installAuthenticatedSession, type AuthenticatedUser } from './fixtures/authenticated';
 
 /**
- * TRAVEL-1008 (#6121) — E2E Playwright admin TravelAgency.
+ * TRAVEL-1008 (#6121) — E2E Playwright admin TravelAgency (squelette).
  *
- * Squelette des parcours admin (à activer quand l'UI admin TravelAgency
- * est livrée — lot frontend TRAVEL-601..609) :
- *   - navigation « Agence de voyage » (gate feature flag) ;
- *   - écran référentiel (liste des trajets, création) ;
- *   - écran réservations (détail, actions).
- *
- * Les contrats API sous-jacents sont stables et couverts par les tests
- * Feature Travel (302 tests verts) — ces specs valideront la couche UI.
+ * L'UI admin TravelAgency (lot frontend TRAVEL-601..609 : navigation,
+ * référentiel des trajets, réservations) n'est PAS encore livrée dans
+ * front/web : le portail voyageur livré est `/travel/portal` (TRAVEL-702,
+ * suivi e-billet côté passager). Ces parcours admin sont donc compilés
+ * (garde tsc) mais exécutés en `skip` motivé, à activer quand l'UI admin
+ * atterrit sur main (même pattern que les skeletons e2e historiques).
+ * Contrats API stables couverts côté Feature (302 tests Travel).
  */
 
-const managerUser = {
+const travelUser: AuthenticatedUser = {
   id: 201,
   first_name: 'Camille',
   last_name: 'Toure',
@@ -23,26 +22,27 @@ const managerUser = {
   manager_role: 'principal',
   language: 'fr',
   is_rtl: false,
-  capabilities: { can_view_travel: true },
+  capabilities: { can_view_dashboard: true, can_view_travel: true },
+  features: { travelagency: true },
   company: { id: 'company-travel-pilot', name: 'Agence Pilote SARL', language: 'fr', timezone: 'Africa/Douala', currency: 'XAF' },
 };
 
 test.describe('TravelAgency admin (TRAVEL-1008)', () => {
   test('navigation travel is gated by feature flag', async ({ page }) => {
-    await setSessionCookie(page, managerUser, { features: { travelagency: true } });
+    test.skip(true, 'UI admin TravelAgency non livrée (TRAVEL-601..609) — activer avec le lot frontend');
+    await installAuthenticatedSession(page, { user: travelUser });
     await page.goto('/');
     await expect(page.getByRole('link', { name: /agence de voyage/i })).toBeVisible();
   });
 
   test('referential screen lists published trips', async ({ page }) => {
-    await setSessionCookie(page, managerUser, { features: { travelagency: true } });
+    test.skip(true, 'UI admin TravelAgency non livrée — route /travel/trips absente de front/web');
+    await installAuthenticatedSession(page, { user: travelUser });
     // Intercepte le contrat API référentiel (stable, testé côté Feature).
     await page.route('**/api/v1/travel/trips**', (route) =>
       route.fulfill({
         json: {
-          data: [
-            { id: 1, code: 'DLA-YDE-001', status: 'published', total_seats: 40 },
-          ],
+          data: [{ id: 1, code: 'DLA-YDE-001', status: 'published', total_seats: 40 }],
         },
       }),
     );

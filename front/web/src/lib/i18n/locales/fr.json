@@ -3943,6 +3943,32 @@
       "empty": "Aucune donnée pour cette période.",
       "loadError": "Impossible de charger le rapport.",
       "exportError": "Erreur lors de l'export CSV."
+    },
+    "kiosk": {
+      "title": "Kiosque",
+      "tokenInvalid": "Jeton boutique invalide ou expiré.",
+      "loadError": "Impossible de charger le menu du kiosque.",
+      "loading": "Chargement du menu…",
+      "emptyMenu": "Aucun produit disponible pour le moment.",
+      "add": "Ajouter",
+      "remove": "Retirer",
+      "cart": "Panier",
+      "total": "Total",
+      "items": "articles",
+      "checkout": "Commander",
+      "takeaway": "À emporter",
+      "delivery": "Livraison",
+      "branch": "Branche",
+      "empty": "Votre panier est vide.",
+      "orderPlaced": "Commande envoyée au restaurant.",
+      "orderReference": "Référence",
+      "startNewOrder": "Nouvelle commande",
+      "payCash": "Payer en espèces",
+      "payMobileMoney": "Payer par Mobile Money",
+      "paid": "Payé",
+      "pendingPayment": "Paiement en attente",
+      "paymentError": "Erreur de paiement.",
+      "orderError": "Impossible de passer la commande."
     }
   },
   "edu": {
