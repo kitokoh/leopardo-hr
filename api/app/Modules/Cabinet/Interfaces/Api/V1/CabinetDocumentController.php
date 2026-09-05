@@ -185,7 +185,6 @@ class CabinetDocumentController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        assert($user instanceof Employee);
 
         return $user;
     }

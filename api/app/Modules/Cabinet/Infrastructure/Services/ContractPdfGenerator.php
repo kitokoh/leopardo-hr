@@ -19,7 +19,7 @@ class ContractPdfGenerator implements ContractDocumentGeneratorInterface
         // Runs outside the HTTP request lifecycle in some call paths (jobs),
         // so the locale must be applied explicitly before rendering.
         App::setLocale(I18nCatalog::normalizeLocale(
-            $contract->employee?->preferred_language ?? $contract->company?->language
+            $contract->employee->preferred_language ?? $contract->company->language ?? 'fr'
         ));
 
         $pdf = Pdf::loadView('pdf.contract', [

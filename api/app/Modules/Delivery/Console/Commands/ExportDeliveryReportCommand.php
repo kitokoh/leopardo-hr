@@ -25,7 +25,8 @@ final class ExportDeliveryReportCommand extends Command
 
     public function handle(): int
     {
-        $companyId = (string) $this->argument('company');
+        $companyRaw = $this->argument('company');
+        $companyId = is_string($companyRaw) ? $companyRaw : '';
 
         $exists = Delivery::query()
             ->where('company_id', $companyId)
@@ -37,8 +38,10 @@ final class ExportDeliveryReportCommand extends Command
             return self::INVALID;
         }
 
-        $from = (string) ($this->option('from') ?? now()->subDays(30)->format('Y-m-d'));
-        $to = (string) ($this->option('to') ?? now()->format('Y-m-d'));
+        $fromRaw = $this->option('from');
+        $toRaw = $this->option('to');
+        $from = is_string($fromRaw) && $fromRaw !== '' ? $fromRaw : now()->subDays(30)->format('Y-m-d');
+        $to = is_string($toRaw) && $toRaw !== '' ? $toRaw : now()->format('Y-m-d');
 
         ExportDeliveryReportJob::dispatch($companyId, $from, $to, (string) Str::uuid());
 
