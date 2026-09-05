@@ -18,6 +18,8 @@
 - `branding/logo-240.png` et `branding/og-banner.png` sont les **2 seuls vrais binaires** (hors LFS) — conservés.
 - `videos/*` (3 captures) : conservées (références historiques README/archives), non déployées.
 
+- **Vague 2 (2026-09-05, agent chef de projet)** : 25 pointeurs LFS orphelins supplémentaires supprimés (zéro référence dans tout le repo, chemin complet ou basename) : icônes/splash `leopardo_*-icon|splash-preview.png` (6), captures de login `{admin,mobile_employee,mobile_manager}/login.png` + `mobile_employee/user-login.png` (3), `marketing/ecrans1.png`, 14 captures `screenshots/web_showcase/*` inutilisées et `admin/login.png`. Les représentants documentés ci-dessus (analytics, absences×3, company-request, register, user-home, user-register, settings/guides), les 4 mockups de design, les 2 binaires branding et les 3 vidéos `videos/*` (sources du `product-demo` de la vitrine, PA2-MKT-014) sont conservés. Les représentants restants ne sont référencés que par ce README (zone d'archive volontaire).
+
 ## Zones canoniques
 
 | Zone | Rôle | Déployée |

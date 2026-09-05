@@ -31,8 +31,7 @@ leopardo-hr/
 ├── scripts/                # Scripts utilitaires racine (bootstrap, capture screenshots, cleanup)
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
-├── assets/ , screenshots/  # Visuels marketing/README (Git LFS — voir README.md § Prérequis Git LFS (#4124) et assets/README.md)
-├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — config dans .gitattributes)
+├── assets/              # Visuels marketing/README en archive (Git LFS — voir assets/README.md)
 ├── marketing/              # (legacy — contenu à migrer vers docs/GOTO_MARKET/, voir #6603)
 └── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
