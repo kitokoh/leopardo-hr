@@ -230,7 +230,7 @@ jobs:
   # phpstan-modules job it was designed to complement.
   #
   # Issue #1413: level 8 had never run against this codebase in CI, so a
-  # baseline (`phpstan-strict-baseline.neon`, ~2950 pre-existing findings,
+  # baseline (`phpstan-strict-baseline.neon`, dette pré-existante actée —
   # generated via `phpstan analyse --generate-baseline`) now freezes that
   # existing debt. continue-on-error is removed: this job is now blocking on
   # the delta only — any *new* level-8 finding on app/Core/app/Modules/
@@ -359,7 +359,7 @@ jobs:
         if: needs.detect-changes.outputs.api_changed == 'true'
         # Garde archunit-style : bloque TOUT nouvel import croisé
         # (`use App\Modules\<X>\` dans un autre module ou dans Core/) — la
-        # dette existante (16/18 modules, 57 paires) est actée dans
+        # dette existante (comptage affiché par la garde à l'exécution) est actée dans
         # dev-hub/tools/module-isolation-allowlist.txt.
         run: dev-hub/tools/check-module-isolation.sh
 
