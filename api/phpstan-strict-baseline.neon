@@ -361,22 +361,10 @@ parameters:
 			path: app/Exceptions/FeatureSynchronizationException.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Web/DashboardController.php
-
-		-
 			message: '#^Parameter \$company of method App\\Modules\\HR\\Infrastructure\\Services\\UserInvitationService\:\:createAndSend\(\) expects App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Tenant\\Domain\\Models\\Company\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>timezone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Controllers/Web/MyDashboardController.php
 
 		-
 			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
@@ -413,12 +401,6 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Http/Middleware/Cameras/EnsureCameraModuleMiddleware.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>language" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Middleware/SetLocale.php
 
 		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
@@ -601,12 +583,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>status" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Http/Resources/Api/V1/AttendanceTodayResource.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>work_type" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -759,18 +735,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:\$work_state_label\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Method App\\Http\\Resources\\Api\\V1\\EmployeeResource\:\:capabilities\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Resources/Api/V1/EmployeeResource.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>language" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Resources/Api/V1/EmployeeResource.php
 
@@ -1291,12 +1255,6 @@ parameters:
 			path: app/Http/Resources/Api/V1/VehicleTripResource.php
 
 		-
-			message: '#^Method App\\Jobs\\DispatchWebhook\:\:__construct\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Jobs/DispatchWebhook.php
-
-		-
 			message: '#^Parameter \#1 \$haystack of function str_starts_with expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1315,12 +1273,6 @@ parameters:
 			path: app/Jobs/DispatchWebhook.php
 
 		-
-			message: '#^Property App\\Jobs\\DispatchWebhook\:\:\$backoff type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Jobs/DispatchWebhook.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 2
@@ -1331,12 +1283,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Jobs/GeneratePaymentDocumentJob.php
-
-		-
-			message: '#^Parameter \#2 \$employeeId of job class App\\Jobs\\GeneratePaySlipPdfJob constructor expects int in App\\Jobs\\GeneratePaySlipPdfJob\:\:dispatch\(\), int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/ProcessBulkPaymentJob.php
 
 		-
 			message: '#^Method App\\Jobs\\ProcessPayrollBatchJob\:\:tags\(\) return type has no value type specified in iterable type array\.$#'
@@ -1927,24 +1873,6 @@ parameters:
 			path: app/Modules/Cabinet/Application/DTOs/UploadDocumentDTO.php
 
 		-
-			message: '#^Class App\\Modules\\Cameras\\Domain\\Camera uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Cameras/Domain/Camera.php
-
-		-
-			message: '#^Class App\\Modules\\Cameras\\Domain\\CameraAccessToken uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Cameras/Domain/CameraAccessToken.php
-
-		-
-			message: '#^Class App\\Modules\\Cameras\\Domain\\CameraPermission uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Cameras/Domain/CameraPermission.php
-
-		-
 			message: '#^Method App\\Modules\\Cameras\\Domain\\Contracts\\AccessTokenServiceInterface\:\:verify\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1991,90 +1919,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Comparison operation "\>" between int\<1, 4\> and 0 is always true\.$#'
-			identifier: greater.alwaysTrue
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Streaming\\CameraStreamTokenService\:\:decode\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Streaming\\CameraStreamTokenService\:\:encode\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Infrastructure\\Streaming\\CameraStreamTokenService\:\:issue\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Streaming/CameraStreamTokenService.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\CameraAccessTokenController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraAccessTokenController.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\CameraPermissionController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Parameter \#1 \$p of method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\CameraPermissionController\:\:present\(\) expects App\\Modules\\Cameras\\Domain\\CameraPermission, App\\Modules\\Cameras\\Domain\\CameraPermission\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/CameraPermissionController.php
-
-		-
-			message: '#^Property App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Controllers\\PublicCameraViewerController\:\:\$cameras is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Controllers/PublicCameraViewerController.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Requests\\StoreCameraAccessTokenRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraAccessTokenRequest.php
-
-		-
-			message: '#^Parameter \#1 \$array \(array\{''required'', ''integer'', ''min\:1''\|Illuminate\\Validation\\Rules\\In\}\) to function array_filter does not contain falsy values, the array will always stay the same\.$#'
-			identifier: arrayFilter.same
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraAccessTokenRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Requests\\StoreCameraPermissionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraPermissionRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Requests\\StoreCameraRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/StoreCameraRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Requests\\TestRtspRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/TestRtspRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Cameras\\Interfaces\\Api\\V1\\Requests\\UpdateCameraRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Cameras/Interfaces/Api/V1/Requests/UpdateCameraRequest.php
 
 		-
 			message: '#^Class App\\Modules\\EdgeSync\\Domain\\Models\\EdgeLicense uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -4741,18 +4585,6 @@ parameters:
 			path: app/Providers/AppServiceProvider.php
 
 		-
-			message: '#^Method App\\Providers\\FeatureDetectionServiceProvider\:\:provides\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Providers/FeatureDetectionServiceProvider.php
-
-		-
-			message: '#^Method App\\Providers\\FeatureRegistryServiceProvider\:\:provides\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Providers/FeatureRegistryServiceProvider.php
-
-		-
 			message: '#^Method App\\Shared\\DTOs\\PaginationDTO\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -4781,18 +4613,6 @@ parameters:
 			identifier: trait.unused
 			count: 1
 			path: app/Shared/Traits/Approvable.php
-
-		-
-			message: '#^Method App\\Support\\I18nCatalog\:\:readLocale\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Support/I18nCatalog.php
-
-		-
-			message: '#^Method App\\Support\\I18nCatalog\:\:readVersions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Support/I18nCatalog.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -5053,18 +4873,6 @@ parameters:
 			path: tests/Feature/Attendance/TodayAndHistoryTest.php
 
 		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/Attendance/TodayAndHistoryTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5137,27 +4945,9 @@ parameters:
 			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
 
 		-
-			message: '#^Cannot call method tokens\(\) on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/AuthMeLogoutTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNull\(\) with string will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
-			path: tests/Feature/AuthProfileSettingsTest.php
-
-		-
-			message: '#^Cannot access property \$password_hash on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: tests/Feature/AuthProfileSettingsTest.php
-
-		-
-			message: '#^Cannot access property \$preferred_language on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: property.nonObject
-			count: 2
 			path: tests/Feature/AuthProfileSettingsTest.php
 
 		-
@@ -5177,12 +4967,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/AuthRefreshTokenTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AuthSelfRegistrationTest\:\:test_an_ordinary_user_can_submit_a_company_request\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AuthSelfRegistrationTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -5353,12 +5137,6 @@ parameters:
 			path: tests/Feature/CalendarSyncServiceTest.php
 
 		-
-			message: '#^Cannot access property \$is_revoked on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CameraAccessTokensTest.php
-
-		-
 			message: '#^Cannot access property \$last_used_at on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -5371,19 +5149,7 @@ parameters:
 			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
 
 		-
-			message: '#^Parameter \#1 \$camera of method App\\Modules\\Cameras\\Infrastructure\\Streaming\\CameraStreamTokenService\:\:issue\(\) expects App\\Modules\\Cameras\\Domain\\Camera, App\\Modules\\Cameras\\Domain\\Camera\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/Cameras/CameraStreamTokenVerifyTest.php
-
-		-
 			message: '#^Cannot access property \$name on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Feature/Cameras/CamerasCrudTest.php
-
-		-
-			message: '#^Cannot access property \$rtsp_url on App\\Modules\\Cameras\\Domain\\Camera\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Feature/Cameras/CamerasCrudTest.php
@@ -6691,18 +6457,6 @@ parameters:
 			path: tests/Feature/EmployeeIbanValidationTest.php
 
 		-
-			message: '#^Parameter \#1 \$path of function basename expects string, string\|false\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
-			message: '#^Parameter \#1 \$url of function parse_url expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/EmployeeInvitationOnboardingTest.php
-
-		-
 			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -6733,28 +6487,16 @@ parameters:
 			path: tests/Feature/EmployeesRbacTest.php
 
 		-
-			message: '#^Cannot call method tokens\(\) on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/EmployeesRbacTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
-			count: 2
+			count: 1
 			path: tests/Feature/EmployeesRbacTest.php
 
 		-
 			message: '#^Unable to resolve the template type TValue in call to function collect$#'
 			identifier: argument.templateType
-			count: 2
-			path: tests/Feature/EmployeesRbacTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Evaluations\\EvaluationWorkflowTest\:\:createCompanyActors\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
-			path: tests/Feature/Evaluations/EvaluationWorkflowTest.php
+			path: tests/Feature/EmployeesRbacTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6835,18 +6577,6 @@ parameters:
 			path: tests/Feature/FeatureFlagControllerTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Feature/FeatureFlagTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\FeatureFlagTest\:\:companyAttributes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/FeatureFlagTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 2
@@ -6874,30 +6604,6 @@ parameters:
 			message: '#^Cannot access property \$metadata on App\\Modules\\Billing\\Domain\\Models\\Feature\|null\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: tests/Feature/FeatureRegistryIntegrationTest.php
-
-		-
-			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Feature/FeatureRegistryIntegrationTest.php
-
-		-
-			message: '#^Offset ''test_metadata'' might not exist on array\<string, mixed\>\|null\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: tests/Feature/FeatureRegistryIntegrationTest.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 3
-			path: tests/Feature/FeatureRegistryIntegrationTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 3
 			path: tests/Feature/FeatureRegistryIntegrationTest.php
 
 		-
@@ -7951,18 +7657,6 @@ parameters:
 			path: tests/Feature/OnboardingChecklistTest.php
 
 		-
-			message: '#^Parameter \#1 \$path of function basename expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
-			message: '#^Parameter \#1 \$url of function parse_url expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/OnboardingE2ETest.php
-
-		-
 			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\OnboardingStep\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -8521,18 +8215,6 @@ parameters:
 			path: tests/Feature/PlatformCompanyHealthApiTest.php
 
 		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/PlatformCompanyHealthApiTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/PlatformCompanyHealthApiTest.php
-
-		-
 			message: '#^Call to an undefined method App\\Core\\Tenant\\Domain\\Models\\Company\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Core\\Tenant\\Domain\\Models\\Company\>\:\:hasFeature\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -8697,12 +8379,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ProcessBulkPaymentJobTest.php
-
-		-
-			message: '#^Access to undefined constant App\\Jobs\\ProcessBulkPaymentJob\:\:CLAIM_TTL_SECONDS\.$#'
-			identifier: classConstant.notFound
 			count: 1
 			path: tests/Feature/ProcessBulkPaymentJobTest.php
 
@@ -9157,19 +8833,7 @@ parameters:
 			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Security\\GoogleAuthGlobalLookupTest\:\:test_google_login_finds_employee_even_when_another_tenant_is_bound_to_container\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Security\\GoogleAuthGlobalLookupTest\:\:test_google_login_rejects_unknown_email_with_401\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Security\\GoogleAuthGlobalLookupTest\:\:test_google_token_login_finds_employee_even_when_another_tenant_is_bound_to_container\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: tests/Feature/Security/GoogleAuthGlobalLookupTest.php
@@ -10051,12 +9715,6 @@ parameters:
 			path: tests/Feature/User/UserAuthGoogleSignInSecurityTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\WebManagerPagesTest\:\:makeCompanyWithUsers\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/WebManagerPagesTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 11
@@ -10111,12 +9769,6 @@ parameters:
 			path: tests/Unit/AttendanceServiceTest.php
 
 		-
-			message: '#^Method Tests\\Unit\\AttendanceServiceTest\:\:seedEmployeeWithSchedule\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/AttendanceServiceTest.php
-
-		-
 			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 3
@@ -10124,12 +9776,6 @@ parameters:
 
 		-
 			message: '#^Cannot access property \$id on App\\Core\\Tenant\\Domain\\Models\\Company\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: tests/Unit/AuthServiceTest.php
-
-		-
-			message: '#^Cannot access property \$last_login_at on App\\Core\\Auth\\Domain\\Models\\Employee\|null\.$#'
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/AuthServiceTest.php
@@ -10145,30 +9791,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: tests/Unit/EdgeSync/EdgeDaemonSyncClientTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\EstimationServiceTest\:\:seedEmployee\(\) has parameter \$employeeOverrides with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/EstimationServiceTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\EstimationServiceTest\:\:seedEmployee\(\) has parameter \$scheduleOverrides with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/EstimationServiceTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\EstimationServiceTest\:\:seedEmployee\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/EstimationServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/ExampleTest.php
 
 		-
 			message: '#^Cannot call method run\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
@@ -10333,18 +9955,6 @@ parameters:
 			path: tests/Unit/Rules/ValidIbanTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 3
-			path: tests/Unit/Services/AnnotationReaderTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Services/FeatureDetectorTest.php
-
-		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php\:81\:\:isValidFeature\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -10363,21 +9973,9 @@ parameters:
 			path: tests/Unit/Services/FeatureDetectorTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Contracts\\FeatureDetectorInterface\:\:shouldReceive\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Cache\\CacheManager\:\:shouldReceive\(\)\.$#'
-			identifier: method.notFound
-			count: 29
-			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 2
+			count: 1
 			path: tests/Unit/Services/FeatureRegistryTest.php
 
 		-
@@ -10385,30 +9983,6 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Services\\FeatureRegistryTest\:\:\$mockCache \(Illuminate\\Cache\\CacheManager\) does not accept Mockery\\MockInterface\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Services\\FeatureRegistryTest\:\:\$mockDetector \(App\\Contracts\\FeatureDetectorInterface\) does not accept Mockery\\MockInterface\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Unit/Services/FeatureRegistryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Unit/Services/ReflectionServiceTest.php
 
 		-
 			message: '#^Parameter \#5 \$employees of method App\\Modules\\Payroll\\Infrastructure\\Services\\SocialDeclarationGenerator\:\:generateCnasDz\(\) expects Illuminate\\Support\\Collection\<int, array\{employee_id\: int, num_ss\: string, last_name\: string, first_name\: string, date_naissance\: string, gross_salary\: float, months_worked\: int\}\>, Illuminate\\Support\\Collection\<int, array\{employee_id\: int, num_ss\: string, last_name\: string, first_name\: string, date_naissance\: string, gross_salary\: float\|int, months_worked\: int\}\> given\.$#'
