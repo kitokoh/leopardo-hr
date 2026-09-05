@@ -6,7 +6,6 @@ namespace Tests\Feature\Accounting;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Modules\Accounting\Infrastructure\Services\SeedAccountingDemoData;
 use App\Modules\Accounting\Application\Services\DocumentWorkflowService;
 use App\Modules\Accounting\Domain\Contracts\DocumentNumberingInterface;
 use App\Modules\Accounting\Domain\Contracts\PdfRendererInterface;
@@ -18,6 +17,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentLine;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Domain\Models\AccountingSettings;
+use App\Modules\Accounting\Infrastructure\Services\SeedAccountingDemoData;
 use App\Modules\Accounting\Infrastructure\Services\SequentialDocumentNumbering;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
-use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 
 /**
  * Issue #5274 — Données démo/seed + E2E parcours facture.
@@ -451,6 +450,4 @@ class AccountingDemoE2ETest extends TestCase
 
         return $payment;
     }
-
-
 }
