@@ -158,3 +158,28 @@ PR #6832 fermée avec renvoi vers #6830.
 `dev-hub/governance/bounded-context-registry.json`, `CODEOWNERS`, `CHANGELOG.md`.
 
 — Fin du rapport consolidé (2026-09-05). Prochaines passes : §3.
+
+---
+
+## 7. Passe 2 (PM correctifs, 2026-09-05) — réintégrée par cherry-pick
+
+Commits du PM « vérité & conformité » (ex-PR #6832, refermée — contenu réintégré ici) :
+- `78a84148c` **ci** : garde CRM passée en mode 100755 (`check-crm-boundary-imports.sh`) —
+  l'étape `architecture-check.yml` l'invoque sans `bash` → Permission denied (exit 126) sinon.
+- `07e7d94e2` **docs** : chemins égarés — `DEVELOPMENT.md` arbre `docs/API/` → `docs/api/` ;
+  `TENANT_CONTEXT_CONVENTIONS.md` : doublon legacy `app/Traits/BelongsToCompany.php` présenté
+  comme vivant → supprimé (#6565) ; `PHPSTAN_BASELINE.md` : notice de péremption du snapshot
+  2026-08-25 (`SmartAttendance` supprimé #5356 ; baseline réelle 1667 entrées au 2026-09-05).
+- `6c7f2a12d` **fix(hr)** : `ApplySectorTemplate` (Action HR) sans façade `DB` — injection
+  `Illuminate\Database\Connection` ; ligne retirée de `layer-purity-allowlist.txt` (128 → 127).
+  Garde `check-layer-purity.sh` ✅.
+
+Issues créées pour le reste connu (1 item = 1 issue) :
+- **#6844** — Shared → Core/Modules : 6 imports transverses (Approvable, Auditable,
+  BelongsToCompany, EmployeeNotifier) : acter la tolérance ou inverser la dépendance.
+- **#6845** — Doublons de casse `api/tests/{Feature,Unit}/CRM` vs `Crm` (collision FS
+  insensible à la casse) — unifier sous `CRM`, baseline phpstan à régénérer (PR dédiée).
+
+Mesures complémentaires passe 2 : `declare(strict_types=1)` = 3351/3646 (92 %) — retrofit
+suivi par #1412/#1096 ; `check-application-layer-placement.sh` : 29 Services/Jobs sous
+`Application/` (issue #6571, en migration, non câblée CI) ; mobile : riverpod 8/8, 0 bloc/provider.

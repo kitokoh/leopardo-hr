@@ -1,6 +1,13 @@
 # Dette baseline PHPStan Strict — métrique & réduction (#5448)
 
 > Dernière mise à jour : 2026-08-25 · Voir l'issue [#5448](https://github.com/kitokoh/leopardo-hr/issues/5448)
+>
+> ⚠️ **Snapshot partiellement périmé (2026-09-05)** : les chiffres ci-dessous datent du
+> 2026-08-25. Depuis : le module `SmartAttendance` a été **supprimé** (ADR-0016, #5356 —
+> sa ligne au tableau de répartition est obsolète) et la baseline a été régénérée à
+> plusieurs reprises (état au 2026-09-05 : **1667 entrées** dans `api/phpstan-strict-baseline.neon`,
+> voir `api/ARCHITECTURE.md`). Ce document sert de suivi de réduction historique ; le
+> fichier de baseline fait foi pour les chiffres actuels.
 
 ## Pourquoi cette dette est dangereuse
 
