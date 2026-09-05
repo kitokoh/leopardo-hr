@@ -235,6 +235,7 @@ class TravelGoldenJourneyGjTravel01Test extends TestCase
         // "autre" doit être un client travel légitime pour que l'isolation
         // cross-tenant soit réellement exercée au niveau du contrôleur (404).
         $otherCompany->setFeature('travelagency', true);
+        $otherCompany->save();
 
         /** @var Employee $otherEmployee */
         $otherEmployee = Employee::factory()->create([

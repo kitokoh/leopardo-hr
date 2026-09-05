@@ -185,7 +185,10 @@ class GenerateBankExportJobTest extends TestCase
         $export->refresh();
 
         $this->assertSame(BankExport::STATUS_FAILED, $export->status);
-        $this->assertStringContainsString('Configuration bancaire entreprise manquante', (string) $export->error_message);
+        // #6559 : on persiste un code métier stable (pas le message brut du
+        // throwable, qui contient des détails internes) ; le détail technique
+        // reste dans les logs via report().
+        $this->assertSame('BANK_EXPORT_GENERATION_FAILED', (string) $export->error_message);
         $this->assertNull($export->file_path);
     }
 

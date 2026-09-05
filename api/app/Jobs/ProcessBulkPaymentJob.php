@@ -45,6 +45,15 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
     public int $timeout = 300;
 
+    /**
+     * Durée de vie d'un claim Redis « bulk_pay:slip:* » (SET NX EX).
+     *
+     * Un claim plus vieux que $timeout est considéré orphelin (worker mort
+     * entre claim et traitement, #6548) et peut être volé par la tentative
+     * en cours : le slip est rejoué, jamais compté payé à tort.
+     */
+    public const CLAIM_TTL_SECONDS = 21600;
+
     private ?string $resolvedCompanyId = null;
 
     /**
@@ -137,7 +146,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             try {
                 $claimed = false;
                 try {
-                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
+                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', self::CLAIM_TTL_SECONDS, 'NX'); // @phpstan-ignore argument.type, arguments.count
                 } catch (Throwable $redisError) {
                     // #3857 : FAIL-CLOSED. Sans claim NX, un job concurrent
                     // (retry queue, second dispatch) re-traiterait des slips
@@ -152,6 +161,26 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                     ]);
                     $redisUnavailable = true;
                     break;
+                }
+
+                if (! $claimed) {
+                    // #6548 : un claim non libéré peut être l'orphelin d'un
+                    // worker mort ENTRE le claim et le traitement. Si le claim
+                    // est plus vieux que le timeout du job, il est VOLÉ
+                    // (del + re-NX) : le slip est rejoué — jamais compté payé
+                    // à tort, jamais perdu non plus. Un claim récent (TTL
+                    // complet) appartient à un worker concurrent → chemin
+                    // fail-visible ci-dessous.
+                    try {
+                        $claimTtl = $redis->ttl($claimPrefix.$slip->id);
+                        if (is_int($claimTtl) && $claimTtl >= 0 && $claimTtl < $this->timeout) {
+                            $redis->del($claimPrefix.$slip->id);
+                            $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', self::CLAIM_TTL_SECONDS, 'NX'); // @phpstan-ignore argument.type, arguments.count
+                        }
+                    } catch (Throwable) {
+                        // Redis indisponible → conservateur : suivre le
+                        // chemin #6548 (échec visible) ci-dessous.
+                    }
                 }
 
                 if (! $claimed) {
@@ -301,7 +330,9 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             ]);
 
         // Dispatch legacy payslip PDF and Plan 62 document index generation.
-        GeneratePaySlipPdfJob::dispatch($run->id, $slip->employee_id);
+        if ($slip->employee_id !== null) {
+            GeneratePaySlipPdfJob::dispatch($run->id, $slip->employee_id);
+        }
         GeneratePaymentDocumentJob::dispatchForPaySlip($slip, $this->triggeredById);
     }
 
@@ -388,7 +419,11 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                 ->pluck('id');
 
             foreach ($orphanSlipIds as $slipId) {
-                $redis->del("bulk_pay:slip:{$this->payrollRunId}:{$slipId}");
+                if (! is_int($slipId) && ! is_string($slipId)) {
+                    continue;
+                }
+                $slipClaimKey = 'bulk_pay:slip:'.$this->payrollRunId.':'.$slipId;
+                $redis->del($slipClaimKey);
             }
         } catch (Throwable) {
             // non bloquant
