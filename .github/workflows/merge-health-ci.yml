@@ -41,6 +41,9 @@ jobs:
       - name: Run merge-health guard
         run: bash dev-hub/tools/check-merge-health.sh
 
+      - name: Check LFS pointer consistency (assets/, #6605)
+        run: bash dev-hub/tools/check-lfs-pointer-consistency.sh
+
       - name: Signal PRs merged without checks (post-merge)
         if: github.event_name == 'push' && failure()
         run: |
