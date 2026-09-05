@@ -63,18 +63,18 @@ job Module Structure Validator) bloque TOUT nouvel import croisé :
 - `use App\Modules\<X>\...` dans un module ≠ X ;
 - `use App\Modules\<X>\...` dans `Core/`.
 
-La dette héritée (19 modules sources, 51 paires source→cible — vérifié
-2026-08-31) est **actée** dans
+La dette héritée (23 modules sources, 55 paires source→cible — vérifié
+2026-09-05) est **actée** dans
 `dev-hub/tools/module-isolation-allowlist.txt` et doit **diminuer** : toute
 ligne ajoutée exige une justification (issue de refactor), aucune n'est
 rajoutée « pour passer ». Dérogations structurelles déjà documentées :
-`Modules/Absence` est une façade sur `Planning` ; `Modules/Expense` a évolué en module DDD complet depuis #5235 (voir dérogation PA2-ARCH-011, à jour plus bas)
+`Modules/Absence` est une façade sur `Planning` ; `Modules/Expense` a évolué en module DDD partiel depuis #5235 (voir dérogation PA2-ARCH-011, à jour plus bas)
 (PA2-ARCH-002 / PA2-ARCH-011). Refactors de résorption en cours : #5591
 (PayrollCalculator → extraire `Planning`) ; déplacement de l'`Employee`
 canonique hors de `Core/Auth` (#5584 item 3, chantier à part — 361
 consommateurs).
 
-**Frontières du module CRM client (issue #5745, ADR 0018) :** le futur module
+**Frontières du module CRM client (issue #5745, ADR 0018) :** le module
 `CRM` (CRM client tenant, cf. ADR-CRM-DUAL-CONTEXTS) est couvert par une garde
 orientée dédiée, `dev-hub/tools/check-crm-boundary-imports.sh`, en complément
 de la garde symétrique #5584 ci-dessus. Elle interdit en HARD BLOCK tout
@@ -83,7 +83,7 @@ de la garde symétrique #5584 ci-dessus. Elle interdit en HARD BLOCK tout
 direct), et exige une exemption justifiée dans
 `dev-hub/tools/crm-boundary-allowlist.txt` pour tout autre import
 inter-module. Les imports `App\Core\*`, `App\Shared\*` et intra-module
-restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
+restent libres. La garde est **active** — `Modules/CRM` existe et est complet (`CrmServiceProvider`), la garde `check-crm-boundary-imports.sh` est branchée en CI.
 
 | Module | Statut routes | Statut code | ServiceProvider |
 |--------|--------------|-------------|-----------------|
@@ -94,7 +94,7 @@ restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ complet | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
-| `Modules/Expense` | ✅ routes/modules/expense.php | 🟢 Module DDD complet depuis #5235 (Domain/Infrastructure/Interfaces/Providers) — modèles de notes de frais sous contrat `Planning` (ex-dérogation PA2-ARCH-011, résorbée) | `ExpenseServiceProvider` |
+| `Modules/Expense` | ✅ routes/modules/expense.php | 🔶 DDD partiel depuis #5235 (Domain/Infrastructure/Interfaces/Providers pour les écritures comptables) — **couche Application absente**, exemption CI maintenue (PA2-ARCH-011) ; modèles de notes de frais sous contrat `Planning` | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | ✅ complet | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
@@ -115,14 +115,14 @@ restent libres. La garde est en veille tant que `Modules/CRM` n'existe pas.
 | `Modules/Platform` | ✅ routes/api.php | ✅ complet | `PlatformServiceProvider` |
 | `Modules/Accounting` | ✅ routes/modules/accounting.php | ✅ complet | `AccountingServiceProvider` |
 
-> **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **60 classes `JsonResource`** de l'API vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
+> **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : contrairement au schema DDD par module (`Modules/<Nom>/Interfaces/Api/V1/Resources/`) documente en §2.7 de `CONVENTIONS.md` et repris par le stub `stubs/module-template/`, les **67 classes `JsonResource`** de l'API (vérifié 2026-09-05) vivent toutes dans `app/Http/Resources/Api/V1/` (namespace legacy centralise) et sont importees a la piece par ~50 controllers de modules differents. C'est un choix delibere, pas une migration inachevee : plusieurs Resources sont **partagees entre modules** (ex. `LoanResource` par `HR` et `Payroll`, `AttendanceTodayResource` par `Attendance` et `HR`, `PayrollRunResource`, `VehicleAlertResource`/`VehicleMaintenanceResource`/`VehicleTripResource` par `Fleet` depuis plusieurs controllers, `InterviewResource`/`JobPostingResource`/`ApplicantResource` par `Recruitment` depuis plusieurs controllers). Deplacer chaque Resource dans le module qui l'a cree obligerait les autres modules consommateurs a l'importer inter-module — ce qui viole l'interdiction stricte ci-dessus (« un module n'importe jamais directement les classes d'un autre module »). Garder les Resources centralisees dans `app/Http/Resources/Api/V1/` evite ce couplage inter-module et reste coherent avec `App\Shared\*` (namespace commun consomme par tout le monde, ne dependant de rien). Le template `stubs/module-template/Interfaces/Api/V1/Resources/` et `docs/architecture/module-creation-guide.md` ont ete corriges pour ne plus induire les nouveaux modules en erreur (voir PA2-ARCH-010) : les Resources d'un nouveau module vont dans `app/Http/Resources/Api/V1/` sauf si elles sont strictement internes et jamais partagees, auquel cas elles peuvent rester dans `Interfaces/Api/V1/Resources/` du module.
 
 **Légende :** ✅ complet | 🟢 verticale consolidée/complétée via le merge 2026-09-02 | 🔶 partiel / en cours | 🔄 migration partielle en cours
 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 >
 > **Historique — `Modules/Expense` (PA2-ARCH-011, issue #1414, évolution #5235)** : la dérogation initiale (2024-2026) documentait un module « façade HTTP » ne possédant que `Interfaces/` (`ExpenseClaimController`) et `Providers/`, les modèles métier (`ExpenseClaim`, `ExpenseItem`) vivant canoniquement dans `Planning\Domain\Models` (le controller routé consommait `Planning\...\ExpenseClaim` directement ; la policy enregistrée sur le modèle mort avait été corrigée).
-> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD complet — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique).
+> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD **partiel** — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense **pour les couches Domain/Infrastructure/Interfaces** : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique). **La couche `Application/` (cas d'usage) reste à créer** — la CI exempte toujours `Expense` de l'exigence des couches Application/Domain/Infrastructure (`FACADE_ONLY_MODULES="Absence Expense"`, `architecture-check.yml`).
 
 ---
 
@@ -208,10 +208,10 @@ _Issue #1413, complétant le suivi de la ligne ci-dessus._
 |---|---|---|---|---|
 | `phpstan.neon` | tout `app/` | `max` | non branché à un job CI dédié (voir `phpstan-modules`/`phpstan-strict` ci-dessous) | n/a |
 | `phpstan-modules.neon` | `app/Core`, `app/Modules`, `app/Shared` | `5` | **bloquant** (`architecture-check.yml`, job `phpstan-modules`) | rester à 5 pour l'instant ; réévaluer une montée à 6/7 une fois `phpstan-strict` stabilisé (voir ci-dessous) |
-| `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 1297 erreurs gelées au 2026-08-31, en réduction continue ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
+| `phpstan-strict.neon` | `app/Core`, `app/Modules`, `app/Shared` | `8` | **bloquant sur delta uniquement** depuis #1413 (`phpstan-strict-baseline.neon`, 1667 entrées / 3317 erreurs gelées au 2026-09-05, en réduction continue ; `continue-on-error` retiré du job `phpstan-strict`) | réduire progressivement la baseline module par module (voir répartition ci-dessous), jamais l'augmenter |
 
-**Répartition de la baseline `phpstan-strict` par module (1297 erreurs, 2026-08-31) :**
-voir `api/phpstan-strict-baseline.neon` — la baseline est réduite module par module, dans des PR dédiées (chiffres du 2026-08-01 périmés : 2950 → 1297).
+**Baseline `phpstan-strict` (1667 entrées / 3317 erreurs, vérifié 2026-09-05) :**
+le fichier `api/phpstan-strict-baseline.neon` fait foi — la baseline est réduite module par module, dans des PR dédiées.
 
 Convergence visée : `phpstan-modules` (5) et `phpstan-strict` (8) ne sont pas censés converger vers un seul niveau à court terme — `phpstan-modules` reste le gate rapide et bloquant sur tout PR touchant `app/Core`/`app/Modules`/`app/Shared`, tandis que `phpstan-strict` sert de garde anti-régression progressive sur le typage strict (niveau 8) sans bloquer sur la dette existante. Toute réduction de la baseline (fichier corrigé et retiré de `phpstan-strict-baseline.neon`) doit être faite module par module, dans des PR dédiées, pour rester revuable.
 
@@ -250,10 +250,11 @@ cat bootstrap/providers.php
 
 # Vérifier la structure de modules DDD (dynamique — voir aussi
 # .github/workflows/architecture-check.yml, généré depuis app/Modules/* sans liste codée en dur)
-# NB: seule Absence reste une façade Interfaces/+Providers/ (derogation
-# PA2-ARCH-002, voir plus haut) — Expense est un module DDD complet depuis
-# #5235 (dérogation PA2-ARCH-011 résorbée)
-FACADE_ONLY_MODULES="Absence"
+# NB: seules Absence (façade pure Interfaces/+Providers/, PA2-ARCH-002) et
+# Expense (Application absente — PA2-ARCH-011 partielle, modèles de notes de
+# frais canoniques dans Planning) sont exemptées de l'exigence
+# Application/Domain/Infrastructure (FACADE_ONLY_EXEMPT_LAYERS).
+FACADE_ONLY_MODULES="Absence Expense"
 for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     if echo "$FACADE_ONLY_MODULES" | grep -qw "$MOD" && echo "Application Domain Infrastructure" | grep -qw "$LAYER"; then
