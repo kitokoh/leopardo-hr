@@ -8158,13 +8158,77 @@ class AppLocalizationsTr extends AppLocalizations {
       'Şirketinizin hesapları, kişileri, potansiyel müşterileri ve fırsatları.';
 
   @override
-  String get crmAccounts => 'CRM hesapları';
+  String get crmAccountsTitle => 'Hesaplar';
 
   @override
-  String get crmContacts => 'CRM kişileri';
+  String get crmAccountsDescription => 'Şirketinizin müşteri kuruluşları';
 
   @override
-  String get crmLeads => 'CRM potansiyel müşterileri';
+  String get crmAccountsSubtitle => 'Hesap listesi (tenant kapsamlı).';
+
+  @override
+  String get crmAccountsEmpty => 'Henüz hesap yok.';
+
+  @override
+  String get crmAccountsColname => 'Ad';
+
+  @override
+  String get crmAccountsColstatus => 'Durum';
+
+  @override
+  String get crmAccountsColemail => 'E-posta';
+
+  @override
+  String get crmAccountsColphone => 'Telefon';
+
+  @override
+  String get crmAccountsColcreated => 'Oluşturulma';
+
+  @override
+  String get crmContactsTitle => 'Kişiler';
+
+  @override
+  String get crmContactsDescription => 'Hesaplarınıza bağlı kişiler';
+
+  @override
+  String get crmContactsSubtitle => 'Kişi listesi (tenant kapsamlı).';
+
+  @override
+  String get crmContactsEmpty => 'Henüz kişi yok.';
+
+  @override
+  String get crmContactsPrimary => 'Birincil';
+
+  @override
+  String get crmLeadsTitle => 'Potansiyel Müşteriler';
+
+  @override
+  String get crmLeadsDescription => 'Nitelendirilecek iş fırsatları';
+
+  @override
+  String get crmLeadsSubtitle =>
+      'Potansiyel müşteri listesi (tenant kapsamlı).';
+
+  @override
+  String get crmLeadsEmpty => 'Henüz potansiyel müşteri yok.';
+
+  @override
+  String get crmLeadsColname => 'Ad';
+
+  @override
+  String get crmLeadsColcompany => 'Şirket';
+
+  @override
+  String get crmLeadsColstatus => 'Durum';
+
+  @override
+  String get crmLeadsColsource => 'Kaynak';
+
+  @override
+  String get crmLeadsColemail => 'E-posta';
+
+  @override
+  String get crmLeadsColcreated => 'Oluşturulma';
 
   @override
   String get crmOpportunities => 'Fırsatlar';
@@ -11698,4 +11762,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get fuelPumpistSubmit => 'Okumayı kaydet';
+
+  @override
+  String get crmAccounts => 'CRM hesapları';
+
+  @override
+  String get crmContacts => 'CRM kişileri';
+
+  @override
+  String get crmLeads => 'CRM potansiyel müşterileri';
 }

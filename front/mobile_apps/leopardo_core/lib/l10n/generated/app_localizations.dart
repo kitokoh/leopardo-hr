@@ -15169,23 +15169,149 @@ abstract class AppLocalizations {
   /// **'Comptes, contacts, leads et opportunités de votre entreprise.'**
   String get crmHubSubtitle;
 
-  /// No description provided for @crmAccounts.
+  /// No description provided for @crmAccountsTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Comptes CRM'**
-  String get crmAccounts;
+  /// **'Comptes'**
+  String get crmAccountsTitle;
 
-  /// No description provided for @crmContacts.
+  /// No description provided for @crmAccountsDescription.
   ///
   /// In fr, this message translates to:
-  /// **'Contacts CRM'**
-  String get crmContacts;
+  /// **'Organisations clientes de votre entreprise'**
+  String get crmAccountsDescription;
 
-  /// No description provided for @crmLeads.
+  /// No description provided for @crmAccountsSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Leads CRM'**
-  String get crmLeads;
+  /// **'Liste des comptes (tenant-scoped).'**
+  String get crmAccountsSubtitle;
+
+  /// No description provided for @crmAccountsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun compte pour le moment.'**
+  String get crmAccountsEmpty;
+
+  /// No description provided for @crmAccountsColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get crmAccountsColname;
+
+  /// No description provided for @crmAccountsColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmAccountsColstatus;
+
+  /// No description provided for @crmAccountsColemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get crmAccountsColemail;
+
+  /// No description provided for @crmAccountsColphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get crmAccountsColphone;
+
+  /// No description provided for @crmAccountsColcreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get crmAccountsColcreated;
+
+  /// No description provided for @crmContactsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts'**
+  String get crmContactsTitle;
+
+  /// No description provided for @crmContactsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Personnes rattachées à vos comptes'**
+  String get crmContactsDescription;
+
+  /// No description provided for @crmContactsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des contacts (tenant-scoped).'**
+  String get crmContactsSubtitle;
+
+  /// No description provided for @crmContactsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun contact pour le moment.'**
+  String get crmContactsEmpty;
+
+  /// No description provided for @crmContactsPrimary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Principal'**
+  String get crmContactsPrimary;
+
+  /// No description provided for @crmLeadsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prospects'**
+  String get crmLeadsTitle;
+
+  /// No description provided for @crmLeadsDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opportunités d\'affaires à qualifier'**
+  String get crmLeadsDescription;
+
+  /// No description provided for @crmLeadsSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste des prospects (tenant-scoped).'**
+  String get crmLeadsSubtitle;
+
+  /// No description provided for @crmLeadsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun prospect pour le moment.'**
+  String get crmLeadsEmpty;
+
+  /// No description provided for @crmLeadsColname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get crmLeadsColname;
+
+  /// No description provided for @crmLeadsColcompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Société'**
+  String get crmLeadsColcompany;
+
+  /// No description provided for @crmLeadsColstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get crmLeadsColstatus;
+
+  /// No description provided for @crmLeadsColsource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source'**
+  String get crmLeadsColsource;
+
+  /// No description provided for @crmLeadsColemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get crmLeadsColemail;
+
+  /// No description provided for @crmLeadsColcreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créé le'**
+  String get crmLeadsColcreated;
 
   /// No description provided for @crmOpportunities.
   ///
@@ -22038,6 +22164,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Enregistrer le relevé'**
   String get fuelPumpistSubmit;
+
+  /// No description provided for @crmAccounts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comptes CRM'**
+  String get crmAccounts;
+
+  /// No description provided for @crmContacts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacts CRM'**
+  String get crmContacts;
+
+  /// No description provided for @crmLeads.
+  ///
+  /// In fr, this message translates to:
+  /// **'Leads CRM'**
+  String get crmLeads;
 }
 
 class _AppLocalizationsDelegate

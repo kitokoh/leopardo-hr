@@ -355,9 +355,36 @@
     "paginationPrev": "السابق",
     "paginationNext": "التالي",
     "paginationPage": "صفحة",
-    "accounts": "حسابات إدارة العلاقات",
-    "contacts": "جهات اتصال إدارة العلاقات",
-    "leads": "عملاء إدارة العلاقات المحتملون",
+    "accounts": {
+      "title": "الحسابات",
+      "description": "مؤسسات العملاء لشركتك",
+      "subtitle": "قائمة الحسابات (نطاق المستأجر).",
+      "empty": "لا توجد حسابات بعد.",
+      "colName": "الاسم",
+      "colStatus": "الحالة",
+      "colEmail": "البريد",
+      "colPhone": "الهاتف",
+      "colCreated": "أنشئ في"
+    },
+    "contacts": {
+      "title": "جهات الاتصال",
+      "description": "الأشخاص المرتبطون بحساباتك",
+      "subtitle": "قائمة جهات الاتصال (نطاق المستأجر).",
+      "empty": "لا توجد جهات اتصال بعد.",
+      "primary": "أساسي"
+    },
+    "leads": {
+      "title": "العملاء المحتملون",
+      "description": "فرص أعمال للتأهيل",
+      "subtitle": "قائمة العملاء المحتملين (نطاق المستأجر).",
+      "empty": "لا يوجد عملاء محتملون بعد.",
+      "colName": "الاسم",
+      "colCompany": "الشركة",
+      "colStatus": "الحالة",
+      "colSource": "المصدر",
+      "colEmail": "البريد",
+      "colCreated": "أنشئ في"
+    },
     "pipeline": {
       "title": "خط الأنابيب",
       "description": "نظرة عامة على الفرص حسب المرحلة",
@@ -6104,15 +6131,16 @@
     "statusRefunded": "مستردة",
     "statusCompleted": "مكتملة"
   },
-  "fuelPumpist": {
-    "title": "عامل المضخة",
-    "backTooltip": "رجوع",
-    "activeShift": "الوردية النشطة",
-    "noShiftTitle": "لا توجد وردية نشطة",
-    "noShiftDescription": "ستظهر مهامك اليوم هنا.",
-    "errorTitle": "تعذر تحميل الورديات",
-    "readingLabel": "قيمة القراءة (وحدات صغرى)",
-    "readingHint": "مثال 12500",
-    "submit": "حفظ القراءة"
-  }
+  "fuelPumpistTitle": "عامل المضخة",
+  "fuelPumpistBackTooltip": "رجوع",
+  "fuelPumpistActiveShift": "الوردية النشطة",
+  "fuelPumpistNoShiftTitle": "لا توجد وردية نشطة",
+  "fuelPumpistNoShiftDescription": "ستظهر مهامك اليوم هنا.",
+  "fuelPumpistErrorTitle": "تعذر تحميل الورديات",
+  "fuelPumpistReadingLabel": "قيمة القراءة (وحدات صغرى)",
+  "fuelPumpistReadingHint": "مثال 12500",
+  "fuelPumpistSubmit": "حفظ القراءة",
+  "crmAccounts": "حسابات إدارة العلاقات",
+  "crmContacts": "جهات اتصال إدارة العلاقات",
+  "crmLeads": "عملاء إدارة العلاقات المحتملون"
 }

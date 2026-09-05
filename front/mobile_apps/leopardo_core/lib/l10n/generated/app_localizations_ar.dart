@@ -8070,13 +8070,76 @@ class AppLocalizationsAr extends AppLocalizations {
       'حسابات وجهات الاتصال والعملاء المحتملين والفرص الخاصة بشركتك.';
 
   @override
-  String get crmAccounts => 'حسابات إدارة العلاقات';
+  String get crmAccountsTitle => 'الحسابات';
 
   @override
-  String get crmContacts => 'جهات اتصال إدارة العلاقات';
+  String get crmAccountsDescription => 'مؤسسات العملاء لشركتك';
 
   @override
-  String get crmLeads => 'عملاء إدارة العلاقات المحتملون';
+  String get crmAccountsSubtitle => 'قائمة الحسابات (نطاق المستأجر).';
+
+  @override
+  String get crmAccountsEmpty => 'لا توجد حسابات بعد.';
+
+  @override
+  String get crmAccountsColname => 'الاسم';
+
+  @override
+  String get crmAccountsColstatus => 'الحالة';
+
+  @override
+  String get crmAccountsColemail => 'البريد';
+
+  @override
+  String get crmAccountsColphone => 'الهاتف';
+
+  @override
+  String get crmAccountsColcreated => 'أنشئ في';
+
+  @override
+  String get crmContactsTitle => 'جهات الاتصال';
+
+  @override
+  String get crmContactsDescription => 'الأشخاص المرتبطون بحساباتك';
+
+  @override
+  String get crmContactsSubtitle => 'قائمة جهات الاتصال (نطاق المستأجر).';
+
+  @override
+  String get crmContactsEmpty => 'لا توجد جهات اتصال بعد.';
+
+  @override
+  String get crmContactsPrimary => 'أساسي';
+
+  @override
+  String get crmLeadsTitle => 'العملاء المحتملون';
+
+  @override
+  String get crmLeadsDescription => 'فرص أعمال للتأهيل';
+
+  @override
+  String get crmLeadsSubtitle => 'قائمة العملاء المحتملين (نطاق المستأجر).';
+
+  @override
+  String get crmLeadsEmpty => 'لا يوجد عملاء محتملون بعد.';
+
+  @override
+  String get crmLeadsColname => 'الاسم';
+
+  @override
+  String get crmLeadsColcompany => 'الشركة';
+
+  @override
+  String get crmLeadsColstatus => 'الحالة';
+
+  @override
+  String get crmLeadsColsource => 'المصدر';
+
+  @override
+  String get crmLeadsColemail => 'البريد';
+
+  @override
+  String get crmLeadsColcreated => 'أنشئ في';
 
   @override
   String get crmOpportunities => 'الفرص';
@@ -11595,4 +11658,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fuelPumpistSubmit => 'حفظ القراءة';
+
+  @override
+  String get crmAccounts => 'حسابات إدارة العلاقات';
+
+  @override
+  String get crmContacts => 'جهات اتصال إدارة العلاقات';
+
+  @override
+  String get crmLeads => 'عملاء إدارة العلاقات المحتملون';
 }

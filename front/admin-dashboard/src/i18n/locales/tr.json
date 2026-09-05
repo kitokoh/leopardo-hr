@@ -355,9 +355,36 @@
     "paginationPrev": "Önceki",
     "paginationNext": "Sonraki",
     "paginationPage": "Sayfa",
-    "accounts": "CRM hesapları",
-    "contacts": "CRM kişileri",
-    "leads": "CRM potansiyel müşterileri",
+    "accounts": {
+      "title": "Hesaplar",
+      "description": "Şirketinizin müşteri kuruluşları",
+      "subtitle": "Hesap listesi (tenant kapsamlı).",
+      "empty": "Henüz hesap yok.",
+      "colName": "Ad",
+      "colStatus": "Durum",
+      "colEmail": "E-posta",
+      "colPhone": "Telefon",
+      "colCreated": "Oluşturulma"
+    },
+    "contacts": {
+      "title": "Kişiler",
+      "description": "Hesaplarınıza bağlı kişiler",
+      "subtitle": "Kişi listesi (tenant kapsamlı).",
+      "empty": "Henüz kişi yok.",
+      "primary": "Birincil"
+    },
+    "leads": {
+      "title": "Potansiyel Müşteriler",
+      "description": "Nitelendirilecek iş fırsatları",
+      "subtitle": "Potansiyel müşteri listesi (tenant kapsamlı).",
+      "empty": "Henüz potansiyel müşteri yok.",
+      "colName": "Ad",
+      "colCompany": "Şirket",
+      "colStatus": "Durum",
+      "colSource": "Kaynak",
+      "colEmail": "E-posta",
+      "colCreated": "Oluşturulma"
+    },
     "pipeline": {
       "title": "Pipeline",
       "description": "Aşamalara göre fırsat genel bakışı",
@@ -6110,15 +6137,16 @@
     "statusRefunded": "İade edildi",
     "statusCompleted": "Tamamlandı"
   },
-  "fuelPumpist": {
-    "title": "Pompacı",
-    "backTooltip": "Geri",
-    "activeShift": "Aktif vardiya",
-    "noShiftTitle": "Aktif vardiya yok",
-    "noShiftDescription": "Bugünkü atamalarınız burada görünecek.",
-    "errorTitle": "Vardiyalar yüklenemedi",
-    "readingLabel": "Okuma değeri (alt birim)",
-    "readingHint": "örn. 12500",
-    "submit": "Okumayı kaydet"
-  }
+  "fuelPumpistTitle": "Pompacı",
+  "fuelPumpistBackTooltip": "Geri",
+  "fuelPumpistActiveShift": "Aktif vardiya",
+  "fuelPumpistNoShiftTitle": "Aktif vardiya yok",
+  "fuelPumpistNoShiftDescription": "Bugünkü atamalarınız burada görünecek.",
+  "fuelPumpistErrorTitle": "Vardiyalar yüklenemedi",
+  "fuelPumpistReadingLabel": "Okuma değeri (alt birim)",
+  "fuelPumpistReadingHint": "örn. 12500",
+  "fuelPumpistSubmit": "Okumayı kaydet",
+  "crmAccounts": "CRM hesapları",
+  "crmContacts": "CRM kişileri",
+  "crmLeads": "CRM potansiyel müşterileri"
 }

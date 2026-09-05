@@ -8250,13 +8250,77 @@ class AppLocalizationsFr extends AppLocalizations {
       'Comptes, contacts, leads et opportunités de votre entreprise.';
 
   @override
-  String get crmAccounts => 'Comptes CRM';
+  String get crmAccountsTitle => 'Comptes';
 
   @override
-  String get crmContacts => 'Contacts CRM';
+  String get crmAccountsDescription =>
+      'Organisations clientes de votre entreprise';
 
   @override
-  String get crmLeads => 'Leads CRM';
+  String get crmAccountsSubtitle => 'Liste des comptes (tenant-scoped).';
+
+  @override
+  String get crmAccountsEmpty => 'Aucun compte pour le moment.';
+
+  @override
+  String get crmAccountsColname => 'Nom';
+
+  @override
+  String get crmAccountsColstatus => 'Statut';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColphone => 'Téléphone';
+
+  @override
+  String get crmAccountsColcreated => 'Créé le';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmContactsDescription => 'Personnes rattachées à vos comptes';
+
+  @override
+  String get crmContactsSubtitle => 'Liste des contacts (tenant-scoped).';
+
+  @override
+  String get crmContactsEmpty => 'Aucun contact pour le moment.';
+
+  @override
+  String get crmContactsPrimary => 'Principal';
+
+  @override
+  String get crmLeadsTitle => 'Prospects';
+
+  @override
+  String get crmLeadsDescription => 'Opportunités d\'affaires à qualifier';
+
+  @override
+  String get crmLeadsSubtitle => 'Liste des prospects (tenant-scoped).';
+
+  @override
+  String get crmLeadsEmpty => 'Aucun prospect pour le moment.';
+
+  @override
+  String get crmLeadsColname => 'Nom';
+
+  @override
+  String get crmLeadsColcompany => 'Société';
+
+  @override
+  String get crmLeadsColstatus => 'Statut';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColcreated => 'Créé le';
 
   @override
   String get crmOpportunities => 'Opportunités';
@@ -11809,4 +11873,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fuelPumpistSubmit => 'Enregistrer le relevé';
+
+  @override
+  String get crmAccounts => 'Comptes CRM';
+
+  @override
+  String get crmContacts => 'Contacts CRM';
+
+  @override
+  String get crmLeads => 'Leads CRM';
 }

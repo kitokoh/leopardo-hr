@@ -3559,9 +3559,36 @@
   "crm": {
     "hub_title": "CRM",
     "hub_subtitle": "Comptes, contacts, leads et opportunités de votre entreprise.",
-    "accounts": "Comptes CRM",
-    "contacts": "Contacts CRM",
-    "leads": "Leads CRM",
+    "accounts": {
+      "title": "Comptes",
+      "description": "Organisations clientes de votre entreprise",
+      "subtitle": "Liste des comptes (tenant-scoped).",
+      "empty": "Aucun compte pour le moment.",
+      "colName": "Nom",
+      "colStatus": "Statut",
+      "colEmail": "Email",
+      "colPhone": "Téléphone",
+      "colCreated": "Créé le"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Personnes rattachées à vos comptes",
+      "subtitle": "Liste des contacts (tenant-scoped).",
+      "empty": "Aucun contact pour le moment.",
+      "primary": "Principal"
+    },
+    "leads": {
+      "title": "Prospects",
+      "description": "Opportunités d'affaires à qualifier",
+      "subtitle": "Liste des prospects (tenant-scoped).",
+      "empty": "Aucun prospect pour le moment.",
+      "colName": "Nom",
+      "colCompany": "Société",
+      "colStatus": "Statut",
+      "colSource": "Source",
+      "colEmail": "Email",
+      "colCreated": "Créé le"
+    },
     "opportunities": "Opportunités",
     "account_detail": "Compte",
     "stage": "Étape",
@@ -4840,15 +4867,16 @@
     "statusRefunded": "Remboursée",
     "statusCompleted": "Terminée"
   },
-  "fuelPumpist": {
-    "title": "Pompiste",
-    "backTooltip": "Retour",
-    "activeShift": "Shift actif",
-    "noShiftTitle": "Aucun shift actif",
-    "noShiftDescription": "Vos affectations du jour apparaîtront ici.",
-    "errorTitle": "Impossible de charger les shifts",
-    "readingLabel": "Valeur relevé (unités mineures)",
-    "readingHint": "ex. 12500",
-    "submit": "Enregistrer le relevé"
-  }
+  "fuelPumpistTitle": "Pompiste",
+  "fuelPumpistBackTooltip": "Retour",
+  "fuelPumpistActiveShift": "Shift actif",
+  "fuelPumpistNoShiftTitle": "Aucun shift actif",
+  "fuelPumpistNoShiftDescription": "Vos affectations du jour apparaîtront ici.",
+  "fuelPumpistErrorTitle": "Impossible de charger les shifts",
+  "fuelPumpistReadingLabel": "Valeur relevé (unités mineures)",
+  "fuelPumpistReadingHint": "ex. 12500",
+  "fuelPumpistSubmit": "Enregistrer le relevé",
+  "crmAccounts": "Comptes CRM",
+  "crmContacts": "Contacts CRM",
+  "crmLeads": "Leads CRM"
 }

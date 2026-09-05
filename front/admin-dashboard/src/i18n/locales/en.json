@@ -355,9 +355,36 @@
     "paginationPrev": "Previous",
     "paginationNext": "Next",
     "paginationPage": "Page",
-    "accounts": "CRM accounts",
-    "contacts": "CRM contacts",
-    "leads": "CRM leads",
+    "accounts": {
+      "title": "Accounts",
+      "description": "Client organizations of your company",
+      "subtitle": "Account list (tenant-scoped).",
+      "empty": "No accounts yet.",
+      "colName": "Name",
+      "colStatus": "Status",
+      "colEmail": "Email",
+      "colPhone": "Phone",
+      "colCreated": "Created"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "People linked to your accounts",
+      "subtitle": "Contact list (tenant-scoped).",
+      "empty": "No contacts yet.",
+      "primary": "Primary"
+    },
+    "leads": {
+      "title": "Leads",
+      "description": "Business opportunities to qualify",
+      "subtitle": "Lead list (tenant-scoped).",
+      "empty": "No leads yet.",
+      "colName": "Name",
+      "colCompany": "Company",
+      "colStatus": "Status",
+      "colSource": "Source",
+      "colEmail": "Email",
+      "colCreated": "Created"
+    },
     "pipeline": {
       "title": "Pipeline",
       "description": "Opportunities overview by stage",
@@ -5971,15 +5998,16 @@
     "statusRefunded": "Refunded",
     "statusCompleted": "Completed"
   },
-  "fuelPumpist": {
-    "title": "Pump attendant",
-    "backTooltip": "Back",
-    "activeShift": "Active shift",
-    "noShiftTitle": "No active shift",
-    "noShiftDescription": "Your assignments for today will appear here.",
-    "errorTitle": "Unable to load shifts",
-    "readingLabel": "Reading value (minor units)",
-    "readingHint": "e.g. 12500",
-    "submit": "Submit reading"
-  }
+  "fuelPumpistTitle": "Pump attendant",
+  "fuelPumpistBackTooltip": "Back",
+  "fuelPumpistActiveShift": "Active shift",
+  "fuelPumpistNoShiftTitle": "No active shift",
+  "fuelPumpistNoShiftDescription": "Your assignments for today will appear here.",
+  "fuelPumpistErrorTitle": "Unable to load shifts",
+  "fuelPumpistReadingLabel": "Reading value (minor units)",
+  "fuelPumpistReadingHint": "e.g. 12500",
+  "fuelPumpistSubmit": "Submit reading",
+  "crmAccounts": "CRM accounts",
+  "crmContacts": "CRM contacts",
+  "crmLeads": "CRM leads"
 }

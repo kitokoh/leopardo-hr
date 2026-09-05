@@ -8148,13 +8148,76 @@ class AppLocalizationsEn extends AppLocalizations {
       'Accounts, contacts, leads and opportunities for your company.';
 
   @override
-  String get crmAccounts => 'CRM accounts';
+  String get crmAccountsTitle => 'Accounts';
 
   @override
-  String get crmContacts => 'CRM contacts';
+  String get crmAccountsDescription => 'Client organizations of your company';
 
   @override
-  String get crmLeads => 'CRM leads';
+  String get crmAccountsSubtitle => 'Account list (tenant-scoped).';
+
+  @override
+  String get crmAccountsEmpty => 'No accounts yet.';
+
+  @override
+  String get crmAccountsColname => 'Name';
+
+  @override
+  String get crmAccountsColstatus => 'Status';
+
+  @override
+  String get crmAccountsColemail => 'Email';
+
+  @override
+  String get crmAccountsColphone => 'Phone';
+
+  @override
+  String get crmAccountsColcreated => 'Created';
+
+  @override
+  String get crmContactsTitle => 'Contacts';
+
+  @override
+  String get crmContactsDescription => 'People linked to your accounts';
+
+  @override
+  String get crmContactsSubtitle => 'Contact list (tenant-scoped).';
+
+  @override
+  String get crmContactsEmpty => 'No contacts yet.';
+
+  @override
+  String get crmContactsPrimary => 'Primary';
+
+  @override
+  String get crmLeadsTitle => 'Leads';
+
+  @override
+  String get crmLeadsDescription => 'Business opportunities to qualify';
+
+  @override
+  String get crmLeadsSubtitle => 'Lead list (tenant-scoped).';
+
+  @override
+  String get crmLeadsEmpty => 'No leads yet.';
+
+  @override
+  String get crmLeadsColname => 'Name';
+
+  @override
+  String get crmLeadsColcompany => 'Company';
+
+  @override
+  String get crmLeadsColstatus => 'Status';
+
+  @override
+  String get crmLeadsColsource => 'Source';
+
+  @override
+  String get crmLeadsColemail => 'Email';
+
+  @override
+  String get crmLeadsColcreated => 'Created';
 
   @override
   String get crmOpportunities => 'Opportunities';
@@ -11682,4 +11745,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fuelPumpistSubmit => 'Submit reading';
+
+  @override
+  String get crmAccounts => 'CRM accounts';
+
+  @override
+  String get crmContacts => 'CRM contacts';
+
+  @override
+  String get crmLeads => 'CRM leads';
 }
