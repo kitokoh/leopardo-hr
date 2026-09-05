@@ -1,6 +1,14 @@
+<?php
 
-use App\Core\Tenant\Domain\Models\Company
+declare(strict_types=1);
+
+namespace App\Modules\HR\Application\Actions;
+
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
+
+class ApplySectorTemplate
+{
     public function execute(Company $company, string $sector): void
     {
         if ($sector === 'btp') {
@@ -9,7 +17,6 @@ use Illuminate\Support\Facades\DB;
             $this->applySecurityTemplate($company->id);
         }
     }
-
 
     private function applyBtpTemplate(string $companyId): void
     {
@@ -59,7 +66,6 @@ use Illuminate\Support\Facades\DB;
         });
     }
 
-
     private function applySecurityTemplate(string $companyId): void
     {
         DB::transaction(function () use ($companyId) {
@@ -97,3 +103,4 @@ use Illuminate\Support\Facades\DB;
             ]);
         });
     }
+}

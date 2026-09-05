@@ -74,7 +74,7 @@ Protocol OBLIGATOIRE avant de commencer a coder :
 ### Affectation par Bounded Context (labels BC — registre #5859)
 
 Le registre automatise des bounded contexts (`dev-hub/governance/
-bounded-context-registry.json`, BC-01 PLATFORM .. BC-23 AI) est la carte
+bounded-context-registry.json`, BC-01 PLATFORM .. BC-26 DELIVERY) est la carte
 canonique. Toute issue ouverte est etiquettee avec son BC (`BC-01 PLATFORM`,
 `BC-02 TENANT`, `BC-11 CRM`, `BC-15 FUEL`, `BC-16 EDU`, ...).
 

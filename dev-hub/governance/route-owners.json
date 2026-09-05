@@ -5,7 +5,7 @@
     "guard": "dev-hub/tools/check-route-owner-guard.sh",
     "platform_guard_middleware": "Authenticate:super_admin_api",
     "tenant_middleware": "TenantMiddleware",
-    "baseline": "route:list sur main 8b3609f — 913 routes (109 platform, 678 tenant, 126 public), audit 2026-08-28",
+    "baseline": "route:list sur main 8b3609f — 913 routes (109 platform, 678 tenant, 126 public), audit 2026-08-28 ; 6 fichiers modules post-consolidation déclarés le 2026-09-05 (travelagency, restaurantmanager, fuel_station, edu_manager, delivery, solutions)",
     "updated": "2026-08-28"
   },
   "scope_by_default": "tenant",
@@ -32,7 +32,13 @@
     "api/routes/modules/rh.php": "tenant",
     "api/routes/modules/sso.php": "tenant",
     "api/routes/modules/tracking.php": "tenant",
-    "api/routes/modules/user.php": "tenant"
+    "api/routes/modules/user.php": "tenant",
+    "api/routes/modules/travelagency.php": "mixed",
+    "api/routes/modules/restaurantmanager.php": "tenant",
+    "api/routes/modules/fuel_station.php": "tenant",
+    "api/routes/modules/edu_manager.php": "tenant",
+    "api/routes/modules/delivery.php": "tenant",
+    "api/routes/modules/solutions.php": "mixed"
   },
   "platform_controller_exceptions": [
     {
