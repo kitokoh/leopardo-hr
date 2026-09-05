@@ -1,6 +1,7 @@
 # Branch Protection — main
 
-> **Mise à jour : 2026-08-26** — enforce_admins activé (CI verte depuis #5691).  
+> **Mise à jour : 2026-09-05** — état vérifié via l'API GitHub (audit PM) ; le référentiel machine
+> de la garde #2011 (`dev-hub/tools/branch-protection-canonical.json`) est synchronisé sur cet état.
 > Référence : audit ratio fix/feat (5.24 → cible ≤ 2.5), post-audit 2026-08-26.
 
 ---
@@ -18,14 +19,14 @@
 
 ## Checks requis (bloquants sur toute PR → main)
 
-| Check | Workflow | Depuis |
+| Check | Workflow émetteur (PR) | Depuis |
 |---|---|---|
 | `Backend Coverage (PHP 8.4 + PostgreSQL 16)` | `coverage-gate.yml` | Phase 2 |
-| `PHPStan — Strict (Core/Modules/Shared, level 8)` | `phpstan-baseline.yml` | Phase 3 |
+| `PHPStan — Strict (Core/Modules/Shared, level 8)` | `architecture-check.yml` | Phase 3 |
 | `Module Structure Validator` | `architecture-check.yml` | #5584 |
-| `Frontend — ESLint + TypeScript` | `web-ci.yml` | Phase 1 |
+| `Frontend — ESLint + TypeScript` | `architecture-check.yml` | Phase 1 |
 | `actionlint (+ shellcheck)` | `actionlint.yml` | #2131 |
-| `Ratio fix/feat (cible ≤ 2.5)` *(signal fort, non requis)* | `fix-feat-ratio-guard.yml` | 2026-08-26 |
+| `Ratio fix/feat (cible ≤ 2.5)` *(signal fort, **non requis**)* | `fix-feat-ratio-guard.yml` | 2026-08-26 |
 
 ## Règles du garde ratio fix/feat
 
@@ -59,7 +60,7 @@ Il mesure et affiche le ratio sans bloquer les PRs.
 
 | Date | Changement | PR/Issue |
 |---|---|---|
-| 2026-08-26 | `enforce_admins=true` activé + `Ratio fix/feat` ajouté aux required checks | Audit post-sprint |
+| 2026-08-26 | `enforce_admins=true` activé ; garde `Ratio fix/feat` créée en **signal fort non requis** (jamais ajoutée aux required checks) | Audit post-sprint |
 | 2026-08-26 | `merge-quota-guard.yml` créé (#5634) — quota journalier signal fort | #5634 |
 | Phase 2 | 5 checks initiaux (Coverage, PHPStan, Modules, Frontend, Actionlint) | — |
 
@@ -69,4 +70,4 @@ Il mesure et affiche le ratio sans bloquer les PRs.
 
 - [ ] `required_approving_review_count: 1` — à activer quand l'équipe dépasse 2 développeurs actifs
 - [ ] `required_linear_history: true` — à valider (rebases obligatoires = historique propre)
-- [ ] Merge Queue GitHub — à activer quand >15 PRs/jour régulièrement
+- [ ] Merge Queue GitHub — **non configurée** (vérifié 2026-09-05 : 0 ruleset) ; à activer quand >15 PRs/jour régulièrement

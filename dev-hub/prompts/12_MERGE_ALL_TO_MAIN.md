@@ -18,12 +18,14 @@ a) Vérifie que les checks CI sont verts. Si rouges :
    - Ne merge JAMAIS une PR avec des checks rouges
 b) Si la PR a des conflits de merge :
    - `gh pr checkout <numero>`
-   - `git fetch origin main; git merge origin/main`
+   - `git fetch origin main; git rebase origin/main` (mode canonique des protocoles CRM/BC)
    - Résous les conflits manuellement en gardant les deux changements quand c'est possible
-   - `git add -A; git commit -m "Merge main to resolve conflicts"`
-   - `git push origin HEAD`
+   - `git add -A; git rebase --continue`
+   - `git push --force-with-lease origin HEAD`
    - Attends que la CI repasse au vert
-c) Merge la PR : `gh pr merge <numero> --merge --delete-branch --admin`
+c) Merge la PR : `gh pr merge <numero> --merge --delete-branch`
+   - **Jamais `--admin`** : `main` est protégée (`enforce_admins=true`, garde #2011) ;
+     un bypass désactiverait la protection et contredit AGENTS.md (incident #2011, 2026-08-14).
 d) Après chaque merge, mets à jour ton main local :
    - `git checkout main; git pull`
 ÉTAPE 3 — VÉRIFICATION POST-MERGE
@@ -39,13 +41,14 @@ Produis un rapport final :
 - État final de main (vert/rouge)
 - Branches nettoyées
 RÈGLES STRICTES :
-- Ne JAMAIS merger une PR avec des tests en échec
+- Ne JAMAIS merger une PR avec des checks requis en échec
 - Ne JAMAIS désactiver un check pour forcer un merge
+- Ne JAMAIS utiliser `--admin` ni bypasser la protection (#2011)
 - Ne JAMAIS faire un force push sur main
 - Toujours merger dans l'ordre : docs → ci → fix → feat (les moins risquées d'abord)
 - Si un merge casse main, reverter immédiatement avec `git revert`
 ## Notes
 - L'ordre de merge est important : les PRs docs/ci ont moins de risque de conflit que les PRs feat.
 - Sur PowerShell, utiliser `;` au lieu de `&&` pour chaîner les commandes.
-- Si la branche est protégée, utiliser `--admin` pour bypasser (uniquement si vous avez les droits).
+- `main` est protégée (`enforce_admins=true`) : **aucun bypass n'est possible ni souhaité** — les merges passent par les checks requis (5) ; ne jamais merger une PR rouge.
 Agis en tant que release manager pour le projet Leopardo RH situé dans leopardo-hr (racine du dépôt git).

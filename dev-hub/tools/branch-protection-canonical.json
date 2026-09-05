@@ -3,22 +3,20 @@
     "strict": true,
     "contexts": [
       "Backend Coverage (PHP 8.4 + PostgreSQL 16)",
-      "PHPStan — Strict (Core/Modules/Shared, level 8)",
+      "PHPStan \u2014 Strict (Core/Modules/Shared, level 8)",
       "Module Structure Validator",
-      "Frontend — ESLint + TypeScript",
+      "Frontend \u2014 ESLint + TypeScript",
       "actionlint (+ shellcheck)"
     ]
   },
-  "enforce_admins": false,
+  "enforce_admins": true,
   "required_pull_request_reviews": {
-    "required_approving_review_count": 0,
+    "required_approving_review_count": null,
     "dismiss_stale_reviews": true,
     "require_code_owner_reviews": false
   },
   "required_merge_queue": {
-    "enabled": true,
-    "merge_method": "squash",
-    "check_response_timeout_minutes": 60
+    "enabled": false
   },
   "allow_force_pushes": false,
   "allow_deletions": false

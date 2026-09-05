@@ -106,6 +106,13 @@ n'ont pas été rejoués localement — ils tourneront sur la branche à la proc
 
 ### 6.2 Gouvernance de `main` — sources contradictoires (docs/outillage, pas de code)
 
+> **Traitement P0 effectué le 2026-09-05 (plan d'action) :** canonique #2011
+> synchronisé sur la protection réelle (`enforce_admins=true`, reviews=null, merge
+> queue désactivée — garde `check-branch-protection.sh` **verte**) ; `prompt 12`
+> neutralisé (`--admin` retiré) ; template PR aligné sur la règle #2512 (body) ;
+> QUICK CARD alignée (nommage `fix/<N>-<slug>`, type de commit unique).
+> Les constats ci-dessous sont conservés pour traçabilité.
+
 - **Protection de `main`** : `BRANCH_PROTECTION_REQUIRED.md` (racine) déclare `enforce_admins`
   **true** ; `dev-hub/tools/branch-protection-canonical.json` (référentiel de la garde
   #2011, 2026-08-15) dit **false** ; la copie `.github/BRANCH_PROTECTION_REQUIRED.md`
