@@ -61,3 +61,7 @@ flutter:
         - asset: assets/fonts/Inter-Variable.ttf
         - asset: assets/fonts/Inter-Italic-Variable.ttf
           style: italic
+
+dependency_overrides:
+  xml: ^7.0.1
+  uuid: ^4.6.0
