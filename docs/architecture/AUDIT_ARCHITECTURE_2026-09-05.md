@@ -50,6 +50,8 @@
   chantier #5584 **non clos** malgré des docs le présentant comme tel.
 - `app/Shared/` viole « Shared ne dépend de rien » : `Traits/Approvable.php` → `Modules\Attendance`,
   `BelongsToCompany` → `Core/Tenant`, `Auditable`/`EmployeeNotifier` → `Core/Auth`.
+  → **Résolu 2026-09-06 (#6844)** : règle précisée « Shared ne dépend que de Core, jamais de Modules »
+  (tolérance actée pour BelongsToCompany/Auditable/EmployeeNotifier) ; trait `Approvable` supprimé (0 consommation).
 - Interfaces dupliquées : `SolutionManifest` ×4 (Core/Solutions, Delivery, RestaurantManager,
   TravelAgency) ; `PaymentGatewayInterface` ×3 signatures divergentes (Accounting,
   RestaurantManager, TravelAgency).

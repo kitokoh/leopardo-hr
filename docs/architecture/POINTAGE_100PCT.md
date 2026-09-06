@@ -51,7 +51,7 @@ sans rupture de contrat API ni migration de données destructive.
 - Géofence : implémentation unique `AttendanceGeofenceService` **+ chemin d'usage unique `GeofenceZoneService`** (ADR-0016 Phase 2, #5353 — garde CI `check-geofence-single-usage.sh`).
 - Fermeture automatique : `AutoCloseAttendanceCommand` unique.
 - Mode entreprise : `attendance_mode_settings` = source de vérité.
-- Approbations : trait `Approvable` partagé (absences, frais, sessions, corrections).
+- Approbations : historiquement trait `Approvable` partagé (absences, frais, sessions, corrections) — **obsolète 2026-09-06 (#6844)** : trait supprimé (0 consommation) ; les cycles d'approbation sont implémentés par module (Absence/Planning #6895, Expense #6894).
 - Garde CI : aucun import `App\Modules\SmartAttendance\*` après Phase 3 ; purge des alias prouvée par contrat mobile.
 
 ## Règles de calcul unifiées (#5265)

@@ -62,7 +62,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (25, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
+Modules actifs (26, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `Catalog`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
 
 
 
@@ -92,8 +92,7 @@ app/Shared/
 │   └── PaginationDTO.php          # DTO pagination générique
 ├── Traits/
 │   ├── BelongsToCompany.php       # Scope tenant + auto-fill company_id
-│   ├── Auditable.php              # Journalisation création/modification/suppression
-│   └── Approvable.php             # Workflow d'approbation morphique
+│   └── Auditable.php              # Journalisation création/modification/suppression
 ├── Attributes/
 │   ├── ApiFeature.php             # Métadonnées de feature API
 │   ├── RequiresPermission.php     # Permission requise sur une méthode
