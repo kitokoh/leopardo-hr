@@ -7,6 +7,7 @@ namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ExpenseAccountingEntryResource;
+use App\Modules\Expense\Application\Actions\GenerateExpenseAccountingEntries;
 use App\Modules\Expense\Infrastructure\Services\ExpenseAccountingEntryService;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,7 @@ class ExpenseAccountingController extends Controller
 {
     public function __construct(
         private readonly ExpenseAccountingEntryService $entries,
+        private readonly GenerateExpenseAccountingEntries $generateEntries,
     ) {}
 
     /**
@@ -58,7 +60,7 @@ class ExpenseAccountingController extends Controller
         }
 
         try {
-            $count = $this->entries->generateForClaim($expenseClaim, $actor);
+            $result = $this->generateEntries->execute($expenseClaim, $actor);
         } catch (\RuntimeException $e) {
             return response()->json([
                 'error' => 'EXPENSE_ENTRIES_GENERATION_FAILED',
@@ -68,8 +70,8 @@ class ExpenseAccountingController extends Controller
 
         return response()->json([
             'expense_claim_id' => $expenseClaim->id,
-            'generated_lines' => $count,
-            'balance' => $this->entries->balanceForClaim($expenseClaim),
+            'generated_lines' => $result['generated_lines'],
+            'balance' => $result['balance'],
         ]);
     }
 }

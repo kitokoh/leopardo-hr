@@ -114,9 +114,9 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
 | `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application quasi vide (1 Service, 0 Action) — Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
-| `Modules/Planning` | ✅ routes/modules/planning.php | 🔶 Application vide (0 PHP) — reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
+| `Modules/Planning` | ✅ routes/modules/planning.php | ✅ Application peuplée (Actions cycle de vie absence — Create/Update/Approve/Reject/Cancel, 2026-09-06 #6895) ; reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
-| `Modules/Expense` | ✅ routes/modules/expense.php | 🔶 DDD partiel depuis #5235 (Domain/Infrastructure/Interfaces/Providers pour les écritures comptables) — **couche Application absente**, exemption CI maintenue (PA2-ARCH-011) ; modèles de notes de frais sous contrat `Planning` | `ExpenseServiceProvider` |
+| `Modules/Expense` | ✅ routes/modules/expense.php | ✅ DDD complet depuis 2026-09-06 (#6894) : Domain/Infrastructure/Interfaces/Providers (écritures comptables #5235) + **Application/Actions** (`GenerateExpenseAccountingEntries`, `VoidExpenseAccountingEntries`) — exemption CI levée (ne couvre plus qu'`Absence`) ; modèles de notes de frais sous contrat `Planning` | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
@@ -144,7 +144,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 > **Derogation documentee — `Modules/Absence` (PA2-ARCH-002)** : ce module ne possede que `Interfaces/` (controllers `AbsenceController`/`LeavePolicyController` + Requests) et `Providers/`. Les couches `Domain/Application/Infrastructure` ont ete supprimees car elles dupliquaient integralement (memes colonnes, memes tables) les modeles/services reels du module `Planning` (`Planning\Domain\Models\{Absence,AbsenceType,LeaveBalance,LeaveBalanceLog}`, `Planning\Infrastructure\Services\AbsenceService`) : ceux-ci sont deja references par 100% des tests, controllers, events, resources, policies et seeders de conges/absences. `Planning` est desormais le seul proprietaire canonique des modeles d'absence ; `Modules/Absence` reste uniquement une facade HTTP (routes + controllers) qui consomme les classes `Planning\...` directement, en attendant une eventuelle extraction complete du domaine Absence hors de Planning.
 >
 > **Historique — `Modules/Expense` (PA2-ARCH-011, issue #1414, évolution #5235)** : la dérogation initiale (2024-2026) documentait un module « façade HTTP » ne possédant que `Interfaces/` (`ExpenseClaimController`) et `Providers/`, les modèles métier (`ExpenseClaim`, `ExpenseItem`) vivant canoniquement dans `Planning\Domain\Models` (le controller routé consommait `Planning\...\ExpenseClaim` directement ; la policy enregistrée sur le modèle mort avait été corrigée).
-> **État actuel (depuis #5235)** : `Modules/Expense` est un module DDD **partiel** — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Infrastructure/{Listeners,Services}` (écritures comptables des notes de frais, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus à Expense **pour les couches Domain/Infrastructure/Interfaces** : seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique). **La couche `Application/` (cas d'usage) reste à créer** — la CI exempte toujours `Expense` de l'exigence des couches Application/Domain/Infrastructure (`FACADE_ONLY_MODULES="Absence Expense"`, `architecture-check.yml`).
+> **État actuel (depuis #5235, complété #6894 le 2026-09-06)** : `Modules/Expense` est un module DDD **complet** — `Domain/Models/ExpenseAccountingEntry`, `Domain/Exceptions/UnbalancedExpenseEntriesException`, `Application/Actions/{GenerateExpenseAccountingEntries,VoidExpenseAccountingEntries}` (cas d'usage nommables, consommés par le contrôleur comptable et l'observer), `Infrastructure/{Listeners,Services}` (persistance/écritures, flux Expense → Accounting) et `Interfaces/Api/V1/Controllers/ExpenseAccountingController` (routes `/expense-claims/{id}/accounting-entries` actives). La dérogation PA2-ARCH-011 ne s'applique plus : **Expense est sorti de l'exemption CI** (`FACADE_ONLY_MODULES="Absence"` — seul `Absence`, façade pure PA2-ARCH-002, reste exempté). Seuls les modèles de *notes de frais* restent sous contrat `Planning` (propriétaire canonique historique).
 
 ---
 
@@ -272,11 +272,12 @@ cat bootstrap/providers.php
 
 # Vérifier la structure de modules DDD (dynamique — voir aussi
 # .github/workflows/architecture-check.yml, généré depuis app/Modules/* sans liste codée en dur)
-# NB: seules Absence (façade pure Interfaces/+Providers/, PA2-ARCH-002) et
-# Expense (Application absente — PA2-ARCH-011 partielle, modèles de notes de
-# frais canoniques dans Planning) sont exemptées de l'exigence
-# Application/Domain/Infrastructure (FACADE_ONLY_EXEMPT_LAYERS).
-FACADE_ONLY_MODULES="Absence Expense"
+# NB: seul Absence (façade pure Interfaces/+Providers/, PA2-ARCH-002) est
+# exempté de l'exigence Application/Domain/Infrastructure. Expense a rejoint
+# le DDD complet le 2026-09-06 (#6894 — couche Application/Actions créée) :
+# la dérogation PA2-ARCH-011 (modèles de notes de frais canoniques dans
+# Planning) est historique, le module n'est plus dans FACADE_ONLY_MODULES.
+FACADE_ONLY_MODULES="Absence"
 for MOD in $(ls app/Modules); do
   for LAYER in Application Domain Infrastructure Interfaces Providers; do
     if echo "$FACADE_ONLY_MODULES" | grep -qw "$MOD" && echo "Application Domain Infrastructure" | grep -qw "$LAYER"; then

@@ -6,6 +6,8 @@ namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\DTOs\AIRequest;
 use App\AI\Orchestrator;
+use App\Core\AI\Domain\Contracts\SpeechToTextPort;
+use App\Core\AI\Domain\ValueObjects\SpeechToTextRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,14 +33,28 @@ class VoiceController extends Controller
         $audio = $request->file('audio');
         $language = $validated['language'] ?? 'fr';
 
-        $provider = config('ai.voice.stt_provider', 'whisper');
-        $text = $this->speechToText($audio, $language, $provider);
+        // A2 (#6849) : la transcription passe par le port SpeechToTextPort —
+        // fail-closed (503 STT_UNAVAILABLE) si aucun fournisseur n'est
+        // configuré, jamais de faux texte.
+        $result = app(SpeechToTextPort::class)->transcribe(new SpeechToTextRequest(
+            audio: file_get_contents($audio->getRealPath()) ?: '',
+            mime: $audio->getMimeType() ?? 'application/octet-stream',
+            language: $language,
+            filename: $audio->getClientOriginalName() ?: 'audio',
+        ));
+
+        if (! $result->ok()) {
+            return response()->json([
+                'error' => $result->error,
+                'message' => (string) __('errors.STT_UNAVAILABLE'),
+            ], 503);
+        }
 
         return response()->json([
             'data' => [
-                'text' => $text,
-                'language' => $language,
-                'provider' => $provider,
+                'text' => $result->text,
+                'language' => $result->language,
+                'provider' => $result->provider,
             ],
         ]);
     }
@@ -78,8 +94,23 @@ class VoiceController extends Controller
         $audio = $request->file('audio');
         $language = $validated['language'] ?? 'fr';
 
-        $sttProvider = config('ai.voice.stt_provider', 'whisper');
-        $transcribedText = $this->speechToText($audio, $language, $sttProvider);
+        // A2 (#6849) : STT via le port (fail-closed 503 — jamais de commande
+        // lancée sur un faux texte).
+        $sttResult = app(SpeechToTextPort::class)->transcribe(new SpeechToTextRequest(
+            audio: file_get_contents($audio->getRealPath()) ?: '',
+            mime: $audio->getMimeType() ?? 'application/octet-stream',
+            language: $language,
+            filename: $audio->getClientOriginalName() ?: 'audio',
+        ));
+
+        if (! $sttResult->ok()) {
+            return response()->json([
+                'error' => $sttResult->error,
+                'message' => (string) __('errors.STT_UNAVAILABLE'),
+            ], 503);
+        }
+
+        $transcribedText = $sttResult->text;
 
         $orchestrator = app(Orchestrator::class);
         $user = $request->user();
@@ -167,83 +198,6 @@ class VoiceController extends Controller
         }
 
         return $configured;
-    }
-
-    /**
-     * @param  UploadedFile  $audio
-     */
-    private function speechToText($audio, string $language, string $provider): string
-    {
-        if ($provider === 'whisper') {
-            return $this->whisperTranscribe($audio, $language);
-        }
-
-        if ($provider === 'deepgram') {
-            return $this->deepgramTranscribe($audio, $language);
-        }
-
-        return '';
-    }
-
-    /**
-     * @param  UploadedFile  $audio
-     */
-    private function whisperTranscribe($audio, string $language): string
-    {
-        $apiKey = config('ai.providers.openai.key');
-        if (! $apiKey) {
-            Log::warning('OpenAI API key not configured for Whisper STT');
-
-            return '';
-        }
-
-        $audioContents = file_get_contents($audio->getRealPath()) ?: '';
-
-        $response = Http::withToken($apiKey)
-            ->timeout(30)
-            ->attach('file', $audioContents, $audio->getClientOriginalName())
-            ->post('https://api.openai.com/v1/audio/transcriptions', [
-                'model' => 'whisper-1',
-                'language' => $language,
-                'response_format' => 'text',
-            ]);
-
-        if ($response->successful()) {
-            return trim($response->body());
-        }
-
-        Log::error('Whisper transcription failed', ['status' => $response->status()]);
-
-        return '';
-    }
-
-    /**
-     * @param  UploadedFile  $audio
-     */
-    private function deepgramTranscribe($audio, string $language): string
-    {
-        $apiKey = config('ai.voice.deepgram_key');
-        if (! $apiKey) {
-            Log::warning('Deepgram API key not configured');
-
-            return '';
-        }
-
-        $audioContents = file_get_contents($audio->getRealPath()) ?: '';
-
-        $response = Http::withToken($apiKey)
-            ->withHeaders(['Content-Type' => $audio->getMimeType()])
-            ->timeout(30)
-            ->withBody($audioContents, $audio->getMimeType() ?? 'application/octet-stream')
-            ->post('https://api.deepgram.com/v1/listen?language='.$language.'&model=nova-2');
-
-        if ($response->successful()) {
-            return $response->json('results.channels.0.alternatives.0.transcript') ?? '';
-        }
-
-        Log::error('Deepgram transcription failed', ['status' => $response->status()]);
-
-        return '';
     }
 
     private function textToSpeech(string $text, string $language, ?string $voice, string $provider): ?string
