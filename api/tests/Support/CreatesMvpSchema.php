@@ -24,11 +24,36 @@ trait CreatesMvpSchema
         RefreshDatabaseState::$migrated = false;
 
         if (DB::getDriverName() === 'pgsql') {
-            $this->preparePostgresSchemas();
-            $this->loadPostgresFixtureSchema();
-            $this->createPostSprintModuleTables();
-            $this->createVerticalParityTables();
-            $this->restoreDefaultSearchPath();
+            if (! $this->mvpFixtureReady()) {
+                // Issue #6928 : la fixture (~250 tables, 25-46 s de DDL) était
+                // rebuildée à CHAQUE test → suite backend > 120 min sur main.
+                // Elle est désormais construite UNE FOIS par base (marqueur
+                // `shared_tenants.__mvp_fixture_ready`, invalidé automatiquement
+                // quand un RefreshTenantDatabase DROP le schéma) et l'isolation
+                // des données entre tests est assurée par un TRUNCATE des
+                // tables de la fixture (cf. resetMvpFixtureTables()).
+                $this->preparePostgresSchemas();
+                $this->loadPostgresFixtureDrops();
+                // Snapshot APRÈS TOUS les drops de la fixture (code +
+                // en-tête SQL) : ne contient que les tables publiques
+                // canoniques survivantes (non gérées par la fixture) — la
+                // différence post-build − ce snapshot = exactement les tables
+                // créées par la fixture (public ET shared_tenants, qui vient
+                // d'être recréé vide).
+                $preBuildTables = $this->snapshotSchemaTables();
+                $this->loadPostgresFixtureCreates();
+                $this->createPostSprintModuleTables();
+                $this->createVerticalParityTables();
+                $this->markMvpFixtureReady($preBuildTables);
+            } else {
+                // Isolation : purge les lignes laissées par le test précédent
+                // (la structure reste en place). Le TRUNCATE — contrairement à
+                // une transaction — ne rollbacke pas les DROP/DDL que certains
+                // tests font eux-mêmes dans leur tearDown (ex.
+                // EstimationServiceTest supprime public.hr_model_templates).
+                $this->restoreDefaultSearchPath();
+                $this->resetMvpFixtureTables();
+            }
 
             return;
         }
@@ -1040,6 +1065,7 @@ trait CreatesMvpSchema
 
         if (DB::getDriverName() === 'pgsql') {
             $this->restoreDefaultSearchPath();
+
             // The MVP fixture drops/recreates both schemas outside Laravel's
             // migration repository. Force the next RefreshTenantDatabase test
             // to rebuild the canonical public + tenant schema instead of
@@ -1158,18 +1184,23 @@ trait CreatesMvpSchema
             SQL);
     }
 
-    private function loadPostgresFixtureSchema(): void
+    private function loadPostgresFixtureDrops(): void
     {
-        $sql = file_get_contents(__DIR__.'/sql/mvp_schema.pgsql.sql');
-
-        if ($sql === false) {
-            throw new \RuntimeException('Unable to load PostgreSQL test schema fixture.');
-        }
-
         DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
 
-        foreach ($this->splitPostgresStatements($sql) as $statement) {
-            DB::statement($statement);
+        foreach ($this->splitPostgresStatements(file_get_contents(__DIR__.'/sql/mvp_schema.pgsql.sql') ?: '') as $statement) {
+            if (str_starts_with($statement, 'DROP')) {
+                DB::statement($statement);
+            }
+        }
+    }
+
+    private function loadPostgresFixtureCreates(): void
+    {
+        foreach ($this->splitPostgresStatements(file_get_contents(__DIR__.'/sql/mvp_schema.pgsql.sql') ?: '') as $statement) {
+            if (! str_starts_with($statement, 'DROP')) {
+                DB::statement($statement);
+            }
         }
     }
 
@@ -1196,7 +1227,115 @@ trait CreatesMvpSchema
     }
 
     /**
-     * Execute fixture SQL statement-by-statement to avoid PostgreSQL rolling
+     * La fixture MVP est-elle déjà construite pour cette base dans CE process ?
+     * Vérifie le marqueur `shared_tenants.__mvp_fixture_ready` (créé APRÈS un
+     * build complet) ET quelques tables représentatives (public + tenant) :
+     * un marqueur peut survivre à un process tué en plein milieu (le build
+     * n'est pas transactionnel) ou à un état résiduel modifié hors du build —
+     * on ne fait alors JAMAIS confiance au marqueur et on rebuild (idempotent).
+     * Un `RefreshTenantDatabase` intercalé DROP le schéma `shared_tenants`
+     * (migrate:fresh + purge) → le marqueur disparaît → le prochain build est
+     * rejoué : l'invalidation est automatique et le coût par test se limite à
+     * cette requête (~1 ms).
+     */
+    private function mvpFixtureReady(): bool
+    {
+        $row = DB::selectOne(
+            "SELECT to_regclass('shared_tenants.__mvp_fixture_ready') AS marker,
+                    to_regclass('public.companies') AS companies,
+                    to_regclass('shared_tenants.employees') AS employees"
+        );
+
+        return $row !== null
+            && $row->marker !== null
+            && $row->companies !== null
+            && $row->employees !== null;
+    }
+
+    /**
+     * Enregistre le marqueur de fixture et persiste la liste des tables créées
+     * par le build (utilisée par resetMvpFixtureTables pour l'isolation par
+     * TRUNCATE). La liste est calculée par différence : tables présentes après
+     * le build MOINS tables présentes avant (état canonique résiduel — les
+     * tables publiques de vraies migrations qui survivent au build ne sont
+     * jamais tronquées).
+     *
+     * @param  array<int, string>  $preBuildTables  tables présentes avant le build
+     */
+    private function markMvpFixtureReady(array $preBuildTables): void
+    {
+        $pre = array_flip($preBuildTables);
+        $fixtureTables = [];
+
+        foreach ($this->snapshotSchemaTables() as $qualified) {
+            if (! isset($pre[$qualified])) {
+                $fixtureTables[] = $qualified;
+            }
+        }
+
+        DB::statement('CREATE TABLE shared_tenants.__mvp_fixture_ready (table_name text PRIMARY KEY)');
+
+        foreach ($fixtureTables as $qualified) {
+            DB::table('shared_tenants.__mvp_fixture_ready')->insert(['table_name' => $qualified]);
+        }
+    }
+
+    /**
+     * @return array<int, string> tables « schéma.table » de public +
+     *                            shared_tenants (hors marqueur de fixture)
+     */
+    private function snapshotSchemaTables(): array
+    {
+        $rows = DB::select(
+            "SELECT schemaname, tablename
+               FROM pg_catalog.pg_tables
+              WHERE schemaname IN ('public', 'shared_tenants')
+                AND tablename <> '__mvp_fixture_ready'
+              ORDER BY schemaname, tablename"
+        );
+
+        $tables = [];
+
+        foreach ($rows as $row) {
+            $row = (array) $row;
+            $tables[] = (string) $row['schemaname'].'.'.(string) $row['tablename'];
+        }
+
+        return $tables;
+    }
+
+    /**
+     * Purge les lignes laissées par le test précédent : TRUNCATE de toutes les
+     * tables créées par la fixture (listées dans le marqueur), RESTART IDENTITY
+     * inclus. Coût ~1 s au lieu de 25-46 s de rebuild (issue #6928).
+     *
+     * Seules les tables ENCORE PRÉSENTES sont tronquées : certains tests
+     * DROP volontairement des tables de la fixture en cours de test pour
+     * simuler une dérive de schéma (ex. TenantIsolationTest DROP
+     * shared_tenants.employees, PlatformAdminAiChatTest DROP
+     * ai_conversations) — le TRUNCATE suivant ne doit pas échouer en 42P01
+     * sur une table absente. Si une table de la garde (companies/employees)
+     * manque, le setUp suivant repassera par un rebuild complet (idempotent).
+     */
+    private function resetMvpFixtureTables(): void
+    {
+        $rows = DB::table('shared_tenants.__mvp_fixture_ready')
+            ->whereRaw('to_regclass(table_name) IS NOT NULL')
+            ->pluck('table_name');
+
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        $tables = $rows
+            ->map(static fn (string $qualified): string => '"'.str_replace('.', '"."', $qualified).'"')
+            ->implode(', ');
+
+        DB::statement("TRUNCATE TABLE {$tables} RESTART IDENTITY CASCADE");
+    }
+
+    /**
+     * Exécute la fixture SQL statement-by-statement to avoid PostgreSQL rolling
      * back an entire multi-statement batch when one DDL statement fails.
      *
      * @return list<string>
