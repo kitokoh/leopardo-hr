@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Crm;
+namespace Tests\Feature\CRM;
 
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\QueryException;
