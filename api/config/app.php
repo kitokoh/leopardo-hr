@@ -24,13 +24,18 @@ return [
     | Application Version
     |--------------------------------------------------------------------------
     |
-    | Version semver exposee par `/api/v1/health` et utile au tagging Sentry.
-    | Idealement injectee au build/deploy depuis le CHANGELOG ou un CI var
-    | (RENDER_GIT_COMMIT), sinon fallback sur la valeur ci-dessous.
+    | Version exposee par `/api/v1/health` et utilisee pour le tagging Sentry.
+    | Ordre de resolution :
+    |   1. APP_VERSION        — injectee au build/deploy (workflow CI ou dashboard Render) ;
+    |   2. RENDER_GIT_COMMIT  — definie par Render pour les deploiements Git (prefixe 7) ;
+    |   3. 'unversioned'      — marqueur explicite : la version reelle est inconnue.
+    | Ne JAMAIS retomber sur une version release passee (ex. '4.24.0') : ce
+    | fallback faisait mentir /api/v1/health sur l'age reel du code deploye
+    | sur tous les tiers (issue #6835).
     |
     */
 
-    'version' => env('APP_VERSION', '4.24.0'),
+    'version' => env('APP_VERSION') ?: (env('RENDER_GIT_COMMIT') ? substr(env('RENDER_GIT_COMMIT'), 0, 7) : 'unversioned'),
 
     /*
     |--------------------------------------------------------------------------
