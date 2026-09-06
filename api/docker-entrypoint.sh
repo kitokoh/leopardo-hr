@@ -106,14 +106,43 @@ wait_for_db_bootstrap() {
     return 1
 }
 
+# Issue #6916 : les migrations du boot doivent transiter par l'hôte DIRECT de
+# la base, jamais par le pooler Neon en mode transaction — toute migration DDL
+# y est abortée (SQLSTATE 25P02) → deploy `update_failed` (constat 2026-09-06,
+# aucun live dev depuis le 08-20). `DB_MIGRATE_URL` (explicite) prime ; sinon
+# on dérive l'hôte direct de `DB_URL` en retirant le jeton "-pooler"
+# (convention d'hôte Neon : `ep-<id>[-pooler].<region>.aws.neon.tech`). La
+# prod (DB_URL hôte direct) et le local (DB_HOST/...) ne sont pas affectés.
+resolve_migrate_db_url() {
+    url="${DB_MIGRATE_URL:-${DB_URL:-}}"
+    case "$url" in
+        *-pooler.*)
+            echo "  [migrate] pooler détecté dans DB_URL — bascule sur l'hôte direct pour artisan migrate (#6916)." >&2
+            url=$(printf '%s' "$url" | sed 's/-pooler\././')
+            ;;
+    esac
+    printf '%s' "$url"
+}
+
 run_migrate_with_retry() {
     path="$1"
     search_path="$2"
+    migrate_url="$(resolve_migrate_db_url)"
     attempt=1
     max_attempts=3
 
+    # Sous-processus migrate avec DB_URL surchargée (hôte direct, #6916) ;
+    # si aucune URL n'est disponible (ex. local via DB_HOST), config inchangée.
+    run_migrate_once() {
+        if [ -n "$migrate_url" ]; then
+            DB_URL="$migrate_url" DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated
+        else
+            DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated
+        fi
+    }
+
     while [ "$attempt" -le "$max_attempts" ]; do
-        if DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate.log 2>&1; then
+        if run_migrate_once >/tmp/render-migrate.log 2>&1; then
             cat /tmp/render-migrate.log
             return 0
         fi
@@ -127,7 +156,7 @@ run_migrate_with_retry() {
             else
                 echo "Migrations table race persisted for $path after $max_attempts attempts."
                 echo "Running isolated global catch-up migrations..."
-                if DB_SEARCH_PATH="$search_path" php artisan migrate --path="$path" --force --isolated >/tmp/render-migrate-catchup.log 2>&1; then
+                if run_migrate_once >/tmp/render-migrate-catchup.log 2>&1; then
                     cat /tmp/render-migrate-catchup.log
                     return 0
                 fi
@@ -332,7 +361,13 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     run_migrate_with_retry "database/migrations/public" "public"
 
     echo "Running tenant schema migrations..."
-    run_migrate_with_retry "database/migrations/tenant" "shared_tenants"
+    # Issue #6924 : search_path du runtime applicatif (défaut config/database.php :
+    # shared_tenants,public) et non `shared_tenants` strict — les CREATE restent
+    # dans shared_tenants (1er schéma), mais les ALTER résolvent les tables
+    # héritées placées historiquement dans public (ex. billing.invoices, constat
+    # pré-flight prod 2026-09-06). Un search_path strict faisait échouer le boot
+    # (SQLSTATE 42P01) sur toute migration tenant ALTÉRANT une table héritée.
+    run_migrate_with_retry "database/migrations/tenant" "shared_tenants,public"
 
     # Warn operators when SUPER_ADMIN_PASSWORD is not set in production:
     # the seeder will generate a random password that is never displayed in
