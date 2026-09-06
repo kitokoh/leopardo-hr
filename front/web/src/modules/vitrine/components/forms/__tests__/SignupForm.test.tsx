@@ -359,6 +359,39 @@ describe('SignupForm Component', () => {
       expect(screen.queryByRole('button', { name: /suivre l'état de mon espace/i })).not.toBeInTheDocument();
     });
 
+    it("guided_trial (status provisioning_sandbox) → tracking direct, jamais d'écran OTP (#6959)", async () => {
+      jest.useFakeTimers();
+      try {
+        mockedSubmitSignupForm.mockResolvedValue({
+          success: true,
+          provisioned: false,
+          message: "Votre demande d'essai est enregistrée. Votre espace est en cours de préparation, vous pouvez suivre son état ci-dessous.",
+          data: { status: 'provisioning_sandbox', provisioning_token: 'g'.repeat(64) },
+        });
+        (fetchTrialStatus as jest.Mock).mockResolvedValue({ success: true, data: { status: 'pending' } });
+
+        render(<SignupForm />);
+        await fillField(/email/i, 'test@example.com');
+        await fillField(/entreprise/i, 'Acme Corp');
+        const selects = screen.getAllByRole('combobox');
+        fireEvent.change(selects[1], { target: { value: '1-10' } });
+        fireEvent.change(selects[0], { target: { value: 'founder' } });
+        await screen.findByRole('option', { name: /algérie/i });
+        fireEvent.change(screen.getByRole('combobox', { name: /pays/i }), { target: { value: 'DZ' } });
+        fireEvent.click(screen.getByRole('checkbox'));
+        submitForm();
+
+        // Le flux guidé n'envoie aucun OTP : on doit arriver sur le suivi du
+        // provisioning (poll immédiat → « Préparation de votre espace ») sans
+        // jamais voir l'écran « Verify your email ».
+        expect(await screen.findByText(/préparation de votre espace/i)).toBeInTheDocument();
+        expect(screen.queryByText(/vérifiez votre email/i)).not.toBeInTheDocument();
+        expect(fetchTrialStatus).toHaveBeenCalled();
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
     it('polls pending → ready and shows the access link', async () => {
       jest.useFakeTimers();
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
