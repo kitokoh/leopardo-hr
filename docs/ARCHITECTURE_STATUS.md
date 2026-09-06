@@ -38,7 +38,11 @@
 > ✅ = au moins un fichier PHP dans la couche (ou dossier de tests dédié sous `api/tests/{Feature,Unit}/`) ;
 > — = couche absente/vide. ⚠️ = aucun dossier de tests dédié identifié pour ce module.
 > `EdgeSync` : structure spécialisée synchro/offline (pas de Contracts/Exceptions/DTOs — conforme).
-> `Restaurant` : Domain (Solution/Survey) + Providers uniquement — Application/Infrastructure/Interfaces en cours.
+> Décisions 2026-09-06 (ADR-0020, #6899/#6901/#6896 — délégation fondateur) :
+> `Restaurant` = **fournisseur de contenu** (Solution/Survey consommés par RestaurantManager et `Core\Solutions`) —
+> Application/Infrastructure/Interfaces **N/A intentionnel** (fini « en cours ») ; `Fleet` = Application/Infrastructure
+> vides **conservées**, à peupler au fil des besoins fonctionnels (aucune Action factice) ; `Payroll` = Application en
+> construction par lots (cartographie `PAYROLL_APPLICATION_CARTOGRAPHIE.md`, #6896 reste ouverte).
 > Détails et dérogations : `api/ARCHITECTURE.md`.
 
 ## 2. Routes — État de la migration
