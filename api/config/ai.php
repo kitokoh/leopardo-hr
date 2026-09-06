@@ -12,7 +12,11 @@ return [
     // posé explicitement (groq si GROQ_API_KEY renseignée, sinon openai) —
     // avec config:cache, préférer la valeur explicite dans l'environnement
     // plutôt que la déduction automatique ci-dessous.
-    'driver' => env('AI_LLM_DRIVER', null) ?? (app()->isProduction()
+    // Prod détectée via env('APP_ENV') — PAS app()->isProduction() : les
+    // fichiers de config sont chargés avant la liaison container `env`
+    // (composer install sur checkout sans .env → « Target class [env] does
+    // not exist »). Même pattern que config/queue.php.
+    'driver' => env('AI_LLM_DRIVER', null) ?? (env('APP_ENV', 'production') === 'production'
         ? ((string) env('GROQ_API_KEY') !== '' ? 'groq' : 'openai')
         : 'fake'),
 
