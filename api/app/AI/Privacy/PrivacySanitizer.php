@@ -32,11 +32,20 @@ final class PrivacySanitizer
     {
         $this->rules = [
             // Emails.
-            ['pattern' => '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i', 'replace' => self::REDACT_EMAIL],
+            ['pattern' => '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', 'replace' => self::REDACT_EMAIL],
+            // Identifiants nationaux labellisés (fr/en) — on masque le libellé +
+            // valeur proche. DOIT précéder la règle téléphone : une valeur
+            // labellisée (ex. « numéro de sécurité sociale 188127512345678 »)
+            // ne doit pas être partiellement consommée comme numéro de
+            // téléphone avant que son libellé ne soit masqué.
+            // Modificateur /u OBLIGATOIRE : sans lui, PCRE traite le pattern en
+            // octets et « [ée] » ne peut jamais matcher un « é » UTF-8 (2 octets)
+            // → les libellés accentués français ne sont jamais masqués
+            // (régression CI 2026-09-06, PrivacySanitizerTest rouge sur main,
+            // issue #6928).
+            ['pattern' => '/\b(?:national\s?id|nin|num[ée]ro\s+de\s+s[ée]curit[ée]\s+(?:sociale|nationale)|num[ée]ro\s+national)\b[^\n]{0,40}/iu', 'replace' => self::REDACT_ID],
             // Téléphones (E.164 ou national long) — 9 à 15 chiffres, + optionnel.
-            ['pattern' => '/\+?[0-9][0-9 .-]{8,14}[0-9]/', 'replace' => self::REDACT_PHONE],
-            // Identifiants nationaux labellisés (fr/en) — on masque le libellé + valeur proche.
-            ['pattern' => '/\b(?:national\s?id|nin|num[ée]ro\s+de\s+s[ée]curit[ée]\s+(?:sociale|nationale)|num[ée]ro\s+national)\b[^\n]{0,40}/i', 'replace' => self::REDACT_ID],
+            ['pattern' => '/\+?[0-9][0-9 .-]{8,14}[0-9]/u', 'replace' => self::REDACT_PHONE],
         ];
     }
 

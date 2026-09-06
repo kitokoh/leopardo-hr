@@ -89,7 +89,11 @@ jobs:
     # Train #6817 (2026-09-05) : suite complète pcov mesurée > 100 min (run
     # annulé à ~101 min, toujours dans les tests) — check REQUIS sur main.
     # Timeout porté à 180 min (marge sur la durée réelle).
-    timeout-minutes: 180
+    # Issue #6928 (2026-09-06) : fixture CreatesMvpSchema rebuildée par test
+    # → pcov > 3 h, job annulé à 180 min (run cd46d2b 2026-09-06). Timeout
+    # porté à 300 min en MESURE TRANSITOIRE (produire le verdict de
+    # couverture) — à réduire dès le fix fixture (#6928).
+    timeout-minutes: 300
 
 
     services:
