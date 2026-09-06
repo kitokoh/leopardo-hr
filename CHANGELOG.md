@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 - **fix(admin): login — accès démo super-admin data-driven, plus d'identifiants codés en dur (Closes #6922).** `LoginView.vue` n'affiche plus inconditionnellement le bouton « Utiliser le compte demo super-admin » : il interroge `GET /api/v1/demo-users` et ne propose le compte que si le backend expose un persona `super_admin` (mode démo activé, `DEMO_MODE_ENABLED=true`). En prod/staging strict l'endpoint répond 404 → bouton masqué (aucun `admin@leopardo-rh.com`/`password123` en dur dans l'UI d'admin). Même contrat data-driven que le portail web (#2730). `launch-workflow-contracts.json` aligné (token `demoSuperAdmin`). Aucun changement côté backend.
+- **fix(ci): parité .env.example — clés `AI_STT_FAKE_TEXT` et `GROQ_BASE_URL` (config/ai.php, lot BC-23) documentées (Closes #6925).** Le check Hygiene Guards (env, migrations, pays, issue #1487) échouait sur toutes les PRs (main rouge) : `env('AI_STT_FAKE_TEXT')` (bloc `stt.fake_text`) et `env('GROQ_BASE_URL', …)` (bloc `providers.groq`) utilisés dans `api/config/ai.php` mais absents de `api/.env.example`. Ajout de `AI_STT_FAKE_TEXT=` et `GROQ_BASE_URL=` (vides). Aucun changement de comportement ; débloque les merges sur main.
 
 
 
