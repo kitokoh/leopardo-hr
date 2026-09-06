@@ -359,7 +359,7 @@ describe('SignupForm Component', () => {
       expect(screen.queryByRole('button', { name: /suivre l'état de mon espace/i })).not.toBeInTheDocument();
     });
 
-    it('guided_trial (status provisioning_sandbox) → tracking direct, jamais d'écran OTP (#6959)', async () => {
+    it("guided_trial (status provisioning_sandbox) → tracking direct, jamais d'écran OTP (#6959)", async () => {
       jest.useFakeTimers();
       try {
         mockedSubmitSignupForm.mockResolvedValue({
