@@ -78,7 +78,13 @@ jobs:
     # Train #6817 (2026-09-05) : la suite complete (unit ~40 min + feature
     # ~40 min, tests restaurés) DEPASSE 75 min — run annulé a ~75 min le
     # 2026-09-05 14:06 (2e constat). Timeout porte a 120 min.
-    timeout-minutes: 120
+    # Issue #6928 (2026-09-06) : le rebuild de la fixture CreatesMvpSchema à
+    # CHAQUE test (~25-46 s/test) fait dépasser 120 min à la suite (unit 29 min
+    # + feature > 90 min sans fin). Timeout porté à 300 min en MESURE
+    # TRANSITOIRE pour laisser les runs produire leur JUnit Feature complet
+    # (mine d'échecs) — à réduire dès que la fixture est construite une fois
+    # par process (#6928, plan P0 CI).
+    timeout-minutes: 300
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
     needs: detect-changes
