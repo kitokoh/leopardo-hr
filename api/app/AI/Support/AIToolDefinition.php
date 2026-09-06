@@ -22,6 +22,10 @@ use InvalidArgumentException;
  */
 final readonly class AIToolDefinition
 {
+    /**
+     * @param  array<string, mixed>  $inputSchema  JSON Schema décrivant l'entrée de l'outil.
+     * @param  array<string, mixed>  $outputSchema  JSON Schema décrivant la sortie de l'outil.
+     */
     public function __construct(
         public string $name,
         public string $description,
@@ -43,9 +47,6 @@ final readonly class AIToolDefinition
         }
         if ($this->version < 1) {
             throw new InvalidArgumentException('AIToolDefinition version >= 1.');
-        }
-        if (! is_array($this->inputSchema)) {
-            throw new InvalidArgumentException('AIToolDefinition inputSchema doit être un tableau.');
         }
     }
 

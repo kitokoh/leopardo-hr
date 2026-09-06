@@ -42,6 +42,9 @@ final class AIToolDefinitionRegistry
         self::$definitions[$definition->name] = $definition;
     }
 
+    /**
+     * @return array<string, AIToolDefinition>
+     */
     public static function all(): array
     {
         return self::$definitions;
