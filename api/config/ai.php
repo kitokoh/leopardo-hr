@@ -7,7 +7,25 @@ return [
     'enabled' => env('AI_ENABLED', false),
     'provider' => env('AI_PROVIDER', 'openai'),
 
+    // A1 (#6848) — sélecteur de driver LLM (fake|groq|openai|claude).
+    // Défaut : fake hors production ; en production, AI_LLM_DRIVER doit être
+    // posé explicitement (groq si GROQ_API_KEY renseignée, sinon openai) —
+    // avec config:cache, préférer la valeur explicite dans l'environnement
+    // plutôt que la déduction automatique ci-dessous.
+    // Prod détectée via env('APP_ENV') — PAS app()->isProduction() : les
+    // fichiers de config sont chargés avant la liaison container `env`
+    // (composer install sur checkout sans .env → « Target class [env] does
+    // not exist »). Même pattern que config/queue.php.
+    'driver' => env('AI_LLM_DRIVER', null) ?? (env('APP_ENV', 'production') === 'production'
+        ? ((string) env('GROQ_API_KEY') !== '' ? 'groq' : 'openai')
+        : 'fake'),
+
     'providers' => [
+        'groq' => [
+            'key' => env('GROQ_API_KEY'),
+            'model' => env('AI_GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        ],
         'openai' => [
             'key' => env('OPENAI_API_KEY'),
             'model' => env('AI_MODEL', 'gpt-4o'),
@@ -191,6 +209,18 @@ return [
                 UnavailableModelInferenceAdapter::class
             ),
         ],
+        // A2 (#6849) — contrat SpeechToTextPort : défaut fail-closed.
+        // Adapter résolu à l'exécution : AI_STT_ADAPTER explicite, sinon
+        // GroqWhisperAdapter si GROQ_API_KEY posée, sinon Unavailable.
+        'stt' => [
+            'adapter' => env('AI_STT_ADAPTER'),
+            'groq_model' => env('AI_STT_GROQ_MODEL', 'whisper-large-v3'),
+        ],
+    ],
+
+    // A2 (#6849) — texte scriptable de l'adaptateur FAKE (tests uniquement).
+    'stt' => [
+        'fake_text' => env('AI_STT_FAKE_TEXT'),
     ],
 
     // AI-002 (#6771) — OCR des compteurs FuelStation : seuil de confiance

@@ -284,4 +284,5 @@ return [
     'OTP_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Vérifiez votre boîte mail et réessayez dans 15 minutes.',
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Le code a été invalidé, reconnectez-vous.',
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Un run de paie existe déjà pour cette période.',
+    'STT_UNAVAILABLE' => 'La transcription vocale est momentanément indisponible (service non configuré).',
 ];

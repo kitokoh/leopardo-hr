@@ -15,7 +15,9 @@ Ce dossier capture les decisions structurantes qui doivent rester stables pour L
 | [0007](0007-progressive-migration-strategy.md) | Acceptee | Strategie de migration progressive flat -> modules DDD (skeleton, cablage, nettoyage) |
 | [0008](0008-payment-consent-signature-model.md) | Acceptee | Modele de consentement/signature de paiement, sans PKI premature |
 | [0009](0009-ai-agent-tool-contracts-and-human-validation.md) | Acceptee | Contrats d'outils pour l'agent IA : permissions RBAC, audit et validation humaine avant toute ecriture |
-| [0010](0010-marketplace-plugin-permissions-billing-webhooks.md) | Acceptee | Plugins marketplace : scopes Sanctum existants, gating via FeaturePlanMatrix, revenu via Partner/Commission, webhooks via AVAILABLE_EVENTS |
+| [0010](0010-marketplace-plugin-permissions-billing-webhooks.md)
+| [0019](0019-mcp-external-exposure-deferred.md) | Decisee | Assistant IA (BC-23) : exposition MCP externe differee (v1 = contrat interne seul, pont hybride possible plus tard) — spike #6861 |
+ | Acceptee | Plugins marketplace : scopes Sanctum existants, gating via FeaturePlanMatrix, revenu via Partner/Commission, webhooks via AVAILABLE_EVENTS |
 | [0013](0013-notifications-read-path-unification.md) | Proposee | Notifications in-app : read-path unifie sur `app_notifications`, migration du canal historique `notifications` (3 etapes) |
 | [0011](0011-billing-payroll-domain-boundary.md) | Acceptee | Billing/Payroll : frontiere de domaine — casse la dependance circulaire (regles de facturation dans Billing, calculs de paie dans Payroll) |
 | [0012](0012-focus-core-depth-peripheral-maintenance.md) | Proposee | Programme FOCUS : profondeur du noyau (HR/Payroll/Attendance), maintenance du peripherique |
