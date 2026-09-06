@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Delivery\Application\Services\DeliveryEventService;
+use App\Modules\Delivery\Application\Actions\UpdateDeliveryStopStatusAction;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
-use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStopStatusRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteResource;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryRouteStopResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 /**
  * API mobile livreur (DELIVERY-203, issue #6287) — partie serveur.
@@ -23,7 +21,8 @@ use Illuminate\Support\Facades\DB;
  *   PROPRIÉTÉ : driver_id = employé connecté — jamais par rôle seul).
  * - `POST stops/{stop}/status` : changement de statut d'un arrêt — idempotent
  *   (rejeu du même statut → même arrêt, aucun doublon), POD obligatoire pour
- *   `delivered` (BC-20 par valeur), transitions via la machine à états.
+ *   `delivered` (BC-20 par valeur), transitions via la machine à états
+ *   (UpdateDeliveryStopStatusAction, couche Application #6898).
  *
  * Le client Flutter (offline replay, états UI) est livré séparément ; le
  * contrat d'API ci-dessus est le socle serveur.
@@ -31,8 +30,8 @@ use Illuminate\Support\Facades\DB;
 final class DeliveryRiderController
 {
     public function __construct(
-        private readonly DeliveryEventService $events,
         private readonly DeliveryRoleResolver $roles,
+        private readonly UpdateDeliveryStopStatusAction $updateStopStatus,
     ) {}
 
     public function today(Request $request): JsonResponse
@@ -63,95 +62,22 @@ final class DeliveryRiderController
 
     public function status(DeliveryStopStatusRequest $request, int $stop): JsonResponse
     {
-        $validated = $request->validated();
         $employee = $request->user();
         if (! $employee instanceof Employee) {
             abort(401, 'AUTH_EMPLOYEE_REQUIRED');
         }
 
-        $companyId = $this->companyId($request);
+        $validated = $request->validated();
 
-        $updated = DB::transaction(function () use ($stop, $companyId, $validated, $employee): DeliveryStop {
-            /** @var DeliveryStop|null $found */
-            $found = DeliveryStop::query()
-                ->where('company_id', $companyId)
-                ->whereKey($stop)
-                ->lockForUpdate()
-                ->first();
-
-            if ($found === null) {
-                abort(404);
-            }
-
-            $route = $found->route()->where('company_id', $companyId)->first();
-
-            if ($route === null || ! $this->canOperate($employee, $route)) {
-                abort(403, 'ROUTE_NOT_ASSIGNED_TO_RIDER');
-            }            // Idempotence : même statut rejoué → même arrêt, aucun effet.
-            if ($found->status === $validated['status']) {
-                return $found;
-            }
-
-            $status = (string) $validated['status'];
-
-            // Chaque statut métier déclenche l'événement de tracking correspondant
-            // (idempotent + POD + machine à états — DeliveryEventService).
-            $eventType = match ($status) {
-                'en_route' => 'out_for_delivery',
-                'arrived' => 'arrived',
-                'delivered' => 'delivered',
-                'failed' => 'failed',
-                default => null, // skipped : pas d'événement de livraison
-            };
-
-            $proofId = $validated['proof_document_id'] ?? null;
-
-            if ($eventType !== null) {
-                $this->events->record(
-                    companyId: $companyId,
-                    deliveryId: (int) $found->delivery_id,
-                    type: $eventType,
-                    eventAt: now(),
-                    latitude: null,
-                    longitude: null,
-                    origin: 'mobile',
-                    idempotencyKey: null,
-                    proofDocumentId: $eventType === 'delivered' ? $proofId : null,
-                );
-            }
-
-            $now = now();
-
-            $found->forceFill([
-                'status' => $status,
-                'arrived_at' => in_array($status, ['arrived', 'delivered'], true) ? $now : $found->arrived_at,
-                'delivered_at' => $status === 'delivered' ? $now : null,
-                'proof_id' => $status === 'delivered' ? $proofId : $found->proof_id,
-            ])->save();
-
-            $fresh = $found->fresh();
-            if ($fresh === null) {
-                abort(500, 'DELIVERY_STOP_RELOAD_FAILED');
-            }
-
-            return $fresh;
-        });
+        $updated = $this->updateStopStatus->execute(
+            stopId: $stop,
+            companyId: $this->companyId($request),
+            employee: $employee,
+            status: (string) $validated['status'],
+            proofDocumentId: $validated['proof_document_id'] ?? null,
+        );
 
         return (new DeliveryRouteStopResource($updated))->response();
-    }
-
-    /**
-     * #675x (consolidation BC-26) : reçoit l'Employee directement — la
-     * version précédente attendait un Request mais était appelée avec
-     * l'employé (TypeError → 500 sur POST /deliveries/stops/{stop}/status).
-     */
-    private function canOperate(Employee $employee, DeliveryRoute $route): bool
-    {
-        if ($this->roles->hasAnyRole($employee, ['dispatcher', 'manager', 'admin'])) {
-            return true;
-        }
-
-        return $route->driver_id !== null && (int) $route->driver_id === (int) $employee->id;
     }
 
     private function companyId(Request $request): string
