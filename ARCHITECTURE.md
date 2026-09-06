@@ -92,8 +92,7 @@ app/Shared/
 │   └── PaginationDTO.php          # DTO pagination générique
 ├── Traits/
 │   ├── BelongsToCompany.php       # Scope tenant + auto-fill company_id
-│   ├── Auditable.php              # Journalisation création/modification/suppression
-│   └── Approvable.php             # Workflow d'approbation morphique
+│   └── Auditable.php              # Journalisation création/modification/suppression
 ├── Attributes/
 │   ├── ApiFeature.php             # Métadonnées de feature API
 │   ├── RequiresPermission.php     # Permission requise sur une méthode
