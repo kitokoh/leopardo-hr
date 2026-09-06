@@ -70,9 +70,13 @@ jobs:
           done
 
           if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::notice::Database backup skipped; missing secrets: ${missing[*]}"
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            # #6836 (P1 data-loss) : no-op silencieux interdit — aucune sauvegarde
+            # n'existe tant que les secrets ne sont pas posés (Neon gratuit, pas de PITR).
+            # Échec volontaire et sonore : l'alerte doit déclencher l'action du fondateur
+            # (Settings → Secrets → Actions : DATABASE_URL, BACKUP_S3_BUCKET,
+            # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY).
+            echo "::error::Database backup IMPOSSIBLE — secrets manquants (issue #6836) : ${missing[*]}"
+            exit 1
           fi
 
           echo "configured=true" >> "$GITHUB_OUTPUT"
@@ -146,9 +150,10 @@ jobs:
           done
 
           if [[ ${#missing[@]} -gt 0 ]]; then
-            echo "::notice::Restore drill skipped; missing secrets: ${missing[*]}"
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            # #6836 : même règle que le backup — un drill de restauration no-op
+            # donne une fausse assurance. Échec sonore tant que les secrets manquent.
+            echo "::error::Restore drill IMPOSSIBLE — secrets manquants (issue #6836) : ${missing[*]}"
+            exit 1
           fi
 
           echo "configured=true" >> "$GITHUB_OUTPUT"
