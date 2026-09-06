@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Delivery\Application\Actions\SummarizeDeliveryCodSettlementsAction;
 use App\Modules\Delivery\Application\Services\DeliveryCodSettlementService;
 use App\Modules\Delivery\Domain\Models\DeliveryCodSettlement;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliverySettlementCollectRequest;
@@ -18,10 +19,15 @@ use Symfony\Component\HttpFoundation\Response;
  * Règlement COD & commissions (DELIVERY-205, issue #6289) — cycle de vie
  * `pending → collected → settled → reconciled`, chaque étape idempotente et
  * verrouillée `SELECT FOR UPDATE`. Posting BC-08 via contrat (seam).
+ * La synthèse (report) vit dans SummarizeDeliveryCodSettlementsAction
+ * (couche Application, #6898).
  */
 final class DeliveryCodSettlementController
 {
-    public function __construct(private readonly DeliveryCodSettlementService $settlements) {}
+    public function __construct(
+        private readonly DeliveryCodSettlementService $settlements,
+        private readonly SummarizeDeliveryCodSettlementsAction $summary,
+    ) {}
 
     public function store(Request $request, int $route): JsonResponse
     {
@@ -87,37 +93,8 @@ final class DeliveryCodSettlementController
      */
     public function report(Request $request): JsonResponse
     {
-        $rows = DeliveryCodSettlement::query()
-            ->where('company_id', $this->companyId($request))
-            ->selectRaw(
-                'status,
-                 COUNT(*) AS settlements,
-                 COALESCE(SUM(expected_minor), 0) AS expected_minor,
-                 COALESCE(SUM(collected_minor), 0) AS collected_minor,
-                 COALESCE(SUM(commission_minor), 0) AS commission_minor',
-            )
-            ->groupBy('status')
-            ->orderBy('status')
-            ->get();
-
-        $expected = $rows->sum('expected_minor');
-        $collected = $rows->sum('collected_minor');
-
         return response()->json([
-            'data' => [
-                'totals' => [
-                    'expected_minor' => (int) $expected,
-                    'collected_minor' => (int) $collected,
-                    'gap_minor' => (int) ($expected - $collected),
-                ],
-                'by_status' => $rows->map(fn ($row): array => [
-                    'status' => (string) $row->status,
-                    'settlements' => (int) $row->getAttribute('settlements'),
-                    'expected_minor' => (int) $row->expected_minor,
-                    'collected_minor' => (int) $row->collected_minor,
-                    'commission_minor' => (int) $row->commission_minor,
-                ])->values()->all(),
-            ],
+            'data' => $this->summary->execute($this->companyId($request)),
         ]);
     }
 
