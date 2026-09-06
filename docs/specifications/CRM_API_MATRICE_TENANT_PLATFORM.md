@@ -163,7 +163,7 @@ Règle : un callback provider qui échoue en cours de traitement doit pouvoir ê
 
 ## 6. Non-régression (testée)
 
-`api/tests/Feature/Crm/CrmPlatformIsolationTest.php` :
+`api/tests/Feature/CRM/CrmPlatformIsolationTest.php` :
 1. Un manager tenant authentifié (`sanctum`) appelant `GET /api/v1/platform/crm/pipeline` → **401** (garde super_admin_api) — le tenant ne peut pas consommer le CRM commercial.
 2. Un super-admin (`super_admin_api`) appelant la même route → **200** (CRM commercial intact).
 3. Un manager tenant appelant une route tenant inconnue → **404** (pas de fuite vers une autre surface).
