@@ -8,11 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
+use App\Modules\Recruitment\Application\Actions\CreateApplicantAction;
+use App\Modules\Recruitment\Application\Actions\CreateJobPostingAction;
+use App\Modules\Recruitment\Application\Actions\ScheduleInterviewAction;
+use App\Modules\Recruitment\Application\Actions\UpdateApplicantAction;
+use App\Modules\Recruitment\Application\Actions\UpdateInterviewAction;
+use App\Modules\Recruitment\Application\Actions\UpdateJobPostingAction;
+use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -72,12 +78,11 @@ class RecruitmentController extends Controller
             'closes_at' => 'nullable|date',
         ]);
 
-        $job = JobPosting::create([
-            ...$validated,
-            'company_id' => $actor->company_id,
-            'created_by' => $actor->id,
-            'status' => 'draft',
-        ]);
+        $job = app(CreateJobPostingAction::class)->execute(
+            $actor->company_id,
+            $actor->id,
+            $validated,
+        );
 
         return (new JobPostingResource($job))
             ->response()
@@ -129,13 +134,9 @@ class RecruitmentController extends Controller
             'closes_at' => 'nullable|date',
         ]);
 
-        if (isset($validated['status']) && $validated['status'] === 'published' && $jobPosting->status === 'draft') {
-            $validated['published_at'] = now();
-        }
+        $jobPosting = app(UpdateJobPostingAction::class)->execute($jobPosting, $validated);
 
-        $jobPosting->update($validated);
-
-        return (new JobPostingResource($jobPosting->fresh()))->response();
+        return (new JobPostingResource($jobPosting))->response();
     }
 
     // ── Applicants ──────────────────────────────────────────────────────────
@@ -184,34 +185,17 @@ class RecruitmentController extends Controller
 
         // Issue #3860 — pas de doublon (job_posting_id, email), même garde
         // que le portail public : un doublon retourne 409 ALREADY_APPLIED.
-        $alreadyApplied = Applicant::query()
-            ->where('company_id', $actor->company_id)
-            ->where('job_posting_id', $jobPosting->id)
-            ->where('email', $validated['email'])
-            ->exists();
-
-        if ($alreadyApplied) {
+        try {
+            $applicant = app(CreateApplicantAction::class)->execute(
+                $actor->company_id,
+                $jobPosting,
+                $validated,
+            );
+        } catch (ApplicantAlreadyAppliedException) {
             return new JsonResponse([
                 'error' => 'ALREADY_APPLIED',
                 'message' => 'A candidate with this email has already applied for this position.',
             ], 409);
-        }
-
-        try {
-            $applicant = Applicant::create([
-                ...$validated,
-                'company_id' => $actor->company_id,
-                'job_posting_id' => $jobPosting->id,
-            ]);
-        } catch (QueryException $e) {
-            if ($e->getCode() === '23505') {
-                return new JsonResponse([
-                    'error' => 'ALREADY_APPLIED',
-                    'message' => 'A candidate with this email has already applied for this position.',
-                ], 409);
-            }
-
-            throw $e;
         }
 
         return (new ApplicantResource($applicant))
@@ -236,9 +220,9 @@ class RecruitmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $applicant->update($validated);
+        $applicant = app(UpdateApplicantAction::class)->execute($applicant, $validated);
 
-        return (new ApplicantResource($applicant->fresh()))->response();
+        return (new ApplicantResource($applicant))->response();
     }
 
     // ── Interviews ──────────────────────────────────────────────────────────
@@ -265,11 +249,11 @@ class RecruitmentController extends Controller
             'duration_minutes' => 'nullable|integer|min:15|max:480',
         ]);
 
-        $interview = Interview::create([
-            ...$validated,
-            'company_id' => $actor->company_id,
-            'applicant_id' => $applicant->id,
-        ]);
+        $interview = app(ScheduleInterviewAction::class)->execute(
+            $actor->company_id,
+            $applicant,
+            $validated,
+        );
 
         return (new InterviewResource($interview))
             ->response()
@@ -293,9 +277,9 @@ class RecruitmentController extends Controller
             'rating' => 'nullable|integer|min:1|max:5',
         ]);
 
-        $interview->update($validated);
+        $interview = app(UpdateInterviewAction::class)->execute($interview, $validated);
 
-        return (new InterviewResource($interview->fresh()))->response();
+        return (new InterviewResource($interview))->response();
     }
 }
 
