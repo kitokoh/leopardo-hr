@@ -11,6 +11,9 @@ use App\Http\Resources\Api\V1\ScheduleResource;
 use App\Modules\HR\Interfaces\Api\V1\Requests\AssignScheduleEmployeesRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreScheduleRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateScheduleRequest;
+use App\Modules\Planning\Application\Actions\CreateSchedule;
+use App\Modules\Planning\Application\Actions\DeleteSchedule;
+use App\Modules\Planning\Application\Actions\UpdateSchedule;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,6 +23,9 @@ class ScheduleController extends Controller
 {
     public function __construct(
         private readonly TenantCacheService $tenantCache,
+        private readonly CreateSchedule $createSchedule,
+        private readonly UpdateSchedule $updateSchedule,
+        private readonly DeleteSchedule $deleteSchedule,
     ) {}
 
     public function index(Request $request): AnonymousResourceCollection
@@ -67,18 +73,7 @@ class ScheduleController extends Controller
         // plannings est réservée aux managers.
         abort_unless($actor->isManager(), 403);
 
-        if (! empty($request->validated('is_default'))) {
-            Schedule::where('company_id', $actor->company_id)->where('is_default', true)->update(['is_default' => false]);
-        }
-
-        $schedule = Schedule::create([
-            'company_id' => $actor->company_id,
-            'work_days' => $request->validated('work_days') ?? [1, 2, 3, 4, 5],
-            ...$request->validated(),
-        ]);
-
-        $this->tenantCache->invalidateSchedules((string) $actor->company_id);
-        $this->tenantCache->invalidateEmployees((string) $actor->company_id);
+        $schedule = $this->createSchedule->execute($actor, $request->validated());
 
         return (new ScheduleResource($schedule))
             ->response()
@@ -104,16 +99,9 @@ class ScheduleController extends Controller
         // plannings est réservée aux managers.
         abort_unless($actor->isManager(), 403);
 
-        if (! empty($request->validated('is_default'))) {
-            Schedule::where('company_id', $actor->company_id)->where('id', '!=', $schedule->id)->where('is_default', true)->update(['is_default' => false]);
-        }
+        $schedule = $this->updateSchedule->execute($actor, $schedule, $request->validated());
 
-        $schedule->update($request->validated());
-
-        $this->tenantCache->invalidateSchedules((string) $actor->company_id);
-        $this->tenantCache->invalidateEmployees((string) $actor->company_id);
-
-        return new ScheduleResource($schedule->fresh());
+        return new ScheduleResource($schedule);
     }
 
     public function assignEmployees(AssignScheduleEmployeesRequest $request, Schedule $schedule): JsonResponse
@@ -181,10 +169,7 @@ class ScheduleController extends Controller
             abort(422, 'SCHEDULE_DEFAULT_DELETE_FORBIDDEN');
         }
 
-        $schedule->delete();
-
-        $this->tenantCache->invalidateSchedules((string) $user->company_id);
-        $this->tenantCache->invalidateEmployees((string) $user->company_id);
+        $this->deleteSchedule->execute($user, $schedule);
 
         // #4812 : littéral EN déplacé au catalogue errors.*
         return response()->json(['message' => __('errors.SCHEDULE_DELETED')]);

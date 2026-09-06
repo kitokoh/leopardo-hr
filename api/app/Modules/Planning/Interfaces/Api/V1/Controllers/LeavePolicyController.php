@@ -9,16 +9,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LeaveAccrualResource;
 use App\Http\Resources\Api\V1\LeaveBalanceResource;
 use App\Http\Resources\Api\V1\LeavePolicyResource;
-use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Application\Actions\CreateLeaveAccrual;
+use App\Modules\Planning\Application\Actions\CreateLeavePolicy;
+use App\Modules\Planning\Application\Actions\DeactivateLeavePolicy;
+use App\Modules\Planning\Application\Actions\UpdateLeavePolicy;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class LeavePolicyController extends Controller
 {
+    public function __construct(
+        private readonly CreateLeavePolicy $createLeavePolicy,
+        private readonly UpdateLeavePolicy $updateLeavePolicy,
+        private readonly DeactivateLeavePolicy $deactivateLeavePolicy,
+        private readonly CreateLeaveAccrual $createLeaveAccrual,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -58,21 +67,7 @@ class LeavePolicyController extends Controller
             'applicable_roles' => 'nullable|array',
         ]);
 
-        $absenceTypeBelongsToCompany = AbsenceType::query()
-            ->where('company_id', $actor->company_id)
-            ->whereKey($validated['absence_type_id'])
-            ->exists();
-
-        if ($absenceTypeBelongsToCompany === false) {
-            throw ValidationException::withMessages([
-                'absence_type_id' => ['The selected absence type is invalid.'],
-            ]);
-        }
-
-        $policy = LeavePolicy::create([
-            ...$validated,
-            'company_id' => $actor->company_id,
-        ]);
+        $policy = $this->createLeavePolicy->execute($actor, $validated);
 
         return (new LeavePolicyResource($policy->load('absenceType:id,name,code')))
             ->response()
@@ -117,12 +112,9 @@ class LeavePolicyController extends Controller
             'active' => 'boolean',
         ]);
 
-        $leavePolicy->update($validated);
+        $leavePolicy = $this->updateLeavePolicy->execute($leavePolicy, $validated);
 
-        /** @var LeavePolicy $leavePolicyFresh */
-        $leavePolicyFresh = $leavePolicy->fresh();
-
-        return (new LeavePolicyResource($leavePolicyFresh->load('absenceType:id,name,code')))->response();
+        return (new LeavePolicyResource($leavePolicy->load('absenceType:id,name,code')))->response();
     }
 
     public function balances(Request $request): JsonResponse
@@ -156,7 +148,7 @@ class LeavePolicyController extends Controller
             abort(403);
         }
 
-        $leavePolicy->update(['active' => false]);
+        $this->deactivateLeavePolicy->execute($leavePolicy);
 
         return response()->json(['message' => 'Policy deactivated.']);
     }
@@ -215,44 +207,7 @@ class LeavePolicyController extends Controller
             'effective_date' => 'required|date',
         ]);
 
-        $employeeBelongsToCompany = Employee::query()
-            ->where('company_id', $actor->company_id)
-            ->whereKey($validated['employee_id'])
-            ->exists();
-        $policy = LeavePolicy::query()
-            ->where('company_id', $actor->company_id)
-            ->whereKey($validated['leave_policy_id'])
-            ->first();
-
-        if ($employeeBelongsToCompany === false) {
-            throw ValidationException::withMessages([
-                'employee_id' => ['The selected employee is invalid.'],
-            ]);
-        }
-
-        if ($policy === null) {
-            throw ValidationException::withMessages([
-                'leave_policy_id' => ['The selected leave policy is invalid.'],
-            ]);
-        }
-
-        $accrual = LeaveAccrual::create([
-            ...$validated,
-            'company_id' => $actor->company_id,
-            'created_by' => $actor->id,
-        ]);
-
-        $balance = LeaveBalance::firstOrCreate(
-            [
-                'company_id' => $actor->company_id,
-                'employee_id' => $validated['employee_id'],
-                'absence_type_id' => $policy->absence_type_id,
-                'year' => (int) date('Y', strtotime($validated['effective_date'])),
-            ],
-            ['balance' => 0, 'used' => 0, 'pending' => 0]
-        );
-
-        $balance->increment('balance', (float) $validated['amount']);
+        $accrual = $this->createLeaveAccrual->execute($actor, $validated);
 
         return (new LeaveAccrualResource($accrual->load(['employee:id,first_name,last_name', 'leavePolicy:id,name'])))
             ->response()

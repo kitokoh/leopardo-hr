@@ -8,20 +8,23 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TaskCommentResource;
 use App\Http\Resources\Api\V1\TaskResource;
-use App\Modules\Notification\Infrastructure\Services\CommunicationService;
+use App\Modules\Planning\Application\Actions\CreateTask;
+use App\Modules\Planning\Application\Actions\CreateTaskComment;
+use App\Modules\Planning\Application\Actions\DeleteTask;
+use App\Modules\Planning\Application\Actions\UpdateTask;
 use App\Modules\Planning\Domain\Models\Task;
-use App\Modules\Planning\Domain\Models\TaskComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
     public function __construct(
-        private readonly CommunicationService $communicationService,
+        private readonly CreateTask $createTask,
+        private readonly UpdateTask $updateTask,
+        private readonly DeleteTask $deleteTask,
+        private readonly CreateTaskComment $createTaskComment,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -74,6 +77,8 @@ class TaskController extends Controller
             'checklist' => ['nullable', 'array'],
         ]);
 
+        // Un employé ne crée que des tâches auto-affectées : l'Action reçoit
+        // un payload aplati (assigned_to = [actor]) dans ce cas.
         if (! $actor->isManager()) {
             $assignedTo = $data['assigned_to'] ?? [$actor->id];
             if ($assignedTo !== [$actor->id]) {
@@ -82,15 +87,7 @@ class TaskController extends Controller
             $data['assigned_to'] = [$actor->id];
         }
 
-        $task = Task::create($this->filterWritableTaskColumns([
-            'company_id' => $actor->company_id,
-            'created_by' => $actor->id,
-            'assigned_to' => $data['assigned_to'] ?? [],
-            'status' => 'todo',
-            'priority' => $data['priority'] ?? 'normal',
-            'visibility' => $data['visibility'] ?? 'visible',
-            ...$data,
-        ]));
+        $task = $this->createTask->execute($actor, $data);
 
         return (new TaskResource($task))
             ->response()
@@ -142,23 +139,10 @@ class TaskController extends Controller
             'visibility' => ['sometimes', 'in:private,visible'],
             'checklist' => ['nullable', 'array'],
         ]);
-        if (! $actor->isManager()) {
-            $data = Arr::only($data, ['status', 'completed_minutes', 'completion_note']);
-        }
-        $data = $this->filterWritableTaskColumns($data);
-        $this->applyCompletionMetrics($task, $data);
 
-        // `status` est volontairement EXCLU du $fillable (garde
-        // SensitiveFillableGuardTest — transitions de statut par code
-        // explicite, pas de mass-assignment). On l'assigne donc directement
-        // après le fill des colonnes autorisées.
-        $task->fill(Arr::except($data, ['status']));
-        if (array_key_exists('status', $data)) {
-            $task->status = $data['status'];
-        }
-        $task->save();
+        $task = $this->updateTask->execute($actor, $task, $data);
 
-        return (new TaskResource($task->fresh()))->response();
+        return (new TaskResource($task))->response();
     }
 
     public function destroy(Request $request, Task $task): JsonResponse
@@ -172,7 +156,7 @@ class TaskController extends Controller
             abort(403);
         }
 
-        $task->delete();
+        $this->deleteTask->execute($task);
 
         return response()->json(['message' => __('errors.TASK_DELETED')]);
     }
@@ -208,9 +192,7 @@ class TaskController extends Controller
         }
 
         $data = $request->validate(['content' => ['required', 'string', 'max:5000']]);
-        $comment = TaskComment::create(['company_id' => $actor->company_id, 'task_id' => $task->id, 'author_id' => $actor->id, 'content' => $data['content']]);
-
-        $this->notifyTaskParticipants($task, $actor, $comment);
+        $comment = $this->createTaskComment->execute($actor, $task, $data['content']);
 
         return (new TaskCommentResource($comment->load('author')))
             ->response()
@@ -222,44 +204,6 @@ class TaskController extends Controller
         return $actor->isManager()
             || in_array($actor->id, $task->assigned_to ?? [], true)
             || (string) $task->created_by === (string) $actor->id;
-    }
-
-    /**
-     * Notify the other task participants (creator + assignees) that a new
-     * comment was posted, excluding the comment author.
-     */
-    private function notifyTaskParticipants(Task $task, Employee $author, TaskComment $comment): void
-    {
-        $recipientIds = collect($task->assigned_to ?? [])
-            ->push($task->created_by)
-            ->filter()
-            ->unique()
-            ->reject(fn ($id): bool => (int) $id === (int) $author->id)
-            ->values();
-
-        if ($recipientIds->isEmpty()) {
-            return;
-        }
-
-        $recipients = Employee::query()
-            ->where('company_id', $task->company_id)
-            ->whereIn('id', $recipientIds)
-            ->get();
-
-        $authorName = trim($author->first_name.' '.$author->last_name);
-
-        foreach ($recipients as $recipient) {
-            // Title/body are resolved by CommunicationService from the
-            // `task_comment_added` template using the recipient's own
-            // locale (preferred_language, falling back to the company
-            // language) — see PA2-COMM-006.
-            $this->communicationService->notifyEmployee($recipient, 'task_comment_added', [
-                'task' => $task->title,
-                'author' => $authorName,
-                'task_id' => $task->id,
-                'task_comment_id' => $comment->id,
-            ], ['app']);
-        }
     }
 
     public function today(Request $request): JsonResponse
@@ -284,45 +228,5 @@ class TaskController extends Controller
                 ->orderBy('due_date')
                 ->get()
         )->response();
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    private function applyCompletionMetrics(Task $task, array &$data): void
-    {
-        if (($data['status'] ?? null) !== 'done') {
-            return;
-        }
-
-        // Métriques CALCULÉES serveur → assignation explicite, jamais de
-        // mass-assignment : `completed_at` et `performance_score` restent
-        // hors $fillable (garde SensitiveFillableGuardTest — l'ancien code
-        // les injectait dans $data et update() les écartait silencieusement :
-        // performance_score restait null).
-        $task->completed_at = $task->completed_at ?? now('UTC');
-        unset($data['completed_at']);
-
-        $estimated = (int) ($data['estimated_minutes'] ?? $task->estimated_minutes ?? 0);
-        $completed = (int) ($data['completed_minutes'] ?? $task->completed_minutes ?? 0);
-        if ($estimated > 0 && $completed > 0) {
-            $ratio = max(0.0, min(2.0, $estimated / $completed));
-            $task->performance_score = round($ratio * 50, 2);
-        }
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function filterWritableTaskColumns(array $data): array
-    {
-        foreach (['category', 'checklist', 'visibility'] as $column) {
-            if (array_key_exists($column, $data) && ! Schema::hasColumn('tasks', $column)) {
-                unset($data[$column]);
-            }
-        }
-
-        return $data;
     }
 }
