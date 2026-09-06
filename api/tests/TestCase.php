@@ -2,11 +2,12 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\ParallelTesting;
+use App\AI\Support\AIToolDefinitionRegistry;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\QueryException;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -40,6 +41,12 @@ abstract class TestCase extends BaseTestCase
     {
         $this->resetTestSearchPath();
         app()->forgetInstance('current_company');
+        // Registre statique des AIToolDefinition (collecteur #6850) : chaque
+        // test boote une app fraiche dont les providers re-enregistrent les
+        // definitions (ex. HRServiceProvider) — sans reset, le 2e test du
+        // process echoue en « AIToolDefinition dupliquee » et toute la suite
+        // Feature est cassee (constat 2026-09-06).
+        AIToolDefinitionRegistry::reset();
 
         parent::tearDown();
     }
