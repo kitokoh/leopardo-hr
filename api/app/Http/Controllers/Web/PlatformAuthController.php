@@ -39,7 +39,13 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin|null $superAdmin */
         $superAdmin = SuperAdmin::query()->where('email', $validated['email'])->first();
 
-        if (! $superAdmin || ! Hash::check($validated['password'], $superAdmin->password_hash)) {
+        // #6956 : hash stocké absent/invalide (dérive de schéma DEV) → 401,
+        // jamais de TypeError/500 (Hash::check exige une string).
+        $storedHash = $superAdmin?->password_hash;
+        $hashCheckable = is_string($storedHash) && $storedHash !== ''
+            && Hash::check($validated['password'], $storedHash);
+
+        if (! $superAdmin || ! $hashCheckable) {
             // PA2-API-005: security-relevant event, logged to the dedicated
             // 'audit' channel so brute-force attempts against the super-admin
             // login are visible independently of the per-minute throttle.
