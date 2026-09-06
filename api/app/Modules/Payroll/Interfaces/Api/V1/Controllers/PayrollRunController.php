@@ -10,6 +10,10 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
+use App\Modules\Payroll\Application\Actions\CreatePayrollRegularization;
+use App\Modules\Payroll\Application\Actions\LockPayrollRun;
+use App\Modules\Payroll\Application\Actions\UnlockPayrollRun;
+use App\Modules\Payroll\Application\Actions\ValidatePayrollRun;
 use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
@@ -20,7 +24,6 @@ use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollAnomalyService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollBordereauGenerator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
-use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
 use App\Modules\Payroll\Infrastructure\Services\PayrollJournalGenerator;
 use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Database\QueryException;
@@ -33,10 +36,14 @@ class PayrollRunController extends Controller
 {
     public function __construct(
         private readonly PayrollCalculator $calculator,
-        private readonly PayrollClosingService $closing,
         private readonly PayrollRegularizationService $regularization,
         private readonly DataAccessAuditLogger $auditLogger,
-    ) {}
+        private readonly ValidatePayrollRun $validateRun,
+        private readonly LockPayrollRun $lockRun,
+        private readonly UnlockPayrollRun $unlockRun,
+        private readonly CreatePayrollRegularization $createRegularization,
+    ) {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -312,9 +319,11 @@ class PayrollRunController extends Controller
         }
 
         try {
-            // Étape 1 du workflow F-11 : validation RH via le service de clôture
-            // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
-            $this->closing->validateRh($payrollRun, $actor);
+            // Étape 1 du workflow F-11 : validation RH — cas d'usage nommable
+            // (ADR-0020, lot 1 #6896). La politique métier (mise à jour
+            // conditionnelle atomique + audit `payroll_run_validated`) reste
+            // dans PayrollClosingService, encapsulé par l'Action.
+            $this->validateRun->execute($payrollRun, $actor);
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue,
             // jamais le message d'exception brut (FR codé en dur, non traduit).
@@ -380,7 +389,8 @@ class PayrollRunController extends Controller
         }
 
         try {
-            $this->closing->lock($payrollRun, $actor);
+            // Étape 2 du workflow F-11 — cas d'usage nommable (ADR-0020, #6896).
+            $this->lockRun->execute($payrollRun, $actor);
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue,
             // jamais le message d'exception brut (FR codé en dur, non traduit).
@@ -425,7 +435,8 @@ class PayrollRunController extends Controller
         ]);
 
         try {
-            $this->closing->unlock($payrollRun, $actor, $validated['reason']);
+            // Cas d'usage nommable (ADR-0020, lot 1 #6896).
+            $this->unlockRun->execute($payrollRun, $actor, $validated['reason']);
         } catch (PayrollRunLockedException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue.
             return response()->json([
@@ -468,8 +479,9 @@ class PayrollRunController extends Controller
         ]);
 
         try {
+            // Cas d'usage nommable (ADR-0020, lot 1 #6896) — DZ-DEPTH #1818.
             /** @var PayrollRun $regularization */
-            $regularization = $this->regularization->createRegularization(
+            $regularization = $this->createRegularization->execute(
                 $payrollRun,
                 $actor,
                 (string) $validated['reason'],
