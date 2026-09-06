@@ -16,7 +16,7 @@
 | **Delivery** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EdgeSync** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EduManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Expense** | ✅ | — | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
+| **Expense** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Fleet** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ⚠️ |
 | **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
 | **Growth** | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ |
@@ -25,7 +25,7 @@
 | **Notification** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Onboarding** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Payroll** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Planning** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Planning** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Platform** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Recruitment** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Restaurant** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
@@ -90,9 +90,10 @@
 ---
 
 > **Absence** : façade HTTP pure (Interfaces + Providers uniquement, dérogation PA2-ARCH-002) — les modèles de
-> congés/absences appartiennent canoniquement à `Planning`. **Expense** : partiellement DDD (Domain + Infrastructure
-> présents depuis #5235) mais **couche Application absente** — la CI exempte encore les deux modules de l'exigence
-> Application (`FACADE_ONLY_MODULES="Absence Expense"`, `architecture-check.yml`). Voir `api/ARCHITECTURE.md`.
+> congés/absences appartiennent canoniquement à `Planning`. **Expense** : module DDD complet depuis 2026-09-06 (#6894)
+> — couche `Application/` créée (Actions `GenerateExpenseAccountingEntries` / `VoidExpenseAccountingEntries`, écritures
+> comptables #5235) ; la CI n'exempte plus qu'`Absence` de l'exigence des couches (`FACADE_ONLY_MODULES="Absence"`,
+> `architecture-check.yml`). Voir `api/ARCHITECTURE.md`.
 
 ## 5. Roadmap restante (Phase 5+)
 
