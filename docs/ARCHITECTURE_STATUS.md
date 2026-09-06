@@ -1,53 +1,44 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-08-31 (audit docs #6585) | Phase 5 terminée — nettoyage legacy (PR #824)
+> Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 25 modules actifs
 ## 1. Tableau de l'état DDD — 25 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
-| **Absence**     | — | — | — | — | — | — | ✅ | ✅ | — |
-| **Attendance**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Billing**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Cabinet**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Cameras**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **CRM** 🆕      | ✅ | ✅ | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
-| **CRM** 🆕      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Delivery** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **EduManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Restaurant** 🆕 | ✅ | ✅ | — | — | — | — | ✅ | ✅ | — |
-| **RestaurantManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **EdgeSync** 🆕  | ✅ | — | — | ✅ | — | — | ✅ | ✅ | ⚠️ |
-| **Expense**     | — | — | — | — | — | — | ✅ | ✅ | — |
-| **Fleet**       | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **FuelStation** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Growth** 🆕   | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **HR**          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Marketing** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Notification**| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Onboarding** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **Payroll**     | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Planning**    | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **RestaurantManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **TravelAgency** 🆕| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Restaurant**  | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | 🔶 | ⚠️ |
-| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Delivery** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **EduManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Restaurant** 🆕 | ✅ | ✅ | — | — | — | — | ✅ | ✅ | — |
-| **RestaurantManager** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Accounting**  | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Absence** | — | — | — | — | — | — | ✅ | ✅ | ✅ |
+| **Accounting** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Attendance** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Billing** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **CRM** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Cabinet** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Cameras** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Delivery** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **EdgeSync** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **EduManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Expense** | ✅ | — | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
+| **Fleet** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ⚠️ |
+| **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
+| **Growth** | ✅ | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ |
+| **HR** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Marketing** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Notification** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Onboarding** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Payroll** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Planning** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Platform** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Recruitment** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Restaurant** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| **RestaurantManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
+| **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 
-> ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
-> — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).
-> Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing` (19 au total, pas 16).
-> Corrige le 2026-08-26 (#5589) : `SmartAttendance` (supprimé #5356) et `Training` (jamais créé, #4936) sont retirés du tableau ; le module `Accounting` (129 fichiers PHP, 2ᵉ module du backend, routes `modules/accounting.php`, provider #55 de `bootstrap/providers.php`) est ajouté → 18 modules actifs réels.
-
----
+> Tableau **régénéré depuis le disque** le 2026-09-05 (audit vérité — doublons CRM ×2, Restaurant ×3,
+> RestaurantManager ×3, Accounting ×3, Delivery/EduManager ×2 et titre dupliqué supprimés).
+> ✅ = au moins un fichier PHP dans la couche (ou dossier de tests dédié sous `api/tests/{Feature,Unit}/`) ;
+> — = couche absente/vide. ⚠️ = aucun dossier de tests dédié identifié pour ce module.
+> `EdgeSync` : structure spécialisée synchro/offline (pas de Contracts/Exceptions/DTOs — conforme).
+> `Restaurant` : Domain (Solution/Survey) + Providers uniquement — Application/Infrastructure/Interfaces en cours.
+> Détails et dérogations : `api/ARCHITECTURE.md`.
 
 ## 2. Routes — État de la migration
 
@@ -76,7 +67,7 @@
 
 ---
 
-## 3. Métriques globales
+## 3. Métriques — historique par phase (Phase 1→4, chantier clos 2026-07 ; 25 modules actifs aujourd'hui)
 
 | Indicateur | Phase 1 | Phase 2 | Phase 3 | Phase 4 |
 |------------|:-------:|:-------:|:-------:|:-------:|
@@ -98,7 +89,10 @@
 
 ---
 
-> **Absence** et **Expense** : façades HTTP sur `Planning` (Interfaces + Providers uniquement, PA2-ARCH-002 / PA2-ARCH-011) — voir `api/ARCHITECTURE.md`.
+> **Absence** : façade HTTP pure (Interfaces + Providers uniquement, dérogation PA2-ARCH-002) — les modèles de
+> congés/absences appartiennent canoniquement à `Planning`. **Expense** : partiellement DDD (Domain + Infrastructure
+> présents depuis #5235) mais **couche Application absente** — la CI exempte encore les deux modules de l'exigence
+> Application (`FACADE_ONLY_MODULES="Absence Expense"`, `architecture-check.yml`). Voir `api/ARCHITECTURE.md`.
 
 ## 5. Roadmap restante (Phase 5+)
 
@@ -108,12 +102,12 @@
 | Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | ✅ Fait — répertoire supprimé (DTOs dans les modules) |
 | Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ✅ Fait |
 | Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait — voir `api/ARCHITECTURE.md` «Nettoyage complet» et `api/app/Core/Tenant/README.md` |
-| Tests Feature pour Growth, Platform, Onboarding | P1 | Moyen | ⏳ À faire |
+| Tests Feature pour Growth, Platform, Onboarding | P1 | Moyen | ✅ Fait — dossiers `api/tests/Feature/{Growth,Platform,Onboarding}` présents |
 | PHPStan niveau 5 via `phpstan-modules.neon` | P2 | Moyen | ✅ Fait — gate bloquant CI (niveau 5) |
 | OpenAPI canonique | P2 | Faible | ✅ Fait — `api/openapi.yaml` source de vérité, Redocly 0 erreur |
 | routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible | ⏳ À faire |
 | Cloudflare Workers build (fix ou supprimer) | P3 | Faible | ⏳ À faire |
-| i18n backend `fr/en/ar` via `lang/` | P3 | Moyen | ✅ Fait — `api/lang/{fr,en,ar}` |
+| i18n backend via `lang/` | P3 | Moyen | ✅ Fait — `api/lang/{fr,en,ar,tr}` (voir `shared/i18n`) |
 | Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé | ⏳ À faire |
 | PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé | ⏳ À faire |
 

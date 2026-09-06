@@ -40,8 +40,8 @@ Middlewares adjacents : `EnsureKioskSearchPathReset`, `AuthenticateZktecoDevice`
 
 ## 3. Scope Eloquent — `BelongsToCompany`
 
-- Trait : `api/app/Shared/Traits/BelongsToCompany.php` (doublon legacy
-  `api/app/Traits/BelongsToCompany.php` — à résorber).
+- Trait : `api/app/Shared/Traits/BelongsToCompany.php` (canonique — l'ancien
+  doublon `api/app/Traits/BelongsToCompany.php` a été supprimé, #6565).
 - **Global scope** : toute requête filtre `company_id = current_company.id` ;
   sans `current_company` sur la surface API tenant (`tenant_scope_required`
   posé) → `TenantContextMissingException` (403).

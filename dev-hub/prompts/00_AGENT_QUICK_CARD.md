@@ -79,9 +79,9 @@ gestionemployer/
 ```
 1. gh issue list → choisir un ticket non assigné
 2. gh issue edit <N> --add-assignee "@me"
-3. git checkout -b fix/issue-<N>  (ou feat/issue-<N>)
+3. git checkout -b fix/<N>-<slug>  (nommage canonique : le nom de branche est le verrou anti-doublon, #2400)
 4. Coder, tester
-5. git commit -m "fix/feat: description (Closes #<N>)"
+5. git commit -m "fix: description (Closes #<N>)"   # type unique : feat|fix|docs|test|ci|refactor|perf|chore (pas de type composé)
 6. git push -u origin HEAD
 7. gh pr create --title "..." --body "Closes #<N>"
 8. gh pr checks <PR> → attendre le vert

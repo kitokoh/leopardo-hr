@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Cameras;
 
-use App\Modules\Cameras\Domain\Camera;
-use App\Modules\Cameras\Domain\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\Camera;
+use App\Modules\Cameras\Domain\Models\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
 use Illuminate\Support\Carbon;
 use Tests\Support\CreatesCameraFixtures;
@@ -44,7 +44,7 @@ class CameraStreamTokenVerifyTest extends TestCase
 
         /** @var CameraStreamTokenService $service */
         $service = app(CameraStreamTokenService::class);
-        $issued = $service->issue($cam->fresh(), $principal->id);
+        $issued = $service->issue($cam->fresh() ?? $cam, $principal->id);
 
         $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.urlencode($issued['token']).'&camera_id='.$cam->id.'&client_ip=1.2.3.4');
 
@@ -67,7 +67,7 @@ class CameraStreamTokenVerifyTest extends TestCase
 
         /** @var CameraStreamTokenService $service */
         $service = app(CameraStreamTokenService::class);
-        $issued = $service->issue($cam->fresh(), $principal->id);
+        $issued = $service->issue($cam->fresh() ?? $cam, $principal->id);
 
         $tampered = $issued['token'].'xx';
         $response = $this->getJson('/api/v1/internal/camera-token/verify?token='.urlencode($tampered).'&camera_id='.$cam->id);
@@ -103,7 +103,7 @@ class CameraStreamTokenVerifyTest extends TestCase
         $response->assertJsonPath('allowed', true);
         $response->assertJsonPath('type', 'access_token');
 
-        $fresh = CameraAccessToken::query()->find($access->id);
+        $fresh = CameraAccessToken::query()->findOrFail($access->id);
         $this->assertSame(1, (int) $fresh->use_count);
         $this->assertNotNull($fresh->last_used_at);
     }

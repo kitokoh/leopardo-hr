@@ -76,7 +76,7 @@ CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (P
 ## 5. Garde-fous
 - **FOCUS intact** : aucun changement sur le noyau paie DZ en dehors des issues Payroll DZ ; Accounting = ajout pur (19ᵉ module).
 - **Décisions requises** : ADR fusion Attendance (W3) · passerelle paiement en ligne (W4) · nom produit/domaine (indépendant).
-- **Budget agents** : plafond par module (`docs/OPS/BUDGET_AGENTS.md`) ; jamais 2 agents sur le même module.
+- **Budget agents** : plafond par module (`docs/ops/BUDGET_AGENTS.md`) ; jamais 2 agents sur le même module.
 
 ---
 

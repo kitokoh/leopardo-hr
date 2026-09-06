@@ -1,0 +1,116 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Cameras\Domain\Models;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+
+/**
+ * Token d'accès délégué à un tiers externe (sans compte) ou à un utilisateur
+ * interne hors-app. Vérifié par MediaMTX via l'endpoint interne.
+ *
+ * Section 4.2 du cahier des charges.
+ *
+ * @property int $id
+ * @property string $company_id
+ * @property int $camera_id
+ * @property string $token
+ * @property string|null $label
+ * @property string|null $granted_to_email
+ * @property string|null $granted_to_name
+ * @property int|null $granted_by
+ * @property array<mixed> $permissions
+ * @property Carbon|null $expires_at
+ * @property Carbon|null $last_used_at
+ * @property int $use_count
+ * @property bool $is_revoked
+ * @property array<mixed>|null $ip_whitelist
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Camera|null $camera
+ * @property-read Employee|null $grantor
+ */
+class CameraAccessToken extends Model
+{
+    use BelongsToCompany;
+
+    protected $table = 'camera_access_tokens';
+
+    protected $fillable = [
+        'company_id',
+        'camera_id',
+        'token',
+        'label',
+        'granted_to_email',
+        'granted_to_name',
+        'granted_by',
+        'permissions',
+        'expires_at',
+        'last_used_at',
+        'use_count',
+        'is_revoked',
+        'ip_whitelist',
+    ];
+
+    protected $casts = [
+        'permissions' => 'array',
+        'ip_whitelist' => 'array',
+        'expires_at' => 'datetime',
+        'last_used_at' => 'datetime',
+        'use_count' => 'integer',
+        'is_revoked' => 'boolean',
+    ];
+
+    protected $attributes = [
+        'is_revoked' => false,
+        'use_count' => 0,
+        'permissions' => '{"view":true}',
+    ];
+
+    protected $hidden = [
+        'token',
+    ];
+
+    /** @return BelongsTo<Camera, $this> */
+    public function camera(): BelongsTo
+    {
+        return $this->belongsTo(Camera::class, 'camera_id');
+    }
+
+    /** @return BelongsTo<Employee, $this> */
+    public function grantor(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'granted_by');
+    }
+
+    public function isValid(): bool
+    {
+        if ($this->is_revoked) {
+            return false;
+        }
+
+        if ($this->expires_at === null) {
+            return false;
+        }
+
+        return $this->expires_at->isFuture();
+    }
+
+    public function expirationReason(): ?string
+    {
+        if ($this->is_revoked) {
+            return 'token_revoked';
+        }
+
+        if ($this->expires_at === null || $this->expires_at->isPast()) {
+            return 'token_expired';
+        }
+
+        return null;
+    }
+}

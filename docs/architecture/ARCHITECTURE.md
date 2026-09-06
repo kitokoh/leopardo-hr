@@ -83,13 +83,13 @@ Modules/<Name>/
 ### Domain Boundaries
 1. **Identity & Access:** Multi-tenant authentication and RBAC (`Core/Auth`, `Core/Tenant`).
 2. **Core HRM:** Employee lifecycle and organizational structure (`Modules/HR`).
-3. **Attendance Engine:** Real-time tracking with geofencing and biometrics (`Modules/Attendance`, `Modules/SmartAttendance`, `Modules/Cameras`).
+3. **Attendance Engine:** Real-time tracking with geofencing and biometrics (`Modules/Attendance`, `Modules/Cameras` — the former `Modules/SmartAttendance` was merged into `Attendance` via ADR-0016, #5356).
 4. **Payroll Processor:** Multi-country compliant salary calculations (`Modules/Payroll`, `Modules/Billing`).
 5. **AI Insights:** LLM-driven forecasting and anomaly detection (`app/AI/`).
 
 ### Cross-Module Communication
 
-Modules communicate via **Events** to maintain loose coupling — they never import each other's classes directly.
+Modules communicate via **Events** to maintain loose coupling. Direct cross-module imports are **blocked by the CI guard** `dev-hub/tools/check-module-isolation.sh` (issue #5584) ; a frozen, shrinking allowlist of legacy cross-imports exists (`module-isolation-allowlist.txt`, 55 pairs — see `api/ARCHITECTURE.md`).
 
 **Example:**
 1. `Modules/Attendance` records a check-in.
@@ -119,7 +119,7 @@ For detailed implementation, see [Multi-Tenancy Documentation](MULTITENANCY.md).
 
 - **Laravel 12 / PHP 8.4:** Robust ecosystem for rapid enterprise development.
 - **PostgreSQL 16:** Advanced JSONB support and schema-based multi-tenancy.
-- **Redis:** High-speed queue and cache management.
+- **Redis:** cache & sessions — the job queue runs on the PostgreSQL `database` driver since #5578 (see `ARCHITECTURE.md` §Infrastructure).
 - **Next.js 16:** Server-side rendering for optimal dashboard performance (`front/web`, deployed on Vercel).
 - **Vue 3 / Vite:** Platform admin dashboard (`front/admin-dashboard`).
 - **Flutter:** Single codebase for native-performance mobile apps (`front/mobile_apps/*`).

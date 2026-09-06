@@ -356,7 +356,7 @@ The roadmap is deliberately staged to protect reliability while the platform exp
 - Evaluate desktop clients only where measured usage justifies them.
 - Expand countries and modules from validated operational evidence, not from feature count alone.
 
-See the [CRM programme](docs/specifications/PROGRAMME-CRM-INTERNE-CLIENT-COMPLET.md), [V0/V1 SQL and integration plan](docs/specifications/PLAN-V0-V1-CRM-CLIENT-SQL-INTEGRATIONS.md) and [refactoring roadmap](docs/architecture/refactoring/ROADMAP-BACKLOG-REFACTORING.md).
+See the [CRM programme](docs/specifications/MODULE_CRM_INTERNE_CLIENT.md), [V0/V1 SQL and integration plan](docs/specifications/PLAN-V0-V1-CRM-CLIENT-SQL-INTEGRATIONS.md) and [refactoring roadmap](docs/architecture/refactoring/ROADMAP-BACKLOG-REFACTORING.md).
 
 ---
 

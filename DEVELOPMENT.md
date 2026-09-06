@@ -44,13 +44,13 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Vue.js 3.4 + Pinia + Tailwind (plateforme admin)
 │   ├── web/                # Next.js 16 (vitrine + blog + SEO)
-│   └── mobile_apps/        # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_platform_admin)
+│   └── mobile_apps/        # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_accounting, leopardo_platform_admin, leopardo_travel_agent)
 ├── docker-compose.yml
 ├── Makefile
 ├── .devcontainer/          # VS Code DevContainer
 └── docs/
     ├── archive/PLAN_ACTION/ # Plans d'action historiques (clos, voir PLAN_ACTION2/)
-    └── API/                # Documentation OpenAPI
+    └── api/                # Documentation OpenAPI
 ```
 
 ## Backend (Laravel)
@@ -187,13 +187,13 @@ GitHub Actions workflows:
 
 | Workflow | Trigger | Checks |
 |----------|---------|--------|
-| `tests.yml` | `api/**` or `front/admin-dashboard/**` changes | PHPUnit/Pest, PHPStan, Pint + admin-dashboard lint/build |
+| `tests.yml` | `api/**` changes | PHPUnit/Pest, PHPStan, Pint, sécurité backend (pas de job front — admin-dashboard couvert par `web-ci.yml`) |
 | `coverage-gate.yml` | `api/**` changes | Coverage >= threshold |
 | `mobile-apps-ci.yml` | `front/mobile_apps/**` changes | Flutter analyze + test + APK |
 | `web-ci.yml` | `front/admin-dashboard/**` changes | ESLint + Vite build |
 | `web-marketing-ci.yml` | `front/web/**` changes | Lint + Next.js build |
 | `deploy-staging.yml` | Merge to `main` | Auto deploy staging |
-| `e2e-staging.yml` | After staging deploy | Playwright E2E |
+| `e2e-staging.yml` | `workflow_run` après « Deploy - Leopardo RH » (`deploy-main.yml`) | Smoke E2E Playwright (nom historique ; contenu « Prod Smoke ») |
 | `release.yml` | Git tag `v*` | GitHub Release (mobile APKs are built/distributed separately by `mobile-distribute.yml`) |
 
 > Il n'existe pas de fichier `backend.yml` distinct dans `.github/workflows/` : les checks backend PHPUnit/PHPStan/Pint sont dans `tests.yml`.

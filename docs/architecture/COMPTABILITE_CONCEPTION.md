@@ -37,7 +37,7 @@ Leopardo RH couvre aujourd'hui le cycle RH (présence, congés, paie). Le module
 
 ## 3. Principes de conception (non négociables)
 
-1. **DDD strict** : module `api/app/Modules/Accounting/` (Application / Domain / Infrastructure / Interfaces / Providers) — mêmes règles que les 18 modules existants.
+1. **DDD strict** : module `api/app/Modules/Accounting/` (Application / Domain / Infrastructure / Interfaces / Providers) — mêmes règles que les 25 modules existants (état 2026-09-05).
 2. **Tenant-scoped** : toute donnée porte `company_id`, tables dans `shared_tenants`, jamais de fuite cross-tenant (tests d'isolation obligatoires, pattern existant).
 3. **Zéro impact FOCUS** : aucun changement sur Payroll DZ / HR / présence / sécurité. Le module vit à côté (nouvelles tables, nouveaux endpoints).
 4. **Spec-first** : chaque lot = spec `.specify/features/` → plan → tasks → PR (protocole #2400).

@@ -218,3 +218,5 @@ Fournir une couverture de test mobile exhaustive par rôle utilisateur et par fo
 - La direction RTL reste correcte pour l'arabe quel que soit le couple langue/pays.
 - Un echec reseau sur le catalogue distant laisse l'application utilisable grace au catalogue embarque ou au dernier cache valide.
 - Un 304 Not Modified reutilise bien le checksum et le cache local sans retelechargement inutile.
+
+Note 2026-09-05 (audit architecture, PR #6832) : **aucun changement de comportement des apps mobiles.** Le diff touche `front/mobile_apps/` uniquement pour de l'hygiène de dépôt : suppression des 25 artefacts `leopardo_travel_agent/build/**` (fichiers de build Flutter qui étaient trackés sur `main` — à ne jamais versionner) + ajout du `.gitignore` dédié + corrections d'inventaire `front/mobile_apps/README.md` (puce dupliquée, liste CI = 8 packages melos). Surface de tests mobile inchangée (suites widget/unit existantes par app — voir `front/mobile_apps/<app>/test/`).

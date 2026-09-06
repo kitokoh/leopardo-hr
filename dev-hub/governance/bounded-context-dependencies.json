@@ -1,11 +1,11 @@
 {
   "_meta": {
     "title": "Bounded Context Dependency Matrix — Leopardo HR",
-    "description": "Dépendances inter-contextes autorisées (MAT-002, issue #5860). Politique : deny-by-default — toute arête cross-BC absente de cette matrice fait échouer la CI. Baseline v1 : graphe réel de main (audit 2026-08-28).",
+    "description": "Dépendances inter-contextes autorisées (MAT-002, issue #5860). Politique : deny-by-default — toute arête cross-BC absente de cette matrice fait échouer la CI. Baseline v2 : graphe réel de main (audit 2026-09-05 — +24 arêtes : BC 15/16/17/22/24/25/26 et dette Employee Core/Auth→modules, #5584).",
     "policy": "deny-by-default",
     "registry": "dev-hub/governance/bounded-context-registry.json",
     "guard": "dev-hub/tools/check-bounded-context-dependencies.sh",
-    "updated": "2026-08-28"
+    "updated": "2026-09-05"
   },
   "edges": [
     {
@@ -499,6 +499,150 @@
       "to": "BC-01",
       "baseline": false,
       "note": "TENANT → PLATFORM : Company::hasFeature() consulte FeatureKillSwitchService (kill switch global, #5868)."
+    },
+    {
+      "from": "BC-04",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "BC-04 → BC-01 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-13",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-13 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "BC-15 → BC-01 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-15 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-15 → BC-03 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-04",
+      "baseline": true,
+      "note": "BC-15 → BC-04 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BC-15 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-15",
+      "to": "BC-23",
+      "baseline": true,
+      "note": "BC-15 → BC-23 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-01",
+      "baseline": true,
+      "note": "BC-16 → BC-01 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-16 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-16 → BC-03 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "BC-16 → BC-13 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-16",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BC-16 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-20",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-20 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BC-23 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-24",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-24 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-24",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-24 → BC-03 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-24",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "BC-24 → BC-13 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-24",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BC-24 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-25",
+      "to": "BC-02",
+      "baseline": true,
+      "note": "BC-25 → BC-02 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-25",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-25 → BC-03 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-25",
+      "to": "BC-13",
+      "baseline": true,
+      "note": "BC-25 → BC-13 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-26",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-26 → BC-03 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-26",
+      "to": "BC-14",
+      "baseline": true,
+      "note": "BC-26 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
     }
   ]
 }
