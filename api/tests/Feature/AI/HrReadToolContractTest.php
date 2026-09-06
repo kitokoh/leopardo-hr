@@ -81,8 +81,11 @@ class HrReadToolContractTest extends TestCase
 
     public function test_tools_endpoint_is_filtered_by_role(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);

@@ -65,7 +65,9 @@ class TeamOverviewToolTest extends TestCase
 
     public function test_principal_manager_gets_company_aggregates(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create([
             'company_id' => $company->id,
             'contract_type' => 'CDI',
@@ -112,18 +114,22 @@ class TeamOverviewToolTest extends TestCase
 
     public function test_supervisor_scope_is_limited_to_direct_team(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $supervisor */
         $supervisor = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'superviseur',
         ]);
+        /** @var Employee $report */
         $report = Employee::factory()->create([
             'company_id' => $company->id,
             'manager_id' => $supervisor->id,
             'status' => 'active',
         ]);
         // Autre employé, rattaché à un autre manager : hors périmètre.
+        /** @var Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Employee::factory()->create([
             'company_id' => $company->id,
@@ -146,7 +152,9 @@ class TeamOverviewToolTest extends TestCase
 
     public function test_employee_role_is_denied(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $result = $this->executeTool((string) $company->id, $employee->id);
@@ -157,8 +165,11 @@ class TeamOverviewToolTest extends TestCase
 
     public function test_cross_tenant_employees_are_never_counted(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
         $deptA = Department::create(['name' => 'Equipe A']);
         $deptB = Department::create(['name' => 'Equipe B']);

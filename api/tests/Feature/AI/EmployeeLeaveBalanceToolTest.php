@@ -67,8 +67,11 @@ class EmployeeLeaveBalanceToolTest extends TestCase
 
     public function test_employee_reads_own_leave_balance(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create(['name' => 'Conges annuels']);
         LeaveBalance::create([
             'company_id' => $company->id,
@@ -96,8 +99,11 @@ class EmployeeLeaveBalanceToolTest extends TestCase
 
     public function test_employee_cannot_read_another_employee_balance(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var Employee $other */
         $other = Employee::factory()->create(['company_id' => $company->id]);
 
         $result = $this->executeTool((string) $company->id, $employee->id, ['employee_id' => $other->id]);
@@ -108,9 +114,13 @@ class EmployeeLeaveBalanceToolTest extends TestCase
 
     public function test_manager_reads_any_company_employee_balance(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         LeaveBalance::create([
             'company_id' => $company->id,
@@ -132,9 +142,13 @@ class EmployeeLeaveBalanceToolTest extends TestCase
 
     public function test_manager_cannot_read_cross_tenant_employee(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
 
         $result = $this->executeTool((string) $companyA->id, $managerA->id, ['employee_id' => $employeeB->id]);
@@ -145,8 +159,11 @@ class EmployeeLeaveBalanceToolTest extends TestCase
 
     public function test_year_argument_selects_snapshot(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         $currentYear = (int) now()->format('Y');
         LeaveBalance::create([
@@ -171,7 +188,9 @@ class EmployeeLeaveBalanceToolTest extends TestCase
     {
         // employee_leave_balance est accessible à l'employé pour SON solde
         // (rôle employee, permission leave.view — parité get_leave_balances).
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $result = $this->executeTool((string) $company->id, $employee->id);

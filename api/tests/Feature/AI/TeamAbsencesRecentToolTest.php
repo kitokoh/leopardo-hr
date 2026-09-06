@@ -66,10 +66,15 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_manager_sees_recent_team_absences_with_statuses(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $e1 */
         $e1 = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var Employee $e2 */
         $e2 = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
 
         Absence::factory()->create([
@@ -98,6 +103,7 @@ class TeamAbsencesRecentToolTest extends TestCase
             'end_date' => now()->subDays(9)->toDateString(),
         ]);
         // Employé archivé : ses absences sortent du périmètre.
+        /** @var Employee $archived */
         $archived = Employee::factory()->archived()->create(['company_id' => $company->id]);
         Absence::factory()->create([
             'company_id' => $company->id,
@@ -130,9 +136,13 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_status_filter_is_applied(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         Absence::factory()->create([
             'company_id' => $company->id,
@@ -160,9 +170,13 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_custom_period_filters_absences(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         Absence::factory()->create([
             'company_id' => $company->id,
@@ -195,21 +209,27 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_supervisor_sees_only_own_team_absences(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $supervisor */
         $supervisor = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'superviseur',
         ]);
+        /** @var Employee $report */
         $report = Employee::factory()->create([
             'company_id' => $company->id,
             'manager_id' => $supervisor->id,
         ]);
+        /** @var Employee $otherManager */
         $otherManager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $outsider */
         $outsider = Employee::factory()->create([
             'company_id' => $company->id,
             'manager_id' => $otherManager->id,
         ]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         Absence::factory()->create([
             'company_id' => $company->id,
@@ -238,10 +258,15 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_cross_tenant_absences_are_excluded(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var Company $companyB */
         $companyB = Company::factory()->create();
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $employeeB */
         $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
+        /** @var AbsenceType $type */
         $type = AbsenceType::factory()->create();
         Absence::factory()->create([
             'company_id' => $companyB->id,
@@ -262,7 +287,9 @@ class TeamAbsencesRecentToolTest extends TestCase
 
     public function test_employee_role_is_denied(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $result = $this->executeTool((string) $company->id, $employee->id);
