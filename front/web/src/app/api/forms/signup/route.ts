@@ -140,14 +140,28 @@ export async function POST(request: NextRequest) {
 
     // Step 3: Return response
     if (signupResult) {
+      // #6959 : contrat honnête selon le workflow réellement exécuté par le
+      // backend. Le flux guidé (`requestedWorkflow=guided_trial`) ne passe
+      // PAS par un OTP : le backend renvoie `status=provisioning_sandbox` +
+      // `provisioning_token` et provisionne en asynchrone. On ne doit donc
+      // jamais répondre « Code de vérification envoyé » pour ce flux —
+      // `provisioned:false` + `nextStep:'tracking'` orientent l'UI vers le
+      // suivi du statut. Seul le flux legacy self-service (statut
+      // `pending_verification`) reçoit réellement un code par email.
+      const otpFlow = signupResult.status === 'pending_verification';
+
       return NextResponse.json(
         {
           success: true,
-          message: 'Code de vérification envoyé.',
+          provisioned: otpFlow,
+          message: otpFlow
+            ? 'Code de vérification envoyé.'
+            : "Votre demande d'essai est enregistrée. Votre espace est en cours de préparation, vous pouvez suivre son état ci-dessous.",
           data: {
             id: lead.id,
             email: signupResult.email,
             status: signupResult.status,
+            nextStep: otpFlow ? 'verify' : 'tracking',
             // #2469 : le provisioning_token permet au prospect de suivre
             // l'état du sandbox (GET /api/forms/trial-status) sans email OTP.
             provisioning_token:
