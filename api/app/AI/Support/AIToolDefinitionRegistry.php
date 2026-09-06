@@ -34,6 +34,16 @@ final class AIToolDefinitionRegistry
     public static function register(AIToolDefinition $definition): void
     {
         if (isset(self::$definitions[$definition->name])) {
+            // Issue #6950 : le boot de l'app peut survenir PLUSIEURS fois par
+            // process dans les tests (worker paratest, refreshApplication entre
+            // tests) — chaque BC re-registre ses définitions à chaque boot.
+            // Une re-registration STRICTEMENT IDENTIQUE est un no-op (boot
+            // idempotent) ; une collision réelle (définition différente, même
+            // nom) reste une erreur.
+            if (self::$definitions[$definition->name] == $definition) {
+                return;
+            }
+
             throw new InvalidArgumentException(
                 "AIToolDefinition dupliquée : \"{$definition->name}\" déjà enregistrée."
             );
