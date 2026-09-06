@@ -55,6 +55,10 @@ class IntentEngine
             'get_notifications',
             'get_leave_balances',
             'get_payroll_summary',
+            // B1 (#6854) — outils lecture BC-04 HR (contrat A3 #6850).
+            'team_overview',
+            'team_absences_recent',
+            'employee_leave_balance',
         ];
     }
 
@@ -271,6 +275,17 @@ class IntentEngine
             },
             'get_leave_balances' => fn (array $arguments): array => $this->getLeaveBalances($companyId, $userId),
             'get_payroll_summary' => fn (array $arguments): array => $this->getPayrollSummary($companyId, $userId),
+            // B1 (#6854) — outils lecture BC-04 HR (contrat A3 #6850) :
+            // agrégats via les modèles canoniques HR/Planning.
+            'team_overview' => fn (array $arguments): array => $this->getTeamOverview($companyId, $userId),
+            'team_absences_recent' => function (array $arguments) use ($companyId, $userId): array {
+                /** @var array<string, mixed> $arguments */
+                return $this->getTeamAbsencesRecent($companyId, $userId, $arguments);
+            },
+            'employee_leave_balance' => function (array $arguments) use ($companyId, $userId): array {
+                /** @var array<string, mixed> $arguments */
+                return $this->getEmployeeLeaveBalance($companyId, $userId, $arguments);
+            },
         ];
     }
 
@@ -627,5 +642,187 @@ class IntentEngine
             ->get(['id', 'period_month', 'period_year', 'gross_salary', 'net_salary', 'status', 'validated_at']);
 
         return ['payrolls' => $payrolls->toArray(), 'count' => $payrolls->count()];
+    }
+
+    /**
+     * B1 (#6854) — agrégats d'effectif du périmètre du manager (entreprise
+     * pour les rôles company-wide, département pour `dept`, équipe directe
+     * pour `superviseur` — scope canonique Employee::visibleToManager()).
+     * Sortie AGRÉGÉE uniquement : aucune donnée nominative (privacy A6,
+     * #6853) ; la liste nominative reste l'apanage du REST HR.
+     *
+     * @return array<string, mixed>
+     */
+    private function getTeamOverview(string $companyId, int $userId): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::where('company_id', $companyId)->find($userId);
+
+        if ($actor === null) {
+            return ['error' => 'Employee not found'];
+        }
+
+        // Défense en profondeur (#6532) : un non-manager (jamais atteint via
+        // la matrice ai.tool_permissions, rôle manager requis) ne voit que
+        // lui-même — parité avec les outils PII existants.
+        $query = Employee::query()
+            ->where('company_id', $companyId)
+            ->whereNotIn('status', ['archived', 'departed']);
+
+        if ($actor->isManager()) {
+            $query->visibleToManager($actor);
+        } else {
+            $query->where('id', $userId);
+        }
+
+        $employees = $query->with('department:id,name')
+            ->get(['id', 'department_id', 'contract_type', 'status']);
+
+        $byDepartment = [];
+        foreach ($employees->groupBy('department_id') as $group) {
+            $byDepartment[] = [
+                'department' => $group->first()?->department?->name,
+                'count' => $group->count(),
+            ];
+        }
+        usort($byDepartment, static fn (array $a, array $b): int => strcmp(
+            (string) ($a['department'] ?? ''),
+            (string) ($b['department'] ?? ''),
+        ));
+
+        return [
+            'scope' => ! $actor->isManager() ? 'self' : ($actor->isTeamScoped() ? 'team' : 'company'),
+            'total' => $employees->count(),
+            'by_status' => $employees->countBy('status')->all(),
+            'by_contract_type' => $employees->countBy('contract_type')->all(),
+            'by_department' => $byDepartment,
+        ];
+    }
+
+    /**
+     * B1 (#6854) — absences récentes du périmètre du manager sur une période
+     * (chevauchement start/end, défaut 30 derniers jours), agrégées par
+     * statut. Sortie non nominative : identifiants employés uniquement, pas
+     * de motif (raison) ni de données brutes sensibles (privacy A6, #6853).
+     *
+     * @param  array<string, mixed>  $args
+     * @return array<string, mixed>
+     */
+    private function getTeamAbsencesRecent(string $companyId, int $userId, array $args): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::where('company_id', $companyId)->find($userId);
+
+        if ($actor === null) {
+            return ['error' => 'Employee not found'];
+        }
+
+        $from = $this->stringArgument($args, 'from', Carbon::today()->subDays(30)->toDateString());
+        $to = $this->stringArgument($args, 'to', Carbon::today()->toDateString());
+
+        $query = Absence::where('company_id', $companyId)
+            ->where('start_date', '<=', $to)
+            ->where('end_date', '>=', $from);
+
+        if ($actor->isManager()) {
+            // Périmètre canonique du manager (visibleToManager, fails closed).
+            $teamIds = Employee::query()
+                ->where('company_id', $companyId)
+                ->whereNotIn('status', ['archived', 'departed'])
+                ->visibleToManager($actor)
+                ->pluck('id');
+            $query->whereIn('employee_id', $teamIds);
+        } else {
+            // Défense en profondeur (#6532) : un non-manager ne voit que ses
+            // propres absences (matrice : rôle manager requis).
+            $query->where('employee_id', $userId);
+        }
+
+        $status = $this->stringArgument($args, 'status', '');
+        if ($status !== '') {
+            $query->where('status', $status);
+        }
+
+        $total = (clone $query)->count();
+        $byStatus = (clone $query)->select('status')->get()->countBy('status')->all();
+
+        $absences = $query->with('absenceType:id,name')
+            ->orderByDesc('start_date')
+            ->limit(20)
+            ->get(['id', 'employee_id', 'absence_type_id', 'start_date', 'end_date', 'days_count', 'status']);
+
+        $mapped = $absences->map(fn (Absence $absence): array => [
+            'id' => $absence->id,
+            'employee_id' => $absence->employee_id,
+            'type' => $absence->absenceType?->name,
+            'start_date' => $absence->start_date->toDateString(),
+            'end_date' => $absence->end_date?->toDateString(),
+            'days_count' => $absence->days_count,
+            'status' => $absence->status,
+        ]);
+
+        return [
+            'period' => ['from' => $from, 'to' => $to],
+            'total' => $total,
+            'count' => $mapped->count(),
+            'by_status' => $byStatus,
+            'absences' => $mapped->values()->toArray(),
+        ];
+    }
+
+    /**
+     * B1 (#6854) — soldes de congés d'un employé (snapshot canonique
+     * LeaveBalance du module Planning, propriétaire PA2-ARCH-002) pour une
+     * année. Un employé ne consulte que son propre solde (#6532) ; un
+     * manager consulte tout employé du tenant (parité LeavePolicyController).
+     *
+     * @param  array<string, mixed>  $args
+     * @return array<string, mixed>
+     */
+    private function getEmployeeLeaveBalance(string $companyId, int $userId, array $args): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::where('company_id', $companyId)->find($userId);
+
+        if ($actor === null) {
+            return ['error' => 'Employee not found'];
+        }
+
+        $requestedId = $this->intArgument($args, 'employee_id', $userId);
+        $year = $this->intArgument($args, 'year', (int) now()->format('Y'));
+
+        // #6532 — pas de fuite d'existence : un non-manager qui demande le
+        // solde d'un autre employé reçoit « not found », pas un refus bavard.
+        if (! $actor->isManager() && $requestedId !== $userId) {
+            return ['error' => 'Employee not found'];
+        }
+
+        if ($requestedId !== $userId
+            && ! Employee::where('company_id', $companyId)->where('id', $requestedId)->exists()) {
+            return ['error' => 'Employee not found'];
+        }
+
+        $balances = LeaveBalance::query()
+            ->where('company_id', $companyId)
+            ->where('employee_id', $requestedId)
+            ->forYear($year)
+            ->with('absenceType:id,name')
+            ->orderBy('absence_type_id')
+            ->get(['id', 'absence_type_id', 'balance', 'used', 'pending', 'year']);
+
+        $mapped = $balances->map(fn (LeaveBalance $balance): array => [
+            'absence_type' => $balance->absenceType?->name,
+            'balance' => $balance->balance,
+            'used' => $balance->used,
+            'pending' => $balance->pending,
+            'year' => $balance->year,
+        ]);
+
+        return [
+            'employee_id' => $requestedId,
+            'year' => $year,
+            'count' => $mapped->count(),
+            'leave_balances' => $mapped->values()->toArray(),
+        ];
     }
 }
