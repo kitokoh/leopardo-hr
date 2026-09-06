@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Recruitment\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
@@ -16,7 +17,6 @@ use App\Modules\Recruitment\Application\Actions\UpdateInterviewAction;
 use App\Modules\Recruitment\Application\Actions\UpdateJobPostingAction;
 use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
 use App\Modules\Recruitment\Domain\Models\Applicant;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Http\JsonResponse;
@@ -79,7 +79,7 @@ class RecruitmentController extends Controller
         ]);
 
         $job = app(CreateJobPostingAction::class)->execute(
-            $actor->company_id,
+            (int) $actor->company_id,
             $actor->id,
             $validated,
         );
@@ -187,7 +187,7 @@ class RecruitmentController extends Controller
         // que le portail public : un doublon retourne 409 ALREADY_APPLIED.
         try {
             $applicant = app(CreateApplicantAction::class)->execute(
-                $actor->company_id,
+                (int) $actor->company_id,
                 $jobPosting,
                 $validated,
             );
@@ -250,7 +250,7 @@ class RecruitmentController extends Controller
         ]);
 
         $interview = app(ScheduleInterviewAction::class)->execute(
-            $actor->company_id,
+            (int) $actor->company_id,
             $applicant,
             $validated,
         );
@@ -282,4 +282,3 @@ class RecruitmentController extends Controller
         return (new InterviewResource($interview))->response();
     }
 }
-

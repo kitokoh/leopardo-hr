@@ -24,6 +24,6 @@ class PublishJobPostingAction
             'published_at' => Carbon::now(),
         ]);
 
-        return $jobPosting->fresh();
+        return $jobPosting->fresh() ?? $jobPosting;
     }
 }

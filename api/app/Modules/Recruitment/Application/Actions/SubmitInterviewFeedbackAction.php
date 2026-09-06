@@ -21,6 +21,6 @@ class SubmitInterviewFeedbackAction
             'status' => 'completed',
         ]);
 
-        return $interview->fresh();
+        return $interview->fresh() ?? $interview;
     }
 }

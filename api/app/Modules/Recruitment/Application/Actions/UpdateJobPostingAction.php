@@ -24,6 +24,6 @@ class UpdateJobPostingAction
 
         $jobPosting->update($data);
 
-        return $jobPosting->fresh();
+        return $jobPosting->fresh() ?? $jobPosting;
     }
 }

@@ -18,6 +18,6 @@ class UpdateApplicantAction
     {
         $applicant->update($data);
 
-        return $applicant->fresh();
+        return $applicant->fresh() ?? $applicant;
     }
 }

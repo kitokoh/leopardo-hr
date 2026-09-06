@@ -18,6 +18,6 @@ class UpdateInterviewAction
     {
         $interview->update($data);
 
-        return $interview->fresh();
+        return $interview->fresh() ?? $interview;
     }
 }

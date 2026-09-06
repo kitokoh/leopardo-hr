@@ -31,7 +31,7 @@ class CreateApplicantAction
             ->exists();
 
         if ($alreadyApplied) {
-            throw new ApplicantAlreadyAppliedException();
+            throw new ApplicantAlreadyAppliedException;
         }
 
         try {
@@ -42,7 +42,7 @@ class CreateApplicantAction
             ]);
         } catch (QueryException $e) {
             if ($e->getCode() === '23505') {
-                throw new ApplicantAlreadyAppliedException();
+                throw new ApplicantAlreadyAppliedException;
             }
 
             throw $e;

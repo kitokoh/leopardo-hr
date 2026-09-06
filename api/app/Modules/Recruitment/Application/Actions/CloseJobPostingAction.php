@@ -20,6 +20,6 @@ class CloseJobPostingAction
 
         $jobPosting->update(['status' => 'closed']);
 
-        return $jobPosting->fresh();
+        return $jobPosting->fresh() ?? $jobPosting;
     }
 }

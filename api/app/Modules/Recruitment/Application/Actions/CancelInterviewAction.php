@@ -15,6 +15,6 @@ class CancelInterviewAction
     {
         $interview->update(['status' => 'cancelled']);
 
-        return $interview->fresh();
+        return $interview->fresh() ?? $interview;
     }
 }
