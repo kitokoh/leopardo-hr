@@ -1196,6 +1196,54 @@ class LeopardoClient:
         """Rejeter un evenement de carriere (pending → rejected)"""
         return self.request("PUT", "/career-events/{careerEvent}/reject", **kwargs)
 
+    def get_catalog_categories(self, **kwargs):
+        """Lister les categories du catalogue (membres du tenant)"""
+        return self.request("GET", "/catalog/categories", **kwargs)
+
+    def post_catalog_categories(self, **kwargs):
+        """Creer une categorie (gestion principal/rh)"""
+        return self.request("POST", "/catalog/categories", **kwargs)
+
+    def delete_catalog_categories_by_category(self, **kwargs):
+        """Supprimer une categorie (gestion principal/rh)"""
+        return self.request("DELETE", "/catalog/categories/{category}", **kwargs)
+
+    def get_catalog_categories_by_category(self, **kwargs):
+        """Detail d'une categorie (membres du tenant)"""
+        return self.request("GET", "/catalog/categories/{category}", **kwargs)
+
+    def put_catalog_categories_by_category(self, **kwargs):
+        """Mettre a jour une categorie (gestion principal/rh)"""
+        return self.request("PUT", "/catalog/categories/{category}", **kwargs)
+
+    def get_catalog_products(self, **kwargs):
+        """Lister les produits du catalogue (membres du tenant)"""
+        return self.request("GET", "/catalog/products", **kwargs)
+
+    def post_catalog_products(self, **kwargs):
+        """Creer un produit (gestion principal/rh)"""
+        return self.request("POST", "/catalog/products", **kwargs)
+
+    def delete_catalog_products_by_product(self, **kwargs):
+        """Supprimer un produit (gestion principal/rh)"""
+        return self.request("DELETE", "/catalog/products/{product}", **kwargs)
+
+    def get_catalog_products_by_product(self, **kwargs):
+        """Detail d'un produit (membres du tenant)"""
+        return self.request("GET", "/catalog/products/{product}", **kwargs)
+
+    def put_catalog_products_by_product(self, **kwargs):
+        """Mettre a jour un produit (gestion principal/rh)"""
+        return self.request("PUT", "/catalog/products/{product}", **kwargs)
+
+    def post_catalog_products_by_product_publish(self, **kwargs):
+        """Publier un produit (statut published)"""
+        return self.request("POST", "/catalog/products/{product}/publish", **kwargs)
+
+    def post_catalog_products_by_product_unpublish(self, **kwargs):
+        """Depublier un produit (statut draft)"""
+        return self.request("POST", "/catalog/products/{product}/unpublish", **kwargs)
+
     def post_client_events(self, **kwargs):
         """Persister un evenement UX client tenant-scope"""
         return self.request("POST", "/client-events", **kwargs)
