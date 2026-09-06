@@ -7890,6 +7890,67 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+  /kiosks/{deviceCode}/config:
+    get:
+      tags:
+      - Kiosks
+      summary: Configuration du kiosk (device token) — BIO-006 (#6767)
+      security: []
+      parameters:
+      - $ref: '#/components/parameters/DeviceCode'
+      - $ref: '#/components/parameters/KioskTokenHeader'
+      responses:
+        '200':
+          description: Configuration kiosk (matrice methodes activees, politique offline, synchro)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      device_code:
+                        type: string
+                      company_id:
+                        type: string
+                      name:
+                        type: string
+                      status:
+                        type: string
+                      biometric_mode:
+                        type: string
+                      site_id:
+                        type: string
+                        nullable: true
+                      punch_methods:
+                        type: array
+                        items:
+                          type: string
+                      server_time:
+                        type: string
+                      offline_policy:
+                        type: object
+                        properties:
+                          max_age_days:
+                            type: integer
+                          max_events_per_batch:
+                            type: integer
+                      sync_status:
+                        type: object
+                        properties:
+                          last_seen_at:
+                            type: string
+                            nullable: true
+                          last_sync_at:
+                            type: string
+                            nullable: true
+                          acked_event_counter:
+                            type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
   /kiosks/{deviceCode}/qr-punch:
     post:
       tags:

@@ -44,6 +44,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 // anonyme partagé (60/min/IP) — un kiosque compromis ne doit pas épuiser le
 // quota IP du site ni être ralenti par le reste du trafic non authentifié.
 Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function (): void {
+    Route::get('/kiosks/{deviceCode}/config', [KioskController::class, 'config']);
     Route::post('/kiosks/{deviceCode}/employee-info', [KioskController::class, 'employeeInfo']);
     Route::get('/kiosks/{deviceCode}/announcements', [KioskController::class, 'announcements']);
     Route::post('/kiosks/{deviceCode}/leave-balance', [KioskController::class, 'leaveBalance']);
@@ -53,8 +54,8 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
 Route::middleware(['throttle:zkteco-device'])->group(function (): void {
     // Issue #6555 : bucket dedie par serial_number (au lieu de 'api' par IP) —
     // plusieurs devices derriere un NAT partagent la meme IP.
-// Audit fiabilité #6555 : bucket dédié par device (serial_number + IP) — un
-// NAT partagé entre plusieurs devices ZKTeco ne provoque plus de 429 croisés.
+    // Audit fiabilité #6555 : bucket dédié par device (serial_number + IP) — un
+    // NAT partagé entre plusieurs devices ZKTeco ne provoque plus de 429 croisés.
     Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat'])
         ->middleware('zkteco.device');
     Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance'])
