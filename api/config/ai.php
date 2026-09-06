@@ -205,6 +205,18 @@ return [
                 UnavailableModelInferenceAdapter::class
             ),
         ],
+        // A2 (#6849) — contrat SpeechToTextPort : défaut fail-closed.
+        // Adapter résolu à l'exécution : AI_STT_ADAPTER explicite, sinon
+        // GroqWhisperAdapter si GROQ_API_KEY posée, sinon Unavailable.
+        'stt' => [
+            'adapter' => env('AI_STT_ADAPTER'),
+            'groq_model' => env('AI_STT_GROQ_MODEL', 'whisper-large-v3'),
+        ],
+    ],
+
+    // A2 (#6849) — texte scriptable de l'adaptateur FAKE (tests uniquement).
+    'stt' => [
+        'fake_text' => env('AI_STT_FAKE_TEXT'),
     ],
 
     // AI-002 (#6771) — OCR des compteurs FuelStation : seuil de confiance

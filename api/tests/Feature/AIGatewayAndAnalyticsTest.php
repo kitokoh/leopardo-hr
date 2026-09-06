@@ -178,14 +178,14 @@ class AIGatewayAndAnalyticsTest extends TestCase
         $this->getJson('/api/v1/ai/analytics/usage')->assertForbidden();
     }
 
-    public function test_voice_transcribe_and_synthesize_validate_without_external_provider_keys(): void
+    public function test_voice_transcribe_fails_closed_without_stt_provider_and_synthesize_validates(): void
     {
         [, $employee] = $this->aiFixture();
         Sanctum::actingAs($employee);
 
+        // A2 (#6849) : sans fournisseur STT (aucune GROQ_API_KEY, adaptateur
+        // par défaut Unavailable) → 503 STT_UNAVAILABLE — jamais de faux texte.
         config([
-            'ai.voice.stt_provider' => 'whisper',
-            'ai.providers.openai.key' => null,
             'ai.voice.tts_provider' => 'elevenlabs',
             'ai.voice.elevenlabs_key' => null,
         ]);
@@ -194,10 +194,8 @@ class AIGatewayAndAnalyticsTest extends TestCase
             'audio' => UploadedFile::fake()->create('voice.mp3', 12, 'audio/mpeg'),
             'language' => 'fr',
         ], ['Accept' => 'application/json'])
-            ->assertOk()
-            ->assertJsonPath('data.text', '')
-            ->assertJsonPath('data.language', 'fr')
-            ->assertJsonPath('data.provider', 'whisper');
+            ->assertStatus(503)
+            ->assertJsonPath('error', 'STT_UNAVAILABLE');
 
         $this->postJson('/api/v1/ai/voice/synthesize', [
             'text' => 'Bonjour',
@@ -215,8 +213,8 @@ class AIGatewayAndAnalyticsTest extends TestCase
         $this->fakeLlmClient('Commande vocale traitee.');
 
         config([
-            'ai.voice.stt_provider' => 'whisper',
-            'ai.providers.openai.key' => null,
+            'ai.models.stt.adapter' => \App\Core\AI\Infrastructure\Adapters\FakeSpeechToTextAdapter::class,
+            'ai.stt.fake_text' => 'Commande vocale de test.',
             'ai.voice.tts_provider' => 'elevenlabs',
             'ai.voice.elevenlabs_key' => null,
         ]);
@@ -226,7 +224,7 @@ class AIGatewayAndAnalyticsTest extends TestCase
             'language' => 'fr',
         ], ['Accept' => 'application/json'])
             ->assertOk()
-            ->assertJsonPath('data.transcribed_text', '')
+            ->assertJsonPath('data.transcribed_text', 'Commande vocale de test.')
             ->assertJsonPath('data.ai_response', 'Commande vocale traitee.')
             ->assertJsonPath('data.language', 'fr')
             ->assertJsonStructure(['data' => ['conversation_id', 'audio_url']]);

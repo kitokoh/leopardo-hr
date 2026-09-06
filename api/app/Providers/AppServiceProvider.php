@@ -7,6 +7,9 @@ use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\FakeLLMClient;
 use App\AI\Providers\GroqClient;
 use App\AI\Providers\OpenAIClient;
+use App\Core\AI\Domain\Contracts\SpeechToTextPort;
+use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
+use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
@@ -74,6 +77,20 @@ class AppServiceProvider extends ServiceProvider
                 'claude' => new ClaudeClient,
                 default => new OpenAIClient,
             };
+        });
+
+        // A2 (#6849) — STT : adaptateur explicite (AI_STT_ADAPTER), sinon
+        // Groq si GROQ_API_KEY posée, sinon fail-closed Unavailable (503).
+        $this->app->bind(SpeechToTextPort::class, function (): SpeechToTextPort {
+            $adapter = (string) (config('ai.models.stt.adapter') ?? '');
+
+            if ($adapter === '') {
+                $adapter = (string) (config('ai.providers.groq.key') ?? '') !== ''
+                    ? GroqWhisperAdapter::class
+                    : UnavailableSpeechToTextAdapter::class;
+            }
+
+            return app($adapter);
         });
 
         // Resolution des factories pour les modeles deplaces en DDD (Core/Modules/*).
