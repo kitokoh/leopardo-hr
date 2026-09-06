@@ -2,6 +2,7 @@
 
 namespace App\AI;
 
+use App\AI\Support\AIToolDefinitionRegistry;
 use Illuminate\Support\Facades\DB;
 
 class ToolRegistry
@@ -9,12 +10,15 @@ class ToolRegistry
     /** @var array<string, array<string, mixed>> */
     private array $tools = [];
 
+    private bool $enriched = false;
+
     /**
      * @return array<string, array<string, mixed>>
      */
     public function getToolsForRole(string $role, string $companyId): array
     {
         $this->loadTools();
+        $this->enrichWithDefinitions();
 
         $roleHierarchy = ['employee' => 1, 'manager' => 2, 'admin' => 3, 'super_admin' => 4];
         $userLevel = $roleHierarchy[$role] ?? 1;
@@ -90,6 +94,7 @@ class ToolRegistry
     public function findTool(string $name): ?array
     {
         $this->loadTools();
+        $this->enrichWithDefinitions();
 
         return $this->tools[$name] ?? null;
     }
@@ -121,5 +126,32 @@ class ToolRegistry
         } catch (\Throwable) {
             // Table may not exist yet during migrations
         }
+    }
+
+    /**
+     * Enrichit les outils chargés avec les AIToolDefinition déclarées par les
+     * BC (issue #6850, tranche additive) : sensibilité, BC propriétaire,
+     * version et schémas — sans changer le comportement existant (aucun outil
+     * n'est ajouté/retiré, aucun champ requis n'est modifié).
+     */
+    private function enrichWithDefinitions(): void
+    {
+        if ($this->enriched) {
+            return;
+        }
+
+        $this->enriched = true;
+
+        foreach ($this->tools as $name => &$tool) {
+            $definition = AIToolDefinitionRegistry::find($name);
+
+            if ($definition === null) {
+                continue;
+            }
+
+            $tool = array_merge($tool, $definition->toEnrichment());
+        }
+
+        unset($tool);
     }
 }
