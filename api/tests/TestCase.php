@@ -2,16 +2,24 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\ParallelTesting;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\QueryException;
 
 abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
     {
+        // Issue #6950 : les collecteurs STATIQUES applicatifs (ex.
+        // AIToolDefinitionRegistry, #6850/#6854) survivent aux boots successifs
+        // de l'app entre tests — chaque BC re-registre ses définitions au boot
+        // (HRServiceProvider, merge #6944) → 2e test = « AIToolDefinition
+        // dupliquée ». Reset avant le refreshApplication (contrat documenté du
+        // registre : self::reset() pour les tests).
+        \App\AI\Support\AIToolDefinitionRegistry::reset();
+
         // La configuration de la connexion doit être appliquée AVANT que les
         // traits ne s'exécutent (RefreshDatabase → migrate:fresh +
         // beginDatabaseTransaction). L'ordre d'origine (`parent::setUp()` en
