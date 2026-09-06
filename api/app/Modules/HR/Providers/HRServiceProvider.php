@@ -6,9 +6,7 @@ namespace App\Modules\HR\Providers;
 
 use App\AI\Support\AIToolDefinitionRegistry;
 use App\Modules\HR\Domain\Contracts\ApplicantPipelineReaderInterface;
-use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
 use App\Modules\HR\Domain\Support\HrReadToolCatalog;
-use App\Modules\HR\Infrastructure\Services\ContractPdfGenerator;
 use App\Modules\Recruitment\Infrastructure\Services\ApplicantPipelineReader;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,8 +29,15 @@ class HRServiceProvider extends ServiceProvider
         // B1 (#6854) — déclaration des outils lecture HR au contrat A3 (BC-23,
         // #6850) : l'hôte ToolRegistry enrichit les entrées ai_tool_registry
         // homonymes (sensibilité read, BC propriétaire, schémas) au boot.
+        // Garde d'idempotence (#6947) : AIToolDefinitionRegistry est un
+        // collecteur STATIQUE (process-wide) — le boot des providers est
+        // rejoué à chaque requête (PHP-FPM) et à chaque test (PHPUnit) ; sans
+        // cette garde, la 2e exécution du process lève « AIToolDefinition
+        // dupliquée » (InvalidArgumentException) pendant le boot.
         foreach (HrReadToolCatalog::definitions() as $definition) {
-            AIToolDefinitionRegistry::register($definition);
+            if (! AIToolDefinitionRegistry::has($definition->name)) {
+                AIToolDefinitionRegistry::register($definition);
+            }
         }
     }
 }
