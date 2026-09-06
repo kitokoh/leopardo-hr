@@ -147,8 +147,14 @@ class CatalogApiTest extends TestCase
         $second = $this->storeCategory($this->principalA, ['name' => 'Machines industrielles']);
         $this->assertSame('machines-industrielles', $second['slug']);
 
-        $duplicate = $this->storeCategory($this->principalA, ['name' => 'Autre', 'slug' => 'machines']);
-        $this->assertSame('machines-2', $duplicate['slug']);
+        // Slug explicite déjà pris → 422 (validation unique par tenant).
+        $this->actingAsUser($this->principalA);
+        $this->postJson('/api/v1/catalog/categories', ['name' => 'Autre', 'slug' => 'machines'])
+            ->assertStatus(422);
+
+        // Même nom (slug auto) → collision gérée côté serveur : suffixe -2.
+        $auto = $this->storeCategory($this->principalA, ['name' => 'Machines']);
+        $this->assertSame('machines-2', $auto['slug']);
 
         // Mise à jour + réordonnancement (position).
         $this->actingAsUser($this->principalA);
@@ -234,6 +240,7 @@ class CatalogApiTest extends TestCase
 
         // Catégorie d'un AUTRE tenant → 422 (Rule::exists scoped company_id).
         $otherCategory = $this->storeCategory($this->principalB);
+        $this->actingAsUser($this->principalA);
         $this->postJson('/api/v1/catalog/products', [
             'name' => 'Produit cross-tenant',
             'price_minor' => 100,

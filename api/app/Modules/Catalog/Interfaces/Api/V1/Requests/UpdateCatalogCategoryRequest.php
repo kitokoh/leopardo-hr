@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Catalog\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Catalog\Domain\Models\CatalogCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +29,8 @@ class UpdateCatalogCategoryRequest extends FormRequest
         /** @var Employee $actor */
         $actor = $this->user();
 
-        $categoryId = (int) $this->route('category');
+        $category = $this->route('category');
+        $categoryId = $category instanceof CatalogCategory ? (int) $category->getKey() : (int) $category;
 
         return [
             'name' => ['required', 'string', 'max:120'],

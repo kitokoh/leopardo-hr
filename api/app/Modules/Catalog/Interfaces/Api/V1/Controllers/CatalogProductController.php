@@ -123,8 +123,8 @@ class CatalogProductController extends Controller
             'description' => $request->input('description'),
             'price_minor' => $request->integer('price_minor'),
             'currency' => $request->input('currency'),
-            'unit' => $request->input('unit'),
-            'status' => $request->input('status'),
+            'unit' => $request->input('unit') ?? $product->unit,
+            'status' => $request->input('status') ?? $product->status->value,
             'meta' => $request->input('meta'),
         ]);
 

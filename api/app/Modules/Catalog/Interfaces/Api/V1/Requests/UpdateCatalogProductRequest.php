@@ -6,6 +6,7 @@ namespace App\Modules\Catalog\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Catalog\Domain\Enums\CatalogProductStatus;
+use App\Modules\Catalog\Domain\Models\CatalogProduct;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,7 +30,8 @@ class UpdateCatalogProductRequest extends FormRequest
         /** @var Employee $actor */
         $actor = $this->user();
 
-        $productId = (int) $this->route('product');
+        $product = $this->route('product');
+        $productId = $product instanceof CatalogProduct ? (int) $product->getKey() : (int) $product;
         $statuses = array_map(
             static fn (CatalogProductStatus $s): string => $s->value,
             CatalogProductStatus::cases()
