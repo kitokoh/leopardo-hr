@@ -655,6 +655,12 @@
       "to": "BC-14",
       "baseline": true,
       "note": "BC-26 → BC-14 — dépendance réelle constatée (rebaseline MAT-002 2026-09-05, audit PM)"
+    },
+    {
+      "from": "BC-28",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-28 → BC-03 — policies Catalog importent App\\Core\\Auth\\Domain\\Models\\Employee (RBAC, #6880)"
     }
   ]
 }

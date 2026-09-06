@@ -125,6 +125,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
 | `Modules/Fleet` | ✅ routes/modules/hr_extended.php | 🔶 Application et Infrastructure vides (0 PHP) — Domain + Interfaces seuls | `FleetServiceProvider` |
+| `Modules/Catalog` | 🔶 socle domaine BC-28 — routes API privée à venir (C-API #6881) | 🟢 socle domaine BC-28 (#6880) : migrations tenant `catalog_categories`/`catalog_products`, modèles, policies deny-by-default, feature flag `b2b_catalog` | `CatalogServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet (CRM client, ADR-CRM-DUAL-CONTEXTS) | `CrmServiceProvider` |
 | `Modules/FuelStation` | ✅ routes/modules/fuel_station.php | 🔶 Application vide (0 PHP) — Domain/Infrastructure/Interfaces/Providers complets | `FuelStationServiceProvider` |
