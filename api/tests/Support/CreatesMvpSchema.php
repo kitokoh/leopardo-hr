@@ -1294,10 +1294,14 @@ trait CreatesMvpSchema
               ORDER BY schemaname, tablename"
         );
 
-        return array_map(
-            static fn (object $row): string => $row->schemaname.'.'.$row->tablename,
-            $rows
-        );
+        $tables = [];
+
+        foreach ($rows as $row) {
+            $row = (array) $row;
+            $tables[] = (string) $row['schemaname'].'.'.(string) $row['tablename'];
+        }
+
+        return $tables;
     }
 
     /**
