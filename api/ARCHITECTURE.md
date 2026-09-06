@@ -112,7 +112,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Core/Auth` | ✅ routes/api.php | ✅ complet | — (AppServiceProvider) |
 | `Core/Tenant` | — | ✅ migré (TenantManager canonique) | — |
 | `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
-| `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application en construction (ADR-0020, #6896) : 1 Service (régularisation) + 0 Action — extraction par lots cartographiée (`PAYROLL_APPLICATION_CARTOGRAPHIE.md`, lot 1 = cycle de paie) ; Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
+| `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application en construction (ADR-0020, #6896) : 1 Service (régularisation) + **4 Actions lot 1** (`ValidatePayrollRun`, `LockPayrollRun`, `UnlockPayrollRun`, `CreatePayrollRegularization` — cycle de paie, 2026-09-06) ; reste à extraire : calculate/cancel + lots 2-6 (cartographie `PAYROLL_APPLICATION_CARTOGRAPHIE.md`) ; Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ Application peuplée (Actions cycle de vie absence — Create/Update/Approve/Reject/Cancel, 2026-09-06 #6895) ; reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
