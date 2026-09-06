@@ -109,6 +109,8 @@ class CrmEmailTest extends TestCase
         Schema::create('crm_contacts', function (Blueprint $table): void {
             $table->id();
             $table->uuid('company_id')->index();
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
             $table->string('email', 255)->nullable();
             $table->string('status', 20)->default('active');
             $table->timestamps();
@@ -399,6 +401,8 @@ class CrmEmailTest extends TestCase
         DB::table('crm_contacts')->insert([
             'company_id' => $this->companyA->id,
             'id' => 5,
+            'first_name' => 'Campagne',
+            'last_name' => 'Contact',
             'email' => 'contact-campagne@example.com',
             'status' => 'active',
             'created_at' => now(),

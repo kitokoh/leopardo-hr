@@ -44,6 +44,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 // anonyme partagé (60/min/IP) — un kiosque compromis ne doit pas épuiser le
 // quota IP du site ni être ralenti par le reste du trafic non authentifié.
 Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function (): void {
+    Route::get('/kiosks/{deviceCode}/config', [KioskController::class, 'config']);
     Route::post('/kiosks/{deviceCode}/employee-info', [KioskController::class, 'employeeInfo']);
     Route::get('/kiosks/{deviceCode}/announcements', [KioskController::class, 'announcements']);
     Route::post('/kiosks/{deviceCode}/leave-balance', [KioskController::class, 'leaveBalance']);
