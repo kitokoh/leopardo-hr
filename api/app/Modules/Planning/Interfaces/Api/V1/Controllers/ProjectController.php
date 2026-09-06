@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ProjectResource;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Application\Actions\CreateProject;
+use App\Modules\Planning\Application\Actions\DeleteProject;
+use App\Modules\Planning\Application\Actions\UpdateProject;
 use App\Modules\Planning\Domain\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,6 +17,12 @@ use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
+    public function __construct(
+        private readonly CreateProject $createProject,
+        private readonly UpdateProject $updateProject,
+        private readonly DeleteProject $deleteProject,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -44,7 +53,7 @@ class ProjectController extends Controller
         }
 
         $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))], 'status' => ['nullable', 'in:active,completed,archived']]);
-        $project = Project::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'members' => $data['members'] ?? [], 'status' => $data['status'] ?? 'active', ...$data]);
+        $project = $this->createProject->execute($actor, $data);
 
         return (new ProjectResource($project))
             ->response()
@@ -77,9 +86,9 @@ class ProjectController extends Controller
         }
 
         $data = $request->validate(['name' => ['sometimes', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
-        $project->update($data);
+        $project = $this->updateProject->execute($project, $data);
 
-        return (new ProjectResource($project->fresh()))->response();
+        return (new ProjectResource($project))->response();
     }
 
     public function destroy(Request $request, Project $project): JsonResponse
@@ -93,9 +102,8 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $project->delete();
+        $this->deleteProject->execute($project);
 
         return response()->json(['message' => 'Project deleted successfully']);
     }
 }
-
