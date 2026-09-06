@@ -197,6 +197,21 @@ class AIToolRegistrySeeder extends Seeder
                 'required_role' => 'manager',
                 'module' => 'payroll',
             ],
+            // B2 (#6855) — outil lecture BC-07 PAYROLL déclaré au contrat A3
+            // (#6850) : `parameters` aligné sur l'inputSchema de la définition
+            // du catalogue Payroll (PayrollReadToolCatalog) ; handler dans
+            // IntentEngine.
+            [
+                'name' => 'payroll_current_status',
+                'description' => 'Aggregated payroll status of the tenant: last closed run (validated/paid) and current run (draft/calculating/processing/calculated/error) with progress (generated/validated payslips vs run headcount). No amounts, no personal data.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [],
+                ]),
+                'required_permissions' => '["payroll.view"]',
+                'required_role' => 'manager',
+                'module' => 'payroll',
+            ],
             // B1 (#6854) — outils lecture BC-04 HR déclarés au contrat A3 (#6850).
             // `parameters` aligné sur l'inputSchema des AIToolDefinition du
             // catalogue HR (HrReadToolCatalog) ; handlers dans IntentEngine.

@@ -131,6 +131,10 @@ return [
         'team_overview' => ['role' => 'manager', 'permissions' => ['employees.view']],
         'team_absences_recent' => ['role' => 'manager', 'permissions' => ['absences.view']],
         'employee_leave_balance' => ['role' => 'employee', 'permissions' => ['leave.view']],
+        // B2 (#6855) — outil lecture BC-07 PAYROLL (contrat A3, #6850) :
+        // lecture seule du statut agrégé du run de paie, permission =
+        // policy lecture payroll existante (même portée que get_payroll_summary).
+        'payroll_current_status' => ['role' => 'manager', 'permissions' => ['payroll.view']],
         'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
         'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],
     ],

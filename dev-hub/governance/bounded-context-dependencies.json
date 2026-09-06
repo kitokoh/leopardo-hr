@@ -237,6 +237,12 @@
       "note": "PAYROLL → BILLING"
     },
     {
+      "from": "BC-07",
+      "to": "BC-23",
+      "baseline": true,
+      "note": "BC-07 → BC-23 — PayrollReadToolCatalog + PayrollServiceProvider importent le contrat AIToolDefinition/AIToolDefinitionRegistry (B2 #6855)"
+    },
+    {
       "from": "BC-08",
       "to": "BC-02",
       "baseline": true,
