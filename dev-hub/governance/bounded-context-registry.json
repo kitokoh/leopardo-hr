@@ -842,11 +842,11 @@
    "responsibility": "Catalogue produits B2B des tenants producteurs/fournisseurs : categories, produits (prix indicatifs minor units + devise), publication draft/published, fiches publiques, demandes de devis/leads (BC-11), back-office des demandes.",
    "owner": "Agent 28 — BC-CATALOG",
    "priority": "P0",
-   "status": "planned",
+   "status": "active",
    "paths": [
     {
      "path": "api/app/Modules/Catalog",
-     "status": "planned"
+     "status": "active"
     }
    ],
    "routes": [],

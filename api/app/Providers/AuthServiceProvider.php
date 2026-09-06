@@ -12,6 +12,10 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Models\Camera;
 use App\Modules\Cameras\Domain\Models\CameraAccessToken;
+use App\Modules\Catalog\Domain\Models\CatalogCategory;
+use App\Modules\Catalog\Domain\Models\CatalogProduct;
+use App\Modules\Catalog\Domain\Policies\CatalogCategoryPolicy;
+use App\Modules\Catalog\Domain\Policies\CatalogProductPolicy;
 use App\Modules\CRM\Domain\Models\CrmAccount;
 use App\Modules\CRM\Domain\Models\CrmImport;
 use App\Modules\CRM\Domain\Models\CrmLead;
@@ -331,6 +335,9 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation (FUEL-017 #5811 : reporting opérationnel)
         Gate::policy(FuelReportSnapshot::class, FuelReportPolicy::class);
         Gate::policy(FuelReportExport::class, FuelReportPolicy::class);
+        // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
+        Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
+        Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);
