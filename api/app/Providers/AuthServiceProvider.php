@@ -173,6 +173,8 @@ use App\Modules\RestaurantManager\Policies\RestaurantTableSessionPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantTaxRatePolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantUnitPolicy;
 use App\Modules\RestaurantManager\Policies\RestaurantZonePolicy;
+use App\Modules\Showcase\Domain\Models\CompanyShowcase;
+use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelCancellationPolicy;
 use App\Modules\TravelAgency\Domain\Models\TravelCarrier;
@@ -244,8 +246,6 @@ use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use App\Modules\Showcase\Domain\Models\CompanyShowcase;
-use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
