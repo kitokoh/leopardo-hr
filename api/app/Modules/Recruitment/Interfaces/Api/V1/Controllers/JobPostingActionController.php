@@ -9,6 +9,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
 use App\Http\Resources\Api\V1\InterviewResource;
 use App\Http\Resources\Api\V1\JobPostingResource;
+use App\Modules\Recruitment\Application\Actions\CancelInterviewAction;
+use App\Modules\Recruitment\Application\Actions\CloseJobPostingAction;
+use App\Modules\Recruitment\Application\Actions\DeleteApplicantAction;
+use App\Modules\Recruitment\Application\Actions\DeleteJobPostingAction;
+use App\Modules\Recruitment\Application\Actions\PublishJobPostingAction;
+use App\Modules\Recruitment\Application\Actions\SubmitInterviewFeedbackAction;
+use App\Modules\Recruitment\Application\Actions\UpdateApplicantAction;
+use App\Modules\Recruitment\Domain\Exceptions\JobPostingStateTransitionException;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
@@ -27,16 +35,13 @@ class JobPostingActionController extends Controller
 
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($jobPosting);
 
-        if ($job->status !== 'draft') {
-            return response()->json(['message' => __('errors.JOB_POSTING_DRAFT_ONLY_PUBLISH')], 422);
+        try {
+            $job = app(PublishJobPostingAction::class)->execute($job);
+        } catch (JobPostingStateTransitionException $e) {
+            return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
         }
 
-        $job->update([
-            'status' => 'published',
-            'published_at' => now(),
-        ]);
-
-        return (new JobPostingResource($job->fresh()))->response();
+        return (new JobPostingResource($job))->response();
     }
 
     public function close(Request $request, int $jobPosting): JsonResponse
@@ -49,13 +54,13 @@ class JobPostingActionController extends Controller
 
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($jobPosting);
 
-        if ($job->status !== 'published') {
-            return response()->json(['message' => __('errors.JOB_POSTING_PUBLISHED_ONLY_CLOSE')], 422);
+        try {
+            $job = app(CloseJobPostingAction::class)->execute($job);
+        } catch (JobPostingStateTransitionException $e) {
+            return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
         }
 
-        $job->update(['status' => 'closed']);
-
-        return (new JobPostingResource($job->fresh()))->response();
+        return (new JobPostingResource($job))->response();
     }
 
     public function destroy(Request $request, int $jobPosting): JsonResponse
@@ -68,11 +73,11 @@ class JobPostingActionController extends Controller
 
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($jobPosting);
 
-        if ($job->status !== 'draft') {
-            return response()->json(['message' => __('errors.JOB_POSTING_DRAFT_ONLY_DELETE')], 422);
+        try {
+            app(DeleteJobPostingAction::class)->execute($job);
+        } catch (JobPostingStateTransitionException $e) {
+            return response()->json(['message' => __('errors.'.$e->translationKey)], 422);
         }
-
-        $job->delete();
 
         return response()->json(['message' => __('errors.JOB_POSTING_DELETED')]);
     }
@@ -105,9 +110,9 @@ class JobPostingActionController extends Controller
         ]);
 
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($applicant);
-        $applicant->update($validated);
+        $applicant = app(UpdateApplicantAction::class)->execute($applicant, $validated);
 
-        return (new ApplicantResource($applicant->fresh()))->response();
+        return (new ApplicantResource($applicant))->response();
     }
 
     public function destroyApplicant(Request $request, int $applicant): JsonResponse
@@ -119,7 +124,7 @@ class JobPostingActionController extends Controller
         }
 
         $applicant = Applicant::where('company_id', $user->company_id)->findOrFail($applicant);
-        $applicant->delete();
+        app(DeleteApplicantAction::class)->execute($applicant);
 
         return response()->json(['message' => 'Applicant deleted.']);
     }
@@ -136,9 +141,9 @@ class JobPostingActionController extends Controller
             'rating' => 'nullable|integer|min:1|max:5',
         ]);
 
-        $interview->update(array_merge($validated, ['status' => 'completed']));
+        $interview = app(SubmitInterviewFeedbackAction::class)->execute($interview, $validated);
 
-        return (new InterviewResource($interview->fresh()))->response();
+        return (new InterviewResource($interview))->response();
     }
 
     public function destroyInterview(Request $request, int $interview): JsonResponse
@@ -150,7 +155,7 @@ class JobPostingActionController extends Controller
         }
 
         $interview = Interview::where('company_id', $user->company_id)->findOrFail($interview);
-        $interview->update(['status' => 'cancelled']);
+        app(CancelInterviewAction::class)->execute($interview);
 
         return response()->json(['message' => 'Interview cancelled.']);
     }
