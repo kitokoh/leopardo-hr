@@ -168,7 +168,7 @@ class CsvParserTest extends TestCase
 
     public function test_rejects_too_many_rows(): void
     {
-        $rows = ["name,industry"];
+        $rows = ['name,industry'];
         for ($i = 0; $i <= CsvParser::MAX_ROWS; $i++) {
             $rows[] = "Company{$i},BTP";
         }

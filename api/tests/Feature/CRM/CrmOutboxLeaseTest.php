@@ -162,7 +162,9 @@ class CrmOutboxLeaseTest extends TestCase
  */
 final class LeaseLedgerConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType) {}
+    public function __construct(private readonly string $eventType)
+    {
+    }
 
     public function supports(string $eventType): bool
     {
@@ -192,7 +194,9 @@ final class LeaseLedgerConsumer implements CrmOutboxConsumer
  */
 final class LeasePermanentFailConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType) {}
+    public function __construct(private readonly string $eventType)
+    {
+    }
 
     public function supports(string $eventType): bool
     {

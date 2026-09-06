@@ -231,7 +231,9 @@ final class FailAfterEffectConsumer implements CrmOutboxConsumer
 {
     private int $calls = 0;
 
-    public function __construct(private readonly string $eventType) {}
+    public function __construct(private readonly string $eventType)
+    {
+    }
 
     public function supports(string $eventType): bool
     {
@@ -266,7 +268,9 @@ final class FailAfterEffectConsumer implements CrmOutboxConsumer
  */
 final class RuntimePermanentFailConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType) {}
+    public function __construct(private readonly string $eventType)
+    {
+    }
 
     public function supports(string $eventType): bool
     {
@@ -284,7 +288,9 @@ final class RuntimePermanentFailConsumer implements CrmOutboxConsumer
  */
 final class RuntimeLedgerConsumer implements CrmOutboxConsumer
 {
-    public function __construct(private readonly string $eventType) {}
+    public function __construct(private readonly string $eventType)
+    {
+    }
 
     public function supports(string $eventType): bool
     {

@@ -231,7 +231,7 @@ class CrmDeduplicationTest extends TestCase
         Sanctum::actingAs($this->principal);
 
         for ($i = 0; $i < 3; $i++) {
-            $this->createAccount("Company {$i}", "same@example.com");
+            $this->createAccount("Company {$i}", 'same@example.com');
         }
 
         $this->getJson('/api/v1/crm/dedup/suggestions?entity=accounts&limit=2')
