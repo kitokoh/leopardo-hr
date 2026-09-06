@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\DB;
  *
  * Correctif : recréer la contrainte en y ajoutant `pending` (additif,
  * idempotent).
+ *
+ * Canonique depuis le dédoublonnage #6924 (2026-09-06) : les jumelles
+ * 2026_08_30_000952/001549_6248 (résidus de merges union) ont été supprimées
+ * du dépôt — déjà enregistrées sur les envs existants, leur rejeu n'est pas
+ * nécessaire (DROP IF EXISTS idempotent) ; un env neuf n'exécute que ce fichier.
  */
 return new class extends Migration
 {

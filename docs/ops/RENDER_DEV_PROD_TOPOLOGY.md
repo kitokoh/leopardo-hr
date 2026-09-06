@@ -75,6 +75,45 @@ constat empirique (pas une supposition) :
 périmètre), laissant le fichier non fiable comme source de vérité ; c'est
 désormais fait (PR #6831).
 
+### Migrations au boot — hôte direct + search_path runtime (2026-09-06, issues #6916/#6924)
+
+Deux correctifs d'`api/docker-entrypoint.sh` issus du pré-flight migrations
+2026-09-06 (rattrapage dev/prod), à connaître avant d'ajouter toute migration
+tenant :
+
+1. **Hôte direct pour `artisan migrate` (#6916)** — les migrations du boot ne
+   passent jamais par le pooler Neon en mode transaction : toute migration DDL
+   y est abortée (`SQLSTATE 25P02`) → deploy `update_failed`. L'entrypoint
+   utilise `DB_MIGRATE_URL` si posée, sinon dérive l'hôte direct de `DB_URL`
+   en retirant le jeton `-pooler` (convention Neon). La prod (DB_URL hôte
+   direct) et le local (DB_HOST/...) ne sont pas affectés. Le runtime
+   applicatif, lui, **peut** rester sur le pooler (connexions courtes).
+2. **Search_path des migrations tenant = `shared_tenants,public` (#6924)** —
+   aligné sur le défaut runtime (`config/database.php`). Les `CREATE` restent
+   dans `shared_tenants` (1er schéma) ; les `ALTER` résolvent les tables
+   héritées placées **historiquement dans `public`**. Un search_path strict
+   (`shared_tenants` seul) faisait échouer le boot en `SQLSTATE 42P01` dès
+   qu'une migration tenant ALTÉRAIT une table héritée.
+
+**Placement historique des tables billing** (inventaire constaté 2026-09-06) :
+des tables de facturation (`invoices`, et voisines du périmètre BC-21) vivent
+dans le schéma `public` sur les bases existantes alors que leurs migrations
+sont dans `database/migrations/tenant/`. Conséquence pour toute migration
+tenant future qui ALTÈRE une telle table : ne pas présumer du schéma — utiliser
+les gardes `schemaTableExists()`/`schemaHasColumn()` (helpers #1613, résolution
+via search_path) et des `ALTER ... DROP CONSTRAINT IF EXISTS` / `ADD CONSTRAINT`
+non qualifiés ; le search_path `shared_tenants,public` de l'entrypoint (fix
+#6924) résout la table où qu'elle soit. Ne jamais réintroduire de search_path
+strict pour `database/migrations/tenant` dans l'entrypoint.
+
+**Dédoublonnage** : les 3 exemplaires quasi identiques de
+`add_pending_to_invoices_status_check` (résidus de merges union, issues
+#6248/#6549) ont été réduits au fichier canonique `2026_08_31_000004_6549`
+(règle #5431) — les jumelles `2026_08_30_000952_6248` / `2026_08_30_001549_6248`
+restent enregistrées sur les envs existants (rejeu inutile, `DROP IF EXISTS`
+idempotent) mais n'existent plus dans le dépôt ; un env neuf n'exécute que la
+canonique.
+
 ### Pourquoi `render.yaml` n'a pas été renommé
 
 Renommer les `name:` de service dans `render.yaml` aurait fait perdre à
