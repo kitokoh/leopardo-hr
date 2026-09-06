@@ -310,14 +310,15 @@ jobs:
           # AbsenceType, LeaveBalance, LeaveBalanceLog, AbsenceService). Derogation
           # documentee dans api/ARCHITECTURE.md.
           #
-          # PA2-ARCH-011 (issue #1414) : meme derogation pour Modules/Expense.
-          # Domain/Application/Infrastructure ont ete supprimes car ils dupliquaient
-          # integralement le modele/service reel du module Planning (ExpenseClaim,
-          # ExpenseItem) — le controller reellement route consommait deja
-          # Planning\...\ExpenseClaim, pas Expense\...\ExpenseClaim. Derogation
-          # documentee dans api/ARCHITECTURE.md.
+          # PA2-ARCH-011 (issue #1414) : derogation HISTORIQUE pour Modules/Expense
+          # (Domain/Application/Infrastructure supprimes car ils dupliquaient le
+          # modele/service reel du module Planning). Depuis #5235 le module a evolue
+          # en DDD partiel (ecritures comptables) et le 2026-09-06 (#6894) sa couche
+          # Application/Actions a ete creee : Expense n'est PLUS exempte — seule
+          # Absence (facade pure Interfaces/ + Providers/, PA2-ARCH-002) reste dans
+          # FACADE_ONLY_MODULES. Derogation documentee dans api/ARCHITECTURE.md.
           FACADE_ONLY_EXEMPT_LAYERS="Application Domain Infrastructure"
-          FACADE_ONLY_MODULES="Absence Expense"
+          FACADE_ONLY_MODULES="Absence"
 
           for MODULE in $MODULES; do
             BASE="api/app/Modules/$MODULE"
