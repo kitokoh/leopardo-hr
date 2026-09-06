@@ -7,6 +7,8 @@ namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
+use App\Modules\FuelStation\Application\Actions\CreateStationEquipmentAction;
+use App\Modules\FuelStation\Application\Actions\UpdateEquipmentAction;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelMeterRegister;
 use App\Modules\FuelStation\Domain\Models\FuelPump;
@@ -130,9 +132,9 @@ class FuelEquipmentController extends Controller
 
         $this->authorize('update', $item);
 
-        $item->update($request->validated());
+        $item = app(UpdateEquipmentAction::class)->execute($item, $request->validated());
 
-        return response()->json(['data' => $this->payload($kind, $item->refresh())]);
+        return response()->json(['data' => $this->payload($kind, $item)]);
     }
 
     private function assertStationInTenant(string $companyId, int $stationId): void
@@ -207,11 +209,12 @@ class FuelEquipmentController extends Controller
         $this->authorize('create', FuelPump::class);
 
         /** @var FuelPump $pump */
-        $pump = FuelPump::query()->create([
-            'company_id' => $actor->company_id,
-            'station_id' => $station->id,
-            ...$request->validated(),
-        ]);
+        $pump = app(CreateStationEquipmentAction::class)->execute(
+            (int) $actor->company_id,
+            $station->id,
+            'pump',
+            $request->validated(),
+        );
 
         return response()->json(['data' => $this->pumpPayload($pump)], 201);
     }
@@ -221,9 +224,9 @@ class FuelEquipmentController extends Controller
         $actor = $this->resolvePump($request, $pump);
         $this->authorize('update', $pump);
 
-        $pump->update($request->validated());
+        $pump = app(UpdateEquipmentAction::class)->execute($pump, $request->validated());
 
-        return response()->json(['data' => $this->pumpPayload($pump->refresh())]);
+        return response()->json(['data' => $this->pumpPayload($pump)]);
     }
 
     public function tanksIndex(Request $request, FuelStation $station): JsonResponse
@@ -246,11 +249,12 @@ class FuelEquipmentController extends Controller
         $this->authorize('create', FuelTank::class);
 
         /** @var FuelTank $tank */
-        $tank = FuelTank::query()->create([
-            'company_id' => $actor->company_id,
-            'station_id' => $station->id,
-            ...$request->validated(),
-        ]);
+        $tank = app(CreateStationEquipmentAction::class)->execute(
+            (int) $actor->company_id,
+            $station->id,
+            'tank',
+            $request->validated(),
+        );
 
         return response()->json(['data' => $this->tankPayload($tank)], 201);
     }
@@ -260,9 +264,9 @@ class FuelEquipmentController extends Controller
         $actor = $this->resolveTank($request, $tank);
         $this->authorize('update', $tank);
 
-        $tank->update($request->validated());
+        $tank = app(UpdateEquipmentAction::class)->execute($tank, $request->validated());
 
-        return response()->json(['data' => $this->tankPayload($tank->refresh())]);
+        return response()->json(['data' => $this->tankPayload($tank)]);
     }
 
     public function metersIndex(Request $request, FuelStation $station): JsonResponse
@@ -285,11 +289,12 @@ class FuelEquipmentController extends Controller
         $this->authorize('create', FuelMeterRegister::class);
 
         /** @var FuelMeterRegister $meter */
-        $meter = FuelMeterRegister::query()->create([
-            'company_id' => $actor->company_id,
-            'station_id' => $station->id,
-            ...$request->validated(),
-        ]);
+        $meter = app(CreateStationEquipmentAction::class)->execute(
+            (int) $actor->company_id,
+            $station->id,
+            'meter',
+            $request->validated(),
+        );
 
         return response()->json(['data' => $this->meterPayload($meter)], 201);
     }
@@ -299,9 +304,9 @@ class FuelEquipmentController extends Controller
         $actor = $this->resolveMeter($request, $meter);
         $this->authorize('update', $meter);
 
-        $meter->update($request->validated());
+        $meter = app(UpdateEquipmentAction::class)->execute($meter, $request->validated());
 
-        return response()->json(['data' => $this->meterPayload($meter->refresh())]);
+        return response()->json(['data' => $this->meterPayload($meter)]);
     }
 
     private function resolve(Request $request, FuelStation $station): Employee
