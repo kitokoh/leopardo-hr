@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Crm;
+namespace Tests\Unit\CRM;
 
 use App\Modules\CRM\Domain\Enums\CrmImportEntityType;
 use App\Modules\CRM\Domain\Exceptions\CrmImportException;
