@@ -26,6 +26,15 @@ return [
     ],
 
     'flags' => [
+        // A6 (#6853) — envoi des prompts vers un driver LLM cloud (groq/openai/
+        // claude) : activé par tenant uniquement. Défaut OFF (fail-closed).
+        'ai_cloud_allowed' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.24.0',
+            'killable' => true,
+            'description' => 'Assistant IA (BC-23) : autorise l\'envoi vers les fournisseurs LLM cloud (RGPD — minimisation + audit requis).',
+        ],
         'rh' => [
             'scope' => 'module',
             'default' => true,

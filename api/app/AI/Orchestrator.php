@@ -6,7 +6,10 @@ namespace App\AI;
 
 use App\AI\DTOs\AIRequest;
 use App\AI\Exceptions\TokenBudgetExceededException;
+use App\AI\Privacy\AiCloudPolicy;
+use App\AI\Privacy\PrivacySanitizer;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\File;
 
 class Orchestrator
@@ -19,6 +22,9 @@ class Orchestrator
         private readonly LLMClient $client,
         // BC-23-D10 (issue #6238) : budgets de tokens versionnés.
         private readonly TokenBudgetGuard $tokenBudgetGuard,
+        // A6 (#6853) : politique cloud (flag tenant ai_cloud_allowed) + minimisation RGPD.
+        private readonly AiCloudPolicy $cloudPolicy,
+        private readonly PrivacySanitizer $privacySanitizer,
     ) {}
 
     /**
@@ -40,6 +46,15 @@ class Orchestrator
         try {
             // BC-23-D10 : fail-closed sur le cumul de la conversation — au-delà
             // du budget de contexte, on refuse de continuer (nouvelle conversation).
+            // A6 (#6853) — politique cloud : driver cloud sans flag tenant
+            // `ai_cloud_allowed` → réponse explicite, aucun appel externe.
+            if ($this->cloudPolicy->isCloudDriver($this->client->provider())) {
+                $company = Company::query()->find($request->companyId);
+                if (! $this->cloudPolicy->cloudAllowed($company)) {
+                    return $this->cloudRefusal($request, $conversationId, $startTime, $company);
+                }
+            }
+
             if ($this->tokenBudgetGuard->contextBudgetExceeded($conversation['token_count'])) {
                 throw new TokenBudgetExceededException(
                     sprintf(
@@ -79,7 +94,7 @@ class Orchestrator
                 ),
             );
 
-            $response = $this->client->chat($llmMessages, $tools);
+            $response = $this->chat($llmMessages, $tools);
 
             $maxIterations = 3;
             $iteration = 0;
@@ -132,7 +147,7 @@ class Orchestrator
                     }
                 }
 
-                $response = $this->client->chat($llmMessages, $tools);
+                $response = $this->chat($llmMessages, $tools);
                 $iteration++;
             }
 
@@ -197,6 +212,62 @@ class Orchestrator
 
             throw $exception;
         }
+    }
+
+    /**
+     * A6 (#6853) — appel LLM avec minimisation RGPD : les messages envoyés
+     * vers un driver cloud passent par PrivacySanitizer (texte seulement).
+     */
+    /**
+     * @param  array<int, array{role: string, content: mixed}>  $messages
+     * @param  array<int, array<string, mixed>>  $tools
+     */
+    private function chat(array $messages, array $tools): \App\AI\DTOs\AIResponse
+    {
+        if ($this->cloudPolicy->isCloudDriver($this->client->provider())) {
+            $messages = $this->privacySanitizer->sanitizeMessages($messages);
+        }
+
+        return $this->client->chat($messages, $tools);
+    }
+
+    /**
+     * A6 (#6853) — refus explicite d'envoi cloud (flag tenant inactif) :
+     * réponse en clair + audit d'erreur, aucun appel externe, aucune écriture
+     * de conversation.
+     *
+     * @return array<string, mixed>
+     */
+    /**
+     * @return array{conversation_id: int, response: string, tools_used: array<int, string>, pending_confirmations: array<int, mixed>, tokens: array{input: int, output: int}}
+     */
+    private function cloudRefusal(AIRequest $request, int $conversationId, int|float $startTime, ?Company $company): array
+    {
+        $message = $this->cloudPolicy->refusalMessage();
+
+        $this->auditLogger->log(
+            companyId: $request->companyId,
+            userId: $request->userId,
+            conversationId: $conversationId,
+            prompt: $request->message,
+            response: '',
+            toolsCalled: [],
+            provider: $this->client->provider(),
+            model: '',
+            inputTokens: 0,
+            outputTokens: 0,
+            durationMs: (int) ((hrtime(true) - $startTime) / 1_000_000),
+            error: 'AI_CLOUD_NOT_ALLOWED (tenant='.($company !== null ? (string) $company->id : '?').')',
+            workflow: $request->workflow,
+        );
+
+        return [
+            'conversation_id' => $conversationId,
+            'response' => $message,
+            'tools_used' => [],
+            'pending_confirmations' => [],
+            'tokens' => ['input' => 0, 'output' => 0],
+        ];
     }
 
     private function loadSystemPrompt(string $companyId): string
