@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Expense\Infrastructure\Listeners;
 
-use App\Modules\Expense\Infrastructure\Services\ExpenseAccountingEntryService;
+use App\Modules\Expense\Application\Actions\GenerateExpenseAccountingEntries;
+use App\Modules\Expense\Application\Actions\VoidExpenseAccountingEntries;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +30,8 @@ use Illuminate\Support\Facades\Log;
 class ExpenseAccountingEntryObserver
 {
     public function __construct(
-        private readonly ExpenseAccountingEntryService $entries,
+        private readonly GenerateExpenseAccountingEntries $generateEntries,
+        private readonly VoidExpenseAccountingEntries $voidEntries,
     ) {}
 
     public function updated(ExpenseClaim $claim): void
@@ -40,10 +42,10 @@ class ExpenseAccountingEntryObserver
         // Transition vers `approved` → génération automatique.
         if ($newStatus === 'approved' && $previousStatus !== 'approved') {
             try {
-                $count = $this->entries->generateForClaim($claim);
+                $result = $this->generateEntries->execute($claim);
                 Log::info('expense.accounting_entries.generated_via_observer', [
                     'expense_claim_id' => $claim->id,
-                    'lines' => $count,
+                    'lines' => $result['generated_lines'],
                 ]);
             } catch (\Throwable $e) {
                 // Ne casse jamais l'approbation : la régénération manuelle
@@ -59,7 +61,7 @@ class ExpenseAccountingEntryObserver
 
         // Transition depuis `approved` (rejet) → annulation des écritures.
         if ($previousStatus === 'approved' && $newStatus !== 'approved') {
-            $this->entries->voidForClaim($claim);
+            $this->voidEntries->execute($claim);
         }
     }
 }
