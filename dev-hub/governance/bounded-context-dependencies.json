@@ -489,6 +489,18 @@
       "note": "AI → COMMS"
     },
     {
+      "from": "BC-23",
+      "to": "BC-02",
+      "baseline": false,
+      "note": "AI → TENANT : Orchestrator::handle et AiCloudPolicy lisent Company (tenant) pour le refus explicite AI_CLOUD_NOT_ALLOWED + flag ai_cloud_allowed (A6, #6853)."
+    },
+    {
+      "from": "BC-23",
+      "to": "BC-01",
+      "baseline": false,
+      "note": "AI → PLATFORM : AiCloudPolicy consulte FeatureFlag::enabled('ai_cloud_allowed') — registre Core/Feature (config/feature-flags.php), killable (A6, #6853)."
+    },
+    {
       "from": "BC-02",
       "to": "BC-14",
       "baseline": false,
