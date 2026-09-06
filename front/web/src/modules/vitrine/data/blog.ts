@@ -425,7 +425,7 @@ Le pointage biométrique est une solution moderne qui améliore la sécurité et
     tags: ['biométrie', 'pointage', 'technologie', 'sécurité'],
   },
   {
-    slug: 'gestion-absences-congés-efficace',
+    slug: 'gestion-absences-conges-efficace',
     title: 'Gestion Efficace des Absences et Congés',
     excerpt: 'Optimisez votre gestion des absences et congés avec les meilleures pratiques.',
     content: `# Gestion Efficace des Absences et Congés
@@ -779,7 +779,7 @@ Biometric terminals reduce buddy punching, speed up shift tracking and improve p
 
 Biometric attendance is powerful when security, consent and auditability are designed from day one.`,
     },
-    'gestion-absences-congés-efficace': {
+    'gestion-absences-conges-efficace': {
       title: 'Efficient leave and absence management',
       excerpt: 'Build a clear approval workflow and avoid leave balance conflicts.',
       category: 'Leave',
@@ -1002,7 +1002,7 @@ Biyometrik cihazlar baskasi yerine giris yapmayi azaltir, vardiya takibini hizla
 
 Biyometrik takip, guvenlik ve denetlenebilirlik bastan tasarlandiginda guclu bir arac olur.`,
     },
-    'gestion-absences-congés-efficace': {
+    'gestion-absences-conges-efficace': {
       title: 'Etkili izin ve devamsizlik yonetimi',
       excerpt: 'Net onay akisi kurun ve izin bakiyesi uyusmazliklarini azaltin.',
       category: 'Izin',
@@ -1225,7 +1225,7 @@ Egitim, roller ve performansla baglandiginda stratejik hale gelir.`,
 
 يكون الحضور البيومتري فعالا عندما تصمم الخصوصية والتدقيق منذ البداية.`,
     },
-    'gestion-absences-congés-efficace': {
+    'gestion-absences-conges-efficace': {
       title: 'إدارة فعالة للإجازات والغيابات',
       excerpt: 'ابن مسار موافقة واضحا وتجنب تضارب أرصدة الإجازات.',
       category: 'الإجازات',
