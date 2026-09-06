@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Crm;
+namespace Tests\Unit\CRM;
 
 use App\Modules\CRM\Domain\Enums\CrmImportEntityType;
 use App\Modules\CRM\Domain\Exceptions\CrmImportException;
@@ -168,7 +168,7 @@ class CsvParserTest extends TestCase
 
     public function test_rejects_too_many_rows(): void
     {
-        $rows = ["name,industry"];
+        $rows = ['name,industry'];
         for ($i = 0; $i <= CsvParser::MAX_ROWS; $i++) {
             $rows[] = "Company{$i},BTP";
         }

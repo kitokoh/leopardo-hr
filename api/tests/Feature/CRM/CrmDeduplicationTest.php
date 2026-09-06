@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Crm;
+namespace Tests\Feature\CRM;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
@@ -231,7 +231,7 @@ class CrmDeduplicationTest extends TestCase
         Sanctum::actingAs($this->principal);
 
         for ($i = 0; $i < 3; $i++) {
-            $this->createAccount("Company {$i}", "same@example.com");
+            $this->createAccount("Company {$i}", 'same@example.com');
         }
 
         $this->getJson('/api/v1/crm/dedup/suggestions?entity=accounts&limit=2')
