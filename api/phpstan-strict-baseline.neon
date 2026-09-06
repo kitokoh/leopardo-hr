@@ -5422,7 +5422,7 @@ parameters:
 			message: '#^Call to static method query\(\) on an unknown class App\\Modules\\CRM\\Domain\\Models\\CrmPipeline\.$#'
 			identifier: class.notFound
 			count: 4
-			path: tests/Feature/Crm/CrmModelsTenantScopingTest.php
+			path: tests/Feature/CRM/CrmModelsTenantScopingTest.php
 
 		-
 			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'

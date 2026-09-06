@@ -33,7 +33,7 @@ public) : ADR-CRM-002, matrice `CRM_API_MATRICE_TENANT_PLATFORM.md`,
 ## Vérification locale (preuve)
 
 ```
-php artisan test tests/Feature/Crm/
+php artisan test tests/Feature/CRM/
 → 43 passed (180 assertions)
 ```
 
