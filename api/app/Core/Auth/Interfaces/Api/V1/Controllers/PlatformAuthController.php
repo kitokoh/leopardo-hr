@@ -48,7 +48,16 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin|null $superAdmin */
         $superAdmin = SuperAdmin::query()->where('email', $validated['email'])->first();
 
-        if (! $superAdmin || ! Hash::check($validated['password'], $superAdmin->password_hash)) {
+        // #6956 : un compte dont le hash stocké est absent/invalide (dérive
+        // de schéma ou seed partiel — constaté en DEV 2026-09-06) ne doit
+        // JAMAIS produire un 500 : `Hash::check()` exige une string et lève
+        // un TypeError sur NULL. On traite ce cas comme des identifiants
+        // invalides (401), jamais comme une erreur serveur.
+        $storedHash = $superAdmin?->password_hash;
+        $hashCheckable = is_string($storedHash) && $storedHash !== ''
+            && Hash::check($validated['password'], $storedHash);
+
+        if (! $superAdmin || ! $hashCheckable) {
             $attempts = (int) Cache::get($attemptKey, 0) + 1;
             Cache::put($attemptKey, $attempts, now()->addMinutes(15));
 
