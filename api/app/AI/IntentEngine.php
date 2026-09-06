@@ -862,7 +862,6 @@ class IntentEngine
             return ['error' => 'Employee not found'];
         }
 
-        /** @var array<int, PayrollRun> $runs */
         $runs = PayrollRun::query()
             ->where('company_id', $companyId)
             ->where('status', '!=', PayrollRun::STATUS_CANCELLED)
@@ -874,6 +873,7 @@ class IntentEngine
         $currentRun = null;
         $lastClosedRun = null;
 
+        /** @var PayrollRun $run */
         foreach ($runs as $run) {
             if (in_array($run->status, [
                 PayrollRun::STATUS_DRAFT,
