@@ -836,6 +836,34 @@
    ]
   },
   {
+   "code": "BC-27",
+   "name": "SHOWCASE",
+   "context": "Showcase",
+   "responsibility": "Site vitrine public du tenant en 1-clic : moteur de sections + themes maison, publication draft/published, consultation publique isolee (0 donnee interne), formulaire de contact (BC-13), medias (BC-20).",
+   "owner": "Agent 27 — BC-SHOWCASE",
+   "priority": "P1",
+   "status": "active",
+   "paths": [
+    {
+     "path": "api/app/Modules/Showcase",
+     "status": "active"
+    }
+   ],
+   "routes": [],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-01",
+    "BC-02",
+    "BC-03",
+    "BC-12",
+    "BC-13",
+    "BC-20"
+   ]
+  },
+  {
    "code": "BC-28",
    "name": "CATALOG",
    "context": "Catalog",
