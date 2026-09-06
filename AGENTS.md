@@ -348,6 +348,21 @@ Exemples resolus le 2026-05-06 :
 - `2026_05_02_100001_create_users_and_company_requests_tables.php` doit verifier l'existence de `users`, `company_requests` et `user_employee_links`.
 - Si une migration touche une table tenant comme `employees`, verifier le `search_path` PostgreSQL et proteger avec `Schema::hasTable`.
 
+Lecons 2026-09-06 (issues #6916/#6924, pre-flight migrations dev/prod) :
+
+- **Les migrations du boot passent par l'hôte DIRECT de la base, jamais le
+  pooler Neon** (`api/docker-entrypoint.sh` : `DB_MIGRATE_URL` si posée, sinon
+  derivee de `DB_URL` en retirant `-pooler`) — le pooler en mode transaction
+  aborte toute migration DDL en `SQLSTATE 25P02` (deploy `update_failed`).
+- **Le search_path des migrations tenant au boot est `shared_tenants,public`**
+  (aligné sur le runtime), pas `shared_tenants` strict : des tables billing
+  héritées (`invoices`...) vivent dans `public` alors que leurs migrations sont
+  dans le dossier tenant. Toute migration tenant qui ALTÈRE une table héritée
+  doit rester non qualifiée + gardée (`schemaTableExists`/`schemaHasColumn`,
+  #1613) ; ne pas réintroduire de search_path strict pour le dossier tenant.
+- Garde migrations #1962 avant push sur toute PR touchant
+  `api/database/migrations/*` : `bash dev-hub/tools/check-migration-basename-collisions.sh`.
+
 ### Vercel
 
 Le statut externe `Vercel` peut echouer immediatement vers une page de configuration projet. Lors du PR #268 et du hotfix #299, tous les GitHub Actions etaient verts et le merge restait possible malgre ce statut externe. Ne pas perdre du temps a corriger le code si Vercel echoue sans logs de build applicatif.
