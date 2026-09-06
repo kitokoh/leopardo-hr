@@ -661,6 +661,12 @@
       "to": "BC-03",
       "baseline": true,
       "note": "BC-28 → BC-03 — policies Catalog importent App\\Core\\Auth\\Domain\\Models\\Employee (RBAC, #6880)"
+    },
+    {
+      "from": "BC-27",
+      "to": "BC-03",
+      "baseline": true,
+      "note": "BC-27 → BC-03 — policies Showcase importent App\\Core\\Auth\\Domain\\Models\\Employee (RBAC, #6865)"
     }
   ]
 }
