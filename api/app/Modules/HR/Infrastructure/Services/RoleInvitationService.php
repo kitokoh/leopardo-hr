@@ -18,36 +18,30 @@ class RoleInvitationService
         /** @var array<string, string|null> $iosLinks */
         $iosLinks = config('services.mobile_app_links.ios', []);
 
-        return match ($managerRole) {
-            'rh' => [
+        // #6942 : mapping aligné sur le catalogue réel des apps (android
+        // applicationId) et sur MobileExperienceService::appContextFor (T120) —
+        // un manager sans app dédiée distribuée (principal, dept, superviseur,
+        // comptable, marketing…) reçoit l'app Manager ; seuls `rh` et l'employé
+        // sans rôle manager ont leurs apps dédiées. Les packages fantômes
+        // com.leopardo.admin / com.leopardo.comptable n'existent dans aucune app.
+        return match (true) {
+            $managerRole === 'rh' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.rh',
                 'ios' => $iosLinks['rh'] ?? null,
                 'name' => 'Leopardo RH',
                 'deep_link_scheme' => 'leopardo-rh',
             ],
-            'comptable' => [
-                'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.comptable',
-                'ios' => $iosLinks['comptable'] ?? null,
-                'name' => 'Leopardo Comptable',
-                'deep_link_scheme' => 'leopardo-comptable',
-            ],
-            'marketing' => [
-                'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.marketing',
-                'ios' => $iosLinks['marketing'] ?? null,
-                'name' => 'Leopardo Marketing',
-                'deep_link_scheme' => 'leopardo-marketing',
-            ],
-            'principal' => [
-                'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.admin',
-                'ios' => $iosLinks['principal'] ?? null,
-                'name' => 'Leopardo Admin',
-                'deep_link_scheme' => 'leopardo-admin',
-            ],
-            default => [
+            $managerRole === 'employee' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.employee',
                 'ios' => $iosLinks['employee'] ?? null,
                 'name' => 'Leopardo Employee',
                 'deep_link_scheme' => 'leopardo-employee',
+            ],
+            default => [
+                'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.manager',
+                'ios' => $iosLinks['manager'] ?? $iosLinks['principal'] ?? null,
+                'name' => 'Leopardo Manager',
+                'deep_link_scheme' => 'leopardo-manager',
             ],
         };
     }
