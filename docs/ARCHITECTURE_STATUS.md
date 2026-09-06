@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 26 modules actifs
+## 1. Tableau de l'état DDD — 27 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -31,6 +31,7 @@
 | **Recruitment** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
 | **Restaurant** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **RestaurantManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Showcase** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 
 > Tableau **régénéré depuis le disque** le 2026-09-05 (audit vérité — doublons CRM ×2, Restaurant ×3,

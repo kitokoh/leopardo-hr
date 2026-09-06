@@ -244,6 +244,8 @@ use App\Policies\VehiclePolicy;
 use App\Policies\WebhookEndpointPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Modules\Showcase\Domain\Models\CompanyShowcase;
+use App\Modules\Showcase\Domain\Policies\CompanyShowcasePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -338,6 +340,8 @@ class AuthServiceProvider extends ServiceProvider
         // — Catalog (BC-28 #6880 : socle domaine — catégories & produits B2B)
         Gate::policy(CatalogCategory::class, CatalogCategoryPolicy::class);
         Gate::policy(CatalogProduct::class, CatalogProductPolicy::class);
+        // — Showcase (BC-27 #6865 : socle domaine — vitrine entreprise)
+        Gate::policy(CompanyShowcase::class, CompanyShowcasePolicy::class);
         Gate::policy(Department::class, DepartmentPolicy::class);
         Gate::policy(Position::class, PositionPolicy::class);
         Gate::policy(Schedule::class, SchedulePolicy::class);

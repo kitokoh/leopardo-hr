@@ -25,6 +25,7 @@ use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\Restaurant\Providers\RestaurantServiceProvider;
 use App\Modules\RestaurantManager\Providers\RestaurantManagerServiceProvider;
+use App\Modules\Showcase\Providers\ShowcaseServiceProvider;
 use App\Modules\TravelAgency\Providers\TravelAgencyServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
@@ -67,4 +68,5 @@ return [
     EduManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
+    ShowcaseServiceProvider::class,
 ];
