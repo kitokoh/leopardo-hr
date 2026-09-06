@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'STT_UNAVAILABLE' => 'Speech-to-text unavailable (missing API key or unreachable service).',
     'INVALID_CREDENTIALS' => 'Invalid email or password.',
     'TOKEN_EXPIRED' => 'Authentication token has expired.',
     'TOKEN_INVALID' => 'Authentication token is invalid.',

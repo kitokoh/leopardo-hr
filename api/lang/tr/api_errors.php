@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'STT_UNAVAILABLE' => 'Sesli yaziya cevirme kullanilamiyor (API anahtari eksik veya hizmet ulasilamaz).',
     'INVALID_CREDENTIALS' => 'Gecersiz e-posta veya sifre.',
     'TOKEN_EXPIRED' => 'Kimlik dogrulama jetonu suresi doldu.',
     'TOKEN_INVALID' => 'Kimlik dogrulama jetonu gecersiz.',

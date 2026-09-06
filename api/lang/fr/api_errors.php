@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'STT_UNAVAILABLE' => 'Transcription vocale indisponible (cle API manquante ou service injoignable).',
     'INVALID_CREDENTIALS' => 'Email ou mot de passe incorrect.',
     'TOKEN_EXPIRED' => 'Le jeton d\'authentification a expire.',
     'TOKEN_INVALID' => 'Le jeton d\'authentification est invalide.',

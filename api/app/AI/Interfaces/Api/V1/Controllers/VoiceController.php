@@ -6,6 +6,8 @@ namespace App\AI\Interfaces\Api\V1\Controllers;
 
 use App\AI\DTOs\AIRequest;
 use App\AI\Orchestrator;
+use App\Core\AI\Domain\Exceptions\SpeechToTextUnavailableException;
+use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +34,12 @@ class VoiceController extends Controller
         $language = $validated['language'] ?? 'fr';
 
         $provider = config('ai.voice.stt_provider', 'whisper');
-        $text = $this->speechToText($audio, $language, $provider);
+
+        try {
+            $text = $this->speechToText($audio, $language, $provider);
+        } catch (SpeechToTextUnavailableException) {
+            return $this->sttUnavailable();
+        }
 
         return response()->json([
             'data' => [
@@ -79,7 +86,12 @@ class VoiceController extends Controller
         $language = $validated['language'] ?? 'fr';
 
         $sttProvider = config('ai.voice.stt_provider', 'whisper');
-        $transcribedText = $this->speechToText($audio, $language, $sttProvider);
+
+        try {
+            $transcribedText = $this->speechToText($audio, $language, $sttProvider);
+        } catch (SpeechToTextUnavailableException) {
+            return $this->sttUnavailable();
+        }
 
         $orchestrator = app(Orchestrator::class);
         $user = $request->user();
@@ -178,6 +190,10 @@ class VoiceController extends Controller
             return $this->whisperTranscribe($audio, $language);
         }
 
+        if ($provider === 'groq_whisper') {
+            return $this->groqWhisperTranscribe($audio, $language);
+        }
+
         if ($provider === 'deepgram') {
             return $this->deepgramTranscribe($audio, $language);
         }
@@ -244,6 +260,35 @@ class VoiceController extends Controller
         Log::error('Deepgram transcription failed', ['status' => $response->status()]);
 
         return '';
+    }
+
+    /**
+     * Transcription via Groq-Whisper (whisper-large-v3) — issue #6849.
+     * Fail-closed : toute défaillance lève SpeechToTextUnavailableException
+     * (jamais de texte vide silencieux).
+     *
+     * @param  UploadedFile  $audio
+     */
+    private function groqWhisperTranscribe($audio, string $language): string
+    {
+        $adapter = app(GroqWhisperAdapter::class);
+
+        return $adapter->transcribe(
+            file_get_contents($audio->getRealPath()) ?: '',
+            (string) $audio->getClientOriginalName(),
+            (string) ($audio->getMimeType() ?? 'application/octet-stream'),
+            $language,
+        );
+    }
+
+    private function sttUnavailable(): JsonResponse
+    {
+        return response()->json([
+            'error' => [
+                'code' => 'STT_UNAVAILABLE',
+                'message' => __('api_errors.STT_UNAVAILABLE'),
+            ],
+        ], 503);
     }
 
     private function textToSpeech(string $text, string $language, ?string $voice, string $provider): ?string
