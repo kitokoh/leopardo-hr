@@ -170,10 +170,11 @@
               </button>
 
               <button
+                v-if="demoSuperAdmin"
                 type="button"
                 :disabled="isLoading"
                 class="flex w-full justify-center rounded-2xl border border-white/10 bg-white/5 py-3.5 px-4 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 transition-all duration-300"
-                @click="useDemoAccount"
+                @click="useDemoAccount(demoSuperAdmin)"
               >
                 <SparklesIcon class="mr-2 h-4 w-4 text-brand-400" />
                 {{ t('auth.demo_access', 'Utiliser le compte demo super-admin') }}
@@ -198,7 +199,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   LockClosedIcon,
@@ -266,13 +267,33 @@ const fieldErrors = computed(() => {
 })
 
 /**
- * Accès démo direct super-admin (contrat AGENTS.md v4.16.250, gardé par
- * launch-workflow-contracts.json) : remplit le formulaire avec le compte
- * démo documenté (admin@leopardo-rh.com / password123) et soumet.
+ * Accès démo super-admin (issue #6922). Data-driven : le bouton n'apparaît
+ * que si le backend expose un persona super_admin via GET /api/v1/demo-users
+ * (mode démo activé côté serveur — DEMO_MODE_ENABLED). Hors mode démo
+ * (prod, staging strict), l'endpoint répond 404 et le bouton reste masqué :
+ * plus aucun identifiant démo codé en dur dans l'UI d'admin.
+ * Même contrat que le portail web (front/web/src/app/auth/login/page.tsx).
  */
-function useDemoAccount() {
-  form.email = 'admin@leopardo-rh.com'
-  form.password = 'password123'
+const demoSuperAdmin = ref(null)
+
+onMounted(() => {
+  api
+    .get('/demo-users')
+    .then((res) => {
+      const sa = res?.data?.data?.super_admin ?? res?.data?.super_admin
+      if (sa && typeof sa.email === 'string' && typeof sa.password === 'string') {
+        demoSuperAdmin.value = sa
+      }
+    })
+    .catch(() => {
+      // Mode démo désactivé (404) ou API injoignable : aucun compte à proposer.
+      demoSuperAdmin.value = null
+    })
+})
+
+function useDemoAccount(persona) {
+  form.email = persona.email
+  form.password = persona.password
   form.twoFactorCode = ''
   handleLogin()
 }
