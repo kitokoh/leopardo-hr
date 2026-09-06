@@ -77,14 +77,18 @@ class CatalogApiTest extends TestCase
         return $employee;
     }
 
-    private function actingAs(Employee $employee): void
+    private function actingAsUser(Employee $employee): void
     {
         Sanctum::actingAs($employee);
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
     private function storeCategory(Employee $actor, array $overrides = []): array
     {
-        $this->actingAs($actor);
+        $this->actingAsUser($actor);
 
         return $this->postJson('/api/v1/catalog/categories', array_merge([
             'name' => 'Machines industrielles',
@@ -93,9 +97,13 @@ class CatalogApiTest extends TestCase
             ->json('data');
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
     private function storeProduct(Employee $actor, array $overrides = []): array
     {
-        $this->actingAs($actor);
+        $this->actingAsUser($actor);
 
         return $this->postJson('/api/v1/catalog/products', array_merge([
             'name' => 'Machine CNC 3 axes',
@@ -111,7 +119,7 @@ class CatalogApiTest extends TestCase
     {
         /** @var Employee $manager */
         $manager = $this->employee($this->companyNoFlag, 'principal');
-        $this->actingAs($manager);
+        $this->actingAsUser($manager);
 
         $this->postJson('/api/v1/catalog/categories', ['name' => 'Machines'])
             ->assertStatus(403)
@@ -120,7 +128,7 @@ class CatalogApiTest extends TestCase
 
     public function test_employee_cannot_manage_categories(): void
     {
-        $this->actingAs($this->employeeA);
+        $this->actingAsUser($this->employeeA);
 
         $this->postJson('/api/v1/catalog/categories', ['name' => 'Machines'])
             ->assertStatus(403);
@@ -143,7 +151,7 @@ class CatalogApiTest extends TestCase
         $this->assertSame('machines-2', $duplicate['slug']);
 
         // Mise à jour + réordonnancement (position).
-        $this->actingAs($this->principalA);
+        $this->actingAsUser($this->principalA);
         $this->putJson("/api/v1/catalog/categories/{$category['id']}", [
             'name' => 'Machines outillage',
             'position' => 3,
@@ -158,7 +166,7 @@ class CatalogApiTest extends TestCase
             ->assertJsonPath('meta.total', 1);
 
         // Suppression.
-        $this->actingAs($this->principalA);
+        $this->actingAsUser($this->principalA);
         $this->deleteJson("/api/v1/catalog/categories/{$category['id']}")
             ->assertStatus(200);
         $this->getJson("/api/v1/catalog/categories/{$category['id']}")
@@ -183,7 +191,7 @@ class CatalogApiTest extends TestCase
             ->assertJsonPath('meta.total', 1);
 
         // Publication puis dépublication (Actions dédiées).
-        $this->actingAs($this->principalA);
+        $this->actingAsUser($this->principalA);
         $this->postJson("/api/v1/catalog/products/{$product['id']}/publish")
             ->assertStatus(200)
             ->assertJsonPath('data.status', 'published');
@@ -208,7 +216,7 @@ class CatalogApiTest extends TestCase
 
     public function test_product_validation_rejects_bad_payloads(): void
     {
-        $this->actingAs($this->principalA);
+        $this->actingAsUser($this->principalA);
 
         // Prix négatif → 422.
         $this->postJson('/api/v1/catalog/products', [
@@ -239,7 +247,7 @@ class CatalogApiTest extends TestCase
         $productA = $this->storeProduct($this->principalA);
 
         // Employé du tenant A : lecture OK, gestion 403.
-        $this->actingAs($this->employeeA);
+        $this->actingAsUser($this->employeeA);
         $this->getJson("/api/v1/catalog/products/{$productA['id']}")
             ->assertStatus(200);
         $this->putJson("/api/v1/catalog/products/{$productA['id']}", [
@@ -249,7 +257,7 @@ class CatalogApiTest extends TestCase
         ])->assertStatus(403);
 
         // Principal du tenant B : ressource de A introuvable (404, fail-closed).
-        $this->actingAs($this->principalB);
+        $this->actingAsUser($this->principalB);
         $this->getJson("/api/v1/catalog/products/{$productA['id']}")
             ->assertStatus(404);
         $this->postJson("/api/v1/catalog/products/{$productA['id']}/publish")
