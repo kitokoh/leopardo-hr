@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -60,7 +61,7 @@ class CreateLeaveAccrual
                 'company_id' => $actor->company_id,
                 'employee_id' => $validated['employee_id'],
                 'absence_type_id' => $policy->absence_type_id,
-                'year' => (int) date('Y', strtotime((string) $validated['effective_date'])),
+                'year' => (int) Carbon::parse($validated['effective_date'])->format('Y'),
             ],
             ['balance' => 0, 'used' => 0, 'pending' => 0]
         );
