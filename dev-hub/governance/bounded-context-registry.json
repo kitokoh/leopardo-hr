@@ -842,11 +842,11 @@
    "responsibility": "Site vitrine public 1-clic du responsable de tenant (PME, usine, fournisseur) : creation brouillon, moteur de sections typees (hero, features, produits, galerie, temoignages, contact, footer) + themes, publication draft→published, consultation publique isolee (0 donnee interne/RH), SEO/RGPD/i18n, contact -> email du tenant. Aucun CMS open-source embarque (moteur maison, spike editeur visuel #6869).",
    "owner": "Agent 27 — BC-SHOWCASE",
    "priority": "P1",
-   "status": "planned",
+   "status": "active",
    "paths": [
     {
      "path": "api/app/Modules/Showcase",
-     "status": "planned"
+     "status": "active"
     }
    ],
    "routes": [],

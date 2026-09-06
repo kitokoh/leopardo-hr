@@ -62,7 +62,7 @@ Modules/<Name>/
 ```
 
 
-Modules actifs (25, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
+Modules actifs (26, sous `api/app/Modules/`) : `Absence`, `Accounting`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `CRM`, `Delivery`, `EdgeSync`, `EduManager`, `Expense`, `Fleet`, `FuelStation`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `Restaurant`, `RestaurantManager`, `Showcase`, `TravelAgency` (ordre alphabétique, vérifié `ls api/app/Modules`) + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`, qui contient aussi `AI`, `Http`, `Notifications`, `Privacy`, `Seed`, `Solutions`).
 
 
 

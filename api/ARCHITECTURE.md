@@ -121,6 +121,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
+| `Modules/Showcase` | 🔶 socle domaine BC-27 — routes API privée à venir (V-SECTIONS-API #6866) | 🟢 socle domaine BC-27 (#6865) : migration tenant `company_showcases`, modèle, policy deny-by-default, feature flag `company_showcase` | `ShowcaseServiceProvider` |
 | `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |

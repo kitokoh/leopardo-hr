@@ -64,4 +64,5 @@ return [
     TravelAgencyServiceProvider::class,
     EduManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
+    ShowcaseServiceProvider::class,
 ];
