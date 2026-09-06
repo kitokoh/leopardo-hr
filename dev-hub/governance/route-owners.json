@@ -38,7 +38,8 @@
     "api/routes/modules/fuel_station.php": "tenant",
     "api/routes/modules/edu_manager.php": "tenant",
     "api/routes/modules/delivery.php": "tenant",
-    "api/routes/modules/solutions.php": "mixed"
+    "api/routes/modules/solutions.php": "mixed",
+    "api/routes/modules/catalog.php": "tenant"
   },
   "platform_controller_exceptions": [
     {

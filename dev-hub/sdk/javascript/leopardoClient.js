@@ -1470,6 +1470,66 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/career-events/{careerEvent}/reject", options);
     },
 
+    /** Lister les categories du catalogue (membres du tenant) */
+    getCatalogCategories(options = {}) {
+      return request("GET", "/catalog/categories", options);
+    },
+
+    /** Creer une categorie (gestion principal/rh) */
+    postCatalogCategories(options = {}) {
+      return request("POST", "/catalog/categories", options);
+    },
+
+    /** Supprimer une categorie (gestion principal/rh) */
+    deleteCatalogCategoriesByCategory(options = {}) {
+      return request("DELETE", "/catalog/categories/{category}", options);
+    },
+
+    /** Detail d'une categorie (membres du tenant) */
+    getCatalogCategoriesByCategory(options = {}) {
+      return request("GET", "/catalog/categories/{category}", options);
+    },
+
+    /** Mettre a jour une categorie (gestion principal/rh) */
+    putCatalogCategoriesByCategory(options = {}) {
+      return request("PUT", "/catalog/categories/{category}", options);
+    },
+
+    /** Lister les produits du catalogue (membres du tenant) */
+    getCatalogProducts(options = {}) {
+      return request("GET", "/catalog/products", options);
+    },
+
+    /** Creer un produit (gestion principal/rh) */
+    postCatalogProducts(options = {}) {
+      return request("POST", "/catalog/products", options);
+    },
+
+    /** Supprimer un produit (gestion principal/rh) */
+    deleteCatalogProductsByProduct(options = {}) {
+      return request("DELETE", "/catalog/products/{product}", options);
+    },
+
+    /** Detail d'un produit (membres du tenant) */
+    getCatalogProductsByProduct(options = {}) {
+      return request("GET", "/catalog/products/{product}", options);
+    },
+
+    /** Mettre a jour un produit (gestion principal/rh) */
+    putCatalogProductsByProduct(options = {}) {
+      return request("PUT", "/catalog/products/{product}", options);
+    },
+
+    /** Publier un produit (statut published) */
+    postCatalogProductsByProductPublish(options = {}) {
+      return request("POST", "/catalog/products/{product}/publish", options);
+    },
+
+    /** Depublier un produit (statut draft) */
+    postCatalogProductsByProductUnpublish(options = {}) {
+      return request("POST", "/catalog/products/{product}/unpublish", options);
+    },
+
     /** Persister un evenement UX client tenant-scope */
     postClientEvents(options = {}) {
       return request("POST", "/client-events", options);
