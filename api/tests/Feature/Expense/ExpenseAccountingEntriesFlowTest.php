@@ -6,6 +6,8 @@ namespace Tests\Feature\Expense;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Expense\Application\Actions\GenerateExpenseAccountingEntries;
+use App\Modules\Expense\Application\Actions\VoidExpenseAccountingEntries;
 use App\Modules\Expense\Domain\Exceptions\UnbalancedExpenseEntriesException;
 use App\Modules\Expense\Domain\Models\ExpenseAccountingEntry;
 use App\Modules\Expense\Infrastructure\Listeners\ExpenseAccountingEntryObserver;
@@ -223,7 +225,10 @@ class ExpenseAccountingEntriesFlowTest extends TestCase
         $service = $this->createMock(ExpenseAccountingEntryService::class);
         $service->method('generateForClaim')->willThrowException(new \RuntimeException('boom'));
 
-        $observer = new ExpenseAccountingEntryObserver($service);
+        $observer = new ExpenseAccountingEntryObserver(
+            new GenerateExpenseAccountingEntries($service),
+            new VoidExpenseAccountingEntries($service),
+        );
         $claim->status = 'approved'; // transition simulée (original = submitted)
 
         $log = Log::spy();
