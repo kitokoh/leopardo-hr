@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Delivery\Interfaces\Api\V1\Controllers;
 
+use App\Modules\Delivery\Application\Actions\CreateDeliveryAction;
 use App\Modules\Delivery\Domain\Contracts\DeliveryRepositoryInterface;
 use App\Modules\Delivery\Domain\Models\Delivery;
-use App\Modules\Delivery\Domain\ValueObjects\DeliveryReference;
 use App\Modules\Delivery\Interfaces\Api\V1\Requests\DeliveryStoreRequest;
 use App\Modules\Delivery\Interfaces\Api\V1\Resources\DeliveryResource;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -22,10 +21,15 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Isolation tenant : la company est résolue depuis l'employé authentifié,
  * jamais par un id d'URL (fail-closed #3727) ; le repository est scopé.
+ * La création (idempotence source, référence DLV, course 23505) vit dans
+ * CreateDeliveryAction (couche Application, #6898).
  */
 final class DeliveryController
 {
-    public function __construct(private readonly DeliveryRepositoryInterface $deliveries) {}
+    public function __construct(
+        private readonly DeliveryRepositoryInterface $deliveries,
+        private readonly CreateDeliveryAction $createDelivery,
+    ) {}
 
     /**
      * Liste des livraisons du tenant (filtres statut/source/date, pagination).
@@ -58,90 +62,12 @@ final class DeliveryController
 
     public function store(DeliveryStoreRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $companyId = $this->companyId($request);
+        $delivery = $this->createDelivery->execute($this->companyId($request), $request->validated());
 
-        // Contrats sources (DELIVERY-208/#6299) : une commande source
-        // (restaurant RST-…, retail POS-…, e-commerce, crm) crée sa livraison
-        // une seule fois — unique (company_id, source, source_reference).
-        // Le rejeu (webhook e-commerce, retry client) retourne l'existante.
-        $source = (string) $validated['source'];
-        $sourceReference = $validated['source_reference'] ?? null;
-
-        if ($source !== 'manual' && $sourceReference !== null && $sourceReference !== '') {
-            $existing = Delivery::query()
-                ->where('company_id', $companyId)
-                ->where('source', $source)
-                ->where('source_reference', $sourceReference)
-                ->first();
-
-            if ($existing !== null) {
-                return (new DeliveryResource($existing))->response();
-            }
-        }
-
-        // Référence DLV-YYYY-NNNNNN : séquence du jour par tenant (borne
-        // d'unicité) — l'index unique (company_id, reference) protège la course.
-        $sequence = (int) Delivery::query()
-            ->where('company_id', $companyId)
-            ->whereYear('created_at', now()->year)
-            ->max('id') + 1;
-
-        try {
-            $delivery = $this->insertDelivery($companyId, $validated, $sequence);
-        } catch (QueryException $exception) {
-            // Course sur l'unicité (company, source, source_reference) : deux
-            // webhooks simultanés → le perdant refetch et retourne l'existante.
-            if ($source !== 'manual' && $exception->getCode() === '23505') {
-                $existing = Delivery::query()
-                    ->where('company_id', $companyId)
-                    ->where('source', $source)
-                    ->where('source_reference', $sourceReference)
-                    ->first();
-
-                if ($existing !== null) {
-                    return (new DeliveryResource($existing))->response();
-                }
-            }
-
-            throw $exception;
-        }
-
+        // Rejeu (source contractuelle) → 200 ; création → 201.
         return (new DeliveryResource($delivery))
             ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
-    }
-
-    /**
-     * Insertion de la livraison (extraite pour le catch d'unicité).
-     *
-     * @param  array<string, mixed>  $validated
-     */
-    private function insertDelivery(string $companyId, array $validated, int $sequence): Delivery
-    {
-        /** @var Delivery $delivery */
-        $delivery = Delivery::query()->create([
-            'company_id' => $companyId,
-            'reference' => DeliveryReference::fromSequence(now()->year, $sequence)->toString(),
-            'source' => $validated['source'],
-            'source_reference' => $validated['source_reference'] ?? null,
-            'type' => $validated['type'],
-            'status' => 'created',
-            'weight_grams' => $validated['weight_grams'] ?? null,
-            'volume_cm3' => $validated['volume_cm3'] ?? null,
-            'declared_value_minor' => $validated['declared_value_minor'] ?? 0,
-            'cod_amount_minor' => $validated['cod_amount_minor'] ?? null,
-            'pickup_contact' => $validated['pickup_contact'] ?? null,
-            'pickup_address' => $validated['pickup_address'] ?? null,
-            'dropoff_contact' => $validated['dropoff_contact'],
-            'dropoff_phone' => $validated['dropoff_phone'] ?? null,
-            'dropoff_address' => $validated['dropoff_address'],
-            'window_from' => $validated['window_from'] ?? null,
-            'window_to' => $validated['window_to'] ?? null,
-            'idempotency_key' => $validated['idempotency_key'] ?? null,
-        ]);
-
-        return $delivery;
+            ->setStatusCode($delivery->wasRecentlyCreated ? Response::HTTP_CREATED : Response::HTTP_OK);
     }
 
     public function show(Request $request, int $delivery): JsonResponse
