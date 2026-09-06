@@ -154,36 +154,28 @@ trait RefreshTenantDatabase
     }
 
     /**
-     * Dernière classe de test ayant rafraîchi la base dans CE process.
-     *
-     * Statique de trait : chaque classe utilisant le trait possède sa propre
-     * copie (vérifié — sémantique PHP), donc toute nouvelle classe voit `null`
-     * au premier test : on force `RefreshDatabaseState::$migrated = false`
-     * pour rejouer une migration COMPLÈTE et propre, exactement comme un run
-     * isolé. Sans ce reset, l'état statique du fichier précédent (même
-     * process) peut être périmé (repo tenant sans tables, tables sans repo,
-     * search_path de session dérivé…) — issue #6754.
-     */
-    private static ?string $lastRefreshingClass = null;
-
-    /**
      * Refresh the test database.
      */
     protected function refreshTestDatabase(): void
     {
-        // Herméticité multi-fichiers (issue #6754) : un NOUVEAU fichier de
-        // tests dans le même process ne doit JAMAIS faire confiance à l'état
-        // statique laissé par le fichier précédent. Le run séquentiel devient
-        // ainsi équivalent au run isolé (migration fraîche par classe).
-        if (self::$lastRefreshingClass !== static::class) {
-            RefreshDatabaseState::$migrated = false;
-            self::$lastRefreshingClass = static::class;
-        }
-
-        // Some MVP fixture tests rebuild schemas outside Laravel's migration
-        // repository. The static flag can therefore remain stale even after a
-        // teardown; verify the canonical tables before trusting it.
-        if (DB::getDriverName() === 'pgsql' && ! $this->canonicalSchemaReady()) {
+        // Issue #6948 : la re-migration COMPLÈTE à chaque nouvelle classe
+        // (herméticité « run isolé » #6754) faisait durer la suite Feature
+        // ~3 h (~632 fichiers × migration public+tenant par classe). La
+        // décision devient ÉTATIQUE : on ne re-migre que si l'état canonique
+        // est réellement invalide (canonicalSchemaReady, garde #6754 déjà en
+        // place — 8 tables sentinelles) :
+        //   - classes RefreshTenantDatabase consécutives : base canonique
+        //     intacte → transactions par test seulement (pattern Laravel
+        //     RefreshDatabase) ;
+        //   - après une classe CreatesMvpSchema (DROP shared_tenants + tables
+        //     public gérées, marqueur #6933) : canonique invalide → re-migration ;
+        //   - base de worker fraîche : canonique absente → migration.
+        // Le flag global RefreshDatabaseState::$migrated peut être laissé à
+        // false par une classe CreatesMvpSchema intercalée : la vérification
+        // canonique prime (on le resynchronise dans les deux sens).
+        if (DB::getDriverName() === 'pgsql' && $this->canonicalSchemaReady()) {
+            RefreshDatabaseState::$migrated = true;
+        } else {
             RefreshDatabaseState::$migrated = false;
         }
 
