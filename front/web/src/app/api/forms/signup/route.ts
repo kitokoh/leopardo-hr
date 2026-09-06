@@ -154,9 +154,11 @@ export async function POST(request: NextRequest) {
         {
           success: true,
           provisioned: otpFlow,
-          message: otpFlow
-            ? 'Code de vérification envoyé.'
-            : "Votre demande d'essai est enregistrée. Votre espace est en cours de préparation, vous pouvez suivre son état ci-dessous.",
+          // #6959 : aucun nouveau littéral affiché côté client — l'UI choisit
+          // ses textes localisés (catalogue i18n vitrine) selon `nextStep`
+          // (`tracking` = suivi du provisioning, `verify` = OTP). Le message
+          // ci-dessous n'est conservé que pour la compatibilité du flux OTP.
+          message: otpFlow ? 'Code de vérification envoyé.' : undefined,
           data: {
             id: lead.id,
             email: signupResult.email,
