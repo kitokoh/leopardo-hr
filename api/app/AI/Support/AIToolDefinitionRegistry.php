@@ -25,6 +25,13 @@ use InvalidArgumentException;
  *
  * Le registre est statique (collecteur) ; app()->forgetInstance() ou
  * self::reset() permettent de le réinitialiser dans les tests.
+ *
+ * ⚠️ Contrat d'enregistrement (#6947) : le collecteur statique survit aux
+ * boots applicatifs (PHP-FPM : un worker re-boote les providers à chaque
+ * requête ; PHPUnit : un process = N boots). Tout fournisseur qui enregistre
+ * au boot DOIT vérifier `self::has($name)` avant `register()` (idempotence
+ * par boot) — `register()` reste strict pour détecter un VRAI doublon
+ * intra-boot (deux BC déclarant le même nom d'outil).
  */
 final class AIToolDefinitionRegistry
 {
