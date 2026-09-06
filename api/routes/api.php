@@ -322,6 +322,7 @@ Route::prefix('v1')->group(function (): void {
     require __DIR__.'/modules/travelagency.php';
     require __DIR__.'/modules/fuel_station.php';
     require __DIR__.'/modules/edu_manager.php';
+    require __DIR__.'/modules/catalog.php';
     require __DIR__.'/modules/solutions.php';
 
     // Multi-App dedicated route modules
