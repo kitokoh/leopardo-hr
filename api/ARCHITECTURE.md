@@ -112,7 +112,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Core/Auth` | ✅ routes/api.php | ✅ complet | — (AppServiceProvider) |
 | `Core/Tenant` | — | ✅ migré (TenantManager canonique) | — |
 | `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
-| `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application quasi vide (1 Service, 0 Action) — Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
+| `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application en construction (ADR-0020, #6896) : 1 Service (régularisation) + 0 Action — extraction par lots cartographiée (`PAYROLL_APPLICATION_CARTOGRAPHIE.md`, lot 1 = cycle de paie) ; Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
 | `Modules/Planning` | ✅ routes/modules/planning.php | ✅ Application peuplée (Actions cycle de vie absence — Create/Update/Approve/Reject/Cancel, 2026-09-06 #6895 ; tranche 2 #6908 : Actions schedules/projects/tasks/politiques congés/accruals) ; reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
@@ -121,11 +121,11 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/Recruitment` | ✅ routes/modules/hr_extended.php | 🔶 Application vide (0 Action) — Domain/Infrastructure/Interfaces présents | `RecruitmentServiceProvider` |
 | `Modules/EduManager` | ✅ routes/modules/edu_manager.php | 🟢 verticale BC-16 (EDU-001..020, core + batch2 + batch3) | `EduManagerServiceProvider` |
 | `Modules/RestaurantManager` | ✅ routes/modules/restaurantmanager.php | 🟢 verticale BC-25 (Application/Domain/Infrastructure/Interfaces/Providers) | `RestaurantManagerServiceProvider` |
-| `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 Domain (Solution+Survey) + Providers ; Application/Infrastructure/Interfaces en cours | `RestaurantServiceProvider` |
+| `Modules/Restaurant` | ✅ routes/modules/solutions.php (public) | 🔶 **Fournisseur de contenu** (Solution/Survey) — Application/Infrastructure/Interfaces **N/A intentionnel** (ADR-0020, #6901) ; webhooks/shop via RestaurantManager, surveys via `Core\Solutions` | `RestaurantServiceProvider` |
 | `Modules/Billing` | ✅ routes/modules/billing.php | ✅ complet | `BillingServiceProvider` |
 | `Modules/Cabinet` | ✅ routes/modules/cabinet.php | ✅ complet | `CabinetServiceProvider` |
-| `Modules/Fleet` | ✅ routes/modules/hr_extended.php | 🔶 Application et Infrastructure vides (0 PHP) — Domain + Interfaces seuls | `FleetServiceProvider` |
 | `Modules/Catalog` | 🔶 socle domaine BC-28 — routes API privée à venir (C-API #6881) | 🟢 socle domaine BC-28 (#6880) : migrations tenant `catalog_categories`/`catalog_products`, modèles, policies deny-by-default, feature flag `b2b_catalog` | `CatalogServiceProvider` |
+| `Modules/Fleet` | ✅ routes/modules/hr_extended.php | 🔶 Application et Infrastructure **vides actées** (ADR-0020, #6899) — conservées, à peupler au fil des besoins fonctionnels ; Domain + Interfaces seuls aujourd'hui | `FleetServiceProvider` |
 | `Modules/Cameras` | ✅ routes/modules/cameras.php | ✅ complet | `CamerasServiceProvider` |
 | `Modules/CRM` | ✅ routes/modules/crm.php | ✅ complet (CRM client, ADR-CRM-DUAL-CONTEXTS) | `CrmServiceProvider` |
 | `Modules/FuelStation` | ✅ routes/modules/fuel_station.php | 🔶 Application vide (0 PHP) — Domain/Infrastructure/Interfaces/Providers complets | `FuelStationServiceProvider` |
