@@ -1308,10 +1308,20 @@ trait CreatesMvpSchema
      * Purge les lignes laissées par le test précédent : TRUNCATE de toutes les
      * tables créées par la fixture (listées dans le marqueur), RESTART IDENTITY
      * inclus. Coût ~1 s au lieu de 25-46 s de rebuild (issue #6928).
+     *
+     * Seules les tables ENCORE PRÉSENTES sont tronquées : certains tests
+     * DROP volontairement des tables de la fixture en cours de test pour
+     * simuler une dérive de schéma (ex. TenantIsolationTest DROP
+     * shared_tenants.employees, PlatformAdminAiChatTest DROP
+     * ai_conversations) — le TRUNCATE suivant ne doit pas échouer en 42P01
+     * sur une table absente. Si une table de la garde (companies/employees)
+     * manque, le setUp suivant repassera par un rebuild complet (idempotent).
      */
     private function resetMvpFixtureTables(): void
     {
-        $rows = DB::table('shared_tenants.__mvp_fixture_ready')->pluck('table_name');
+        $rows = DB::table('shared_tenants.__mvp_fixture_ready')
+            ->whereRaw('to_regclass(table_name) IS NOT NULL')
+            ->pluck('table_name');
 
         if ($rows->isEmpty()) {
             return;
