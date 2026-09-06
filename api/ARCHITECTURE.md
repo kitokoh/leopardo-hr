@@ -9,7 +9,7 @@ L'API `leopardo-hr` suit un modèle **Domain-Driven Design (DDD) modulaire** :
 
 - **`app/Core/`** — Socle transversal SaaS (Auth, Tenant)
 - **`app/Modules/`** — Domaines métier autonomes (HR, Payroll, Attendance, etc.)
-- **`app/Shared/`** — Kernel partagé entre modules (DTOs, Enums, Events, Exceptions, Traits)
+- **`app/Shared/`** — Kernel partagé entre modules (DTOs, Enums, Events, Exceptions, Traits) — **ne dépend que de `Core/`, jamais de `Modules/`** (règle précisée 2026-09-06, #6844 : les traits/contrats transverses peuvent référencer Core/Tenant, Core/Auth… ; toute dépendance vers un module = le code doit vivre dans ce module ou être supprimé)
 - **`app/AI/`** — Module IA autonome (non DDD classique, orienté agent)
 
 ---

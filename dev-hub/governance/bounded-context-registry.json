@@ -12,7 +12,7 @@
   },
   {
    "path": "api/app/Shared",
-   "reason": "Building blocks partagés (DTOs, Enums, Events, Models, Traits) — volontairement hors BC."
+   "reason": "Building blocks partagés (DTOs, Enums, Events, Models, Traits) — volontairement hors BC ; ne dépend que de Core, jamais de Modules (règle #6844)."
   },
   {
    "path": "api/app/Core/Solutions",

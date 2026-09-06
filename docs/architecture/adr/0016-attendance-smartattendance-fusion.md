@@ -121,4 +121,4 @@ Périmètre à migrer : **4 tables** (aucune fusion de table nécessaire), **4 m
 - **1 fermeture automatique** : `AutoCloseAttendanceCommand` uniquement.
 - **Garde CI** : aucun nouvel import `App\Modules\SmartAttendance\*` dès la Phase 3 ; purger les alias en Phase 5 avec preuve mobile (contrat `validate-mobile-workflow-contracts.ps1`).
 - **Mode entreprise** : `attendance_mode_settings` reste la source de vérité (forced_mode / punch_photo_mode / géofence) ; toute nouvelle option de mode passe par cette table.
-- **Approbation** : le workflow `Approvable` reste générique et partagé (absences, notes de frais, sessions GPS, corrections) — ne pas dupliquer.
+- **Approbation** : le workflow `Approvable` reste générique et partagé (absences, notes de frais, sessions GPS, corrections) — ne pas dupliquer. *(Note 2026-09-06, #6844 : le trait partagé `App\Shared\Traits\Approvable` a été supprimé — 0 consommation, confirmé PHPStan « used zero times » ; la règle « ne pas dupliquer » vaudra pour tout prochain socle d'approbation générique, à créer dans `Core/` ou le module propriétaire — jamais de dépendance `Modules/*` depuis `Shared/`.)*
