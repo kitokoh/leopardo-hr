@@ -18,6 +18,14 @@ return [
             'model' => env('AI_MODEL', 'claude-sonnet-4-20250514'),
             'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com/v1'),
         ],
+        'groq' => [
+            // Issue #6848 (BC-23) : Groq = inférence rapide, free tier, API
+            // OpenAI-compatible — driver par défaut recommandé pour
+            // l'assistant v1 (zéro API payante obligatoire).
+            'key' => env('GROQ_API_KEY'),
+            'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        ],
     ],
 
     'max_tokens' => (int) env('AI_MAX_TOKENS', 1024),

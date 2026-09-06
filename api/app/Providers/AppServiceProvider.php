@@ -7,6 +7,7 @@ use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
+use App\AI\Providers\GroqClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
@@ -62,7 +63,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LLMClient::class, function (): LLMClient {
             $provider = (string) config('ai.provider', 'openai');
 
-            return $provider === 'claude' ? new ClaudeClient : new OpenAIClient;
+            return match ($provider) {
+                'claude' => new ClaudeClient,
+                'groq' => new GroqClient,
+                default => new OpenAIClient,
+            };
         });
 
         // Resolution des factories pour les modeles deplaces en DDD (Core/Modules/*).
