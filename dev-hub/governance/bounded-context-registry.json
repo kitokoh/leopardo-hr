@@ -3,7 +3,7 @@
   "title": "Bounded Context Registry — Leopardo HR",
   "description": "Registre canonique machine-readable des bounded contexts (MAT-001, issue #5859). Référence humaine : docs/architecture/BOUNDED-CONTEXT-REGISTRY-AGENT-PLAN.md (plan de gouvernance, PR agent-readiness).",
   "maintained_by": "dev-hub/tools/check-bounded-context-registry.sh (garde CI)",
-  "updated": "2026-09-05"
+  "updated": "2026-09-06"
  },
  "_shared_exceptions": [
   {
@@ -833,6 +833,33 @@
     "BC-18",
     "BC-20",
     "BC-22"
+   ]
+  },
+  {
+   "code": "BC-27",
+   "name": "SHOWCASE",
+   "context": "Showcase",
+   "responsibility": "Site vitrine public 1-clic du responsable de tenant (PME, usine, fournisseur) : creation brouillon, moteur de sections typees (hero, features, produits, galerie, temoignages, contact, footer) + themes, publication draft→published, consultation publique isolee (0 donnee interne/RH), SEO/RGPD/i18n, contact -> email du tenant. Aucun CMS open-source embarque (moteur maison, spike editeur visuel #6869).",
+   "owner": "Agent 27 — BC-SHOWCASE",
+   "priority": "P1",
+   "status": "planned",
+   "paths": [
+    {
+     "path": "api/app/Modules/Showcase",
+     "status": "planned"
+    }
+   ],
+   "routes": [],
+   "migrations": [
+    "api/database/migrations/tenant"
+   ],
+   "events": [],
+   "dependencies": [
+    "BC-01",
+    "BC-02",
+    "BC-12",
+    "BC-13",
+    "BC-20"
    ]
   }
  ]
