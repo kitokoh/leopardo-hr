@@ -115,7 +115,11 @@ export async function generateMetadata(): Promise<Metadata> {
       url: siteUrl,
       images: [
         {
-          url: '/opengraph-image',
+          // #6940 : image OG statique vérifiée 200 (le rendu dynamique
+          // /opengraph-image répondait 404 sur DEV et PROD — partage social
+          // sans visuel). Les pages qui ont leur propre og:image (/og/*.png)
+          // ne sont pas affectées.
+          url: '/og/default.png',
           width: 1200,
           height: 630,
           alt: rootL10n.ogImageAlt,
@@ -126,7 +130,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/twitter-image'],
+      images: ['/og/default.png'],
     },
     appleWebApp: {
       capable: true,
