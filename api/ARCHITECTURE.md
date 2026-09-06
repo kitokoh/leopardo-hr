@@ -114,7 +114,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/HR` | ✅ routes/modules/rh.php + hr_extended.php | ✅ complet | `HRServiceProvider` |
 | `Modules/Payroll` | ✅ routes/modules/payroll_engine.php | 🔶 Application quasi vide (1 Service, 0 Action) — Domain/Infrastructure/Interfaces complets | `PayrollServiceProvider` |
 | `Modules/Attendance` | ✅ routes/modules/rh.php | ✅ complet | `AttendanceServiceProvider` |
-| `Modules/Planning` | ✅ routes/modules/planning.php | 🔶 Application vide (0 PHP) — reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
+| `Modules/Planning` | ✅ routes/modules/planning.php | ✅ Application peuplée (Actions cycle de vie absence — Create/Update/Approve/Reject/Cancel, 2026-09-06 #6895) ; reste propriétaire canonique des modèles Absence/Expense | `PlanningServiceProvider` |
 | `Modules/Absence` | ✅ routes/modules/absence.php | 🔶 Interfaces + Providers uniquement (derogation documentee, PA2-ARCH-002) | `AbsenceServiceProvider` |
 | `Modules/Expense` | ✅ routes/modules/expense.php | ✅ DDD complet depuis 2026-09-06 (#6894) : Domain/Infrastructure/Interfaces/Providers (écritures comptables #5235) + **Application/Actions** (`GenerateExpenseAccountingEntries`, `VoidExpenseAccountingEntries`) — exemption CI levée (ne couvre plus qu'`Absence`) ; modèles de notes de frais sous contrat `Planning` | `ExpenseServiceProvider` |
 | `Modules/Notification` | ✅ routes/api.php + dashboard.php + hr_extended.php | ✅ complet | `NotificationServiceProvider` |

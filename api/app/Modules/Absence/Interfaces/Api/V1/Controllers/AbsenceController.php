@@ -10,8 +10,12 @@ use App\Http\Resources\Api\V1\AbsenceResource;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\AbsenceIndexRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\RejectAbsenceRequest;
 use App\Modules\Absence\Interfaces\Api\V1\Requests\StoreAbsenceRequest;
+use App\Modules\Planning\Application\Actions\ApproveAbsence;
+use App\Modules\Planning\Application\Actions\CancelAbsence;
+use App\Modules\Planning\Application\Actions\CreateAbsence;
+use App\Modules\Planning\Application\Actions\RejectAbsence;
+use App\Modules\Planning\Application\Actions\UpdateAbsence;
 use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Infrastructure\Services\AbsenceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,7 +25,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AbsenceController extends Controller
 {
-    public function __construct(private readonly AbsenceService $absenceService) {}
+    public function __construct(
+        private readonly CreateAbsence $createAbsence,
+        private readonly UpdateAbsence $updateAbsence,
+        private readonly ApproveAbsence $approveAbsence,
+        private readonly RejectAbsence $rejectAbsence,
+        private readonly CancelAbsence $cancelAbsence,
+    ) {}
 
     public function index(AbsenceIndexRequest $request): AnonymousResourceCollection
     {
@@ -73,7 +83,7 @@ class AbsenceController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        $absence = $this->absenceService->create($actor, $request->validated(), $request->file('proof'));
+        $absence = $this->createAbsence->execute($actor, $request->validated(), $request->file('proof'));
 
         return (new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
@@ -113,7 +123,7 @@ class AbsenceController extends Controller
             abort(403);
         }
 
-        $absence = $this->absenceService->approve($absence, $actor);
+        $absence = $this->approveAbsence->execute($absence, $actor);
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
@@ -134,7 +144,9 @@ class AbsenceController extends Controller
             abort(403);
         }
 
-        $absence = $this->absenceService->reject($absence, $request->validated('rejected_reason'));
+        /** @var string $reason */
+        $reason = $request->validated('rejected_reason');
+        $absence = $this->rejectAbsence->execute($absence, $reason);
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
@@ -165,7 +177,8 @@ class AbsenceController extends Controller
             'reason' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $absence = $this->absenceService->update($absence, $validated);
+        /** @var array<string, mixed> $validated */
+        $absence = $this->updateAbsence->execute($absence, $validated);
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
@@ -186,7 +199,7 @@ class AbsenceController extends Controller
             abort(403);
         }
 
-        $absence = $this->absenceService->cancel($absence);
+        $absence = $this->cancelAbsence->execute($absence);
 
         return new AbsenceResource($absence->load([
             'absenceType:id,name,code,deducts_leave',
