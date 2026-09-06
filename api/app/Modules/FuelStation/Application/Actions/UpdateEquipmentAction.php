@@ -14,12 +14,16 @@ use App\Modules\FuelStation\Domain\Models\FuelTank;
 class UpdateEquipmentAction
 {
     /**
+     * @template T of FuelPump|FuelTank|FuelMeterRegister
+     *
+     * @param  T  $item
      * @param  array<string, mixed>  $data  champs validés par la Request
+     * @return T
      */
     public function execute(FuelPump|FuelTank|FuelMeterRegister $item, array $data): FuelPump|FuelTank|FuelMeterRegister
     {
         $item->update($data);
 
-        return $item->refresh() ?? $item;
+        return $item->refresh();
     }
 }
