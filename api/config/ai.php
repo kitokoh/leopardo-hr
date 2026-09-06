@@ -126,6 +126,11 @@ return [
         'get_notifications' => ['role' => 'employee', 'permissions' => ['notifications.view']],
         'get_leave_balances' => ['role' => 'employee', 'permissions' => ['leave.view']],
         'get_payroll_summary' => ['role' => 'manager', 'permissions' => ['payroll.view']],
+        // B1 (#6854) — outils lecture BC-04 HR (contrat A3, #6850) : lecture
+        // seule, permissions = policies lecture HR/Planning existantes.
+        'team_overview' => ['role' => 'manager', 'permissions' => ['employees.view']],
+        'team_absences_recent' => ['role' => 'manager', 'permissions' => ['absences.view']],
+        'employee_leave_balance' => ['role' => 'employee', 'permissions' => ['leave.view']],
         'create_absence' => ['role' => 'employee', 'permissions' => ['absences.create']],
         'approve_absence' => ['role' => 'manager', 'permissions' => ['absences.approve']],
     ],
