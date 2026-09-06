@@ -2116,6 +2116,10 @@ class LeopardoClient:
         """Annonces du kiosk (device token)"""
         return self.request("GET", "/kiosks/{deviceCode}/announcements", **kwargs)
 
+    def get_kiosks_by_devicecode_config(self, **kwargs):
+        """Configuration du kiosk (device token) — BIO-006 (#6767)"""
+        return self.request("GET", "/kiosks/{deviceCode}/config", **kwargs)
+
     def post_kiosks_by_devicecode_employee_info(self, **kwargs):
         """Infos employe pour ecran kiosk (device token)"""
         return self.request("POST", "/kiosks/{deviceCode}/employee-info", **kwargs)

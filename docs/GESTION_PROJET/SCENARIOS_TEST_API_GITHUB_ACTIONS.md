@@ -260,7 +260,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - PDF du rapport mensuel affiche les indicateurs de cloture et l'estimation globale sans casser le rendu
 - Exports admin `GET /api/v1/export/{employees,attendance,contracts,vehicles,pay-slips,absences,training}` restent authentifies, reserves manager et disponibles pour le dashboard Cloudflare Pages.
 - Le test contractuel `FrontendApiContractTest` garde les routes critiques admin, mobile et kiosk afin qu'un renommage backend ne casse pas silencieusement les frontends.
-- Les endpoints kiosque terrain `employee-info`, `announcements`, `leave-balance` et `qr-punch` restent accessibles avec `X-Kiosk-Token` sans bearer Sanctum utilisateur.
+- Les endpoints kiosque terrain `config` (BIO-006 #6767), `employee-info`, `announcements`, `leave-balance` et `qr-punch` restent accessibles avec `X-Kiosk-Token` sans bearer Sanctum utilisateur.
 
 ### 10. Notifications / evenements / audit
 
@@ -992,6 +992,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `POST /api/v1/kiosks/{deviceCode}/employee-info` info employe post-pointage (nom, departement, poste, photo, pointage du jour, solde conges)
 - `GET /api/v1/kiosks/{deviceCode}/announcements` annonces actives pour le kiosk (titre, corps, priorite, dates)
 - `POST /api/v1/kiosks/{deviceCode}/leave-balance` solde conges par identifiant employe
+- `GET /api/v1/kiosks/{deviceCode}/config` configuration kiosk au demarrage (matrice methodes BIO-006 #6767, politique offline BIO-007 #6772, etat synchro)
 - `POST /api/v1/kiosks/{deviceCode}/qr-punch` pointage par QR code (decode base64 JSON â matricule/employee_id)
 - Tous les endpoints kiosk necessitent le header X-Kiosk-Token pour l'authentification device
 

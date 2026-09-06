@@ -2620,6 +2620,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/kiosks/{deviceCode}/announcements", options);
     },
 
+    /** Configuration du kiosk (device token) — BIO-006 (#6767) */
+    getKiosksByDeviceCodeConfig(options = {}) {
+      return request("GET", "/kiosks/{deviceCode}/config", options);
+    },
+
     /** Infos employe pour ecran kiosk (device token) */
     postKiosksByDeviceCodeEmployeeInfo(options = {}) {
       return request("POST", "/kiosks/{deviceCode}/employee-info", options);
