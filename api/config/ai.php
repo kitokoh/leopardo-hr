@@ -7,7 +7,21 @@ return [
     'enabled' => env('AI_ENABLED', false),
     'provider' => env('AI_PROVIDER', 'openai'),
 
+    // A1 (#6848) — sélecteur de driver LLM (fake|groq|openai|claude).
+    // Défaut : fake hors production ; en production, AI_LLM_DRIVER doit être
+    // posé explicitement (groq si GROQ_API_KEY renseignée, sinon openai) —
+    // avec config:cache, préférer la valeur explicite dans l'environnement
+    // plutôt que la déduction automatique ci-dessous.
+    'driver' => env('AI_LLM_DRIVER', null) ?? (app()->isProduction()
+        ? ((string) env('GROQ_API_KEY') !== '' ? 'groq' : 'openai')
+        : 'fake'),
+
     'providers' => [
+        'groq' => [
+            'key' => env('GROQ_API_KEY'),
+            'model' => env('AI_GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+        ],
         'openai' => [
             'key' => env('OPENAI_API_KEY'),
             'model' => env('AI_MODEL', 'gpt-4o'),

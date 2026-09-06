@@ -2,17 +2,18 @@
 
 namespace App\Providers;
 
-use App\Core\Notifications\Contracts\InAppNotifier;
-use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
-
 use App\AI\LLMClient;
 use App\AI\Providers\ClaudeClient;
+use App\AI\Providers\FakeLLMClient;
+use App\AI\Providers\GroqClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
+use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
+use App\Modules\HR\Infrastructure\Services\PiiLifecycleService;
+use App\Modules\Notification\Infrastructure\Services\InAppNotifierAdapter;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Policies\CrmDashboardPolicy;
@@ -60,9 +61,19 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->app->bind(LLMClient::class, function (): LLMClient {
-            $provider = (string) config('ai.provider', 'openai');
+            // A1 (#6848) — sélecteur par `ai.driver` (AI_LLM_DRIVER) ;
+            // rétrocompat : `ai.provider` legacy (claude → ClaudeClient).
+            $driver = (string) config('ai.driver', 'fake');
+            if ($driver === 'claude' || (string) config('ai.provider', 'openai') === 'claude') {
+                return new ClaudeClient;
+            }
 
-            return $provider === 'claude' ? new ClaudeClient : new OpenAIClient;
+            return match ($driver) {
+                'fake' => new FakeLLMClient,
+                'groq' => new GroqClient,
+                'claude' => new ClaudeClient,
+                default => new OpenAIClient,
+            };
         });
 
         // Resolution des factories pour les modeles deplaces en DDD (Core/Modules/*).
