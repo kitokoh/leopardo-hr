@@ -71,7 +71,7 @@
             "localStorage.getItem('admin_token')",
             "window.location.href = '/login'",
             "Utiliser le compte demo super-admin",
-            "password123"
+            "demoSuperAdmin"
           ]
         },
         {
