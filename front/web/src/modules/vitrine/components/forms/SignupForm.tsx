@@ -216,9 +216,32 @@ export function SignupForm({
 
         // #2469 : on conserve le token de provisioning (quand le backend en
         // renvoie un) pour permettre le suivi du statut sans email.
-        persistTrialToken(response.data?.provisioning_token);
+        const provisioningToken = response.data?.provisioning_token;
+        persistTrialToken(provisioningToken);
 
-        if (response.provisioned === false) {
+        // #6959 : le flux « guided trial » (requestedWorkflow=guided_trial)
+        // est SANS OTP — le backend provisionne le sandbox en asynchrone et
+        // renvoie `status=provisioning_sandbox` + un provisioning_token. On ne
+        // doit donc jamais afficher l'écran de vérification « Verify your
+        // email » pour ce flux : on bascule directement sur le suivi du
+        // provisioning (poll /trial/status). L'écran OTP reste réservé au flux
+        // legacy self-service (`pending_verification`, OTP réellement envoyé).
+        const guidedTrial = response.data?.status === 'provisioning_sandbox';
+
+        if (guidedTrial) {
+          if (provisioningToken) {
+            // Démarre immédiatement le suivi (mêmes transitions que
+            // startTracking, sans dépendre du re-render pour le token).
+            setTrialStatus('pending');
+            setTrialTimedOut(false);
+            setIsTracking(true);
+            setCurrentStep('tracking');
+          } else {
+            // Sans token (rare), on reste honnête : pas d'écran OTP.
+            setPendingMessage(response.message || c.pendingFallback);
+            setCurrentStep('pending');
+          }
+        } else if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
           // The lead was still captured, so tell the user honestly instead of
           // showing a vérification screen for a code that was never sent.
