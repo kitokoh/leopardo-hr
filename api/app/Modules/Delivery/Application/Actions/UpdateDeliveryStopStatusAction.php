@@ -9,7 +9,7 @@ use App\Modules\Delivery\Application\Services\DeliveryEventService;
 use App\Modules\Delivery\Domain\Models\DeliveryRoute;
 use App\Modules\Delivery\Domain\Models\DeliveryStop;
 use App\Modules\Delivery\Domain\Support\DeliveryRoleResolver;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\ConnectionInterface;
 
 /**
  * DELIVERY-203 (#6287) — changement de statut d'un arrêt de tournée par le
@@ -27,6 +27,7 @@ final class UpdateDeliveryStopStatusAction
     public function __construct(
         private readonly DeliveryEventService $events,
         private readonly DeliveryRoleResolver $roles,
+        private readonly ConnectionInterface $db,
     ) {}
 
     /**
@@ -39,7 +40,7 @@ final class UpdateDeliveryStopStatusAction
         string $status,
         int|string|null $proofDocumentId,
     ): DeliveryStop {
-        return DB::transaction(function () use ($stopId, $companyId, $employee, $status, $proofDocumentId): DeliveryStop {
+        return $this->db->transaction(function () use ($stopId, $companyId, $employee, $status, $proofDocumentId): DeliveryStop {
             /** @var DeliveryStop|null $found */
             $found = DeliveryStop::query()
                 ->where('company_id', $companyId)
