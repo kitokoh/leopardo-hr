@@ -6,8 +6,8 @@ namespace App\Modules\Planning\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Task;
+use App\Modules\Planning\Infrastructure\Services\TaskSchemaService;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Cas d'usage : mise à jour d'une tâche (manager, créateur ou assigné).
@@ -24,6 +24,10 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateTask
 {
+    public function __construct(
+        private readonly TaskSchemaService $taskSchema,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $validated
      */
@@ -32,7 +36,7 @@ class UpdateTask
         if (! $actor->isManager()) {
             $validated = Arr::only($validated, ['status', 'completed_minutes', 'completion_note']);
         }
-        $validated = $this->filterWritableTaskColumns($validated);
+        $validated = $this->taskSchema->filterToExistingColumns($validated);
         $this->applyCompletionMetrics($task, $validated);
 
         $task->fill(Arr::except($validated, ['status']));
@@ -67,23 +71,5 @@ class UpdateTask
             $ratio = max(0.0, min(2.0, $estimated / $completed));
             $task->performance_score = round($ratio * 50, 2);
         }
-    }
-
-    /**
-     * Colonnes ajoutées post-MVP : ignorées si la table ne les porte pas
-     * encore (compatibilité montée de schéma progressive, garde historique).
-     *
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function filterWritableTaskColumns(array $data): array
-    {
-        foreach (['category', 'checklist', 'visibility'] as $column) {
-            if (array_key_exists($column, $data) && ! Schema::hasColumn('tasks', $column)) {
-                unset($data[$column]);
-            }
-        }
-
-        return $data;
     }
 }

@@ -6,7 +6,7 @@ namespace App\Modules\Planning\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Task;
-use Illuminate\Support\Facades\Schema;
+use App\Modules\Planning\Infrastructure\Services\TaskSchemaService;
 
 /**
  * Cas d'usage : création d'une tâche (manager ou employé pour soi-même).
@@ -18,12 +18,16 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateTask
 {
+    public function __construct(
+        private readonly TaskSchemaService $taskSchema,
+    ) {}
+
     /**
      * @param  array<string, mixed>  $validated  champs validés (assigned_to aplati par l'interface)
      */
     public function execute(Employee $actor, array $validated): Task
     {
-        $task = Task::create($this->filterWritableTaskColumns([
+        $task = Task::create($this->taskSchema->filterToExistingColumns([
             'company_id' => $actor->company_id,
             'created_by' => $actor->id,
             'assigned_to' => $validated['assigned_to'] ?? [],
@@ -34,23 +38,5 @@ class CreateTask
         ]));
 
         return $task;
-    }
-
-    /**
-     * Colonnes ajoutées post-MVP : ignorées si la table ne les porte pas
-     * encore (compatibilité montée de schéma progressive, garde historique).
-     *
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function filterWritableTaskColumns(array $data): array
-    {
-        foreach (['category', 'checklist', 'visibility'] as $column) {
-            if (array_key_exists($column, $data) && ! Schema::hasColumn('tasks', $column)) {
-                unset($data[$column]);
-            }
-        }
-
-        return $data;
     }
 }
