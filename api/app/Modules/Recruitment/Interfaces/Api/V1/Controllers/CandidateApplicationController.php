@@ -8,10 +8,11 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ApplicantResource;
+use App\Modules\Recruitment\Application\Actions\CreateApplicantAction;
+use App\Modules\Recruitment\Domain\Exceptions\ApplicantAlreadyAppliedException;
 use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\Recruitment\Interfaces\Api\V1\Requests\PublicApplyRequest;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -46,44 +47,29 @@ class CandidateApplicationController extends Controller
 
             // Issue #3860 — pas de doublon (job_posting_id, email) : le
             // double-clic, le spam ou un retry ne doivent pas créer plusieurs
-            // candidatures. Garde applicative + index unique en base (le catch
-            // 23505 couvre la course entre le check et le create).
-            $alreadyApplied = Applicant::query()
-                ->where('company_id', $company->id)
-                ->where('job_posting_id', $job->id)
-                ->where('email', $validated['email'])
-                ->exists();
-
-            if ($alreadyApplied) {
+            // candidatures. Garde applicative dans l'Action + index unique en
+            // base (le catch 23505 couvre la course check/create).
+            try {
+                $applicant = app(CreateApplicantAction::class)->execute(
+                    (int) $company->id,
+                    $job,
+                    [
+                        'first_name' => $validated['first_name'],
+                        'last_name' => $validated['last_name'],
+                        'email' => $validated['email'],
+                        'phone' => $validated['phone'] ?? null,
+                        'resume_path' => $resumePath ?? ($validated['resume_url'] ?? null),
+                        'cover_letter' => $validated['cover_letter'] ?? null,
+                        'source' => $validated['source'] ?? 'website',
+                        'status' => 'new',
+                        'applied_at' => now(),
+                    ],
+                );
+            } catch (ApplicantAlreadyAppliedException) {
                 return new JsonResponse([
                     'error' => 'ALREADY_APPLIED',
                     'message' => 'You have already applied for this position.',
                 ], 409);
-            }
-
-            try {
-                $applicant = Applicant::create([
-                    'company_id' => $company->id,
-                    'job_posting_id' => $job->id,
-                    'first_name' => $validated['first_name'],
-                    'last_name' => $validated['last_name'],
-                    'email' => $validated['email'],
-                    'phone' => $validated['phone'] ?? null,
-                    'resume_path' => $resumePath ?? ($validated['resume_url'] ?? null),
-                    'cover_letter' => $validated['cover_letter'] ?? null,
-                    'source' => $validated['source'] ?? 'website',
-                    'status' => 'new',
-                    'applied_at' => now(),
-                ]);
-            } catch (QueryException $e) {
-                if ($e->getCode() === '23505') {
-                    return new JsonResponse([
-                        'error' => 'ALREADY_APPLIED',
-                        'message' => 'You have already applied for this position.',
-                    ], 409);
-                }
-
-                throw $e;
             }
 
             return (new ApplicantResource($applicant))
