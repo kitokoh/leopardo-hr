@@ -197,6 +197,51 @@ class AIToolRegistrySeeder extends Seeder
                 'required_role' => 'manager',
                 'module' => 'payroll',
             ],
+            // B1 (#6854) — outils lecture BC-04 HR déclarés au contrat A3 (#6850).
+            // `parameters` aligné sur l'inputSchema des AIToolDefinition du
+            // catalogue HR (HrReadToolCatalog) ; handlers dans IntentEngine.
+            [
+                'name' => 'team_overview',
+                'description' => 'Aggregated headcount view (company or manager scope): total, status, contract type and department breakdown. No personal data.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'department_id' => ['type' => 'integer', 'description' => 'Optional department filter'],
+                    ],
+                ]),
+                'required_permissions' => '["employees.view"]',
+                'required_role' => 'manager',
+                'module' => 'rh',
+            ],
+            [
+                'name' => 'team_absences_recent',
+                'description' => 'Recent absences in the manager scope over a period (default: last 30 days), with statuses and aggregates. Non-personal output.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'status' => ['type' => 'string', 'enum' => ['pending', 'approved', 'rejected', 'cancelled']],
+                        'from' => ['type' => 'string', 'format' => 'date'],
+                        'to' => ['type' => 'string', 'format' => 'date'],
+                    ],
+                ]),
+                'required_permissions' => '["absences.view"]',
+                'required_role' => 'manager',
+                'module' => 'rh',
+            ],
+            [
+                'name' => 'employee_leave_balance',
+                'description' => 'Leave balance of an employee for a year (default: current year): balance, used and pending per absence type. Employees can only read their own balance.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'employee_id' => ['type' => 'integer', 'description' => 'Target employee (default: caller). Managers only.'],
+                        'year' => ['type' => 'integer', 'description' => 'Balance year (default: current year)'],
+                    ],
+                ]),
+                'required_permissions' => '["leave.view"]',
+                'required_role' => 'employee',
+                'module' => 'rh',
+            ],
         ];
 
         foreach ($tools as $tool) {
