@@ -13,6 +13,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\Notification\Domain\Models\AppNotification;
 use App\Modules\Payroll\Domain\Models\Payroll;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Support\Carbon;
@@ -59,6 +61,8 @@ class IntentEngine
             'team_overview',
             'team_absences_recent',
             'employee_leave_balance',
+            // B2 (#6855) — outil lecture BC-07 PAYROLL (contrat A3 #6850).
+            'payroll_current_status',
         ];
     }
 
@@ -286,6 +290,9 @@ class IntentEngine
                 /** @var array<string, mixed> $arguments */
                 return $this->getEmployeeLeaveBalance($companyId, $userId, $arguments);
             },
+            // B2 (#6855) — agrégat du statut de paie via les modèles canoniques
+            // Payroll (PayrollRun + PaySlip) — aucun montant exposé.
+            'payroll_current_status' => fn (array $arguments): array => $this->getPayrollCurrentStatus($companyId, $userId),
         ];
     }
 
@@ -823,6 +830,112 @@ class IntentEngine
             'year' => $year,
             'count' => $mapped->count(),
             'leave_balances' => $mapped->values()->toArray(),
+        ];
+    }
+
+    /**
+     * B2 (#6855) — statut agrégé de la paie du tenant (BC-07 PAYROLL).
+     *
+     * Réutilise les modèles canoniques `PayrollRun`/`PaySlip` (contrat
+     * PayrollRunController) : dernier run clôturé (validé/payé/verrouillé) et
+     * run en cours éventuel (draft/calculating/processing/calculated/error)
+     * avec progression — bulletins générés/validés rapportés à l'effectif du
+     * run. Sortie AGRÉGÉE : statuts, dates et compteurs uniquement — jamais de
+     * montants (nominatifs ou totaux), jamais de bulletins (privacy A6, #6853).
+     * Lecteur : manager RH/principal (matrice ai.tool_permissions, rôle
+     * manager + payroll.view) — fail-closed sinon (#6532).
+     *
+     * @return array<string, mixed>
+     */
+    private function getPayrollCurrentStatus(string $companyId, int $userId): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::where('company_id', $companyId)->find($userId);
+
+        if ($actor === null) {
+            return ['error' => 'Employee not found'];
+        }
+
+        // #6532 — défense en profondeur : un non-manager (jamais atteint via la
+        // matrice ai.tool_permissions) n'accède pas au statut de paie.
+        if (! $actor->isManager()) {
+            return ['error' => 'Employee not found'];
+        }
+
+        $runs = PayrollRun::query()
+            ->where('company_id', $companyId)
+            ->where('status', '!=', PayrollRun::STATUS_CANCELLED)
+            ->orderByDesc('period_end')
+            ->orderByDesc('id')
+            ->limit(30)
+            ->get();
+
+        $currentRun = null;
+        $lastClosedRun = null;
+
+        /** @var PayrollRun $run */
+        foreach ($runs as $run) {
+            if (in_array($run->status, [
+                PayrollRun::STATUS_DRAFT,
+                PayrollRun::STATUS_CALCULATING,
+                PayrollRun::STATUS_PROCESSING,
+                PayrollRun::STATUS_CALCULATED,
+                PayrollRun::STATUS_ERROR,
+            ], true) && $currentRun === null) {
+                $currentRun = $run;
+            }
+
+            if (in_array($run->status, [
+                PayrollRun::STATUS_VALIDATED,
+                PayrollRun::STATUS_PAID,
+                PayrollRun::STATUS_LOCKED,
+            ], true) && $lastClosedRun === null) {
+                $lastClosedRun = $run;
+            }
+
+            if ($currentRun !== null && $lastClosedRun !== null) {
+                break;
+            }
+        }
+
+        return [
+            'has_current_run' => $currentRun !== null,
+            'current_run' => $currentRun !== null ? $this->payrollRunStatusPayload($currentRun) : null,
+            'last_closed_run' => $lastClosedRun !== null ? $this->payrollRunStatusPayload($lastClosedRun) : null,
+            'as_of' => now()->toIso8601String(),
+        ];
+    }
+
+    /**
+     * Payload agrégé d'un run : identité temporelle, statut, effectif et
+     * compteurs de bulletins — explicitement AUCUN montant (privacy A6,
+     * #6853). `validated` = bulletins au statut `validated` (scope canonique
+     * PaySlip::scopeValidated).
+     *
+     * @return array<string, mixed>
+     */
+    private function payrollRunStatusPayload(PayrollRun $run): array
+    {
+        $slipsCount = PaySlip::query()->where('payroll_run_id', $run->id)->count();
+        $validatedSlipsCount = PaySlip::query()
+            ->where('payroll_run_id', $run->id)
+            ->where('status', 'validated')
+            ->count();
+
+        return [
+            'id' => $run->id,
+            'status' => $run->status,
+            'period' => [
+                'start' => $run->period_start?->toDateString(),
+                'end' => $run->period_end?->toDateString(),
+            ],
+            'employee_count' => $run->employee_count,
+            'slips_count' => $slipsCount,
+            'validated_slips_count' => $validatedSlipsCount,
+            'calculated_at' => $run->calculated_at?->toIso8601String(),
+            'validated_at' => $run->validated_at?->toIso8601String(),
+            'paid_at' => $run->paid_at?->toIso8601String(),
+            'updated_at' => $run->updated_at?->toIso8601String(),
         ];
     }
 }
