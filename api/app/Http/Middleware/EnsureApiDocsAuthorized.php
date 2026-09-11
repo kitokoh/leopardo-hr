@@ -23,6 +23,15 @@ class EnsureApiDocsAuthorized
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // Le tier dev Render tourne avec APP_ENV=production (dette de nommage,
+        // render.yaml) : environment('production') ne distingue donc PAS dev de
+        // prod. Le flag explicite api_docs.public (API_DOCS_PUBLIC=true sur le
+        // tier dev) rétablit l'intention — doc publique en dev (QA/démos/tests),
+        // verrouillée en prod (Gate viewApiDocs). Défaut false = prod inchangée.
+        if (config('api_docs.public') === true) {
+            return $next($request);
+        }
+
         if (app()->environment('production') && ! Gate::allows('viewApiDocs')) {
             abort(403, 'FORBIDDEN');
         }
