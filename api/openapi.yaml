@@ -1455,6 +1455,93 @@ paths:
                     example: PROVISIONING_TOKEN_INVALID
                   message:
                     type: string
+  /trial/set-password:
+    post:
+      tags:
+      - Billing
+      summary: Définit le mot de passe de l'espace d'essai (onboarding sans e-mail)
+      description: Permet au prospect de choisir lui-même le mot de passe de son
+        espace d'essai à partir du token de provisioning déjà détenu par le
+        navigateur, sans dépendre d'un e-mail de livraison d'identifiants.
+        Même convention que /trial/status : le token voyage dans l'en-tête
+        X-Token, jamais dans l'URL. Token à usage unique.
+      security: []
+      parameters:
+      - name: X-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 64
+          maxLength: 64
+          description: Token de provisioning (64 caractères) issu de /trial/signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - password
+              - password_confirmation
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Minimum 8 caractères, dont au moins un chiffre
+                password_confirmation:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Mot de passe enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      login_url:
+                        type: string
+                        example: /auth/login
+        '404':
+          description: Token invalide ou gestionnaire introuvable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    enum:
+                    - PROVISIONING_TOKEN_INVALID
+                    - TRIAL_MANAGER_NOT_FOUND
+        '409':
+          description: Espace pas encore prêt, ou mot de passe déjà défini (token à usage unique)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    enum:
+                    - PROVISIONING_NOT_READY
+                    - TRIAL_PASSWORD_ALREADY_SET
+        '422':
+          description: Mot de passe non conforme (politique de mot de passe)
   /user/register:
     post:
       tags:
