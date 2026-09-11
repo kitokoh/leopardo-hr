@@ -11,6 +11,15 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 
 > **NOUVEL AGENT ? Commence par lire `dev-hub/prompts/00_AGENT_QUICK_CARD.md` (2 min) pour une carte de reference rapide. Ce fichier AGENTS.md est le guide complet.**
 
+> **Cadre de protocoles opposables (P01-P07) : `docs/PROTOCOLES/README.md`** — validation marché
+> (P01), onboarding (P02), vitrine & présentation (P03), issues/tâches par expérience (P04),
+> design harmonisé (P05), desktop Windows/macOS par BC (P06), architecture dev/prod (P07).
+> État, propriétaires et travaux ouverts : `docs/PROTOCOLES/REGISTRE_PROTOCOLES.md`.
+> **Revue mensuelle** le dernier jour ouvré (gabarit `.github/ISSUE_TEMPLATE/revue_mensuelle.md`) ;
+> moisson des leçons le 1er du mois (`docs/GESTION_PROJET/MOISSON_LECONS.md`).
+> En cas de conflit de règle : `.specify/constitution.md` > `AGENTS.md` > `docs/PROTOCOLES/` >
+> `docs/GOUVERNANCE/` > `docs/ops/`.
+
 ## ⚡ Spec-Driven Development — Spec Kit (NOUVEAU 2026-08-14)
 
 Leopardo HR utilise desormais **GitHub Spec Kit** pour structurer tout travail significatif.

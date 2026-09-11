@@ -1,6 +1,6 @@
 # P02 — Intégration d'un nouvel agent (onboarding sans perte de temps)
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** gardien technique (parcours) + PM (affectation)
 > **Portée :** tout agent (humain ou IA) qui arrive sur le dépôt pour la première fois ou revient
 > après une absence. Hors champ : la formation métier RH/paie (voir `docs/payroll/`, compliance pays).
@@ -111,3 +111,4 @@ Tout agent qui termine une session ou un BC laisse une trace exploitable par le 
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — consolidation des parcours existants + tableau des leçons |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |

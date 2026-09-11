@@ -372,6 +372,13 @@ Every significant change needs a focused issue, a clear owner, a unique branch, 
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md) and use [SECURITY.md](SECURITY.md) for private vulnerability reports.
 
+### Governance & protocols
+
+The project is governed by an opposable protocol corpus (market validation, onboarding,
+presentation/showcase, issue handling by experience level, design, desktop distribution,
+dev/prod architecture): see [`docs/PROTOCOLES/`](docs/PROTOCOLES/README.md) and its
+[`REGISTRE_PROTOCOLES`](docs/PROTOCOLES/REGISTRE_PROTOCOLES.md), reviewed at the end of every month.
+
 ---
 
 ## License

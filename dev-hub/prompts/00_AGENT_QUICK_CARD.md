@@ -4,6 +4,22 @@
 
 ---
 
+## 📜 CADRE DE PROTOCOLES (P01-P07) — où trouver la règle qui s'applique
+
+| Question | Protocole |
+|---|---|
+| Peut-on mettre en marché ? | P01 — `docs/PROTOCOLES/P01_VALIDATION_MARCHE.md` |
+| Comment un nouvel agent démarre ? | P02 — `P02_ONBOARDING_AGENT.md` |
+| Quels mots pour présenter le produit ? | P03 — `P03_VITRINE_PRESENTATION.md` (source : `docs/REFERENTIEL_PRODUIT/MESSAGE.md`) |
+| Créer / déléguer une issue, capitaliser ? | P04 — `P04_TACHES_ISSUES_EXPERIENCE.md` |
+| Tokens/couleurs, quelle charte ? | P05 — `P05_DESIGN_HARMONISE.md` |
+| Sortir un `.exe` / une app macOS ? | P06 — `P06_DESKTOP_DISTRIBUTION.md` |
+| Un doute sur dev vs prod ? | P07 — `P07_ARCHITECTURE_DEV_PROD.md` |
+
+État & travaux ouverts : `docs/PROTOCOLES/REGISTRE_PROTOCOLES.md`. Revue mensuelle : dernier jour ouvré.
+
+---
+
 ## ❌ INTERDIT (ne fais JAMAIS ça)
 
 | Règle | Pourquoi |
@@ -111,3 +127,5 @@ gestionemployer/
 | 12 | Merger toutes les branches |
 | 13 | Garde anti-régression |
 | 14 | Onboarding nouvel agent |
+| 15 | Audit / refonte design UI |
+| 16 | Fin de session — contrat de sortie |
