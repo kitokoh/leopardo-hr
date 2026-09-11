@@ -70,7 +70,7 @@
   ],
   "cleanUrls": true,
   "trailingSlash": false,
-  "ignoreCommand": "bash -c 'ref=\"${VERCEL_GIT_COMMIT_REF:-}\"; case \"$ref\" in main|staging) ;; *) echo \"ignore: ref=$ref not deployable -> skip\"; exit 0;; esac; root=\"$(git rev-parse --show-toplevel 2>/dev/null)\" || { echo \"ignore: no git toplevel -> build\"; exit 1; }; prev=\"${VERCEL_GIT_PREVIOUS_SHA:-}\"; if [ -n \"$prev\" ] && git -C \"$root\" cat-file -e \"${prev}^{commit}\" 2>/dev/null; then base=\"$prev\"; elif git -C \"$root\" rev-parse --verify --quiet HEAD~1 >/dev/null 2>&1; then base=\"HEAD~1\"; else echo \"ignore: cannot resolve previous SHA -> build\"; exit 1; fi; if git -C \"$root\" diff --quiet \"$base\" HEAD -- front/web; then echo \"ignore: front/web unchanged ($base..HEAD) -> skip\"; exit 0; fi; echo \"ignore: front/web changed ($base..HEAD) -> build\"; exit 1'",
+  "ignoreCommand": "bash -c 'r=\"${VERCEL_GIT_COMMIT_REF:-}\"; case \"$r\" in main|staging);; *) exit 0;; esac; b=\"${VERCEL_GIT_PREVIOUS_SHA:-HEAD~1}\"; git -C \"$(git rev-parse --show-toplevel)\" diff --quiet \"$b\" HEAD -- :/front/web || exit 1; exit 0'",
   "git": {
     "deploymentEnabled": {
       "main": true,

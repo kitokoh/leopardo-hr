@@ -35,10 +35,20 @@ name: Deploy Production - Leopardo RH
 # /services/{serviceId}/rollback), ce qu'un deploy hook seul ne permet pas.
 
 on:
-  # Publiée = chaîne tag vX.Y.Z → release.yml → release publiée (évite les
-  # doubles runs tag+release, rend le déclenchement visible dans l'UI GitHub).
-  release:
-    types: [published]
+  # Créer un tag `vX.Y.Z` déclenche DIRECTEMENT la production.
+  #
+  # Pourquoi `push: tags` et non `release: published` (incident 2026-09-10) :
+  # `release.yml` crée la Release avec le `GITHUB_TOKEN` du dépôt, et GitHub
+  # NE DÉCLENCHE PAS de workflow pour les événements provoqués par
+  # `GITHUB_TOKEN` (exception : `workflow_dispatch` / `repository_dispatch`).
+  # L'événement `release: published` n'a donc jamais fait partir la prod —
+  # constaté sur les runs v4.27.0 / v4.27.1 / v4.27.2 (0 déploiement
+  # automatique réussi depuis l'introduction de la chaîne). Un push de tag,
+  # lui, est un événement utilisateur : il déclenche toujours.
+  # `release.yml` continue de créer la Release (notes de version) en parallèle.
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
@@ -53,7 +63,9 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: deploy-prod-${{ github.ref }}
+  # Clé = le tag promu (et non `github.ref`, qui vaut `refs/heads/main` en
+  # workflow_dispatch) : deux déploiements du même tag ne se chevauchent pas.
+  group: deploy-prod-${{ github.event.inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -79,7 +91,8 @@ jobs:
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             TAG="${{ github.event.inputs.tag }}"
           else
-            TAG="${{ github.event.release.tag_name }}"
+            # push de tag : le tag poussé est `github.ref_name` (vX.Y.Z).
+            TAG="${{ github.ref_name }}"
           fi
 
           # Refus des tags invalides (injection / typos), même garde que release.yml.
@@ -130,14 +143,26 @@ jobs:
         run: |
           set -euo pipefail
           SHA="${{ steps.verify.outputs.tag_commit }}"
+          # Check REQUIS = les 4 contexts réellement exigés par la protection de
+          # branche de `main` (fiables). « Backend Coverage » est passé en
+          # ADVISORY : depuis #6928 il n'est plus requis au merge, et son
+          # workflow sérialisé ne produit plus aucun statut sous rafale de
+          # pushes (les runs en attente sont annulés au profit du suivant).
+          # L'exiger rendait la chaîne prod IMPOSSIBLE : aucun tag ne pouvait
+          # créer de Release ni déclencher de déploiement (incident 2026-09-10,
+          # prod figée sur 4.24.0). Un check advisory manquant/rouge est
+          # désormais signalé en ::warning:: sans bloquer.
           REQUIRED=( \
-            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
             "PHPStan — Strict (Core/Modules/Shared, level 8)" \
             "Module Structure Validator" \
             "Frontend — ESLint + TypeScript" \
             "actionlint (+ shellcheck)" \
           )
+          ADVISORY=( \
+            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
+          )
           FAILED=()
+          ADVISORY_WARN=()
           for ctx in "${REQUIRED[@]}"; do
             # Pagination : un vieux commit peut avoir >100 check-runs.
             CONCS=()
@@ -168,6 +193,34 @@ jobs:
               echo "::notice::${ctx} -> ${CONC} : OK"
             fi
           done
+          for ctx in "${ADVISORY[@]}"; do
+            CONCS=()
+            PAGE=1
+            while :; do
+              BATCH=$(curl -fsSL \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100&page=${PAGE}")
+              COUNT_BATCH=$(jq '.check_runs | length' <<<"${BATCH}")
+              if [[ "${COUNT_BATCH}" -eq 0 ]]; then break; fi
+              mapfile -t BATCH_CONCS < <(jq -r --arg ctx "$ctx" '.check_runs[] | select(.name == $ctx) | .conclusion' <<<"${BATCH}")
+              CONCS+=("${BATCH_CONCS[@]}")
+              PAGE=$((PAGE + 1))
+              if [[ "${PAGE}" -gt 10 ]]; then break; fi
+            done
+            if [[ ${#CONCS[@]} -eq 0 ]]; then
+              ADVISORY_WARN+=("${ctx} (absent)")
+            else
+              CONC=$(printf '%s\n' "${CONCS[@]}" | sort -u | paste -sd, -)
+              case "${CONC}" in
+                *failure*|*timed_out*|*cancelled*) ADVISORY_WARN+=("${ctx} (${CONC})") ;;
+                *) echo "::notice::[advisory] ${ctx} -> ${CONC} : OK" ;;
+              esac
+            fi
+          done
+          if [[ ${#ADVISORY_WARN[@]} -gt 0 ]]; then
+            echo "::warning::[advisory] checks non bloquants non verts : ${ADVISORY_WARN[*]} — deploiement autorise (incident 2026-09-10)."
+          fi
           if [[ ${#FAILED[@]} -gt 0 ]]; then
             echo "::error::Deploiement prod bloque — checks requis en echec ou absents : ${FAILED[*]}"
             exit 1
@@ -203,6 +256,40 @@ jobs:
           if [[ ${#missing[@]} -gt 0 ]]; then
             echo "::error::Missing: ${missing[*]} (voir docs/ops/RENDER_DEV_PROD_TOPOLOGY.md)"
             exit 1
+          fi
+
+      # « prod = version du tag » : l'API prod lit `APP_VERSION` (config/app.php)
+      # et la fige dans le cache de config au démarrage du conteneur
+      # (docker-entrypoint.sh → config:cache). Sans cette étape la prod
+      # rapporterait soit un défaut de code obsolète (4.24.0), soit le SHA de
+      # main — jamais la version du tag. Tolérant : un échec d'update n'empêche
+      # pas le déploiement (avertissement explicite).
+      - name: Pin APP_VERSION to the release tag (Render prod)
+        shell: bash
+        env:
+          RENDER_PROD_API_KEY: ${{ secrets.RENDER_PROD_API_KEY }}
+          RENDER_PROD_SERVICE_ID: ${{ secrets.RENDER_PROD_SERVICE_ID }}
+          RELEASE_TAG: ${{ needs.verify.outputs.tag }}
+        run: |
+          set -euo pipefail
+          VERSION="${RELEASE_TAG#v}"
+          BASE="https://api.render.com/v1/services/${RENDER_PROD_SERVICE_ID}/env-vars"
+          AUTH="Authorization: Bearer ${RENDER_PROD_API_KEY}"
+
+          # upsert : PUT met à jour, POST crée si la clé n'existe pas encore.
+          code=$(curl -s -o /tmp/env-var.json -w '%{http_code}' -X PUT \
+            -H "${AUTH}" -H 'Content-Type: application/json' \
+            -d "{\"value\":\"${VERSION}\"}" "${BASE}/APP_VERSION" || echo 000)
+          if [[ "${code}" != "200" && "${code}" != "201" ]]; then
+            code=$(curl -s -o /tmp/env-var.json -w '%{http_code}' -X POST \
+              -H "${AUTH}" -H 'Content-Type: application/json' \
+              -d "{\"key\":\"APP_VERSION\",\"value\":\"${VERSION}\"}" "${BASE}" || echo 000)
+          fi
+
+          if [[ "${code}" == "200" || "${code}" == "201" ]]; then
+            echo "::notice::APP_VERSION=${VERSION} positionné sur le service prod (tag ${RELEASE_TAG})."
+          else
+            echo "::warning::APP_VERSION non positionné (HTTP ${code}) — la prod rapportera la version du code, pas celle du tag."
           fi
 
       - name: Record current live deploy (rollback target)

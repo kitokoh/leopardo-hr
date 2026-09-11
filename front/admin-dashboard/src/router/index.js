@@ -210,8 +210,13 @@ const routes = [
         }
       },
       {
-        path: '/fuel-station',
-        name: 'fuel-station',
+        // Chemin dédié : `/fuel-station` reste réservé au hub `fuelStation`
+        // (FuelManagerView), cible de la Sidebar et des e2e. Deux routes
+        // déclaraient auparavant le MÊME chemin `/fuel-station` ; la première
+        // gagnait sur une URL saisie directement alors que la Sidebar
+        // navigue par nom vers la seconde → rendu non déterministe.
+        path: '/fuel-station/operations',
+        name: 'fuel-station-operations',
         component: () => import('@/views/fuel/FuelStationView.vue'),
         meta: {
           title: 'navigation.fuelStation',

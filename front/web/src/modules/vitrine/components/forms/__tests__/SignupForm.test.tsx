@@ -406,7 +406,11 @@ describe('SignupForm Component', () => {
           .mockResolvedValueOnce({ success: true, data: { status: 'pending' } })
           .mockResolvedValueOnce({
             success: true,
-            data: { status: 'ready', login_url: 'https://demo.leopardo.app/access?t=123' },
+            data: {
+              status: 'ready',
+              login_url: 'https://demo.leopardo.app/access?t=123',
+              password_set: true,
+            },
           });
 
         render(<SignupForm />);
@@ -440,6 +444,49 @@ describe('SignupForm Component', () => {
           'href',
           'https://demo.leopardo.app/access?t=123'
         );
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('propose de définir le mot de passe quand l’espace est prêt sans mot de passe (onboarding sans mailer)', async () => {
+      jest.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+      try {
+        mockedSubmitSignupForm.mockResolvedValue({
+          success: true,
+          provisioned: true,
+          message: 'Code de vérification envoyé.',
+          data: { provisioning_token: 'c'.repeat(64) },
+        });
+        (fetchTrialStatus as jest.Mock)
+          .mockResolvedValueOnce({ success: true, data: { status: 'pending' } })
+          .mockResolvedValueOnce({
+            success: true,
+            data: { status: 'ready', login_url: '/auth/login', password_set: false },
+          });
+
+        render(<SignupForm />);
+        await fillValidForm();
+        submitForm();
+        await screen.findByText(/vérifiez votre email/i);
+
+        await user.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
+
+        await act(async () => {
+          jest.advanceTimersByTime(5000);
+        });
+
+        expect(await screen.findByText(/votre espace est prêt/i)).toBeInTheDocument();
+        // Le prospect choisit lui-même son mot de passe : sans mailer, c'est le
+        // seul chemin d'accès possible.
+        expect(screen.getByLabelText(/confirmer le mot de passe/i)).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /définir mon mot de passe/i })
+        ).toBeInTheDocument();
+        // Tant que le mot de passe n'est pas défini, on ne propose pas un lien
+        // de connexion par mot de passe (il mènerait à une impasse).
+        expect(screen.queryByRole('link', { name: /accéder à mon espace/i })).toBeNull();
       } finally {
         jest.useRealTimers();
       }

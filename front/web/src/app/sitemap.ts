@@ -67,6 +67,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/branding', 'monthly', 0.5),
     page('/careers', 'monthly', 0.5),
     page('/mobile', 'monthly', 0.6),
+    // BC-25 : vitrine « Je suis restaurateur » — page publique indexable, elle
+    // avait une route mais ni métadonnées dédiées ni entrée sitemap.
+    page('/restaurateur', 'monthly', 0.6),
     page('/privacy', 'yearly', 0.4, false),
     page('/terms', 'yearly', 0.4, false),
     page('/guides/rh-startup', 'monthly', 0.7),

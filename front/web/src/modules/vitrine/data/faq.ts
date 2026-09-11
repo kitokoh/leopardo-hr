@@ -21,7 +21,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Mes données sont-elles sécurisées ?',
-      answer: 'Oui. Chiffrement AES-256 au repos, TLS 1.3 en transit, 2FA, audit trail complet et hebergement conforme.',
+      answer: 'Oui. Chiffrement AES-256 au repos, TLS 1.3 en transit, 2FA, audit trail complet et hébergement européen.',
     },
     {
       question: 'Puis-je migrer depuis un autre outil RH ?',

@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { CTASection } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Building2, CheckCircle, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Building2, CheckCircle, Info, TrendingUp } from 'lucide-react';
 import { getCaseStudy, getModuleLabel } from '@/modules/vitrine/lib/case-studies';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { caseStudyUiCopy } from '@/modules/vitrine/data/case-studies';
@@ -93,6 +93,14 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
             <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-6">
               {study.title}
             </h1>
+
+            {/* Même mention d'honnêteté que la liste : la page détail affichait des
+                chiffres inventés (« 99.9% de précision », « 98% de satisfaction »)
+                sans aucun avertissement pour le visiteur. */}
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-5 py-4">
+              <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">{ui.demoNotice}</p>
+            </div>
             <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
               {study.description}
             </p>

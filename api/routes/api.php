@@ -135,6 +135,9 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
+        // Onboarding sans mailer : le prospect définit lui-même son mot de passe
+        // avec le provisioning_token qu'il détient déjà (voir setPassword()).
+        Route::post('/trial/set-password', [SelfServiceTrialController::class, 'setPassword']);
     });
 
     // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req/5 s)

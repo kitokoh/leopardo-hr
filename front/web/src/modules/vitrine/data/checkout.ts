@@ -178,7 +178,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     annual: 'Annuel',
     trust: {
       secure: 'Paiement sécurisé TLS 1.3 + AES-256',
-      rgpd: 'Données hébergées en Europe — conforme RGPD',
+      rgpd: 'Données hébergées en Europe (UE)',
       cancel: 'Sans engagement · Résiliation en 2 clics',
     },
     continueWithGoogle: 'Continuer avec Google',
@@ -331,7 +331,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       operations: {
         label: 'Operations',
-        employeeLimit: "Jusqu'à 250 employés",
+        employeeLimit: "Jusqu'à 200 employés",
         features: [
           'Tout Pilot inclus',
           'Paie automatisée',
@@ -379,7 +379,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     annual: 'Annual',
     trust: {
       secure: 'Secure payment — TLS 1.3 + AES-256',
-      rgpd: 'Data hosted in Europe — GDPR compliant',
+      rgpd: 'Data hosted in Europe (EU)',
       cancel: 'No commitment · Cancel in 2 clicks',
     },
     continueWithGoogle: 'Continue with Google',
@@ -531,7 +531,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       operations: {
         label: 'Operations',
-        employeeLimit: 'Up to 250 employees',
+        employeeLimit: 'Up to 200 employees',
         features: [
           'Everything in Pilot',
           'Automated payroll',
@@ -730,7 +730,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       operations: {
         label: 'Operations',
-        employeeLimit: '250 çalışana kadar',
+        employeeLimit: '200 çalışana kadar',
         features: [
           "Pilot'un tamamı",
           'Otomatik bordro',
@@ -928,7 +928,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
       },
       operations: {
         label: 'Operations',
-        employeeLimit: 'حتى 250 موظفاً',
+        employeeLimit: 'حتى 200 موظفاً',
         features: [
           'كل ما في Pilot',
           'رواتب آلية',

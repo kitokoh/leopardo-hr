@@ -14,37 +14,30 @@ function jsonResponse(payload: unknown): Response {
   return { json: async () => payload, ok: true, status: 200 } as unknown as Response;
 }
 
+// Contrat réel de `GET /public/restaurant/kiosk/menu` (liste plate + pagination).
 const menu = {
-  data: [
-    {
-      id: 1,
-      name: 'Plats',
-      sort_order: 1,
-      products: [
-        {
-          id: 101,
-          code: 'BURGER-XL',
-          name: 'Burger XL',
-          description: 'Double steak',
-          price_minor: 3500,
-          currency: 'XAF',
-          image_asset_id: null,
-        },
-        {
-          id: 102,
-          code: 'SALADE',
-          name: 'Salade César',
-          description: null,
-          price_minor: 2500,
-          currency: 'XAF',
-          image_asset_id: null,
-        },
-      ],
-    },
-  ],
+  data: {
+    products: [
+      {
+        id: 101,
+        code: 'BURGER-XL',
+        name: 'Burger XL',
+        price_minor: 3500,
+        currency: 'XAF',
+        category_id: 1,
+      },
+      {
+        id: 102,
+        code: 'SALADE',
+        name: 'Salade César',
+        price_minor: 2500,
+        currency: 'XAF',
+        category_id: 1,
+      },
+    ],
+    pagination: { per_page: 50, total: 2 },
+  },
 };
-
-const branches = { data: [{ id: 1, code: 'MAIN', name: 'Branche Centrale' }] };
 
 describe('RestaurantKioskPage (RESTO-807)', () => {
   beforeEach(() => {
@@ -52,8 +45,7 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
     window.localStorage.setItem('preferred_locale', 'fr');
     window.history.pushState({}, '', '/kiosk?token=rshop_test');
     mockedApiFetch.mockImplementation(async (endpoint: string) => {
-      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
-      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
+      if (endpoint === '/public/restaurant/kiosk/menu') return jsonResponse(menu);
       throw new Error(`Unexpected endpoint: ${endpoint}`);
     });
   });
@@ -82,23 +74,32 @@ describe('RestaurantKioskPage (RESTO-807)', () => {
   });
 
   it('passe une commande complète et paie en espèces', async () => {
+    // Contrat réel de `POST /public/restaurant/kiosk/orders`.
     const order = {
       data: {
         reference: 'RST-KIOSK1',
-        status: 'draft',
+        ticket_number: '7',
+        status: 'open',
         total_minor: 3500,
         currency: 'XAF',
-        subtotal_minor: 3500,
-        tax_minor: 0,
+        created: true,
       },
     };
-    const payment = { data: { id: 1, status: 'confirmed' } };
+    const payment = {
+      data: {
+        provider_code: 'cash',
+        status: 'pending',
+        instruction: 'pay_at_pickup',
+        order_reference: 'RST-KIOSK1',
+      },
+    };
 
     mockedApiFetch.mockImplementation(async (endpoint: string, options?: RequestInit) => {
-      if (endpoint === '/public/restaurant/menu') return jsonResponse(menu);
-      if (endpoint === '/public/restaurant/branches') return jsonResponse(branches);
-      if (endpoint === '/public/restaurant/orders' && options?.method === 'POST') return jsonResponse(order);
-      if (endpoint.endsWith('/pay') && options?.method === 'POST') return jsonResponse(payment);
+      if (endpoint === '/public/restaurant/kiosk/menu') return jsonResponse(menu);
+      if (endpoint === '/public/restaurant/kiosk/orders' && options?.method === 'POST') return jsonResponse(order);
+      if (endpoint === '/public/restaurant/shop/orders/RST-KIOSK1/pay' && options?.method === 'POST') {
+        return jsonResponse(payment);
+      }
       throw new Error(`Unexpected endpoint: ${endpoint}`);
     });
 

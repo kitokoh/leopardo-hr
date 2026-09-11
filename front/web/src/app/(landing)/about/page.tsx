@@ -11,7 +11,7 @@ import {
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getAboutContent } from '@/modules/vitrine/data/about';
 import { motion } from 'framer-motion';
-import { Users, Heart, Shield, Zap, ArrowRight } from 'lucide-react';
+import { Users, Heart, Shield, Zap, ArrowRight, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const valueIcons = [Zap, Heart, Users, Shield];
@@ -156,6 +156,12 @@ export default function AboutPage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+          {/* Mention d'honnêteté : ces profils sont fictifs et étaient présentés
+              sans avertissement, contrairement aux témoignages et études de cas. */}
+          <div className="mt-10 flex items-start gap-3 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-5 py-4">
+            <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
+            <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">{content.team.disclosure}</p>
           </div>
         </div>
       </section>

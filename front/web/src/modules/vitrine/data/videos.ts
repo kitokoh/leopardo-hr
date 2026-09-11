@@ -131,7 +131,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'Multi-country payroll: Algeria, Morocco, France',
           description:
-            'Generate compliant payslips for several countries from a single interface.',
+            'Generate payslips for several countries from a single interface.',
           category: 'Tutorial',
         },
         {

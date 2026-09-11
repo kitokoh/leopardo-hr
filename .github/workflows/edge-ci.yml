@@ -10,6 +10,13 @@ on:
       - "front/web-offline/**"
       - ".github/workflows/edge-ci.yml"
 
+# CodeQL #33 (actions/missing-workflow-permissions) : le workflow n'avait aucun
+# bloc `permissions` → il héritait des permissions par défaut du dépôt pour le
+# GITHUB_TOKEN. Ce workflow ne fait que lire le dépôt (checkout + scripts de
+# garde), donc le strict minimum suffit (principe du moindre privilège).
+permissions:
+  contents: read
+
 concurrency:
   group: edge-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

@@ -13,6 +13,7 @@ import {
   Clock3,
   ClipboardCopy,
   Download,
+  KeyRound,
   LogIn,
   Mail,
   Phone,
@@ -26,7 +27,7 @@ import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
 import { Card } from '@/modules/vitrine/components/common/Card';
 import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validation';
-import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState, getLeadSource } from '@/modules/vitrine/lib/forms';
+import { submitSignupForm, submitVerifyForm, fetchTrialStatus, submitTrialPassword, createFormReducer, initialFormState, getLeadSource } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
@@ -56,7 +57,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -131,6 +132,13 @@ export function SignupForm({
   });
   const [trialStatus, setTrialStatus] = useState<'pending' | 'ready' | 'failed' | 'unknown'>('pending');
   const [trialLoginUrl, setTrialLoginUrl] = useState('');
+  // Onboarding sans mailer : le prospect définit son mot de passe avec le
+  // provisioning_token qu'il détient déjà (l'email d'accès est best-effort).
+  const [passwordSet, setPasswordSet] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [settingPassword, setSettingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const [trialTimedOut, setTrialTimedOut] = useState(false);
   const [isTracking, setIsTracking] = useState(false);
 
@@ -162,6 +170,7 @@ export function SignupForm({
         if (status === 'ready') {
           setTrialStatus('ready');
           setTrialLoginUrl(res.data.login_url || '');
+          setPasswordSet(res.data.password_set === true);
           if (intervalId) clearInterval(intervalId);
           return;
         }
@@ -186,6 +195,44 @@ export function SignupForm({
       if (intervalId) clearInterval(intervalId);
     };
   }, [currentStep, trialToken]);
+
+  const handleSetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!trialToken || settingPassword) return;
+
+    setPasswordError('');
+
+    if (newPassword.length < 8 || !/[0-9]/.test(newPassword)) {
+      setPasswordError(c.setPasswordTooWeak);
+      return;
+    }
+    if (newPassword !== newPasswordConfirm) {
+      setPasswordError(c.setPasswordMismatch);
+      return;
+    }
+
+    setSettingPassword(true);
+    const res = await submitTrialPassword(trialToken, newPassword);
+    setSettingPassword(false);
+
+    if (res.success) {
+      setPasswordSet(true);
+      const loginUrl = res.data?.login_url;
+      if (typeof loginUrl === 'string' && loginUrl !== '') {
+        setTrialLoginUrl(loginUrl);
+      }
+      return;
+    }
+
+    // Le mot de passe est déjà défini : ce n'est pas une erreur pour
+    // l'utilisateur, on bascule simplement sur la connexion.
+    if (res.error === 'TRIAL_PASSWORD_ALREADY_SET') {
+      setPasswordSet(true);
+      return;
+    }
+
+    setPasswordError(c.setPasswordUnavailable);
+  };
 
   const startTracking = () => {
     if (!trialToken) return;
@@ -712,7 +759,63 @@ export function SignupForm({
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {c.readySubtitle}
                 </p>
-                {trialLoginUrl ? (
+                {!passwordSet ? (
+                  <form onSubmit={handleSetPassword} className="space-y-3 text-left">
+                    <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
+                      {c.setPasswordSubtitle}
+                    </p>
+                    <div>
+                      <label
+                        htmlFor="trial-new-password"
+                        className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                      >
+                        {c.setPasswordLabel}
+                      </label>
+                      <input
+                        id="trial-new-password"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                        minLength={8}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="trial-new-password-confirm"
+                        className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                      >
+                        {c.setPasswordConfirmLabel}
+                      </label>
+                      <input
+                        id="trial-new-password-confirm"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                        minLength={8}
+                        value={newPasswordConfirm}
+                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                      />
+                    </div>
+                    {passwordError ? (
+                      <p role="alert" className="text-xs font-semibold text-red-600 dark:text-red-400">
+                        {passwordError}
+                      </p>
+                    ) : null}
+                    <button
+                      type="submit"
+                      disabled={settingPassword}
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      <KeyRound className="h-4 w-4" />
+                      {settingPassword ? c.setPasswordSubmitting : c.setPasswordSubmit}
+                    </button>
+                  </form>
+                ) : null}
+                {passwordSet && trialLoginUrl ? (
                   <div className="space-y-3">
                     <a
                       href={trialLoginUrl}

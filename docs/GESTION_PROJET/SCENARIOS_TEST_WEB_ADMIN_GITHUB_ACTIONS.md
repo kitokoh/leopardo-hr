@@ -89,9 +89,16 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 
 ### 9. Fuel — stations-service (tenant manager, bc15)
 
-- La vue `/fuel-station` (FuelStationView) charge la vue d'ensemble multi-stations (stats stations/caisses/incidents/rapprochements) et pilote les onglets stations, équipements, shifts, incidents, rapprochements via les endpoints `GET /api/v1/fuel-station/*` réels
-- La vue `FuelManagerView` (route historique même path) est shadowée par FuelStationView (doublon de path issu d'un merge union — suivi séparé, ne pas supprimer sans décision)
+- La console d'exploitation `/fuel-station/operations` charge la vue d'ensemble multi-stations (stats stations/caisses/incidents/rapprochements) et pilote les onglets stations, équipements, shifts, incidents, rapprochements via les endpoints `GET /api/v1/fuel-station/*` réels
+- Arbitrage du doublon de path (audit 2026-09-10) : `/fuel-station` reste le hub `FuelManagerView` (cible de la Sidebar et des e2e), la console `FuelStationView` est déplacée sur `/fuel-station/operations` — l'URL directe et la navigation par nom rendent désormais la même vue
+- Les 4 rapports utilisent les segments de route réels (`daily-volumes`, `sales`, `stock`, `variances`) et non les identifiants internes (`daily_volumes`, `sales_summary`, `stock_status`, `variance_summary`) qui répondaient 404
+- Le téléchargement d'un export passe par la session axios (`downloadApiFile`, baseURL + `Authorization`, `responseType: blob`), pas par un lien nu `/api/...` relatif au domaine de l'admin (404 systématique), avec un état de chargement par ligne
 - Rendu vérifié après restauration de la version bc15 (608 l) : template SFC valide, clés i18n `fuel.*` cohérentes avec `FuelManagerView` et les catalogues fr/en/ar/tr
+
+### 10. Dashboard — véracité des indicateurs (audit 2026-09-10)
+
+- Les KPI (entreprises actives, tenants, MRR, alertes, demandes) reflètent la réponse de `/api/v1/platform/metrics/overview` ; un `0` renvoyé par l'API est affiché comme `0` et ne doit jamais retomber sur une valeur de `summary` (`/platform/companies/health`)
+- Non-régression : remplacer la donnée par `0` ne doit pas ressusciter un compteur périmé (garde sur la distinction `null`/`undefined` vs `0`)
 
 ## Artefacts obligatoires
 

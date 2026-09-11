@@ -33,6 +33,13 @@
 > des déploiements `CANCELED`, CI verte). La commande doit donc toujours
 > résoudre la racine du dépôt (`git rev-parse --show-toplevel`) et lancer le
 > diff depuis là. Ne jamais réintroduire un pathspec relatif au cwd.
+>
+> ⚠️ **Limite de schéma** — Vercel **rejette** un `ignoreCommand` de plus de
+> **256 caractères** (`vercel.json schema validation failed`) : le déploiement
+> part alors en `ERROR`, et plus rien ne se déploie. Garder la commande
+> compacte (la version actuelle fait ~220 caractères) et vérifier la longueur
+> après toute modification. Un correctif qui « build correctement » en local
+> peut être refusé par le schéma.
 
 ## Procédure de diagnostic / réparation (dashboard Vercel)
 

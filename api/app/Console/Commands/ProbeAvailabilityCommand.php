@@ -67,7 +67,20 @@ class ProbeAvailabilityCommand extends Command
         ];
 
         if (! $redisUp) {
-            $this->warn('[infra] Redis injoignable — CACHE_STORE=file : la déduplication idempotence est DÉSACTIVÉE (multi-instance).');
+            $message = '[infra] Redis injoignable — CACHE_STORE=file : la déduplication idempotence est DÉSACTIVÉE (multi-instance).';
+
+            // ⚠️ En mode `env`, la sortie EST un fichier shell sourcé par
+            // `docker-entrypoint.sh` (`. "$PROBE_ENV"`). Y écrire un message
+            // humain (qui contient « (multi-instance) ») rend le fichier
+            // invalide et fait échouer le boot :
+            //   « syntax error: unexpected "(" » (incident dev 2026-09-11,
+            //   déclenché dès que Redis devient injoignable — quota Upstash).
+            // Le message part donc sur STDERR (capté par les logs Render).
+            if ($this->option('format') === 'env') {
+                fwrite(STDERR, $message.PHP_EOL);
+            } else {
+                $this->warn($message);
+            }
         }
 
         if ($this->option('format') === 'env') {
@@ -86,9 +99,31 @@ class ProbeAvailabilityCommand extends Command
     private function redisIsReachable(): bool
     {
         try {
-            // Quota épuisé (Upstash) = connexion refusée en < 1 s → exception
-            // rapide. Un simple ping avec try/catch suffit pour le failover.
-            return Redis::connection()->ping() !== false;
+            $connection = Redis::connection();
+
+            // ⚠️ Un `ping()` ne suffit PAS (constaté le 2026-09-11).
+            // Un Upstash dont le quota de requêtes est épuisé ACCEPTE la
+            // connexion et répond à PING ; ce sont les commandes suivantes qui
+            // échouent avec « ERR max requests limit exceeded. Limit: 500000 ».
+            // Le probe annonçait donc Redis « up » → CACHE_STORE restait `redis`
+            // → le boot prenait un verrou Redis pour les migrations
+            // (CacheCommandMutex → RedisLock→acquire() → SET) → exception →
+            // « Final migration failure » → conteneur jamais sain → Render
+            // `update_failed` (21 des 30 derniers déploiements dev). Le repli
+            // `file` ne s'engageait jamais.
+            //
+            // On teste donc une ÉCRITURE réelle, exactement ce que feront le
+            // cache et les verrous : si l'écriture échoue, Redis n'est pas
+            // utilisable et l'environnement doit dégrader vers `file`.
+            $probeKey = 'leopardo:availability-probe';
+            // Deux commandes (portable phpredis/Predis, pas d'options variadiques) :
+            // SET puis EXPIRE. La première qui échoue prouve que Redis est inutilisable.
+            $connection->set($probeKey, (string) time());
+            $connection->expire($probeKey, 10);
+
+            // Si l'écriture n'a pas levé, Redis est utilisable (le retour varie
+            // selon le client : « OK » via Predis, objet via phpredis).
+            return true;
         } catch (\Throwable) {
             return false;
         }

@@ -229,6 +229,8 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
 /** Libellés UI de la page détail /case-studies/[slug] (#4299). */
 export const caseStudyUiCopy: Record<AppLocale, {
   backLink: string;
+  /** Mention d'honnêteté affichée sur la page détail (chiffres fictifs). */
+  demoNotice: string;
   resultsTitle: string;
   seeAll: string;
   ctaTitle: string;
@@ -243,6 +245,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
 }> = {
   fr: {
     backLink: 'Toutes les études de cas',
+    demoNotice: "Ces études de cas sont des exemples illustratifs (données fictives) pour montrer les cas d'usage de la plateforme.",
     resultsTitle: 'Résultats clés',
     seeAll: 'Voir toutes les études de cas',
     ctaTitle: 'Votre entreprise pourrait être la prochaine',
@@ -257,6 +260,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
   },
   en: {
     backLink: 'All case studies',
+    demoNotice: 'These case studies are illustrative examples (fictional data) showing platform use cases.',
     resultsTitle: 'Key results',
     seeAll: 'See all case studies',
     ctaTitle: 'Your company could be next',
@@ -271,6 +275,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
   },
   tr: {
     backLink: 'Tüm vaka çalışmaları',
+    demoNotice: 'Bu vaka çalışmaları, platformun kullanım senaryolarını gösteren örneklerdir (kurgusal veriler).',
     resultsTitle: 'Ana sonuçlar',
     seeAll: 'Tüm vaka çalışmalarını gör',
     ctaTitle: 'Sıradaki şirket siz olabilirsiniz',
@@ -285,6 +290,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
   },
   ar: {
     backLink: 'كل دراسات الحالة',
+    demoNotice: 'دراسات الحالة هذه أمثلة توضيحية (بيانات افتراضية) لعرض حالات استخدام المنصة.',
     resultsTitle: 'النتائج الرئيسية',
     seeAll: 'عرض كل دراسات الحالة',
     ctaTitle: 'يمكن أن تكون شركتك التالية',

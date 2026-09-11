@@ -240,13 +240,15 @@
           <StatusBadge :status="value" :map="exportStatusMap" />
         </template>
         <template #row-actions="{ row }">
-          <a
+          <button
             v-if="row.status === 'generated'"
-            :href="`/api/v1/fuel-station/reports/exports/${row.id}/download`"
+            type="button"
             class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            :disabled="downloadingExportId === row.id"
+            @click="downloadExport(row)"
           >
             {{ t('fuel.downloadExport', 'Télécharger') }}
-          </a>
+          </button>
         </template>
       </DataTable>
       <button
@@ -263,7 +265,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from '@/services/api'
+import api, { downloadApiFile } from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -276,6 +278,7 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const loading = ref(false)
 const exportLoading = ref(false)
+const downloadingExportId = ref(null)
 const reportLoading = ref(false)
 const equipmentLoading = ref(false)
 const loadError = ref('')
@@ -306,11 +309,15 @@ const alerts = ref([])
 const exports = ref([])
 const reportPayload = ref('')
 
+// `key` = segment de route attendu par l'API (`api/routes/modules/fuel_station.php`).
+// Les libellés historiques (`daily_volumes`, `sales_summary`, …) étaient des
+// identifiants internes, pas des segments d'URL : ils provoquaient un 404 sur
+// chacun des 4 rapports.
 const reportTypes = [
-  { key: 'daily_volumes', label: t('fuel.reportVolumes', 'Volumes par pompe') },
-  { key: 'sales_summary', label: t('fuel.reportSales', 'Ventes') },
-  { key: 'stock_status', label: t('fuel.reportStock', 'Stock') },
-  { key: 'variance_summary', label: t('fuel.reportVariances', 'Écarts') },
+  { key: 'daily-volumes', label: t('fuel.reportVolumes', 'Volumes par pompe') },
+  { key: 'sales', label: t('fuel.reportSales', 'Ventes') },
+  { key: 'stock', label: t('fuel.reportStock', 'Stock') },
+  { key: 'variances', label: t('fuel.reportVariances', 'Écarts') },
 ]
 
 const stationColumns = [
@@ -552,6 +559,27 @@ async function openReport(type) {
     reportPayload.value = e?.response?.data?.message || t('fuel.errorReport', 'Rapport indisponible.')
   } finally {
     reportLoading.value = false
+  }
+}
+
+/**
+ * Télécharge un export généré via le client API authentifié.
+ *
+ * L'ancien lien `<a href="/api/v1/...">` était relatif au domaine de l'admin
+ * (leo-admin.pages.dev) : il ne visait pas l'API et n'envoyait pas le token,
+ * donc 404 systématique. `downloadApiFile` passe par l'instance axios
+ * (baseURL + Authorization) et gère le blob/`Content-Disposition`.
+ */
+async function downloadExport(row) {
+  if (!row?.id) return
+
+  downloadingExportId.value = row.id
+  try {
+    await downloadApiFile(`/fuel-station/reports/exports/${row.id}/download`)
+  } catch (e) {
+    error.value = e?.response?.data?.message || t('fuel.errorDownloadExport', 'Téléchargement impossible.')
+  } finally {
+    downloadingExportId.value = null
   }
 }
 
