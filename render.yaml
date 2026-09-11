@@ -69,6 +69,10 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      # Issue #7213 : doc API Blade publique sur le tier dev (QA/démos).
+      # Verrouillée en prod (render.prod.yaml, Gate viewApiDocs).
+      - key: API_DOCS_PUBLIC
+        value: "true"
       # Audit #1697 : ne jamais créer les sociétés démo / reset le mot de
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
