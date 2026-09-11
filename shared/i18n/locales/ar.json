@@ -1408,7 +1408,18 @@
       "countryRequired": "البلد مطلوب."
     },
     "labelCountry": "البلد",
-    "countryPlaceholder": "اختر بلدك"
+    "countryPlaceholder": "اختر بلدك",
+    "setPasswordTitle": "اختر كلمة المرور",
+    "setPasswordSubtitle": "الخطوة الأخيرة: عيّن كلمة المرور للوصول إلى مساحتك. لا حاجة إلى البريد الإلكتروني.",
+    "setPasswordLabel": "كلمة المرور",
+    "setPasswordConfirmLabel": "تأكيد كلمة المرور",
+    "setPasswordSubmit": "تعيين كلمة المرور",
+    "setPasswordSubmitting": "جارٍ الحفظ…",
+    "setPasswordSuccess": "تم حفظ كلمة المرور. يمكنك تسجيل الدخول.",
+    "setPasswordTooWeak": "8 أحرف على الأقل، بما في ذلك رقم واحد.",
+    "setPasswordMismatch": "كلمتا المرور غير متطابقتين.",
+    "setPasswordUnavailable": "تعذّر حفظ كلمة المرور حاليًا. يُرجى إعادة المحاولة.",
+    "goToLogin": "تسجيل الدخول"
   },
   "companies": {
     "toast": {

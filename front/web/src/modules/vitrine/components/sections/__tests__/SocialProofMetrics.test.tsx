@@ -23,9 +23,13 @@ describe('SocialProofMetrics', () => {
   it('shows real, verifiable engineering metrics for the English locale', () => {
     render(<SocialProofMetrics locale="en" />);
 
-    expect(screen.getByText('Countries with dedicated payroll rules')).toBeInTheDocument();
+    // Audit 2026-09-10 : les libellés sont alignés sur le registre des métriques
+    // (21 pays au catalogue de paie, ~1 000 fichiers de tests backend) — les
+    // anciennes formulations (« dedicated payroll rules », « Automated backend
+    // tests ») ne correspondaient pas à ce qui est mesuré.
+    expect(screen.getByText('Countries in the payroll catalog')).toBeInTheDocument();
     expect(screen.getByText('Product languages (FR/EN/TR/AR)')).toBeInTheDocument();
     expect(screen.getByText('Product surfaces (web, mobile, kiosk)')).toBeInTheDocument();
-    expect(screen.getByText('Automated backend tests')).toBeInTheDocument();
+    expect(screen.getByText('Backend test files')).toBeInTheDocument();
   });
 });

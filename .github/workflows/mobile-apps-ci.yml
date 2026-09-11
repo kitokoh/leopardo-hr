@@ -151,11 +151,26 @@ jobs:
         # byte-identiques dupliqués entre employee/manager/hr (chantier #2661)
         # — un fix appliqué à une seule copie laisse le mojibake chez les
         # sœurs. Détecte les copies divergentes sur le diff de la PR.
+        #
+        # #7198 : hors `pull_request` et hors `push`, `github.event.before`
+        # n'existe pas (workflow_dispatch, relance manuelle des builds Flutter
+        # après une saturation de runners). Le garde, lui, exige 2 SHA et sort
+        # en `exit 1` avec « Usage: » — il rougissait donc `main` à chaque
+        # relance manuelle (constaté sur le run 34517288447, job 103015978924).
+        # Même repli que l'étape « Identify changed Dart files » ci-dessous :
+        # base absente ou tout-à-zéro → `HEAD^` (checkout en fetch-depth: 0).
         shell: bash
         env:
           DIFF_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           DIFF_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-        run: 'bash ./dev-hub/tools/check-mobile-duplicated-drift.sh "${DIFF_BASE_SHA}" "${DIFF_HEAD_SHA}"'
+        run: |
+          set -euo pipefail
+          base="${DIFF_BASE_SHA:-}"
+          if [[ -z "$base" || "$base" == "0000000000000000000000000000000000000000" ]]; then
+            base="$(git rev-parse HEAD^)"
+            echo "::notice::DIFF_BASE_SHA absent (event=${{ github.event_name }}) — repli sur HEAD^ (${base})."
+          fi
+          bash ./dev-hub/tools/check-mobile-duplicated-drift.sh "$base" "${DIFF_HEAD_SHA:-$(git rev-parse HEAD)}"
 
   flutter-analyze:
     timeout-minutes: 90

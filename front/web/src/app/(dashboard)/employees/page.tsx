@@ -83,10 +83,6 @@ export default function EmployeesPage() {
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : total}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{i18nT(locale, 'employees.source')}</p>
-          <p className="mt-3 text-lg font-bold text-slate-950">GET /employees</p>
-        </div>
-        <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{i18nT(locale, 'employees.state')}</p>
           <p className="mt-3 text-lg font-bold text-slate-950">{loading ? i18nT(locale, 'employees.loading_short') : i18nT(locale, 'employees.connected_api')}</p>
         </div>

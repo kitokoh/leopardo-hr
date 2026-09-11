@@ -15,6 +15,12 @@ TARGETS=(
 )
 
 # Promesses INTERDITES (FR/EN) — maintenir en synchro avec MESSAGE.md.
+# Audit 2026-09-10 : les 7 motifs d'origine ne couvraient que « certifié X » et
+# « conformité légale » au sens strict. La copie publique affirmait pourtant
+# « conforme au RGPD » (×5), « SOC2 », « Conformité Garantie » et « You are
+# always compliant » — la garde renvoyait 0 (faux négatif structurel). Les
+# motifs ci-dessous couvrent ces affirmations positives ; une formulation de
+# non-revendication (« non certifié RGPD ») reste autorisée.
 PATTERNS=(
   'certifi[ée]s? (RGPD|ISO|paie|payroll)'
   'conformit[ée] l[ée]gale'
@@ -23,6 +29,14 @@ PATTERNS=(
   'legally compliant'
   'fully compliant'
   'certifi[ée]s? (GDPR|ISO|payroll)'
+  # --- audit 2026-09-10 ---
+  'conforme[s]? (au|à la|a la) RGPD'
+  'GDPR compliant|RGPD compliant'
+  'conformit[ée] garantie|guaranteed compliance|compliance guaranteed'
+  'toujours conforme|always compliant'
+  '100[ ]?% compliant'
+  'certifi[ée]s?[^.]{0,24}(SOC ?2|ISO ?27001)'
+  '(SOC ?2|ISO ?27001)[^.]{0,24}(certifi|conform|compliant)'
 )
 
 scan() {

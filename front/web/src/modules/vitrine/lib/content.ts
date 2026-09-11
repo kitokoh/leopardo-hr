@@ -238,7 +238,7 @@ export const modulePageContent = {
     solution: {
       title: "Un Cabinet Numérique Sécurisé",
       subtitle: "Centralisez et sécurisez tous vos documents",
-      description: "Leopardo offre un cabinet numérique avec chiffrement AES-256, permissions granulaires et conformité RGPD.",
+      description: "Leopardo offre un cabinet numérique avec chiffrement AES-256, permissions granulaires et outils de conformité RGPD.",
       features: [
         {
           title: "Stockage Sécurisé",
@@ -253,8 +253,8 @@ export const modulePageContent = {
           description: "Rétention automatique, destruction sécurisée, conformité",
         },
         {
-          title: "Conformité RGPD",
-          description: "Respect des réglementations, certifications, support légal",
+          title: "Outils RGPD",
+          description: "Export et suppression des données, registre des traitements, audit trail",
         },
       ],
     },
@@ -310,7 +310,7 @@ export const modulePageContent = {
           rating: 5,
         },
         {
-          quote: "Conformité RGPD garantie et interface simple. Parfait!",
+          quote: "Interface simple et outils RGPD au rendez-vous. Parfait!",
           author: "Isabelle Moreau",
           role: "Responsable RH",
           company: "Groupe Moreau",
@@ -356,7 +356,7 @@ export const modulePageContent = {
           answer: "Vous définissez des règles de rétention. Les documents sont automatiquement archivés ou supprimés selon vos paramètres.",
         },
         {
-          question: "Pouvez-vous garantir la conformité RGPD?",
+          question: "Comment gérez-vous la conformité RGPD?",
           answer: "Leopardo RH applique des mesures de protection des données (chiffrement, isolation par société, registre des traitements) et fournit les exports/suppressions prévus par le RGPD. Voir notre politique de confidentialité pour le détail.",
         },
         {
@@ -389,7 +389,7 @@ export const modulePageContent = {
       featuresSubtitle: 'Tout ce dont vous avez besoin',
     },
     hero: {
-      headline: "Paie Automatisée et Conformité Garantie",
+      headline: "Paie Automatisée et Conformité Assistée",
       subheadline: "Calculs exacts, bulletins générés, exports comptables",
       ctaPrimary: {
         text: "Essai gratuit",
@@ -513,7 +513,7 @@ export const modulePageContent = {
           rating: 5,
         },
         {
-          quote: "Conformité garantie. Nous dormons tranquilles!",
+          quote: "La paie se prépare bien plus vite. Nous dormons tranquilles!",
           author: "Nathalie Rousseau",
           role: "Directrice",
           company: "Groupe Rousseau",
@@ -532,7 +532,7 @@ export const modulePageContent = {
         },
         {
           question: "Comment fonctionne la conformité?",
-          answer: "Nos taux et règles sont mis à jour automatiquement selon les réglementations locales. Vous êtes toujours conforme.",
+          answer: "Nos taux et règles sont construits à partir des réglementations locales. La conformité relève de votre organisation.",
         },
         {
           question: "Pouvez-vous exporter vers ma comptabilité?",
@@ -922,13 +922,13 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       heroBadge: 'Digital Office',
       problemBadge: 'The Challenges',
       solutionBadge: 'Our Solution',
-      featuresBadge: 'Secure & Compliant',
+      featuresBadge: 'Secure & auditable',
       featuresTitle: 'Detailed Features',
       featuresSubtitle: 'Everything you need',
     },
     hero: {
       headline: "Secure Digital Cabinet for Your Documents",
-      subheadline: "Compliant storage, sharing and archiving",
+      subheadline: "Secure storage, sharing and archiving",
       ctaPrimary: {
         text: "Free trial",
         href: "/signup?module=documents",
@@ -1140,7 +1140,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       featuresSubtitle: 'Everything you need',
     },
     hero: {
-      headline: "Automated Payroll with Guaranteed Compliance",
+      headline: "Automated Payroll with Compliance Support",
       subheadline: "Accurate calculations, generated payslips, accounting exports",
       ctaPrimary: {
         text: "Free trial",
@@ -1291,7 +1291,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
           rating: 5,
         },
         {
-          quote: "Guaranteed compliance. We sleep well!",
+          quote: "Payroll takes far less time to prepare. We sleep well!",
           author: "Nathalie Rousseau",
           role: "Director",
           company: "Rousseau Group",
@@ -1310,7 +1310,7 @@ const modulePageContentEn: Partial<ModulePageContent> = {
         },
         {
           question: "How does compliance work?",
-          answer: "Our rates and rules are updated automatically according to local regulations. You are always compliant.",
+          answer: "Our rates and rules are built from local regulations. Compliance remains your organisation's responsibility.",
         },
         {
           question: "Can you export to my accounting software?",

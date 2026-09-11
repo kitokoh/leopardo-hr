@@ -1408,7 +1408,18 @@
       "countryRequired": "Le pays est requis."
     },
     "labelCountry": "Pays",
-    "countryPlaceholder": "Sélectionnez votre pays"
+    "countryPlaceholder": "Sélectionnez votre pays",
+    "setPasswordTitle": "Choisissez votre mot de passe",
+    "setPasswordSubtitle": "Dernière étape : définissez votre mot de passe pour accéder à votre espace. Aucun email n'est nécessaire.",
+    "setPasswordLabel": "Mot de passe",
+    "setPasswordConfirmLabel": "Confirmer le mot de passe",
+    "setPasswordSubmit": "Définir mon mot de passe",
+    "setPasswordSubmitting": "Enregistrement…",
+    "setPasswordSuccess": "Mot de passe enregistré. Vous pouvez vous connecter.",
+    "setPasswordTooWeak": "8 caractères minimum, dont un chiffre.",
+    "setPasswordMismatch": "Les deux mots de passe ne correspondent pas.",
+    "setPasswordUnavailable": "Impossible d'enregistrer le mot de passe pour le moment. Réessayez.",
+    "goToLogin": "Se connecter"
   },
   "companies": {
     "toast": {
@@ -1445,7 +1456,7 @@
   },
   "seo": {
     "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 79 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     }
   },
   "adminChat": {

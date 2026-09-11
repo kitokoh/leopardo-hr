@@ -549,7 +549,7 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
         { title: 'Chiffrement en transit', desc: 'Toutes les communications passent par TLS 1.3. Aucun échange en clair entre les clients, l\'API et les bornes.' },
         { title: 'Chiffrement au repos', desc: 'Les données sensibles sont chiffrées en AES-256. Les données biométriques restent sur le terminal, seuls des hash transitent.' },
         { title: 'Isolation multi-tenant', desc: 'Un schéma PostgreSQL isolé par entreprise. Les accès sont contrôlés par RBAC (Principal, RH, Employé, Super Admin).' },
-        { title: 'Conformité RGPD', desc: 'Hébergement européen, audit trail complet, exports et suppression des données personnelles conformes au RGPD.' },
+        { title: 'Outils RGPD', desc: "Hébergement européen, audit trail complet, export et suppression des données personnelles. La conformité réglementaire relève de votre organisation." },
       ],
     },
     mobileInstallSection: {
@@ -635,7 +635,7 @@ export const docsPageCopy: Record<AppLocale, DocsCopy> = {
         { title: 'Encryption in transit', desc: 'All communications go through TLS 1.3. No plain-text exchange between clients, the API and terminals.' },
         { title: 'Encryption at rest', desc: 'Sensitive data is AES-256 encrypted. Biometric data stays on the terminal; only hashes travel.' },
         { title: 'Multi-tenant isolation', desc: 'One isolated PostgreSQL schema per company. Access is controlled by RBAC (Principal, HR, Employee, Super Admin).' },
-        { title: 'GDPR compliance', desc: 'European hosting, full audit trail, GDPR-compliant exports and deletion of personal data.' },
+        { title: 'GDPR tooling', desc: "European hosting, full audit trail, personal-data export and deletion. Regulatory compliance remains your organisation's responsibility." },
       ],
     },
     mobileInstallSection: {

@@ -1408,7 +1408,18 @@
       "countryRequired": "Ülke zorunludur."
     },
     "labelCountry": "Ülke",
-    "countryPlaceholder": "Ülkenizi seçin"
+    "countryPlaceholder": "Ülkenizi seçin",
+    "setPasswordTitle": "Parolanızı seçin",
+    "setPasswordSubtitle": "Son adım: alanınıza erişmek için parolanızı belirleyin. E-posta gerekmez.",
+    "setPasswordLabel": "Parola",
+    "setPasswordConfirmLabel": "Parolayı doğrula",
+    "setPasswordSubmit": "Parolamı belirle",
+    "setPasswordSubmitting": "Kaydediliyor…",
+    "setPasswordSuccess": "Parola kaydedildi. Giriş yapabilirsiniz.",
+    "setPasswordTooWeak": "En az 8 karakter ve bir rakam.",
+    "setPasswordMismatch": "İki parola eşleşmiyor.",
+    "setPasswordUnavailable": "Parola şu anda kaydedilemiyor. Lütfen tekrar deneyin.",
+    "goToLogin": "Giriş yap"
   },
   "companies": {
     "toast": {
@@ -1445,7 +1456,7 @@
   },
   "seo": {
     "pricing": {
-      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 79 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   },
   "adminChat": {

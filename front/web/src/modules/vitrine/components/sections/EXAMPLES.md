@@ -145,8 +145,8 @@ export default function Features() {
       title: 'Sécurité Renforcée',
       description: 'Authentification biométrique, chiffrement bout-en-bout et audit trail complet.',
       gradient: 'from-violet-400 to-purple-500',
-      stats: { value: 'SOC2', label: 'Certifié' },
-      details: ['2FA obligatoire', 'Chiffrement AES-256', 'Audit trail', 'RGPD compliant'],
+      stats: { value: 'UE', label: 'Hébergement' },
+      details: ['2FA obligatoire', 'Chiffrement AES-256', 'Audit trail', 'Outils RGPD'],
     },
     {
       icon: <Brain className="w-7 h-7" />,
@@ -361,7 +361,7 @@ export default function CaseStudies() {
       link: '/case-studies/techstartup',
     },
     {
-      title: 'PME Solutions: Conformité garantie',
+      title: 'PME Solutions: conformité assistée',
       description: 'Comment une PME a atteint la conformité fiscale complète en 2 mois.',
       industry: 'Services',
       metrics: [

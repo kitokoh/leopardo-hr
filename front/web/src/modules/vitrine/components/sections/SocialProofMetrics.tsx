@@ -30,28 +30,28 @@ type MetricItem = {
 
 const metricsByLocale: Record<AppLocale, MetricItem[]> = {
   fr: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Pays avec regles de paie dediees' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'Pays au catalogue de paie' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
-    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Tests automatises backend' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Fichiers de tests backend' },
   ],
   en: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Countries with dedicated payroll rules' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'Countries in the payroll catalog' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Product languages (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Product surfaces (web, mobile, kiosk)' },
-    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Automated backend tests' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Backend test files' },
   ],
   tr: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Ozel bordro kurali olan ulke' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'Bordro katalogundaki ulke' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Urun dili (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Urun yuzeyi (web, mobil, kiosk)' },
-    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Otomatik backend testi' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'Backend test dosyasi' },
   ],
   ar: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'دول بقواعد رواتب مخصصة' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '21', label: 'دولة في كتالوج الرواتب' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'لغات المنتج (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'واجهات المنتج (ويب، موبايل، كشك)' },
-    { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'اختبار تلقائي للخلفية' },
+    { icon: <ShieldCheck className="w-6 h-6" />, value: '1000+', label: 'ملف اختبار للخلفية' },
   ],
 };
 

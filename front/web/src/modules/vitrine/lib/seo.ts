@@ -151,7 +151,7 @@ export const pageMetadata = {
   documents: {
     title: "Cabinet Numérique Sécurisé | Gestion Documents Conformes",
     description:
-      "Cabinet numérique avec chiffrement AES-256. Partage sécurisé, archivage automatique, conformité RGPD.",
+      "Cabinet numérique avec chiffrement AES-256. Partage sécurisé, archivage automatique, outils de conformité RGPD.",
     keywords: [
       "cabinet numérique",
       "gestion documents sécurisée",
@@ -165,7 +165,7 @@ export const pageMetadata = {
   comptabilite: {
     title: "Paie Automatisée & Conformité | Bulletins Générés",
     description:
-      "Paie automatisée avec calculs exacts et conformité garantie. Bulletins générés, exports comptables. Essai gratuit.",
+      "Paie automatisée avec calculs exacts et aide à la conformité. Bulletins générés, exports comptables. Essai gratuit.",
     keywords: [
       "paie automatisée",
       "logiciel paie PME",
@@ -429,7 +429,7 @@ export const pageMetadata = {
   branding: {
     title: "Branding & Personnalisation | Leopardo RH Multi-Tenant",
     description:
-      "Personnalisez Leopardo RH avec votre logo, vos couleurs et votre nom d'affichage sur web et mobile, isolation tenant garantie.",
+      "Personnalisez Leopardo RH avec votre logo, vos couleurs et votre nom d'affichage sur web et mobile, avec isolation par tenant.",
     keywords: [
       "branding SaaS RH",
       "personnalisation multi-tenant",
@@ -542,8 +542,8 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
   en: {
     landing: { title: "Employee Management, Payroll & Documents | All-in-One Platform", description: "Manage employees, payroll and documents in one place. Free 14-day trial, no credit card required." },
     employes: { title: "Complete HR Management | Attendance, Leave, Schedules", description: "Manage attendance, leave and schedules easily. Smart check-in with NFC and biometrics. Free trial." },
-    documents: { title: "Secure Digital Filing Cabinet | Compliant Document Management", description: "Digital filing cabinet with AES-256 encryption. Secure sharing, automatic archiving and compliant storage." },
-    comptabilite: { title: "Automated Payroll & Compliance | Payslips Generated", description: "Automated payroll with exact calculations and guaranteed compliance. Generated payslips, social declarations and bank exports." },
+    documents: { title: "Secure Digital Filing Cabinet | Document Management", description: "Digital filing cabinet with AES-256 encryption. Secure sharing, automatic archiving and GDPR tooling." },
+    comptabilite: { title: "Automated Payroll & Compliance Support | Payslips Generated", description: "Automated payroll with exact calculations and compliance support. Generated payslips, social declarations and bank exports." },
     marketing: { title: "Integrated Digital Marketing | Email, SMS, Social Media", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
     integrations: { title: "Integrations & Connectors", description: "Accounting connectors and Leopardo HR API: Sage, QuickBooks, public API, webhooks and more." },
     restaurateur: { title: "Restaurant management software", description: "Reservations, POS, kitchen, stock and delivery: discover the Leopardo RH solution for single and multi-site restaurants." },

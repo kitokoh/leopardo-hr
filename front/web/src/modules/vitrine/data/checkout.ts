@@ -178,7 +178,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     annual: 'Annuel',
     trust: {
       secure: 'Paiement sécurisé TLS 1.3 + AES-256',
-      rgpd: 'Données hébergées en Europe — conforme RGPD',
+      rgpd: 'Données hébergées en Europe (UE)',
       cancel: 'Sans engagement · Résiliation en 2 clics',
     },
     continueWithGoogle: 'Continuer avec Google',
@@ -379,7 +379,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     annual: 'Annual',
     trust: {
       secure: 'Secure payment — TLS 1.3 + AES-256',
-      rgpd: 'Data hosted in Europe — GDPR compliant',
+      rgpd: 'Data hosted in Europe (EU)',
       cancel: 'No commitment · Cancel in 2 clicks',
     },
     continueWithGoogle: 'Continue with Google',
