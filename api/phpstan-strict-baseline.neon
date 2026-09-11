@@ -2857,12 +2857,6 @@ parameters:
 			path: app/Modules/HR/Interfaces/Api/V1/Requests/ArchiveEmployeeRequest.php
 
 		-
-			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/AssignScheduleEmployeesRequest.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2974,12 +2968,6 @@ parameters:
 			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/StoreScheduleRequest.php
-
-		-
-			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Requests/StoreSiteRequest.php
 
 		-
@@ -3053,12 +3041,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Requests/UpdatePositionRequest.php
-
-		-
-			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Planning/Interfaces/Api/V1/Requests/UpdateScheduleRequest.php
 
 		-
 			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
