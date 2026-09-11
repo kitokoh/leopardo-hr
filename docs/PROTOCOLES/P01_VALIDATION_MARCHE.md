@@ -1,6 +1,6 @@
 # P01 — Validation & mise sur le marché (« quand dit-on OK pour le marché ? »)
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** PM (décision) + gardien technique (preuves)
 > **Portée :** toute sortie livrée à des utilisateurs réels : pilote encadré, bêta, disponibilité
 > générale (GA), par surface et par BC vertical. Hors champ : le merge quotidien sur `main`
@@ -106,3 +106,4 @@ par surface et par BC, jamais « le produit » en bloc** (cf. `README.md` — pr
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — consolidation des gates existants en protocole de paliers |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |
