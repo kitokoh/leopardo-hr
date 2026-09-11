@@ -100,6 +100,8 @@ export type CopyTree = {
     managePreferences: string;
     /** #R8 — lien de reprise d'onboarding dans la sidebar */
     resumeOnboarding: string;
+    /** #7218 — titre de section « Mon métier » (verticales activées) */
+    businessSection: string;
   };
   passwordReset: {
     title: string;
@@ -695,6 +697,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
       resumeOnboarding: '▶ Reprendre la configuration',
+      businessSection: 'Mon métier',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1326,6 +1329,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
       resumeOnboarding: '▶ استئناف الإعداد',
+      businessSection: 'قطاع عملك',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -1953,6 +1957,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
       resumeOnboarding: '▶ Yapılandırmaya devam et',
+      businessSection: 'İş kolunuz',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2580,6 +2585,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
       resumeOnboarding: '▶ Resume setup',
+      businessSection: 'Your business',
     },
     passwordReset: {
       title: 'Forgot your password?',
