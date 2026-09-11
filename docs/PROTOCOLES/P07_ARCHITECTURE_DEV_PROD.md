@@ -1,6 +1,6 @@
 # P07 — Architecture à deux volets dev/prod : surveillance continue de la santé
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** gardien technique infra (exécution) + PM (arbitrages)
 > **Portée :** les deux volets d'architecture (dev = continu sur `main` ; prod = stable, Release
 > taguée) sur **Render, Vercel, Cloudflare Pages/Workers, Neon et Mailgun**, et la cohérence entre
@@ -126,3 +126,4 @@ Règles structurelles opposables :
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — état live vérifié via API Render/Vercel ; consolidation de la leçon #6831 en surveillance régulière |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |

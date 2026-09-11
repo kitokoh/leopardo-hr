@@ -1,6 +1,6 @@
 # P05 — Harmonisation du design (une seule identité visuelle sur toutes les surfaces)
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** gardien design (PM valide les orientations)
 > **Portée :** toutes les surfaces d'interface : vitrine `front/web/` (Next.js), admin
 > `front/admin-dashboard/` (Vue), apps Flutter `front/mobile_apps/*` (8 apps + `leopardo_core`),
@@ -120,3 +120,4 @@ Règles :
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — consolidation des lois/tokens existants en protocole d'harmonisation |
 | v0.2 | 2026-09-09 | §5 : plan de non-régression visuelle T1-T3 (issue #7105) — diff Playwright, golden Flutter, garde tokens |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |
