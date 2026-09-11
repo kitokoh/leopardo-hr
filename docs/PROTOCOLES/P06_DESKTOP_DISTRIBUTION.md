@@ -1,6 +1,6 @@
 # P06 — Clients desktop Windows/macOS : extraction, tests & distribution par BC vertical
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** gardien technique mobile/desktop + PM (décision de sortie)
 > **Portée :** production de clients desktop (Windows `.exe`/MSIX, macOS `.app`/`.dmg`) **extraits
 > des apps Flutter existantes**, BC vertical par BC vertical. Hors champ : le web (PWA/edge), le
@@ -130,3 +130,4 @@ du workflow (même discipline que mobile-distribute : gate `PROD_API_BASE_URL`, 
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — état réel constaté (#3257, scaffolds 5/8 apps) + processus d'extraction desktop |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |

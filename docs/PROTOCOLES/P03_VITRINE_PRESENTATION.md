@@ -1,6 +1,6 @@
 # P03 — Vitrine & présentation (« le projet présentable à tout moment, avec les bons mots »)
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** PM (message) + gardiens de surface (exécution)
 > **Portée :** toutes les surfaces où Leopardo RH est présenté au monde : vitrine web produit,
 > site vitrine des tenants (BC-27 SHOWCASE), README/repo GitHub, stores mobiles, démos, pitchs
@@ -106,3 +106,4 @@ Le coût d'une vitrine inexacte est la confiance — ce protocole la protège.
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — message canonique + audit mensuel vitrine |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |
