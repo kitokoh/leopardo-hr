@@ -1466,6 +1466,91 @@ paths:
                     example: PROVISIONING_TOKEN_INVALID
                   message:
                     type: string
+  /trial/set-password:
+    post:
+      tags:
+      - Billing
+      summary: Definir le mot de passe du manager d'un essai guide
+      description: Route publique appelee par la vitrine apres provisioning (issue #1473). Le token de provisioning de 64 caracteres vit dans l'en-tete `X-Token` (repli `token` en corps). Idempotence stricte : 409 si le mot de passe a deja ete defini.
+      security: []
+      parameters:
+      - name: X-Token
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 64
+          maxLength: 64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - password
+              - password_confirmation
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                  description: Minimum 8 caracteres avec au moins un chiffre ; confirmation requise.
+                password_confirmation:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Mot de passe defini
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  localized_message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      login_url:
+                        type: string
+        '404':
+          description: Token invalide ou manager introuvable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: PROVISIONING_TOKEN_INVALID
+                  localized_message:
+                    type: string
+        '409':
+          description: Provisioning non pret ou mot de passe deja defini
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: TRIAL_PASSWORD_ALREADY_SET
+                  localized_message:
+                    type: string
+        '422':
+          description: Validation echouee (mot de passe trop faible ou confirmation absente)
   /user/register:
     post:
       tags:
