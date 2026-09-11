@@ -3692,6 +3692,10 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def post_trial_set_password(self, **kwargs):
+        """Definir le mot de passe du manager d'un essai guide"""
+        return self.request("POST", "/trial/set-password", **kwargs)
+
     def post_trial_signup(self, **kwargs):
         """Demande d'essai guidé / auto-service (onboarding)"""
         return self.request("POST", "/trial/signup", **kwargs)
