@@ -67,7 +67,20 @@ class ProbeAvailabilityCommand extends Command
         ];
 
         if (! $redisUp) {
-            $this->warn('[infra] Redis injoignable — CACHE_STORE=file : la déduplication idempotence est DÉSACTIVÉE (multi-instance).');
+            $message = '[infra] Redis injoignable — CACHE_STORE=file : la déduplication idempotence est DÉSACTIVÉE (multi-instance).';
+
+            // ⚠️ En mode `env`, la sortie EST un fichier shell sourcé par
+            // `docker-entrypoint.sh` (`. "$PROBE_ENV"`). Y écrire un message
+            // humain (qui contient « (multi-instance) ») rend le fichier
+            // invalide et fait échouer le boot :
+            //   « syntax error: unexpected "(" » (incident dev 2026-09-11,
+            //   déclenché dès que Redis devient injoignable — quota Upstash).
+            // Le message part donc sur STDERR (capté par les logs Render).
+            if ($this->option('format') === 'env') {
+                fwrite(STDERR, $message.PHP_EOL);
+            } else {
+                $this->warn($message);
+            }
         }
 
         if ($this->option('format') === 'env') {
