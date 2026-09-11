@@ -130,4 +130,32 @@ class OpenApiDocsTest extends TestCase
         app()->detectEnvironment(fn () => 'testing');
         parent::tearDown();
     }
+
+    /**
+     * Issue #7213 — le tier dev Render tourne avec APP_ENV=production
+     * (render.yaml) : la doc y était donc verrouillée par la Gate viewApiDocs.
+     * Le flag explicite api_docs.public rétablit l'accès QA/démo sans ouvrir la
+     * prod (défaut false).
+     */
+    public function test_api_docs_stay_locked_in_production_when_public_flag_is_off(): void
+    {
+        $this->app['env'] = 'production';
+        config(['api_docs.public' => false]);
+
+        $this->get('/docs')->assertForbidden();
+        $this->get('/tester-guide')->assertForbidden();
+        $this->get('/api-explorer')->assertForbidden();
+        $this->get('/docs/openapi.yaml')->assertForbidden();
+    }
+
+    public function test_api_docs_are_public_on_a_production_env_tier_when_public_flag_is_on(): void
+    {
+        $this->app['env'] = 'production';
+        config(['api_docs.public' => true]);
+
+        $this->get('/docs')->assertOk()->assertSee('Leopardo RH API Docs');
+        $this->get('/tester-guide')->assertOk();
+        $this->get('/api-explorer')->assertOk();
+        $this->get('/docs/openapi.yaml')->assertOk();
+    }
 }
