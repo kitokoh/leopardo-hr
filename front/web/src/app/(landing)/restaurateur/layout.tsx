@@ -1,0 +1,37 @@
+import { SITE_URL } from '@/lib/site-url';
+import { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
+
+/**
+ * Page vitrine « Je suis restaurateur » (/restaurateur) — issue BC-25.
+ *
+ * Elle n'avait pas de layout dédié : la route héritait donc du titre et de la
+ * description génériques de la racine au lieu de ses propres métadonnées, et
+ * restait absente du sitemap.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  // #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
+  // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
+  const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
+  const seo = getPageMetadata('restaurateur', lang);
+
+  return generateSEOMetadata({
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
+    ogImage: seo.ogImage,
+    ogType: 'website',
+    canonical: `${SITE_URL}/restaurateur`,
+    locale: lang,
+  });
+}
+
+export default function RestaurantMarketingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return children;
+}

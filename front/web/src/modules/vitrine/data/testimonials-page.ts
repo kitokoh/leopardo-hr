@@ -36,7 +36,7 @@ const fr: TestimonialsPageContent = {
     items: [
       { value: '4.8/5', label: 'Note moyenne (démo)' },
       { value: '6', label: 'Pays couverts' },
-      { value: '1200+', label: 'Tests automatisés backend' },
+      { value: '1000+', label: 'Fichiers de tests backend' },
       { value: '14 j', label: "Durée de l'essai gratuit" },
     ],
   },
@@ -61,7 +61,7 @@ const en: TestimonialsPageContent = {
     items: [
       { value: '4.8/5', label: 'Average rating (demo)' },
       { value: '6', label: 'Countries covered' },
-      { value: '1200+', label: 'Automated backend tests' },
+      { value: '1000+', label: 'Backend test files' },
       { value: '14 d', label: 'Free trial length' },
     ],
   },
@@ -86,7 +86,7 @@ const tr: TestimonialsPageContent = {
     items: [
       { value: '4.8/5', label: 'Ortalama puan (demo)' },
       { value: '6', label: 'Kapsanan ülke' },
-      { value: '1200+', label: 'Otomatikleştirilmiş backend testi' },
+      { value: '1000+', label: 'Backend test dosyası' },
       { value: '14 g', label: 'Ücretsiz deneme süresi' },
     ],
   },
@@ -111,7 +111,7 @@ const ar: TestimonialsPageContent = {
     items: [
       { value: '4.8/5', label: 'متوسط التقييم (عرض)' },
       { value: '6', label: 'دول مغطاة' },
-      { value: '1200+', label: 'اختبار آلي للخلفية' },
+      { value: '1000+', label: 'ملف اختبار للخلفية' },
       { value: '14 يوم', label: 'مدة النسخة التجريبية' },
     ],
   },

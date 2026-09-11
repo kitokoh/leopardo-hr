@@ -1105,7 +1105,12 @@
     "two_fa_label": "2FA code",
     "two_fa_required_msg": "A verification code is required.",
     "two_fa_setup_failed": "2FA secret generation failed.",
-    "unexpected_error": "An unexpected error occurred."
+    "unexpected_error": "An unexpected error occurred.",
+    "demo_panel_title": "Demo access — pick a profile",
+    "demo_panel_hint": "Demonstration environment: pick a profile to sign in instantly. Disabled in production.",
+    "demo_badge_platform": "Platform",
+    "demo_access": "Use a demo account",
+    "demo_super_admin_label": "Super Administrator"
   },
   "settingsShareProfileOrScan": "Share your profile or scan a company.",
   "attendanceStatusInProgress": "In progress",
@@ -1646,7 +1651,18 @@
       "countryRequired": "Country is required."
     },
     "labelCountry": "Country",
-    "countryPlaceholder": "Select your country"
+    "countryPlaceholder": "Select your country",
+    "setPasswordTitle": "Choose your password",
+    "setPasswordSubtitle": "Last step: set your password to access your workspace. No email required.",
+    "setPasswordLabel": "Password",
+    "setPasswordConfirmLabel": "Confirm password",
+    "setPasswordSubmit": "Set my password",
+    "setPasswordSubmitting": "Saving…",
+    "setPasswordSuccess": "Password saved. You can sign in.",
+    "setPasswordTooWeak": "At least 8 characters, including one digit.",
+    "setPasswordMismatch": "The two passwords do not match.",
+    "setPasswordUnavailable": "Unable to save the password right now. Please retry.",
+    "goToLogin": "Sign in"
   },
   "attendanceDayDetail": "Daily detail",
   "support_tickets": {
@@ -2705,7 +2721,37 @@
     "stationsCaption": "Fleet stations",
     "incidentsCaption": "Reported incidents",
     "reconciliationsCaption": "Reconciliation reports",
-    "apiUnavailable": "The FuelStation API (stations reference, incidents, reconciliations) is not delivered yet — the page will become operational with the BC-15 batch (#6373)."
+    "apiUnavailable": "The FuelStation API (stations reference, incidents, reconciliations) is not delivered yet — the page will become operational with the BC-15 batch (#6373).",
+    "pump": {
+      "title": "Pump attendant reading",
+      "subtitle": "Capture meter readings per station",
+      "loadError": "Unable to load network data",
+      "noShift": "No active shift",
+      "retry": "Retry",
+      "emptyStations": "No station available",
+      "selectStation": "Select a station",
+      "selectPump": "Select a pump",
+      "selectMeter": "Select a meter",
+      "back": "Back",
+      "shift": "Shift",
+      "reading": "Meter reading",
+      "unitHint": "Value in litres",
+      "capturedAt": "Reading date and time",
+      "offlineHint": "Offline: the reading will sync automatically.",
+      "submit": "Save reading",
+      "submitting": "Saving…",
+      "saved": "Reading saved",
+      "delta": "Delta",
+      "noDelta": "No delta computed yet.",
+      "anomaly": "Report an issue",
+      "anomalyTitle": "Issue title",
+      "anomalySeverity": "Severity",
+      "anomalySaved": "Issue reported",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
   },
   "adminPalette": {
     "appLoading": "Loading the administration…",

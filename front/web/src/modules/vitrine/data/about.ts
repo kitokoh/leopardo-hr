@@ -41,6 +41,8 @@ export type AboutContent = {
   team: {
     badge: string
     title: string
+    /** Mention d'honnêteté : les profils présentés sont fictifs. */
+    disclosure: string
     members: AboutTeamMember[]
   }
   stats: {
@@ -94,6 +96,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
     team: {
       badge: 'Notre Équipe',
       title: 'Les Gens Derrière Leopardo',
+      disclosure: "Les profils ci-dessous sont illustratifs (personnes fictives) : ils montrent l'organisation cible d'une équipe produit.",
       members: [
         { name: 'Ahmed Benali', role: 'Fondateur & CEO', bio: "Entrepreneur passionné avec 10 ans d'expérience en RH et technologie.", image: '/avatars/ahmed.svg' },
         { name: 'Fatima Dupont', role: 'CTO', bio: 'Architecte logiciel avec expertise en scalabilité et sécurité.', image: '/avatars/fatima.svg' },
@@ -106,10 +109,10 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Leopardo en Chiffres',
       footnote: 'Métriques vérifiables dans le dépôt public du produit — aucun chiffre client inventé.',
       items: [
-        { value: '19', label: 'Pays avec règles de paie dédiées' },
+        { value: '21', label: 'Pays au catalogue de paie' },
         { value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
         { value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
-        { value: '1200+', label: 'Tests automatisés backend' },
+        { value: '1000+', label: 'Fichiers de tests backend' },
       ],
     },
     join: {
@@ -155,6 +158,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
     team: {
       badge: 'Our Team',
       title: 'The People Behind Leopardo',
+      disclosure: 'The profiles below are illustrative (fictional people): they show the target organisation of a product team.',
       members: [
         { name: 'Ahmed Benali', role: 'Founder & CEO', bio: 'Passionate entrepreneur with 10 years of experience in HR and technology.', image: '/avatars/ahmed.svg' },
         { name: 'Fatima Dupont', role: 'CTO', bio: 'Software architect with expertise in scalability and security.', image: '/avatars/fatima.svg' },
@@ -167,10 +171,10 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Leopardo in Numbers',
       footnote: 'Metrics verifiable in the public product repository — no invented customer figures.',
       items: [
-        { value: '19', label: 'Countries with dedicated payroll rules' },
+        { value: '21', label: 'Countries in the payroll catalog' },
         { value: '4', label: 'Product languages (FR/EN/TR/AR)' },
         { value: '7', label: 'Product surfaces (web, mobile, kiosk)' },
-        { value: '1200+', label: 'Automated backend tests' },
+        { value: '1000+', label: 'Backend test files' },
       ],
     },
     join: {
@@ -216,6 +220,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
     team: {
       badge: 'Ekibimiz',
       title: 'Leopardo\'nun Arkasındaki İnsanlar',
+      disclosure: 'Aşağıdaki profiller örnektir (kurgusal kişiler): bir ürün ekibinin hedef organizasyonunu göstermek için kullanılır.',
       members: [
         { name: 'Ahmed Benali', role: 'Kurucu & CEO', bio: 'İK ve teknolojide 10 yıllık deneyime sahip tutkulu girişimci.', image: '/avatars/ahmed.svg' },
         { name: 'Fatima Dupont', role: 'CTO', bio: 'Ölçeklenebilirlik ve güvenlik konusunda uzman yazılım mimarı.', image: '/avatars/fatima.svg' },
@@ -228,10 +233,10 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Rakamlarla Leopardo',
       footnote: 'Ürünün herkese açık deposunda doğrulanabilir metrikler — uydurma müşteri verisi yok.',
       items: [
-        { value: '19', label: 'Özel maaş kuralları olan ülke' },
+        { value: '21', label: 'Bordro kataloğundaki ülke' },
         { value: '4', label: 'Ürün dili (FR/EN/TR/AR)' },
         { value: '7', label: 'Ürün yüzeyi (web, mobil, kiosk)' },
-        { value: '1200+', label: 'Otomatikleştirilmiş backend testi' },
+        { value: '1000+', label: 'Backend test dosyası' },
       ],
     },
     join: {
@@ -277,6 +282,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
     team: {
       badge: 'فريقنا',
       title: 'الأشخاص خلف ليوباردو',
+      disclosure: 'الملفات أدناه توضيحية (أشخاص افتراضيون) وتُستخدم لإظهار التنظيم المستهدف لفريق المنتج.',
       members: [
         { name: 'أحمد بن علي', role: 'المؤسس والرئيس التنفيذي', bio: 'رائد أعمال شغوف بخبرة 10 سنوات في الموارد البشرية والتكنولوجيا.', image: '/avatars/ahmed.svg' },
         { name: 'فاطمة دوبون', role: 'المديرة التقنية', bio: 'مهندسة برمجيات بخبرة في قابلية التوسع والأمان.', image: '/avatars/fatima.svg' },
@@ -289,10 +295,10 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'ليوباردو بالأرقام',
       footnote: 'مقاييس يمكن التحقق منها في المستودع العام للمنتج — لا أرقام عملاء مختلقة.',
       items: [
-        { value: '19', label: 'دول بقواعد رواتب مخصصة' },
+        { value: '21', label: 'دولة في كتالوج الرواتب' },
         { value: '4', label: 'لغات المنتج (FR/EN/TR/AR)' },
         { value: '7', label: 'أسطح المنتج (ويب، موبايل، كشك)' },
-        { value: '1200+', label: 'اختبار آلي للخلفية' },
+        { value: '1000+', label: 'ملف اختبار للخلفية' },
       ],
     },
     join: {

@@ -151,7 +151,7 @@ export const pageMetadata = {
   documents: {
     title: "Cabinet Numérique Sécurisé | Gestion Documents Conformes",
     description:
-      "Cabinet numérique avec chiffrement AES-256. Partage sécurisé, archivage automatique, conformité RGPD.",
+      "Cabinet numérique avec chiffrement AES-256. Partage sécurisé, archivage automatique, outils de conformité RGPD.",
     keywords: [
       "cabinet numérique",
       "gestion documents sécurisée",
@@ -165,7 +165,7 @@ export const pageMetadata = {
   comptabilite: {
     title: "Paie Automatisée & Conformité | Bulletins Générés",
     description:
-      "Paie automatisée avec calculs exacts et conformité garantie. Bulletins générés, exports comptables. Essai gratuit.",
+      "Paie automatisée avec calculs exacts et aide à la conformité. Bulletins générés, exports comptables. Essai gratuit.",
     keywords: [
       "paie automatisée",
       "logiciel paie PME",
@@ -191,7 +191,7 @@ export const pageMetadata = {
   },
 
   integrations: {
-    title: "Integrations & Connecteurs",
+    title: "Intégrations & Connecteurs",
     description:
       "Connecteurs comptables et API Leopardo RH : Sage, QuickBooks, API publique, webhooks. Intégrez la paie et les RH à votre stack.",
     keywords: [
@@ -200,6 +200,20 @@ export const pageMetadata = {
       "API paie",
       "webhooks RH",
       "Sage QuickBooks",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
+  restaurateur: {
+    title: "Logiciel de gestion pour restaurants",
+    description:
+      "Réservations, caisse, cuisine, stock et livraison : découvrez la solution Leopardo RH pour les restaurants mono et multi-sites.",
+    keywords: [
+      "logiciel restaurant",
+      "gestion restaurant",
+      "caisse restaurant",
+      "réservation table",
+      "gestion stock restaurant",
     ],
     ogImage: `${siteUrl}/og/default.png`,
   },
@@ -361,7 +375,7 @@ export const pageMetadata = {
   },
 
   faq: {
-    title: "Questions Frequentes | FAQ Leopardo RH",
+    title: "Questions Fréquentes | FAQ Leopardo RH",
     description:
       "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, sécurité, integrations et support.",
     keywords: [
@@ -387,7 +401,7 @@ export const pageMetadata = {
   },
 
   caseStudies: {
-    title: "Etudes de Cas | Success Stories Leopardo RH",
+    title: "Études de Cas | Success Stories Leopardo RH",
     description:
       "Etudes de cas detaillees d'entreprises ayant déployé Leopardo RH pour automatiser paie, pointage et absences.",
     keywords: [
@@ -400,7 +414,7 @@ export const pageMetadata = {
   },
 
   videos: {
-    title: "Videos & Demonstrations | Leopardo RH en Action",
+    title: "Vidéos & Démonstrations | Leopardo RH en Action",
     description:
       "Regardez nos tutoriels et demonstrations video : configuration ZKTeco, paie multi-pays et prise en main de Leopardo RH.",
     keywords: [
@@ -415,7 +429,7 @@ export const pageMetadata = {
   branding: {
     title: "Branding & Personnalisation | Leopardo RH Multi-Tenant",
     description:
-      "Personnalisez Leopardo RH avec votre logo, vos couleurs et votre nom d'affichage sur web et mobile, isolation tenant garantie.",
+      "Personnalisez Leopardo RH avec votre logo, vos couleurs et votre nom d'affichage sur web et mobile, avec isolation par tenant.",
     keywords: [
       "branding SaaS RH",
       "personnalisation multi-tenant",
@@ -426,7 +440,7 @@ export const pageMetadata = {
   },
 
   careers: {
-    title: "Carrieres | Rejoignez l'Équipe Leopardo RH",
+    title: "Carrières | Rejoignez l'Équipe Leopardo RH",
     description:
       "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de référence pour les PME.",
     keywords: [
@@ -528,10 +542,11 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
   en: {
     landing: { title: "Employee Management, Payroll & Documents | All-in-One Platform", description: "Manage employees, payroll and documents in one place. Free 14-day trial, no credit card required." },
     employes: { title: "Complete HR Management | Attendance, Leave, Schedules", description: "Manage attendance, leave and schedules easily. Smart check-in with NFC and biometrics. Free trial." },
-    documents: { title: "Secure Digital Filing Cabinet | Compliant Document Management", description: "Digital filing cabinet with AES-256 encryption. Secure sharing, automatic archiving and compliant storage." },
-    comptabilite: { title: "Automated Payroll & Compliance | Payslips Generated", description: "Automated payroll with exact calculations and guaranteed compliance. Generated payslips, social declarations and bank exports." },
+    documents: { title: "Secure Digital Filing Cabinet | Document Management", description: "Digital filing cabinet with AES-256 encryption. Secure sharing, automatic archiving and GDPR tooling." },
+    comptabilite: { title: "Automated Payroll & Compliance Support | Payslips Generated", description: "Automated payroll with exact calculations and compliance support. Generated payslips, social declarations and bank exports." },
     marketing: { title: "Integrated Digital Marketing | Email, SMS, Social Media", description: "Complete marketing tools: email, SMS, social media. Automation, analytics and integrated campaigns for your business." },
     integrations: { title: "Integrations & Connectors", description: "Accounting connectors and Leopardo HR API: Sage, QuickBooks, public API, webhooks and more." },
+    restaurateur: { title: "Restaurant management software", description: "Reservations, POS, kitchen, stock and delivery: discover the Leopardo RH solution for single and multi-site restaurants." },
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
@@ -562,6 +577,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     comptabilite: { title: "Otomatik Maaş & Uyumluluk | Oluşturulan Maaş Bordroları", description: "Hassas hesaplamalar ve garantili uyumlulukla otomatik maaş işlemleri. Oluşturulan bordrolar, sosyal bildirimler ve banka ihracatları." },
     marketing: { title: "Entegre Dijital Pazarlama | E-posta, SMS, Sosyal Medya", description: "Eksiksiz pazarlama araçları: e-posta, SMS, sosyal medya. Otomasyon, analitik ve entegre kampanyalar." },
     integrations: { title: "Entegrasyonlar & Bağlayıcılar", description: "Muhasebe bağlayıcıları ve Leopardo İK API'si: Sage, QuickBooks, genel API, webhook'lar ve daha fazlası." },
+    restaurateur: { title: "Restoran yönetim yazılımı", description: "Rezervasyon, kasa, mutfak, stok ve teslimat: tek ve çok şubeli restoranlar için Leopardo RH çözümünü keşfedin." },
     pricing: { title: "Şeffaf Fiyatlandırma | Esnek Planlar", description: "Basit fiyatlandırma: Free 0 € (5 çalışan), Pilot ayda 29 € (30 çalışan), Operations ayda 79 € (200 çalışan), Enterprise teklif. 14 gün ücretsiz deneme." },
     about: { title: "Hakkımızda | Misyonumuz ve Ekibimiz", description: "Misyonumuzu, ekibimizi ve değerlerimizi keşfedin. Saha KOBİ'leri için mobil öncelikli bir İK platformu inşa ediyoruz." },
     blog: { title: "Blog & Kaynaklar | İK Rehberleri ve İpuçları", description: "KOBİ'ler için İK yönetimi, maaş ve üretkenlik üzerine rehberler, makaleler ve webinarlar." },
@@ -592,6 +608,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     comptabilite: { title: "رواتب آلية ومتوافقة | كشوف رواتب مولّدة", description: "رواتب آلية بحسابات دقيقة وامتثال مضمون. كشوف رواتب مولّدة وتصريحات اجتماعية وتصديرات بنكية." },
     marketing: { title: "تسويق رقمي متكامل | بريد إلكتروني ورسائل نصية وتواصل اجتماعي", description: "أدوات تسويق كاملة: البريد الإلكتروني والرسائل النصية ووسائل التواصل الاجتماعي. أتمتة وتحليلات وحملات متكاملة." },
     integrations: { title: "التكاملات والموصلات | ليوباردو لإدارة الموارد البشرية", description: "موصلات محاسبية وواجهة برمجة ليوباردو: Sage وQuickBooks وواجهة عامة وwebhooks والمزيد." },
+    restaurateur: { title: "برنامج إدارة المطاعم", description: "الحجوزات ونقاط البيع والمطبخ والمخزون والتوصيل: اكتشف حل ليوباردو للمطاعم بفرع واحد أو عدة فروع." },
     pricing: { title: "تسعير شفاف | خطط مرنة", description: "تسعير شفاف: Free مجاني (5 موظفين)، Pilot بـ 29 يورو/شهر (30 موظفًا)، Operations بـ 79 يورو/شهر (200 موظف)، Enterprise حسب الطلب. تجربة مجانية 14 يومًا." },
     about: { title: "من نحن | مهمتنا وفريقنا", description: "اكتشف مهمتنا وفريقنا وقيمنا. نساعد الشركات الصغيرة والمتوسطة في إدارة موظفيها عبر منصة موارد بشرية متنقلة." },
     blog: { title: "المدونة والموارد | أدلة ونصائح الموارد البشرية", description: "أدلة ومقالات وندوات عبر الإنترنت حول إدارة الموارد البشرية والرواتب والإنتاجية للشركات الصغيرة." },

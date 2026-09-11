@@ -62,4 +62,3 @@ Modules/Recruitment -> Modules/HR
 # À revisiter si le hub expose un contrat découplé plus large que
 # App\Contracts\Communication\...Interface.
 Modules/EduManager -> Modules/Notification
-Modules/TravelAgency -> Modules/Notification

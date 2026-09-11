@@ -2,7 +2,7 @@
 
 /**
  * Page vitrine « Je suis restaurateur » — pré-qualification publique.
- * Route : /restaurant
+ * Route : /restaurateur (le hub applicatif client vit sur /restaurant)
  */
 
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';

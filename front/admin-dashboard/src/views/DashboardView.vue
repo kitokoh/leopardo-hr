@@ -275,24 +275,44 @@ const priorityCompanies = computed(() => {
     .slice(0, 5)
 })
 const revenue = computed(() => platformMetrics.value.revenue || {})
+
+/**
+ * Sélectionne la première valeur réellement renseignée et la convertit en nombre.
+ *
+ * Un `0` renvoyé par l'API est une donnée valide : l'utiliser comme « absent »
+ * (avec `||`) faisait retomber le dashboard sur des valeurs périmées de
+ * `summary`, affichant des entreprises actives ou un MRR qui n'existaient pas.
+ * Ici seul `null`/`undefined`/chaîne vide déclenche le repli.
+ */
+function pickNumber(...candidates) {
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined || candidate === '') continue
+
+    const value = Number(candidate)
+    if (!Number.isNaN(value)) return value
+  }
+
+  return 0
+}
+
 const companyMetrics = computed(() => {
   const metrics = platformMetrics.value.companies || {}
 
   return {
-    total: Number(metrics.total || summary.value.companies || 0),
-    active: Number(metrics.active || summary.value.active_companies || 0),
+    total: pickNumber(metrics.total, summary.value.companies),
+    active: pickNumber(metrics.active, summary.value.active_companies),
   }
 })
 const subscriptionMetrics = computed(() => platformMetrics.value.subscriptions || {})
 const averageRevenuePerAccount = computed(() => {
   if (!companyMetrics.value.active) return 0
-  return Number(revenue.value.mrr || summary.value.mrr || 0) / companyMetrics.value.active
+  return pickNumber(revenue.value.mrr, summary.value.mrr) / companyMetrics.value.active
 })
 const adoption = computed(() => portfolioItems.value.reduce((totals, item) => ({
   attendance_logs: totals.attendance_logs + Number(item.attendance_logs_30d || 0),
   active_employees: totals.active_employees + Number(item.employees_active || 0),
 }), { attendance_logs: 0, active_employees: 0 }))
-const formattedMrr = computed(() => formatCurrency(revenue.value.mrr || summary.value.mrr, revenue.value.currency))
+const formattedMrr = computed(() => formatCurrency(pickNumber(revenue.value.mrr, summary.value.mrr), revenue.value.currency))
 
 const workflowCards = computed(() => [
   {

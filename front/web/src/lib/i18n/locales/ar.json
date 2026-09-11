@@ -1408,7 +1408,18 @@
       "countryRequired": "البلد مطلوب."
     },
     "labelCountry": "البلد",
-    "countryPlaceholder": "اختر بلدك"
+    "countryPlaceholder": "اختر بلدك",
+    "setPasswordTitle": "اختر كلمة المرور",
+    "setPasswordSubtitle": "الخطوة الأخيرة: عيّن كلمة المرور للوصول إلى مساحتك. لا حاجة إلى البريد الإلكتروني.",
+    "setPasswordLabel": "كلمة المرور",
+    "setPasswordConfirmLabel": "تأكيد كلمة المرور",
+    "setPasswordSubmit": "تعيين كلمة المرور",
+    "setPasswordSubmitting": "جارٍ الحفظ…",
+    "setPasswordSuccess": "تم حفظ كلمة المرور. يمكنك تسجيل الدخول.",
+    "setPasswordTooWeak": "8 أحرف على الأقل، بما في ذلك رقم واحد.",
+    "setPasswordMismatch": "كلمتا المرور غير متطابقتين.",
+    "setPasswordUnavailable": "تعذّر حفظ كلمة المرور حاليًا. يُرجى إعادة المحاولة.",
+    "goToLogin": "تسجيل الدخول"
   },
   "companies": {
     "toast": {
@@ -4878,5 +4889,37 @@
   "fuelPumpistSubmit": "حفظ القراءة",
   "crmAccounts": "حسابات إدارة العلاقات",
   "crmContacts": "جهات اتصال إدارة العلاقات",
-  "crmLeads": "عملاء إدارة العلاقات المحتملون"
+  "crmLeads": "عملاء إدارة العلاقات المحتملون",
+  "fuel": {
+    "pump": {
+      "title": "قراءة العدّاد",
+      "subtitle": "تسجيل قراءات العدّادات حسب المحطة",
+      "loadError": "تعذّر تحميل بيانات الشبكة",
+      "noShift": "لا توجد وردية نشطة",
+      "retry": "إعادة المحاولة",
+      "emptyStations": "لا توجد محطة متاحة",
+      "selectStation": "اختر محطة",
+      "selectPump": "اختر مضخة",
+      "selectMeter": "اختر عدّادًا",
+      "back": "رجوع",
+      "shift": "الوردية",
+      "reading": "قراءة العدّاد",
+      "unitHint": "القيمة باللتر",
+      "capturedAt": "تاريخ ووقت القراءة",
+      "offlineHint": "غير متصل: ستتم مزامنة القراءة تلقائيًا.",
+      "submit": "حفظ القراءة",
+      "submitting": "جارٍ الحفظ…",
+      "saved": "تم حفظ القراءة",
+      "delta": "الفرق",
+      "noDelta": "لم يتم حساب أي فرق بعد.",
+      "anomaly": "الإبلاغ عن عطل",
+      "anomalyTitle": "عنوان العطل",
+      "anomalySeverity": "الخطورة",
+      "anomalySaved": "تم الإبلاغ عن العطل",
+      "low": "منخفضة",
+      "medium": "متوسطة",
+      "high": "عالية",
+      "critical": "حرجة"
+    }
+  }
 }

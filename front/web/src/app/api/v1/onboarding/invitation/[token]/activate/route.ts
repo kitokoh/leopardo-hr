@@ -21,9 +21,14 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 jours (cohérent avec la route log
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { token: string } },
+  { params }: { params: Promise<{ token: string }> },
 ): Promise<NextResponse> {
-  const { token } = params;
+  // Next.js 15+ : `params` est une Promise dans les Route Handlers. Sans
+  // `await`, la déstructuration renvoie `undefined`, l'URL amont devenait
+  // `/onboarding/invitation/undefined/activate` et le backend répondait 404
+  // INVITATION_NOT_FOUND — l'activation d'un compte invité était donc cassée
+  // en production (le composant de page, lui, attendait bien la Promise).
+  const { token } = await params;
 
   let body: unknown;
   try {

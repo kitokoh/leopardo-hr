@@ -9296,12 +9296,6 @@ parameters:
 			path: tests/Feature/Travel/TravelMobileApiTest.php
 
 		-
-			message: '#^Parameter \#1 \$push of class App\\Modules\\TravelAgency\\Infrastructure\\Services\\TravelAgentPushConsumer constructor expects App\\Modules\\Notification\\Infrastructure\\Services\\PushNotificationService, Mockery\\MockInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Travel/TravelMobileApiTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\Travel\\TravelNotificationApiTest\:\:dispatch\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

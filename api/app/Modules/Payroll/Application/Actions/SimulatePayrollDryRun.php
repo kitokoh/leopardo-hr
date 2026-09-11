@@ -53,7 +53,7 @@ class SimulatePayrollDryRun
     ) {}
 
     /**
-     * @param  array<int|string, mixed>|null  $slabsOverride
+     * @param  array<int|string, array{min: float|string, max?: float|string|null, rate: float|string, fixed_deduction?: float|string}>|null  $slabsOverride
      * @return array<string, mixed>
      */
     public function execute(

@@ -27,36 +27,33 @@ import { getPreferredLocale } from '@/lib/i18n';
  * Étude : docs/specifications/ETUDE_KIOSQUE_RESTAURANT.md.
  */
 
+/**
+ * Contrat réel de `GET /public/restaurant/kiosk/menu`
+ * (`RestaurantKioskController::menu`) : liste PLATE de produits + pagination.
+ * L'API kiosque ne renvoie aucun libellé de catégorie (seulement
+ * `category_id`) — l'écran ne peut donc pas regrouper par catégorie.
+ */
 interface KioskProduct {
   id: number;
   code: string;
   name: string;
-  description: string | null;
   price_minor: number;
   currency: string;
-  image_asset_id: number | null;
+  category_id: number | null;
 }
 
-interface KioskCategory {
-  id: number;
-  name: string;
-  sort_order: number;
-  products: KioskProduct[];
+interface KioskMenuPayload {
+  products?: KioskProduct[];
+  pagination?: { per_page: number; total: number };
 }
 
+/** `POST /public/restaurant/kiosk/orders` (ticket court côté serveur). */
 interface KioskOrder {
   reference: string;
+  ticket_number?: string;
   status: string;
   total_minor: number;
   currency: string;
-  subtotal_minor: number;
-  tax_minor: number;
-}
-
-interface KioskBranch {
-  id: number;
-  code: string;
-  name: string;
 }
 
 type PaymentState =
@@ -72,9 +69,7 @@ export default function RestaurantKioskPage() {
   const locale = getPreferredLocale();
   const [token, setToken] = useState<string>('');
   const [tokenError, setTokenError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<KioskCategory[]>([]);
-  const [branches, setBranches] = useState<KioskBranch[]>([]);
-  const [branchId, setBranchId] = useState<number | null>(null);
+  const [products, setProducts] = useState<KioskProduct[]>([]);
   const [menuLoading, setMenuLoading] = useState(false);
   const [menuError, setMenuError] = useState<string | null>(null);
   const [cart, setCart] = useState<Record<number, number>>({});
@@ -100,26 +95,18 @@ export default function RestaurantKioskPage() {
     setMenuError(null);
 
     try {
-      const [menuRes, branchesRes] = await Promise.all([
-        apiFetch('/public/restaurant/menu', {
-          headers: { 'X-Restaurant-Shop-Token': token },
-          _cacheBust: true,
-        }),
-        apiFetch('/public/restaurant/branches', {
-          headers: { 'X-Restaurant-Shop-Token': token },
-          _cacheBust: true,
-        }),
-      ]);
+      // Chemins réels : /public/restaurant/kiosk/menu|orders (routes/api.php:225-227).
+      // L'ancien préfixe /public/restaurant/menu répondait 404.
+      const menuRes = await apiFetch('/public/restaurant/kiosk/menu', {
+        headers: { 'X-Restaurant-Shop-Token': token },
+        _cacheBust: true,
+      });
 
-      const menuJson = (await menuRes.json()) as { data: KioskCategory[] };
-      const branchesJson = (await branchesRes.json()) as { data: KioskBranch[] };
+      const menuJson = (await menuRes.json()) as { data?: KioskMenuPayload };
 
-      const list = Array.isArray(menuJson?.data) ? menuJson.data : [];
-      const branchList = Array.isArray(branchesJson?.data) ? branchesJson.data : [];
+      const list = Array.isArray(menuJson?.data?.products) ? menuJson.data.products : [];
 
-      setCategories(list);
-      setBranches(branchList);
-      setBranchId((current) => current ?? branchList[0]?.id ?? null);
+      setProducts(list);
     } catch {
       setMenuError(t(locale, 'restaurant.kiosk.loadError'));
     } finally {
@@ -134,18 +121,16 @@ export default function RestaurantKioskPage() {
   const cartLines = useMemo(() => {
     const lines: { product: KioskProduct; quantity: number }[] = [];
 
-    for (const category of categories) {
-      for (const product of category.products) {
-        const quantity = cart[product.id] ?? 0;
+    for (const product of products) {
+      const quantity = cart[product.id] ?? 0;
 
-        if (quantity > 0) {
-          lines.push({ product, quantity });
-        }
+      if (quantity > 0) {
+        lines.push({ product, quantity });
       }
     }
 
     return lines;
-  }, [cart, categories]);
+  }, [cart, products]);
 
   const cartTotal = useMemo(
     () => cartLines.reduce((sum, line) => sum + line.product.price_minor * line.quantity, 0),
@@ -179,14 +164,19 @@ export default function RestaurantKioskPage() {
     setPayment({ step: 'placing' });
 
     try {
-      const res = await apiFetch('/public/restaurant/orders', {
+      const res = await apiFetch('/public/restaurant/kiosk/orders', {
         method: 'POST',
         headers: { 'X-Restaurant-Shop-Token': token },
         body: JSON.stringify({
-          branch_id: branchId,
+          // Aucune route « branches » n'existe côté API publique : `branch_id`
+          // n'est pas transmis (optionnel au contrat serveur).
+          // `order_type` est transmis mais n'est pas encore validé côté API
+          // kiosque (le service crée la commande en `OrderSource::WEB`).
           order_type: orderType,
+          // Contrat réel (RestaurantKioskController::storeOrder) :
+          // `product_code` (référence produit), jamais l'id interne.
           items: cartLines.map((line) => ({
-            product_id: line.product.id,
+            product_code: line.product.code,
             quantity: line.quantity,
           })),
         }),
@@ -217,14 +207,18 @@ export default function RestaurantKioskPage() {
     }
 
     try {
+      // Contrat documenté : le paiement public (jeton boutique) vit sur la
+      // boutique RESTO-805 — `docs/restaurant/KIOSK_ETUDE.md` § « Paiement ».
+      // L'ancien chemin `/public/restaurant/orders/{ref}/pay` n'existe dans
+      // aucune route (404 systématique). Le montant est vérifié côté serveur :
+      // seul `provider_code` est transmis.
       const res = await apiFetch(
-        `/public/restaurant/orders/${current.order.reference}/pay`,
+        `/public/restaurant/shop/orders/${current.order.reference}/pay`,
         {
           method: 'POST',
           headers: { 'X-Restaurant-Shop-Token': token },
           body: JSON.stringify({
             provider_code: provider,
-            amount_minor: current.order.total_minor,
           }),
         },
       );
@@ -266,27 +260,13 @@ export default function RestaurantKioskPage() {
           <h1 className="text-xl font-semibold">{t(locale, 'restaurant.kiosk.title')}</h1>
         </div>
         <div className="flex items-center gap-4">
-          {branches.length > 1 && (
-            <select
-              value={branchId ?? ''}
-              onChange={(event) => setBranchId(Number(event.target.value))}
-              aria-label={t(locale, 'restaurant.kiosk.branch')}
-              className="rounded-full bg-slate-900 px-4 py-1.5 text-sm text-slate-200 outline-none"
-            >
-              {branches.map((branch) => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
-          )}
           <div className="flex items-center gap-2 rounded-full bg-slate-900 px-4 py-1.5 text-sm">
             <ShoppingCart className="h-4 w-4 text-amber-400" />
             <span>
               {cartLines.reduce((sum, line) => sum + line.quantity, 0)}{' '}
               {t(locale, 'restaurant.kiosk.items')}
             </span>
-            <span className="font-semibold">{formatPrice(cartTotal, categories[0]?.products[0]?.currency ?? 'DZD')}</span>
+            <span className="font-semibold">{formatPrice(cartTotal, products[0]?.currency ?? 'DZD')}</span>
           </div>
         </div>
       </header>
@@ -360,58 +340,52 @@ export default function RestaurantKioskPage() {
 
             {menuError !== null && <p className="py-12 text-red-300">{menuError}</p>}
 
-            {!menuLoading && menuError === null && categories.length === 0 && (
+            {!menuLoading && menuError === null && products.length === 0 && (
               <p className="py-12 text-slate-400">{t(locale, 'restaurant.kiosk.emptyMenu')}</p>
             )}
 
-            {categories.map((category) => (
-              <div key={category.id} className="mb-8">
-                <h2 className="mb-3 text-lg font-semibold text-amber-400">{category.name}</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                  {category.products.map((product) => (
-                    <div
-                      key={product.id}
-                      className="flex flex-col rounded-2xl bg-slate-900 p-4"
-                    >
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold">{product.name}</h3>
-                        {product.description !== null && product.description !== '' && (
-                          <p className="mt-1 text-sm text-slate-400">{product.description}</p>
+            {products.length > 0 && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex flex-col rounded-2xl bg-slate-900 p-4"
+                  >
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold">{product.name}</h3>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="font-semibold text-amber-400">
+                        {formatPrice(product.price_minor, product.currency)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {(cart[product.id] ?? 0) > 0 && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => removeFromCart(product.id)}
+                              aria-label={t(locale, 'restaurant.kiosk.remove')}
+                              className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="w-5 text-center font-semibold">{cart[product.id]}</span>
+                          </>
                         )}
-                      </div>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="font-semibold text-amber-400">
-                          {formatPrice(product.price_minor, product.currency)}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {(cart[product.id] ?? 0) > 0 && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => removeFromCart(product.id)}
-                                aria-label={t(locale, 'restaurant.kiosk.remove')}
-                                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-800 transition hover:bg-slate-700"
-                              >
-                                <Minus className="h-4 w-4" />
-                              </button>
-                              <span className="w-5 text-center font-semibold">{cart[product.id]}</span>
-                            </>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => addToCart(product.id)}
-                            aria-label={t(locale, 'restaurant.kiosk.add')}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500 text-amber-950 transition hover:bg-amber-400"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => addToCart(product.id)}
+                          aria-label={t(locale, 'restaurant.kiosk.add')}
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500 text-amber-950 transition hover:bg-amber-400"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </section>
 
           <aside className="h-fit rounded-2xl bg-slate-900 p-5 lg:sticky lg:top-6">
@@ -455,7 +429,7 @@ export default function RestaurantKioskPage() {
 
             <div className="mb-4 flex items-center justify-between border-t border-slate-800 pt-3 text-lg font-semibold">
               <span>{t(locale, 'restaurant.kiosk.total')}</span>
-              <span>{formatPrice(cartTotal, categories[0]?.products[0]?.currency ?? 'DZD')}</span>
+              <span>{formatPrice(cartTotal, products[0]?.currency ?? 'DZD')}</span>
             </div>
 
             {payment.step === 'error' && (

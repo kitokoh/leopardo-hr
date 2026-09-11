@@ -46,7 +46,12 @@ export function getEnvConfig(): EnvironmentConfig {
 
     // Feature flags
     enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true",
-    enableForms: process.env.NEXT_PUBLIC_ENABLE_FORMS === "true",
+    // Aligné sur le runtime serveur (src/app/api/forms/_lib/lead-capture.ts) et
+    // sur .env.local.example : le flag est ON par défaut et n'est désactivé que
+    // par un `false` explicite. Avant, le client testait `=== "true"` (donc OFF
+    // si non défini) alors que le serveur testait `!== "false"` (donc ON) : deux
+    // défauts contradictoires pour le même flag.
+    enableForms: process.env.NEXT_PUBLIC_ENABLE_FORMS !== "false",
     // #2906 : blog activé par défaut — contenu prêt, sitemap existant.
     // Pour désactiver explicitement : NEXT_PUBLIC_ENABLE_BLOG=false.
     enableBlog: process.env.NEXT_PUBLIC_ENABLE_BLOG !== "false",

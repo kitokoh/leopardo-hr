@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\TravelAgency\Application\Services;
+namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;

@@ -176,6 +176,57 @@ export async function fetchTrialStatus(token: string): Promise<FormSubmissionRes
 }
 
 /**
+ * Définit le mot de passe du manager d'un essai guidé, à partir du
+ * `provisioning_token` déjà détenu par le navigateur.
+ *
+ * Onboarding sans dépendance au mailer : sans email d'accès (mailer non
+ * configuré), c'est le seul moyen pour le prospect d'entrer dans son espace.
+ * Les erreurs remontent sous forme de **codes** — la mise en mots est faite
+ * côté composant via le catalogue i18n.
+ */
+export async function submitTrialPassword(
+  token: string,
+  password: string
+): Promise<FormSubmissionResponse> {
+  try {
+    const response = await fetch("/api/forms/trial-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ token, password, password_confirmation: password }),
+    });
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok || payload === null || payload.success === false) {
+      return {
+        success: false,
+        message: "",
+        error: payload?.error || "TRIAL_PASSWORD_UNAVAILABLE",
+        data: payload?.data,
+      };
+    }
+
+    return {
+      success: true,
+      message: "",
+      data: payload.data,
+    };
+  } catch (error) {
+    // Pas de message littéral ici : la garde `check-i18n-diff.js` traite toute
+    // nouvelle chaîne visible comme non traduite. L'erreur remonte en code, le
+    // composant la met en mots via le catalogue.
+    return {
+      success: false,
+      message: "",
+      error: error instanceof Error ? error.name : "NETWORK_ERROR",
+    };
+  }
+}
+
+/**
  * Submit OTP verification to complete trial provisioning
  */
 export async function submitVerifyForm(

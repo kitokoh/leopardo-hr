@@ -169,16 +169,39 @@
                 {{ isLoading ? t('auth.loading', 'Authentification…') : t('auth.login_submit', 'Se connecter') }}
               </button>
 
-              <button
-                v-if="demoSuperAdmin"
-                type="button"
-                :disabled="isLoading"
-                class="flex w-full justify-center rounded-2xl border border-white/10 bg-white/5 py-3.5 px-4 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 transition-all duration-300"
-                @click="useDemoAccount(demoSuperAdmin)"
+              <!-- Accès démo (dev/staging uniquement — masqué en production). -->
+              <div
+                v-if="hasDemoPersonas"
+                class="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-3"
               >
-                <SparklesIcon class="mr-2 h-4 w-4 text-brand-400" />
-                {{ t('auth.demo_access', 'Utiliser le compte demo super-admin') }}
-              </button>
+                <div class="flex items-center gap-2">
+                  <SparklesIcon class="h-4 w-4 shrink-0 text-amber-400" />
+                  <h2 class="text-[10px] font-black uppercase tracking-widest text-amber-300">
+                    {{ t('auth.demo_panel_title', 'Accès démo — choisir un profil') }}
+                  </h2>
+                </div>
+                <p class="text-[10px] font-bold leading-tight text-amber-200/70">
+                  {{ t('auth.demo_panel_hint', 'Environnement de démonstration : sélectionnez un profil pour vous connecter immédiatement. Désactivé en production.') }}
+                </p>
+                <div class="grid gap-2">
+                  <button
+                    v-for="persona in demoPersonas"
+                    :key="persona.email"
+                    type="button"
+                    :disabled="isLoading"
+                    class="flex w-full items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-left hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50 transition-all duration-300"
+                    @click="useDemoAccount(persona)"
+                  >
+                    <span class="min-w-0">
+                      <span class="block truncate text-xs font-bold text-slate-200">{{ persona.label }}</span>
+                      <span class="block truncate text-[10px] text-slate-500">{{ persona.email }}</span>
+                    </span>
+                    <span class="ml-2 shrink-0 rounded-full bg-brand-500/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-brand-300">
+                      {{ persona.badge }}
+                    </span>
+                  </button>
+                </div>
+              </div>
 
             </div>
           </form>
@@ -207,6 +230,7 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
+  SparklesIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
@@ -267,27 +291,67 @@ const fieldErrors = computed(() => {
 })
 
 /**
- * Accès démo super-admin (issue #6922). Data-driven : le bouton n'apparaît
- * que si le backend expose un persona super_admin via GET /api/v1/demo-users
- * (mode démo activé côté serveur — DEMO_MODE_ENABLED). Hors mode démo
- * (prod, staging strict), l'endpoint répond 404 et le bouton reste masqué :
- * plus aucun identifiant démo codé en dur dans l'UI d'admin.
- * Même contrat que le portail web (front/web/src/app/auth/login/page.tsx).
+ * Accès démo (issues #6922, #6524) — **DEV / STAGING UNIQUEMENT, par construction**.
+ *
+ * Le panneau n'apparaît que si le backend expose des personas via
+ * `GET /api/v1/demo-users` (mode démo activé côté serveur — `DEMO_MODE_ENABLED`).
+ * Hors mode démo — donc **toujours en production**, où l'endpoint répond 404 —
+ * la liste reste vide et rien n'est rendu : aucun identifiant n'est codé en dur
+ * dans l'UI (le bundle ne contient plus de credentials, cf. #4511 / #6922).
+ *
+ * L'utilisateur choisit un profil et se connecte en un clic. Le contrat de
+ * données est identique à celui du portail web
+ * (front/web/src/app/auth/login/page.tsx) : `{ super_admin, companies[].users[] }`.
  */
-const demoSuperAdmin = ref(null)
+const demoPersonas = ref([])
+
+// `v-if` sur un booléen nommé : évite une expression inline dans le template
+// (garde i18n « no new hardcoded strings » — PA2-I18N-014).
+const hasDemoPersonas = computed(() => demoPersonas.value.length > 0)
+
+function buildDemoPersonas(responseBody) {
+  // axios: responseBody = corps JSON ; le endpoint renvoie { data: {...} } ou {...}.
+  const root = responseBody?.data ?? responseBody ?? {}
+  const personas = []
+
+  const superAdmin = root.super_admin
+  if (typeof superAdmin?.email === 'string' && typeof superAdmin?.password === 'string') {
+    personas.push({
+      label: superAdmin.label || t('auth.demo_super_admin_label'),
+      email: superAdmin.email,
+      password: superAdmin.password,
+      badge: t('auth.demo_badge_platform', 'Plateforme'),
+    })
+  }
+
+  const companies = Array.isArray(root.companies) ? root.companies : []
+  for (const company of companies) {
+    const users = Array.isArray(company?.users) ? company.users : []
+    for (const user of users) {
+      if (typeof user?.email !== 'string' || typeof user?.password !== 'string') continue
+      const companyName = company?.name || 'Tenant'
+      personas.push({
+        label: user.name || user.email,
+        email: user.email,
+        password: user.password,
+        badge: user.manager_role ? `${companyName} · ${user.manager_role}` : companyName,
+      })
+    }
+  }
+
+  return personas
+}
 
 onMounted(() => {
   api
     .get('/demo-users')
     .then((res) => {
-      const sa = res?.data?.data?.super_admin ?? res?.data?.super_admin
-      if (sa && typeof sa.email === 'string' && typeof sa.password === 'string') {
-        demoSuperAdmin.value = sa
-      }
+      demoPersonas.value = buildDemoPersonas(res?.data)
     })
     .catch(() => {
-      // Mode démo désactivé (404) ou API injoignable : aucun compte à proposer.
-      demoSuperAdmin.value = null
+      // Mode démo désactivé (404 en production) ou API injoignable :
+      // aucun compte à proposer, le panneau reste masqué.
+      demoPersonas.value = []
     })
 })
 

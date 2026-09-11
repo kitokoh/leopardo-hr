@@ -113,7 +113,7 @@ export const guidesPageCopy: Record<AppLocale, GuidesContent> = {
       },
       stats: [
         { title: '50+ Points', description: 'Vérifications complètes pour votre paie' },
-        { title: 'Conformité Garantie', description: 'Respectez toutes les réglementations en vigueur' },
+        { title: 'Conformité assistée', description: 'Vérifiez vos échéances paie et sociales' },
         { title: '100% Gratuit', description: 'Téléchargez directement en PDF' },
       ],
       sectionTitle: 'Sections de la Checklist',
@@ -203,7 +203,7 @@ export const guidesPageCopy: Record<AppLocale, GuidesContent> = {
       },
       stats: [
         { title: '50+ Items', description: 'Complete checks for your payroll' },
-        { title: 'Guaranteed Compliance', description: 'Respect all applicable regulations' },
+        { title: 'Compliance support', description: 'Track your payroll and social deadlines' },
         { title: '100% Free', description: 'Download directly in PDF' },
       ],
       sectionTitle: 'Checklist Sections',

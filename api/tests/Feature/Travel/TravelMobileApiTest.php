@@ -7,15 +7,16 @@ namespace Tests\Feature\Travel;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
-use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\TravelAgency\Application\Actions\GenerateTripSeatsAction;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelClass;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelAgentPushConsumer;
+use App\Shared\Contracts\Notification\PushNotifier;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -93,7 +94,8 @@ class TravelMobileApiTest extends TestCase
         // Consumer testé en isolation avec un mock du service push : tous les
         // agents manage du tenant reçoivent un push FCM (TRAVEL-703).
         // 3 agents : le principal du test + rh + principal créés ci-dessus.
-        $push = Mockery::mock(PushNotificationService::class);
+        /** @var PushNotifier&MockInterface $push */
+        $push = Mockery::mock(PushNotifier::class);
         $push->shouldReceive('sendToUser')->times(3);
 
         $consumer = new TravelAgentPushConsumer($push);

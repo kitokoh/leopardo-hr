@@ -10,6 +10,12 @@ List<dynamic> extractDataList(dynamic payload) {
     if (data is Map && data['items'] is List) {
       return data['items'] as List;
     }
+    // `GET /onboarding-setup/checklist` renvoie {data: {steps: [...]}} et non
+    // une liste nue sous `data` : sans ce cas, l'extraction retombait sur []
+    // et l'ecran d'onboarding mobile affichait a tort « Onboarding termine ! ».
+    if (data is Map && data['steps'] is List) {
+      return data['steps'] as List;
+    }
 
     final items = payload['items'];
     if (items is List) return items;

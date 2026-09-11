@@ -13,30 +13,21 @@ test.use({ locale: 'fr-FR' });
  * e2e/manager-workday-smoke.spec.ts).
  */
 
+// Contrat réel de `GET /public/restaurant/kiosk/menu` (RestaurantKioskController::menu) :
+// liste plate de produits + pagination — voir api/tests/Feature/Restaurant/RestaurantKioskTest.php.
 const MENU_FIXTURE = {
-  data: [
-    {
-      id: 1,
-      name: 'Plats',
-      sort_order: 1,
-      products: [
-        { id: 101, code: 'BURGER-XL', name: 'Burger XL', description: 'Double steak', price_minor: 3500, currency: 'XAF', image_asset_id: null },
-        { id: 102, code: 'SALADE', name: 'Salade César', description: null, price_minor: 2500, currency: 'XAF', image_asset_id: null },
-      ],
-    },
-  ],
-};
-
-const BRANCHES_FIXTURE = {
-  data: [{ id: 1, code: 'MAIN', name: 'Branche Centrale' }],
+  data: {
+    products: [
+      { id: 101, code: 'BURGER-XL', name: 'Burger XL', price_minor: 3500, currency: 'XAF', category_id: 1 },
+      { id: 102, code: 'SALADE', name: 'Salade César', price_minor: 2500, currency: 'XAF', category_id: 1 },
+    ],
+    pagination: { per_page: 50, total: 2 },
+  },
 };
 
 async function mockPublicApi(page: Page) {
-  await page.route('**/api/v1/public/restaurant/menu', async (route) => {
+  await page.route('**/api/v1/public/restaurant/kiosk/menu', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MENU_FIXTURE) });
-  });
-  await page.route('**/api/v1/public/restaurant/branches', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(BRANCHES_FIXTURE) });
   });
 }
 
@@ -50,7 +41,7 @@ test.describe('Kiosque libre-service (RESTO-807)', () => {
   test('flux complet : menu → panier → commande → paiement espèces', async ({ page }) => {
     await mockPublicApi(page);
 
-    await page.route('**/api/v1/public/restaurant/orders', async (route) => {
+    await page.route('**/api/v1/public/restaurant/kiosk/orders', async (route) => {
       if (route.request().method() !== 'POST') {
         await route.continue();
         return;
@@ -61,21 +52,25 @@ test.describe('Kiosque libre-service (RESTO-807)', () => {
         body: JSON.stringify({
           data: {
             reference: 'RST-KIOSK-E2E',
-            status: 'draft',
-            total_minor: 6000,
+            ticket_number: '42',
+            status: 'open',
+            total_minor: 7000,
             currency: 'XAF',
-            subtotal_minor: 6000,
-            tax_minor: 0,
+            created: true,
           },
         }),
       });
     });
 
-    await page.route('**/api/v1/public/restaurant/orders/*/pay', async (route) => {
+    // Paiement public : même contrat que la boutique RESTO-805 (jeton boutique),
+    // documenté dans docs/restaurant/KIOSK_ETUDE.md § « Paiement ».
+    await page.route('**/api/v1/public/restaurant/shop/orders/*/pay', async (route) => {
       await route.fulfill({
-        status: 201,
+        status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ data: { id: 1, status: 'confirmed', provider_code: 'cash' } }),
+        body: JSON.stringify({
+          data: { provider_code: 'cash', status: 'pending', instruction: 'pay_at_pickup', order_reference: 'RST-KIOSK-E2E' },
+        }),
       });
     });
 

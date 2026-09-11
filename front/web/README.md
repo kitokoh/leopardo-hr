@@ -11,7 +11,7 @@ Frontend Next.js pour le dashboard web Leopardo RH.
 Create a local env file when you want an explicit override:
 
 ```bash
-cp .env.example .env.local
+cp .env.local.example .env.local
 ```
 
 ## Getting started

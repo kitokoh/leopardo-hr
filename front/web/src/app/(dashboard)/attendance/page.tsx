@@ -103,10 +103,6 @@ export default function AttendancePage() {
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Lignes</p>
           <p className="mt-3 text-3xl font-black text-slate-950">{loading ? '...' : items.length}</p>
         </div>
-        <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Source</p>
-          <p className="mt-3 text-lg font-bold text-slate-950">GET /attendance/today</p>
-        </div>
       </section>
 
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">

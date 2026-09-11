@@ -58,12 +58,12 @@ export const CLIENT_MODULES: ClientModule[] = [
   {
     key: 'employees',
     href: '/employees',
-    label: 'Employes',
+    label: 'Employés',
     group: 'hr',
     capabilityKeys: ['employees', 'can_view_employees', 'can_create_employees'],
     featureKeys: ['employees', 'employee_management', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Gestion des employes',
+    upgradeLabel: 'Gestion des employés',
   },
   {
     key: 'attendance',
@@ -73,7 +73,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     capabilityKeys: ['attendance', 'can_view_attendance'],
     featureKeys: ['attendance', 'time_tracking', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
-    upgradeLabel: 'Pointage et presence',
+    upgradeLabel: 'Pointage et présence',
   },
   {
     key: 'attendance_geo',
@@ -93,7 +93,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     capabilityKeys: ['absences', 'can_view_absences'],
     featureKeys: ['absences', 'leave_management', 'rh'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
-    upgradeLabel: 'Absences et conges',
+    upgradeLabel: 'Absences et congés',
   },
   {
     key: 'contracts',
@@ -133,7 +133,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     capabilityKeys: ['reports', 'can_view_reports'],
     featureKeys: ['reports', 'analytics'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Rapports avances',
+    upgradeLabel: 'Rapports avancés',
   },
   {
     key: 'partner',
@@ -158,12 +158,12 @@ export const CLIENT_MODULES: ClientModule[] = [
   {
     key: 'integrations',
     href: '/settings/developer',
-    label: 'Integrations',
+    label: 'Intégrations',
     group: 'platform',
     capabilityKeys: ['integrations', 'can_manage_integrations'],
     featureKeys: ['integrations', 'api_access', 'webhooks'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
-    upgradeLabel: 'Integrations',
+    upgradeLabel: 'Intégrations',
   },
   {
     key: 'marketing',
@@ -173,7 +173,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     capabilityKeys: ['marketing', 'can_view_marketing'],
     featureKeys: ['marketing', 'social_marketing'],
     allowedRoles: ['manager'],
-    upgradeLabel: 'Marketing & reseaux sociaux',
+    upgradeLabel: 'Marketing & réseaux sociaux',
   },
   // #5626 — Module Comptabilité (backend #5288/#5422 livré, front/web manquait
   // d'une entrée sidebar). Rôles : comptable et principal uniquement.

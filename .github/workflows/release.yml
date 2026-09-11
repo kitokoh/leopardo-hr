@@ -76,14 +76,26 @@ jobs:
         run: |
           set -euo pipefail
           SHA="${{ steps.verify.outputs.tag_commit }}"
+          # Check REQUIS = les 4 contexts réellement exigés par la protection de
+          # branche de `main` (fiables). « Backend Coverage » est passé en
+          # ADVISORY : depuis #6928 il n'est plus requis au merge, et son
+          # workflow sérialisé ne produit plus aucun statut sous rafale de
+          # pushes (les runs en attente sont annulés au profit du suivant).
+          # L'exiger rendait la chaîne prod IMPOSSIBLE : aucun tag ne pouvait
+          # créer de Release ni déclencher de déploiement (incident 2026-09-10,
+          # prod figée sur 4.24.0). Un check advisory manquant/rouge est
+          # désormais signalé en ::warning:: sans bloquer.
           REQUIRED=( \
-            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
             "PHPStan — Strict (Core/Modules/Shared, level 8)" \
             "Module Structure Validator" \
             "Frontend — ESLint + TypeScript" \
             "actionlint (+ shellcheck)" \
           )
+          ADVISORY=( \
+            "Backend Coverage (PHP 8.4 + PostgreSQL 16)" \
+          )
           FAILED=()
+          ADVISORY_WARN=()
           for ctx in "${REQUIRED[@]}"; do
             # Pagination : une release sur un vieux commit peut avoir >100
             # check-runs (chaque merge rejoue toute la matrice). Issue #3970.
@@ -118,6 +130,34 @@ jobs:
               echo "::notice::${ctx} -> ${CONC} : OK"
             fi
           done
+          for ctx in "${ADVISORY[@]}"; do
+            CONCS=()
+            PAGE=1
+            while :; do
+              BATCH=$(curl -fsSL \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100&page=${PAGE}")
+              COUNT_BATCH=$(jq '.check_runs | length' <<<"${BATCH}")
+              if [[ "${COUNT_BATCH}" -eq 0 ]]; then break; fi
+              mapfile -t BATCH_CONCS < <(jq -r --arg ctx "$ctx" '.check_runs[] | select(.name == $ctx) | .conclusion' <<<"${BATCH}")
+              CONCS+=("${BATCH_CONCS[@]}")
+              PAGE=$((PAGE + 1))
+              if [[ "${PAGE}" -gt 10 ]]; then break; fi
+            done
+            if [[ ${#CONCS[@]} -eq 0 ]]; then
+              ADVISORY_WARN+=("${ctx} (absent)")
+            else
+              CONC=$(printf '%s\n' "${CONCS[@]}" | sort -u | paste -sd, -)
+              case "${CONC}" in
+                *failure*|*timed_out*|*cancelled*) ADVISORY_WARN+=("${ctx} (${CONC})") ;;
+                *) echo "::notice::[advisory] ${ctx} -> ${CONC} : OK" ;;
+              esac
+            fi
+          done
+          if [[ ${#ADVISORY_WARN[@]} -gt 0 ]]; then
+            echo "::warning::[advisory] checks non bloquants non verts : ${ADVISORY_WARN[*]} — deploiement autorise (incident 2026-09-10)."
+          fi
           if [[ ${#FAILED[@]} -gt 0 ]]; then
             echo "::error::Release bloquee — checks requis en echec ou absents : ${FAILED[*]}"
             exit 1

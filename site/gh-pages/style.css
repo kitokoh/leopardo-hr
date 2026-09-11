@@ -95,3 +95,10 @@ a { color: var(--teal); text-decoration: none; }
   .nav-links { gap: 12px; }
   .nav-links a:not(.btn) { display: none; }
 }
+
+.stats-note {
+  margin: 0.75rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted, #94a3b8);
+}

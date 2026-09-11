@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\TravelAgency\Domain\Contracts\TravelOutboxConsumer;
+use App\Shared\Contracts\Notification\PushNotifier;
 
 /**
  * TRAVEL-703 (#6090) — Notifications push agents (FCM).
@@ -23,7 +23,7 @@ final class TravelAgentPushConsumer implements TravelOutboxConsumer
         'travel.booking.confirmed.v1',
     ];
 
-    public function __construct(private readonly PushNotificationService $push) {}
+    public function __construct(private readonly PushNotifier $push) {}
 
     public function supports(string $eventType): bool
     {

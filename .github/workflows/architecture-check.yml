@@ -544,3 +544,12 @@ jobs:
         if: needs.detect-changes.outputs.web_changed == 'true'
         working-directory: front/web
         run: npx eslint src --ext .ts,.tsx --max-warnings 0
+
+      # Garde config Vercel (incident 2026-09-10) : un `ignoreCommand` de plus
+      # de 256 caractères fait échouer la validation du schéma et met TOUS les
+      # déploiements en ERROR ; un pathspec relatif au cwd (`front/web` alors que
+      # le cwd vaut déjà `front/web`) saute TOUS les builds. Les deux sont
+      # arrivés — cette étape les attrape avant la production.
+      - name: Vercel config guard (ignoreCommand)
+        if: needs.detect-changes.outputs.web_changed == 'true'
+        run: node dev-hub/tools/check-vercel-config.js

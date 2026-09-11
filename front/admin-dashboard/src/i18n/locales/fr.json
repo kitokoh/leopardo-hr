@@ -311,7 +311,7 @@
   "settingsTeamDrive": "Pilotage équipe",
   "seo": {
     "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 79 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     }
   },
   "settingsBiometryEnableFirst": "Active d abord la preparation biometrie.",
@@ -1111,7 +1111,12 @@
     "two_fa_label": "Code 2FA",
     "two_fa_required_msg": "Un code de vérification est requis.",
     "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
-    "unexpected_error": "Une erreur inattendue est survenue."
+    "unexpected_error": "Une erreur inattendue est survenue.",
+    "demo_panel_title": "Accès démo — choisir un profil",
+    "demo_panel_hint": "Environnement de démonstration : sélectionnez un profil pour vous connecter immédiatement. Désactivé en production.",
+    "demo_badge_platform": "Plateforme",
+    "demo_access": "Utiliser un compte démo",
+    "demo_super_admin_label": "Super Administrateur"
   },
   "settingsShareProfileOrScan": "Partager votre profil ou scanner une entreprise.",
   "attendanceStatusInProgress": "En cours",
@@ -1652,7 +1657,18 @@
       "countryRequired": "Le pays est requis."
     },
     "labelCountry": "Pays",
-    "countryPlaceholder": "Sélectionnez votre pays"
+    "countryPlaceholder": "Sélectionnez votre pays",
+    "setPasswordTitle": "Choisissez votre mot de passe",
+    "setPasswordSubtitle": "Dernière étape : définissez votre mot de passe pour accéder à votre espace. Aucun email n'est nécessaire.",
+    "setPasswordLabel": "Mot de passe",
+    "setPasswordConfirmLabel": "Confirmer le mot de passe",
+    "setPasswordSubmit": "Définir mon mot de passe",
+    "setPasswordSubmitting": "Enregistrement…",
+    "setPasswordSuccess": "Mot de passe enregistré. Vous pouvez vous connecter.",
+    "setPasswordTooWeak": "8 caractères minimum, dont un chiffre.",
+    "setPasswordMismatch": "Les deux mots de passe ne correspondent pas.",
+    "setPasswordUnavailable": "Impossible d'enregistrer le mot de passe pour le moment. Réessayez.",
+    "goToLogin": "Se connecter"
   },
   "attendanceDayDetail": "Détail par jour",
   "support_tickets": {
@@ -2711,7 +2727,37 @@
     "stationsCaption": "Stations de la flotte",
     "incidentsCaption": "Incidents signalés",
     "reconciliationsCaption": "Rapports de rapprochement",
-    "apiUnavailable": "L'API FuelStation (référentiel stations, incidents, rapprochements) n'est pas encore livrée — la page sera opérationnelle avec le batch BC-15 (#6373)."
+    "apiUnavailable": "L'API FuelStation (référentiel stations, incidents, rapprochements) n'est pas encore livrée — la page sera opérationnelle avec le batch BC-15 (#6373).",
+    "pump": {
+      "title": "Relevé pompiste",
+      "subtitle": "Saisie des index compteurs par station",
+      "loadError": "Impossible de charger les données du réseau",
+      "noShift": "Aucun shift actif",
+      "retry": "Réessayer",
+      "emptyStations": "Aucune station disponible",
+      "selectStation": "Choisir une station",
+      "selectPump": "Choisir une pompe",
+      "selectMeter": "Choisir un compteur",
+      "back": "Retour",
+      "shift": "Shift",
+      "reading": "Relevé du compteur",
+      "unitHint": "Valeur en litres",
+      "capturedAt": "Date et heure du relevé",
+      "offlineHint": "Hors ligne : le relevé sera synchronisé automatiquement.",
+      "submit": "Enregistrer le relevé",
+      "submitting": "Enregistrement…",
+      "saved": "Relevé enregistré",
+      "delta": "Delta",
+      "noDelta": "Aucun écart calculé pour l'instant.",
+      "anomaly": "Signaler une anomalie",
+      "anomalyTitle": "Titre de l'anomalie",
+      "anomalySeverity": "Gravité",
+      "anomalySaved": "Anomalie signalée",
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée",
+      "critical": "Critique"
+    }
   },
   "adminPalette": {
     "appLoading": "Chargement de l'administration…",

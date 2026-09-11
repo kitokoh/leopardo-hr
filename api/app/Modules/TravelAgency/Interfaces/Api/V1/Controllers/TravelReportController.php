@@ -6,7 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use App\Modules\TravelAgency\Application\Services\TravelReportService;
+use App\Modules\TravelAgency\Infrastructure\Services\TravelReportService;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\TravelReportRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;

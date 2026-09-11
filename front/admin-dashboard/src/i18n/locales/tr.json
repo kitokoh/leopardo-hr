@@ -311,7 +311,7 @@
   "settingsTeamDrive": "Ekip yönetimi",
   "seo": {
     "pricing": {
-      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 79 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   },
   "settingsBiometryEnableFirst": "Önce biyometrik kaydı etkinleştirin.",
@@ -1111,7 +1111,12 @@
     "two_fa_label": "2FA kodu",
     "two_fa_required_msg": "Bir doğrulama kodu gereklidir.",
     "two_fa_setup_failed": "2FA gizli anahtarı oluşturulamadı.",
-    "unexpected_error": "Beklenmeyen bir hata oluştu."
+    "unexpected_error": "Beklenmeyen bir hata oluştu.",
+    "demo_panel_title": "Demo erişimi — bir profil seçin",
+    "demo_panel_hint": "Demo ortamı: anında giriş yapmak için bir profil seçin. Üretimde devre dışı.",
+    "demo_badge_platform": "Platform",
+    "demo_access": "Demo hesabı kullan",
+    "demo_super_admin_label": "Süper Yönetici"
   },
   "settingsShareProfileOrScan": "Profilinizi paylaşın veya bir şirketi tarayın.",
   "attendanceStatusInProgress": "Devam ediyor",
@@ -1652,7 +1657,18 @@
       "countryRequired": "Ülke zorunludur."
     },
     "labelCountry": "Ülke",
-    "countryPlaceholder": "Ülkenizi seçin"
+    "countryPlaceholder": "Ülkenizi seçin",
+    "setPasswordTitle": "Parolanızı seçin",
+    "setPasswordSubtitle": "Son adım: alanınıza erişmek için parolanızı belirleyin. E-posta gerekmez.",
+    "setPasswordLabel": "Parola",
+    "setPasswordConfirmLabel": "Parolayı doğrula",
+    "setPasswordSubmit": "Parolamı belirle",
+    "setPasswordSubmitting": "Kaydediliyor…",
+    "setPasswordSuccess": "Parola kaydedildi. Giriş yapabilirsiniz.",
+    "setPasswordTooWeak": "En az 8 karakter ve bir rakam.",
+    "setPasswordMismatch": "İki parola eşleşmiyor.",
+    "setPasswordUnavailable": "Parola şu anda kaydedilemiyor. Lütfen tekrar deneyin.",
+    "goToLogin": "Giriş yap"
   },
   "attendanceDayDetail": "Günlük detay",
   "support_tickets": {
@@ -2711,7 +2727,37 @@
     "stationsCaption": "Filo istasyonları",
     "incidentsCaption": "Bildirilen olaylar",
     "reconciliationsCaption": "Mutabakat raporları",
-    "apiUnavailable": "FuelStation API'si (istasyon referansı, olaylar, mutabakatlar) henüz teslim edilmedi — sayfa BC-15 partisiyle (#6373) birlikte çalışır hale gelecek."
+    "apiUnavailable": "FuelStation API'si (istasyon referansı, olaylar, mutabakatlar) henüz teslim edilmedi — sayfa BC-15 partisiyle (#6373) birlikte çalışır hale gelecek.",
+    "pump": {
+      "title": "Pompacı sayacı okuma",
+      "subtitle": "İstasyon bazında sayaç okumalarını kaydet",
+      "loadError": "Ağ verileri yüklenemedi",
+      "noShift": "Aktif vardiya yok",
+      "retry": "Yeniden dene",
+      "emptyStations": "Kullanılabilir istasyon yok",
+      "selectStation": "İstasyon seç",
+      "selectPump": "Pompa seç",
+      "selectMeter": "Sayaç seç",
+      "back": "Geri",
+      "shift": "Vardiya",
+      "reading": "Sayaç okuması",
+      "unitHint": "Litre cinsinden değer",
+      "capturedAt": "Okuma tarihi ve saati",
+      "offlineHint": "Çevrimdışı: okuma otomatik olarak eşitlenecek.",
+      "submit": "Okumayı kaydet",
+      "submitting": "Kaydediliyor…",
+      "saved": "Okuma kaydedildi",
+      "delta": "Fark",
+      "noDelta": "Henüz fark hesaplanmadı.",
+      "anomaly": "Arıza bildir",
+      "anomalyTitle": "Arıza başlığı",
+      "anomalySeverity": "Önem derecesi",
+      "anomalySaved": "Arıza bildirildi",
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "critical": "Kritik"
+    }
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",

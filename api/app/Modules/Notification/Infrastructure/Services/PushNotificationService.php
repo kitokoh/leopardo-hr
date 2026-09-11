@@ -6,12 +6,13 @@ namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\DeviceToken;
+use App\Shared\Contracts\Notification\PushNotifier;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
-class PushNotificationService
+class PushNotificationService implements PushNotifier
 {
     public function registerToken(Employee $employee, string $token, string $platform = 'android', ?string $deviceName = null): DeviceToken
     {

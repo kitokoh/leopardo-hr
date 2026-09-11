@@ -108,8 +108,11 @@ export default function DashboardLayout({
       return;
     }
 
+    // PATCH, pas PUT : l'API n'expose que PATCH /notifications/{id}/read
+    // (routes/modules/rh.php:202, dashboard.php:44) — le PUT répondait 405 et
+    // la pastille de notification ne se marquait jamais comme lue.
     await apiFetch(`/notifications/${notification.id}/read`, {
-      method: 'PUT',
+      method: 'PATCH',
     });
 
     setNotificationPreview((items) => items.map((item) => (
