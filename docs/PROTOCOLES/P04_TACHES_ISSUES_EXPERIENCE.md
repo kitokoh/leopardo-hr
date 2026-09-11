@@ -1,6 +1,6 @@
 # P04 — Issues & tâches par niveau d'expérience, délégation et capitalisation
 
-> **Statut :** proposition v0.1 — **Dernière revue :** 2026-09-09
+> **Statut :** ratifié v1.0 (2026-09-11) — **Dernière revue :** 2026-09-11 — revue mensuelle (dernier jour ouvré)
 > **Propriétaire :** PM (affectation) + gardien technique (qualité des issues)
 > **Portée :** création, qualification, affectation, exécution et délégation des issues GitHub ;
 > transformation de l'expérience acquise en issues/tâches automatiques ; capitalisation des
@@ -111,3 +111,4 @@ Règles :
 | Version | Date | Changement |
 |---|---|---|
 | v0.1 | 2026-09-09 | Création — matrice expérience/délégation + capitalisation obligatoire |
+| v1.0 | 2026-09-11 | Ratification — audit de l'état réel du dépôt (registre `REGISTRE_PROTOCOLES.md`) |
