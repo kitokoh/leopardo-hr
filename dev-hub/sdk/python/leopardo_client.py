@@ -3693,7 +3693,7 @@ class LeopardoClient:
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
     def post_trial_set_password(self, **kwargs):
-        """Définit le mot de passe de l'espace d'essai (onboarding sans e-mail)"""
+        """Definir le mot de passe du manager d'un essai guide"""
         return self.request("POST", "/trial/set-password", **kwargs)
 
     def post_trial_signup(self, **kwargs):

@@ -4590,7 +4590,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
-    /** Définit le mot de passe de l'espace d'essai (onboarding sans e-mail) */
+    /** Definir le mot de passe du manager d'un essai guide */
     postTrialSetPassword(options = {}) {
       return request("POST", "/trial/set-password", options);
     },
