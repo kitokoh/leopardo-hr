@@ -1,0 +1,96 @@
+name: "🤝 Relais / délégation"
+description: Passer le relais sur un travail en cours (fin de session, changement d'agent, issue hors BC/niveau) — protocole P04 §5. Décrit l'état réel pour que le suivant reprenne sans se perdre.
+title: "[RELAIS]: "
+labels: ["relais"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Protocole P04 §5 — Délégation entre agents.** Un relais sans état réel fait perdre
+        au suivant exactement le temps que le protocole P02 cherche à économiser.
+        Règle : l'issue délégante est **qualifiée** (BC, priorité, critères) et le relais cite
+        les branches/PRs existantes (le nom de branche EST le verrou, #2400).
+        Flux de capitalisation : `docs/GOUVERNANCE/RETEX_FLUX.md`.
+
+  - type: input
+    id: issue_source
+    attributes:
+      label: Issue / travail concerné
+      description: Numéro(s) d'issue et/ou de PR en cours.
+      placeholder: "#1234 (PR #1240 en brouillon)"
+    validations:
+      required: true
+
+  - type: input
+    id: bc
+    attributes:
+      label: Bounded Context (BC)
+      description: BC du travail (registre dev-hub/governance/bounded-context-registry.json) — l'affectation se fait par BC, jamais par « premier arrivé ».
+      placeholder: "BC-11 CRM"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: motif
+    attributes:
+      label: Motif du relais
+      options:
+        - "Fin de session / fin de contexte"
+        - "Issue hors de mon BC ou de mon niveau (palier L1-L4)"
+        - "Blocage : dépendance externe, CI, décision manquante"
+        - "Récupération après erreur (état à ne pas reproduire)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: etat_reel
+    attributes:
+      label: État réel vérifié (pas supposé)
+      description: Ce qui est fait, ce qui est poussé, ce qui reste. Vérifié via `git status`, `gh pr list`, `gh issue view`.
+      placeholder: |
+        - Fait : ... (fichiers, tests)
+        - Poussé : branche `fix/1234-...`, dernier commit `<sha>`
+        - Reste : ...
+      value: ""
+    validations:
+      required: true
+
+  - type: textarea
+    id: verrous
+    attributes:
+      label: Branches & PRs existantes (verrous)
+      description: Lister TOUTES les branches/PRs contenant le n° d'issue (parade #2400). Le suivant DOIT contribuer dessus, jamais ouvrir une seconde branche.
+      placeholder: |
+        - fix/1234-slug (poussée) → contribuer dessus
+        - PR #1240 ouverte, checks X/Y verts
+    validations:
+      required: true
+
+  - type: textarea
+    id: risques
+    attributes:
+      label: Risques connus & pièges rencontrés
+      description: Ce qui a coûté du temps, ce qui est fragile, ce qu'il ne faut PAS refaire. Si c'est rejouable, ouvrir en parallèle une issue `[LECON]`.
+    validations:
+      required: false
+
+  - type: textarea
+    id: prochaine_action
+    attributes:
+      label: Prochaine action recommandée
+      description: La première chose que le repreneur doit faire, en une phrase actionnable.
+      placeholder: "Reprendre la branche fix/1234-slug, lancer les tests Payroll, ouvrir la PR."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: engagements
+    attributes:
+      label: Engagements du relais
+      options:
+        - label: L'issue est qualifiée (BC + priorité + critères d'acceptation).
+          required: true
+        - label: J'ai listé toutes les branches/PRs existantes pour éviter un doublon (#2400).
+          required: true
+        - label: Une leçon réutilisable a été transformée en issue `[LECON]`/RETEX si applicable (P04 §6).
+          required: false
