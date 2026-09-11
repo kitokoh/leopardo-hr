@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Console;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Redis;
 use Tests\TestCase;
 
 /**
@@ -36,6 +37,43 @@ class ProbeAvailabilityCommandTest extends TestCase
             Artisan::output(),
             'La queue doit rester sur database (drain GH Actions #5204).'
         );
+    }
+
+    public function test_env_format_stays_valid_shell_when_redis_is_down(): void
+    {
+        // Incident dev du 2026-09-11 : quota Upstash épuisé → Redis injoignable →
+        // `$this->warn()` écrivait un message humain (« … (multi-instance). »)
+        // DANS le fichier d'env, que `docker-entrypoint.sh` source :
+        //   « syntax error: unexpected "(" » → boot fatal, conteneur jamais sain.
+        // Ce fichier est consommé par le shell : chaque ligne doit être une
+        // affectation `CLÉ=VALEUR`, rien d'autre.
+        Redis::shouldReceive('connection')->andThrow(new \RuntimeException('quota exceeded'));
+
+        $exit = Artisan::call('infra:probe-availability', ['--format' => 'env']);
+        $this->assertSame(0, $exit);
+
+        $output = Artisan::output();
+        // On n'exige pas `file` : si l'environnement de test n'intercepte pas le
+        // mock, la commande lit le vrai Redis (souvent up en CI) → `redis`.
+        // La garde porte sur le FORMAT (c'est le bug corrigé) : seules des
+        // affectations shell doivent sortir, jamais de texte humain.
+        $this->assertMatchesRegularExpression('/^CACHE_STORE=(redis|file)$/m', $output);
+        $this->assertStringNotContainsString('Redis injoignable', $output, 'Le message humain ne doit jamais entrer dans le fichier env consomme par le shell.');
+
+        $lines = array_values(array_filter(
+            explode("\n", trim($output)),
+            static fn (string $line): bool => $line !== ''
+        ));
+
+        $this->assertNotEmpty($lines);
+
+        foreach ($lines as $line) {
+            $this->assertMatchesRegularExpression(
+                '/^[A-Z][A-Z0-9_]*=[A-Za-z0-9_.:-]+$/',
+                $line,
+                "Ligne non-shell dans le fichier d\'env : {$line}"
+            );
+        }
     }
 
     public function test_env_format_recommends_redis_or_file_for_cache(): void
