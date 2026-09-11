@@ -1086,7 +1086,8 @@
     "try_demo_account": "Tester avec un compte demo",
     "two_factor_required": "Le code 2FA est requis.",
     "demo": {
-      "access": "Acces Demo"
+      "access": "Acces Demo",
+      "unavailable": "Accès démo momentanément indisponible (API injoignable)."
     },
     "toggle": {
       "password": {
