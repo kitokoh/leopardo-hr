@@ -13,12 +13,12 @@
   <!-- Sidebar -->
   <div
     :class="[
-      'fixed inset-y-0 left-0 z-50 w-64 transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out md:static md:translate-x-0',
+      'fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out md:translate-x-0',
       isOpen ? 'translate-x-0' : '-translate-x-full'
     ]"
   >
     <!-- Logo -->
-    <div class="flex h-20 items-center justify-center border-b border-slate-200/50 dark:border-slate-800/50 px-6">
+    <div class="flex h-20 shrink-0 items-center justify-center border-b border-slate-200/50 dark:border-slate-800/50 px-6">
       <div class="flex items-center">
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-cyan-600 shadow-lg shadow-brand-500/20">
           <span class="text-sm font-bold text-white">LRH</span>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="mt-6 px-4" role="navigation" :aria-label="t('navigation.mainMenu', 'Menu principal')">
+    <nav class="mt-6 flex-1 overflow-y-auto px-4 pb-24" role="navigation" :aria-label="t('navigation.mainMenu', 'Menu principal')">
       <div class="space-y-1">
         <router-link
           v-for="item in navigation"
