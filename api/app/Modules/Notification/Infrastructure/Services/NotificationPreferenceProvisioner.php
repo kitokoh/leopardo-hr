@@ -6,20 +6,19 @@ namespace App\Modules\Notification\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 
 class NotificationPreferenceProvisioner
 {
     public function ensureForEmployee(Employee $employee): NotificationPreference
     {
-        $preference = NotificationPreference::query()->firstOrNew([
-            'employee_id' => $employee->id,
-        ]);
+        $preference = $this->findExisting($employee);
 
         $this->applyDefaults($preference, $employee);
 
         if ($preference->exists === false || $preference->isDirty()) {
-            $preference->save();
+            $this->persist($preference, $employee);
         }
 
         return $preference;
@@ -49,9 +48,7 @@ class NotificationPreferenceProvisioner
                         continue;
                     }
 
-                    $preference = NotificationPreference::query()->firstOrNew([
-                        'employee_id' => $employee->id,
-                    ]);
+                    $preference = $this->findExisting($employee);
                     $wasExisting = $preference->exists;
                     $this->applyDefaults($preference, $employee);
 
@@ -67,12 +64,72 @@ class NotificationPreferenceProvisioner
                         continue;
                     }
 
-                    $preference->save();
+                    $this->persist($preference, $employee);
                     $stats[$wasExisting ? 'updated' : 'created']++;
                 }
             });
 
         return $stats;
+    }
+
+    /**
+     * Retrouve la préférence existante par `employee_id`.
+     *
+     * Le backfill tourne en console (sans contexte société) et la contrainte
+     * d'unicité `notification_preferences_employee_id_unique` est globale, pas
+     * par société : on interroge donc sans le scope `company` pour ne jamais
+     * rater une ligne existante et provoquer un INSERT en doublon (#7227).
+     */
+    private function findExisting(Employee $employee): NotificationPreference
+    {
+        $existing = NotificationPreference::query()
+            ->withoutGlobalScopes()
+            ->where('employee_id', $employee->id)
+            ->first();
+
+        if ($existing instanceof NotificationPreference) {
+            return $existing;
+        }
+
+        return new NotificationPreference(['employee_id' => $employee->id]);
+    }
+
+    /**
+     * Enregistre la préférence en absorbant la violation d'unicité
+     * `employee_id` (ligne créée hors scope ou par un déploiement concurrent) :
+     * on recharge alors la ligne réelle et on la met à jour au lieu d'échouer.
+     */
+    private function persist(NotificationPreference $preference, Employee $employee): void
+    {
+        try {
+            $preference->save();
+
+            return;
+        } catch (QueryException $exception) {
+            if (! $this->isUniqueViolation($exception)) {
+                throw $exception;
+            }
+        }
+
+        $existing = NotificationPreference::query()
+            ->withoutGlobalScopes()
+            ->where('employee_id', $employee->id)
+            ->first();
+
+        if (! $existing instanceof NotificationPreference) {
+            throw new \RuntimeException(sprintf(
+                'Préférence de notification introuvable pour employee_id=%s après violation d’unicité.',
+                (string) $employee->id
+            ));
+        }
+
+        $this->applyDefaults($existing, $employee);
+        $existing->save();
+    }
+
+    private function isUniqueViolation(QueryException $exception): bool
+    {
+        return in_array((string) $exception->getCode(), ['23505', '23000'], true);
     }
 
     private function applyDefaults(NotificationPreference $preference, Employee $employee): void
