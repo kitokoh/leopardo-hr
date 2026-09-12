@@ -165,7 +165,7 @@ services:
         sync: false
       # Mail
       - key: MAIL_MAILER
-        value: smtp
+        value: resend
       - key: MAIL_HOST
         sync: false
       - key: MAIL_PORT
@@ -174,10 +174,13 @@ services:
         sync: false
       - key: MAIL_PASSWORD
         sync: false
+      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+      - key: RESEND_KEY
+        sync: false
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        value: noreply@leopardo-rh.com
+        value: noreply@hurkonsan.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
       # Demo / ops (issue #2336) : le super-admin et le cockpit admin ne
@@ -293,7 +296,7 @@ services:
       - key: FIREBASE_SERVICE_ACCOUNT_JSON
         sync: false
       - key: MAIL_MAILER
-        value: smtp
+        value: resend
       - key: MAIL_HOST
         sync: false
       - key: MAIL_PORT
@@ -302,10 +305,13 @@ services:
         sync: false
       - key: MAIL_PASSWORD
         sync: false
+      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+      - key: RESEND_KEY
+        sync: false
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        value: noreply@leopardo-rh.com
+        value: noreply@hurkonsan.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
       - key: STRIPE_SECRET_KEY
@@ -396,7 +402,7 @@ services:
       # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.
       # Bloc aligné sur le web service (mêmes valeurs/sync: false).
       - key: MAIL_MAILER
-        value: smtp
+        value: resend
       - key: MAIL_HOST
         sync: false
       - key: MAIL_PORT
@@ -405,10 +411,13 @@ services:
         sync: false
       - key: MAIL_PASSWORD
         sync: false
+      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+      - key: RESEND_KEY
+        sync: false
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        value: noreply@leopardo-rh.com
+        value: noreply@hurkonsan.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
 
