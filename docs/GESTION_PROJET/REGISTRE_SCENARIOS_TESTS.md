@@ -266,3 +266,4 @@ et de la veracite des termes employes. La correction a entraine :
 
 Aucun parcours critique n'est modifie : le lint, le build et les suites vitrine
 restent les gates applicables.
+- **#7223 — Web E2E admin : rôle `super_admin` + init carte flotte.** Les specs `accounting-dashboard-golden`, `travel-content`, `travel-contacts` et `fleet-no-session-kill` ont été réalignées sur le garde-fou de rôle introduit par #7205 (le backend plateforme renvoie toujours `super_admin`) ; `FleetView.vue` n'initialise plus Leaflet sans conteneur monté (`await nextTick()` + garde). Aucun changement de parcours fonctionnel.

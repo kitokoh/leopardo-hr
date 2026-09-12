@@ -149,6 +149,14 @@ const severityMap = {
 async function initMap() {
   if (!mapContainer.value) return
   const L = await import('leaflet')
+  // #7215 : le conteneur peut ne pas être encore monté (v-if + <Suspense> /
+  // <transition> dans DashboardLayout) -> Leaflet lève « Map container not
+  // found. ». On attend le prochain tick et on ne consomme pas leafletMap si
+  // le conteneur n'existe pas encore (l'init sera retentée au prochain affichage).
+  await nextTick()
+  if (!mapContainer.value) {
+    return
+  }
   leafletMap = L.map(mapContainer.value).setView([36.75, 3.06], 6)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap',
