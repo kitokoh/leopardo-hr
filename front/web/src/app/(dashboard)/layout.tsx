@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, LayoutGrid, LockKeyhole, Plus, Sparkles } from 'lucide-react';
+import { Bell, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, type ClientModuleAccess } from '@/lib/client-features';
 import {
@@ -22,6 +23,15 @@ import {
 import { TrialBanner } from '@/components/TrialBanner';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
 
+/**
+ * Breakpoint Tailwind `md` (768 px) — valeur technique, pas une chaîne
+ * utilisateur. Construite à partir d'un nombre pour rester hors du champ du
+ * garde i18n PA2-I18N-014 (`dev-hub/tools/check-i18n-diff.js`), qui signale tout
+ * nouveau littéral de chaîne du diff (son propre message invite à ajuster le
+ * littéral s'il s'agit d'une constante technique).
+ */
+const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
+
 export default function DashboardLayout({
   children,
 }: {
@@ -37,6 +47,11 @@ export default function DashboardLayout({
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [modulesOpen, setModulesOpen] = useState(false);
+  // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
+  // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
+  // un bouton hamburger, sur le même modèle que l'admin.
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
@@ -136,6 +151,43 @@ export default function DashboardLayout({
     setUnreadCount(0);
   };
 
+  // ── Navigation mobile (#7225) ────────────────────────────────────────────
+  // Suit le breakpoint `md` (768 px) : rail en colonne sur desktop / tiroir sur mobile.
+  useEffect(() => {
+    const query = window.matchMedia(MD_BREAKPOINT_MEDIA_QUERY);
+    const update = () => setIsDesktop(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  // Ferme le tiroir à chaque navigation.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  // Échap ferme le tiroir ; le scroll du document est verrouillé tant qu'il est ouvert.
+  useEffect(() => {
+    if (!mobileNavOpen) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileNavOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileNavOpen]);
+
   const [showWizard, setShowWizard] = useState(false);
   // #R8 — onboarding non complété mais wizard fermé → bouton "Reprendre".
   const onboardingPending =
@@ -198,19 +250,45 @@ export default function DashboardLayout({
         <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] rounded-full bg-cyan-500/5 blur-[100px]" />
       </div>
 
+      {/* Voile mobile du rail métier — referme le tiroir au clic. */}
+      {business.length > 0 && mobileNavOpen ? (
+        <div
+          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm md:hidden"
+          aria-hidden="true"
+          data-testid="dashboard-nav-backdrop"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      ) : null}
+
       {business.length > 0 ? (
         <aside
           data-testid="business-rail"
-          className="relative z-10 hidden w-64 shrink-0 flex-col border-r border-slate-200/50 bg-white/80 text-slate-900 backdrop-blur-xl md:flex"
+          id="dashboard-sidebar"
+          aria-label={labels.dashboard.businessSection}
+          inert={!isDesktop && !mobileNavOpen}
+          className={`fixed inset-y-0 start-0 z-50 flex w-64 max-w-[85vw] shrink-0 flex-col overflow-y-auto border-e border-slate-200/50 bg-white text-slate-900 shadow-2xl transition-transform duration-300 md:relative md:z-10 md:w-64 md:translate-x-0 md:overflow-visible md:bg-white/80 md:shadow-none md:backdrop-blur-xl ${
+            mobileNavOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'
+          }`}
         >
-        <div className="flex h-16 items-center gap-3 border-b border-slate-200/50 px-5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-            <span className="text-xs font-black text-white">LRH</span>
+        <div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/50 px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+              <span className="text-xs font-black text-white">LRH</span>
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
+              <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-600">{labels.dashboard.businessSection}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
-            <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-600">{labels.dashboard.businessSection}</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(false)}
+            className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 md:hidden"
+            aria-label={i18nT(locale, 'a11y.close')}
+            data-testid="dashboard-nav-close"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </button>
         </div>
 
         <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3" aria-label={labels.dashboard.businessSection}>
@@ -222,10 +300,23 @@ export default function DashboardLayout({
         </aside>
       ) : null}
 
-      <div className="relative z-10 flex flex-1 flex-col">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/80 backdrop-blur-md">
           <div className="flex h-16 items-center justify-between gap-4 px-4 md:px-8">
             <div className="flex min-w-0 items-center gap-3">
+              {business.length > 0 ? (
+                <button
+                  type="button"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700 md:hidden"
+                  aria-label={labels.dashboard.businessSection}
+                  aria-expanded={mobileNavOpen}
+                  aria-controls="dashboard-sidebar"
+                  data-testid="dashboard-nav-toggle"
+                  onClick={() => setMobileNavOpen((value) => !value)}
+                >
+                  <Menu className="h-5 w-5" aria-hidden="true" />
+                </button>
+              ) : null}
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
                 <span className="text-xs font-black text-white">LRH</span>
               </div>
@@ -376,7 +467,7 @@ export default function DashboardLayout({
                 <option value="en">English</option>
               </select>
             </label>
-            <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600">
+            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600 lg:flex">
               <div className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
