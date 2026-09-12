@@ -139,7 +139,7 @@ services:
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        value: mail@hurkonsan.com
+        value: noreply@hurkonsan.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
       # Ops / admin
