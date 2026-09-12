@@ -32,9 +32,11 @@ describe('client-features — profil d’inscription (#7235)', () => {
     };
 
     for (const key of ['employees', 'attendance', 'attendance_geo', 'absences', 'contracts', 'payroll', 'training']) {
-      const module = stateOf(solo, key);
-      expect(module?.state).toBe('locked');
-      expect(module?.enabled).toBe(false);
+      // `entry` et non `module` : la règle Next `no-assign-module-variable`
+      // interdit d'affecter une variable de ce nom (lint CI).
+      const entry = stateOf(solo, key);
+      expect(entry?.state).toBe('locked');
+      expect(entry?.enabled).toBe(false);
     }
 
     // …mais il garde bien ce qu’il a choisi, et le socle.
