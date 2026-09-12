@@ -65,10 +65,22 @@
             </nav>
           </div>
 
-          <!-- Router view with transition -->
+          <!-- Router view with transition.
+               Les vues sont chargées dynamiquement (`() => import(...)`) : pendant
+               le téléchargement du chunk, le <router-view> ne rendait rien et
+               l'utilisateur voyait le menu à gauche avec une zone de contenu
+               vide. <Suspense> affiche un indicateur le temps du chargement
+               (et pendant la résolution d'un composant asynchrone). -->
           <router-view v-slot="{ Component }">
             <transition name="fade" mode="out-in">
-              <component :is="Component" />
+              <Suspense>
+                <component :is="Component" />
+                <template #fallback>
+                  <div class="flex h-64 items-center justify-center" role="status" aria-live="polite">
+                    <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
+                  </div>
+                </template>
+              </Suspense>
             </transition>
           </router-view>
         </div>

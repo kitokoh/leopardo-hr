@@ -216,7 +216,7 @@ const localeStore = useLocaleStore()
 const route = useRoute()
 const router = useRouter()
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 const isReplying = ref(false)
 const isTriaging = ref(false)
 const activeStatus = ref('all')

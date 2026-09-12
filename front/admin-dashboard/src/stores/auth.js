@@ -71,6 +71,23 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
 
+      // Défense en profondeur (demande propriétaire 2026-09-10) : l'admin
+      // plateforme est réservé au super-admin de la plateforme, PAS aux
+      // utilisateurs d'un tenant. Le backend sépare déjà les tables
+      // (`super_admins` en schéma public vs `employees` du tenant) et
+      // `/platform/auth/me` renvoie toujours `role: 'super_admin'` — mais on
+      // refuse ici toute session qui n'aurait pas ce rôle, pour qu'une
+      // évolution d'API ne puisse pas ouvrir l'admin à un tenant.
+      if (userData?.role !== 'super_admin') {
+        clearSession()
+
+        return {
+          success: false,
+          requiresTwoFactor: false,
+          message: t('auth.platform_admin_only', 'Accès réservé aux administrateurs de la plateforme.'),
+        }
+      }
+
       token.value = authToken
       user.value = userData
       storage.setToken(authToken)
@@ -130,7 +147,17 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       api.defaults.headers.common.Authorization = `Bearer ${token.value}`
       const response = await api.get(`${PLATFORM_AUTH_BASE}/me`)
-      user.value = response.data?.data || null
+      const me = response.data?.data || null
+
+      // Même garde qu'à la connexion : une session sans rôle super-admin est
+      // détruite plutôt que de laisser entrer dans l'admin plateforme.
+      if (me && me.role !== 'super_admin') {
+        await logout()
+
+        return false
+      }
+
+      user.value = me
 
       return !!user.value
     } catch (error) {

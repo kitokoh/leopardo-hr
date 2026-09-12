@@ -183,7 +183,7 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 // #4518 : état d'erreur visible + retry (pattern #4333) — avant, un échec de
 // chargement rendait des stats à zéro sans bannière ni moyen de recharger.
 const errorMessage = ref('')
