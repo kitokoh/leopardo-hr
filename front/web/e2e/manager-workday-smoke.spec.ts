@@ -206,20 +206,22 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');
     await expect(page.locator('body')).toContainText('absence.requested');
 
-    await page.locator('aside a[href="/employees"]').click();
+    // #7225 — IA revue : les modules transverses vivent dans le bandeau
+    // horizontal « Entreprise » (header), le rail `aside` étant réservé au métier.
+    await page.locator('header a[href="/employees"]').first().click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Total équipe');
     await expect(page.locator('body')).toContainText('42');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText('EMP-501');
 
-    await page.locator('aside a[href="/attendance"]').click();
+    await page.locator('header a[href="/attendance"]').first().click();
     await expect(page).toHaveURL(/\/attendance$/);
     await expect(page.locator('body')).toContainText('Manager');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText(/Présents|present/i);
 
-    await page.locator('aside a[href="/absences"]').click();
+    await page.locator('header a[href="/absences"]').first().click();
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Absences');
     await expect(page.locator('body')).toContainText('Conges payes');

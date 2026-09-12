@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, LockKeyhole, Sparkles } from 'lucide-react';
+import { Bell, LayoutGrid, LockKeyhole, Plus, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, type ClientModuleAccess } from '@/lib/client-features';
@@ -35,6 +35,7 @@ export default function DashboardLayout({
   const [notificationPreview, setNotificationPreview] = useState<ClientNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [modulesOpen, setModulesOpen] = useState(false);
   const user = userOverride ?? storedUser;
   const locale = localeOverride ?? normalizeLocale(user?.language);
   const labels = useMemo(() => getCopy(locale), [locale]);
@@ -170,18 +171,23 @@ export default function DashboardLayout({
     return null;
   }
 
-  // #7218 — deux axes : transverse (entreprise) vs métier (verticales du tenant).
+  // #7225 — deux axes : transverse (entreprise) vs métier (verticales du tenant).
   // Les modules métier non activés sont sortis du menu et restent découvrables
   // dans la carte « Plan & Modules » (avant : « Restaurant » s'affichait chez
   // toutes les entreprises, y compris une agence de voyage).
   const { core, business, lockedBusiness } = getSidebarSections(modules);
 
-  const navGroups = {
-    general: core.filter((module) => module.group === 'general' && module.href),
-    hr: core.filter((module) => module.group === 'hr' && module.href),
-    finance: core.filter((module) => module.group === 'finance' && module.href),
-    platform: [...core.filter((module) => module.group === 'platform'), ...lockedBusiness],
-  };
+  // #7225 — IA demandée : bandeau HORIZONTAL « Entreprise » (transverse) +
+  // rail VERTICAL « Mon métier » (verticales du tenant). Les modules de
+  // plateforme (facturation, intégrations) et les verticales non activées
+  // restent découvrables dans le panneau « Modules & plan ».
+  // Le bandeau horizontal ne montre QUE ce que le client a réellement
+  // (menus = capacités du tenant) ; les modules non activés (transverses ou
+  // métier) sont découvrables dans le panneau « Modules & plan ».
+  const navPills = core.filter((module) => module.group !== 'platform' && module.href && module.enabled);
+  const platformModules = core.filter((module) => module.group === 'platform');
+  const lockedCore = core.filter((module) => module.group !== 'platform' && module.href && !module.enabled);
+  const discoverable = [...lockedCore, ...lockedBusiness];
 
   return (
     <div className="flex min-h-screen bg-transparent">
@@ -191,135 +197,93 @@ export default function DashboardLayout({
         <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] rounded-full bg-cyan-500/5 blur-[100px]" />
       </div>
 
-      <aside className="relative z-10 hidden w-64 flex-col border-r border-slate-200/50 bg-white/80 text-slate-900 backdrop-blur-xl md:flex">
-        <div className="flex h-20 items-center border-b border-slate-200/50 px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-              <span className="text-sm font-black text-white">LRH</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-black tracking-tight text-slate-950">Leopardo</h1>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Manager</p>
-            </div>
+      {business.length > 0 ? (
+        <aside
+          data-testid="business-rail"
+          className="relative z-10 hidden w-64 shrink-0 flex-col border-r border-slate-200/50 bg-white/80 text-slate-900 backdrop-blur-xl md:flex"
+        >
+        <div className="flex h-16 items-center gap-3 border-b border-slate-200/50 px-5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+            <span className="text-xs font-black text-white">LRH</span>
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
+            <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-600">{labels.dashboard.businessSection}</p>
           </div>
         </div>
 
-        <nav className="mt-6 flex-1 px-3">
-          <div className="mb-2 px-4">
-            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">General</p>
-          </div>
-          {navGroups.general.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
+        <nav className="mt-4 flex-1 space-y-1 overflow-y-auto px-3" aria-label={labels.dashboard.businessSection}>
+          {business.map((module) => (
+            <BusinessCard key={module.key} module={module} active={pathname === module.href} labels={labels} />
           ))}
-
-          <div className="mb-2 mt-6 px-4">
-            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Module RH</p>
-          </div>
-          {navGroups.hr.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
-          ))}
-
-          <div className="mb-2 mt-6 px-4">
-            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Finance & Formation</p>
-          </div>
-          {navGroups.finance.map((module) => (
-            <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
-          ))}
-
-          {/* #7218 — section « Mon métier » : uniquement les verticales
-              réellement activées sur ce tenant. Jamais de module métier
-              étranger au business du client (ex. Restaurant chez une agence
-              de voyage). Masquée si le tenant n'a aucune verticale. */}
-          {business.length > 0 ? (
-            <>
-              <div className="mb-2 mt-6 px-4">
-                <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-emerald-600">
-                  {labels.dashboard.businessSection}
-                </p>
-              </div>
-              {business.map((module) => (
-                <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
-              ))}
-            </>
-          ) : null}
         </nav>
 
-        <div className="m-3 space-y-3 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-4">
-          <div className="flex items-center gap-2 text-emerald-600">
-            <Sparkles className="h-4 w-4" aria-hidden="true" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Plan & Modules</span>
-          </div>
-          <div className="grid gap-2">
-            {navGroups.platform.map((module) => {
-              const content = (
-                <>
-                  <span>{module.label}</span>
-                  <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
-                    module.enabled
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                      : 'border-slate-200 bg-slate-100 text-slate-500'
-                  }`}>
-                    {module.enabled ? (module.state === 'trial' ? 'Trial' : 'Actif') : 'Lock'}
-                  </span>
-                </>
-              );
-
-              if (module.href && module.enabled) {
-                return (
-                  <Link
-                    key={module.key}
-                    href={module.href}
-                    className="flex items-center justify-between gap-2 rounded-lg px-1 py-0.5 text-[11px] font-bold text-slate-600 transition-colors hover:bg-white/60"
-                  >
-                    {content}
-                  </Link>
-                );
-              }
-
-              return (
-                <div key={module.key} className="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-600">
-                  {content}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* #R8 — bouton de reprise d'onboarding si wizard fermé mais non complété */}
-        {onboardingPending && !showWizard && (
-          <div className="mx-3 mb-2">
-            <button
-              onClick={() => setShowWizard(true)}
-              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-left text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100"
-            >
-              {labels.dashboard.resumeOnboarding}
-            </button>
-          </div>
-        )}
-        <div className="border-t border-slate-200/50 p-4">
-          <div className="flex items-center gap-3 rounded-2xl bg-transparent p-3 transition-colors hover:bg-slate-100">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 text-xs font-black text-slate-600">
-              {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="truncate text-xs font-black text-slate-900">{getDisplayName(user)}</p>
-              <p className="truncate text-[10px] font-medium text-slate-500">{user?.email}</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="group rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
-              title={labels.dashboard.logout}
-            >
-              <LockKeyhole className="h-4 w-4 transition-transform group-hover:scale-110" />
-            </button>
-          </div>
-        </div>
-      </aside>
+        </aside>
+      ) : null}
 
       <div className="relative z-10 flex flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between border-b border-slate-200/50 bg-white/70 px-8 backdrop-blur-md">
-          <h2 className="text-xl font-black tracking-tight text-slate-950 uppercase">{labels.dashboard.heading}</h2>
-          <div className="flex items-center gap-4">
+        <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/80 backdrop-blur-md">
+          <div className="flex h-16 items-center justify-between gap-4 px-4 md:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+                <span className="text-xs font-black text-white">LRH</span>
+              </div>
+              <div className="min-w-0">
+                <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{labels.dashboard.heading}</h2>
+                <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
+              </div>
+            </div>
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* #7225 — panneau « Modules & plan » : modules de plateforme +
+                verticales non activées (découverte, sans polluer le menu). */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setModulesOpen((value) => !value)}
+                aria-expanded={modulesOpen}
+                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+              >
+                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">{labels.dashboard.sectionModules}</span>
+              </button>
+              {modulesOpen ? (
+                <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{labels.dashboard.sectionEnterprise}</p>
+                  <div className="mt-2 space-y-1">
+                    {platformModules.length > 0 ? platformModules.map((module) => (
+                      <div key={module.key} className="flex items-center justify-between gap-2 text-[12px] font-bold text-slate-600">
+                        <span>{labels.dashboard.modules[module.key] ?? module.label}</span>
+                        <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${
+                          module.enabled ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-slate-100 text-slate-500'
+                        }`}>
+                          {module.enabled ? (module.state === 'trial' ? 'Trial' : labels.dashboard.present) : 'Lock'}
+                        </span>
+                      </div>
+                    )) : <p className="text-[12px] text-slate-400">—</p>}
+                  </div>
+                  {discoverable.length > 0 ? (
+                    <>
+                      <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        {business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
+                      </p>
+                      <div className="mt-2 space-y-1">
+                        {discoverable.map((module) => (
+                          <Link
+                            key={module.key}
+                            href="/contact?topic=upgrade"
+                            className="flex items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-[12px] font-bold text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-700"
+                          >
+                            <span>{labels.dashboard.modules[module.key] ?? module.label}</span>
+                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Link>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-4">
             <div className="relative">
               <button
                 type="button"
@@ -381,7 +345,24 @@ export default function DashboardLayout({
                 </div>
               ) : null}
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate-600">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-slate-200 to-slate-300 text-[10px] font-black text-slate-600">
+                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+              </div>
+              <div className="hidden max-w-[10rem] overflow-hidden lg:block">
+                <p className="truncate text-[11px] font-black text-slate-900">{getDisplayName(user)}</p>
+                <p className="truncate text-[9px] font-medium text-slate-500">{user?.email}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="group rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                title={labels.dashboard.logout}
+                aria-label={labels.dashboard.logout}
+              >
+                <LockKeyhole className="h-4 w-4 transition-transform group-hover:scale-110" />
+              </button>
+            </div>
+            <label className="hidden items-center gap-2 text-sm text-slate-600 md:flex">
               <span>{labels.dashboard.language}</span>
               <select
                 className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700"
@@ -404,8 +385,29 @@ export default function DashboardLayout({
               {labels.dashboard.present}
             </div>
           </div>
+          </div>
+          </div>
+          {/* Bandeau horizontal — modules transverses de l'entreprise */}
+          <div className="border-t border-slate-100/70 px-4 md:px-8">
+            <div className="flex items-center gap-1.5 overflow-x-auto py-2" aria-label={labels.dashboard.sectionEnterprise}>
+              <span className="shrink-0 pr-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{labels.dashboard.sectionEnterprise}</span>
+              {navPills.map((module) => (
+                <NavPill key={module.key} module={module} active={pathname === module.href} labels={labels} />
+              ))}
+            </div>
+          </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl p-8">
+        {onboardingPending && !showWizard ? (
+          <div className="mx-auto w-full max-w-7xl px-4 pt-4 md:px-8">
+            <button
+              onClick={() => setShowWizard(true)}
+              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-left text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100"
+            >
+              {labels.dashboard.resumeOnboarding}
+            </button>
+          </div>
+        ) : null}
+        <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
           {currentModule && !currentModule.enabled ? (
             <FeatureLockedPanel module={currentModule} labels={labels} />
           ) : (
@@ -426,29 +428,57 @@ type ClientNotification = {
   is_read?: boolean;
 };
 
-function SidebarLink({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
+function NavPill({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
+  const label = labels.dashboard.modules[module.key] ?? module.label;
   const className = [
-    'group flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-bold uppercase tracking-tight mx-2',
+    'group inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
     active
-      ? 'bg-emerald-50 text-emerald-700 shadow-glass-sm border border-emerald-100'
-      : 'text-slate-500 hover:bg-transparent hover:text-slate-900',
-    module.enabled ? '' : 'opacity-50 cursor-not-allowed',
-  ].filter(Boolean).join(' ');
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
+      : module.enabled
+        ? 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900'
+        : 'border-transparent text-slate-300',
+  ].join(' ');
 
   return (
-    <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled}>
-      <span className="flex items-center gap-3">
-        <div className={`h-1.5 w-1.5 rounded-full transition-transform group-hover:scale-150 ${
-          active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(20,184,166,0.5)]' : (module.enabled ? 'bg-slate-300' : 'bg-slate-200')
-        }`}></div>
-        {module.label}
+    <Link href={module.href ?? '#'} className={className} aria-disabled={!module.enabled} aria-current={active ? 'page' : undefined}>
+      {label}
+      {!module.enabled ? <LockKeyhole className="h-3 w-3" aria-label={labels.dashboard.featureLockedBadge} /> : null}
+      {module.enabled && module.state === 'trial' ? (
+        <span className="rounded-md border border-amber-200 bg-amber-50 px-1 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
+      ) : null}
+    </Link>
+  );
+}
+
+function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; active: boolean; labels: CopyTree }) {
+  const label = labels.dashboard.modules[module.key] ?? module.label;
+  const initials = label.trim().slice(0, 2).toUpperCase();
+
+  return (
+    <Link
+      href={module.href ?? '#'}
+      aria-current={active ? 'page' : undefined}
+      className={[
+        'group flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-sm font-bold transition-all',
+        active
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
+          : 'border-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-900',
+      ].join(' ')}
+    >
+      <span
+        className={[
+          'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
+          active
+            ? 'border-emerald-200 bg-white text-emerald-600'
+            : 'border-slate-200 bg-slate-50 text-slate-400 group-hover:text-emerald-600',
+        ].join(' ')}
+      >
+        {initials}
       </span>
-      <div className="flex items-center gap-1.5">
-        {!module.enabled ? <LockKeyhole className="h-3 w-3 text-slate-400" aria-label={labels.dashboard.featureLockedBadge} /> : null}
-        {module.enabled && module.state === 'trial' ? (
-          <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
-        ) : null}
-      </div>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {module.state === 'trial' ? (
+        <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-600">Trial</span>
+      ) : null}
     </Link>
   );
 }

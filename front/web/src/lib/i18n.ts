@@ -101,8 +101,24 @@ export type CopyTree = {
     managePreferences: string;
     /** #R8 — lien de reprise d'onboarding dans la sidebar */
     resumeOnboarding: string;
-    /** #7218 — titre de section « Mon métier » (verticales activées) */
+    /** #7225 — titre de section « Mon métier » (verticales activées) */
     businessSection: string;
+    /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
+    modules: {
+      dashboard: string; employees: string; attendance: string; attendance_geo: string;
+      absences: string; contracts: string; payroll: string; training: string;
+      reports: string; partner: string; billing: string; integrations: string;
+      marketing: string; accounting: string; crm: string; restaurant: string;
+      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string;
+    };
+    /** #7225 — « Entreprise » (bandeau horizontal transverse) */
+    sectionEnterprise: string;
+    /** #7225 — « Modules & plan » (panneau de découverte) */
+    sectionModules: string;
+    /** #7225 — « Découvrir les métiers » (tenant sans verticale) */
+    sectionDiscoverBusiness: string;
+    /** #7225 — « À activer » (modules verrouillés, découvrables) */
+    sectionLocked: string;
   };
   passwordReset: {
     title: string;
@@ -700,6 +716,32 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Gérer mes préférences',
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
+      modules: {
+        dashboard: 'Tableau de bord',
+        employees: 'Employés',
+        attendance: 'Pointages',
+        attendance_geo: 'Sessions GPS',
+        absences: 'Absences',
+        contracts: 'Contrats',
+        payroll: 'Paie',
+        training: 'Formations',
+        reports: 'Rapports',
+        partner: 'Programme Partenaire',
+        billing: 'Facturation',
+        integrations: 'Intégrations',
+        marketing: 'Marketing',
+        accounting: 'Comptabilité',
+        crm: 'CRM Client',
+        restaurant: 'Restaurant',
+        restaurant_kitchen: 'Cuisine',
+        edu_manager: 'Scolarité',
+        travel: 'Agence de voyage',
+        fuel: 'Station-service',
+      },
+      sectionEnterprise: 'Entreprise',
+      sectionModules: 'Modules & plan',
+      sectionDiscoverBusiness: 'Découvrir les métiers',
+      sectionLocked: 'À activer',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1333,6 +1375,32 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'إدارة تفضيلاتي',
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
+      modules: {
+        dashboard: 'لوحة القيادة',
+        employees: 'الموظفون',
+        attendance: 'الحضور',
+        attendance_geo: 'جلسات GPS',
+        absences: 'الإجازات',
+        contracts: 'العقود',
+        payroll: 'الرواتب',
+        training: 'التدريب',
+        reports: 'التقارير',
+        partner: 'برنامج الشراكة',
+        billing: 'الفوترة',
+        integrations: 'التكاملات',
+        marketing: 'التسويق',
+        accounting: 'المحاسبة',
+        crm: 'إدارة العملاء',
+        restaurant: 'مطعم',
+        restaurant_kitchen: 'المطبخ',
+        edu_manager: 'الإدارة المدرسية',
+        travel: 'وكالة سفر',
+        fuel: 'محطة وقود',
+      },
+      sectionEnterprise: 'الشركة',
+      sectionModules: 'الوحدات والخطة',
+      sectionDiscoverBusiness: 'اكتشف القطاعات',
+      sectionLocked: 'للتفعيل',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -1962,6 +2030,32 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Tercihlerimi yönet',
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
+      modules: {
+        dashboard: 'Panel',
+        employees: 'Çalışanlar',
+        attendance: 'Giriş-çıkışlar',
+        attendance_geo: 'GPS oturumları',
+        absences: 'İzinler',
+        contracts: 'Sözleşmeler',
+        payroll: 'Bordro',
+        training: 'Eğitimler',
+        reports: 'Raporlar',
+        partner: 'İş ortaklığı',
+        billing: 'Faturalama',
+        integrations: 'Entegrasyonlar',
+        marketing: 'Pazarlama',
+        accounting: 'Muhasebe',
+        crm: 'Müşteri CRM',
+        restaurant: 'Restoran',
+        restaurant_kitchen: 'Mutfak',
+        edu_manager: 'Okul yönetimi',
+        travel: 'Seyahat acentesi',
+        fuel: 'Akaryakıt istasyonu',
+      },
+      sectionEnterprise: 'Şirket',
+      sectionModules: 'Modüller ve plan',
+      sectionDiscoverBusiness: 'İş kollarını keşfet',
+      sectionLocked: 'Etkinleştirilecek',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2591,6 +2685,32 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Manage my preferences',
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
+      modules: {
+        dashboard: 'Dashboard',
+        employees: 'Employees',
+        attendance: 'Attendance',
+        attendance_geo: 'GPS sessions',
+        absences: 'Leave',
+        contracts: 'Contracts',
+        payroll: 'Payroll',
+        training: 'Training',
+        reports: 'Reports',
+        partner: 'Partner program',
+        billing: 'Billing',
+        integrations: 'Integrations',
+        marketing: 'Marketing',
+        accounting: 'Accounting',
+        crm: 'Client CRM',
+        restaurant: 'Restaurant',
+        restaurant_kitchen: 'Kitchen',
+        edu_manager: 'School management',
+        travel: 'Travel agency',
+        fuel: 'Fuel station',
+      },
+      sectionEnterprise: 'Company',
+      sectionModules: 'Modules & plan',
+      sectionDiscoverBusiness: 'Discover business modules',
+      sectionLocked: 'To activate',
     },
     passwordReset: {
       title: 'Forgot your password?',

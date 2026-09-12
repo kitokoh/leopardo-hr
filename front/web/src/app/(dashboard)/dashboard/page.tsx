@@ -137,7 +137,7 @@ export default function DashboardPage() {
   const isSuperAdmin = role === 'super_admin';
   const companyName = user?.company?.name ?? i18nT(locale, 'dashboard.yourCompany');
   const modules = getClientModuleAccess(user);
-  // #7218 — les verticales métier non activées ne sont plus dans le menu :
+  // #7225 — les verticales métier non activées ne sont plus dans le menu :
   // elles ne doivent pas gonfler le compteur « modules verrouillés » du
   // tableau de bord (sinon une agence de voyage lit « 3 Restaurants » ...).
   const { lockedBusiness } = getSidebarSections(modules);
