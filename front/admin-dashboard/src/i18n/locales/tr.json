@@ -6228,6 +6228,17 @@
     "section_saved": "Bölüm kaydedildi.",
     "section_deleted": "Bölüm silindi.",
     "invalid_json": "Geçersiz JSON içeriği — kaydetmeden önce düzeltin.",
-    "section_type": "Bölüm türü"
+    "section_type": "Bölüm türü",
+    "media_logo": "Logo",
+    "media_logo_hint": "PNG, JPEG, WebP veya SVG — en fazla 2 MB. SVG yalnızca logo için kabul edilir.",
+    "media_section_images": "Bölüm görselleri",
+    "media_section_hint": "PNG, JPEG veya WebP — en fazla 5 MB.",
+    "media_upload": "Görsel yükle",
+    "media_uploading": "Yükleniyor…",
+    "media_uploaded": "Medya yüklendi.",
+    "media_deleted": "Medya silindi.",
+    "media_delete": "Sil",
+    "media_empty": "Henüz medya yok.",
+    "media_error": "Yükleme başarısız — dosya türünü ve boyutunu kontrol edin."
   }
 }

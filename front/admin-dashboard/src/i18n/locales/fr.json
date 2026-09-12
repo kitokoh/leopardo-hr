@@ -6095,6 +6095,17 @@
     "section_saved": "Section enregistrée.",
     "section_deleted": "Section supprimée.",
     "invalid_json": "Contenu JSON invalide — corrigez avant d’enregistrer.",
-    "section_type": "Type de section"
+    "section_type": "Type de section",
+    "media_logo": "Logo",
+    "media_logo_hint": "PNG, JPEG, WebP ou SVG — 2 Mo max. Le SVG n’est accepté que pour le logo.",
+    "media_section_images": "Images de la section",
+    "media_section_hint": "PNG, JPEG ou WebP — 5 Mo max.",
+    "media_upload": "Téléverser une image",
+    "media_uploading": "Envoi…",
+    "media_uploaded": "Média téléversé.",
+    "media_deleted": "Média supprimé.",
+    "media_delete": "Supprimer",
+    "media_empty": "Aucun média pour l’instant.",
+    "media_error": "Le téléversement a échoué — vérifiez le type et la taille du fichier."
   }
 }

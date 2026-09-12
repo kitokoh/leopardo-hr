@@ -6222,6 +6222,17 @@
     "section_saved": "تم حفظ القسم.",
     "section_deleted": "تم حذف القسم.",
     "invalid_json": "محتوى JSON غير صالح — صححه قبل الحفظ.",
-    "section_type": "نوع القسم"
+    "section_type": "نوع القسم",
+    "media_logo": "الشعار",
+    "media_logo_hint": "PNG أو JPEG أو WebP أو SVG — 2 ميغابايت كحد أقصى. يُقبل SVG للشعار فقط.",
+    "media_section_images": "صور القسم",
+    "media_section_hint": "PNG أو JPEG أو WebP — 5 ميغابايت كحد أقصى.",
+    "media_upload": "تحميل صورة",
+    "media_uploading": "جارٍ الإرسال…",
+    "media_uploaded": "تم تحميل الوسائط.",
+    "media_deleted": "تم حذف الوسائط.",
+    "media_delete": "حذف",
+    "media_empty": "لا توجد وسائط بعد.",
+    "media_error": "فشل التحميل — تحقق من نوع الملف وحجمه."
   }
 }
