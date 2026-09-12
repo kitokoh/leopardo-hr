@@ -61,6 +61,7 @@
   "authTryDemoAccount": "Tester avec un compte demo",
   "authTwoFactorRequired": "Le code 2FA est requis.",
   "authDemoAccess": "Acces Demo",
+  "authDemoUnavailable": "Accès démo momentanément indisponible (API injoignable).",
   "authTogglePasswordVisibility": "Afficher ou masquer le mot de passe",
   "commonLanguageLabel": "Langue",
   "commonLanguageVariantsFrFr": "Français (France)",

@@ -61,6 +61,7 @@
   "authTryDemoAccount": "Demo hesabini dene",
   "authTwoFactorRequired": "2FA kodu gereklidir.",
   "authDemoAccess": "Demo erisimi",
+  "authDemoUnavailable": "Demo erisimi gecici olarak kullanilamiyor (API'ye ulasilamiyor).",
   "authTogglePasswordVisibility": "Sifreyi goster veya gizle",
   "commonLanguageLabel": "Dil",
   "commonLanguageVariantsFrFr": "Fransizca (Fransa)",
