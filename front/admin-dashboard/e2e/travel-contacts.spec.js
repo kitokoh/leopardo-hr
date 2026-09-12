@@ -16,9 +16,15 @@ test.describe('Contacts voyageurs travel (TRAVEL-912)', () => {
     await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) }),
     )
-    await page.route('**/api/v1/**', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
-    )
+    // Le catch-all est enregistré APRÈS les mocks spécifiques : en Playwright la
+    // dernière route gagne, il écrasait donc /platform/auth/me (rôle absent ->
+    // session refusée par le store, #7205). On sert le vrai profil super-admin.
+    await page.route('**/api/v1/**', (route) => {
+      if (/\/platform\/auth\/me/.test(route.request().url())) {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(AUTH_ME) })
+      }
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) })
+    })
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
     )
