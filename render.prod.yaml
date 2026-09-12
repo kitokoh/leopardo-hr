@@ -124,7 +124,7 @@ services:
         sync: false
       # Mail
       - key: MAIL_MAILER
-        value: smtp
+        value: resend
       - key: MAIL_HOST
         sync: false
       - key: MAIL_PORT
@@ -133,10 +133,13 @@ services:
         sync: false
       - key: MAIL_PASSWORD
         sync: false
+      # Transport HTTP Resend (#5139 : le SMTP sortant est bloqué par Render).
+      - key: RESEND_KEY
+        sync: false
       - key: MAIL_ENCRYPTION
         value: tls
       - key: MAIL_FROM_ADDRESS
-        value: noreply@leopardo-rh.com
+        value: mail@hurkonsan.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
       # Ops / admin
