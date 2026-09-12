@@ -282,6 +282,51 @@ export function Navbar({ isDark, onToggleDark }: Props) {
     dropdownTimeoutRef.current = setTimeout(() => setOpenDropdown(null), 150)
   }
 
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null)
+  const mobilePanelRef = useRef<HTMLDivElement | null>(null)
+
+  // Échap ferme le menu mobile et rend le focus au bouton hamburger.
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [mobileOpen])
+
+  // Un clic/toucher en dehors du panneau referme le menu (hors bouton hamburger,
+  // sinon le toggle du bouton et ce handler se neutraliseraient).
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null
+      if (!target) return
+      if (mobilePanelRef.current?.contains(target)) return
+      if (menuButtonRef.current?.contains(target)) return
+      setMobileOpen(false)
+    }
+
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('touchstart', onPointerDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('touchstart', onPointerDown)
+    }
+  }, [mobileOpen])
+
+  // Referme le menu mobile à chaque navigation et réinitialise les accordéons.
+  useEffect(() => {
+    setMobileOpen(false)
+    setOpenDropdown(null)
+  }, [pathname])
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -393,6 +438,8 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             </Link>
 
             <button
+              ref={menuButtonRef}
+              type="button"
               className="lg:hidden p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={copy.nav.menuLabel}
@@ -408,6 +455,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            ref={mobilePanelRef}
             id="mobile-menu-panel"
             role="region"
             aria-label={copy.nav.menuLabel}

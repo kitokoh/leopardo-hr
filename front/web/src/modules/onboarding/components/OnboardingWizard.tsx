@@ -339,12 +339,12 @@ export function OnboardingWizard({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
+          className="relative my-auto w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
           role="dialog"
           aria-modal="true"
           aria-label={onboarding.close}
