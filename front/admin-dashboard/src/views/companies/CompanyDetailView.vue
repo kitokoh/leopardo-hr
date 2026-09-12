@@ -358,7 +358,7 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 const health = ref(null)
 const plans = ref([])

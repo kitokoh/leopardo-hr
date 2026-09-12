@@ -1111,7 +1111,8 @@
     "demo_panel_hint": "بيئة تجريبية: اختر حسابًا لتسجيل الدخول فورًا. معطّل في الإنتاج.",
     "demo_badge_platform": "المنصة",
     "demo_access": "استخدام حساب تجريبي",
-    "demo_super_admin_label": "المسؤول الأعلى"
+    "demo_super_admin_label": "المسؤول الأعلى",
+    "platform_admin_only": "الوصول مقتصر على مسؤولي المنصة."
   },
   "settingsShareProfileOrScan": "شارك ملفك الشخصي أو امسح شركة.",
   "attendanceStatusInProgress": "جارٍ",

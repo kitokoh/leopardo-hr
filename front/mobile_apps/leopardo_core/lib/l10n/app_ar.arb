@@ -63,6 +63,7 @@
   "authDemoAccess": "وصول تجريبي",
   "authDemoUnavailable": "الوصول التجريبي غير متاح مؤقتاً (تعذّر الوصول إلى الواجهة البرمجية).",
   "authTogglePasswordVisibility": "إظهار أو إخفاء كلمة المرور",
+  "authPlatformAdminOnly": "الوصول مقتصر على مسؤولي المنصة.",
   "commonLanguageLabel": "اللغة",
   "commonLanguageVariantsFrFr": "الفرنسية (فرنسا)",
   "commonLanguageVariantsFrBe": "الفرنسية (بلجيكا)",
