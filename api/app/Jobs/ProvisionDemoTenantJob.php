@@ -33,8 +33,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly ?string $companyType = null,
         /** @var list<string> $modules #7235 : outils horizontaux choisis à l'inscription. */
         public readonly array $modules = [],
-    ) {
-    }
+    ) {}
 
     // Issue #3600 : provisioning trial = opération lourde et critique — retries
     // espacés (30s, 1min, 2min, 5min) au lieu d'une rafale par défaut, et

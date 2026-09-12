@@ -36,8 +36,7 @@ class SelfServiceTrialController extends Controller
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SolutionCatalogue $solutionCatalogue,
-    ) {
-    }
+    ) {}
 
     /**
      * POST /api/v1/trial/signup

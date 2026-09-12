@@ -20,8 +20,7 @@ class ProvisionGuidedTrial
     public function __construct(
         private readonly TenantManager $tenantManager,
         private readonly SolutionActivator $solutionActivator,
-    ) {
-    }
+    ) {}
 
     /**
      * MULTI-PAYS (#1867/#1950) : le pays légal est OBLIGATOIRE et doit être
