@@ -96,7 +96,7 @@ $dir = ($locale ?? 'fr') === 'ar' ? 'rtl' : 'ltr';
     </div>
 
     <div style="text-align: center; margin: 24px 0;">
-      <a href="{{ $appUrl ?? 'https://leopardo.com' }}/demo" style="display: inline-block; padding: 14px 32px; background: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">{{ $t['button'] }}</a>
+      <a href="{{$appUrl}}/demo" style="display: inline-block; padding: 14px 32px; background: #3b82f6; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">{{ $t['button'] }}</a>
     </div>
 
     <p style="font-size: 15px; color: #374151; margin: 24px 0 4px;">{{ $t['thanks'] }}</p>

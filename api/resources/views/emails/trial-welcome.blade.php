@@ -31,7 +31,7 @@
     </ul>
 
     <div style="margin-top: 30px; text-align: center;">
-        <a href="https://gestionemployerbackend.onrender.com" class="btn-primary">
+        <a href="{{$appUrl}}/auth/login" class="btn-primary">
             {{ __('emails.email_trial_welcome_button') }}
         </a>
     </div>
