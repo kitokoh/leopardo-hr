@@ -17,8 +17,26 @@ export type ClientModuleKey =
   | 'crm'
   | 'restaurant'
   | 'restaurant_kitchen'
-  | 'edu_manager';
+  | 'edu_manager'
+  | 'travel'
+  | 'fuel';
 export type FeatureState = 'available' | 'trial' | 'locked';
+
+/**
+ * Métiers (verticales) portés par la plateforme. Chaque verticale est un
+ * ensemble de modules métier activés par un feature flag tenant.
+ * (#7218 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
+ * voyage car les modules métier étaient rangés dans les groupes transverses.)
+ */
+export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel';
+
+/**
+ * Portée d'un module :
+ * - `core`     : transverse, utile à toute entreprise (RH, paie, rapports…)
+ * - `business` : métier — n'a de sens que pour la verticale du tenant.
+ */
+export type ClientModuleScope = 'core' | 'business';
+
 export type ClientModule = {
   key: ClientModuleKey;
   href?: string;
@@ -28,6 +46,10 @@ export type ClientModule = {
   featureKeys: string[];
   allowedRoles: string[];
   upgradeLabel: string;
+  /** Défaut : `core` (transverse). */
+  scope?: ClientModuleScope;
+  /** Renseigné pour les modules `business` : verticale de rattachement. */
+  vertical?: BusinessVertical;
 };
 export type ClientModuleAccess = ClientModule & {
   state: FeatureState;
@@ -44,6 +66,8 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['restaurantmanager', 'restaurant'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Restaurant Manager',
+    scope: 'business',
+    vertical: 'restaurant',
   },
   {
     key: 'dashboard',
@@ -209,6 +233,39 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['restaurantmanager'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Restaurant',
+    scope: 'business',
+    vertical: 'restaurant',
+  },
+  // #7218 — verticale Agence de voyage (BC-13/TRAVEL). Le portail client
+  // `/travel/portal` existait mais n'était déclaré dans AUCUNE entrée de
+  // navigation : un manager d'agence de voyage n'avait aucun point d'entrée
+  // métier dans le menu. Feature flag tenant `travelagency`
+  // (TravelAgencyManifest::code(), ActivateTravelAgencyAction).
+  {
+    key: 'travel',
+    href: '/travel/portal',
+    label: 'Agence de voyage',
+    group: 'general',
+    capabilityKeys: ['travelagency', 'travel', 'can_view_travel', 'can_manage_travel'],
+    featureKeys: ['travelagency', 'travel_agency'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Agence de voyage (ventes, réservations, check-in)',
+    scope: 'business',
+    vertical: 'travel',
+  },
+  // #7218 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
+  // existait sans entrée de navigation (même défaut que Travel).
+  {
+    key: 'fuel',
+    href: '/fuel/pump',
+    label: 'Station-service',
+    group: 'general',
+    capabilityKeys: ['fuel_station', 'fuel', 'can_view_fuel'],
+    featureKeys: ['fuel_station', 'fuel'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Station-service (pompes, volumes, écarts)',
+    scope: 'business',
+    vertical: 'fuel',
   },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware : manager direction (principal/rh) → administration scolaire ;
@@ -224,6 +281,8 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['edumanager'],
     allowedRoles: ['super_admin', 'admin', 'manager', 'employee'],
     upgradeLabel: 'EduManager',
+    scope: 'business',
+    vertical: 'education',
   },
 ];
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
@@ -249,6 +308,10 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/restaurant': 'restaurant',
   '/restaurant/pos': 'restaurant',
   '/restaurant/kitchen': 'restaurant_kitchen',
+  '/travel': 'travel',
+  '/travel/portal': 'travel',
+  '/fuel': 'fuel',
+  '/fuel/pump': 'fuel',
   '/edu-manager': 'edu_manager',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',
@@ -380,6 +443,36 @@ export function getClientModuleAccess(user?: StoredAuthUser | null): ClientModul
     };
   });
 }
+/**
+ * #7218 — découpage de la navigation en deux axes :
+ * - `core`      : modules transverses (utiles à toute entreprise), filtrés par
+ *                 rôle/plan comme avant ;
+ * - `business`  : modules **métier** réellement activés pour ce tenant
+ *                 (ex. Agence de voyage), regroupés par verticale ;
+ * - `lockedBusiness` : modules métier non activés — ils ne doivent PAS
+ *                 encombrer le menu (c'était le défaut : « Restaurant » affiché
+ *                 à une agence de voyage). Ils restent découvrables dans la
+ *                 carte « Plan & Modules ».
+ *
+ * Un tenant sans verticale activée n'a donc aucune section métier : le menu
+ * s'adapte au métier au lieu de lister toutes les verticales de la plateforme.
+ */
+export function getSidebarSections(access: ClientModuleAccess[]): {
+  core: ClientModuleAccess[];
+  business: ClientModuleAccess[];
+  lockedBusiness: ClientModuleAccess[];
+  verticals: BusinessVertical[];
+} {
+  const isBusiness = (module: ClientModuleAccess) => (module.scope ?? 'core') === 'business';
+  const core = access.filter((module) => !isBusiness(module));
+  const business = access.filter((module) => isBusiness(module) && module.enabled);
+  const lockedBusiness = access.filter((module) => isBusiness(module) && !module.enabled);
+  const verticals = Array.from(
+    new Set(business.map((module) => module.vertical).filter((v): v is BusinessVertical => !!v)),
+  );
+  return { core, business, lockedBusiness, verticals };
+}
+
 export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser | null): ClientModuleAccess | null {
   // Try exact match first
   let moduleKey: ClientModuleKey | undefined = ROUTE_TO_MODULE[pathname];
