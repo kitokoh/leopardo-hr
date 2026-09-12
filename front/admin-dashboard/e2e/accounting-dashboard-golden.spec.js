@@ -33,7 +33,9 @@ const USER = {
     id: 1,
     name: 'Comptable Pilote',
     email: 'comptable@analytics-pilot-001.leopardo.test',
-    role: 'admin',
+    // Le backend plateforme (/platform/auth/me) renvoie toujours super_admin ;
+    // le store refuse désormais tout autre rôle (#7205).
+    role: 'super_admin',
   },
 }
 
