@@ -143,6 +143,10 @@ function LoginInner() {
   const [error, setError] = useState<string | null>(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [demoCompanies, setDemoCompanies] = useState<DemoCompany[]>([]);
+  // Vrai uniquement si l'API ne répond pas (5xx/réseau) — PAS si elle répond
+  // 404 (mode démo désactivé, donc toujours en production) : dans ce cas on
+  // reste silencieux (issues #2730/#4511).
+  const [demoUnavailable, setDemoUnavailable] = useState(false);
   const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
 
@@ -158,20 +162,24 @@ function LoginInner() {
     let active = true;
 
     apiFetch('/demo-users', { method: 'GET' }, { maxRetries: 1 })
-      .then((response) => response.json() as Promise<DemoUsersPayload>)
+      .then((response) => {
+        // 404 = mode démo volontairement désactivé (production) → silence total.
+        if (response.status === 404) return null;
+        if (!response.ok) throw new Error(`demo-users HTTP ${response.status}`);
+        return response.json() as Promise<DemoUsersPayload>;
+      })
       .then((payload) => {
-        if (!active) return;
-        const companies = normalizeDemoCompanies(payload);
-        if (companies.length > 0) {
-          setDemoCompanies(companies);
-        }
+        if (!active || payload === null) return;
+        setDemoCompanies(normalizeDemoCompanies(payload));
       })
       .catch(() => {
         // Issue #2730 — pas de repli sur des comptes codés en dur
-        // (password123) : si /demo-users ne répond pas, la section démo
-        // reste masquée (aucune proposition d'un compte inutilisable).
+        // (password123) : si /demo-users ne répond pas, on ne propose aucun
+        // compte. Mais on le DIT (au lieu du silence) : l'absence du bouton
+        // démo en dev était indiscernable d'une panne d'API.
         if (active) {
           setDemoCompanies([]);
+          setDemoUnavailable(true);
         }
       });
 
@@ -570,6 +578,12 @@ function LoginInner() {
                   <Sparkles className="h-4 w-4" aria-hidden="true" />
                   {labels.login.demoAccess}
                 </button>
+              ) : null}
+
+              {demoUnavailable ? (
+                <p role="status" className="text-center text-xs font-semibold text-amber-600">
+                  {labels.login.demoUnavailable}
+                </p>
               ) : null}
 
               <p className="text-center text-xs leading-5 text-slate-500">

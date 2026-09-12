@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\HR\Interfaces\Api\V1\Requests;
+namespace App\Modules\Planning\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateScheduleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->isManager();
+        $user = $this->user();
+
+        return $user instanceof Employee && $user->isManager();
     }
 
     /** @return array<string, mixed> */

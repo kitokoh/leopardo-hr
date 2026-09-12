@@ -213,6 +213,33 @@ Quand un domaine gagne une feature significative, ajouter:
 - v4.32.0 (BC-28 CATALOG #6883 #6888 #6890) : fiche produit publique (`GET /public/catalog/{companySlug}/products/{productSlug}` — photos, `meta` SEO dérivées du contenu, `related` produits publiés, CTA devis) + SEO catalogue (`meta` du snapshot + `GET /public/catalog/sitemap.xml` des produits publiés, brouillons jamais exposés) + parcours E2E création → publication produit → fiche publique + devis. Scénarios couverts par `api/tests/Feature/Catalog/CatalogPublicPageSeoTest.php` et `CatalogEndToEndJourneyTest.php`.
 | Catalog fiche produit + SEO | docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md | Tests - Leopardo RH | tests/Feature/Catalog/CatalogPublicPageSeoTest.php | backend-tests |
 
+## Mise a jour 2026-09-10 (2) — acces admin plateforme & etats de chargement
+
+Demande proprietaire : l'admin plateforme est reserve au super-admin de la
+plateforme (pas aux utilisateurs d'un tenant), le selecteur de comptes de demo
+doit rester reserve au deploiement DEV, et la zone de contenu de l'admin ne doit
+plus s'afficher vide a l'arrivee.
+
+- **Surface web admin** — `stores/auth.js` : garde explicite `role === 'super_admin'`
+  a la connexion ET a la reprise de session (`/platform/auth/me`). Le backend
+  separait deja `super_admins` (schema public) des `employees` du tenant ; la
+  garde front rend la regle opposable cote client. Nouveau scenario a couvrir :
+  identifiants tenant -> refus explicite, pas d'acces a l'admin.
+- **Selecteur de comptes de demo** : toujours conditionne a `GET /demo-users`
+  (404 hors mode demo, donc en production) — aucun identifiant dans le bundle,
+  verifie sur le bundle de production (0 occurrence de mot de passe de demo).
+  Aucun changement de comportement attendu.
+- **Etats de chargement** : `layouts/DashboardLayout.vue` entoure le `<router-view>`
+  d'un `<Suspense>` avec indicateur (les vues sont chargees dynamiquement : la zone
+  de droite restait vide pendant le telechargement du chunk). 10 vues principales
+  demarrent desormais avec leur drapeau de chargement a `true` (1er rendu = indicateur,
+  plus de contenu a zero puis spinner puis donnees).
+- **i18n** : nouvelle cle `auth.platform_admin_only` dans les 4 langues du catalogue
+  partage, puis chaine de sync rejouee (admin/web/ARB mobile + `versions.json`).
+
+Scenarios admin a verifier apres deploiement : refus d'un compte tenant, absence du
+selecteur de demo hors DEV, affichage d'un indicateur (et non d'une page vide) au
+premier rendu de chaque vue principale.
 ## Mise a jour 2026-09-10 — honnetete de la copie publique & propagation i18n
 
 Contexte : audit de la presentation publique (vitrine Next.js + site GitHub Pages)
@@ -239,3 +266,4 @@ et de la veracite des termes employes. La correction a entraine :
 
 Aucun parcours critique n'est modifie : le lint, le build et les suites vitrine
 restent les gates applicables.
+- **#7223 — Web E2E admin : rôle `super_admin` + init carte flotte.** Les specs `accounting-dashboard-golden`, `travel-content`, `travel-contacts` et `fleet-no-session-kill` ont été réalignées sur le garde-fou de rôle introduit par #7205 (le backend plateforme renvoie toujours `super_admin`) ; `FleetView.vue` n'initialise plus Leaflet sans conteneur monté (`await nextTick()` + garde). Aucun changement de parcours fonctionnel.

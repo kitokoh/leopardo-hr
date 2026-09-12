@@ -25,7 +25,7 @@ import {
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
-import { getClientModuleAccess } from '@/lib/client-features';
+import { getClientModuleAccess, getSidebarSections } from '@/lib/client-features';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { LeaveBalanceCard } from './_components/LeaveBalanceCard';
 
@@ -137,8 +137,13 @@ export default function DashboardPage() {
   const isSuperAdmin = role === 'super_admin';
   const companyName = user?.company?.name ?? i18nT(locale, 'dashboard.yourCompany');
   const modules = getClientModuleAccess(user);
+  // #7218 — les verticales métier non activées ne sont plus dans le menu :
+  // elles ne doivent pas gonfler le compteur « modules verrouillés » du
+  // tableau de bord (sinon une agence de voyage lit « 3 Restaurants » ...).
+  const { lockedBusiness } = getSidebarSections(modules);
+  const lockedBusinessKeys = new Set(lockedBusiness.map((module) => module.key));
   const activeModules = modules.filter((module) => module.enabled && module.key !== 'dashboard').length;
-  const lockedModules = modules.filter((module) => !module.enabled).length;
+  const lockedModules = modules.filter((module) => !module.enabled && !lockedBusinessKeys.has(module.key)).length;
 
   useEffect(() => {
     document.documentElement.lang = locale;

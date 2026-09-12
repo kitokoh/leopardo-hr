@@ -92,13 +92,15 @@
     "try_demo_account": "Try a demo account",
     "two_factor_required": "The 2FA code is required.",
     "demo": {
-      "access": "Demo access"
+      "access": "Demo access",
+      "unavailable": "Demo access is temporarily unavailable (API unreachable)."
     },
     "toggle": {
       "password": {
         "visibility": "Show or hide password"
       }
-    }
+    },
+    "platform_admin_only": "Access is restricted to platform administrators."
   },
   "common": {
     "language": {

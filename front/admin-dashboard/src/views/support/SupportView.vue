@@ -221,7 +221,7 @@ import { toIntlLocale, translate } from '@/i18n/index.js'
 const toast = useToast()
 const route = useRoute()
 const localeStore = useLocaleStore()
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 const savingId = ref(null)
 const activeStatus = ref('pending') // Default to pending for better workflow

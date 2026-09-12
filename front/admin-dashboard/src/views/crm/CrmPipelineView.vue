@@ -160,7 +160,7 @@ import { toIntlLocale, translate } from '@/i18n/index.js'
 const router = useRouter()
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 const pipeline = ref({
   leads: [],

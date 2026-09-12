@@ -64,12 +64,14 @@ return [
         'two_factor_required' => 'Le code 2FA est requis.',
         'demo' => [
             'access' => 'Acces Demo',
+            'unavailable' => 'Accès démo momentanément indisponible (API injoignable).',
         ],
         'toggle' => [
             'password' => [
                 'visibility' => 'Afficher ou masquer le mot de passe',
             ],
         ],
+        'platform_admin_only' => 'Accès réservé aux administrateurs de la plateforme.',
     ],
     'common' => [
         'language' => [

@@ -64,12 +64,14 @@ return [
         'two_factor_required' => '2FA kodu gereklidir.',
         'demo' => [
             'access' => 'Demo erisimi',
+            'unavailable' => 'Demo erisimi gecici olarak kullanilamiyor (API\'ye ulasilamiyor).',
         ],
         'toggle' => [
             'password' => [
                 'visibility' => 'Sifreyi goster veya gizle',
             ],
         ],
+        'platform_admin_only' => 'Erişim yalnızca platform yöneticilerine açıktır.',
     ],
     'common' => [
         'language' => [
