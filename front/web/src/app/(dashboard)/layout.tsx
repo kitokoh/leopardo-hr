@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Bell, LockKeyhole, Sparkles } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getClientModuleAccess, getModuleAccessForPath, type ClientModuleAccess } from '@/lib/client-features';
+import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, type ClientModuleAccess } from '@/lib/client-features';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -170,11 +170,17 @@ export default function DashboardLayout({
     return null;
   }
 
+  // #7218 — deux axes : transverse (entreprise) vs métier (verticales du tenant).
+  // Les modules métier non activés sont sortis du menu et restent découvrables
+  // dans la carte « Plan & Modules » (avant : « Restaurant » s'affichait chez
+  // toutes les entreprises, y compris une agence de voyage).
+  const { core, business, lockedBusiness } = getSidebarSections(modules);
+
   const navGroups = {
-    general: modules.filter((module) => module.group === 'general' && module.href),
-    hr: modules.filter((module) => module.group === 'hr' && module.href),
-    finance: modules.filter((module) => module.group === 'finance' && module.href),
-    platform: modules.filter((module) => module.group === 'platform'),
+    general: core.filter((module) => module.group === 'general' && module.href),
+    hr: core.filter((module) => module.group === 'hr' && module.href),
+    finance: core.filter((module) => module.group === 'finance' && module.href),
+    platform: [...core.filter((module) => module.group === 'platform'), ...lockedBusiness],
   };
 
   return (
@@ -219,6 +225,23 @@ export default function DashboardLayout({
           {navGroups.finance.map((module) => (
             <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
           ))}
+
+          {/* #7218 — section « Mon métier » : uniquement les verticales
+              réellement activées sur ce tenant. Jamais de module métier
+              étranger au business du client (ex. Restaurant chez une agence
+              de voyage). Masquée si le tenant n'a aucune verticale. */}
+          {business.length > 0 ? (
+            <>
+              <div className="mb-2 mt-6 px-4">
+                <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-emerald-600">
+                  {labels.dashboard.businessSection}
+                </p>
+              </div>
+              {business.map((module) => (
+                <SidebarLink key={module.key} module={module} active={pathname === module.href} labels={labels} />
+              ))}
+            </>
+          ) : null}
         </nav>
 
         <div className="m-3 space-y-3 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-4">

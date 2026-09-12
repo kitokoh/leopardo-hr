@@ -64,6 +64,7 @@ return [
         'two_factor_required' => 'The 2FA code is required.',
         'demo' => [
             'access' => 'Demo access',
+            'unavailable' => 'Demo access is temporarily unavailable (API unreachable).',
         ],
         'toggle' => [
             'password' => [
