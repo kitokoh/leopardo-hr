@@ -60,7 +60,10 @@ class ProvisionDemoTenantJob implements ShouldQueue
                         'status' => 'ready',
                         'company_id' => $result['company']->id,
                         'login_url' => '/auth/login',
-                        'access_sent_at' => now(),
+                        // Issue #7218 (suite #7191) : ne JAMAIS affirmer un accès
+                        // envoyé avant l'envoi réel — la colonne n'est posée par
+                        // issueDemoAccess() que si l'e-mail part effectivement.
+                        'access_sent_at' => null,
                         'provisioned_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -126,16 +129,30 @@ class ProvisionDemoTenantJob implements ShouldQueue
 
         // Best-effort : un échec d'envoi (mailer non configuré) ne doit pas
         // faire échouer le provisioning — le lien est loggé pour support.
+        $delivered = false;
         try {
             Mail::to($this->email)->send(new CommunicationMail(
                 subjectLine: __('emails.demo_access_subject'),
                 bodyText: __('emails.demo_access_body', ['url' => $magicUrl]),
             ));
+            $delivered = true;
         } catch (\Throwable $exception) {
             Log::warning('Demo access email could not be sent', [
                 'email' => $this->email,
                 'error' => $exception->getMessage(),
             ]);
+        }
+
+        // Issue #7218 (suite #7191) : /trial/status n'expose « accès envoyé »
+        // que si l'envoi a réellement abouti — un échec silencieux ne doit pas
+        // produire un statut mensonger (anti-faux-vert #6831).
+        if ($delivered && $this->provisioningToken !== null) {
+            DB::table('trial_provisionings')
+                ->where('provisioning_token', $this->provisioningToken)
+                ->update([
+                    'access_sent_at' => now(),
+                    'updated_at' => now(),
+                ]);
         }
 
         Log::info('Demo magic link issued', [
