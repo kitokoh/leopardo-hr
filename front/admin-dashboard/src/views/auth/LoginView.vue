@@ -203,6 +203,15 @@
                 </div>
               </div>
 
+              <!-- Démo indisponible : API injoignable (jamais en prod : 404 → silence). -->
+              <p
+                v-if="demoUnavailable"
+                role="status"
+                class="text-[10px] font-bold leading-tight text-amber-300/80"
+              >
+                {{ t('auth.demo.unavailable') }}
+              </p>
+
             </div>
           </form>
         </div>
@@ -309,6 +318,10 @@ const demoPersonas = ref([])
 // (garde i18n « no new hardcoded strings » — PA2-I18N-014).
 const hasDemoPersonas = computed(() => demoPersonas.value.length > 0)
 
+// Vrai seulement si l'API est injoignable (≠ 404, qui signifie « démo
+// désactivée » : c'est le cas en production → on reste silencieux).
+const demoUnavailable = ref(false)
+
 function buildDemoPersonas(responseBody) {
   // axios: responseBody = corps JSON ; le endpoint renvoie { data: {...} } ou {...}.
   const root = responseBody?.data ?? responseBody ?? {}
@@ -348,10 +361,14 @@ onMounted(() => {
     .then((res) => {
       demoPersonas.value = buildDemoPersonas(res?.data)
     })
-    .catch(() => {
-      // Mode démo désactivé (404 en production) ou API injoignable :
-      // aucun compte à proposer, le panneau reste masqué.
+    .catch((err) => {
+      // 404 = mode démo volontairement désactivé (production) → silence.
+      // Toute autre erreur = API injoignable → on l'affiche (en dev, un
+      // panneau absent était indiscernable d'une panne d'API).
       demoPersonas.value = []
+      if (err?.response?.status !== 404) {
+        demoUnavailable.value = true
+      }
     })
 })
 

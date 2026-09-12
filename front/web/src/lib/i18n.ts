@@ -53,6 +53,7 @@ export type CopyTree = {
     submit: string;
     loading: string;
     demoAccess: string;
+    demoUnavailable: string;
     accountCreatedFree: string;
     accountCreatedPaid: string;
     demoTitle: string;
@@ -100,6 +101,8 @@ export type CopyTree = {
     managePreferences: string;
     /** #R8 — lien de reprise d'onboarding dans la sidebar */
     resumeOnboarding: string;
+    /** #7218 — titre de section « Mon métier » (verticales activées) */
+    businessSection: string;
   };
   passwordReset: {
     title: string;
@@ -646,6 +649,7 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Se connecter',
       loading: 'Connexion...',
       demoAccess: 'Tester avec un compte demo',
+      demoUnavailable: 'Accès démo momentanément indisponible (API injoignable).',
     accountCreatedFree: 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.',
     accountCreatedPaid: 'Inscription reçue ! Connectez-vous pour continuer.',
       demoTitle: 'Choisir un compte démo',
@@ -695,6 +699,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
       resumeOnboarding: '▶ Reprendre la configuration',
+      businessSection: 'Mon métier',
     },
     passwordReset: {
       title: 'Mot de passe oublié',
@@ -1280,6 +1285,7 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'تسجيل الدخول',
       loading: 'جار تسجيل الدخول...',
       demoAccess: 'تجربة حساب تجريبي',
+      demoUnavailable: 'الوصول التجريبي غير متاح مؤقتاً.',
     accountCreatedFree: 'تم إنشاء الحساب! سجّل الدخول للوصول إلى مساحتك المجانية.',
     accountCreatedPaid: 'تم استلام التسجيل! سجّل الدخول للمتابعة.',
       demoTitle: 'اختيار حساب تجريبي',
@@ -1326,6 +1332,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
       resumeOnboarding: '▶ استئناف الإعداد',
+      businessSection: 'قطاع عملك',
     },
     passwordReset: {
       title: 'نسيت كلمة المرور؟',
@@ -1907,6 +1914,7 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Giris yap',
       loading: 'Giris yapiliyor...',
       demoAccess: 'Demo hesapla dene',
+      demoUnavailable: 'Demo erisimi gecici olarak kullanilamiyor.',
     accountCreatedFree: 'Hesap oluşturuldu! Ücretsiz alanınıza erişmek için giriş yapın.',
     accountCreatedPaid: 'Kayıt alındı! Devam etmek için giriş yapın.',
       demoTitle: 'Demo hesabi sec',
@@ -1953,6 +1961,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
       resumeOnboarding: '▶ Yapılandırmaya devam et',
+      businessSection: 'İş kolunuz',
     },
     passwordReset: {
       title: 'Şifrenizi mi unuttunuz?',
@@ -2534,6 +2543,7 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Sign in',
       loading: 'Signing in...',
       demoAccess: 'Try a demo account',
+      demoUnavailable: 'Demo access is temporarily unavailable (API unreachable).',
     accountCreatedFree: 'Account created! Sign in to access your free workspace.',
     accountCreatedPaid: 'Registration received! Sign in to continue.',
       demoTitle: 'Choose a demo account',
@@ -2580,6 +2590,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
       resumeOnboarding: '▶ Resume setup',
+      businessSection: 'Your business',
     },
     passwordReset: {
       title: 'Forgot your password?',
