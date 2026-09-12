@@ -61,6 +61,7 @@
   "authTryDemoAccount": "Try a demo account",
   "authTwoFactorRequired": "The 2FA code is required.",
   "authDemoAccess": "Demo access",
+  "authDemoUnavailable": "Demo access is temporarily unavailable (API unreachable).",
   "authTogglePasswordVisibility": "Show or hide password",
   "authPlatformAdminOnly": "Access is restricted to platform administrators.",
   "commonLanguageLabel": "Language",

@@ -92,7 +92,8 @@
     "try_demo_account": "Demo hesabini dene",
     "two_factor_required": "2FA kodu gereklidir.",
     "demo": {
-      "access": "Demo erisimi"
+      "access": "Demo erisimi",
+      "unavailable": "Demo erisimi gecici olarak kullanilamiyor (API'ye ulasilamiyor)."
     },
     "toggle": {
       "password": {

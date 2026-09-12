@@ -64,6 +64,7 @@ return [
         'two_factor_required' => '2FA kodu gereklidir.',
         'demo' => [
             'access' => 'Demo erisimi',
+            'unavailable' => 'Demo erisimi gecici olarak kullanilamiyor (API\'ye ulasilamiyor).',
         ],
         'toggle' => [
             'password' => [

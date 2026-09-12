@@ -8,8 +8,10 @@ import { useVitrineLocale } from '../lib/vitrine-locale'
 const SOCIAL_LINKS = [
   // Compte X/Twitter @leopardo_hr inexistant (404 constaté 2026-08-15, session
   // QA expert) — remplacé par GitHub pour garder un lien social vivant.
+  // #7192 : lien LinkedIn `https://linkedin.com/company/leopardo` retiré —
+  // 404 vérifié le 2026-09-10 (`www.linkedin.com/company/leopardo` → 404).
+  // Ne réintroduire une entrée LinkedIn qu'avec une page d'entreprise réelle.
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
-  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
 ]
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
