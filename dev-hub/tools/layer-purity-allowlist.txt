@@ -4,7 +4,7 @@ api/app/Core/Auth/Application/Actions/RegisterAction.php:11:use Illuminate\Suppo
 api/app/Core/Auth/Application/Actions/RegisterAction.php:12:use Illuminate\Support\Facades\Hash;
 api/app/Core/Auth/Domain/Models/Employee.php:32:use Illuminate\Support\Facades\DB;
 api/app/Core/Auth/Domain/Models/Employee.php:33:use Illuminate\Support\Facades\Schema;
-api/app/Core/Tenant/Domain/Models/Company.php:18:use Illuminate\Support\Facades\DB;
+api/app/Core/Tenant/Domain/Models/Company.php:17:use Illuminate\Support\Facades\DB;
 api/app/Core/Tenant/Domain/Models/Company.php:8:use App\Core\Feature\Infrastructure\Services\FeatureKillSwitchService;
 api/app/Modules/Accounting/Application/Actions/AccountingReportingSnapshotService.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Accounting/Application/Listeners/ProvisionAccountingSettings.php:11:use Illuminate\Support\Facades\Log;
