@@ -22,6 +22,20 @@ export type StoredAuthUser = {
     currency?: string | null;
     features?: Record<string, unknown> | null;
     metadata?: Record<string, unknown> | null;
+    // #7235 — profil d'activité déclaré à l'inscription : `company`
+    // (entreprise) ou `solo` (indépendant, sans outils d'équipe).
+    type?: string | null;
+    // #7235 — secteur / métier vertical (ex. « restaurant »).
+    sector?: string | null;
+    // #7235 — sélection EXPLICITE des outils horizontaux faite à
+    // l'inscription ({ employees: true, attendance: false, … }). `null` ou
+    // absent = aucune sélection déclarée → comportement historique.
+    modules?: Record<string, unknown> | null;
+    // #7235 — essai : `subscription_end` alimente le compteur de jours
+    // restants dans l'application (les CTA « essai 14 jours » de la vitrine
+    // disparaissent, l'inscription est directe).
+    status?: string | null;
+    subscription_end?: string | null;
   } | null;
   plan?: {
     name?: string | null;

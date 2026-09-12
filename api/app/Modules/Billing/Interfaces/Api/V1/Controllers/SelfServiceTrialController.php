@@ -36,7 +36,8 @@ class SelfServiceTrialController extends Controller
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SolutionCatalogue $solutionCatalogue,
-    ) {}
+    ) {
+    }
 
     /**
      * POST /api/v1/trial/signup
@@ -83,9 +84,20 @@ class SelfServiceTrialController extends Controller
             // hors allowlist du catalogue (SolutionCatalogue) est refusé en
             // 422 — jamais de résolution dynamique côté provisioning.
             'solution' => ['nullable', 'string', 'max:60', Rule::in($this->solutionCatalogue->codes())],
+            // #7235 — Profil d'activité déclaré à l'inscription :
+            //   `company` (défaut) = entreprise traditionnelle ;
+            //   `solo`             = indépendant, sans outils d'équipe.
+            'company_type' => ['nullable', 'string', 'in:'.Company::TYPE_COMPANY.','.Company::TYPE_SOLO],
+            // #7235 — Outils HORIZONTAUX choisis par le client (allowlist
+            // `Company::HORIZONTAL_TOOLS`, fail-closed : une clé inconnue est
+            // refusée en 422 plutôt que stockée silencieusement). Absent =
+            // aucune sélection déclarée → comportement historique préservé
+            // (inscription rapide depuis le hero de la vitrine).
+            'modules' => ['nullable', 'array', 'max:20'],
+            'modules.*' => ['string', 'max:40', 'distinct', Rule::in(Company::HORIZONTAL_TOOLS)],
         ]);
 
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null} $validated */
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
@@ -193,7 +205,17 @@ class SelfServiceTrialController extends Controller
                 throw $e;
             }
 
-            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken, $validated['solutions'] ?? []);
+            ProvisionDemoTenantJob::dispatch(
+                $email,
+                $validated['company'],
+                $validated['country'],
+                $provisioningToken,
+                $validated['solutions'] ?? [],
+                // #7235 — profil + outils horizontaux choisis (null/[]
+                // = inscription rapide : aucun verrouillage rétroactif).
+                $validated['company_type'] ?? null,
+                $validated['modules'] ?? [],
+            );
 
             return new JsonResponse([
                 'success' => true,
