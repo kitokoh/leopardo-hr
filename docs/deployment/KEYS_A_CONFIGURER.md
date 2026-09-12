@@ -46,6 +46,18 @@ https://gestionemployerbackend.onrender.com/api/v1/webhooks/stripe
 | `MAIL_FROM_ADDRESS` | Adresse expéditeur (ex: hello@leopardo-rh.com) | |
 | `MAIL_FROM_NAME` | Nom expéditeur (Leopardo RH) | |
 
+### Transport : Resend (HTTP) — et pourquoi pas le SMTP
+
+Render **bloque l'egress SMTP** (testé 587/465, #5139) : un mailer `smtp` (Gmail, Mailgun SMTP…)
+échoue en timeout depuis les services Render. Le transport retenu est donc **HTTP** :
+
+- `MAIL_MAILER=resend`
+- `RESEND_KEY=<clé API Resend>`
+- `MAIL_FROM_ADDRESS=<adresse sur un domaine vérifié Resend>` (ex. `noreply@leopardo.app`)
+
+Prérequis : un **domaine vérifié** dans Resend (enregistrements DKIM/SPF à poser chez le
+gestionnaire DNS). Alternative déjà câblée : `MAIL_MAILER=mailgun` (`MAILGUN_DOMAIN`, `MAILGUN_SECRET`).
+
 ---
 
 ## Statut

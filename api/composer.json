@@ -16,6 +16,7 @@
         "laravel/socialite": "^5.27",
         "laravel/tinker": "^3.0",
         "predis/predis": "^3.6",
+        "resend/resend-laravel": "^1.4",
         "sentry/sentry-laravel": "^4.0",
         "dedoc/scramble": "^0.13.42",
         "symfony/mailgun-mailer": "^8.1",
