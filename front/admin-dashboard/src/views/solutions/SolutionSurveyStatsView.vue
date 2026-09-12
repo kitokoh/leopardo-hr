@@ -165,7 +165,7 @@ import MetricCard from '@/components/analytics/MetricCard.vue'
 import api from '@/services/api'
 
 const data = ref(null)
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 
 const conversionRateLabel = computed(() => {

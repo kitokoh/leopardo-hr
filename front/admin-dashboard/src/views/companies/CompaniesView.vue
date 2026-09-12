@@ -267,7 +267,7 @@ const localeStore = useLocaleStore()
 function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 const showCreateModal = ref(false)
 const isCreating = ref(false)

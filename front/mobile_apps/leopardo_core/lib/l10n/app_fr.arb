@@ -63,6 +63,7 @@
   "authDemoAccess": "Acces Demo",
   "authDemoUnavailable": "Accès démo momentanément indisponible (API injoignable).",
   "authTogglePasswordVisibility": "Afficher ou masquer le mot de passe",
+  "authPlatformAdminOnly": "Accès réservé aux administrateurs de la plateforme.",
   "commonLanguageLabel": "Langue",
   "commonLanguageVariantsFrFr": "Français (France)",
   "commonLanguageVariantsFrBe": "Français (Belgique)",

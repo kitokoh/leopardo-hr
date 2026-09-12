@@ -1111,7 +1111,8 @@
     "demo_panel_hint": "Demonstration environment: pick a profile to sign in instantly. Disabled in production.",
     "demo_badge_platform": "Platform",
     "demo_access": "Use a demo account",
-    "demo_super_admin_label": "Super Administrator"
+    "demo_super_admin_label": "Super Administrator",
+    "platform_admin_only": "Access is restricted to platform administrators."
   },
   "settingsShareProfileOrScan": "Share your profile or scan a company.",
   "attendanceStatusInProgress": "In progress",

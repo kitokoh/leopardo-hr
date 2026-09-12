@@ -63,6 +63,7 @@
   "authDemoAccess": "Demo access",
   "authDemoUnavailable": "Demo access is temporarily unavailable (API unreachable).",
   "authTogglePasswordVisibility": "Show or hide password",
+  "authPlatformAdminOnly": "Access is restricted to platform administrators.",
   "commonLanguageLabel": "Language",
   "commonLanguageVariantsFrFr": "French (France)",
   "commonLanguageVariantsFrBe": "French (Belgium)",

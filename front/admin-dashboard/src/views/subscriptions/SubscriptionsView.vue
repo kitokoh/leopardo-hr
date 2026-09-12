@@ -152,7 +152,7 @@ import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
-const isLoading = ref(false)
+const isLoading = ref(true)
 const errorMessage = ref('')
 const plans = ref([])
 const portfolioItems = ref([])
