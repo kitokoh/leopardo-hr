@@ -7,7 +7,7 @@ import {
 import type { StoredAuthUser } from '@/lib/i18n';
 
 /**
- * #7218 — le menu du portail client doit s'adapter au MÉTIER du tenant.
+ * #7225 — le menu du portail client doit s'adapter au MÉTIER du tenant.
  *
  * Défaut constaté (audit 2026-09-10) : le menu listait « Restaurant » à une
  * agence de voyage, car les modules métier (restaurant, edu, fuel, travel…)
@@ -22,10 +22,10 @@ import type { StoredAuthUser } from '@/lib/i18n';
  * 4. une agence de voyage a bien un point d'entrée métier (le module `travel`
  *    manquait complètement — `/travel/portal` existait sans entrée de menu).
  */
-describe('client-features — navigation par métier (#7218)', () => {
+describe('client-features — navigation par métier (#7225)', () => {
   const BUSINESS_KEYS = ['restaurant', 'restaurant_kitchen', 'edu_manager', 'travel', 'fuel'];
 
-  it('déclare la verticale Agence de voyage (absente avant #7218)', () => {
+  it('déclare la verticale Agence de voyage (absente avant #7225)', () => {
     const travel = CLIENT_MODULES.find((m) => m.key === 'travel');
     expect(travel).toBeDefined();
     expect(travel?.href).toBe('/travel/portal');

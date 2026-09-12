@@ -25,7 +25,7 @@ export type FeatureState = 'available' | 'trial' | 'locked';
 /**
  * Métiers (verticales) portés par la plateforme. Chaque verticale est un
  * ensemble de modules métier activés par un feature flag tenant.
- * (#7218 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
+ * (#7225 — audit 2026-09-10 : le menu listait « Restaurant » à une agence de
  * voyage car les modules métier étaient rangés dans les groupes transverses.)
  */
 export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel';
@@ -236,7 +236,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'restaurant',
   },
-  // #7218 — verticale Agence de voyage (BC-13/TRAVEL). Le portail client
+  // #7225 — verticale Agence de voyage (BC-13/TRAVEL). Le portail client
   // `/travel/portal` existait mais n'était déclaré dans AUCUNE entrée de
   // navigation : un manager d'agence de voyage n'avait aucun point d'entrée
   // métier dans le menu. Feature flag tenant `travelagency`
@@ -253,7 +253,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'travel',
   },
-  // #7218 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
+  // #7225 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
   // existait sans entrée de navigation (même défaut que Travel).
   {
     key: 'fuel',
@@ -444,7 +444,7 @@ export function getClientModuleAccess(user?: StoredAuthUser | null): ClientModul
   });
 }
 /**
- * #7218 — découpage de la navigation en deux axes :
+ * #7225 — découpage de la navigation en deux axes :
  * - `core`      : modules transverses (utiles à toute entreprise), filtrés par
  *                 rôle/plan comme avant ;
  * - `business`  : modules **métier** réellement activés pour ce tenant

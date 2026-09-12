@@ -10,7 +10,6 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Database\Factories\CompanyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,12 +41,14 @@ use Illuminate\Support\Facades\DB;
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ *
  * @mixin Builder<static>
  */
 class Company extends Model
 {
     /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
+
     use HasUuids;
 
     public $incrementing = false;
@@ -111,6 +112,14 @@ class Company extends Model
         'fuel_station',
         'edumanager',
         'restaurant',
+        // #7220 (audit 2026-09-10) : verticale Agence de voyage. `travelagency`
+        // est le code du TravelAgencyManifest et le flag posé par
+        // `ActivateTravelAgencyAction`, mais il était ABSENT de ce registre :
+        // l'admin plateforme (PATCH /platform/companies/{company}/features)
+        // reconstruit `features` à partir de KNOWN_MODULES et ne pouvait donc
+        // jamais activer ni exposer la verticale Travel. Fail-closed conservé
+        // (défaut false, `rh` seul actif par défaut).
+        'travelagency',
     ];
 
     /**
