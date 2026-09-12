@@ -922,4 +922,13 @@ PUT /v1/v1/travel/stations/{param}
 PUT /v1/v1/travel/trips/{param}
 PUT /v1/v1/travel/trips/{param}/prices/{param}
 PUT /v1/v1/travel/vehicles/{param}
+# BC-27 SHOWCASE — V-MEDIA (#6872) : médias de vitrine (upload privé +
+# service public du binaire). Le contrat OpenAPI (api/openapi.yaml) est
+# généré par Scramble ; ces 4 opérations seront documentées à la prochaine
+# régénération (SDK/miroir inclus), en attente ici comme gap connu
+# (même règle que les gaps #1473).
+GET /v1/showcase/media
+POST /v1/showcase/media
+DELETE /v1/showcase/media/{param}
+GET /v1/public/vitrine/{param}/media/{param}
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier

@@ -84,6 +84,22 @@
             <input id="showcase-tagline" v-model="form.tagline" class="form-input w-full">
           </div>
           <div class="md:col-span-2">
+            <span class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+              {{ $t('showcase.media_logo') }}
+            </span>
+            <ShowcaseMediaUploader
+              kind="logo"
+              :media="logoMedia"
+              :disabled="busy"
+              :published="isPublished"
+              :preview-token="showcase.preview_token"
+              test-id="showcase-logo-upload"
+              @uploaded="handleMediaUploaded"
+              @deleted="handleMediaDeleted"
+              @error="handleMediaError"
+            />
+          </div>
+          <div class="md:col-span-2">
             <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="showcase-notice">
               {{ $t('showcase.legal_notice') }}
             </label>
@@ -136,6 +152,23 @@
               rows="4"
               class="form-input w-full mt-3 font-mono text-sm"
               :data-testid="`showcase-section-content-${section.id}`"></textarea>
+            <div class="mt-3">
+              <span class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                {{ $t('showcase.media_section_images') }}
+              </span>
+              <ShowcaseMediaUploader
+                kind="section"
+                :section-id="section.id"
+                :media="mediaForSection(section.id)"
+                :disabled="busy"
+                :published="isPublished"
+                :preview-token="showcase.preview_token"
+                :test-id="`showcase-section-media-${section.id}`"
+                @uploaded="handleMediaUploaded"
+                @deleted="handleMediaDeleted"
+                @error="handleMediaError"
+              />
+            </div>
           </li>
         </ul>
       </div>
@@ -147,9 +180,14 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
+import ShowcaseMediaUploader from '@/components/showcase/ShowcaseMediaUploader.vue'
+import { listShowcaseMedia, showcaseMediaErrorMessage } from '@/services/showcase'
 import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const loading = ref(false)
 const busy = ref(false)
@@ -157,6 +195,7 @@ const error = ref('')
 
 const showcase = ref(null)
 const sections = ref([])
+const media = ref([])
 const themes = ref(['industrie', 'service', 'commerce'])
 const sectionTypes = ref(['hero', 'features', 'gallery', 'testimonials', 'products', 'contact', 'footer'])
 const newType = ref('hero')
@@ -170,12 +209,18 @@ const form = reactive({
 })
 
 const isPublished = computed(() => showcase.value?.status === 'published')
+const logoMedia = computed(() => media.value.filter((item) => item.kind === 'logo'))
 const previewUrl = computed(() => {
   if (!showcase.value) return ''
   const base = api.defaults?.baseURL || ''
   const path = showcase.value.preview_path || `/public/vitrine/${showcase.value.slug}`
   return path.startsWith('http') ? path : `${base.replace(/\/api\/v1\/?$/, '')}${path}`
 })
+
+/** Médias rattachés à une section (lien par id stable). */
+function mediaForSection(sectionId) {
+  return media.value.filter((item) => item.kind === 'section' && item.section_id === sectionId)
+}
 
 function applyShowcase(data) {
   showcase.value = data
@@ -201,9 +246,11 @@ async function load() {
     applyShowcase(data.data)
     const sectionsResponse = await api.get('/showcase/sections')
     applySections(sectionsResponse.data.data)
+    await loadMedia()
   } catch (e) {
     if (e?.response?.status === 404) {
       showcase.value = null
+      media.value = []
     } else {
       error.value = e?.response?.data?.message || e.message
     }
@@ -212,12 +259,43 @@ async function load() {
   }
 }
 
+/** Charge les médias réels de la vitrine (endpoint `/showcase/media`). */
+async function loadMedia() {
+  if (!showcase.value) {
+    media.value = []
+    return
+  }
+  try {
+    const { data } = await listShowcaseMedia()
+    media.value = Array.isArray(data?.data) ? data.data : []
+  } catch (e) {
+    media.value = []
+    if (e?.response?.status !== 404) {
+      error.value = showcaseMediaErrorMessage(e, e.message)
+    }
+  }
+}
+
+async function handleMediaUploaded() {
+  await loadMedia()
+  toast.success(t('showcase.media_uploaded'))
+}
+
+async function handleMediaDeleted() {
+  await loadMedia()
+  toast.success(t('showcase.media_deleted'))
+}
+
+function handleMediaError(message) {
+  error.value = message || t('showcase.media_error')
+}
+
 async function createShowcase() {
   busy.value = true
   try {
     const { data } = await api.post('/showcase')
     applyShowcase(data.data)
-    toast.success(translate('showcase.created'))
+    toast.success(t('showcase.created'))
   } catch (e) {
     error.value = e?.response?.data?.message || e.message
   } finally {
@@ -240,7 +318,7 @@ async function saveSettings() {
       },
     })
     applyShowcase(data.data)
-    toast.success(translate('showcase.settings_saved'))
+    toast.success(t('showcase.settings_saved'))
   } catch (e) {
     error.value = e?.response?.data?.message || e.message
   } finally {
@@ -254,7 +332,7 @@ async function togglePublish() {
     const action = isPublished.value ? 'unpublish' : 'publish'
     const { data } = await api.post(`/showcase/${action}`)
     applyShowcase(data.data)
-    toast.success(translate(action === 'publish' ? 'showcase.published' : 'showcase.draft'))
+    toast.success(t(action === 'publish' ? 'showcase.published' : 'showcase.draft'))
   } catch (e) {
     const errors = e?.response?.data?.errors
     error.value = errors?.sections?.[0] || e?.response?.data?.message || e.message
@@ -268,7 +346,7 @@ async function rotatePreview() {
   try {
     const { data } = await api.post('/showcase/preview-token')
     showcase.value = { ...showcase.value, preview_path: data.data.preview_path, preview_token: data.data.preview_token }
-    toast.success(translate('showcase.preview_generated'))
+    toast.success(t('showcase.preview_generated'))
   } catch (e) {
     error.value = e?.response?.data?.message || e.message
   } finally {
@@ -281,7 +359,7 @@ async function addSection() {
   try {
     const { data } = await api.post('/showcase/sections', { type: newType.value, content: {} })
     await load()
-    toast.success(translate('showcase.section_saved'))
+    toast.success(t('showcase.section_saved'))
     return data
   } catch (e) {
     error.value = e?.response?.data?.errors ? Object.values(e.response.data.errors).flat().join(' ') : e.message
@@ -297,11 +375,11 @@ async function saveSection(section) {
     try {
       content = JSON.parse(section.editor || '{}')
     } catch {
-      error.value = translate('showcase.invalid_json')
+      error.value = t('showcase.invalid_json')
       return
     }
     await api.patch(`/showcase/sections/${section.id}`, { content })
-    toast.success(translate('showcase.section_saved'))
+    toast.success(t('showcase.section_saved'))
   } catch (e) {
     error.value = e?.response?.data?.errors ? Object.values(e.response.data.errors).flat().join(' ') : e.message
   } finally {
@@ -314,7 +392,7 @@ async function removeSection(section) {
   try {
     await api.delete(`/showcase/sections/${section.id}`)
     await load()
-    toast.success(translate('showcase.section_deleted'))
+    toast.success(t('showcase.section_deleted'))
   } catch (e) {
     error.value = e?.response?.data?.message || e.message
   } finally {
