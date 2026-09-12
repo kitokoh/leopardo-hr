@@ -37,6 +37,22 @@ export type BusinessVertical = 'restaurant' | 'travel' | 'education' | 'fuel';
  */
 export type ClientModuleScope = 'core' | 'business';
 
+/**
+ * #7235 — Outils d'ÉQUIPE : sans objet pour un profil `solo` (indépendant).
+ * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
+ * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
+ * partiel ne fasse jamais réapparaître pointage/employés chez un indépendant.
+ */
+const SOLO_HIDDEN_MODULE_KEYS: ClientModuleKey[] = [
+  'employees',
+  'attendance',
+  'attendance_geo',
+  'absences',
+  'contracts',
+  'payroll',
+  'training',
+];
+
 export type ClientModule = {
   key: ClientModuleKey;
   href?: string;
@@ -374,6 +390,22 @@ function stateFromValue(value: unknown): FeatureState | null {
   }
   return 'locked';
 }
+/**
+ * #7235 — Valeur d'un module dans la sélection explicite de l'inscription.
+ * On cherche la première `featureKey` déclarée dans `company.modules`
+ * (l'ordre de `featureKeys` porte la sémantique déjà utilisée par le reste du
+ * fichier) ; clé absente ⇒ `undefined` (la résolution continue normalement).
+ */
+function explicitToolValue(module: ClientModule, user?: StoredAuthUser | null): unknown {
+  const selection = user?.company?.modules;
+  if (!selection || typeof selection !== 'object' || Array.isArray(selection)) {
+    return undefined;
+  }
+  const matchedKey = module.featureKeys.find((key) =>
+    Object.prototype.hasOwnProperty.call(selection, key),
+  );
+  return matchedKey ? selection[matchedKey] : undefined;
+}
 function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null): FeatureState {
   if (!user) {
     return 'locked';
@@ -381,9 +413,23 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   if (module.key === 'dashboard') {
     return 'available';
   }
+  // #7235 — un profil Indépendant ne voit ni pointage ni gestion d'employés,
+  // quelle que soit la donnée de gate par ailleurs.
+  if (user.company?.type === 'solo' && SOLO_HIDDEN_MODULE_KEYS.includes(module.key)) {
+    return 'locked';
+  }
   const capabilityState = stateFromValue(valueFor(module.capabilityKeys, user.capabilities));
   if (capabilityState) {
     return capabilityState;
+  }
+  // #7235 — Sélection explicite faite à l'inscription (metadata.modules →
+  // /auth/me `company.modules`). Elle fait AUTORITÉ sur les replis
+  // historiques : sans cela, le fallback `rh` des modules RH rendait
+  // pointage/employés visibles à TOUT LE MONDE, y compris à une entreprise
+  // n'ayant coché ni l'un ni l'autre.
+  const explicitState = stateFromValue(explicitToolValue(module, user));
+  if (explicitState) {
+    return explicitState;
   }
   // Features tenant au niveau racine (/auth/me → EmployeeResource → FeatureFlag::for).
   const rootFeatureState = stateFromValue(valueFor(module.featureKeys, user.features));

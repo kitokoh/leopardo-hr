@@ -17,6 +17,12 @@ const signupSchema = z.object({
   country: z.string().max(2).optional().or(z.literal('')),
   plan: z.string().max(80).optional(),
   module: z.string().max(80).optional(),
+  // #7235 — profil d'activité (`company` | `solo`), outils horizontaux choisis
+  // et métier vertical. Ils étaient purement et simplement ABSENTS du schéma :
+  // même envoyés par le formulaire, ils étaient retirés ici avant l'appel API.
+  company_type: z.enum(['company', 'solo']).optional(),
+  modules: z.array(z.string().max(40)).max(20).optional(),
+  solutions: z.array(z.string().max(40)).max(20).optional(),
   locale: z.enum(['fr', 'en', 'ar', 'tr']).optional(),
   page: z.string().max(300).optional(),
   source: z.string().max(120).optional(),
@@ -78,6 +84,8 @@ export async function POST(request: NextRequest) {
         phone,
         plan: validatedData.plan,
         module: validatedData.module,
+        company_type: validatedData.company_type,
+        modules: validatedData.modules,
         requestedWorkflow: 'guided_trial',
         passwordCaptured: false,
       },
@@ -107,6 +115,9 @@ export async function POST(request: NextRequest) {
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
           requestedWorkflow: 'guided_trial',
+          company_type: validatedData.company_type,
+          modules: validatedData.modules,
+          solutions: validatedData.solutions,
         }),
         signal: AbortSignal.timeout(15000),
       });

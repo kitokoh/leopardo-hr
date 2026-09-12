@@ -7,6 +7,7 @@ import { Footer, HeroSection, Navbar, useScrollReveal } from '@/modules/vitrine'
 import { SignupForm } from '@/modules/vitrine/components/forms';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
 type SignupCopy = {
   hero: {
@@ -22,101 +23,37 @@ type SignupCopy = {
   steps: string[];
 };
 
-const signupCopy: Record<AppLocale, SignupCopy> = {
-  fr: {
+/**
+ * #7235 — le récit de la page vit dans le catalogue i18n partagé
+ * (`shared/i18n/locales/*.json` → clé `signupPage`), pas dans le composant :
+ * aucun littéral utilisateur ici, et les 4 langues restent synchronisées par
+ * l'outillage i18n du dépôt.
+ */
+function buildSignupCopy(locale: AppLocale): SignupCopy {
+  const k = (key: string) => t(locale, `signupPage.${key}`);
+  return {
     hero: {
-      badge: 'Essai guide',
-      headline: 'Testez Leopardo RH sans tunnel complique',
-      subheadline:
-        "Un email professionnel suffit pour lancer une demande d'essai claire. Notre équipe qualifie votre contexte et prepare l'accès adapte.",
-      cta: "Recevoir mon accès d'essai",
+      badge: k('badge'),
+      headline: k('headline'),
+      subheadline: k('subheadline'),
+      cta: k('cta'),
     },
-    sideBadge: 'Funnel marketing operationnel',
-    title: "Ce qui se passe apres votre demande",
+    sideBadge: k('sideBadge'),
+    title: k('sideTitle'),
     proof: [
-      { title: 'Qualification utile', desc: 'Pays, taille, role et source marketing sont conserves.' },
-      { title: 'Pas de faux compte', desc: 'Aucun mot de passe n est collecte tant que l espace n est pas cree.' },
-      { title: 'Lead exploitable', desc: 'Chaque demande produit un identifiant utilisable par CRM ou platform admin.' },
+      { title: k('proof1Title'), desc: k('proof1Desc') },
+      { title: k('proof2Title'), desc: k('proof2Desc') },
+      { title: k('proof3Title'), desc: k('proof3Desc') },
     ],
-    stepsTitle: 'Parcours clair en 3 temps',
-    steps: [
-      'Vous laissez votre email et le nom de votre entreprise.',
-      'Leopardo qualifie le besoin et choisit le bon espace d essai.',
-      'Vous recevez la suite sous 24h ouvrables, sans intervention invisible.',
-    ],
-  },
-  en: {
-    hero: {
-      badge: 'Guided trial',
-      headline: 'Try Leopardo RH without a heavy signup flow',
-      subheadline:
-        'A professional email is enough to start a clear trial request. Our team qualifies your context and prepares the right access.',
-      cta: 'Get my trial access',
-    },
-    sideBadge: 'Operational marketing funnel',
-    title: 'What happens after your request',
-    proof: [
-      { title: 'Useful qualification', desc: 'Country, size, role and marketing source are preserved.' },
-      { title: 'No fake account', desc: 'No password is collected before the workspace is actually created.' },
-      { title: 'Actionable lead', desc: 'Each request gets a lead identifier usable by CRM or platform admin.' },
-    ],
-    stepsTitle: 'A clear 3-step path',
-    steps: [
-      'You share your email and company name.',
-      'Leopardo qualifies the need and selects the right trial workspace.',
-      'You receive the next step within 24 business hours.',
-    ],
-  },
-  tr: {
-    hero: {
-      badge: 'Rehberli deneme',
-      headline: 'Leopardo RH yi agir bir kayit akisi olmadan deneyin',
-      subheadline:
-        'Profesyonel e-posta yeterlidir. Ekibimiz ihtiyacinizi nitelendirir ve uygun deneme erisimini hazirlar.',
-      cta: 'Deneme erisimimi al',
-    },
-    sideBadge: 'Operasyonel pazarlama hunisi',
-    title: 'Talebinizden sonra ne olur',
-    proof: [
-      { title: 'Kullanilabilir nitelendirme', desc: 'Ulke, ekip buyuklugu, rol ve kampanya kaynagi saklanir.' },
-      { title: 'Sahte hesap yok', desc: 'Calisma alani gercekten olusturulmadan parola toplanmaz.' },
-      { title: 'Aksiyon alinabilir lead', desc: 'Her talep CRM veya platform admin icin kullanilabilir bir kimlik uretir.' },
-    ],
-    stepsTitle: 'Net 3 adimli yol',
-    steps: [
-      'E-posta ve sirket adinizi birakirsiniz.',
-      'Leopardo ihtiyaci nitelendirir ve uygun deneme alanini secer.',
-      'Sonraki adimi 24 is saati icinde alirsiniz.',
-    ],
-  },
-  ar: {
-    hero: {
-      badge: 'تجربة موجهة',
-      headline: 'جرّب Leopardo RH بدون مسار تسجيل معقد',
-      subheadline:
-        'يكفي بريد مهني لبدء طلب تجربة واضح. يقوم فريقنا بفهم احتياجك ثم تجهيز الوصول المناسب.',
-      cta: 'الحصول على وصول تجريبي',
-    },
-    sideBadge: 'مسار تسويقي عملي',
-    title: 'ماذا يحدث بعد إرسال الطلب',
-    proof: [
-      { title: 'تأهيل مفيد', desc: 'نحتفظ بالبلد وحجم الفريق والدور ومصدر الحملة.' },
-      { title: 'لا حساب وهمي', desc: 'لا يتم طلب كلمة مرور قبل إنشاء مساحة العمل فعليا.' },
-      { title: 'طلب قابل للمتابعة', desc: 'كل طلب يحصل على معرف يمكن استخدامه في CRM أو إدارة المنصة.' },
-    ],
-    stepsTitle: 'مسار واضح من ثلاث خطوات',
-    steps: [
-      'تترك بريدك المهني واسم شركتك.',
-      'يقوم Leopardo بفهم الاحتياج واختيار مساحة التجربة المناسبة.',
-      'تصلك الخطوة التالية خلال 24 ساعة عمل.',
-    ],
-  },
-};
+    stepsTitle: k('stepsTitle'),
+    steps: [k('step1'), k('step2'), k('step3')],
+  };
+}
 
 export default function SignupPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
-  const copy = signupCopy[locale] ?? signupCopy.fr;
+  const copy = buildSignupCopy(locale);
   useScrollReveal();
 
   return (

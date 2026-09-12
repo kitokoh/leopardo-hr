@@ -86,6 +86,12 @@ export async function submitSignupForm(
       // #4476 : le pays est requis par l'API trial/signup (MULTI-PAYS #1867) —
       // sans lui le tunnel se dégradait en lead capture pour 100 % des demandes.
       country: data.country ? data.country.toUpperCase() : undefined,
+      // #7235 — profil d'activité, outils horizontaux choisis et métier
+      // vertical : sans cette remontée, l'API provisionnerait un tenant
+      // standard et le choix de l'utilisateur serait purement cosmétique.
+      company_type: data.company_type,
+      modules: data.modules,
+      solutions: data.solutions,
     };
 
     const response = await fetch("/api/forms/signup", {

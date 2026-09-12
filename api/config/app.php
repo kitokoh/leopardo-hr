@@ -87,7 +87,7 @@ return [
     |
     */
 
-    'frontend_url' => env('FRONTEND_URL'),
+    'frontend_url' => env('FRONTEND_URL', 'https://gestionemployer-backend.vercel.app'),
 
     /*
     |--------------------------------------------------------------------------

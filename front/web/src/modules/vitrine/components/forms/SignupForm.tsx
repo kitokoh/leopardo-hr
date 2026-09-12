@@ -8,20 +8,33 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Briefcase,
   Building2,
+  CalendarClock,
+  Calculator,
+  Check,
   CheckCircle,
   Clock3,
   ClipboardCopy,
+  Contact,
   Download,
+  Fingerprint,
+  Fuel,
+  GraduationCap,
+  Globe,
   KeyRound,
   LogIn,
   Mail,
+  Megaphone,
   Phone,
   Rocket,
   ShieldCheck,
   Sparkles,
   Users,
-  Globe,
+  UtensilsCrossed,
+  Wallet,
 } from 'lucide-react';
 import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
@@ -41,13 +54,61 @@ interface SignupFormProps {
   className?: string;
 }
 
-type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+// #7235 — le tunnel s'ouvre désormais sur le choix du PROFIL (entreprise ou
+// indépendant) puis sur les OUTILS + le MÉTIER, avant les coordonnées.
+type Step = 'profile' | 'setup' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
 const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
 // Repli après ~60 s de polling (12 × 5 s).
 const TRIAL_POLL_INTERVAL_MS = 5000;
 const TRIAL_POLL_MAX_ATTEMPTS = 12;
+
+/**
+ * #7235 — Outils HORIZONTAUX proposés à l'inscription. Les clés sont celles
+ * du catalogue client (`@/lib/client-features`) et de l'allowlist serveur
+ * (`Company::HORIZONTAL_TOOLS`) : elles sont revalidées côté API (fail-closed).
+ * `TEAM_TOOL_KEYS` est masqué pour un profil Indépendant.
+ */
+/** Clés du catalogue i18n `signup.*` utilisées par les cartes du parcours. */
+type SignupFormCopyKey = (typeof signupFormKeys)[number];
+
+type HorizontalTool = { key: string; group: 'team' | 'management'; icon: typeof Users; labelKey: SignupFormCopyKey; descKey: SignupFormCopyKey };
+
+const HORIZONTAL_TOOLS: HorizontalTool[] = [
+  { key: 'employees', group: 'team', icon: Users, labelKey: 'toolsEmployees', descKey: 'toolsEmployeesDesc' },
+  { key: 'attendance', group: 'team', icon: Fingerprint, labelKey: 'toolsAttendance', descKey: 'toolsAttendanceDesc' },
+  { key: 'absences', group: 'team', icon: CalendarClock, labelKey: 'toolsAbsences', descKey: 'toolsAbsencesDesc' },
+  { key: 'payroll', group: 'team', icon: Wallet, labelKey: 'toolsPayroll', descKey: 'toolsPayrollDesc' },
+  { key: 'accounting', group: 'management', icon: Calculator, labelKey: 'toolsAccounting', descKey: 'toolsAccountingDesc' },
+  { key: 'crm', group: 'management', icon: Contact, labelKey: 'toolsCrm', descKey: 'toolsCrmDesc' },
+  { key: 'reports', group: 'management', icon: BarChart3, labelKey: 'toolsReports', descKey: 'toolsReportsDesc' },
+  { key: 'marketing', group: 'management', icon: Megaphone, labelKey: 'toolsMarketing', descKey: 'toolsMarketingDesc' },
+];
+
+const TEAM_TOOL_KEYS = HORIZONTAL_TOOLS.filter((tool) => tool.group === 'team').map((tool) => tool.key);
+
+/**
+ * Le socle « Employés » entraîne les contrats et les formations : ce sont les
+ * mêmes collections de données côté serveur, proposer trois cases distinctes
+ * n'apporterait rien à l'utilisateur.
+ */
+const TOOL_DEPENDENCIES: Record<string, string[]> = {
+  employees: ['contracts', 'training'],
+};
+
+/** Métiers VERTICAUX : codes du catalogue de solutions serveur (SolutionCatalogue). */
+type VerticalOption = { code: string; icon: typeof Users; labelKey: SignupFormCopyKey; descKey: SignupFormCopyKey };
+
+const VERTICALS: VerticalOption[] = [
+  { code: 'restaurant', icon: UtensilsCrossed, labelKey: 'verticalRestaurant', descKey: 'verticalRestaurantDesc' },
+  { code: 'fuel_station', icon: Fuel, labelKey: 'verticalFuel', descKey: 'verticalFuelDesc' },
+  { code: 'edumanager', icon: GraduationCap, labelKey: 'verticalEdu', descKey: 'verticalEduDesc' },
+];
+
+const DEFAULT_TOOLS_COMPANY = ['employees', 'attendance', 'absences', 'payroll', 'accounting', 'reports'];
+const DEFAULT_TOOLS_SOLO = ['accounting', 'reports'];
 
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
@@ -57,7 +118,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -106,7 +167,39 @@ export function SignupForm({
   }, []);
 
   // Multi-step state
-  const [currentStep, setCurrentStep] = useState<Step>('form');
+  const [currentStep, setCurrentStep] = useState<Step>('profile');
+  // #7235 — profil, outils horizontaux et métier vertical choisis.
+  const [profile, setProfile] = useState<SignupProfile | null>(null);
+  const [selectedTools, setSelectedTools] = useState<string[]>(DEFAULT_TOOLS_COMPANY);
+  const [vertical, setVertical] = useState<string>('');
+
+  const chooseProfile = (next: SignupProfile) => {
+    setProfile(next);
+    setSelectedTools(next === 'solo' ? DEFAULT_TOOLS_SOLO : DEFAULT_TOOLS_COMPANY);
+    if (next === 'solo') {
+      setVertical('');
+    }
+    setCurrentStep('setup');
+  };
+
+  const toggleTool = (key: string) => {
+    setSelectedTools((current) =>
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
+    );
+  };
+
+  const visibleTools = HORIZONTAL_TOOLS.filter(
+    (tool) => profile !== 'solo' || !TEAM_TOOL_KEYS.includes(tool.key),
+  );
+
+  /**
+   * Outils réellement transmis à l'API : la sélection + les dépendances
+   * (contrats/formations suivent « Employés »).
+   */
+  const effectiveModules = Array.from(
+    new Set(selectedTools.flatMap((key) => [key, ...(TOOL_DEPENDENCIES[key] ?? [])])),
+  ).sort();
+
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpValues, setOtpValues] = useState<string[]>(['', '', '', '', '', '']);
   const [otpError, setOtpError] = useState('');
@@ -247,7 +340,16 @@ export function SignupForm({
     dispatch({ type: 'SUBMIT_START' });
 
     try {
-      const response = await submitSignupForm(data, page);
+      // #7235 — le profil, les outils et le métier viennent du parcours
+      // (étapes 1 et 2) : sans cette injection ils ne quitteraient jamais le
+      // navigateur et l'API provisionnerait un tenant standard.
+      const payload: SignupFormData = {
+        ...data,
+        company_type: profile ?? 'company',
+        modules: effectiveModules,
+        solutions: vertical ? [vertical] : [],
+      };
+      const response = await submitSignupForm(payload, page);
 
       if (response.success) {
         trackSignup(data.email, {
@@ -384,7 +486,298 @@ export function SignupForm({
   // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
+      {/* #7235 — parcours en 3 temps : profil → outils & métier → coordonnées. */}
+      {(currentStep === 'profile' || currentStep === 'setup' || currentStep === 'form') && (
+        <ol className="mb-6 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
+          {(
+            [
+              ['profile', c.stepProfileLabel],
+              ['setup', c.stepToolsLabel],
+              ['form', c.stepIdentityLabel],
+            ] as const
+          ).map(([key, label], index) => {
+            const order = { profile: 0, setup: 1, form: 2 } as const;
+            const current = order[currentStep as 'profile' | 'setup' | 'form'];
+            const done = index < current;
+            const active = index === current;
+            return (
+              <li key={key} className="flex flex-1 items-center gap-2">
+                <span
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${
+                    done
+                      ? 'bg-emerald-500 text-white'
+                      : active
+                        ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-300'
+                        : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
+                  }`}
+                >
+                  {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                </span>
+                <span className={active ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}>
+                  {label}
+                </span>
+                {index < 2 && (
+                  <span className={`h-0.5 flex-1 rounded ${done ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
       <AnimatePresence mode="wait">
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 0: Profil (entreprise / indép.)    */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'profile' && (
+          <motion.div
+            key="step-profile"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              {c.badge}
+            </div>
+
+            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
+              {c.profileTitle}
+            </h2>
+            <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              {c.profileSubtitle}
+            </p>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {(
+                [
+                  {
+                    key: 'company' as const,
+                    icon: Building2,
+                    title: c.profileCompanyTitle,
+                    desc: c.profileCompanyDesc,
+                    bullets: [c.profileCompanyBullet1, c.profileCompanyBullet2, c.profileCompanyBullet3],
+                    badge: c.profileCompanyBadge,
+                  },
+                  {
+                    key: 'solo' as const,
+                    icon: Briefcase,
+                    title: c.profileSoloTitle,
+                    desc: c.profileSoloDesc,
+                    bullets: [c.profileSoloBullet1, c.profileSoloBullet2, c.profileSoloBullet3],
+                    badge: c.profileSoloBadge,
+                  },
+                ]
+              ).map((option) => {
+                const Icon = option.icon;
+                const active = profile === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => chooseProfile(option.key)}
+                    aria-pressed={active}
+                    data-testid={`signup-profile-${option.key}`}
+                    className={`group relative flex h-full flex-col items-start rounded-2xl border-2 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-500/10 dark:bg-slate-900 ${
+                      active
+                        ? 'border-emerald-500 ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 hover:border-emerald-400 dark:border-slate-700'
+                    }`}
+                  >
+                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white shadow-lg shadow-emerald-500/25">
+                      <Icon className="h-6 w-6" aria-hidden="true" />
+                    </span>
+                    <span className="text-lg font-black tracking-tight text-slate-950 dark:text-white">
+                      {option.title}
+                    </span>
+                    <span className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                      {option.desc}
+                    </span>
+                    <ul className="mt-4 space-y-1.5">
+                      {option.bullets.map((bullet) => (
+                        <li key={bullet} className="flex items-start gap-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="mt-4 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                      {option.badge}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 0b: Outils + métier                */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'setup' && (
+          <motion.div
+            key="step-setup"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button
+              type="button"
+              onClick={() => setCurrentStep('profile')}
+              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              {c.back}
+            </button>
+
+            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
+              {c.toolsTitle}
+            </h2>
+            <p className="mb-5 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              {c.toolsSubtitle}
+            </p>
+
+            {profile === 'solo' && (
+              <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
+                {c.soloNote}
+              </p>
+            )}
+
+            {(['team', 'management'] as const).map((group) => {
+              const tools = visibleTools.filter((tool) => tool.group === group);
+              if (tools.length === 0) return null;
+              return (
+                <div key={group} className="mb-5">
+                  <p className="mb-2 text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    {group === 'team' ? c.toolsTeamGroup : c.toolsManagementGroup}
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {tools.map((tool) => {
+                      const Icon = tool.icon;
+                      const on = selectedTools.includes(tool.key);
+                      return (
+                        <button
+                          key={tool.key}
+                          type="button"
+                          onClick={() => toggleTool(tool.key)}
+                          aria-pressed={on}
+                          data-testid={`signup-tool-${tool.key}`}
+                          className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
+                            on
+                              ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
+                              : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
+                          }`}
+                        >
+                          <span
+                            className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${
+                              on ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
+                            }`}
+                          >
+                            {on && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                          </span>
+                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                          <span className="min-w-0">
+                            <span className="block text-sm font-bold text-slate-900 dark:text-white">
+                              {c[tool.labelKey]}
+                            </span>
+                            <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">
+                              {c[tool.descKey]}
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            <p className="mb-6 rounded-xl bg-transparent px-4 py-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
+              {c.toolsHint}
+            </p>
+
+            <div className="mb-5">
+              <p className="mb-2 text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                {c.verticalTitle}
+              </p>
+              <p className="mb-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{c.verticalSubtitle}</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {VERTICALS.map((option) => {
+                  const Icon = option.icon;
+                  const on = vertical === option.code;
+                  return (
+                    <button
+                      key={option.code}
+                      type="button"
+                      onClick={() => setVertical(on ? '' : option.code)}
+                      aria-pressed={on}
+                      data-testid={`signup-vertical-${option.code}`}
+                      className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
+                        on
+                          ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
+                          : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
+                      }`}
+                    >
+                      <span
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                          on ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
+                        }`}
+                      >
+                        {on && <Check className="h-3 w-3" aria-hidden="true" />}
+                      </span>
+                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-bold text-slate-900 dark:text-white">
+                          {c[option.labelKey]}
+                        </span>
+                        <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">
+                          {c[option.descKey]}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setVertical('')}
+                  aria-pressed={vertical === ''}
+                  data-testid="signup-vertical-none"
+                  className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
+                    vertical === ''
+                      ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
+                      : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
+                  }`}
+                >
+                  <span
+                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                      vertical === '' ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
+                    }`}
+                  >
+                    {vertical === '' && <Check className="h-3 w-3" aria-hidden="true" />}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold text-slate-900 dark:text-white">{c.verticalNone}</span>
+                    <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">{c.verticalNoneDesc}</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={() => setCurrentStep('form')}
+            >
+              {c.continueLabel}
+              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+            </Button>
+          </motion.div>
+        )}
+
         {/* ═══════════════════════════════════════ */}
         {/* STEP 1: Signup Form                     */}
         {/* ═══════════════════════════════════════ */}
@@ -396,10 +789,20 @@ export function SignupForm({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              {c.badge}
-            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentStep('setup')}
+              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              {c.back}
+            </button>
+
+            {profile === 'solo' && (
+              <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
+                {c.soloNote}
+              </p>
+            )}
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
               {c.title}
@@ -467,6 +870,10 @@ export function SignupForm({
                   )}
                 </label>
 
+                {/* #7235 — un indépendant ne déclare pas de taille d’équipe :
+                    le champ n’est pas rendu (et non simplement masqué) pour ne
+                    pas laisser un contrôle fantôme dans le formulaire. */}
+                {profile !== 'solo' && (
                 <label className="block">
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <Users className="h-4 w-4" />
@@ -491,6 +898,7 @@ export function SignupForm({
                     </p>
                   )}
                 </label>
+                )}
               </div>
 
               <label className="block">

@@ -120,7 +120,107 @@ class Company extends Model
         // jamais activer ni exposer la verticale Travel. Fail-closed conservé
         // (défaut false, `rh` seul actif par défaut).
         'travelagency',
+        // #7235 (audit 2026-09-12) : la comptabilité est un module HORIZONTAL
+        // (transverse à tous les secteurs) et le module serveur existe
+        // (`app/Modules/Accounting`, routes `/api/v1/accounting/*`) — mais il
+        // était absent de ce registre, donc jamais reconstruit par l'admin
+        // plateforme (`PlatformCompanyFeatureController::update`) ni remonté
+        // par `/auth/me`. Il est désormais de premier ordre, comme demandé.
+        'accounting',
     ];
+
+    /**
+     * #7235 — Type d'activité déclaré à l'inscription.
+     *
+     * `company` : entreprise traditionnelle (équipe, pointage, RH…).
+     * `solo`    : indépendant / solo — pas d'outils d'équipe (pointage,
+     *             gestion des employés) dans l'interface.
+     */
+    public const TYPE_COMPANY = 'company';
+
+    public const TYPE_SOLO = 'solo';
+
+    /**
+     * #7235 — Outils HORIZONTAUX (transverses, utiles quel que soit le
+     * secteur) proposés à l'inscription et pilotables par le client. Les
+     * clés sont celles du catalogue client (`front/web/src/lib/client-features.ts`)
+     * pour que la sélection soit directement résolvable côté interface.
+     *
+     * Les VERTICALES (restaurant, fuel_station, edumanager, travelagency…)
+     * ne sont pas ici : elles passent par le catalogue de solutions
+     * (`SolutionCatalogue`) et `solutions[]`.
+     */
+    public const HORIZONTAL_TOOLS = [
+        'employees',
+        'attendance',
+        'absences',
+        'contracts',
+        'payroll',
+        'training',
+        'reports',
+        'accounting',
+        'crm',
+        'marketing',
+    ];
+
+    /**
+     * #7235 — Outils HORIZONTAUX d'ÉQUIPE. Un profil `solo` (indépendant)
+     * n'en a aucun usage : ils sont explicitement désactivés à l'inscription
+     * pour ne pas encombrer son interface (demande produit : « le solo n'a pas
+     * besoin des outils de pointage ou de gestion d'employés »).
+     */
+    public const TEAM_TOOLS = [
+        'employees',
+        'attendance',
+        'absences',
+        'contracts',
+        'payroll',
+        'training',
+    ];
+
+    /**
+     * #7235 — Profil d'activité du tenant (`company` par défaut, fail-safe :
+     * une valeur inconnue retombe sur le profil complet, jamais sur le profil
+     * réduit).
+     */
+    public function companyType(): string
+    {
+        $type = $this->metadata['company_type'] ?? null;
+
+        return $type === self::TYPE_SOLO ? self::TYPE_SOLO : self::TYPE_COMPANY;
+    }
+
+    public function isSolo(): bool
+    {
+        return $this->companyType() === self::TYPE_SOLO;
+    }
+
+    /**
+     * #7235 — Sélection explicite des outils horizontaux faite à l'inscription
+     * (`metadata.modules`). `null` = aucune sélection déclarée (tenants
+     * historiques / inscription rapide) → l'interface garde son comportement
+     * antérieur, aucun client existant n'est verrouillé par surprise.
+     *
+     * @return array<string, bool>|null
+     */
+    public function moduleSelection(): ?array
+    {
+        $modules = $this->metadata['modules'] ?? null;
+
+        if (! is_array($modules)) {
+            return null;
+        }
+
+        $selection = [];
+
+        foreach ($modules as $key => $enabled) {
+            if (is_string($key) && is_bool($enabled)) {
+                $selection[$key] = $enabled;
+            }
+        }
+
+        return $selection === [] ? null : $selection;
+    }
 
     /**
      * Indique si un module (ou une sous-feature) est actif pour cette company.

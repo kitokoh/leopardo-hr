@@ -93,6 +93,11 @@ test.describe('Marketing funnel preview', () => {
 
     await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
+    // #7235 — le tunnel s'ouvre sur le choix du PROFIL puis des OUTILS avant
+    // les coordonnées : on traverse les deux nouveaux écrans.
+    await page.locator('[data-testid="signup-profile-company"]').click();
+    await page.getByRole('button', { name: /continuer|continue/i }).first().click();
+
     const signupForm = page.locator('main form').first();
     await signupForm.getByLabel(/email professionnel|email/i).fill(email);
     await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
@@ -104,6 +109,15 @@ test.describe('Marketing funnel preview', () => {
     const submitButton = signupForm.locator('button[type="submit"]');
     await expect(submitButton).toBeVisible();
 
+    // Tableau (et non variable réassignée) : TypeScript réduirait un `let`
+    // affecté seulement dans une closure à `never` à la lecture.
+    const signupRequests: import('@playwright/test').Request[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/api/forms/signup')) {
+        signupRequests.push(request);
+      }
+    });
+
     const [signupResponse] = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/api/forms/signup'), { timeout: 30000 }),
       submitButton.click(),
@@ -111,6 +125,13 @@ test.describe('Marketing funnel preview', () => {
 
     expect(signupResponse.status()).toBe(201);
     await expect(page.locator('body')).toContainText(/demande d'essai|trial request|24h|email/i);
+
+    // #7235 — le profil, les outils et le métier sont bien remontés à l'API
+    // (et non restés dans le navigateur).
+    const payload = JSON.parse(signupRequests[0]?.postData() ?? '{}');
+    expect(payload.company_type).toBe('company');
+    expect(Array.isArray(payload.modules)).toBe(true);
+    expect(payload.modules.length).toBeGreaterThan(0);
   });
 
   test('captures a localized demo request without leaving the vitrine', async ({ page }) => {
