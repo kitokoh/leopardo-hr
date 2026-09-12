@@ -17,7 +17,7 @@
     <Sidebar
       :is-open="sidebarOpen"
       @close="sidebarOpen = false"
-      class="fixed inset-y-0 left-0 z-50 md:static md:inset-0"
+      class="fixed inset-y-0 left-0 z-50"
     />
 
     <!-- Main content -->
@@ -137,6 +137,16 @@ watch(sidebarOpen, (open) => {
 
 // Close sidebar on route change (navigation on mobile).
 watch(route, () => { sidebarOpen.value = false })
+
+// Échap ferme le tiroir mobile — même comportement que la vitrine et le
+// dashboard web (le tiroir ne se fermait qu'au clic sur l'overlay).
+const handleEscape = (event) => {
+  if (event.key === 'Escape' && sidebarOpen.value) {
+    sidebarOpen.value = false
+  }
+}
+onMounted(() => window.addEventListener('keydown', handleEscape))
+onUnmounted(() => window.removeEventListener('keydown', handleEscape))
 
 // Initialize keyboard shortcuts
 useKeyboardShortcuts()
