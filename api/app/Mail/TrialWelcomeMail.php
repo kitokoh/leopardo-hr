@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -43,9 +43,12 @@ class TrialWelcomeMail extends Mailable
                 'tempPassword' => $this->tempPassword,
                 'locale' => $locale,
                 'trialDays' => $this->trialDays,
+                // L'email contient les identifiants temporaires : le CTA doit
+                // pointer sur l'UI produit (page de connexion), jamais sur
+                // l'API — même convention que TrialDripMail.
+                'appUrl' => rtrim((string) config('app.frontend_url', config('app.url')), '/'),
             ]);
     }
-
 
     /**
      * Durée d'essai réelle affichée dans l'email : dérivée du provisioning
@@ -90,4 +93,3 @@ class TrialWelcomeMail extends Mailable
         };
     }
 }
-

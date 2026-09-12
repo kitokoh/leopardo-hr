@@ -311,6 +311,24 @@ export function OnboardingWizard({
     onComplete();
   };
 
+  // Échap ferme l'assistant — cohérent avec les autres surfaces (vitrine,
+  // admin, tiroirs de navigation).
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+        onComplete();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onComplete]);
+
   const handlePrimary = async () => {
     if (done) {
       completeLocalOnboarding();
@@ -339,12 +357,12 @@ export function OnboardingWizard({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
+          className="relative my-auto flex max-h-[92vh] w-full min-w-0 max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
           role="dialog"
           aria-modal="true"
           aria-label={onboarding.close}
@@ -357,7 +375,7 @@ export function OnboardingWizard({
             <X className="h-5 w-5" />
           </button>
 
-          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
+          <div className="shrink-0 bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white">
             <div className="mb-4 flex items-center justify-between gap-2">
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
                 {badgeText}
@@ -389,8 +407,8 @@ export function OnboardingWizard({
             </div>
           </div>
 
-          <div className="p-8">
-            <div className="space-y-6">
+          <div className="min-h-0 flex-1 overflow-y-auto p-6">
+            <div className="grid gap-3 sm:grid-cols-2">
               {(steps ?? []).map((s) => {
                 const meta = stepMeta(s);
                 const isCompleted = s.status === 'completed';
@@ -456,6 +474,55 @@ export function OnboardingWizard({
               })}
             </div>
 
+            {steps !== null && (
+              <div className="mt-4 space-y-3">
+                  {isFirstEmployee && (
+                    <div className="w-full rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                      <p className="text-xs font-medium text-blue-700">{onboarding.csvColumnsHint}</p>
+                    </div>
+                  )}
+                  {/* #R5 — feedback queue à l'étape invite_manager */}
+                  {isInviteManager && (
+                    <div className="w-full rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                      <p className="text-xs font-medium text-amber-700">{onboarding.inviteManagerHint}</p>
+                    </div>
+                  )}
+                  {isFirstAttendance && (
+                    <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-xs font-medium text-slate-600">{onboarding.firstCheckinHint}</p>
+                      <button
+                        onClick={() => void fetchQr()}
+                        disabled={qrLoading}
+                        className="mt-3 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 disabled:opacity-50"
+                      >
+                        {qrLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <QrCode className="h-4 w-4" aria-hidden="true" />
+                        )}
+                        {qrLoading ? onboarding.qrLoading : qrData ? onboarding.qrHide : onboarding.qrShow}
+                      </button>
+                      {qrData && (
+                        <div className="mt-3 flex flex-col items-center gap-2">
+                          <canvas
+                            ref={qrCanvasRef}
+                            role="img"
+                            aria-label={onboarding.qrHint}
+                            className="rounded-xl bg-white p-2 shadow-sm"
+                          />
+                          <p className="text-center text-xs text-slate-500">{onboarding.qrHint}</p>
+                        </div>
+                      )}
+                      {qrError && (
+                        <p role="alert" className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+                          {qrError}
+                        </p>
+                      )}
+                    </div>
+                  )}
+              </div>
+            )}
+
             {error && (
               <p
                 role="alert"
@@ -466,7 +533,7 @@ export function OnboardingWizard({
             )}
 
             {steps === null ? (
-              <div className="mt-8 flex flex-col items-end gap-2">
+              <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 flex flex-col items-end gap-2 border-t border-slate-100 bg-white px-6 py-4">
                 <button
                   onClick={() => void loadChecklist()}
                   disabled={loading}
@@ -480,52 +547,7 @@ export function OnboardingWizard({
                 </button>
               </div>
             ) : (
-              <div className="mt-8 flex flex-col items-end gap-2">
-                {/* #R13 — aide CSV à l'étape first_employee */}
-                {isFirstEmployee && (
-                  <div className="w-full rounded-2xl border border-blue-100 bg-blue-50 p-4">
-                    <p className="text-xs font-medium text-blue-700">{onboarding.csvColumnsHint}</p>
-                  </div>
-                )}
-                {/* #R5 — feedback queue à l'étape invite_manager */}
-                {isInviteManager && (
-                  <div className="w-full rounded-2xl border border-amber-100 bg-amber-50 p-4">
-                    <p className="text-xs font-medium text-amber-700">{onboarding.inviteManagerHint}</p>
-                  </div>
-                )}
-                {isFirstAttendance && (
-                  <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-medium text-slate-600">{onboarding.firstCheckinHint}</p>
-                    <button
-                      onClick={() => void fetchQr()}
-                      disabled={qrLoading}
-                      className="mt-3 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 disabled:opacity-50"
-                    >
-                      {qrLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                      ) : (
-                        <QrCode className="h-4 w-4" aria-hidden="true" />
-                      )}
-                      {qrLoading ? onboarding.qrLoading : qrData ? onboarding.qrHide : onboarding.qrShow}
-                    </button>
-                    {qrData && (
-                      <div className="mt-3 flex flex-col items-center gap-2">
-                        <canvas
-                          ref={qrCanvasRef}
-                          role="img"
-                          aria-label={onboarding.qrHint}
-                          className="rounded-xl bg-white p-2 shadow-sm"
-                        />
-                        <p className="text-center text-xs text-slate-500">{onboarding.qrHint}</p>
-                      </div>
-                    )}
-                    {qrError && (
-                      <p role="alert" className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
-                        {qrError}
-                      </p>
-                    )}
-                  </div>
-                )}
+              <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 flex flex-col items-end gap-2 border-t border-slate-100 bg-white px-6 py-4">
                 {currentStep && !currentStep.required && (
                   <button
                     onClick={() => void mutateStep(currentStep, 'skipped')}

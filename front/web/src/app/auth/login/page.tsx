@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { Button } from '@/components/ui/Button';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
@@ -543,6 +544,18 @@ function LoginInner() {
                       ? 'المتابعة عبر Google'
                       : 'Continue with Google'}
               </a>
+
+              {/* Entrée permanente vers la création de compte : elle n’existait
+                  qu’en cas d’erreur Google (« aucun compte ») — impossible de
+                  démarrer un essai depuis l’écran de connexion (#7231). */}
+              <p className="text-center text-sm text-slate-600">
+                <Link
+                  href="/signup"
+                  className="font-black text-emerald-700 underline-offset-4 transition hover:text-emerald-900 hover:underline"
+                >
+                  {i18nT(locale, 'user_auth.no_account')}
+                </Link>
+              </p>
 
               {coldStartHint && submitting ? (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 space-y-2">
