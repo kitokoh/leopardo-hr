@@ -16,7 +16,9 @@ import { expect, test } from '@playwright/test'
  * annexes de l'app, ex. health check, sans dépendre du réseau/CI).
  */
 
-const AUTH_ME_URL = /\/api\/v1\/platform\/auth\/me$/
+// Query tolérée : sans `(\?.*)?`, un appel `/auth/me?x=1` tombait dans le
+// catch-all qui renvoie `{data:{}}` (pas de rôle) -> session refusée (#7205).
+const AUTH_ME_URL = /\/api\/v1\/platform\/auth\/me(\?.*)?$/
 const DASHBOARD_URL = /\/api\/v1\/accounting\/dashboard\?.*$/
 const EXPORT_URL = /\/api\/v1\/accounting\/dashboard\/export(?:\?.*)?$/
 
@@ -24,6 +26,11 @@ const EXPORT_URL = /\/api\/v1\/accounting\/dashboard\/export(?:\?.*)?$/
 // PREMIER, les mocks spécifiques (enregistrés ensuite) ont priorité.
 function mockApiCatchAll(page) {
   return page.route('**/api/v1/**', (route) => {
+    // Le profil plateforme réel est toujours super_admin (#7205) : on ne laisse
+    // jamais le catch-all renvoyer un profil sans rôle.
+    if (/\/platform\/auth\/me/.test(route.request().url())) {
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(USER) })
+    }
     route.fulfill({ status: 200, contentType: 'application/json', body: '{"data":{}}' })
   })
 }
