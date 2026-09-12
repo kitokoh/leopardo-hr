@@ -1,0 +1,53 @@
+name: Application Layer Placement Guard
+
+# Garde « couche Application saine » (issue #6571, audit DDD M3) : les Services
+# et Jobs d'un module vivent sous Infrastructure/{Services,Jobs}/.
+#
+# Le script dev-hub/tools/check-application-layer-placement.sh existait mais
+# n'était exécuté par AUCUN workflow (constat 2026-09-10) : les 14 violations
+# restantes (CRM 6, RestaurantManager 8 — dont 2 doublons à arbitrer, cf. #7159)
+# étaient invisibles en CI.
+#
+# NON BLOQUANT : les violations historiques sont signalées en warning pour
+# rester visibles, sans bloquer les PR. Passage en bloquant quand le reliquat
+# sera résorbé.
+
+on:
+  pull_request:
+    paths:
+      - "api/app/Modules/**"
+      - "api/app/Core/**"
+      - "dev-hub/tools/check-application-layer-placement.sh"
+      - "dev-hub/tools/application-layer-placement-allowlist.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-layer-placement-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  placement:
+    runs-on: ubuntu-latest
+    name: Placement Application/Services (non bloquant)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Run application layer placement guard
+        shell: bash
+        run: |
+          set +e
+          output="$(bash dev-hub/tools/check-application-layer-placement.sh 2>&1)"
+          code=$?
+          set -e
+          echo "$output"
+          if [ "$code" -ne 0 ]; then
+            count="$(printf '%s\n' "$output" | grep -c '::error::Service/Job' || true)"
+            echo "::warning::Placement DDD — ${count} violation(s) Service/Job dans Application/ (issue #6571, reliquat suivi par #7159). Non bloquant : résorber avant passage en garde bloquante."
+          fi
+          exit 0
