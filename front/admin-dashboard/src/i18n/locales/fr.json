@@ -1117,7 +1117,8 @@
     "demo_panel_hint": "Environnement de démonstration : sélectionnez un profil pour vous connecter immédiatement. Désactivé en production.",
     "demo_badge_platform": "Plateforme",
     "demo_access": "Utiliser un compte démo",
-    "demo_super_admin_label": "Super Administrateur"
+    "demo_super_admin_label": "Super Administrateur",
+    "platform_admin_only": "Accès réservé aux administrateurs de la plateforme."
   },
   "settingsShareProfileOrScan": "Partager votre profil ou scanner une entreprise.",
   "attendanceStatusInProgress": "En cours",

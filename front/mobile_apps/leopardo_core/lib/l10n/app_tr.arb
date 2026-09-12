@@ -63,6 +63,7 @@
   "authDemoAccess": "Demo erisimi",
   "authDemoUnavailable": "Demo erisimi gecici olarak kullanilamiyor (API'ye ulasilamiyor).",
   "authTogglePasswordVisibility": "Sifreyi goster veya gizle",
+  "authPlatformAdminOnly": "Erişim yalnızca platform yöneticilerine açıktır.",
   "commonLanguageLabel": "Dil",
   "commonLanguageVariantsFrFr": "Fransizca (Fransa)",
   "commonLanguageVariantsFrBe": "Fransizca (Belcika)",

@@ -1117,7 +1117,8 @@
     "demo_panel_hint": "Demo ortamı: anında giriş yapmak için bir profil seçin. Üretimde devre dışı.",
     "demo_badge_platform": "Platform",
     "demo_access": "Demo hesabı kullan",
-    "demo_super_admin_label": "Süper Yönetici"
+    "demo_super_admin_label": "Süper Yönetici",
+    "platform_admin_only": "Erişim yalnızca platform yöneticilerine açıktır."
   },
   "settingsShareProfileOrScan": "Profilinizi paylaşın veya bir şirketi tarayın.",
   "attendanceStatusInProgress": "Devam ediyor",
