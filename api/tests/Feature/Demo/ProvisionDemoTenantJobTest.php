@@ -213,4 +213,63 @@ class ProvisionDemoTenantJobTest extends TestCase
             'alice@demo.local ne doit jamais etre dupliquee',
         );
     }
+
+    /**
+     * Issue #7218 (suite #7191) : `access_sent_at` n'est posé que si l'e-mail
+     * d'accès a réellement pu partir — sinon /trial/status annonce un accès
+     * envoyé qui n'existe pas.
+     */
+    public function test_access_sent_at_is_set_when_demo_email_is_delivered(): void
+    {
+        Mail::fake();
+
+        $email = 'sent-'.uniqid().'@example.com';
+        $token = Str::random(64);
+
+        DB::table('trial_provisionings')->insert([
+            'email' => $email,
+            'provisioning_token' => $token,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $job = new ProvisionDemoTenantJob($email, 'Sent Sandbox '.uniqid(), 'DZ', $token);
+        $job->handle(app(ProvisionGuidedTrial::class));
+
+        $row = DB::table('trial_provisionings')->where('provisioning_token', $token)->first();
+
+        $this->assertNotNull($row);
+        $this->assertSame('ready', $row->status);
+        $this->assertNotNull($row->access_sent_at, 'access_sent_at doit être posé après un envoi réussi.');
+    }
+
+    public function test_access_sent_at_stays_null_when_demo_email_fails(): void
+    {
+        // Pattern maison (#3057/#5162) : l'échec d'envoi est simulé par un
+        // transport qui lève (mailer non configuré — cas réel dev/prod #7191).
+        Mail::shouldReceive('to')
+            ->once()
+            ->andThrow(new \RuntimeException('mailer not configured'));
+
+        $email = 'unsent-'.uniqid().'@example.com';
+        $token = Str::random(64);
+
+        DB::table('trial_provisionings')->insert([
+            'email' => $email,
+            'provisioning_token' => $token,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $job = new ProvisionDemoTenantJob($email, 'Unsent Sandbox '.uniqid(), 'DZ', $token);
+        $job->handle(app(ProvisionGuidedTrial::class));
+
+        $row = DB::table('trial_provisionings')->where('provisioning_token', $token)->first();
+
+        $this->assertNotNull($row);
+        $this->assertSame('ready', $row->status);
+        $this->assertNull($row->access_sent_at, "Aucun acces ne doit etre annonce si l'e-mail a echoue.");
+    }
 }
