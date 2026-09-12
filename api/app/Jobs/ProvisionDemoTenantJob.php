@@ -29,7 +29,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly ?string $provisioningToken = null,
         /** @var list<string> $solutions BC-25 (#6693) : solutions sectorielles demandées à l'inscription. */
         public readonly array $solutions = [],
-    ) {}
+        /** #7235 — profil d'activité déclaré (`company` | `solo`). */
+        public readonly ?string $companyType = null,
+        /** @var list<string> $modules #7235 : outils horizontaux choisis à l'inscription. */
+        public readonly array $modules = [],
+    ) {
+    }
 
     // Issue #3600 : provisioning trial = opération lourde et critique — retries
     // espacés (30s, 1min, 2min, 5min) au lieu d'une rafale par défaut, et
@@ -48,7 +53,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
 
         try {
             /** @var array{company: Company, manager: Employee} $result */
-            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions);
+            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions, $this->companyType, $this->modules);
 
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail

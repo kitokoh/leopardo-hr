@@ -68,6 +68,15 @@ export function signupFormSchema(locale: AppLocale) {
     agreeToTerms: z.boolean().refine((val) => val === true, {
       message: m.agreeTerms,
     }),
+    // #7235 — Profil d'activité : `company` (entreprise, défaut) ou `solo`
+    // (indépendant). Le choix est imposé par le parcours (l'écran de profil
+    // est obligatoire) ; le schéma reste permissif pour ne pas casser le
+    // formulaire rapide du hero, qui ne collecte qu'un email.
+    company_type: z.enum(['company', 'solo']).optional(),
+    // #7235 — Outils horizontaux choisis (allowlist revalidée côté API).
+    modules: z.array(z.string().max(40)).max(20).optional(),
+    // #7235 — Métier vertical (code du catalogue de solutions).
+    solutions: z.array(z.string().max(40)).max(20).optional(),
   });
 }
 

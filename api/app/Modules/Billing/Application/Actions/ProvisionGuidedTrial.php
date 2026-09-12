@@ -20,7 +20,8 @@ class ProvisionGuidedTrial
     public function __construct(
         private readonly TenantManager $tenantManager,
         private readonly SolutionActivator $solutionActivator,
-    ) {}
+    ) {
+    }
 
     /**
      * MULTI-PAYS (#1867/#1950) : le pays légal est OBLIGATOIRE et doit être
@@ -29,10 +30,18 @@ class ProvisionGuidedTrial
      * devise et le fuseau sont dérivés du pays validé.
      *
      * @param  list<string>  $solutions  Codes de solutions sectorielles demandées (#6693)
+     * @param  string|null  $companyType  #7235 — `company` (défaut) | `solo`
+     * @param  list<string>  $modules  #7235 — outils horizontaux choisis à l'inscription
      * @return array<string, mixed>
      */
-    public function execute(string $email, string $companyName, ?string $country = null, array $solutions = []): array
-    {
+    public function execute(
+        string $email,
+        string $companyName,
+        ?string $country = null,
+        array $solutions = [],
+        ?string $companyType = null,
+        array $modules = [],
+    ): array {
         // BC-25 (#6693) : les solutions demandées doivent exister au catalogue
         // (fail-closed) AVANT tout provisioning — jamais de tenant partiel.
         $solutions = array_values(array_unique(array_map(
@@ -79,12 +88,19 @@ class ProvisionGuidedTrial
             $slug = 'sandbox-'.Str::random(6);
         }
 
+        // #7235 — Profil d'activité + sélection explicite des outils
+        // horizontaux. `modules = []` (inscription rapide, appelants
+        // historiques) ⇒ AUCUNE sélection écrite : les tenants existants et
+        // les inscriptions sans choix gardent le comportement d'avant.
+        $companyType = $companyType === Company::TYPE_SOLO ? Company::TYPE_SOLO : Company::TYPE_COMPANY;
+        $moduleSelection = $this->resolveModuleSelection($modules, $companyType);
+
         $countryDefaults = CountryDefaults::find($country);
         if ($countryDefaults === null) {
             throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions): array {
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -101,10 +117,25 @@ class ProvisionGuidedTrial
                 'language' => strtolower($countryDefaults['language']),
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
-                'metadata' => [
-                    'provisioned_by' => 'guided_trial',
-                    'is_sandbox' => true,
-                ],
+                // #7235 — profil d'activité, métier vertical et outils
+                // choisis. `modules` reste ABSENT quand aucune sélection n'a
+                // été déclarée (le front retombe alors sur son comportement
+                // historique, aucun verrouillage rétroactif).
+                'metadata' => array_filter(
+                    [
+                        'provisioned_by' => 'guided_trial',
+                        'is_sandbox' => true,
+                        'company_type' => $companyType,
+                        'vertical' => $solutions[0] ?? null,
+                        'modules' => $moduleSelection,
+                    ],
+                    static fn (mixed $value): bool => $value !== null,
+                ),
+                // #7235 — les clés de la sélection qui sont AUSSI des feature
+                // flags plateforme (registre `config/feature-flags.php`) sont
+                // miroirées dans `features` pour être résolues par
+                // `FeatureFlag::for()` (donc visibles dans /auth/me).
+                'features' => $this->mirroredFeatures($moduleSelection),
             ]);
 
             if (DB::getDriverName() === 'pgsql') {
@@ -168,6 +199,75 @@ class ProvisionGuidedTrial
                 'manager' => $manager,
             ];
         });
+    }
+
+    /**
+     * #7235 — Sélection explicite des outils horizontaux, normalisée :
+     * toutes les clés de `Company::HORIZONTAL_TOOLS` sont présentes, avec
+     * `true` pour les outils choisis et `false` pour les autres. Un profil
+     * `solo` voit en plus les outils d'ÉQUIPE forcés à `false` — la règle est
+     * posée côté serveur, elle ne dépend pas du client.
+     *
+     * @param  list<string>  $modules
+     * @return array<string, bool>|null null quand aucune sélection n'a été fournie
+     */
+    private function resolveModuleSelection(array $modules, string $companyType): ?array
+    {
+        if ($modules === []) {
+            return null;
+        }
+
+        $requested = [];
+
+        foreach ($modules as $module) {
+            $key = strtolower(trim((string) $module));
+
+            if ($key !== '' && in_array($key, Company::HORIZONTAL_TOOLS, true)) {
+                $requested[$key] = true;
+            }
+        }
+
+        $selection = [];
+
+        foreach (Company::HORIZONTAL_TOOLS as $tool) {
+            $selection[$tool] = isset($requested[$tool]);
+        }
+
+        if ($companyType === Company::TYPE_SOLO) {
+            foreach (Company::TEAM_TOOLS as $tool) {
+                $selection[$tool] = false;
+            }
+        }
+
+        return $selection;
+    }
+
+    /**
+     * #7235 — Miroir des outils choisis vers `features` pour les clés qui
+     * existent réellement dans le registre des feature flags
+     * (`config/feature-flags.php`). Les autres clés (employees, attendance…)
+     * ne sont PAS des flags plateforme : elles vivent dans
+     * `metadata.modules`, que le client web consomme directement.
+     *
+     * @param  array<string, bool>|null  $selection
+     * @return array<string, bool>
+     */
+    private function mirroredFeatures(?array $selection): array
+    {
+        if ($selection === null) {
+            return [];
+        }
+
+        $platformFlags = ['accounting', 'crm'];
+        $features = [];
+
+        foreach ($platformFlags as $flag) {
+            if (array_key_exists($flag, $selection)) {
+                $features[$flag] = $selection[$flag];
+            }
+        }
+
+        return $features;
     }
 
     private function resolveTrialPlanId(): int

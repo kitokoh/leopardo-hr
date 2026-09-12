@@ -19,6 +19,7 @@ import {
   type CopyTree,
   type StoredAuthUser,
 } from '@/lib/i18n';
+import { TrialBanner } from '@/components/TrialBanner';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
 
 export default function DashboardLayout({
@@ -407,6 +408,9 @@ export default function DashboardLayout({
             </button>
           </div>
         ) : null}
+        {/* #7235 — l’essai est porté par l’application : jours restants +
+            passage à Pro (les boutons « tester 14 jours » disparaissent). */}
+        <TrialBanner user={user} locale={locale} />
         <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
           {currentModule && !currentModule.enabled ? (
             <FeatureLockedPanel module={currentModule} labels={labels} />

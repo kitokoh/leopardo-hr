@@ -77,5 +77,52 @@ return [
             'killable' => true,
             'description' => 'Solution FuelStation — pilote terrain (BC-15 FUEL).',
         ],
+        // #7235 — Comptabilité : module HORIZONTAL de premier ordre (toute
+        // entreprise, y compris un indépendant, peut en avoir besoin). Le
+        // module existait (app/Modules/Accounting) mais était absent du
+        // registre ET de `Company::KNOWN_MODULES` : il n'était donc jamais
+        // exposé par /auth/me et le front l'affichait verrouillé alors que
+        // l'API répondait (audit #7235).
+        'accounting' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'Comptabilité (journaux, grand livre, balance, FEC, lettrage).',
+        ],
+        // #7235 — Ces trois solutions étaient activables (elles sont dans
+        // `Company::KNOWN_MODULES` et dans le catalogue de solutions) mais
+        // absentes du registre : `FeatureFlag::for()` les ignorait donc, et
+        // /auth/me ne les remontait jamais → la verticale choisie par le
+        // client restait invisible côté web. Même correctif de cohérence pour
+        // `crm` (module opt-in #5742), également absent du registre.
+        'crm' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'CRM client (comptes, contacts, opportunités, pipeline) — espace tenant.',
+        ],
+        'restaurant' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'Solution Restaurant (POS, cuisine, réservations, stock).',
+        ],
+        'edumanager' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'Solution EduManager (établissements scolaires, classes, notes).',
+        ],
+        'travelagency' => [
+            'scope' => 'solution',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'Solution Agence de voyage (ventes, réservations, check-in).',
+        ],
     ],
 ];

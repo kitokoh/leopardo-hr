@@ -121,6 +121,29 @@ class EmployeeResource extends JsonResource
                 'language' => $company->language,
                 'timezone' => $company->timezone,
                 'currency' => $company->currency,
+                // #7235 — profil d'activité (`company` | `solo`) et sélection
+                // explicite des outils horizontaux faite à l'inscription :
+                // l'interface s'y adapte (un indépendant ne voit ni pointage
+                // ni gestion d'employés). `modules` vaut null quand aucune
+                // sélection n'a été déclarée (tenants historiques) — le front
+                // garde alors son comportement d'origine.
+                'type' => $company->companyType(),
+                'sector' => $company->sector,
+                'modules' => $company->moduleSelection(),
+                // #R8 — le front lit `company.metadata.onboarding_completed`
+                // depuis le premier jour, mais cette clé n'était JAMAIS
+                // exposée par l'API : l'assistant d'accueil se rouvrait donc à
+                // chaque connexion. On expose les métadonnées du tenant (les
+                // siennes, aucun risque cross-tenant).
+                'metadata' => $company->metadata ?? [],
+                // #7235 — essai : l'application affiche les jours restants et
+                // propose le passage au plan supérieur (les CTA « testez
+                // 14 jours » de la vitrine disparaissent, l'inscription est
+                // directe).
+                'status' => $company->status,
+                'subscription_end' => $company->subscription_end instanceof DateTimeInterface
+                    ? $company->subscription_end->format('Y-m-d')
+                    : $company->subscription_end,
             ] : null,
             // #5326 (G3) — badge « dossier complet » sur la fiche employé.
             // Présent uniquement quand la relation est chargée (show), jamais
