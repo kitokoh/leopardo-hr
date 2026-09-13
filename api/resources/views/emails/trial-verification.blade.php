@@ -2,10 +2,13 @@
 <html lang="{{ $locale }}" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    <!-- Le titre doit suivre la langue de l'e-mail : il était figé en français
-         alors que le corps était déjà traduit (e-mail « Bonjour … » +
-         paragraphes en turc, signalé par le fondateur). -->
-    <title>@if($locale === 'en')Verify your Leopardo RH email@elseif($locale === 'ar')تحقق من بريدك الإلكتروني في Leopardo RH@elseif($locale === 'tr')Leopardo RH e-postanızı doğrulayın@else Vérifiez votre email Leopardo RH@endif</title>
+    {{-- Les chaînes passent par le catalogue `api/lang/*/emails.php` (garde CI
+         I18N : aucun littéral utilisateur dans une vue Blade e-mail/PDF). Le
+         titre et la salutation étaient auparavant figés en français pour les
+         4 langues, d'où l'e-mail hybride « Bonjour … » + corps en turc.
+         La locale est portée par `TrialVerificationMail::locale()`, donc
+         `__()` résout dans la langue choisie par l'utilisateur. --}}
+    <title>{{ __('emails.trial_verification_subject') }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 0; color: #334155;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
@@ -14,30 +17,12 @@
         </div>
 
         <div style="padding: 32px;">
-            {{-- Salutation localisée : elle était en dur (« Bonjour ») pour les
-                 4 langues, d'où l'e-mail hybride reçu par le fondateur. --}}
             <p style="font-size: 16px; line-height: 24px; margin-bottom: 24px;">
-                @if($locale === 'en')
-                    Hello {{ $managerName }},
-                @elseif($locale === 'ar')
-                    مرحباً {{ $managerName }}،
-                @elseif($locale === 'tr')
-                    Merhaba {{ $managerName }},
-                @else
-                    Bonjour {{ $managerName }},
-                @endif
+                {{ __('emails.trial_verification_greeting', ['name' => $managerName]) }}
             </p>
 
             <p style="font-size: 16px; line-height: 24px; margin-bottom: 24px;">
-                @if($locale === 'en')
-                    Please use the verification code below to complete the creation of your workspace:
-                @elseif($locale === 'ar')
-                    يرجى استخدام رمز التحقق أدناه لإكمال إنشاء مساحة العمل الخاصة بك:
-                @elseif($locale === 'tr')
-                    Çalışma alanınızın oluşturulmasını tamamlamak için lütfen aşağıdaki doğrulama kodunu kullanın:
-                @else
-                    Veuillez utiliser le code de vérification ci-dessous pour finaliser la création de votre espace de travail :
-                @endif
+                {{ __('emails.trial_verification_intro') }}
             </p>
 
             <div style="background-color: #f1f5f9; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 32px;">
@@ -45,15 +30,7 @@
             </div>
 
             <p style="font-size: 14px; color: #64748b; line-height: 20px;">
-                @if($locale === 'en')
-                    This code is valid for 30 minutes. If you did not request this, you can safely ignore this email.
-                @elseif($locale === 'ar')
-                    هذا الرمز صالح لمدة 30 دقيقة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.
-                @elseif($locale === 'tr')
-                    Bu kod 30 dakika geçerlidir. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.
-                @else
-                    Ce code est valide pendant 30 minutes. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.
-                @endif
+                {{ __('emails.trial_verification_validity') }}
             </p>
         </div>
 
