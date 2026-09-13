@@ -27,8 +27,8 @@ class OnboardingReminderMail extends Mailable
 
     public function __construct(
         public readonly Company $company,
-        public readonly string  $managerName,
-        public readonly string  $managerEmail,
+        public readonly string $managerName,
+        public readonly string $managerEmail,
         ?string $locale = null,
     ) {
         $this->locale = I18nCatalog::normalizeLocale($locale ?? $company->language);
@@ -47,13 +47,17 @@ class OnboardingReminderMail extends Mailable
     {
         App::setLocale($this->locale);
 
+        // #7238 — domaine PRODUIT (portail) : un CTA d'e-mail ouvre l'UI,
+        // jamais l'API (même convention que TrialWelcomeMail).
+        $base = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+
         return new Content(
             view: 'emails.onboarding.reminder',
             with: [
-                'company'     => $this->company,
+                'company' => $this->company,
                 'managerName' => $this->managerName,
-                'setupUrl'    => config('app.url') . '/',
-                'locale'      => $this->locale,
+                'setupUrl' => $base.'/',
+                'locale' => $this->locale,
             ],
         );
     }

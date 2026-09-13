@@ -128,8 +128,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
         $extraData['demo_access_token_expires_at'] = $expiresAt->toIso8601String();
         $manager->update(['extra_data' => $extraData]);
 
-        $appUrl = config('app.url');
-        $magicUrl = rtrim(\is_string($appUrl) ? $appUrl : '', '/').'/demo-login/'.$token;
+        // #7238 — l'e-mail d'accès doit ouvrir le PORTAIL (UI produit), jamais
+        // l'API : /demo-login/{token} est une route web du backend (session
+        // serveur + dashboard Blade), on atterrissait donc sur le backend.
+        // La route backend reste en place pour les liens déjà envoyés.
+        $frontUrl = config('app.frontend_url', config('app.url'));
+        $magicUrl = rtrim(\is_string($frontUrl) ? $frontUrl : '', '/').'/auth/login';
 
         // Best-effort : un échec d'envoi (mailer non configuré) ne doit pas
         // faire échouer le provisioning — le lien est loggé pour support.
