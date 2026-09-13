@@ -64,7 +64,21 @@
               <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
                   <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.onboarding') }}</dt>
-                  <dd class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{{ health.adoption.onboarding.progress_percent }}%</dd>
+                  <!-- #7300 : « Onboarding » = progression CANONIQUE (checklist setup,
+                       la même que celle affichée au client). Une société dont la checklist
+                       n'a jamais été amorcée affiche « — », jamais 0 % (qui se lirait
+                       « mauvais élève »). L'usage réel du produit — une autre notion — est
+                       affiché juste en dessous sous « Adoption terrain ». -->
+                  <dd class="mt-2 text-2xl font-black text-slate-900 dark:text-white">
+                    {{ health.adoption.onboarding.initialized === false ? '—' : `${health.adoption.onboarding.progress_percent}%` }}
+                  </dd>
+                  <p
+                    v-if="health.adoption.onboarding.observed"
+                    class="mt-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500"
+                  >
+                    {{ t('companyDetail.fieldAdoption') }}
+                    {{ health.adoption.onboarding.observed.progress_percent }}%
+                  </p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
                   <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.anomalies30d') }}</dt>

@@ -257,6 +257,13 @@ class OnboardingStepControllerTest extends TestCase
         $company = Company::factory()->create();
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        // #7261/#7300 — `first_employee` est gardée par un prédicat serveur :
+        // `Employee::count() > 1` (le manager compte pour un). La fixture de ce
+        // test ne créait que le manager, donc l'étape répondait 422 et le test
+        // était rouge sur `main` sans rapport avec ce qu'il vérifie. On ajoute
+        // le second employé pour satisfaire la garde, ce qui laisse le test
+        // porter sur son vrai sujet : la persistance serveur de la complétion.
+        Employee::factory()->create(['company_id' => $company->id]);
 
         $this->step($company, 'company_info', 'completed');
         $this->step($company, 'first_employee', 'pending');

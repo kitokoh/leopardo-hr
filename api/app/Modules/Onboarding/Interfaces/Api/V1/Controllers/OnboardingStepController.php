@@ -11,6 +11,7 @@ use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use App\Modules\Onboarding\Application\Actions\SyncOnboardingCompletion;
+use App\Modules\Onboarding\Application\Services\OnboardingProgressReader;
 use App\Modules\Onboarding\Application\Services\StepCompletionGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,15 +21,22 @@ class OnboardingStepController extends Controller
 {
     public function __construct(
         private readonly StepCompletionGuard $stepCompletionGuard,
+        private readonly OnboardingProgressReader $progressReader,
     ) {}
 
     /**
-     * Checklist pilotée par la table `onboarding_steps`.
+     * Checklist pilotée par la table `onboarding_steps` — SOURCE DE VÉRITÉ
+     * de la progression d'onboarding (#7300).
      *
-     * #3239 — shape alignée sur le moteur calculé canonique
-     * (OnboardingChecklistController) : data{ completed_steps, total_steps,
-     * progress_percent, progress (alias), go_live_ready, next_actions, steps }.
-     * La collection d'étapes reste exposée telle quelle sous `data.steps`.
+     * #3239 — shape alignée sur le moteur calculé : data{ completed_steps,
+     * total_steps, progress_percent, progress (alias), go_live_ready,
+     * next_actions, steps }. La collection d'étapes reste exposée telle quelle
+     * sous `data.steps`.
+     *
+     * #7300 — les nombres proviennent désormais de `OnboardingProgressReader`.
+     * Ils étaient auparavant recalculés ici, dans `progress()`, dans le moteur
+     * calculé et dans le back-office : quatre implémentations d'une même règle,
+     * qui avaient divergé.
      */
     public function checklist(Request $request): JsonResponse
     {
@@ -39,31 +47,15 @@ class OnboardingStepController extends Controller
             return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
         }
 
-        $steps = OnboardingStep::where('company_id', $companyId)
-            ->orderBy('order')
-            ->get();
+        $progress = $this->progressReader->read($companyId);
 
-        if ($steps->isEmpty()) {
+        if ($progress['total_steps'] === 0) {
             // #4929 : seed paresseux via l'action canonique (source de vérité
             // unique des 10 étapes) — couvre les sociétés créées avant le
             // correctif provisioning.
             app(SeedDefaultSteps::class)->execute($companyId);
-            $steps = OnboardingStep::where('company_id', $companyId)
-                ->orderBy('order')
-                ->get();
+            $progress = $this->progressReader->read($companyId);
         }
-
-        $total = $steps->count();
-        $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
-        $percent = $total > 0 ? (int) round(($completed / $total) * 100) : 0;
-
-        // #R15 — go_live_ready : toutes les étapes REQUISES doivent être
-        // complétées (status = 'completed'). L'ancien seuil `total - 1` était
-        // trop permissif : une étape requise manquante n'empêchait pas le
-        // passage en production.
-        $allRequiredDone = $steps
-            ->where('required', true)
-            ->every(fn (OnboardingStep $s): bool => $s->status === 'completed');
 
         // #R6 — exposer employees_count depuis ce endpoint (évite au wizard
         // d'appeler le moteur calculé séparément pour le Quick Start).
@@ -78,25 +70,18 @@ class OnboardingStepController extends Controller
 
         return response()->json([
             'data' => [
-                'completed_steps' => $completed,
-                'total_steps' => $total,
-                'progress_percent' => $percent,
-                'progress' => $percent,
-                'go_live_ready' => $total > 0 && $allRequiredDone,
+                'completed_steps' => $progress['completed_steps'],
+                'total_steps' => $progress['total_steps'],
+                'progress_percent' => $progress['progress_percent'],
+                'progress' => $progress['progress'],
+                'go_live_ready' => $progress['go_live_ready'],
                 'employees_count' => $employeesCount,
                 'company_created_at' => $companyCreatedAt?->toIso8601String(),
                 'elapsed_since_company_creation_minutes' => $companyCreatedAt
                     ? (int) $companyCreatedAt->diffInMinutes(now())
                     : null,
-                'next_actions' => $steps
-                    ->where('status', 'pending')
-                    ->take(3)
-                    ->map(fn (OnboardingStep $step): array => [
-                        'key' => $step->step_key,
-                        'label' => $step->title,
-                    ])
-                    ->values(),
-                'steps' => $steps
+                'next_actions' => $progress['next_actions'],
+                'steps' => $progress['steps']
                     ->map(fn (OnboardingStep $step): array => (new OnboardingStepResource($step))->resolve($request))
                     ->all(),
             ],
@@ -112,29 +97,16 @@ class OnboardingStepController extends Controller
             return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
         }
 
-        $steps = OnboardingStep::where('company_id', $companyId)->get();
-        $total = $steps->count();
-
-        if ($total === 0) {
-            return response()->json([
-                'data' => [
-                    'progress' => 0,
-                    'progress_percent' => 0,
-                    'completed' => 0,
-                    'total' => 0,
-                ],
-            ]);
-        }
-
-        $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
-        $percent = (int) round(($completed / $total) * 100);
+        // #7300 — même lecteur canonique que `checklist()` : les deux endpoints
+        // ne peuvent plus annoncer deux progressions différentes.
+        $progress = $this->progressReader->read($companyId);
 
         return response()->json([
             'data' => [
-                'progress' => $percent,
-                'progress_percent' => $percent,
-                'completed' => $completed,
-                'total' => $total,
+                'progress' => $progress['progress'],
+                'progress_percent' => $progress['progress_percent'],
+                'completed' => $progress['completed_steps'],
+                'total' => $progress['total_steps'],
             ],
         ]);
     }

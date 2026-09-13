@@ -7,18 +7,66 @@
 
 L'onboarding guidé est le **premier écran que voit un client après inscription**.
 Il conditionne directement le taux de conversion Trial → Payant.
-Il s'affiche automatiquement si `company_settings.onboarding_completed = false`.
+Il s'affiche automatiquement si `company.metadata.onboarding_completed !== true`
+(persisté côté serveur depuis #7262 ; l'ancien `company_settings.onboarding_completed`
+n'a jamais existé côté API — voir « SOURCE DE VÉRITÉ » ci-dessous).
 
 ---
 
-## 4 ÉTAPES OBLIGATOIRES
+## SOURCE DE VÉRITÉ DE LA PROGRESSION (#7300)
 
-```
-ÉTAPE 1 : Ajouter vos premiers employés (CSV ou manuel)
-ÉTAPE 2 : Configurer votre planning de travail
-ÉTAPE 3 : Télécharger l'app mobile (QR code)
-ÉTAPE 4 : Faire un premier pointage de test
-```
+> **Décision (2026-09-13).** Trois surfaces exposaient trois progressions
+> différentes pour le **même tenant au même instant** — assistant client 100 %,
+> moteur calculé 38 %, back-office admin 40 % — parce que trois modèles
+> coexistaient sans hiérarchie. La divergence a été corrigée en désignant une
+> source unique, et non en recalant les chiffres à la main.
+
+| Surface | Rôle | Source de la progression |
+| :--- | :--- | :--- |
+| `GET /onboarding-setup/checklist` | **SOURCE DE VÉRITÉ** — checklist pilotée par l'utilisateur | table `onboarding_steps` (10 étapes) |
+| `GET /onboarding/checklist` | **DÉPRÉCIÉ** — moteur d'observation (8 prédicats serveur) | relaie la source de vérité ; ses faits restent sous `observed` |
+| `GET /platform/companies/{id}/health` → `adoption.onboarding` | back-office / CSM | relaie la source de vérité ; l'usage réel est sous `observed` |
+
+Règles qui en découlent :
+
+- **« Onboarding » et « adoption » sont deux notions distinctes** et ne doivent
+  jamais être affichées l'une pour l'autre : l'onboarding est ce que le client
+  *déclare avoir configuré* ; l'adoption est ce que le serveur *observe* (équipe
+  active, bases de paie, géofence, premier pointage).
+- Une seule implémentation du calcul :
+  `App\Modules\Onboarding\Application\Services\OnboardingProgressReader`.
+  Les surfaces ci-dessus la consomment ; aucune ne recalcule la sienne.
+- `progress_percent` compte les étapes `completed` **et** `skipped` ;
+  `go_live_ready` exige que **toutes** les étapes `required` soient `completed`.
+- Une société sans étape seedée renvoie `initialized: false` : l'affichage doit
+  montrer « non initialisé », jamais 0 % (qui se lirait « mauvais élève »).
+- Verrou : `api/tests/Feature/Onboarding/OnboardingProgressAlignmentTest.php`
+  échoue si une surface réintroduit une échelle parallèle.
+
+---
+
+## LES 10 ÉTAPES CANONIQUES (`SeedDefaultSteps`)
+
+L'ancienne description « 4 étapes obligatoires » ne correspond plus au produit.
+La checklist réelle compte **10 étapes**, dont 5 obligatoires :
+
+| # | `step_key` | Obligatoire | Condition serveur (`StepCompletionGuard`) |
+| --- | :--- | :--- | :--- |
+| 1 | `company_info` | oui | déclarative |
+| 2 | `first_department` | oui | une ligne `Department` existe |
+| 3 | `first_employee` | oui | `Employee::count() > 1` (le manager compte) |
+| 4 | `first_attendance` | oui | déclarative |
+| 5 | `invite_manager` | non | une invitation existe |
+| 6 | `configure_schedules` | oui | déclarative |
+| 7 | `first_report` | non | déclarative |
+| 8 | `configure_payroll` | non | un employé a `salary_base` ou `hourly_rate` > 0 |
+| 9 | `install_kiosk` | non | une borne `active` existe |
+| 10 | `activate_geofence` | non | `metadata.attendance_geofence` avec rayon > 0 |
+
+Les étapes **déclaratives** n'ont pas de prédicat serveur : elles sont validées
+sur la seule action de l'utilisateur. Les autres renvoient
+`422 ONBOARDING_STEP_NOT_DONE` tant que la donnée réelle n'existe pas — c'est
+volontaire (#7261) : `go_live_ready` doit mesurer un démarrage réel.
 
 ---
 
@@ -94,65 +142,47 @@ Conservée pour les clients existants ; le contrat canonique est
 // geofence_configured / biometrics_ready / kiosk_connected
 ```
 
-## COMPOSANT VUE.JS — OnboardingWizard.vue
+## COMPOSANT RÉEL — `OnboardingWizard.tsx` (web) / mobile Flutter
 
-```vue
-<template>
-  <div v-if="!onboarding.completed" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-2">
-          <h2 class="text-2xl font-bold text-gray-900">Bienvenue sur Leopardo RH 🐆</h2>
-          <span class="text-sm text-amber-600 font-medium">
-            Trial : {{ onboarding.trial_days_remaining }} jours restants
-          </span>
-        </div>
-        <p class="text-gray-500">Configurez votre espace en 4 étapes rapides</p>
-      </div>
+> **Correction #7300.** La section précédente décrivait un composant **Vue.js**
+> (`OnboardingWizard.vue`, propriétés `onboarding.completed`,
+> `trial_days_remaining`, « 4 étapes rapides ») qui **n'existe pas** : le
+> composant réel est **React** et vit dans `front/web/src/modules/onboarding/`.
+> Un développeur suivant l'ancienne spec implémentait un contrat mort.
 
-      <!-- Progress bar -->
-      <div class="flex gap-2 mb-8">
-        <div v-for="step in onboarding.steps" :key="step.id"
-             class="flex-1 h-2 rounded-full transition-colors"
-             :class="step.completed ? 'bg-emerald-500' : 'bg-gray-200'" />
-      </div>
-
-      <!-- Étape courante -->
-      <component :is="currentStepComponent" @completed="markStepDone" />
-
-      <!-- Actions -->
-      <div class="flex justify-between mt-8">
-        <button @click="skipOnboarding" class="text-sm text-gray-400 hover:text-gray-600">
-          Passer (configurer plus tard)
-        </button>
-        <button v-if="canProceed" @click="nextStep"
-                class="px-6 py-2 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600">
-          {{ isLastStep ? 'Terminer' : 'Étape suivante →' }}
-        </button>
-      </div>
-    </div>
-  </div>
-</template>
-```
-
----
+- **Composant** : `front/web/src/modules/onboarding/components/OnboardingWizard.tsx`
+  (assistant client, modale), consommé par `front/web/src/app/(dashboard)/layout.tsx`.
+- **Mobile** : `front/mobile_apps/leopardo_core/lib/features/onboarding/` — même
+  endpoint canonique `/onboarding-setup/checklist`.
+- **Données** : `GET /onboarding-setup/checklist` pour la progression et les
+  étapes ; `PATCH /onboarding-setup/{stepKey}/complete|skip` pour agir.
+  Le wizard lit en plus `GET /onboarding/checklist` (déprécié) **uniquement**
+  pour `employees_count` (badge Quick Start) et l'auto-complétion d'étapes dont
+  la condition serveur est déjà vraie.
+- **Libellés** : catalogue i18n partagé (`onboarding.*`, ×4 langues), jamais de
+  littéral dans le composant (garde PA2-I18N-014).
+- **Fin de parcours** : le serveur persiste `company.metadata.onboarding_completed`
+  (#7262) ; le client ne décide plus seul qu'il a terminé.
 
 ## DÉCLENCHEMENT
 
-```php
-// Middleware ou Inertia shared data :
-Inertia::share([
-    'onboarding' => function () {
-        if (!auth()->check()) return null;
-        $settings = CompanySetting::first();
-        if ($settings?->onboarding_completed) return null;
-        return app(OnboardingService::class)->getStatus();
-    }
-]);
-```
+> **Correction #7300.** L'extrait Inertia/PHP ci-dessous décrivait un contrôleur
+> et une table (`CompanySetting`, `OnboardingService::getStatus()`) qui
+> **n'existent pas** — le web n'utilise pas Inertia et aucune colonne
+> `onboarding_completed` ne vit dans une table dédiée.
 
----
+Le déclenchement réel :
+
+1. `front/web/src/app/(dashboard)/layout.tsx` ouvre l'assistant si
+   `user.company.metadata.onboarding_completed !== true`
+   (champ renvoyé par `/auth/me`, `EmployeeResource`).
+2. Le serveur est **seul juge** de la fin de parcours : dès que toutes les
+   étapes sont `completed` ou `skipped`, `OnboardingStepController` persiste
+   `company.metadata.onboarding_completed = true` (+ `onboarding_completed_at`),
+   de façon idempotente (#7262). Aucun appareil ne peut donc « croire » avoir
+   terminé à la place du serveur.
+3. Une pastille « Reprendre l'onboarding » reste accessible dans la barre
+   latérale tant que le drapeau serveur est absent.
 
 ## EMAILS AUTOMATIQUES (séquence Trial)
 
