@@ -218,6 +218,72 @@ class OnboardingStepControllerTest extends TestCase
         $this->assertArrayHasKey('elapsed_minutes_since_company_creation', $captured[0]);
     }
 
+    public function test_onboarding_completion_is_persisted_server_side(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $this->step($company, 'company_info', 'completed');
+        $this->step($company, 'first_employee', 'pending');
+        $this->step($company, 'first_report', 'pending');
+
+        Sanctum::actingAs($manager);
+
+        // #7262 — tant qu'une étape reste en attente, rien n'est persisté.
+        $this->patchJson('/api/v1/onboarding-setup/first_employee/complete')->assertOk();
+        $this->assertArrayNotHasKey('onboarding_completed', $this->freshCompanyMetadata($company));
+
+        // Dernière étape terminée : le serveur devient la source de vérité.
+        $this->patchJson('/api/v1/onboarding-setup/first_report/complete')->assertOk();
+
+        $metadata = $this->freshCompanyMetadata($company);
+        $this->assertTrue($metadata['onboarding_completed'] ?? false);
+        $this->assertArrayHasKey('onboarding_completed_at', $metadata);
+
+        // Idempotent : re-compléter une étape ne réécrit pas la date de fin.
+        $completedAt = $metadata['onboarding_completed_at'];
+
+        $this->patchJson('/api/v1/onboarding-setup/company_info/complete')->assertOk();
+
+        $this->assertSame($completedAt, $this->freshCompanyMetadata($company)['onboarding_completed_at'] ?? null);
+    }
+
+    public function test_onboarding_completion_is_persisted_when_last_step_is_skipped(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $this->step($company, 'company_info', 'completed');
+        $this->step($company, 'invite_manager', 'pending');
+
+        Sanctum::actingAs($manager);
+
+        // Les étapes ignorées comptent comme terminées (même définition que
+        // `progress()` et le moteur calculé) : l'onboarding est donc fini.
+        $this->patchJson('/api/v1/onboarding-setup/invite_manager/skip')->assertOk();
+
+        $this->assertTrue($this->freshCompanyMetadata($company)['onboarding_completed'] ?? false);
+    }
+
+    /**
+     * Relecture depuis la base : simule une autre session / un autre appareil,
+     * qui ne partage ni le localStorage ni l'instance Eloquent courante.
+     *
+     * @return array<string, mixed>
+     */
+    private function freshCompanyMetadata(Company $company): array
+    {
+        /** @var Company|null $fresh */
+        $fresh = Company::query()->whereKey($company->id)->first();
+        $metadata = $fresh?->metadata;
+
+        return is_array($metadata) ? $metadata : [];
+    }
+
     private function step(
         Company $company,
         string $key,
