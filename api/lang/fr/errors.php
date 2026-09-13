@@ -288,5 +288,6 @@ return [
     'AI_ACTION_REJECTED' => 'Action rejetée par l\'utilisateur',
     // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
+    'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
 ];

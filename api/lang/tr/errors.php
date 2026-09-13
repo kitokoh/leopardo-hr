@@ -287,5 +287,6 @@ return [
     'AI_ACTION_REJECTED' => 'İşlem kullanıcı tarafından reddedildi.',
     // #7268 — Onboarding: yerelleştirilmiş adım mesajları (sabit metin yok)
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',
+    'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
 ];

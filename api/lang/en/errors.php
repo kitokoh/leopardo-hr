@@ -294,5 +294,6 @@ return [
     'AI_ACTION_REJECTED' => 'Action rejected by the user.',
     // #7268 — Onboarding: localized step messages (no more hardcoded literals)
     'ONBOARDING_STEP_REQUIRED' => 'This step is required and cannot be skipped.',
+    'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
 ];
