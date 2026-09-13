@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         module: validatedData.module,
         company_type: validatedData.company_type,
         modules: validatedData.modules,
-        requestedWorkflow: 'guided_trial',
+        requestedWorkflow: 'self_service',
         passwordCaptured: false,
       },
     });
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
           phone,
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
-          requestedWorkflow: 'guided_trial',
+          requestedWorkflow: 'self_service',
           company_type: validatedData.company_type,
           modules: validatedData.modules,
           solutions: validatedData.solutions,
@@ -151,14 +151,15 @@ export async function POST(request: NextRequest) {
 
     // Step 3: Return response
     if (signupResult) {
-      // #6959 : contrat honnête selon le workflow réellement exécuté par le
-      // backend. Le flux guidé (`requestedWorkflow=guided_trial`) ne passe
-      // PAS par un OTP : le backend renvoie `status=provisioning_sandbox` +
-      // `provisioning_token` et provisionne en asynchrone. On ne doit donc
-      // jamais répondre « Code de vérification envoyé » pour ce flux —
-      // `provisioned:false` + `nextStep:'tracking'` orientent l'UI vers le
-      // suivi du statut. Seul le flux legacy self-service (statut
-      // `pending_verification`) reçoit réellement un code par email.
+      // #7249 — le formulaire web utilise désormais le workflow VÉRIFIÉ
+      // (`self_service`) : le backend envoie un code à 6 chiffres par e-mail
+      // (valable 30 min) et renvoie `status=pending_verification` ; le compte
+      // n'est provisionné qu'après vérification du code. C'est la réponse au
+      // retour propriétaire « éviter que des gens créent des comptes avec des
+      // mails inexistants ». Le contrat de réponse reste piloté par le statut
+      // réellement renvoyé (`#6959`) : `provisioned:true` + `nextStep:'verify'`
+      // pour le flux vérifié, `provisioned:false` + `nextStep:'tracking'` si le
+      // backend a provisionné un sandbox sans OTP.
       const otpFlow = signupResult.status === 'pending_verification';
 
       return NextResponse.json(

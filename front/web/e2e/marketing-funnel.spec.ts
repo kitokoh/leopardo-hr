@@ -93,10 +93,10 @@ test.describe('Marketing funnel preview', () => {
 
     await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
-    // #7235 — le tunnel s'ouvre sur le choix du PROFIL puis des OUTILS avant
-    // les coordonnées : on traverse les deux nouveaux écrans.
+    // #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise /
+    // indépendant) puis va directement aux coordonnées : l'écran « outils +
+    // métier » a été retiré (parcours raccourci).
     await page.locator('[data-testid="signup-profile-company"]').click();
-    await page.getByRole('button', { name: /continuer|continue/i }).first().click();
 
     const signupForm = page.locator('main form').first();
     await signupForm.getByLabel(/email professionnel|email/i).fill(email);
@@ -126,12 +126,11 @@ test.describe('Marketing funnel preview', () => {
     expect(signupResponse.status()).toBe(201);
     await expect(page.locator('body')).toContainText(/demande d'essai|trial request|24h|email/i);
 
-    // #7235 — le profil, les outils et le métier sont bien remontés à l'API
-    // (et non restés dans le navigateur).
+    // #7249 — le PROFIL reste déclaré à l'API ; les outils et le métier ne sont
+    // plus demandés dans le tunnel (le client les choisit ensuite dans
+    // « Modules & plan »), donc le payload ne porte plus `modules`.
     const payload = JSON.parse(signupRequests[0]?.postData() ?? '{}');
     expect(payload.company_type).toBe('company');
-    expect(Array.isArray(payload.modules)).toBe(true);
-    expect(payload.modules.length).toBeGreaterThan(0);
   });
 
   test('captures a localized demo request without leaving the vitrine', async ({ page }) => {
