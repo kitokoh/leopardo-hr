@@ -173,3 +173,88 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe('#7251 — repli sur le parcours guidé si la vérification e-mail est indisponible', () => {
+  let fetchMock: jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockedLeadCapture.areFormsEnabled.mockReturnValue(true);
+    mockedLeadCapture.getClientIp.mockReturnValue(`10.1.0.${Math.floor(Math.random() * 250) + 1}`);
+    fetchMock = jest.fn();
+    global.fetch = fetchMock as unknown as typeof fetch;
+  });
+
+  function trialSignupWorkflows(): string[] {
+    return fetchMock.mock.calls
+      .filter(([url]) => String(url).includes('/trial/signup'))
+      .map(([, init]) => {
+        const body = JSON.parse(String((init as RequestInit).body)) as {
+          requestedWorkflow?: string;
+        };
+        return String(body.requestedWorkflow);
+      });
+  }
+
+  it("bascule en guided_trial quand l'envoi du code échoue, et rend un espace suivi", async () => {
+    const provisioningToken = 'b'.repeat(64);
+
+    fetchMock
+      .mockResolvedValueOnce(
+        backendResponse({ success: false, error: 'TRIAL_OTP_SEND_FAILED' }, 503),
+      )
+      .mockResolvedValueOnce(
+        backendResponse({
+          success: true,
+          data: {
+            status: 'provisioning_sandbox',
+            email: 'fondateur@techcorp.dz',
+            provisioning_token: provisioningToken,
+          },
+        }),
+      );
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }),
+    );
+    const payload = (await response.json()) as {
+      success: boolean;
+      data: { nextStep: string; provisioning_token?: string };
+    };
+
+    expect(trialSignupWorkflows()).toEqual(['self_service', 'guided_trial']);
+    expect(response.status).toBe(200);
+    expect(payload.data.nextStep).toBe('tracking');
+    expect(payload.data.provisioning_token).toBe(provisioningToken);
+  });
+
+  it('ne relance pas en guided_trial sur une erreur de validation', async () => {
+    fetchMock.mockResolvedValueOnce(
+      backendResponse({ success: false, error: 'VALIDATION_ERROR' }, 422),
+    );
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }),
+    );
+
+    expect(trialSignupWorkflows()).toEqual(['self_service']);
+    expect(response.status).toBe(422);
+  });
+
+  it("conserve la vérification par e-mail quand l'envoi réussit", async () => {
+    fetchMock.mockResolvedValueOnce(
+      backendResponse({
+        success: true,
+        data: { email: 'fondateur@techcorp.dz', status: 'pending_verification' },
+      }),
+    );
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }),
+    );
+    const payload = (await response.json()) as { data: { nextStep: string } };
+
+    expect(trialSignupWorkflows()).toEqual(['self_service']);
+    expect(payload.data.nextStep).toBe('verify');
+  });
+});
