@@ -286,4 +286,7 @@ return [
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Un run de paie existe déjà pour cette période.',
     'STT_UNAVAILABLE' => 'La transcription vocale est momentanément indisponible (service non configuré).',
     'AI_ACTION_REJECTED' => 'Action rejetée par l\'utilisateur',
+    // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
+    'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
+    'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
 ];

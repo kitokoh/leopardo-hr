@@ -285,4 +285,7 @@ return [
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'توجد بالفعل دورة رواتب لهذه الفترة.',
     'STT_UNAVAILABLE' => 'التحويل الصوتي إلى نص غير متاح مؤقتًا (الخدمة غير مكوّنة).',
     'AI_ACTION_REJECTED' => 'تم رفض الإجراء من قبل المستخدم.',
+    // #7268 — Onboarding: رسائل خطوات مُترجمة (لا نصوص ثابتة)
+    'ONBOARDING_STEP_REQUIRED' => 'هذه الخطوة إلزامية ولا يمكن تخطيها.',
+    'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
 ];
