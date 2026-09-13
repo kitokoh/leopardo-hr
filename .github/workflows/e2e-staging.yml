@@ -102,12 +102,44 @@ jobs:
             local name="$1"
             local url="$2"
             local expected_status="${3:-200}"
+            local max_attempts="${SMOKE_MAX_ATTEMPTS:-4}"
+            local delay=2
+            local attempt=1
+            local status="000"
             echo -n "Testing ${name}... "
-            STATUS=$(curl -s -H 'Accept: application/json' -o /dev/null -w '%{http_code}' "${url}" || echo "000")
-            if [[ "${STATUS}" == "${expected_status}" ]]; then
-              echo "OK (${STATUS})"
+
+            while true; do
+              status=$(curl -s -H 'Accept: application/json' -o /dev/null -w '%{http_code}' --max-time 20 "${url}" || echo "000")
+              if [[ "${status}" == "${expected_status}" ]]; then
+                break
+              fi
+              # #7317 : on rejoue UNIQUEMENT une reponse transitoire — le
+              # throttling de l'API renvoie 429 quand plusieurs runners
+              # interrogent la prod en meme temps (famine de runners), et un
+              # 502/503/504/000 est une indisponibilite passagere. Une reponse
+              # franche (ex. 500 attendu 200) echoue immediatement : on ne
+              # masque JAMAIS une vraie panne derriere un retry.
+              case "${status}" in
+                429|502|503|504|000) ;;
+                *) break ;;
+              esac
+              if [[ "${attempt}" -ge "${max_attempts}" ]]; then
+                break
+              fi
+              printf 'transient %s, retry %s/%s in %ss... ' "${status}" "${attempt}" "${max_attempts}" "${delay}"
+              sleep "${delay}"
+              delay=$(( delay * 2 ))
+              attempt=$(( attempt + 1 ))
+            done
+
+            if [[ "${status}" == "${expected_status}" ]]; then
+              if [[ "${attempt}" -gt 1 ]]; then
+                echo "OK (${status}, after ${attempt} attempts)"
+              else
+                echo "OK (${status})"
+              fi
             else
-              echo "FAIL (got ${STATUS}, expected ${expected_status})"
+              echo "FAIL (got ${status}, expected ${expected_status}, after ${attempt} attempt(s))"
               FAILED=$((FAILED + 1))
             fi
           }
