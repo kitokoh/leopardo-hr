@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
 import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
+
+/**
+ * Cookie de session — mêmes nom/attributs que `app/api/v1/auth/login/route.ts`
+ * pour que le middleware du dashboard (`leopardo_token`, cf. `middleware.ts`)
+ * reconnaisse immédiatement la session après la vérification du code.
+ */
+const COOKIE_NAME = 'leopardo_token';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 jours (aligné sur Sanctum)
 
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000);
 
@@ -63,11 +72,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Auto-connexion : le backend émet un jeton de session après vérification
+    // du code (l'utilisateur n'a jamais choisi de mot de passe). On le pose en
+    // cookie httpOnly — jamais exposé au JavaScript de la page — exactement
+    // comme le fait /api/v1/auth/login, puis on le retire de la réponse JSON.
+    const data = (trialData.data ?? {}) as Record<string, unknown>;
+    const token = typeof data.token === 'string' && data.token.length > 0 ? data.token : null;
+
+    if (token) {
+      const isSecure =
+        request.nextUrl.protocol === 'https:' ||
+        process.env.NODE_ENV === 'production';
+      const cookieStore = await cookies();
+      cookieStore.set(COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'strict',
+        maxAge: COOKIE_MAX_AGE,
+        path: '/',
+      });
+    }
+
+    const { token: _stripped, ...safeData } = data;
+
     return NextResponse.json(
       {
         success: true,
         message: trialData.message || 'Votre espace Leopardo est pret !',
-        data: trialData.data,
+        // `sessionEstablished` indique au formulaire s'il peut rediriger
+        // directement vers le dashboard ou s'il doit proposer la connexion.
+        data: { ...safeData, sessionEstablished: token !== null },
       },
       { status: 201 }
     );

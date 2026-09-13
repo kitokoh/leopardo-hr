@@ -68,6 +68,23 @@ export async function POST(request: NextRequest) {
     const geoCountry = geo?.country?.toUpperCase() ?? '';
     const effectiveCountry = validatedData.country || geoCountry || undefined;
 
+    if (!effectiveCountry) {
+      // Le formulaire simplifié ne demande plus le pays : il vient de la
+      // géolocalisation. Si celle-ci est indisponible (dev local, proxy, IP
+      // inconnue), on répond un code DÉDIÉ plutôt qu'un 422 générique, pour
+      // que l'UI n'affiche le sélecteur de pays que dans ce cas précis.
+      // Code machine uniquement : le texte affiché est localisé côté UI
+      // (clé i18n `signup.countryDetectionFailed`, ×4 langues) — garde CI I18N
+      // : aucun littéral utilisateur dans une route API.
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'COUNTRY_REQUIRED',
+        },
+        { status: 422 }
+      );
+    }
+
     // Step 1: Capture the marketing lead (CRM tracking)
     const lead = await captureMarketingLead(request, {
       type: 'signup',
@@ -120,6 +137,12 @@ export async function POST(request: NextRequest) {
           company_type: validatedData.company_type,
           modules: validatedData.modules,
           solutions: validatedData.solutions,
+          // La langue de l'e-mail OTP doit être celle CHOISIE par l'utilisateur
+          // (langue de l'interface), pas la langue par défaut de son pays :
+          // un utilisateur turcophone au Maroc recevait un e-mail... en
+          // arabe/français selon le pays détecté. `locale` est collecté par le
+          // formulaire (`getBrowserLocale()`) et validé plus haut.
+          locale: validatedData.locale,
         }),
         signal: AbortSignal.timeout(15000),
       });

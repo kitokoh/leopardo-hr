@@ -184,31 +184,18 @@ describe('SignupForm Component', () => {
       });
     });
 
-    it('should show error for missing country (#4476)', async () => {
+    // Le pays n'est plus demandé : il est résolu côté serveur par
+    // géolocalisation (`request.geo`) dans /api/forms/signup, et reste
+    // modifiable ensuite dans les paramètres de l'entreprise.
+    it('ne demande plus le pays à l’utilisateur', async () => {
       renderAtFormStep();
-      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      await userEvent.selectOptions(selects[1], '1-10');
-      await userEvent.selectOptions(selects[0], 'founder');
-      await userEvent.click(screen.getByRole('checkbox'));
-      await userEvent.click(screen.getByRole('button', { name: /créer mon espace/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(/pays est requis/i)).toBeInTheDocument();
-      });
+      expect(screen.queryByRole('combobox', { name: /pays/i })).not.toBeInTheDocument();
     });
 
-    it('should show error for invalid phone', async () => {
+    // L'e-mail est vérifié par code : le téléphone n'est plus demandé.
+    it('ne demande plus le téléphone', async () => {
       renderAtFormStep();
-      await fillField(/email/i, 'test@example.com');
-      await fillField(/entreprise/i, 'Acme Corp');
-      await fillField(/téléphone/i, 'not-a-phone');
-      submitForm();
-      
-      await waitFor(() => {
-        expect(screen.getByText(/numéro de téléphone invalide/i)).toBeInTheDocument();
-      });
+      expect(screen.queryByRole('textbox', { name: /téléphone/i })).not.toBeInTheDocument();
     });
   });
 
@@ -256,19 +243,8 @@ describe('SignupForm Component', () => {
     async function fillValidForm() {
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      // employees AVANT role : SignupForm fait `watch('role')` — la sélection
-      // du rôle re-rend le composant et (avec le mock framer-motion, commits
-      // synchrones) peut orpheliner la référence du 2e select → la valeur
-      // « employees » était perdue. L'ordre des champs n'a pas d'importance
-      // métier : on remplit employees en premier pour un test déterministe.
-      fireEvent.change(selects[1], { target: { value: '1-10' } });
-      fireEvent.change(selects[0], { target: { value: 'founder' } });
-      // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
-      // sélecteur se remplit via fetchSupportedCountries (mock déterministe).
-      await screen.findByRole('option', { name: /algérie/i });
-      const countrySelect = screen.getByRole('combobox', { name: /pays/i });
-      fireEvent.change(countrySelect, { target: { value: 'DZ' } });
+      // Formulaire simplifié : plus de rôle, de taille d'équipe, de pays
+      // (détecté côté serveur) ni de téléphone — e-mail + entreprise + CGU.
       fireEvent.click(screen.getByRole('checkbox'));
     }
 
@@ -319,19 +295,8 @@ describe('SignupForm Component', () => {
     async function fillValidForm() {
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      // employees AVANT role : SignupForm fait `watch('role')` — la sélection
-      // du rôle re-rend le composant et (avec le mock framer-motion, commits
-      // synchrones) peut orpheliner la référence du 2e select → la valeur
-      // « employees » était perdue. L'ordre des champs n'a pas d'importance
-      // métier : on remplit employees en premier pour un test déterministe.
-      fireEvent.change(selects[1], { target: { value: '1-10' } });
-      fireEvent.change(selects[0], { target: { value: 'founder' } });
-      // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
-      // sélecteur se remplit via fetchSupportedCountries (mock déterministe).
-      await screen.findByRole('option', { name: /algérie/i });
-      const countrySelect = screen.getByRole('combobox', { name: /pays/i });
-      fireEvent.change(countrySelect, { target: { value: 'DZ' } });
+      // Formulaire simplifié : plus de rôle, de taille d'équipe, de pays
+      // (détecté côté serveur) ni de téléphone — e-mail + entreprise + CGU.
       fireEvent.click(screen.getByRole('checkbox'));
     }
 
@@ -385,11 +350,7 @@ describe('SignupForm Component', () => {
         renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
-        const selects = screen.getAllByRole('combobox');
-        fireEvent.change(selects[1], { target: { value: '1-10' } });
-        fireEvent.change(selects[0], { target: { value: 'founder' } });
-        await screen.findByRole('option', { name: /algérie/i });
-        fireEvent.change(screen.getByRole('combobox', { name: /pays/i }), { target: { value: 'DZ' } });
+        // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
         fireEvent.click(screen.getByRole('checkbox'));
         submitForm();
 
@@ -428,12 +389,7 @@ describe('SignupForm Component', () => {
         renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
-        const selects = screen.getAllByRole('combobox');
-        fireEvent.change(selects[1], { target: { value: '1-10' } });
-        fireEvent.change(selects[0], { target: { value: 'founder' } });
-        await screen.findByRole('option', { name: /algérie/i });
-        const countrySelect = screen.getByRole('combobox', { name: /pays/i });
-        fireEvent.change(countrySelect, { target: { value: 'DZ' } });
+        // Formulaire simplifié : plus de sélecteurs rôle / taille / pays.
         // fireEvent (et non user.click) : avec jest.useFakeTimers() actif au
         // milieu de la suite, les clicks userEvent sont intermittemment avalés
         // (désynchronisation pointerup/click par l'avancement des timers) —
@@ -517,21 +473,21 @@ describe('SignupForm Component', () => {
       renderAtFormStep();
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      fireEvent.change(selects[1], { target: { value: '1-10' } });
-      fireEvent.change(selects[0], { target: { value: 'founder' } });
-      await screen.findByRole('option', { name: /algérie/i });
-      fireEvent.change(screen.getByRole('combobox', { name: /pays/i }), { target: { value: 'DZ' } });
+      // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
       fireEvent.click(screen.getByRole('checkbox'));
       submitForm();
 
       await waitFor(() => {
         expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
       });
-      expect(mockedSubmitSignupForm).toHaveBeenCalledWith(
-        expect.objectContaining({ email: 'test@example.com', company: 'Acme Corp', country: 'DZ' }),
-        expect.anything()
+      const [payload] = mockedSubmitSignupForm.mock.calls[0] as [Record<string, unknown>, unknown];
+      expect(payload).toEqual(
+        expect.objectContaining({ email: 'test@example.com', company: 'Acme Corp' })
       );
+      // Le créateur du compte EST le fondateur : le rôle est implicite.
+      expect(payload.role).toBe('founder');
+      // Le pays n'est plus transmis par le formulaire (détecté côté serveur).
+      expect(payload.country).toBeUndefined();
     });
 
     it('should show loading state during submission', async () => {
