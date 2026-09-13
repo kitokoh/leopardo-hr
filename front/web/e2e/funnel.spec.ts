@@ -133,7 +133,7 @@ async function pollTrialUntilReady(
  * un build antérieur ne la pose pas).
  */
 async function guidedSignupViaVitrine(page: Page, email: string, company: string): Promise<string> {
-  await page.goto('/signup', { waitUntil: 'domcontentloaded' });
+  await page.goto('/signup?plan=pilot', { waitUntil: 'domcontentloaded' });
 
   // Le sélecteur de pays est alimenté par le registre public avec un fallback
   // statique (#4476) — on attend l'option DZ pour un selectOption fiable.

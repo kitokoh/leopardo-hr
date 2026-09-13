@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -132,6 +133,13 @@ class ProvisionDemoTenantJob implements ShouldQueue
         // l'API : /demo-login/{token} est une route web du backend (session
         // serveur + dashboard Blade), on atterrissait donc sur le backend.
         // La route backend reste en place pour les liens déjà envoyés.
+        // #7238 — la langue du mail doit être celle de l'utilisateur, pas la
+        // locale par défaut de l'application (`APP_LOCALE`, 'en' par défaut) :
+        // le manager recevait « Welcome! ... » en anglais.
+        $locale = $manager->preferred_language
+            ?: ($manager->company->language ?? config('app.locale', 'fr'));
+        App::setLocale((string) $locale);
+
         $frontUrl = config('app.frontend_url', config('app.url'));
         $magicUrl = rtrim(\is_string($frontUrl) ? $frontUrl : '', '/').'/auth/login';
 

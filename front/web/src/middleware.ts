@@ -19,6 +19,9 @@ import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
+/** Codes d'offres souscriptibles (miroir du catalogue tarifaire). */
+const SUPPORTED_PLANS = ['free', 'pilot', 'operations', 'enterprise'];
+
 const DASHBOARD_PREFIXES = [  '/dashboard',
   '/absences',
   '/attendance',
@@ -37,6 +40,13 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // #7238 (retour PM) — on ne met PAS de sélecteur d'offre dans le formulaire :
+  // un compte est créé POUR une offre, et l'offre se choisit sur la page tarifs
+  // (d'où l'on arrive avec `?plan=<offre>`). Sans offre choisie, on y renvoie.
+  if (pathname === '/signup' && !SUPPORTED_PLANS.includes(request.nextUrl.searchParams.get('plan') ?? '')) {
+    return NextResponse.redirect(new URL('/pricing', request.url));
+  }
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
