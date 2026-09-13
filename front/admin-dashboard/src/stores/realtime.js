@@ -58,25 +58,24 @@ export const useRealtimeStore = defineStore('realtime', () => {
       return
     }
 
-    // Défaut dérivé de l'origine API (wss://hôte) pour ne jamais viser le
-    // localhost du visiteur en production (#3392). VITE_WEBSOCKET_URL reste
-    // prioritaire quand un serveur push existe. Sans VITE_API_URL ni
-    // VITE_WEBSOCKET_URL, on dérive de location.host (même origine) — le
-    // fallback ws://localhost:6001 a été supprimé (#4715) ; le build de
-    // production échoue d'ailleurs sans VITE_API_URL (vite.config.js).
-    const defaultWsUrl = (() => {
-      try {
-        const apiUrl = new URL(import.meta.env.VITE_API_URL || '')
-        const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
-        return `${proto}://${apiUrl.host}`
-      } catch {
-        // Littéral construit en deux morceaux pour rester sous le radar du
-        // garde i18n-diff (constante technique, pas du texte utilisateur).
-        const proto = window.location.protocol === 'https' + ':' ? 'wss' : 'ws'
-        return `${proto}://${window.location.host}`
-      }
-    })()
-    socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || defaultWsUrl, {
+    // #7303 — n'ouvrir le canal push QUE si un serveur Socket.IO existe
+    // réellement, c'est-à-dire si `VITE_WEBSOCKET_URL` est explicitement
+    // configuré. L'ancien comportement dérivait `wss://<hôte API>` : comme
+    // aucun service socket.io n'est déployé (absent de `render.yaml` ; ni
+    // Reverb ni Soketi dans le dépôt), chaque chargement tentait un handshake
+    // contre un hôte qui ne sert pas Socket.IO → `404` en console
+    // (« Error during WebSocket handshake ») et bruit dans les E2E, pour rien.
+    // Sans URL explicite, on assume le polling et l'état neutre
+    // « Push non configuré » (#3932) — même sémantique, sans échec fabriqué.
+    const explicitWsUrl = import.meta.env.VITE_WEBSOCKET_URL
+    if (!explicitWsUrl) {
+      pushUnavailable.value = true
+      isConnected.value = false
+      startPolling()
+      return
+    }
+
+    socket.value = io(explicitWsUrl, {
       auth: {
         token
       },
