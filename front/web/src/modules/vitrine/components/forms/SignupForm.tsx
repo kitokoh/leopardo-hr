@@ -244,7 +244,6 @@ export function SignupForm({
   // provisioning_token qu'il détient déjà (l'email d'accès est best-effort).
   const [passwordSet, setPasswordSet] = useState(false);
   const [newPassword, setNewPassword] = useState('');
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [settingPassword, setSettingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [trialTimedOut, setTrialTimedOut] = useState(false);
@@ -312,10 +311,6 @@ export function SignupForm({
 
     if (newPassword.length < 8 || !/[0-9]/.test(newPassword)) {
       setPasswordError(c.setPasswordTooWeak);
-      return;
-    }
-    if (newPassword !== newPasswordConfirm) {
-      setPasswordError(c.setPasswordMismatch);
       return;
     }
 
@@ -1263,24 +1258,6 @@ export function SignupForm({
                         minLength={8}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="trial-new-password-confirm"
-                        className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                      >
-                        {c.setPasswordConfirmLabel}
-                      </label>
-                      <input
-                        id="trial-new-password-confirm"
-                        type="password"
-                        autoComplete="new-password"
-                        required
-                        minLength={8}
-                        value={newPasswordConfirm}
-                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                       />
                     </div>
