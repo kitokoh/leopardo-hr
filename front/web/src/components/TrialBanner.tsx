@@ -18,9 +18,16 @@ import type { AppLocale, StoredAuthUser } from '@/lib/i18n';
 export function TrialBanner({
   user,
   locale,
+  variant = 'bar',
 }: {
   user?: StoredAuthUser | null;
   locale: AppLocale;
+  /**
+   * `bar` (défaut) : bandeau pleine largeur sous l'en-tête.
+   * `compact` : pastille pour la barre du haut (à côté de la langue), sur
+   * demande du PM — l'essai ne doit plus prendre une ligne entière.
+   */
+  variant?: 'bar' | 'compact';
 }) {
   const status = (user?.company?.status ?? '').toString().toLowerCase();
   const subscriptionEnd = user?.company?.subscription_end;
@@ -51,6 +58,25 @@ export function TrialBanner({
     : isLastDay
       ? t(locale, 'trial.lastDay')
       : t(locale, 'trial.daysLeft').replace('{n}', String(daysLeft));
+
+  if (variant === 'compact') {
+    return (
+      <Link
+        href="/billing"
+        data-testid="trial-badge"
+        data-trial-days-left={daysLeft}
+        title={expired ? t(locale, 'trial.endedTitle') : message}
+        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
+          expired
+            ? 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300'
+            : 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
+        }`}
+      >
+        {expired ? <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> : <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />}
+        <span>{message}</span>
+      </Link>
+    );
+  }
 
   return (
     <div

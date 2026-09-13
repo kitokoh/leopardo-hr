@@ -454,6 +454,20 @@ export default function DashboardLayout({
                 <LockKeyhole className="h-4 w-4 transition-transform group-hover:scale-110" />
               </button>
             </div>
+            {/* #7238 (retour PM) — l'essai et la reprise de configuration sont
+                des pastilles de la barre du haut, plus des lignes pleine largeur. */}
+            <div className="flex items-center gap-2">
+              {onboardingPending && !showWizard ? (
+                <button
+                  type="button"
+                  onClick={() => setShowWizard(true)}
+                  className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
+                >
+                  {labels.dashboard.resumeOnboarding}
+                </button>
+              ) : null}
+              <TrialBanner user={user} locale={locale} variant="compact" />
+            </div>
             <label className="hidden items-center gap-2 text-sm text-slate-600 md:flex">
               <span>{labels.dashboard.language}</span>
               <select
@@ -489,19 +503,6 @@ export default function DashboardLayout({
             </div>
           </div>
         </header>
-        {onboardingPending && !showWizard ? (
-          <div className="mx-auto w-full max-w-7xl px-4 pt-4 md:px-8">
-            <button
-              onClick={() => setShowWizard(true)}
-              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-left text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100"
-            >
-              {labels.dashboard.resumeOnboarding}
-            </button>
-          </div>
-        ) : null}
-        {/* #7235 — l’essai est porté par l’application : jours restants +
-            passage à Pro (les boutons « tester 14 jours » disparaissent). */}
-        <TrialBanner user={user} locale={locale} />
         <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
           {currentModule && !currentModule.enabled ? (
             <FeatureLockedPanel module={currentModule} labels={labels} />
