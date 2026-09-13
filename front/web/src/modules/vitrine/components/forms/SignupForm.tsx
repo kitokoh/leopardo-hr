@@ -47,6 +47,13 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
 import { t } from '@/lib/i18n/locale-catalog';
+import {
+  applyDocumentLocale,
+  normalizeLocale,
+  storeAuthSession,
+  type StoredAuthUser,
+} from '@/lib/i18n';
+import { apiFetch } from '@/lib/api-client';
 
 interface SignupFormProps {
   page?: string;
@@ -450,7 +457,32 @@ export function SignupForm({
         // (l'utilisateur n'a jamais choisi de mot de passe). On entre
         // directement dans l'espace au lieu d'afficher un écran « e-mail
         // vérifié » suivi d'un bouton de connexion sans identifiants.
+        //
+        // ⚠️ Le cookie httpOnly n'est PAS lu par le client : il faut hydrater
+        // la session locale (`auth_user`) avant de naviguer, sinon la garde du
+        // layout dashboard (`getStoredUser()` → null) renvoie aussitôt vers
+        // /auth/login — le prospect perdait l'accès qu'on venait de lui
+        // provisionner. On lit donc le profil via /auth/me (le cookie est
+        // désormais posé) puis on persiste la session.
         if (response.data?.sessionEstablished === true) {
+          try {
+            const meResponse = await apiFetch('/auth/me');
+            if (meResponse.ok) {
+              const mePayload = (await meResponse.json()) as { data?: StoredAuthUser };
+              if (mePayload.data) {
+                storeAuthSession(null, mePayload.data);
+                applyDocumentLocale(
+                  normalizeLocale(mePayload.data.language),
+                  mePayload.data.is_rtl,
+                );
+              }
+            }
+          } catch {
+            // Silencieux : si /auth/me échoue, l'utilisateur retombe sur
+            // l'écran de connexion (avec son mot de passe temporaire reçu par
+            // e-mail) plutôt que sur une page blanche.
+          }
+
           router.replace('/dashboard');
           return;
         }

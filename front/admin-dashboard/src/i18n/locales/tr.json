@@ -490,7 +490,11 @@
     "connected_api": "API'ye bağlı",
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
-    "empty_list": "Bu hesap için görünür çalışan yok."
+    "empty_list": "Bu hesap için görünür çalışan yok.",
+    "empty_departments": "Henüz departman yok.",
+    "create_department_error": "Departman oluşturulamadı.",
+    "create_employee_error": "İşbirlikçi eklenemedi.",
+    "open_team": "Ekip sayfasını aç"
   },
   "smartAttendanceGpsAuto": "Otomatik GPS",
   "smartAttendanceNoGpsSessions": "Şu anda GPS oturumu yok.",

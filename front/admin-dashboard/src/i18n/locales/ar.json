@@ -490,7 +490,11 @@
     "connected_api": "متصل بواجهة البرمجة",
     "recent_collaborators": "المتعاونون الأخيرون",
     "list_loading": "جارٍ تحميل قائمة الفريق...",
-    "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
+    "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب.",
+    "empty_departments": "لا يوجد قسم بعد.",
+    "create_department_error": "تعذر إنشاء القسم.",
+    "create_employee_error": "تعذر إضافة المتعاون.",
+    "open_team": "افتح صفحة الفريق"
   },
   "smartAttendanceGpsAuto": "GPS تلقائي",
   "smartAttendanceNoGpsSessions": "لا توجد جلسة GPS حاليًا.",

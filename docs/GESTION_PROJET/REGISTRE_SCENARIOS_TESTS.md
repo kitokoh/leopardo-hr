@@ -13,6 +13,21 @@
 > réellement ajoutée est **web** (`front/web`, page `/showcase` + rendu public `/vitrine/{slug}`).
 
 
+> **MAJ 2026-09-13 — déblocage de l'onboarding (#7320), surface web admin touchée
+> par propagation i18n uniquement.** Le lot « création de département et de
+> collaborateur depuis la page Équipe + lien d'action depuis l'assistant »
+> ajoute 4 clés `employees.*` au catalogue **partagé**
+> (`shared/i18n/locales/*.json`). Ces clés sont propagées par `sync-web.js` aux
+> dictionnaires `front/admin-dashboard/src/i18n/locales/` — **aucun écran,
+> aucune route ni aucun parcours admin n'est modifié** : la garde de gouvernance
+> exige néanmoins la mise à jour de ce registre (détection par chemin
+> `front/admin-dashboard/src/`). Les scénarios web admin existants
+> (`SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`, section « Extension i18n
+> enterprise ») restent inchangés et valides. La surface fonctionnelle
+> réellement modifiée est **web client** (`front/web/src/app/(dashboard)/employees`
+> et `front/web/src/modules/onboarding`).
+
+
 # REGISTRE DES SCENARIOS DE TESTS
 
 > ⚠️ **MAJ 2026-08-17** : les références à `front/mobile/` ci-dessous sont obsolètes
