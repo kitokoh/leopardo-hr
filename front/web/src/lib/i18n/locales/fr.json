@@ -1516,6 +1516,30 @@
   "seo": {
     "pricing": {
       "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 79 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+    },
+    "llms": {
+      "summary": "Leopardo RH est un logiciel SaaS de gestion du personnel pour PME terrain. Il centralise le pointage, les absences, les plannings, la paie multi-pays, les documents RH et le pilotage dans une seule application, du mobile au kiosque.",
+      "factsLabel": "Chiffres clés",
+      "factCountries": "pays couverts au catalogue de paie",
+      "factLanguages": "langues du produit (FR/EN/TR/AR)",
+      "factTrial": "jours d'essai gratuit, sans carte bancaire",
+      "factPlans": "offres : Free, Pilot, Operations, Enterprise",
+      "sectionCore": "Pages principales",
+      "sectionResources": "Guides et ressources",
+      "sectionBlog": "Articles de blog",
+      "sectionCompany": "Entreprise",
+      "sectionContact": "Contact",
+      "contactLine": "Équipe commerciale et support : utiliser la page contact du site.",
+      "fullIntro": "Version longue pour les moteurs de réponse et assistants IA : inventaire des pages publiques, questions fréquentes localisées et ressources téléchargeables.",
+      "faqSection": "Questions fréquentes",
+      "pricingSection": "Offres et tarifs",
+      "aliasesLabel": "Alias de marque"
+    },
+    "breadcrumb": {
+      "home": "Accueil",
+      "blog": "Blog",
+      "caseStudies": "Études de cas",
+      "guides": "Guides"
     }
   },
   "adminChat": {

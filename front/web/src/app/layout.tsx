@@ -8,12 +8,12 @@ import "./globals.css";
 import { LocaleSync } from "@/components/locale-sync";
 import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
-import { OrganizationJsonLd } from "@/components/JsonLd";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 
 import { inter } from '@/lib/fonts';
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
-import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
+import { BRAND_NAME_BY_LOCALE, pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -109,7 +109,9 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: ogLocale(ssrLocale),
-      siteName: 'Leopardo RH',
+      // #AI-SEO : og:site_name suit la locale (avant : FR en dur sur toutes
+      // les langues, alors que le titre et la description étaient localisés).
+      siteName: BRAND_NAME_BY_LOCALE[ssrLocale] ?? 'Leopardo RH',
       title,
       description,
       url: siteUrl,
@@ -153,6 +155,9 @@ export async function generateMetadata(): Promise<Metadata> {
         en: `${siteUrl}/?lang=en`,
         tr: `${siteUrl}/?lang=tr`,
         ar: `${siteUrl}/?lang=ar`,
+        // #AI-SEO : variante de repli pour les langues non couvertes —
+        // aligné sur sitemap.ts et sur les alternates de seo.ts.
+        'x-default': siteUrl,
       },
     },
   };
@@ -251,6 +256,9 @@ export default async function RootLayout({
           {t(ssrLang, 'a11y.skip_to_content', 'Aller au contenu principal')}
         </a>
         <OrganizationJsonLd locale={ssrLang} />
+        {/* #AI-SEO : nœud WebSite racine (identité du site pour les moteurs
+            de réponse et l'ancrage des alias de marque). */}
+        <WebSiteJsonLd locale={ssrLang} />
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />

@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { SocialShare } from '@/components/SocialShare';
-import { ArticleJsonLd } from '@/components/JsonLd';
 import { SITE_URL } from '@/lib/site-url';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -95,22 +94,16 @@ export function BlogArticle({
       });
   };
 
+  // #AI-SEO : l'URL est conservée pour le partage social. Le JSON-LD Article
+  // est émis côté serveur (voir blog/[slug]/layout.tsx) — un composant client
+  // ne produirait le balisage qu'après exécution du JS, invisible pour les
+  // crawlers IA qui n'exécutent pas JavaScript.
   const siteOrigin = typeof window !== 'undefined' ? window.location.origin : SITE_URL;
   const localeQuery = locale && locale !== 'fr' ? `?lang=${locale}` : '';
   const articleUrl = `${siteOrigin}/blog/${post.slug}${localeQuery}`;
-  const articleImageUrl = new URL(post.image, siteOrigin).toString();
 
   return (
     <>
-      <ArticleJsonLd
-        title={post.title}
-        description={post.excerpt}
-        url={articleUrl}
-        image={articleImageUrl}
-        datePublished={new Date(post.date).toISOString()}
-        author={post.author.name}
-        inLanguage={locale}
-      />
     <div className="min-h-screen">
       {/* Hero Image */}
       <div className="relative w-full h-96 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900">

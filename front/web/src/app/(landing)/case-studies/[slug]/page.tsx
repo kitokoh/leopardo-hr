@@ -47,7 +47,8 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
 
   const { locale } = useVitrineLocale();
   const ui = caseStudyUiCopy[locale] ?? caseStudyUiCopy.fr;
-  const study = getCaseStudy(slug);
+  // #AI-SEO : titre/description localisés (le H1 affiché suit la locale).
+  const study = getCaseStudy(slug, locale);
 
   if (!study) {
     notFound();

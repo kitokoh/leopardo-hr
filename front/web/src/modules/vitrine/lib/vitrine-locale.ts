@@ -146,6 +146,9 @@ type LandingCopy = {
   }
   caseStudies: {
     heroBadge: string
+    /** #AI-SEO : titre/sous-titre du catalogue de liens vers les 12 études. */
+    catalogTitle: string
+    catalogSubtitle: string
     heroTitle: string
     heroSubtitle: string
     heroPrimary: string
@@ -199,7 +202,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Creer un compte',
       secondaryCta: 'Voir la demo',
       stats: [
-        { value: 8, suffix: '', label: 'Pays couverts (paie)' },
+        { value: 21, suffix: '', label: 'Pays couverts (paie)' },
         { value: 4, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
         { value: 14, suffix: 'j', label: 'Essai gratuit' },
         { value: 3, suffix: '', label: 'Apps mobiles' },
@@ -317,6 +320,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     caseStudies: {
       heroBadge: 'Succes Clients',
+      catalogTitle: 'Études de cas par métier',
+      catalogSubtitle: "Douze cas d'usage détaillés : pointage, paie, documents et marketing, secteur par secteur.",
       heroTitle: 'Etudes de Cas Clients',
       heroSubtitle: 'Comment nos clients ont transforme leur gestion RH avec Leopardo',
       heroPrimary: 'Démarrer gratuitement',
@@ -361,7 +366,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Create an account',
       secondaryCta: 'Watch demo',
       stats: [
-        { value: 8, suffix: '', label: 'Payroll countries' },
+        { value: 21, suffix: '', label: 'Payroll countries' },
         { value: 4, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
         { value: 14, suffix: 'd', label: 'Free trial' },
         { value: 3, suffix: '', label: 'Mobile apps' },
@@ -479,6 +484,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     caseStudies: {
       heroBadge: 'Success Stories',
+      catalogTitle: 'Case studies by use case',
+      catalogSubtitle: 'Twelve detailed use cases: attendance, payroll, documents and marketing, sector by sector.',
       heroTitle: 'Client Case Studies',
       heroSubtitle: 'How our clients transformed their HR management with Leopardo',
       heroPrimary: 'Start for free',
@@ -523,7 +530,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: '14 gun ucretsiz deneyin',
       secondaryCta: 'Demoyu izle',
       stats: [
-        { value: 8, suffix: '', label: 'Bordro ulkesi' },
+        { value: 21, suffix: '', label: 'Bordro ulkesi' },
         { value: 4, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
         { value: 14, suffix: 'g', label: 'Ucretsiz deneme' },
         { value: 3, suffix: '', label: 'Mobil uygulama' },
@@ -641,6 +648,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     caseStudies: {
       heroBadge: 'Basari Hikayeleri',
+      catalogTitle: 'Kullanım senaryosuna göre vaka çalışmaları',
+      catalogSubtitle: 'On iki ayrıntılı kullanım senaryosu: yoklama, bordro, belgeler ve pazarlama — sektör sektör.',
       heroTitle: 'Musteri Vaka Calismalari',
       heroSubtitle: 'Musterilerimiz Leopardo ile insan kaynaklari yonetimini nasil donusturdu',
       heroPrimary: 'Ucretsiz baslayin',
@@ -685,7 +694,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'ابدأ تجربة 14 يوما',
       secondaryCta: 'شاهد العرض',
       stats: [
-        { value: 8, suffix: '', label: 'دول الرواتب' },
+        { value: 21, suffix: '', label: 'دول الرواتب' },
         { value: 4, suffix: '', label: 'لغات (FR/EN/AR/TR)' },
         { value: 14, suffix: 'يومًا', label: 'تجربة مجانية' },
         { value: 3, suffix: '', label: 'تطبيقات جوال' },
@@ -803,6 +812,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     },
     caseStudies: {
       heroBadge: 'قصص نجاح',
+      catalogTitle: 'دراسات الحالة حسب حالة الاستخدام',
+      catalogSubtitle: 'اثنتا عشرة حالة استخدام مفصّلة: الحضور والرواتب والمستندات والتسويق، قطاعًا بقطاع.',
       heroTitle: 'دراسات حالة العملاء',
       heroSubtitle: 'كيف غيّر عملاؤنا إدارة الموارد البشرية مع Leopardo',
       heroPrimary: 'ابدأ مجاناً',

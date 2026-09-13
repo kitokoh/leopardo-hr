@@ -2,7 +2,6 @@ import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
-import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
 
 // #4004 : listing localisé (FR par défaut, ?lang= pour EN/TR/AR).
 async function listingMetadata(lang?: string): Promise<Metadata> {
@@ -15,36 +14,17 @@ async function listingMetadata(lang?: string): Promise<Metadata> {
   });
 }
 
-// #3435 : metadata par slug (title/description/canonical propres) au lieu du
-// canonical fixe du layout pour les 12 études de cas.
-// #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
-// (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug?: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
+// #7192 (audit SEO 2026-09-13) : la branche `params.slug` de ce layout était
+// MORTE — un layout ne reçoit les params que de son propre segment, et
+// `case-studies` n'a pas de segment dynamique (`[slug]` est un enfant). Elle
+// n'a jamais pu produire autre chose que les métadonnées du listing, et
+// dupliquait la logique désormais portée par `case-studies/[slug]/layout.tsx`.
+// Ne reste ici que le listing ; le détail est dans le layout enfant.
+// #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang.
+export async function generateMetadata(): Promise<Metadata> {
   const headerList = await headers();
   const lang = headerList.get('x-vitrine-lang') ?? undefined;
-  if (!slug) {
-    return listingMetadata(lang);
-  }
-
-  const study = getCaseStudy(slug);
-  if (!study) {
-    return listingMetadata(lang);
-  }
-
-  // #4867 : ogType 'article' pour les études de cas individuelles (contenu
-  // éditorial — cohérent avec le schéma OpenGraph et les robots de crawl).
-  return generateSEOMetadata({
-    title: study.title,
-    description: study.description,
-    ogType: 'article',
-    canonical: `${SITE_URL}/case-studies/${study.slug}`,
-    locale: lang,
-  });
+  return listingMetadata(lang);
 }
 
 export default function CaseStudiesLayout({

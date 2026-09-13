@@ -11,8 +11,23 @@ interface JsonLdProps {
 // NEXT_PUBLIC_SITE_URL → DEFAULT_SITE_URL (marque) → localhost en dev.
 // Migration cible : leopardo-rh.com (#3452). (Closes #3852)
 import { getSiteUrl } from '@/lib/site-url';
+// #AI-SEO : nom de marque canonique + alias — une seule entité pour les
+// moteurs et les assistants IA (avant : « Leopardo RH » figé en dur alors que
+// les <title> alternent RH/HR/İK/ليوباردو).
+import { BRAND_ALTERNATE_NAMES, BRAND_NAME } from '@/modules/vitrine/lib/seo';
 
 const SITE_URL = getSiteUrl();
+
+/**
+ * Profils publics officiels de la marque (schema.org `sameAs`).
+ *
+ * Consolidation d'entité : c'est le signal qui rattache les mentions de
+ * « Leopardo RH » sur le web à une même organisation pour les moteurs et les
+ * LLM. Seul le dépôt GitHub est vérifié (cf. Footer.tsx — le LinkedIn
+ * `linkedin.com/company/leopardo` renvoyait 404 au 2026-09-10 et a été
+ * retiré ; ne PAS l'ajouter tant qu'il n'est pas de nouveau résolvable).
+ */
+const SAME_AS = ['https://github.com/kitokoh/leopardo-hr'] as const;
 
 export function JsonLd({ data }: JsonLdProps) {
   return (
@@ -51,13 +66,142 @@ export function ArticleJsonLd({
         url,
         inLanguage,
         datePublished,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': url,
+        },
         author: {
           '@type': 'Person',
           name: author,
         },
         publisher: {
           '@type': 'Organization',
-          name: 'Leopardo RH',
+          name: BRAND_NAME,
+          alternateName: BRAND_ALTERNATE_NAMES,
+          url: SITE_URL,
+          sameAs: [...SAME_AS],
+          logo: {
+            '@type': 'ImageObject',
+            url: `${SITE_URL}/logo.png`,
+          },
+        },
+      }}
+    />
+  );
+}
+
+/**
+ * #AI-SEO — nœud `WebSite` racine : identité du site, langue servie et
+ * éditeur. Absent jusqu'ici (seul un `SoftwareApplication` existait) : sans
+ * nœud WebSite/Organization, les moteurs de réponse n'ont pas d'entité
+ * « site » à laquelle rattacher les pages et les alias de marque.
+ *
+ * Pas de `potentialAction` SearchAction : le site n'expose aucune recherche
+ * publique — un SearchAction sans endpoint est du balisage invalide.
+ */
+export function WebSiteJsonLd({ locale = 'fr' }: { locale?: string }) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: BRAND_NAME,
+        alternateName: BRAND_ALTERNATE_NAMES,
+        url: SITE_URL,
+        inLanguage: locale,
+        publisher: {
+          '@type': 'Organization',
+          name: BRAND_NAME,
+          alternateName: BRAND_ALTERNATE_NAMES,
+          url: SITE_URL,
+          sameAs: [...SAME_AS],
+          logo: {
+            '@type': 'ImageObject',
+            url: `${SITE_URL}/logo.png`,
+          },
+        },
+      }}
+    />
+  );
+}
+
+/**
+ * #AI-SEO — fil d'Ariane structuré (`BreadcrumbList`).
+ *
+ * Deux bénéfices : affichage du chemin dans les SERP, et hiérarchie
+ * explicite page → section → accueil pour les moteurs de réponse (AEO), qui
+ * s'appuient sur la structure plutôt que sur l'ordre visuel.
+ */
+export function BreadcrumbJsonLd({
+  items,
+}: {
+  items: Array<{ name: string; url: string }>;
+}) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: items.map((item, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          item: item.url,
+        })),
+      }}
+    />
+  );
+}
+
+/**
+ * #AI-SEO — vidéo de démonstration réelle, committée dans `public/videos/`
+ * (mp4 + webm + poster + sous-titres FR/EN). `uploadDate` = date de commit de
+ * l'asset (source vérifiable dans l'historique git), pas une date inventée.
+ *
+ * Sans `VideoObject`, une vidéo pourtant présente et indexable ne produit
+ * aucun rich result vidéo et reste invisible pour les moteurs de réponse.
+ */
+export const PRODUCT_DEMO_VIDEO = {
+  contentUrl: '/videos/product-demo.mp4',
+  contentUrlAlternate: '/videos/product-demo.webm',
+  thumbnailUrl: '/videos/product-demo-poster.jpg',
+  uploadDate: '2026-09-10T21:14:30+03:00',
+  duration: 'PT1M4S',
+} as const;
+
+export function VideoObjectJsonLd({
+  name,
+  description,
+  locale = 'fr',
+}: {
+  name: string;
+  description: string;
+  locale?: string;
+}) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        name,
+        description,
+        thumbnailUrl: `${SITE_URL}${PRODUCT_DEMO_VIDEO.thumbnailUrl}`,
+        uploadDate: PRODUCT_DEMO_VIDEO.uploadDate,
+        duration: PRODUCT_DEMO_VIDEO.duration,
+        contentUrl: `${SITE_URL}${PRODUCT_DEMO_VIDEO.contentUrl}`,
+        inLanguage: locale,
+        // Le contenu décrit la page /videos : rattache la vidéo à son URL
+        // canonique (les moteurs de réponse citent l'entité, pas un fichier).
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `${SITE_URL}/videos`,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: BRAND_NAME,
+          alternateName: BRAND_ALTERNATE_NAMES,
+          url: SITE_URL,
+          sameAs: [...SAME_AS],
           logo: {
             '@type': 'ImageObject',
             url: `${SITE_URL}/logo.png`,
@@ -98,16 +242,22 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
       data={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'Leopardo RH',
+        name: BRAND_NAME,
+        alternateName: BRAND_ALTERNATE_NAMES,
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web, Android',
         description: organizationDescription[locale] ?? organizationDescription.fr,
+        url: SITE_URL,
+        inLanguage: locale,
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
+        sameAs: [...SAME_AS],
         offers,
         creator: {
           '@type': 'Organization',
-          name: 'Leopardo RH',
+          name: BRAND_NAME,
+          alternateName: BRAND_ALTERNATE_NAMES,
           url: SITE_URL,
+          sameAs: [...SAME_AS],
         },
       }}
     />
