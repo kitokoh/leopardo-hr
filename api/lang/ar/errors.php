@@ -289,4 +289,8 @@ return [
     'ONBOARDING_STEP_REQUIRED' => 'هذه الخطوة إلزامية ولا يمكن تخطيها.',
     'ONBOARDING_STEP_NOT_DONE' => 'لا يمكن تعليم هذه الخطوة كمكتملة: لم يتم تسجيل أي إجراء مطابق.',
     'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
+    // #7322 — التفعيل الذاتي لوحدة أفقية من قبل العميل.
+    'INVALID_HORIZONTAL_TOOL' => 'وحدة غير معروفة أو غير قابلة للتفعيل الذاتي: :module.',
+    'MODULE_ACTIVATED' => 'تم تفعيل الوحدة.',
+    'MODULE_ALREADY_ACTIVE' => 'هذه الوحدة نشطة بالفعل.',
 ];

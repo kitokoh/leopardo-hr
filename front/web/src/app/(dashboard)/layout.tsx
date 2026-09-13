@@ -7,7 +7,7 @@ import { Bell, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-r
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess } from '@/lib/client-features';
+import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -54,6 +54,9 @@ export default function DashboardLayout({
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [modulesOpen, setModulesOpen] = useState(false);
+  // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
+  const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
+  const [activateError, setActivateError] = useState('');
   // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
   // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
   // un bouton hamburger, sur le même modèle que l'admin.
@@ -273,6 +276,38 @@ export default function DashboardLayout({
     };
   }, [mounted]);
 
+  /**
+   * #7322 — active un module HORIZONTAL pour le tenant puis recharge
+   * `/auth/me` pour que la navigation reflète l'activation SANS reconnexion
+   * (même surface que le rafraîchissement silencieux #7245).
+   */
+  const activateModule = async (key: ClientModuleKey) => {
+    setActivatingModule(key);
+    setActivateError('');
+
+    try {
+      const response = await apiFetch(`/company/modules/${key}/activate`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error(`activation failed (${response.status})`);
+      }
+
+      const me = await apiFetch('/auth/me');
+      if (me.ok) {
+        const payload = await me.json() as { data?: StoredAuthUser };
+        const current = userRef.current;
+        if (payload.data && current) {
+          const refreshed = mergeActivationSurface(current, payload.data);
+          storeAuthSession(null, refreshed);
+          setUserOverride(refreshed);
+        }
+      }
+    } catch {
+      setActivateError(labels.dashboard.activateError);
+    } finally {
+      setActivatingModule(null);
+    }
+  };
+
   const handleLanguageChange = async (value: string) => {
     const nextLocale = normalizeLocale(value);
     const response = await apiFetch('/auth/language', {
@@ -433,17 +468,53 @@ export default function DashboardLayout({
                         {business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
                       </p>
                       <div className="mt-2 space-y-1">
-                        {discoverable.map((module) => (
-                          <Link
-                            key={module.key}
-                            href="/contact?topic=upgrade"
-                            className="flex items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-[12px] font-bold text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-700"
-                          >
-                            <span>{labels.dashboard.modules[module.key] ?? module.label}</span>
-                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                          </Link>
-                        ))}
+                        {discoverable.map((module) => {
+                          // #7322 — un outil HORIZONTAL s'active en autonomie ;
+                          // une verticale métier reste « sur demande » (seeders
+                          // et dépendances de pack, admin plateforme).
+                          const label = labels.dashboard.modules[module.key] ?? module.label;
+
+                          if (isSelfActivable(module)) {
+                            const busy = activatingModule === module.key;
+                            return (
+                              <button
+                                key={module.key}
+                                type="button"
+                                data-testid={`activate-module-${module.key}`}
+                                onClick={() => void activateModule(module.key)}
+                                disabled={activatingModule !== null}
+                                className="flex w-full items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-start text-[12px] font-bold text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-60"
+                              >
+                                <span>{label}</span>
+                                {busy ? (
+                                  <span aria-live="polite">{labels.dashboard.activating}</span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide">
+                                    <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                                    {labels.dashboard.activate}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <Link
+                              key={module.key}
+                              href="/contact?topic=upgrade"
+                              className="flex items-center justify-between gap-2 rounded-lg px-1 py-1.5 text-[12px] font-bold text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-700"
+                            >
+                              <span>{label}</span>
+                              <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                            </Link>
+                          );
+                        })}
                       </div>
+                      {activateError !== '' ? (
+                        <p role="alert" className="mt-2 text-[11px] font-semibold text-red-600">
+                          {activateError}
+                        </p>
+                      ) : null}
                     </>
                   ) : null}
                 </div>

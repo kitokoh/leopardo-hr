@@ -18,6 +18,7 @@ use App\Modules\Billing\Interfaces\Api\V1\Controllers\StripeWebhookController;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Controllers\EdgeNodeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBankingController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyBrandingController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\CompanyModuleController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\PrivacyController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\MarketingLeadController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\EmailBounceWebhookController;
@@ -277,6 +278,14 @@ Route::prefix('v1')->group(function (): void {
         // Issue #5613 — Coordonnées bancaires SEPA (IBAN/BIC entreprise).
         Route::get('/company/banking', [CompanyBankingController::class, 'show']);
         Route::patch('/company/banking', [CompanyBankingController::class, 'update']);
+
+        // #7322 — le client (responsable du tenant) active lui-même un module
+        // HORIZONTAL de son entreprise : `metadata.modules` + flag plateforme
+        // miroir. Allowlist fail-closed (Company::HORIZONTAL_TOOLS) et RBAC
+        // principal/rh appliqués dans le contrôleur ; les verticales restent
+        // hors périmètre (seeders/dépendances de pack, admin plateforme).
+        Route::post('/company/modules/{module}/activate', [CompanyModuleController::class, 'activate'])
+            ->where('module', '[a-z_]{1,40}');
 
         // PA2-COMM-012 — Pilot client support center: a manager/employee can
         // open a support ticket and reply on their own company's tickets.

@@ -290,4 +290,8 @@ return [
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
+    // #7322 — Auto-activation d'un module horizontal par le client.
+    'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
+    'MODULE_ACTIVATED' => 'Module activé.',
+    'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',
 ];
