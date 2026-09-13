@@ -1,4 +1,8 @@
 import type { AppLocale } from '@/lib/i18n'
+import {
+  FREE_TRIAL_DAYS,
+  PAYROLL_COUNTRIES_COUNT,
+} from './vitrine-numbers'
 
 // Contenu de la page /testimonials par locale (issues #3334 + honnêteté #2726).
 // Les témoignages eux-mêmes viennent de data/testimonials.ts (marqués DÉMO).
@@ -35,9 +39,9 @@ const fr: TestimonialsPageContent = {
     footnote: "Témoignages et chiffres de démonstration — données fictives à titre d'illustration (aucun client payant à ce jour).",
     items: [
       { value: '4.8/5', label: 'Note moyenne (démo)' },
-      { value: '6', label: 'Pays couverts' },
+      { value: String(PAYROLL_COUNTRIES_COUNT), label: 'Pays couverts' },
       { value: '1000+', label: 'Fichiers de tests backend' },
-      { value: '14 j', label: "Durée de l'essai gratuit" },
+      { value: `${FREE_TRIAL_DAYS} j`, label: "Durée de l'essai gratuit" },
     ],
   },
   cta: {
@@ -60,9 +64,9 @@ const en: TestimonialsPageContent = {
     footnote: 'Testimonials and figures are demonstration data — fictional, for illustration only (no paying customers yet).',
     items: [
       { value: '4.8/5', label: 'Average rating (demo)' },
-      { value: '6', label: 'Countries covered' },
+      { value: String(PAYROLL_COUNTRIES_COUNT), label: 'Countries covered' },
       { value: '1000+', label: 'Backend test files' },
-      { value: '14 d', label: 'Free trial length' },
+      { value: `${FREE_TRIAL_DAYS} d`, label: 'Free trial length' },
     ],
   },
   cta: {
@@ -85,9 +89,9 @@ const tr: TestimonialsPageContent = {
     footnote: 'Referanslar ve rakamlar tanıtım verisidir — yalnızca örnek amaçlı kurgusaldır (henüz ödeme yapan müşteri yok).',
     items: [
       { value: '4.8/5', label: 'Ortalama puan (demo)' },
-      { value: '6', label: 'Kapsanan ülke' },
+      { value: String(PAYROLL_COUNTRIES_COUNT), label: 'Kapsanan ülke' },
       { value: '1000+', label: 'Backend test dosyası' },
-      { value: '14 g', label: 'Ücretsiz deneme süresi' },
+      { value: `${FREE_TRIAL_DAYS} g`, label: 'Ücretsiz deneme süresi' },
     ],
   },
   cta: {
@@ -110,9 +114,9 @@ const ar: TestimonialsPageContent = {
     footnote: 'الشهادات والأرقام بيانات توضيحية — خيالية لأغراض العرض فقط (لا يوجد عملاء يدفعون حتى الآن).',
     items: [
       { value: '4.8/5', label: 'متوسط التقييم (عرض)' },
-      { value: '6', label: 'دول مغطاة' },
+      { value: String(PAYROLL_COUNTRIES_COUNT), label: 'دول مغطاة' },
       { value: '1000+', label: 'ملف اختبار للخلفية' },
-      { value: '14 يوم', label: 'مدة النسخة التجريبية' },
+      { value: `${FREE_TRIAL_DAYS} يوم`, label: 'مدة النسخة التجريبية' },
     ],
   },
   cta: {
