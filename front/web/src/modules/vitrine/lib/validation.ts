@@ -51,12 +51,16 @@ export function signupFormSchema(locale: AppLocale) {
       })
       .optional(),
     // MULTI-PAYS (#1867/#4476) : le pays est obligatoire côté API
-    // (required|size:2|SupportedCountry) — le formulaire doit l'envoyer,
-    // sinon le tunnel se dégrade silencieusement en capture de lead.
+    // (required|size:2|SupportedCountry). Il n'est PLUS demandé à
+    // l'utilisateur : il est résolu côté serveur par géolocalisation
+    // (`request.geo`, Vercel) dans /api/forms/signup, et reste modifiable
+    // ensuite dans les paramètres de l'entreprise.
     country: z
       .string()
       .length(2, { message: m.countryRequired })
-      .refine((v) => v === v.toUpperCase(), { message: m.countryRequired }),
+      .refine((v) => v === v.toUpperCase(), { message: m.countryRequired })
+      .optional()
+      .or(z.literal('')),
     phone: z
       .string()
       .regex(

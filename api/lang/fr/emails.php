@@ -167,4 +167,11 @@ return [
     'email_password_reset_body' => 'Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous. Ce lien expire dans 60 minutes.',
     'email_password_reset_button' => 'Réinitialiser le mot de passe',
     'email_password_reset_ignore' => 'Si vous n\'avez pas fait cette demande, ignorez cet email.',
+
+    // E-mail de vérification du code d'inscription (trial self-service)
+    'trial_verification_subject' => 'Vérifiez votre email Leopardo RH',
+    'trial_verification_greeting' => 'Bonjour :name,',
+    'trial_verification_intro' => 'Veuillez utiliser le code de vérification ci-dessous pour finaliser la création de votre espace de travail :',
+    'trial_verification_validity' => "Ce code est valide pendant 30 minutes. Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.",
+
 ];

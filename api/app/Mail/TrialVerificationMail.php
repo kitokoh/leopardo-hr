@@ -20,6 +20,11 @@ class TrialVerificationMail extends Mailable
     public function build(): self
     {
         return $this
+            // La locale pilote la résolution de `__()` dans la vue : sans elle,
+            // les chaînes du catalogue `api/lang` retombaient sur la locale de
+            // l'application (français/anglais) alors que le sujet était déjà
+            // localisé — e-mail hybride.
+            ->locale($this->emailLocale)
             ->subject($this->resolveSubject($this->emailLocale))
             ->view('emails.trial-verification', [
                 'managerName' => $this->managerName,

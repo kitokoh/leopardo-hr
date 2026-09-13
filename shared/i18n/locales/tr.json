@@ -1475,7 +1475,10 @@
     "stepPlanLabel": "Plan",
     "planTitle": "Planınızı seçin",
     "planSubtitle": "Çalışma alanınız seçtiğiniz plan üzerinde oluşturulur. Ücretsiz deneme, kredi kartı gerekmez.",
-    "planContinue": "Bu planla devam et"
+    "planContinue": "Bu planla devam et",
+    "planSelected": "Seçilen plan",
+    "planChange": "Değiştir",
+    "countryDetectionFailed": "Ülkeniz otomatik olarak belirlenemedi. Lütfen aşağıdan seçin."
   },
   "companies": {
     "toast": {
