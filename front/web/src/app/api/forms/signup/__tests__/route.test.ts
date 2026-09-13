@@ -101,4 +101,17 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(payload.data.nextStep).toBe('verify');
     expect(payload.data.status).toBe('pending_verification');
   });
+
+  it('répond COUNTRY_REQUIRED (422) quand la géolocalisation est indisponible', async () => {
+    // Ni pays dans la requête, ni `geo` fourni par la plateforme : le
+    // formulaire simplifié ne demande plus le pays, on doit donc le signaler
+    // par un code dédié pour que l'UI n'affiche le sélecteur que dans ce cas.
+    const response = await POST(makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp' }));
+
+    expect(response.status).toBe(422);
+    const payload = (await response.json()) as { error: string };
+    expect(payload.error).toBe('COUNTRY_REQUIRED');
+    // Aucun appel backend inutile : le 422 est détecté en amont.
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

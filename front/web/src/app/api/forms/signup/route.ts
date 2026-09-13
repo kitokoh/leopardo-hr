@@ -68,6 +68,21 @@ export async function POST(request: NextRequest) {
     const geoCountry = geo?.country?.toUpperCase() ?? '';
     const effectiveCountry = validatedData.country || geoCountry || undefined;
 
+    if (!effectiveCountry) {
+      // Le formulaire simplifié ne demande plus le pays : il vient de la
+      // géolocalisation. Si celle-ci est indisponible (dev local, proxy, IP
+      // inconnue), on répond un code DÉDIÉ plutôt qu'un 422 générique, pour
+      // que l'UI n'affiche le sélecteur de pays que dans ce cas précis.
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'COUNTRY_REQUIRED',
+          message: "Nous n'avons pas pu détecter votre pays. Merci de le préciser.",
+        },
+        { status: 422 }
+      );
+    }
+
     // Step 1: Capture the marketing lead (CRM tracking)
     const lead = await captureMarketingLead(request, {
       type: 'signup',

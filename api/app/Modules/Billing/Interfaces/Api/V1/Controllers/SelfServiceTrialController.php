@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
@@ -39,6 +40,7 @@ class SelfServiceTrialController extends Controller
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
         private readonly SolutionCatalogue $solutionCatalogue,
+        private readonly AuthService $authService,
     ) {}
 
     /**
@@ -410,10 +412,44 @@ class SelfServiceTrialController extends Controller
         $fallbackLocale = config('app.locale', 'en');
         App::setLocale($company->language ?: (\is_string($fallbackLocale) ? $fallbackLocale : 'en'));
 
+        // Auto-connexion (retour fondateur 2026-09-13). L'utilisateur vient de
+        // prouver la possession de sa boîte mail par le code à 6 chiffres, et
+        // n'a JAMAIS choisi de mot de passe : le renvoyer vers un écran de
+        // connexion était un cul-de-sac (« il n'a qu'à cliquer sur se
+        // connecter » alors qu'aucun mot de passe n'existe).
+        //
+        // On réutilise le chemin de connexion ÉPROUVÉ (`AuthService::login`)
+        // plutôt que de forger un jeton ici : il construit les abilities
+        // multi-tenant (`tenant_schema:…`, `tenant_company:…`) sans lesquelles
+        // le dashboard est inaccessible, applique la purge de quota de jetons
+        // (#7009) et positionne `last_login_at`.
+        //
+        // Toute erreur est absorbée : le compte EST provisionné, on dégrade
+        // vers le parcours manuel au lieu de casser la vérification.
+        $autoLoginToken = null;
+        $tempPassword = $result['temp_password'] ?? null;
+
+        if (is_string($tempPassword) && $tempPassword !== '') {
+            try {
+                /** @var array{token: string} $authResult */
+                $authResult = $this->authService->login($email, $tempPassword, 'trial-self-service');
+                $autoLoginToken = $authResult['token'];
+            } catch (\Throwable $e) {
+                Log::warning('trial.verify.autologin_failed', [
+                    'email' => $email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         return new JsonResponse([
             'success' => true,
             'message' => __('errors.TRIAL_SPACE_READY'),
             'data' => [
+                // Jeton de session à poser en cookie httpOnly par le client web
+                // (/api/forms/verify). `null` = auto-connexion indisponible →
+                // le client retombe sur l'écran de connexion classique.
+                'token' => $autoLoginToken,
                 'company' => [
                     'id' => $result['company']->id,
                     'name' => $result['company']->name,
