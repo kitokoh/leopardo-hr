@@ -1475,7 +1475,10 @@
     "stepPlanLabel": "Plan",
     "planTitle": "Choose your plan",
     "planSubtitle": "Your workspace is created on the plan you select. Free trial, no credit card.",
-    "planContinue": "Continue with this plan"
+    "planContinue": "Continue with this plan",
+    "planSelected": "Selected plan",
+    "planChange": "Change",
+    "countryDetectionFailed": "We could not detect your country automatically. Please select it below."
   },
   "companies": {
     "toast": {

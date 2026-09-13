@@ -1475,7 +1475,10 @@
     "stepPlanLabel": "العرض",
     "planTitle": "اختر عرضك",
     "planSubtitle": "يتم إنشاء مساحتك على العرض الذي تختاره. تجربة مجانية بدون بطاقة بنكية.",
-    "planContinue": "المتابعة بهذا العرض"
+    "planContinue": "المتابعة بهذا العرض",
+    "planSelected": "العرض المختار",
+    "planChange": "تغيير",
+    "countryDetectionFailed": "لم نتمكن من تحديد بلدك تلقائياً. يرجى تحديده أدناه."
   },
   "companies": {
     "toast": {

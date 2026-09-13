@@ -53,13 +53,16 @@ describe('Form Validation Schemas', () => {
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
-    it('should reject a missing country (#4476)', () => {
+    // Le pays n'est plus demandé à l'utilisateur : il est résolu côté serveur
+    // par géolocalisation. Le schéma l'accepte donc absent (mais le valide
+    // toujours s'il est fourni).
+    it('should accept a payload without country (#7250)', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema('fr').parse(data)).toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject a non-2-letter country (#4476)', () => {

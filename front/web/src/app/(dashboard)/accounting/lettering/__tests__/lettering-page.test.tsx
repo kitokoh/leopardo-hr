@@ -10,8 +10,18 @@ jest.mock('@/lib/api-client', () => ({
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 
+/**
+ * La page lettrage charge par défaut la **période courante** (`currentPeriod()`
+ * côté composant). La figer en dur (« 2026-08 ») transformait ce test en bombe
+ * à retardement : il échouait dès le changement de mois.
+ */
+const currentPeriod = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
 const journalPayload = {
-  period: '2026-08',
+  period: currentPeriod(),
   balanced: true,
   closed: false,
   totals: { total_debit: 100, total_credit: 100 },
@@ -38,7 +48,7 @@ describe('LetteringPage (#5534)', () => {
 
     expect((await screen.findAllByText('FAC-2026-0001')).length).toBeGreaterThan(0);
     expect(screen.getByText('Journal équilibré')).toBeInTheDocument();
-    expect(mockedApiFetch).toHaveBeenCalledWith('/accounting/journal?period=2026-08');
+    expect(mockedApiFetch).toHaveBeenCalledWith(`/accounting/journal?period=${currentPeriod()}`);
   });
 
   it('lettre 2+ écritures sélectionnées via POST /accounting/journal/lettering', async () => {

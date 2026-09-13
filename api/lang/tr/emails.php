@@ -166,4 +166,11 @@ return [
     'email_password_reset_body' => 'Şifre sıfırlama talebinde bulundunuz. Aşağıdaki düğmeye tıklayın. Bu bağlantı 60 dakika içinde sona erer.',
     'email_password_reset_button' => 'Şifreyi sıfırla',
     'email_password_reset_ignore' => 'Bu talebi siz yapmadıysanız bu e-postayı yok sayın.',
+
+    // E-mail de vérification du code d'inscription (trial self-service)
+    'trial_verification_subject' => 'Leopardo RH e-postanızı doğrulayın',
+    'trial_verification_greeting' => 'Merhaba :name,',
+    'trial_verification_intro' => 'Çalışma alanınızın oluşturulmasını tamamlamak için lütfen aşağıdaki doğrulama kodunu kullanın:',
+    'trial_verification_validity' => 'Bu kod 30 dakika geçerlidir. Bunu talep etmediyseniz, bu e-postayı güvenle yok sayabilirsiniz.',
+
 ];

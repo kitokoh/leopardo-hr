@@ -38,7 +38,12 @@ class RequestTrialSignup
 
         try {
             Mail::to($email)->send(
-                new TrialVerificationMail($managerName, $otp, strtolower($countryDefaults['language']))
+                // Langue de l'e-mail = choix explicite de l'utilisateur (validé
+                // en amont par `in:fr,en,ar,tr`), repli sur la langue par défaut
+                // du pays pour les clients historiques. Issue #7249 : sans cela
+                // un utilisateur turcophone inscrit depuis le Maroc recevait un
+                // e-mail dans la langue de son pays.
+                new TrialVerificationMail($managerName, $otp, (string) ($validated['locale'] ?? $countryDefaults['language']))
             );
         } catch (\Throwable $e) {
             // Issue #5162 : sans visibilité sur le mailer résolu, un échec
@@ -63,6 +68,7 @@ class RequestTrialSignup
                 'from_address' => (string) config('mail.from.address', ''),
                 'error' => $e->getMessage(),
             ]);
+
             // Issue #3057 : ne jamais répondre « code envoyé » si le mail a
             // échoué — la demande est conservée mais le client doit le savoir
             // (état honnête, pas d'écran OTP pour un code jamais parti).

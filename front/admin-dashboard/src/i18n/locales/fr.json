@@ -1724,7 +1724,10 @@
     "stepPlanLabel": "Offre",
     "planTitle": "Choisissez votre offre",
     "planSubtitle": "Votre espace est créé sur l'offre sélectionnée. Essai gratuit, sans carte bancaire.",
-    "planContinue": "Continuer avec cette offre"
+    "planContinue": "Continuer avec cette offre",
+    "planSelected": "Offre choisie",
+    "planChange": "Modifier",
+    "countryDetectionFailed": "Nous n'avons pas pu détecter votre pays automatiquement. Merci de le préciser ci-dessous."
   },
   "attendanceDayDetail": "Détail par jour",
   "support_tickets": {
