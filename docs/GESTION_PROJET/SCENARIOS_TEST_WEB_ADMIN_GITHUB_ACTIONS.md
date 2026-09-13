@@ -30,6 +30,7 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - login plateforme branche sur `/api/v1/platform/auth/login` et non sur des routes `/admin/auth/*` inexistantes
 - un retour `202 TWO_FA_REQUIRED` affiche un champ 2FA exploitable au lieu de marquer la session comme connectee
 - un `401` API nettoie la session locale et renvoie proprement vers `/login`
+- **garde de navigation (#7305)** : acces anonyme a une route protegee => `/login` ; utilisateur connecte sur `/login` => redirection vers `/` ; **aucun avertissement `VUE_ROUTER_R0025`** en console (les guards retournent la route cible au lieu d'appeler `next()`)
 
 ### 2. Navigation protegee
 
