@@ -24,7 +24,7 @@ import {
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
+import { FREE_GUIDED_TRIAL_HREF, getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -978,7 +978,7 @@ function CheckoutInner() {
               {copy.free.body}
             </p>
             <Link
-              href="/signup?source=checkout_plan_free"
+              href={FREE_GUIDED_TRIAL_HREF}
               className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-lg font-bold rounded-2xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-xl shadow-emerald-500/20"
             >
               {copy.free.cta}
