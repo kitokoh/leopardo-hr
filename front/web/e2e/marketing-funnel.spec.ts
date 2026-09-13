@@ -87,7 +87,7 @@ test.describe('Marketing funnel preview', () => {
     const timestamp = Date.now();
     const email = `trial.lead.${timestamp}@example.com`;
 
-    await page.goto('/signup?lang=en&utm_source=e2e&plan=business', {
+    await page.goto('/signup?lang=en&utm_source=e2e&plan=pilot', {
       waitUntil: 'networkidle',
     });
 
