@@ -490,7 +490,11 @@
     "connected_api": "Connecté à l'API",
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
-    "empty_list": "Aucun employé visible pour ce compte."
+    "empty_list": "Aucun employé visible pour ce compte.",
+    "empty_departments": "Aucun département pour le moment.",
+    "create_department_error": "Impossible de créer le département.",
+    "create_employee_error": "Impossible d'ajouter le collaborateur.",
+    "open_team": "Ouvrir la page Équipe"
   },
   "smartAttendanceGpsAuto": "GPS Automatique",
   "smartAttendanceNoGpsSessions": "Aucune session GPS pour le moment.",

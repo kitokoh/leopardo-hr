@@ -1740,7 +1740,11 @@
     "connected_api": "Connected to the API",
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
-    "empty_list": "No employee visible for this account."
+    "empty_list": "No employee visible for this account.",
+    "empty_departments": "No department yet.",
+    "create_department_error": "Unable to create the department.",
+    "create_employee_error": "Unable to add the collaborator.",
+    "open_team": "Open the Team page"
   },
   "user_auth": {
     "company_request": {
