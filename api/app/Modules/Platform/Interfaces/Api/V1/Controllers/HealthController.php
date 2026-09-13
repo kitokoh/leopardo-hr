@@ -25,9 +25,17 @@ use UnitEnum;
  * tombe on renvoie 503 pour que Render detecte immediatement une instance
  * non disponible.
  *
- * Les checks secondaires (Redis, storage) sont `degraded` en cas d'echec
- * mais ne declenchent pas un 503 : l'API reste partiellement servable
- * (les jobs/queues peuvent etre degrades, pas l'auth).
+ * Les checks secondaires (Redis, storage, queue, delivery) sont `degraded` en
+ * cas d'echec mais ne declenchent pas un 503 sur `/health` : l'API reste
+ * partiellement servable (les jobs/queues peuvent etre degrades, pas l'auth),
+ * et une sonde de deploiement ne doit pas redemarrer une instance saine parce
+ * qu'une dependance secondaire est tombee.
+ *
+ * #7255 — la sonde honnete de disponibilite est `/health/ready` : elle couvre
+ * les dependances CRITIQUES (base + Redis + queue) et renvoie 503 des que
+ * l'une d'elles est en panne. `/health/live` reste un liveness pur et n'est
+ * plus la sonde recommandee au monitoring externe. Semantique complete
+ * (ok / degraded / fail / skipped) : docs/ops/HEALTH_ENDPOINTS.md.
  */
 class HealthController extends Controller
 {
@@ -177,6 +185,11 @@ class HealthController extends Controller
 
     /**
      * GET /api/v1/health/live — 200 if the process is running.
+     *
+     * Liveness pur : aucune I/O, donc toujours 200 tant que PHP repond.
+     * #7255 — ce n'est PAS la sonde a brancher sur un monitoring de
+     * disponibilite : elle ne verra jamais une degradation (Redis, queue,
+     * mailer). Pour cela, utiliser `/health/ready`.
      */
     public function live(): JsonResponse
     {
@@ -187,20 +200,48 @@ class HealthController extends Controller
     }
 
     /**
-     * GET /api/v1/health/ready — 200 if DB is up.
+     * GET /api/v1/health/ready — 200 si les dependances CRITIQUES repondent.
+     *
+     * #7255 — la readiness ne regardait que la base : Redis HS, queue bloquee
+     * et mailer muet restaient invisibles (HTTP 200 + `status: ok`) alors que
+     * l'instance n'assurait plus ses jobs, ses sessions ni ses e-mails (constat
+     * live du 2026-09-11). Les dependances critiques sont desormais la base
+     * (auth, tenants), Redis (cache/sessions/queues) et la file d'attente :
+     * des qu'une seule tombe, `status: fail`, HTTP 503 et `failed_checks`
+     * nomme la dependance — un probe Render ou un monitoring externe detecte
+     * donc reellement la panne.
+     *
+     * Une dependance volontairement absente (`status: skipped`, ex. Redis non
+     * configure) n'est jamais un echec : on ne transforme pas une absence de
+     * dependance en incident.
      */
     public function ready(): JsonResponse
     {
         $database = $this->checkDatabase();
+        $redis = $this->checkRedis();
+        $queue = $this->checkQueue();
 
-        $status = $database['ok'] ? 'ok' : 'fail';
-        $code = $database['ok'] ? 200 : 503;
+        $checks = [
+            'database' => $database,
+            'redis' => $redis,
+            'queue' => $queue,
+        ];
+
+        $critical = [
+            'database' => $database['ok'],
+            'redis' => $redis['ok'],
+            'queue' => $queue['ok'],
+        ];
+
+        $failed = array_keys(array_filter($critical, static fn (bool $ok): bool => ! $ok));
+        $ok = $failed === [];
 
         return response()->json([
-            'status' => $status,
-            'checks' => ['database' => $database],
+            'status' => $ok ? 'ok' : 'fail',
+            'checks' => $checks,
+            'failed_checks' => $failed,
             'timestamp' => now()->toIso8601String(),
-        ], $code);
+        ], $ok ? 200 : 503);
     }
 
     /**
