@@ -17,9 +17,18 @@ const E2E_ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'e2e-fixture-passwo
 test.describe.configure({ retries: 3 })
 
 test('falls back to REST polling when the push (Socket.IO) channel is unavailable', async ({ page }) => {
-  // Le serveur de dev n'a pas d'upstream socket.io : pour rendre la détection
-  // d'échec déterministe (pas de dépendance à la grace period), on avorte les
-  // connexions socket.io dès leur tentative.
+  // #7303 — sans `VITE_WEBSOCKET_URL` configuré, le store ne tente PLUS de
+  // handshake socket.io (aucun serveur push n'existe : absent de
+  // `render.yaml`, ni Reverb ni Soketi dans le dépôt). On compte les
+  // tentatives pour verrouiller ce comportement : un retour à la dérivation
+  // `wss://<hôte API>` produirait un 404 en console à chaque chargement.
+  let socketAttempts = 0
+  page.on('request', (r) => {
+    if (/socket\.io/.test(r.url())) socketAttempts += 1
+  })
+
+  // Défensif : si une tentative avait lieu malgré tout, on l'avorte pour
+  // garder la détection d'échec déterministe.
   await page.route('**/socket.io/**', (route) => route.abort())
   await page.route(/\/socket\.io\/?$/, (route) => route.abort())
 
@@ -134,4 +143,9 @@ test('falls back to REST polling when the push (Socket.IO) channel is unavailabl
   // connect grace period (8s) plus socket.io's own retry timing.
   await expect.poll(() => notificationsPolled, { timeout: 30000 }).toBeGreaterThan(0)
   await expect(page.getByText(/Mode secours \(polling\)|D\u00e9connect\u00e9/i)).toBeVisible({ timeout: 30000 })
+
+  // #7303 — aucun handshake socket.io ne doit être tenté sans serveur push
+  // configuré : c'est ce qui produisait « Error during WebSocket handshake:
+  // Unexpected response code: 404 » en console.
+  expect(socketAttempts).toBe(0)
 })
