@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react';
@@ -11,6 +11,14 @@ import { getCopy, normalizeLocale, storeAuthSession, type AppLocale, type Stored
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 const MIN_PASSWORD_LENGTH = 8;
+
+/**
+ * État du lien d'activation, résolu **avant** toute saisie (#7267). Sans cette
+ * pré-validation, l'invité découvrait un lien expiré ou déjà consommé seulement
+ * après avoir choisi son mot de passe, et le cas « société suspendue » (403)
+ * s'affichait comme une erreur générique.
+ */
+type InvitationState = 'checking' | 'ready' | 'notFound' | 'expired' | 'alreadyAccepted' | 'suspended';
 
 export function ActivateAccountForm({ token }: { token: string }) {
   const { locale } = useVitrineLocale();
@@ -26,6 +34,73 @@ export function ActivateAccountForm({ token }: { token: string }) {
   const [error, setError] = useState<string | null>(null);
 
   const missingLink = !token;
+
+  const [invitationState, setInvitationState] = useState<InvitationState>('checking');
+
+  // #7267 — contrôler le lien dès l'ouverture (GET public, déjà exposé par
+  // l'API : `OnboardingController@show`) plutôt qu'à la soumission.
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const checkInvitation = async () => {
+      try {
+        await apiFetch(`/onboarding/invitation/${encodeURIComponent(token)}`);
+        if (!cancelled) {
+          setInvitationState('ready');
+        }
+      } catch (e) {
+        if (cancelled) {
+          return;
+        }
+        if (e instanceof ApiError) {
+          if (e.status === 404) {
+            setInvitationState('notFound');
+            return;
+          }
+          if (e.status === 410 && e.code === 'INVITATION_EXPIRED') {
+            setInvitationState('expired');
+            return;
+          }
+          if (e.status === 410 && e.code === 'INVITATION_ALREADY_ACCEPTED') {
+            setInvitationState('alreadyAccepted');
+            return;
+          }
+          if (e.status === 403) {
+            setInvitationState('suspended');
+            return;
+          }
+        }
+        // Pré-validation indisponible (réseau, 5xx) : on ne bloque PAS
+        // l'utilisateur — le POST d'activation reste la source de vérité.
+        setInvitationState('ready');
+      }
+    };
+
+    void checkInvitation();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const invitationBlockedMessage = (): string | null => {
+    switch (invitationState) {
+      case 'notFound':
+        return labels.missingTokenBody;
+      case 'expired':
+        return labels.expired;
+      case 'alreadyAccepted':
+        return labels.alreadyAccepted;
+      case 'suspended':
+        return labels.companySuspended;
+      default:
+        return null;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,6 +154,11 @@ export function ActivateAccountForm({ token }: { token: string }) {
           setError(labels.expired);
         } else if (e.status === 410 && e.code === 'INVITATION_ALREADY_ACCEPTED') {
           setError(labels.alreadyAccepted);
+        } else if (e.status === 403) {
+          // #7267 — 403 COMPANY_SUSPENDED : message dédié au lieu d'une erreur
+          // générique. La cause est côté société, pas côté utilisateur.
+          setError(labels.companySuspended);
+          setInvitationState('suspended');
         } else {
           setError(e.message || labels.genericError);
         }
@@ -127,6 +207,26 @@ export function ActivateAccountForm({ token }: { token: string }) {
             ) : missingLink ? (
               <div className="flex flex-col items-center gap-4 py-6 text-center">
                 <p className="text-sm text-slate-500">{labels.missingTokenBody}</p>
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  {labels.backToLogin}
+                </Link>
+              </div>
+            ) : invitationState === 'checking' ? (
+              <div className="flex flex-col items-center gap-4 py-6 text-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+                <p role="status" className="text-sm text-slate-500">
+                  {labels.validating}
+                </p>
+              </div>
+            ) : invitationBlockedMessage() ? (
+              <div className="flex flex-col items-center gap-4 py-6 text-center">
+                <p role="alert" className="text-sm text-slate-500">
+                  {invitationBlockedMessage()}
+                </p>
                 <Link
                   href="/auth/login"
                   className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
