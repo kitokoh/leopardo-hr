@@ -19,10 +19,13 @@ jest.mock('../../_lib/lead-capture', () => ({
 
 const mockedLeadCapture = leadCapture as jest.Mocked<typeof leadCapture>;
 
-function makeRequest(body: Record<string, unknown>): NextRequest {
+function makeRequest(
+  body: Record<string, unknown>,
+  headers: Record<string, string> = {},
+): NextRequest {
   return new NextRequest('http://localhost/api/forms/signup', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify(body),
   });
 }
@@ -74,10 +77,65 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(lastBackendBody(fetchMock).locale).toBe('tr');
   });
 
-  it('utilise le pays détecté (géolocalisation) quand le formulaire n’en envoie aucun', async () => {
+  it("utilise le pays de l'en-tête plateforme `x-vercel-ip-country` (Vercel)", async () => {
+    // ⚠️ Régression corrigée le 2026-09-13 : ce test fabriquait auparavant un
+    // `request.geo`, propriété que **Next 16 ne fournit plus** (les extensions
+    // `geo`/`ip` ont été retirées de `NextRequest`) — il validait donc une
+    // fiction pendant que la production répondait COUNTRY_REQUIRED à 100 % des
+    // visiteurs. La source réelle est l'en-tête injecté par l'hébergeur.
+    const response = await POST(
+      makeRequest(
+        { email: 'fondateur@techcorp.dz', company: 'TechCorp' },
+        { 'x-vercel-ip-country': 'tn' },
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(lastBackendBody(fetchMock).country).toBe('TN');
+  });
+
+  it("utilise aussi l'en-tête Cloudflare `cf-ipcountry`", async () => {
+    const response = await POST(
+      makeRequest(
+        { email: 'fondateur@techcorp.dz', company: 'TechCorp' },
+        { 'cf-ipcountry': 'MA' },
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    expect(lastBackendBody(fetchMock).country).toBe('MA');
+  });
+
+  it("ignore un en-tête de pays invalide (pas un code ISO à 2 lettres)", async () => {
+    // Une valeur non exploitable ne doit pas être transmise au backend (qui
+    // rejetterait la demande) : on retombe sur COUNTRY_REQUIRED, donc sur le
+    // sélecteur de pays côté UI.
+    const response = await POST(
+      makeRequest(
+        { email: 'fondateur@techcorp.dz', company: 'TechCorp' },
+        { 'x-vercel-ip-country': 'unknown' },
+      ),
+    );
+
+    expect(response.status).toBe(422);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('conserve le pays envoyé par le formulaire (repli) comme priorité', async () => {
+    const response = await POST(
+      makeRequest(
+        { email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'dz' },
+        { 'x-vercel-ip-country': 'FR' },
+      ),
+    );
+
+    expect(response.status).toBe(200);
+    // Le choix explicite de l'utilisateur prime sur la détection.
+    expect(lastBackendBody(fetchMock).country).toBe('DZ');
+  });
+
+  it('tolère encore un `geo` de runtime (compatibilité)', async () => {
     const request = makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp' });
-    // Vercel enrichit la requête avec `geo` — le formulaire simplifié ne
-    // demande plus le pays à l'utilisateur.
     Object.assign(request as unknown as Record<string, unknown>, {
       geo: { country: 'tn' },
     });
