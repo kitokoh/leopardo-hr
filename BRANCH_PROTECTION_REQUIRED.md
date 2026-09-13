@@ -39,6 +39,28 @@ Vérifié via l'API branche protection le **2026-09-09** : 4 contexts requis seu
 > le coverage bloque le merge (il est informatif) ni ignorer qu'il bloque la release (vrai).
 > Le job `flutter-analyze` suit le même régime (fast-path #6928, non requis au merge).
 
+### Sémantique exacte d'un check requis vert (#7269)
+
+Les 3 checks portés par `architecture-check.yml` sont **pilotés par les chemins modifiés**
+(`detect-changes` : `^api/` → `api_changed`, `^front/web/` → `web_changed`). Un vert ne signifie
+donc pas toujours « l'analyse a tourné » :
+
+| Situation | Analyse exécutée | Ce que garantit le vert |
+|---|---|---|
+| Des fichiers `api/` sont modifiés | oui (PHPStan strict, Module Structure) | le code **a été analysé** |
+| Aucun fichier `api/` modifié | non (non applicable) | **le gate a rendu un verdict explicite** (`api_changed=false`) — pas « l'analyse a réussi » |
+| Le gate ne rend aucun verdict | non | **impossible** : une assertion placée en tête de chaque job requis échoue si `detect-changes` ne produit pas exactement `true`/`false` (#7269) |
+
+Conséquence pratique : une PR front-only ou docs-only peut afficher ces checks **verts sans qu'aucune
+analyse PHP n'ait tourné**. C'est volontaire (économie de runners — saturation documentée dans
+`docs/infra/02_alignement/CI_SATURATION.md`) et c'est désormais **explicite** (log `::notice::` dans
+le job) et **non contournable par accident** (verdict obligatoire). L'alternative — faire tourner
+PHPStan sur tous les commits — a été écartée le 2026-09-13 : elle aggrave la famine de runners,
+dont le coût dépasse le bénéfice d'un contrôle non applicable.
+
+Ne pas confondre avec un feu vert sur le code : le seuil réel de validation PHP reste
+`Tests - Leopardo RH` (sans gate de chemins) et, à la release, `Backend Coverage`.
+
 ## Règles du garde ratio fix/feat
 
 Le workflow `fix-feat-ratio-guard.yml` calcule le ratio `nb_commits_fix / nb_commits_feat`

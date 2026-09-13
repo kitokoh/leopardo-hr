@@ -244,6 +244,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # #7269 — un check requis ne doit pas être vert parce que le gate de
+      # chemins n'a rien dit. `detect-changes` doit rendre un verdict EXPLICITE
+      # (`true`/`false`) : une sortie vide (output perdu, job cassé) faisait
+      # sauter toutes les étapes d'analyse et le check restait vert sans avoir
+      # rien vérifié. Coût : une comparaison de chaîne, aucun runner en plus.
+      - name: Gate verdict (issue #7269)
+        shell: bash
+        env:
+          CHANGED: ${{ needs.detect-changes.outputs.api_changed }}
+        run: |
+          set -euo pipefail
+          if [[ "${CHANGED}" != "true" && "${CHANGED}" != "false" ]]; then
+            echo "::error::Aucun verdict du gate de chemins (api_changed='${CHANGED}') : l'analyse n'a rien vérifié et ce check requis ne peut pas être vert (issue #7269)."
+            exit 1
+          fi
+          if [[ "${CHANGED}" == "false" ]]; then
+            echo "::notice::Aucun chemin api/ modifié — analyse non applicable, verdict du gate explicitement vérifié (issue #7269)."
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Quota Git LFS épuisé (2026-08-29, budget mensuel) : les jobs
@@ -276,6 +295,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # #7269 — un check requis ne doit pas être vert parce que le gate de
+      # chemins n'a rien dit. `detect-changes` doit rendre un verdict EXPLICITE
+      # (`true`/`false`) : une sortie vide (output perdu, job cassé) faisait
+      # sauter toutes les étapes d'analyse et le check restait vert sans avoir
+      # rien vérifié. Coût : une comparaison de chaîne, aucun runner en plus.
+      - name: Gate verdict (issue #7269)
+        shell: bash
+        env:
+          CHANGED: ${{ needs.detect-changes.outputs.api_changed }}
+        run: |
+          set -euo pipefail
+          if [[ "${CHANGED}" != "true" && "${CHANGED}" != "false" ]]; then
+            echo "::error::Aucun verdict du gate de chemins (api_changed='${CHANGED}') : l'analyse n'a rien vérifié et ce check requis ne peut pas être vert (issue #7269)."
+            exit 1
+          fi
+          if [[ "${CHANGED}" == "false" ]]; then
+            echo "::notice::Aucun chemin api/ modifié — analyse non applicable, verdict du gate explicitement vérifié (issue #7269)."
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Quota Git LFS épuisé (2026-08-29, budget mensuel) : les jobs
@@ -514,6 +552,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # #7269 — un check requis ne doit pas être vert parce que le gate de
+      # chemins n'a rien dit. `detect-changes` doit rendre un verdict EXPLICITE
+      # (`true`/`false`) : une sortie vide (output perdu, job cassé) faisait
+      # sauter toutes les étapes d'analyse et le check restait vert sans avoir
+      # rien vérifié. Coût : une comparaison de chaîne, aucun runner en plus.
+      - name: Gate verdict (issue #7269)
+        shell: bash
+        env:
+          CHANGED: ${{ needs.detect-changes.outputs.web_changed }}
+        run: |
+          set -euo pipefail
+          if [[ "${CHANGED}" != "true" && "${CHANGED}" != "false" ]]; then
+            echo "::error::Aucun verdict du gate de chemins (web_changed='${CHANGED}') : l'analyse n'a rien vérifié et ce check requis ne peut pas être vert (issue #7269)."
+            exit 1
+          fi
+          if [[ "${CHANGED}" == "false" ]]; then
+            echo "::notice::Aucun chemin front/web/ modifié — analyse non applicable, verdict du gate explicitement vérifié (issue #7269)."
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # Quota Git LFS épuisé (2026-08-29, budget mensuel) : les jobs
