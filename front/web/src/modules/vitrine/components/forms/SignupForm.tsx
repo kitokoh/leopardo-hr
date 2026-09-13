@@ -280,8 +280,11 @@ export function SignupForm({
       // #7249 — le profil (entreprise/indépendant) reste déclaré à
       // l'inscription ; les outils et le métier ne sont plus demandés dans le
       // tunnel (choisis ensuite depuis « Modules & plan »).
+      // Le créateur du compte EST le fondateur : le rôle n'est plus demandé
+      // dans le tunnel (il reste éditable ensuite depuis l'équipe).
       const payload: SignupFormData = {
         ...data,
+        role: data.role ?? 'founder',
         company_type: profile ?? 'company',
       };
       const response = await submitSignupForm(payload, page);
@@ -613,101 +616,11 @@ export function SignupForm({
                 {...register('company')}
               />
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    {c.labelRole}
-                  </span>
-                  <select
-                    className={selectClassName}
-                    aria-invalid={errors.role ? true : undefined}
-                    aria-describedby={errors.role ? 'signup-role-error' : undefined}
-                    {...register('role')}
-                  >
-                    <option value="">{c.rolePlaceholder}</option>
-                    <option value="founder">{c.roleFounder}</option>
-                    <option value="manager">{c.roleManager}</option>
-                    <option value="hr">{c.roleHr}</option>
-                    <option value="operations">{c.roleOperations}</option>
-                    <option value="other">{c.roleOther}</option>
-                  </select>
-                  {errors.role && (
-                    <p id="signup-role-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.role.message}
-                    </p>
-                  )}
-                </label>
-
-                {/* #7235 — un indépendant ne déclare pas de taille d’équipe :
-                    le champ n’est pas rendu (et non simplement masqué) pour ne
-                    pas laisser un contrôle fantôme dans le formulaire. */}
-                {profile !== 'solo' && (
-                <label className="block">
-                  <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    <Users className="h-4 w-4" />
-                    {c.labelTeamSize}
-                  </span>
-                  <select
-                    className={selectClassName}
-                    aria-invalid={errors.employees ? true : undefined}
-                    aria-describedby={errors.employees ? 'signup-employees-error' : undefined}
-                    {...register('employees')}
-                  >
-                    <option value="">{c.teamPlaceholder}</option>
-                    <option value="1-10">1-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-200">51-200</option>
-                    <option value="201-500">201-500</option>
-                    <option value="500+">500+</option>
-                  </select>
-                  {errors.employees && (
-                    <p id="signup-employees-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.employees.message}
-                    </p>
-                  )}
-                </label>
-                )}
-              </div>
-
-              <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <Globe className="h-4 w-4" />
-                  {c.labelCountry}
-                </span>
-                <select
-                  className={selectClassName}
-                  aria-invalid={errors.country ? true : undefined}
-                  aria-describedby={errors.country ? 'signup-country-error' : undefined}
-                  {...register('country')}
-                >
-                  <option value="">{c.countryPlaceholder}</option>
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.country && (
-                  <p id="signup-country-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                    {errors.country.message}
-                  </p>
-                )}
-              </label>
-
-              <Input
-                label={c.labelPhone}
-                type="tel"
-                placeholder={c.placeholderPhone}
-                icon={<Phone className="h-4 w-4" />}
-                error={errors.phone?.message}
-                {...register('phone')}
-              />
-
-              {role === 'operations' && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-                  {c.operationsNote}
-                </div>
-              )}
+              {/* Le créateur du compte EST le fondateur — on ne lui demande
+                  plus son rôle. La taille d'équipe, le pays (détecté) et le
+                  téléphone (l'e-mail est vérifié) ne sont plus demandés non
+                  plus : tout est éditable plus tard depuis les paramètres.
+                  Objectif : réduire le tunnel au strict nécessaire. */}
 
               <div className="flex items-start gap-3">
                 <input

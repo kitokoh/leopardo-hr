@@ -56,6 +56,11 @@ class SelfServiceTrialController extends Controller
             'last_name' => ['nullable', 'string', 'max:80'],
             'role' => ['nullable', 'string', 'in:founder,manager,hr,operations,other'],
             'employees' => ['nullable', 'string', 'in:1-10,11-50,51-200,201-500,500+'],
+            // Langue d'INTERFACE choisie par l'utilisateur. Elle pilote la
+            // langue de l'e-mail de vérification et devient la langue du tenant
+            // au provisioning. Absente = repli sur la langue par défaut du pays
+            // (comportement historique, jamais de régression dure).
+            'locale' => ['nullable', 'string', 'in:fr,en,ar,tr'],
             // MULTI-PAYS (#1867) : le pays est obligatoire et doit être un
             // pays supporté du registre (plus de fallback silencieux DZ).
             'country' => ['required', 'string', 'size:2', new SupportedCountry],

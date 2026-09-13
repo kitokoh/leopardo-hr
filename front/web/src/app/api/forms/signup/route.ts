@@ -118,6 +118,12 @@ export async function POST(request: NextRequest) {
           company_type: validatedData.company_type,
           modules: validatedData.modules,
           solutions: validatedData.solutions,
+          // La langue de l'e-mail OTP doit être celle CHOISIE par l'utilisateur
+          // (langue de l'interface), pas la langue par défaut de son pays :
+          // un utilisateur turcophone au Maroc recevait un e-mail... en
+          // arabe/français selon le pays détecté. `locale` est collecté par le
+          // formulaire (`getBrowserLocale()`) et validé plus haut.
+          locale: validatedData.locale,
         }),
         signal: AbortSignal.timeout(15000),
       });

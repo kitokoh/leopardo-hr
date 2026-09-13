@@ -194,6 +194,14 @@ class VerifyTrialSignup
 
         $rawRole = $payload['role'] ?? null;
 
+        // Langue du tenant = langue d'interface choisie à l'inscription, sinon
+        // langue par défaut du pays (comportement historique). Sans cela, la
+        // société d'un utilisateur turcophone était créée en arabe/français.
+        $requestedLocale = strtolower(trim((string) ($payload['locale'] ?? '')));
+        $companyLanguage = in_array($requestedLocale, ['fr', 'en', 'ar', 'tr'], true)
+            ? $requestedLocale
+            : strtolower((string) $countryDefaults['language']);
+
         try {
             /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
@@ -205,7 +213,7 @@ class VerifyTrialSignup
                 'email' => $email,
                 'phone' => $payload['phone'] ?? null,
                 'plan_id' => $trialPlan->id,
-                'language' => strtolower($countryDefaults['language']),
+                'language' => $companyLanguage,
                 'currency' => strtoupper($countryDefaults['currency']),
                 'timezone' => $countryDefaults['timezone'],
                 'manager_first_name' => $firstName,
