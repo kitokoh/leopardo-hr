@@ -440,7 +440,7 @@ class VerifyTrialSignup
                 return $requestedPlan;
             }
 
-            Log::warning('SelfServiceTrial: offre inconnue demandée à l’inscription — repli sur l’offre par défaut', [
+            Log::warning('SelfServiceTrial: unknown plan requested at signup - falling back to the default plan', [
                 'plan' => $planCode,
             ]);
         }
