@@ -96,7 +96,9 @@ export async function POST(request: NextRequest) {
     let signupError = null;
     let signupValidationDetails: unknown = null;
 
-    try {
+    // #7251 — un seul point d'appel, paramétré par le workflow, pour pouvoir
+    // relancer en parcours guidé si la vérification par e-mail est impossible.
+    const postTrialSignup = async (workflow: 'self_service' | 'guided_trial') => {
       const trialResponse = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
         method: 'POST',
         headers: {
@@ -114,7 +116,7 @@ export async function POST(request: NextRequest) {
           phone,
           plan: validatedData.plan,
           source: validatedData.source || 'signup_form',
-          requestedWorkflow: 'self_service',
+          requestedWorkflow: workflow,
           company_type: validatedData.company_type,
           modules: validatedData.modules,
           solutions: validatedData.solutions,
@@ -124,17 +126,48 @@ export async function POST(request: NextRequest) {
 
       const trialData = await trialResponse.json();
 
-      if (trialResponse.ok && trialData.success) {
-        signupResult = trialData.data;
+      return { ok: Boolean(trialResponse.ok && trialData.success), trialData };
+    };
+
+    try {
+      let attempt = await postTrialSignup('self_service');
+
+      // #7251 — le parcours `self_service` exige l'envoi d'un code par e-mail.
+      // Quand le transport e-mail est indisponible (mailer non configuré,
+      // domaine sandbox, panne fournisseur), le prospect perdait son essai :
+      // l'API répond `TRIAL_OTP_SEND_FAILED` et la vitrine retombait sur une
+      // promesse de rappel « sous 24 h » alors qu'aucun espace n'était créé.
+      // On bascule alors sur le parcours **guidé**, qui provisionne un espace
+      // sans dépendre du mailer et renvoie un `provisioning_token` (chemin
+      // supporté de bout en bout : suivi de statut + définition du mot de
+      // passe). La vérification par e-mail reste la voie préférée — elle n'est
+      // abandonnée qu'en cas d'échec d'envoi réel.
+      if (!attempt.ok && attempt.trialData?.error === 'TRIAL_OTP_SEND_FAILED') {
+        console.warn(
+          JSON.stringify({
+            event: 'marketing.signup.email_verification_unavailable',
+            service: 'leopardo-web',
+            fallback: 'guided_trial',
+          })
+        );
+
+        const fallback = await postTrialSignup('guided_trial');
+        if (fallback.ok) {
+          attempt = fallback;
+        }
+      }
+
+      if (attempt.ok) {
+        signupResult = attempt.trialData.data;
       } else {
         // Anti-énumération (#3945) : /trial/signup renvoie désormais une
         // réponse uniforme — la détection « email déjà enregistré » se fait à
         // l'étape verify (OTP), qui remonte EMAIL_ALREADY_REGISTERED (409).
-        signupError = trialData.error || 'SIGNUP_FAILED';
+        signupError = attempt.trialData.error || 'SIGNUP_FAILED';
         // Issue #6680 : conserver les détails de validation (ex. country
         // requis) pour une réponse d'erreur exploitable côté client.
-        if (trialData.error === 'VALIDATION_ERROR' && trialData.errors) {
-          signupValidationDetails = trialData.errors;
+        if (attempt.trialData.error === 'VALIDATION_ERROR' && attempt.trialData.errors) {
+          signupValidationDetails = attempt.trialData.errors;
         }
       }
     } catch (error) {
