@@ -28,6 +28,16 @@
 > et `front/web/src/modules/onboarding`).
 
 
+> **MAJ 2026-09-13 — #7300, alignement des progressions d'onboarding.** Le
+> lot « une seule source de vérité pour la progression d'onboarding » modifie la
+> **fiche Entreprise** du back-office (**vraie** évolution d'UI, pas une simple
+> propagation i18n) : la carte Onboarding affiche désormais la progression
+> canonique (`onboarding_steps`) — la même que le client —, « — » quand la
+> checklist n'est pas amorcée, et l'« Adoption terrain » observée en second
+> libellé. Scénario détaillé : `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`,
+> section 11. Non-régression API :
+> `api/tests/Feature/Onboarding/OnboardingProgressAlignmentTest.php`.
+
 # REGISTRE DES SCENARIOS DE TESTS
 
 > ⚠️ **MAJ 2026-08-17** : les références à `front/mobile/` ci-dessous sont obsolètes

@@ -101,6 +101,32 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - Les KPI (entreprises actives, tenants, MRR, alertes, demandes) reflètent la réponse de `/api/v1/platform/metrics/overview` ; un `0` renvoyé par l'API est affiché comme `0` et ne doit jamais retomber sur une valeur de `summary` (`/platform/companies/health`)
 - Non-régression : remplacer la donnée par `0` ne doit pas ressusciter un compteur périmé (garde sur la distinction `null`/`undefined` vs `0`)
 
+### 11. Fiche Entreprise — Onboarding vs Adoption (#7300)
+
+Le back-office affichait « ONBOARDING 40 % — RISK HIGH » pour un client dont
+l'assistant affichait « Configuration terminée ». Les trois surfaces de
+progression sont désormais alignées sur une source de vérité unique (table
+`onboarding_steps`, via `/onboarding-setup/checklist`) :
+
+- La carte **Onboarding** de `/companies/:id` affiche la progression canonique —
+  **la même valeur que celle vue par le client**, pas une échelle parallèle.
+- La valeur est **pilotée par `adoption.onboarding.progress_percent`** ; le
+  champ `source` vaut `onboarding_steps`.
+- Une société dont la checklist n'a jamais été amorcée affiche **« — »**
+  (`initialized: false`), **jamais 0 %** — un 0 % se lirait « mauvais élève »
+  alors que rien n'a été demandé au client.
+- La mention **« Adoption terrain »** (`adoption.onboarding.observed.progress_percent`)
+  reste affichée sous la carte : « onboarding » (ce que le client a configuré)
+  et « adoption » (ce que le serveur observe) sont deux notions distinctes et ne
+  doivent jamais être confondues à l'écran.
+- Non-régression : pour un tenant dont toutes les étapes setup sont complétées,
+  la fiche Entreprise et l'assistant client affichent le **même pourcentage**.
+  Côté API, `OnboardingProgressAlignmentTest` verrouille cette égalité (setup
+  complet **et** incomplet) — le test échoue si une surface réintroduit une
+  échelle parallèle.
+- Le risque client ne doit plus être déclenché par un onboarding « inachevé »
+  calculé autrement : le malus de score se juge sur `go_live_ready`.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright

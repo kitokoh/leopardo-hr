@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use Illuminate\Support\Carbon;
@@ -247,7 +247,7 @@ class PlatformCompanyHealthApiTest extends TestCase
             'email' => fake()->unique()->safeEmail(),
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
         return $superAdmin;
     }
 }
-
