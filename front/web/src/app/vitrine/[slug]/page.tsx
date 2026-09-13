@@ -36,7 +36,7 @@ export async function generateMetadata({ params, searchParams }: VitrinePageProp
   const vitrine = await getPublicVitrine(slug, { lang: locale, token });
 
   if (!vitrine) {
-    return { title: t(locale, 'showcase.notFoundTitle', 'Page not found') };
+    return { title: t(locale, 'showcase.notFoundTitle') };
   }
 
   return {
