@@ -45,7 +45,6 @@ import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
 import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
-import { getPricingPlans } from '@/modules/vitrine/data/pricing';
 import { t } from '@/lib/i18n/locale-catalog';
 
 interface SignupFormProps {
@@ -55,10 +54,9 @@ interface SignupFormProps {
   className?: string;
 }
 
-// #7238 — le tunnel s'ouvre sur le choix de l'OFFRE (un compte est créé POUR
-// une offre donnée), puis le PROFIL (entreprise ou indépendant), les OUTILS +
-// le MÉTIER, et enfin les coordonnées.
-type Step = 'plan' | 'profile' | 'setup' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+// #7235 — le tunnel s'ouvre désormais sur le choix du PROFIL (entreprise ou
+// indépendant) puis sur les OUTILS + le MÉTIER, avant les coordonnées.
+type Step = 'profile' | 'setup' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
 type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
@@ -120,8 +118,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepPlanLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel',
-  'planTitle', 'planSubtitle', 'planContinue', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -170,23 +167,11 @@ export function SignupForm({
   }, []);
 
   // Multi-step state
-  const [currentStep, setCurrentStep] = useState<Step>('plan');
+  const [currentStep, setCurrentStep] = useState<Step>('profile');
   // #7235 — profil, outils horizontaux et métier vertical choisis.
   const [profile, setProfile] = useState<SignupProfile | null>(null);
   const [selectedTools, setSelectedTools] = useState<string[]>(DEFAULT_TOOLS_COMPANY);
   const [vertical, setVertical] = useState<string>('');
-
-  // #7238 — un compte est créé POUR une offre : le choix de l'offre est la
-  // première étape, obligatoire. `?plan=<code>` (CTA de la page tarifs)
-  // pré-sélectionne l'offre sans jamais l'imposer si l'utilisateur en change.
-  const plans = getPricingPlans(locale);
-  const [planCode, setPlanCode] = useState<string>(() => {
-    if (typeof window === 'undefined') {
-      return '';
-    }
-    const fromUrl = new URLSearchParams(window.location.search).get('plan') ?? '';
-    return plans.some((plan) => plan.planCode === fromUrl) ? fromUrl : '';
-  });
 
   const chooseProfile = (next: SignupProfile) => {
     setProfile(next);
@@ -363,10 +348,6 @@ export function SignupForm({
         company_type: profile ?? 'company',
         modules: effectiveModules,
         solutions: vertical ? [vertical] : [],
-        // #7238 — l'offre choisie à l'étape 1 pilote la création du compte.
-        // (omise si vide : l'API valide les codes d'offres et refuserait '' ; le
-        // tunnel impose de toute façon le choix avant d'arriver ici.)
-        ...(planCode ? { plan: planCode as SignupFormData['plan'] } : {}),
       };
       const response = await submitSignupForm(payload, page);
 
@@ -505,19 +486,18 @@ export function SignupForm({
   // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
-      {/* #7238 — parcours en 4 temps : offre → profil → outils & métier → coordonnées. */}
-      {(currentStep === 'plan' || currentStep === 'profile' || currentStep === 'setup' || currentStep === 'form') && (
+      {/* #7235 — parcours en 3 temps : profil → outils & métier → coordonnées. */}
+      {(currentStep === 'profile' || currentStep === 'setup' || currentStep === 'form') && (
         <ol className="mb-6 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
           {(
             [
-              ['plan', c.stepPlanLabel],
               ['profile', c.stepProfileLabel],
               ['setup', c.stepToolsLabel],
               ['form', c.stepIdentityLabel],
             ] as const
           ).map(([key, label], index) => {
-            const order = { plan: 0, profile: 1, setup: 2, form: 3 } as const;
-            const current = order[currentStep as 'plan' | 'profile' | 'setup' | 'form'];
+            const order = { profile: 0, setup: 1, form: 2 } as const;
+            const current = order[currentStep as 'profile' | 'setup' | 'form'];
             const done = index < current;
             const active = index === current;
             return (
@@ -536,7 +516,7 @@ export function SignupForm({
                 <span className={active ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}>
                   {label}
                 </span>
-                {index < 3 && (
+                {index < 2 && (
                   <span className={`h-0.5 flex-1 rounded ${done ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-slate-800'}`} />
                 )}
               </li>
@@ -546,62 +526,6 @@ export function SignupForm({
       )}
 
       <AnimatePresence mode="wait">
-        {/* ═══════════════════════════════════════ */}
-        {/* STEP 0: Offre (obligatoire, #7238)      */}
-        {/* ═══════════════════════════════════════ */}
-        {currentStep === 'plan' && (
-          <motion.div
-            key="step-plan"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-              {c.stepPlanLabel}
-            </div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">{c.planTitle}</h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{c.planSubtitle}</p>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {plans.map((plan) => {
-                const active = plan.planCode === planCode;
-                return (
-                  <button
-                    key={plan.planCode}
-                    type="button"
-                    onClick={() => setPlanCode(plan.planCode)}
-                    aria-pressed={active}
-                    className={`rounded-2xl border p-4 text-left transition ${
-                      active
-                        ? 'border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/30 dark:border-emerald-500 dark:bg-emerald-950/30'
-                        : 'border-slate-200 bg-white hover:border-emerald-300 dark:border-slate-700 dark:bg-slate-800/60'
-                    }`}
-                  >
-                    <span className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">{plan.name}</span>
-                      {active ? <Check className="h-4 w-4 text-emerald-600" /> : null}
-                    </span>
-                    <span className="mt-1 block text-lg font-bold text-emerald-600 dark:text-emerald-400">{plan.price}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{plan.period}</span>
-                    <span className="mt-2 block text-xs font-semibold text-slate-700 dark:text-slate-200">{plan.employeeLimit}</span>
-                    <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{plan.description}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              disabled={!planCode}
-              onClick={() => setCurrentStep('profile')}
-              className="mt-6 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {c.planContinue}
-            </button>
-          </motion.div>
-        )}
-
         {/* ═══════════════════════════════════════ */}
         {/* STEP 0: Profil (entreprise / indép.)    */}
         {/* ═══════════════════════════════════════ */}

@@ -15,7 +15,7 @@ test.describe('Forms and Submissions E2E Tests', () => {
     // #2823/#2648 : essai guidé sans mot de passe (v4.16.250) — champs requis :
     // email (+ entreprise/rôle/taille), pas de password.
     test('should display guided-trial signup form with required fields', async ({ page }) => {
-      await page.goto('/signup');
+      await page.goto('/signup?plan=pilot');
 
       const emailInput = page.locator('input[type="email"]').first();
       const submitButton = page.locator('button[type="submit"]').first();
@@ -26,7 +26,7 @@ test.describe('Forms and Submissions E2E Tests', () => {
     });
 
     test('should validate email format', async ({ page }) => {
-      await page.goto('/signup');
+      await page.goto('/signup?plan=pilot');
 
       const emailInput = page.locator('input[type="email"]').first();
       await emailInput.fill('invalid-email');
@@ -39,7 +39,7 @@ test.describe('Forms and Submissions E2E Tests', () => {
     });
 
     test('should accept valid signup data without password', async ({ page }) => {
-      await page.goto('/signup');
+      await page.goto('/signup?plan=pilot');
 
       const emailInput = page.locator('input[type="email"]').first();
       await emailInput.fill('e2e-forms@example.com');
@@ -54,7 +54,7 @@ test.describe('Forms and Submissions E2E Tests', () => {
     });
 
     test('should show loading state during submission', async ({ page }) => {
-      await page.goto('/signup');
+      await page.goto('/signup?plan=pilot');
 
       const emailInput = page.locator('input[type="email"]').first();
       await emailInput.fill('e2e-loading@example.com');
