@@ -1721,7 +1721,7 @@
     "planContinue": "Continue with this plan",
     "planSelected": "Selected plan",
     "planChange": "Change",
-    "countryDetectionFailed": "We could not detect your country automatically. Please select it below."
+    "countryDetectionFailed": "Select your country."
   },
   "attendanceDayDetail": "Daily detail",
   "support_tickets": {
@@ -6171,10 +6171,10 @@
   "signupPage": {
     "badge": "Sign up in 2 minutes",
     "headline": "Try Leopardo RH without a heavy signup flow",
-    "subheadline": "Build your own workspace: profile, tools and industry, then go straight into the app. No credit card required.",
+    "subheadline": "Create your workspace yourself: your email, your company, a verification code — and you are in the app. No credit card.",
     "cta": "Create my trial workspace",
     "sideBadge": "Workspace available immediately",
-    "sideTitle": "What you get right away",
+    "sideTitle": "Your workspace in 2 minutes",
     "proof1Title": "A tailored interface",
     "proof1Desc": "Company or independent: the menu adapts to your activity.",
     "proof2Title": "Your tools, your industry",
@@ -6182,8 +6182,8 @@
     "proof3Title": "14 days, no card",
     "proof3Desc": "The app shows the days left and the upgrade to Pro.",
     "stepsTitle": "Signing up in 3 steps",
-    "step1": "You pick your profile: company or independent.",
-    "step2": "You choose your tools and your industry.",
-    "step3": "You set your password and sign in."
+    "step1": "You enter your email and your company name.",
+    "step2": "You receive a 6-digit code by email.",
+    "step3": "You go straight into your workspace — no password to create."
   }
 }

@@ -1,7 +1,7 @@
 ﻿'use client';
 import { getPricingFaq } from '@/modules/vitrine/data/pricing-faq';
 
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -358,6 +358,21 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 /* ─────────────────────────────────────────────
    PAGE
 ───────────────────────────────────────────── */
+// Retour fondateur 2026-09-13 : arriver ici en cliquant « Créer un compte »
+// doit montrer LES OFFRES, pas un récit marketing de 60 vh qui les repousse
+// sous la ligne de flottaison (« il me met en dessous de ces textes »).
+// `#plans` (posé par la redirection /signup → /pricing#plans) active donc une
+// vue resserrée : titre court + cartes d'offres, sans hero, sans tableau
+// comparatif, sans FAQ ni bandeau final.
+//
+// Le marqueur est un FRAGMENT et non une query : un prefetch Next de `/signup`
+// suit la redirection du middleware, et une cible porteuse d'une query laissait
+// ce prefetch en suspens (voir le commentaire du middleware) — `networkidle`
+// n'était alors jamais atteint.
+//
+// Le paramètre est lu côté client (`window.location`) et non via
+// `useSearchParams`, qui imposerait une frontière <Suspense> sur cette page
+// prérendue — même approche que `SignupForm`.
 export default function PricingPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const [isAnnual, setIsAnnual] = useState(true);
@@ -375,6 +390,12 @@ export default function PricingPage() {
   const toggleBillingLabel = vitrine.copy.pricing.toggleBilling;
   const plans = getPricingPlans(locale);
   useScrollReveal();
+
+  // Vue resserrée — voir le commentaire au-dessus du composant.
+  const [signupFocus, setSignupFocus] = useState(false);
+  useEffect(() => {
+    setSignupFocus(window.location.hash === '#plans');
+  }, []);
 
   const isEurSelected = currencyOption.currency === 'EUR';
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
@@ -404,7 +425,8 @@ export default function PricingPage() {
     >
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
-      {/* ── HERO ───────────────────────────────── */}
+      {/* ── HERO (masqué quand on arrive depuis « Créer un compte ») ── */}
+      {!signupFocus && (
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24 pb-20">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.15),transparent)]" />
@@ -485,28 +507,41 @@ export default function PricingPage() {
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* ── PRICING CARDS ──────────────────────── */}
-      <section className="relative py-24 overflow-hidden">
+      <section className={signupFocus ? 'relative py-10 overflow-hidden' : 'relative py-24 overflow-hidden'}>
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section header */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-              {copy.plans.badge}
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
-              {copy.plans.title}
-            </h2>
+          {/* Section header. Mode inscription : entete court + cartes ; sinon
+              recit tarifaire complet (libelles du tunnel reutilises, aucune
+              nouvelle chaine). */}
+          <div className={signupFocus ? 'text-center mb-6' : 'text-center mb-12'}>
+            {signupFocus ? (
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">
+                {t(locale, 'signup.planTitle')}
+              </h2>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+                {copy.plans.badge}
+              </div>
+            )}
+            {!signupFocus && (
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
+                {copy.plans.title}
+              </h2>
+            )}
             <p className="text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-              {copy.plans.subtitle}
+              {signupFocus ? t(locale, 'signup.planSubtitle') : copy.plans.subtitle}
             </p>
           </div>
 
-          {/* PA2-MKT-003: currency/country selector for approximate local pricing */}
-          <div className="flex items-center justify-center gap-2 mb-6">
+          {/* PA2-MKT-003: selecteur de devise. Masque en mode inscription : sur
+              ce chemin le but est de VOIR les offres tout de suite. Reste
+              disponible sur la page tarifs complete (prix contractuel en EUR). */}
+          <div className={signupFocus ? 'hidden' : 'flex items-center justify-center gap-2 mb-6'}>
             <label className="flex items-center gap-2 rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-900/80 px-3 py-2 text-sm text-slate-600 dark:text-slate-300">
               <span className="font-medium">{copy.currency.label}</span>
               <select
@@ -725,6 +760,8 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {!signupFocus && (
+      <>
       {/* ── COMPARISON TABLE ────────────────────── */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-900/50 dark:to-slate-950" />
@@ -999,6 +1036,8 @@ export default function PricingPage() {
           </motion.div>
         </div>
       </section>
+      </>
+      )}
 
       <Footer />
     </div>
