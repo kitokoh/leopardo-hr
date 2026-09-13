@@ -115,7 +115,7 @@ ci-dessous.
 | `admin-pages-deploy-guard.yml` | PR/push → admin | Garde déploiement Cloudflare Pages admin |
 | `bc-batch-branch-protocol.yml` | PR bc/* | Vérifie le protocole de branche par lot BC |
 | `branch-hygiene.yml` | PR/push | Hygiène des branches (noms, markers) |
-| `branch-protection-guard.yml` | PR → main | Vérifie la cohérence de la protection de branche |
+| `branch-protection-guard.yml` | Schedule (quotidien) + PR → main | Vérifie la cohérence de la protection de branche (fail-loud si `BRANCH_PROTECTION_TOKEN` absent — #7270) |
 | `ci-observability.yml` | Schedule + manuel | Observabilité des runs CI |
 | `cleanup-orphan-runs.yml` | Schedule + PR close | Annule les runs orphelins (cf. `dev-hub/tools/cancel-orphan-runs.sh`) |
 | `country-catalog-check.yml` | PR → api | Garde catalogue pays (double du check dans `architecture-check.yml`) |
