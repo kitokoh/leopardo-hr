@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
+use App\Modules\Onboarding\Application\Actions\SyncOnboardingCompletion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -179,6 +180,11 @@ class OnboardingStepController extends Controller
             'completed_by' => $user->id,
         ]);
 
+        // #7262 — l'etat « onboarding termine » n'existait que dans le
+        // localStorage du navigateur : le serveur en est desormais la source de
+        // verite (voir SyncOnboardingCompletion).
+        app(SyncOnboardingCompletion::class)->execute($companyId);
+
         // #5151 — instrumentation légère : horodatage par étape du parcours
         // pilote (log structuré, pas d'outil externe). `elapsed_minutes` =
         // temps écoulé depuis la création de la société → permet de mesurer
@@ -230,6 +236,7 @@ class OnboardingStepController extends Controller
         }
 
         $step->update(['status' => 'skipped']);
+        app(SyncOnboardingCompletion::class)->execute($companyId);
 
         return (new OnboardingStepResource($step->fresh()))->response();
     }
