@@ -6,7 +6,7 @@ namespace App\Modules\Onboarding\Application\Actions;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\OnboardingStep;
-use Illuminate\Support\Facades\DB;
+use App\Modules\Onboarding\Infrastructure\Services\CompanyOnboardingCompletionWriter;
 
 /**
  * Use Case: persiste la fin d'onboarding côté serveur (#7262).
@@ -34,6 +34,10 @@ use Illuminate\Support\Facades\DB;
  */
 final class SyncOnboardingCompletion
 {
+    public function __construct(
+        private readonly CompanyOnboardingCompletionWriter $writer,
+    ) {}
+
     public function execute(string $companyId): void
     {
         $steps = OnboardingStep::where('company_id', $companyId)->get();
@@ -65,11 +69,6 @@ final class SyncOnboardingCompletion
         $metadata['onboarding_completed'] = true;
         $metadata['onboarding_completed_at'] = now()->toIso8601String();
 
-        DB::table(DB::getDriverName() === 'pgsql' ? 'public.companies' : 'companies')
-            ->where('id', $companyId)
-            ->update([
-                'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
-                'updated_at' => now(),
-            ]);
+        $this->writer->persist($companyId, $metadata);
     }
 }
