@@ -36,19 +36,14 @@ class RequestTrialSignup
         $country = strtoupper(trim((string) ($validated['country'] ?? '')));
         $countryDefaults = CountryDefaults::find($country) ?? throw new \InvalidArgumentException('Pays de signup invalide.');
 
-        // Issue #7249 (suite) : la langue de l'e-mail OTP doit être celle
-        // CHOISIE par l'utilisateur, pas la langue par défaut de son pays.
-        // Un utilisateur turcophone inscrit depuis le Maroc recevait un e-mail
-        // arabe/français. Repli sur la langue du pays uniquement si la locale
-        // n'est pas transmise (clients historiques).
-        $requestedLocale = strtolower(trim((string) ($validated['locale'] ?? '')));
-        $emailLocale = in_array($requestedLocale, ['fr', 'en', 'ar', 'tr'], true)
-            ? $requestedLocale
-            : strtolower((string) $countryDefaults['language']);
-
         try {
             Mail::to($email)->send(
-                new TrialVerificationMail($managerName, $otp, $emailLocale)
+                // Langue de l'e-mail = choix explicite de l'utilisateur (validé
+                // en amont par `in:fr,en,ar,tr`), repli sur la langue par défaut
+                // du pays pour les clients historiques. Issue #7249 : sans cela
+                // un utilisateur turcophone inscrit depuis le Maroc recevait un
+                // e-mail dans la langue de son pays.
+                new TrialVerificationMail($managerName, $otp, (string) ($validated['locale'] ?? $countryDefaults['language']))
             );
         } catch (\Throwable $e) {
             // Issue #5162 : sans visibilité sur le mailer résolu, un échec

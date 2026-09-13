@@ -378,7 +378,7 @@ class SelfServiceTrialController extends Controller
         // verify) : toute exception inattendue du provisioning est convertie
         // en réponse structurée réessayable.
         try {
-            /** @var array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int} $result */
+            /** @var array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string, temp_password: string}|array{success: false, error: string, message: string, status: int} $result */
             $result = $this->verifyTrialSignup->execute($email, $validated['code']);
         } catch (\Throwable $e) {
             Log::channel('structured')->error('trial.verify.unexpected', [
@@ -427,19 +427,16 @@ class SelfServiceTrialController extends Controller
         // Toute erreur est absorbée : le compte EST provisionné, on dégrade
         // vers le parcours manuel au lieu de casser la vérification.
         $autoLoginToken = null;
-        $tempPassword = $result['temp_password'] ?? null;
 
-        if (is_string($tempPassword) && $tempPassword !== '') {
-            try {
-                /** @var array{token: string} $authResult */
-                $authResult = $this->authService->login($email, $tempPassword, 'trial-self-service');
-                $autoLoginToken = $authResult['token'];
-            } catch (\Throwable $e) {
-                Log::warning('trial.verify.autologin_failed', [
-                    'email' => $email,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+        try {
+            /** @var array{token: string} $authResult */
+            $authResult = $this->authService->login($email, $result['temp_password'], 'trial-self-service');
+            $autoLoginToken = $authResult['token'];
+        } catch (\Throwable $e) {
+            Log::warning('trial.verify.autologin_failed', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         return new JsonResponse([
