@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider'
 import { SITE_URL } from '@/lib/site-url'
+// #7307 — chiffres canoniques de la vitrine : une seule source pour toutes les
+// pages et toutes les locales (le nombre de pays de paie était annoncé 21 ici
+// et 6 sur /testimonials).
+import {
+  FREE_TRIAL_DAYS,
+  MOBILE_APPS_COUNT,
+  PAYROLL_COUNTRIES_COUNT,
+  SUPPORTED_LANGUAGES_COUNT,
+} from '../data/vitrine-numbers'
 import {
   type AppLocale,
   applyDocumentLocale,
@@ -202,10 +211,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Creer un compte',
       secondaryCta: 'Voir la demo',
       stats: [
-        { value: 21, suffix: '', label: 'Pays couverts (paie)' },
-        { value: 4, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
-        { value: 14, suffix: 'j', label: 'Essai gratuit' },
-        { value: 3, suffix: '', label: 'Apps mobiles' },
+        { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Pays couverts (paie)' },
+        { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Langues (FR/EN/AR/TR)' },
+        { value: FREE_TRIAL_DAYS, suffix: 'j', label: 'Essai gratuit' },
+        { value: MOBILE_APPS_COUNT, suffix: '', label: 'Apps mobiles' },
       ],
     },
     heroQuickTrial: {
@@ -366,10 +375,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'Create an account',
       secondaryCta: 'Watch demo',
       stats: [
-        { value: 21, suffix: '', label: 'Payroll countries' },
-        { value: 4, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
-        { value: 14, suffix: 'd', label: 'Free trial' },
-        { value: 3, suffix: '', label: 'Mobile apps' },
+        { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Payroll countries' },
+        { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Languages (FR/EN/AR/TR)' },
+        { value: FREE_TRIAL_DAYS, suffix: 'd', label: 'Free trial' },
+        { value: MOBILE_APPS_COUNT, suffix: '', label: 'Mobile apps' },
       ],
     },
     heroQuickTrial: {
@@ -530,10 +539,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: '14 gun ucretsiz deneyin',
       secondaryCta: 'Demoyu izle',
       stats: [
-        { value: 21, suffix: '', label: 'Bordro ulkesi' },
-        { value: 4, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
-        { value: 14, suffix: 'g', label: 'Ucretsiz deneme' },
-        { value: 3, suffix: '', label: 'Mobil uygulama' },
+        { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'Bordro ulkesi' },
+        { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'Dil (FR/EN/AR/TR)' },
+        { value: FREE_TRIAL_DAYS, suffix: 'g', label: 'Ucretsiz deneme' },
+        { value: MOBILE_APPS_COUNT, suffix: '', label: 'Mobil uygulama' },
       ],
     },
     heroQuickTrial: {
@@ -694,10 +703,10 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       primaryCta: 'ابدأ تجربة 14 يوما',
       secondaryCta: 'شاهد العرض',
       stats: [
-        { value: 21, suffix: '', label: 'دول الرواتب' },
-        { value: 4, suffix: '', label: 'لغات (FR/EN/AR/TR)' },
-        { value: 14, suffix: 'يومًا', label: 'تجربة مجانية' },
-        { value: 3, suffix: '', label: 'تطبيقات جوال' },
+        { value: PAYROLL_COUNTRIES_COUNT, suffix: '', label: 'دول الرواتب' },
+        { value: SUPPORTED_LANGUAGES_COUNT, suffix: '', label: 'لغات (FR/EN/AR/TR)' },
+        { value: FREE_TRIAL_DAYS, suffix: 'يومًا', label: 'تجربة مجانية' },
+        { value: MOBILE_APPS_COUNT, suffix: '', label: 'تطبيقات جوال' },
       ],
     },
     heroQuickTrial: {

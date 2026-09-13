@@ -80,7 +80,13 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
   },
 }));
 
+// On ne remplace QUE la fonction reseau : le mock precedent ecrasait tout le
+// module, donc `SUPPORTED_COUNTRIES_FALLBACK` devenait `undefined` pour ses
+// consommateurs (#7307 — `vitrine-numbers` derive le nombre de pays de paie de
+// ce registre, ce qui cassait la suite a l'import). Un mock ne doit pas eraser
+// les exports qu'il ne teste pas.
 jest.mock('@/modules/vitrine/data/supported-countries', () => ({
+  ...jest.requireActual('@/modules/vitrine/data/supported-countries'),
   fetchSupportedCountries: jest.fn().mockResolvedValue([
     { code: 'DZ', label: 'Algérie' },
     { code: 'MA', label: 'Maroc' },
