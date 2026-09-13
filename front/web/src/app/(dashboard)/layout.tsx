@@ -1,13 +1,13 @@
 ﻿'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bell, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, type ClientModuleAccess } from '@/lib/client-features';
+import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess } from '@/lib/client-features';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -31,6 +31,13 @@ import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWiza
  * littéral s'il s'agit d'une constante technique).
  */
 const MD_BREAKPOINT_MEDIA_QUERY = `(min-width: ${768}px)`;
+
+/**
+ * #7245 — Intervalle minimal entre deux rechargements silencieux de la session
+ * (`/auth/me`). Évite de marteler l'API quand l'utilisateur alterne souvent
+ * entre onglets, tout en rattrapant une activation faite côté plateforme.
+ */
+const SESSION_REFRESH_MIN_INTERVAL_MS = 60_000;
 
 export default function DashboardLayout({
   children,
@@ -198,6 +205,73 @@ export default function DashboardLayout({
       setShowWizard(true);
     }
   }, [user]);
+
+  // ── Rafraîchissement silencieux de la session (#7245) ────────────────────
+  // Les features du tenant et les capacités du manager sont figées dans
+  // `auth_user` au moment du login : quand la plateforme activait ensuite un
+  // module (ou une verticale métier), le client déjà connecté voyait son
+  // ancien menu — « j'ai activé le module, rien ne change » — jusqu'à une
+  // reconnexion. On recharge donc `/auth/me` au montage et au retour sur
+  // l'onglet, et on n'applique que la surface d'activation : les mises à jour
+  // optimistes de l'assistant d'onboarding (metadata, outils déclarés) ne sont
+  // jamais écrasées.
+  const userRef = useRef<StoredAuthUser | null>(null);
+  const lastSessionRefreshRef = useRef(0);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const refreshSession = async () => {
+      if (Date.now() - lastSessionRefreshRef.current < SESSION_REFRESH_MIN_INTERVAL_MS) {
+        return;
+      }
+      lastSessionRefreshRef.current = Date.now();
+
+      try {
+        const response = await apiFetch('/auth/me');
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = await response.json() as { data?: StoredAuthUser };
+        const current = userRef.current;
+        if (cancelled || !payload.data || !current) {
+          return;
+        }
+
+        const refreshed = mergeActivationSurface(current, payload.data);
+        if (sessionModuleSignature(current) === sessionModuleSignature(refreshed)) {
+          return;
+        }
+
+        storeAuthSession(null, refreshed);
+        setUserOverride(refreshed);
+      } catch {
+        // Silencieux : une API injoignable ne doit pas casser l'interface.
+      }
+    };
+
+    void refreshSession();
+
+    const onFocus = () => {
+      void refreshSession();
+    };
+
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [mounted]);
 
   const handleLanguageChange = async (value: string) => {
     const nextLocale = normalizeLocale(value);
