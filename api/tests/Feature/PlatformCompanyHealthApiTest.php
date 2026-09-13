@@ -61,15 +61,12 @@ class PlatformCompanyHealthApiTest extends TestCase
         $employeeA = Employee::factory()->create(['company_id' => $company->id, 'salary_base' => 173330]);
         $employeeB = Employee::factory()->create(['company_id' => $company->id, 'salary_base' => 120000]);
 
-        app()->instance('current_company', $company);
         // #7300 — « onboarding » côté back-office = progression CANONIQUE
         // (checklist setup). Le tenant de ce test est un client sain : ses
         // étapes setup doivent donc être réellement complétées, pas seulement
         // déduites d'une échelle parallèle.
-        app(SeedDefaultSteps::class)->execute($company->id);
-        OnboardingStep::query()
-            ->where('company_id', $company->id)
-            ->update(['status' => 'completed']);
+        app()->instance('current_company', $company);
+        $this->seedOnboardingSteps();
         AttendanceLog::factory()->create([
             'company_id' => $company->id,
             'employee_id' => $employeeA->id,
@@ -249,5 +246,25 @@ class PlatformCompanyHealthApiTest extends TestCase
         $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         return $superAdmin;
+    }
+
+    /**
+     * #7300 — amorce ET complète la checklist d'onboarding (source de vérité)
+     * pour le tenant courant.
+     *
+     * On passe par `currentCompany()` (retour typé `Company`) plutôt que par la
+     * variable de test : `Company::factory()->create()` est typé `Model` pour
+     * larastan et le baseline PHPStan strict compte les accès `Model::$id` par
+     * fichier — un accès non typé de plus ferait échouer le check requis
+     * `PHPStan — Strict` (`ignore.count`). Le contexte tenant est posé par
+     * l'appelant.
+     */
+    private function seedOnboardingSteps(): void
+    {
+        $company = currentCompany();
+        app(SeedDefaultSteps::class)->execute($company->id);
+        OnboardingStep::query()
+            ->where('company_id', $company->id)
+            ->update(['status' => 'completed']);
     }
 }

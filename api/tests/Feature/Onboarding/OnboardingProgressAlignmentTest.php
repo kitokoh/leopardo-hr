@@ -38,7 +38,9 @@ class OnboardingProgressAlignmentTest extends TestCase
      */
     private function companyWithSteps(string $status): array
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         app()->instance('current_company', $company);

@@ -39,11 +39,11 @@ class OnboardingChecklistTest extends TestCase
         ]);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
-        app()->instance('current_company', $company);
         // #7300 — la progression exposée en tête de réponse est désormais la
         // progression CANONIQUE (checklist setup). On amorce les étapes pour
         // que le test porte sur un tenant réellement configuré.
-        app(SeedDefaultSteps::class)->execute($company->id);
+        app()->instance('current_company', $company);
+        $this->seedOnboardingSteps();
         Employee::factory()->create([
             'company_id' => $company->id,
             'biometric_fingerprint_enabled' => true,
@@ -85,7 +85,7 @@ class OnboardingChecklistTest extends TestCase
         ]);
 
         app()->instance('current_company', $company);
-        app(SeedDefaultSteps::class)->execute($company->id);
+        $this->seedOnboardingSteps();
         app()->forgetInstance('current_company');
 
         Sanctum::actingAs($employee);
@@ -119,5 +119,20 @@ class OnboardingChecklistTest extends TestCase
         $response->assertJsonPath('data.observed.total_steps', 8);
         $this->assertCount(8, $response->json('data.steps'));
         $this->assertIsInt($response->json('data.completed_steps'));
+    }
+
+    /**
+     * #7300 — amorce la checklist d'onboarding (source de vérité) pour le tenant
+     * courant.
+     *
+     * On passe par `currentCompany()` (retour typé `Company`) plutôt que par la
+     * variable de test : `Company::factory()->create()` est typé `Model` pour
+     * larastan, et le baseline PHPStan strict compte les accès `Model::$id`
+     * **par fichier** — un accès non typé de plus ferait échouer le check requis
+     * (`ignore.count`). Le contexte tenant est déjà posé par l'appelant.
+     */
+    private function seedOnboardingSteps(): void
+    {
+        app(SeedDefaultSteps::class)->execute(currentCompany()->id);
     }
 }
