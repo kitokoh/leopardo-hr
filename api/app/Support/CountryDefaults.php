@@ -8,22 +8,26 @@ final class CountryDefaults
      * @var array<string, array{label: string, language: string, currency: string, timezone: string}>
      */
     private const DEFAULTS = [
-        'DZ' => ['label' => 'Algerie', 'language' => 'fr', 'currency' => 'DZD', 'timezone' => 'Africa/Algiers'],
+        // #7299 — libellés français accentués (source de vérité du sélecteur de
+        // pays) : `GET /supported-countries` exposait « Algerie », « Cote d
+        // Ivoire », « Guinee Equatoriale »… alors que le repli statique du front
+        // était, lui, correctement accentué — deux libellés pour un même pays.
+        'DZ' => ['label' => 'Algérie', 'language' => 'fr', 'currency' => 'DZD', 'timezone' => 'Africa/Algiers'],
         'MA' => ['label' => 'Maroc', 'language' => 'fr', 'currency' => 'MAD', 'timezone' => 'Africa/Casablanca'],
         'TN' => ['label' => 'Tunisie', 'language' => 'fr', 'currency' => 'TND', 'timezone' => 'Africa/Tunis'],
-        'SN' => ['label' => 'Senegal', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Dakar'],
-        'CI' => ['label' => 'Cote d Ivoire', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Abidjan'],
+        'SN' => ['label' => 'Sénégal', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Dakar'],
+        'CI' => ['label' => "Côte d'Ivoire", 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Abidjan'],
         'ML' => ['label' => 'Mali', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Bamako'],
         'BF' => ['label' => 'Burkina Faso', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Ouagadougou'],
-        'BJ' => ['label' => 'Benin', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Porto-Novo'],
+        'BJ' => ['label' => 'Bénin', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Porto-Novo'],
         'TG' => ['label' => 'Togo', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Lome'],
         'NE' => ['label' => 'Niger', 'language' => 'fr', 'currency' => 'XOF', 'timezone' => 'Africa/Niamey'],
         'CM' => ['label' => 'Cameroun', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Douala'],
         'GA' => ['label' => 'Gabon', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Libreville'],
         'CG' => ['label' => 'Congo', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Brazzaville'],
         'TD' => ['label' => 'Tchad', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Ndjamena'],
-        'CF' => ['label' => 'Republique Centrafricaine', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Bangui'],
-        'GQ' => ['label' => 'Guinee Equatoriale', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Malabo'],
+        'CF' => ['label' => 'République Centrafricaine', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Bangui'],
+        'GQ' => ['label' => 'Guinée Équatoriale', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Malabo'],
         'FR' => ['label' => 'France', 'language' => 'fr', 'currency' => 'EUR', 'timezone' => 'Europe/Paris'],
         'TR' => ['label' => 'Turquie', 'language' => 'tr', 'currency' => 'TRY', 'timezone' => 'Europe/Istanbul'],
         'GB' => ['label' => 'United Kingdom', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],

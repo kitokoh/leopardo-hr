@@ -26,7 +26,8 @@ export const SUPPORTED_COUNTRIES_FALLBACK: SupportedCountryOption[] = [
   { code: 'GA', label: 'Gabon' },
   { code: 'CG', label: 'Congo' },
   { code: 'TD', label: 'Tchad' },
-  { code: 'CF', label: 'Centrafrique' },
+  // #7299 — aligné sur le libellé canonique du registre API (`CountryDefaults`).
+  { code: 'CF', label: 'République Centrafricaine' },
   { code: 'GQ', label: 'Guinée Équatoriale' },
   { code: 'FR', label: 'France' },
   { code: 'TR', label: 'Turquie' },
