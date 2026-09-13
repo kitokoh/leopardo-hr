@@ -180,6 +180,10 @@ export type CopyTree = {
     alreadyAccepted: string;
     expired: string;
     genericError: string;
+    /** #7267 — societe suspendue/expiree (403 COMPANY_SUSPENDED) */
+    companySuspended: string;
+    /** #7267 — pre-validation du lien d'invitation */
+    validating: string;
     showPassword: string;
     hidePassword: string;
   };
@@ -803,6 +807,8 @@ const copy: Record<AppLocale, CopyTree> = {
       alreadyAccepted: 'Ce lien a déjà été utilisé. Connectez-vous directement.',
       expired: 'Ce lien a expiré. Demandez une nouvelle invitation.',
       genericError: 'Une erreur est survenue. Réessayez dans quelques instants.',
+      companySuspended: 'Accès de votre entreprise suspendu. Contactez votre administrateur.',
+      validating: 'Vérification de votre lien…',
       showPassword: 'Afficher le mot de passe',
       hidePassword: 'Masquer le mot de passe',
     },
@@ -1462,6 +1468,8 @@ const copy: Record<AppLocale, CopyTree> = {
       alreadyAccepted: 'This link has already been used. Sign in directly.',
       expired: 'This link has expired. Request a new invitation.',
       genericError: 'Something went wrong. Please try again in a moment.',
+      companySuspended: 'Your company access is suspended. Contact your administrator.',
+      validating: 'Checking your link…',
       showPassword: 'Show password',
       hidePassword: 'Hide password',
     },
@@ -2117,6 +2125,8 @@ const copy: Record<AppLocale, CopyTree> = {
       alreadyAccepted: 'تم استخدام هذا الرابط بالفعل. سجّل الدخول مباشرة.',
       expired: 'انتهت صلاحية هذا الرابط. اطلب دعوة جديدة.',
       genericError: 'حدث خطأ ما. حاول مرة أخرى بعد قليل.',
+      companySuspended: 'تم تعليق وصول شركتك. تواصل مع المسؤول.',
+      validating: 'جارٍ التحقق من رابطك…',
       showPassword: 'إظهار كلمة المرور',
       hidePassword: 'إخفاء كلمة المرور',
     },
@@ -2772,6 +2782,8 @@ const copy: Record<AppLocale, CopyTree> = {
       alreadyAccepted: 'Bu bağlantı zaten kullanıldı. Doğrudan giriş yapın.',
       expired: 'Bu bağlantının süresi doldu. Yeni bir davet isteyin.',
       genericError: 'Bir hata oluştu. Birkaç dakika sonra tekrar deneyin.',
+      companySuspended: 'Şirket erişiminiz askıya alındı. Yöneticinizle iletişime geçin.',
+      validating: 'Bağlantınız kontrol ediliyor…',
       showPassword: 'Şifreyi göster',
       hidePassword: 'Şifreyi gizle',
     },
