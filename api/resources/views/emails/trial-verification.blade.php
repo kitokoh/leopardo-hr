@@ -2,12 +2,10 @@
 <html lang="{{ $locale }}" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
-    {{-- Les chaînes passent par le catalogue `api/lang/*/emails.php` (garde CI
-         I18N : aucun littéral utilisateur dans une vue Blade e-mail/PDF). Le
-         titre et la salutation étaient auparavant figés en français pour les
-         4 langues, d'où l'e-mail hybride « Bonjour … » + corps en turc.
-         La locale est portée par `TrialVerificationMail::locale()`, donc
-         `__()` résout dans la langue choisie par l'utilisateur. --}}
+    {{-- All user-visible strings come from the api/lang/*/emails.php catalog
+         (CI I18N guard). The locale is carried by
+         TrialVerificationMail::locale(), so __() resolves in the language
+         chosen by the user instead of the application default. --}}
     <title>{{ __('emails.trial_verification_subject') }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 40px 0; color: #334155;">

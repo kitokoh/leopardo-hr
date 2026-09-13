@@ -73,11 +73,13 @@ export async function POST(request: NextRequest) {
       // géolocalisation. Si celle-ci est indisponible (dev local, proxy, IP
       // inconnue), on répond un code DÉDIÉ plutôt qu'un 422 générique, pour
       // que l'UI n'affiche le sélecteur de pays que dans ce cas précis.
+      // Code machine uniquement : le texte affiché est localisé côté UI
+      // (clé i18n `signup.countryDetectionFailed`, ×4 langues) — garde CI I18N
+      // : aucun littéral utilisateur dans une route API.
       return NextResponse.json(
         {
           success: false,
           error: 'COUNTRY_REQUIRED',
-          message: "Nous n'avons pas pu détecter votre pays. Merci de le préciser.",
         },
         { status: 422 }
       );
