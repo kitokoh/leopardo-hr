@@ -174,6 +174,11 @@ export function SignupForm({
   const [settingPassword, setSettingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [trialTimedOut, setTrialTimedOut] = useState(false);
+  // #7264 — nonce de relance du polling : l'écran de timeout proposait
+  // « Actualiser le statut » mais le bouton ne faisait que remettre l'état à
+  // zéro ; l'`useEffect` de polling ayant pour dépendances `[currentStep,
+  // trialToken]`, il ne se relançait jamais et l'utilisateur restait bloqué.
+  const [pollNonce, setPollNonce] = useState(0);
   const [isTracking, setIsTracking] = useState(false);
 
   const persistTrialToken = (token: string | null | undefined) => {
@@ -228,7 +233,7 @@ export function SignupForm({
       cancelled = true;
       if (intervalId) clearInterval(intervalId);
     };
-  }, [currentStep, trialToken]);
+  }, [currentStep, trialToken, pollNonce]);
 
   const handleSetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1036,6 +1041,8 @@ export function SignupForm({
                   onClick={() => {
                     setTrialTimedOut(false);
                     setTrialStatus('pending');
+                    // #7264 — relance réellement un cycle de polling.
+                    setPollNonce((value) => value + 1);
                   }}
                 >
                   {c.refreshStatus}
