@@ -456,6 +456,9 @@ describe('SignupForm Component', () => {
         // Tant que le mot de passe n'est pas défini, on ne propose pas un lien
         // de connexion par mot de passe (il mènerait à une impasse).
         expect(screen.queryByRole('link', { name: /accéder à mon espace/i })).toBeNull();
+        // #7298 — parcours guidé SANS mailer : ne jamais annoncer un envoi par
+        // e-mail (`access_sent` absent/false). Le message s'affichait à tort.
+        expect(screen.queryByText(/également été envoyé par email/i)).toBeNull();
       } finally {
         jest.useRealTimers();
       }
