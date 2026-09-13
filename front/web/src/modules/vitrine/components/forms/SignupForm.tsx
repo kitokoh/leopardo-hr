@@ -3,6 +3,7 @@
 import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -84,7 +85,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -117,6 +118,22 @@ export function SignupForm({
   const [formState, dispatch] = useReducer(createFormReducer(), initialFormState);
   const { trackSignup } = useAnalyticsForm();
   const role = watch('role');
+  const router = useRouter();
+
+  // Repli pays : le pays n'est plus demandé (il est résolu côté serveur par
+  // géolocalisation). Si le serveur ne peut PAS le détecter, il répond
+  // `COUNTRY_REQUIRED` et on n'affiche le sélecteur QUE dans ce cas — le
+  // formulaire reste minimal dans tous les autres.
+  const [showCountryFallback, setShowCountryFallback] = useState(false);
+
+  // Offre choisie sur /pricing (`?plan=<code>`), rappelée à l'utilisateur : le
+  // tunnel démarre par le choix d'une offre, il doit rester lisible jusqu'au
+  // bout. `?plan=` est obligatoire — `/signup` nu redirige vers /pricing.
+  const [selectedPlan, setSelectedPlan] = useState('');
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setSelectedPlan(new URLSearchParams(window.location.search).get('plan') ?? '');
+  }, []);
 
   // #4476 — pays supportés pour l'essai guidé (registre public #4217, fallback
   // statique si le backend est injoignable). Sans pays, l'API trial/signup
@@ -280,8 +297,11 @@ export function SignupForm({
       // #7249 — le profil (entreprise/indépendant) reste déclaré à
       // l'inscription ; les outils et le métier ne sont plus demandés dans le
       // tunnel (choisis ensuite depuis « Modules & plan »).
+      // Le créateur du compte EST le fondateur : le rôle n'est plus demandé
+      // dans le tunnel (il reste éditable ensuite depuis l'équipe).
       const payload: SignupFormData = {
         ...data,
+        role: data.role ?? 'founder',
         company_type: profile ?? 'company',
       };
       const response = await submitSignupForm(payload, page);
@@ -336,6 +356,15 @@ export function SignupForm({
         } else {
           setCurrentStep('otp');
         }
+      } else if (response.error === 'COUNTRY_REQUIRED') {
+        // La géolocalisation n'a pas permis de déterminer le pays (dev local,
+        // proxy, IP inconnue) : on ne demande le pays QUE dans ce cas précis,
+        // au lieu de laisser l'utilisateur dans un cul-de-sac 422.
+        setShowCountryFallback(true);
+        dispatch({
+          type: 'SUBMIT_ERROR',
+          payload: { message: c.countryDetectionFailed },
+        });
       } else {
         dispatch({
           type: 'SUBMIT_ERROR',
@@ -405,9 +434,19 @@ export function SignupForm({
 
       if (response.success) {
         setProvisionedData(response.data);
-        setCurrentStep('success');
         reset();
         onSuccess?.({} as SignupFormData);
+
+        // Auto-connexion : /api/forms/verify a posé le cookie de session
+        // (l'utilisateur n'a jamais choisi de mot de passe). On entre
+        // directement dans l'espace au lieu d'afficher un écran « e-mail
+        // vérifié » suivi d'un bouton de connexion sans identifiants.
+        if (response.data?.sessionEstablished === true) {
+          router.replace('/dashboard');
+          return;
+        }
+
+        setCurrentStep('success');
       } else {
         setOtpError(response.message || c.otpInvalidCode);
       }
@@ -613,100 +652,53 @@ export function SignupForm({
                 {...register('company')}
               />
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    {c.labelRole}
-                  </span>
-                  <select
-                    className={selectClassName}
-                    aria-invalid={errors.role ? true : undefined}
-                    aria-describedby={errors.role ? 'signup-role-error' : undefined}
-                    {...register('role')}
-                  >
-                    <option value="">{c.rolePlaceholder}</option>
-                    <option value="founder">{c.roleFounder}</option>
-                    <option value="manager">{c.roleManager}</option>
-                    <option value="hr">{c.roleHr}</option>
-                    <option value="operations">{c.roleOperations}</option>
-                    <option value="other">{c.roleOther}</option>
-                  </select>
-                  {errors.role && (
-                    <p id="signup-role-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.role.message}
-                    </p>
-                  )}
-                </label>
+              {/* Le créateur du compte EST le fondateur — on ne lui demande
+                  plus son rôle. La taille d'équipe, le pays (détecté) et le
+                  téléphone (l'e-mail est vérifié) ne sont plus demandés non
+                  plus : tout est éditable plus tard depuis les paramètres.
+                  Objectif : réduire le tunnel au strict nécessaire. */}
 
-                {/* #7235 — un indépendant ne déclare pas de taille d’équipe :
-                    le champ n’est pas rendu (et non simplement masqué) pour ne
-                    pas laisser un contrôle fantôme dans le formulaire. */}
-                {profile !== 'solo' && (
+              {selectedPlan !== '' && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm dark:border-emerald-900 dark:bg-emerald-950/30">
+                  <span className="font-semibold text-emerald-800 dark:text-emerald-200">
+                    {c.planSelected} : <span className="uppercase">{selectedPlan}</span>
+                  </span>
+                  <Link
+                    href="/pricing"
+                    className="font-semibold text-emerald-700 underline hover:text-emerald-800 dark:text-emerald-300"
+                  >
+                    {c.planChange}
+                  </Link>
+                </div>
+              )}
+
+              {/* Repli pays : rendu UNIQUEMENT si la géolocalisation serveur
+                  n'a pas permis de déterminer le pays (sinon le champ reste
+                  absent du formulaire minimal). */}
+              {showCountryFallback && (
                 <label className="block">
                   <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    <Users className="h-4 w-4" />
-                    {c.labelTeamSize}
+                    <Globe className="h-4 w-4" />
+                    {c.labelCountry}
                   </span>
                   <select
                     className={selectClassName}
-                    aria-invalid={errors.employees ? true : undefined}
-                    aria-describedby={errors.employees ? 'signup-employees-error' : undefined}
-                    {...register('employees')}
+                    aria-invalid={errors.country ? true : undefined}
+                    {...register('country')}
                   >
-                    <option value="">{c.teamPlaceholder}</option>
-                    <option value="1-10">1-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-200">51-200</option>
-                    <option value="201-500">201-500</option>
-                    <option value="500+">500+</option>
+                    <option value="">{c.countryPlaceholder}</option>
+                    {countries.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.label}
+                      </option>
+                    ))}
                   </select>
-                  {errors.employees && (
-                    <p id="signup-employees-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.employees.message}
+                  {errors.country && (
+                    <p role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+                      {errors.country.message}
                     </p>
                   )}
                 </label>
-                )}
-              </div>
-
-              <label className="block">
-                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                  <Globe className="h-4 w-4" />
-                  {c.labelCountry}
-                </span>
-                <select
-                  className={selectClassName}
-                  aria-invalid={errors.country ? true : undefined}
-                  aria-describedby={errors.country ? 'signup-country-error' : undefined}
-                  {...register('country')}
-                >
-                  <option value="">{c.countryPlaceholder}</option>
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.country && (
-                  <p id="signup-country-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
-                    {errors.country.message}
-                  </p>
-                )}
-              </label>
-
-              <Input
-                label={c.labelPhone}
-                type="tel"
-                placeholder={c.placeholderPhone}
-                icon={<Phone className="h-4 w-4" />}
-                error={errors.phone?.message}
-                {...register('phone')}
-              />
-
-              {role === 'operations' && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-100">
-                  {c.operationsNote}
-                </div>
               )}
 
               <div className="flex items-start gap-3">

@@ -166,4 +166,11 @@ return [
     'email_password_reset_body' => 'لقد طلبت إعادة تعيين كلمة المرور الخاصة بك. انقر على الزر أدناه. تنتهي صلاحية هذا الرابط خلال 60 دقيقة.',
     'email_password_reset_button' => 'إعادة تعيين كلمة المرور',
     'email_password_reset_ignore' => 'إذا لم تقم بهذا الطلب، تجاهل هذا البريد.',
+
+    // E-mail de vérification du code d'inscription (trial self-service)
+    'trial_verification_subject' => 'تحقق من بريدك الإلكتروني في Leopardo RH',
+    'trial_verification_greeting' => 'مرحباً :name،',
+    'trial_verification_intro' => 'يرجى استخدام رمز التحقق أدناه لإكمال إنشاء مساحة العمل الخاصة بك:',
+    'trial_verification_validity' => 'هذا الرمز صالح لمدة 30 دقيقة. إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.',
+
 ];

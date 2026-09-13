@@ -10,6 +10,13 @@ jest.mock('@/lib/api-client', () => ({
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 
+/** Date ISO (UTC) décalée de `offset` jours par rapport à aujourd'hui. */
+const isoDayOffset = (offset: number) => {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + offset);
+  return date.toISOString().slice(0, 10);
+};
+
 const absencesPayload = {
   data: [
     {
@@ -155,9 +162,16 @@ describe('AbsencesPage — formulaire de demande (#5693)', () => {
     await userEvent.click(screen.getByRole('button', { name: /Demander/i }));
     await screen.findByText('Nouvelle absence');
 
+    // Les champs portent `min={aujourd'hui}` (date UTC) : des dates figées
+    // finissent dans le passé et rendent le formulaire invalide — jsdom bloque
+    // alors la soumission (validation de contrainte) et le POST n'est jamais
+    // émis. On exprime donc la demande en dates futures relatives à aujourd'hui.
+    const startDate = isoDayOffset(1);
+    const endDate = isoDayOffset(5);
+
     await userEvent.selectOptions(screen.getByRole('combobox', { name: /Type/i }), '1');
-    await userEvent.type(screen.getByLabelText(/Début/i), '2026-09-01');
-    await userEvent.type(screen.getByLabelText(/Fin/i), '2026-09-05');
+    await userEvent.type(screen.getByLabelText(/Début/i), startDate);
+    await userEvent.type(screen.getByLabelText(/Fin/i), endDate);
     await userEvent.type(screen.getByLabelText(/Motif/i), 'Vacances');
 
     await userEvent.click(screen.getByRole('button', { name: /Soumettre au RH/i }));
@@ -169,8 +183,8 @@ describe('AbsencesPage — formulaire de demande (#5693)', () => {
           method: 'POST',
           body: JSON.stringify({
             absence_type_id: 1,
-            start_date: '2026-09-01',
-            end_date: '2026-09-05',
+            start_date: startDate,
+            end_date: endDate,
             reason: 'Vacances',
           }),
         })
