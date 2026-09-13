@@ -287,5 +287,6 @@ return [
     'AI_ACTION_REJECTED' => 'تم رفض الإجراء من قبل المستخدم.',
     // #7268 — Onboarding: رسائل خطوات مُترجمة (لا نصوص ثابتة)
     'ONBOARDING_STEP_REQUIRED' => 'هذه الخطوة إلزامية ولا يمكن تخطيها.',
+    'ONBOARDING_STEP_NOT_DONE' => 'لا يمكن تعليم هذه الخطوة كمكتملة: لم يتم تسجيل أي إجراء مطابق.',
     'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
 ];

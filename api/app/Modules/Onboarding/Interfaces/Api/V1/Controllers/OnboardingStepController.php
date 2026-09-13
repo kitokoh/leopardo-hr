@@ -11,12 +11,17 @@ use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use App\Modules\Onboarding\Application\Actions\SyncOnboardingCompletion;
+use App\Modules\Onboarding\Application\Services\StepCompletionGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class OnboardingStepController extends Controller
 {
+    public function __construct(
+        private readonly StepCompletionGuard $stepCompletionGuard,
+    ) {}
+
     /**
      * Checklist pilotée par la table `onboarding_steps`.
      *
@@ -173,6 +178,13 @@ class OnboardingStepController extends Controller
         $step = OnboardingStep::where('company_id', $companyId)
             ->where('step_key', $stepKey)
             ->firstOrFail();
+
+        // #7261 — une étape ne peut être marquée terminée que si l'action
+        // correspondante est constatée côté serveur. `null` signifie « étape
+        // sans prédicat » (déclarative) : on ne bloque pas le client.
+        if ($this->stepCompletionGuard->isSatisfied($companyId, $stepKey) === false) {
+            return $this->errorResponse('ONBOARDING_STEP_NOT_DONE', 422);
+        }
 
         $step->update([
             'status' => 'completed',
