@@ -33,8 +33,21 @@ const DEPLOYED_API_BASE_URL = DEFAULT_BACKEND_API_URL;
  */
 const VERCEL_PROXY_BASE_URL = '/api/v1';
 
-function resolveApiBaseUrl(): string {
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+/**
+ * #7297 — le navigateur passe par le proxy same-origin `/api/v1/...` **en dev
+ * comme en production**.
+ *
+ * Le token n'est jamais exposé au JS : il est posé en cookie httpOnly
+ * `leopardo_token` par `src/app/api/v1/auth/login/route.ts`, puis relu et
+ * injecté en `Authorization: Bearer` par `src/app/api/v1/[...path]/route.ts`.
+ * Appeler l'API **en direct** contourne ces deux routes : le cookie n'est
+ * jamais posé et `GET /auth/me` répond 401 — le login était donc impossible en
+ * dev (constaté le 2026-09-13). Le contournement en direct reste possible sur
+ * opt-in explicite via `NEXT_PUBLIC_API_DIRECT=true`
+ * (cf. docs/archive/AGENTS_HISTORIQUE_UTILE.md).
+ */
+export function resolveApiBaseUrl(): string {
+  if (typeof window !== 'undefined') {
     if (process.env.NEXT_PUBLIC_API_DIRECT === 'true' && process.env.NEXT_PUBLIC_API_URL) {
       return process.env.NEXT_PUBLIC_API_URL;
     }
