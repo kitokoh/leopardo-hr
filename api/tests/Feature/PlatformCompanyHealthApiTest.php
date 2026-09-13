@@ -6,6 +6,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\HR\Domain\Models\OnboardingStep;
+use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -60,6 +62,14 @@ class PlatformCompanyHealthApiTest extends TestCase
         $employeeB = Employee::factory()->create(['company_id' => $company->id, 'salary_base' => 120000]);
 
         app()->instance('current_company', $company);
+        // #7300 — « onboarding » côté back-office = progression CANONIQUE
+        // (checklist setup). Le tenant de ce test est un client sain : ses
+        // étapes setup doivent donc être réellement complétées, pas seulement
+        // déduites d'une échelle parallèle.
+        app(SeedDefaultSteps::class)->execute($company->id);
+        OnboardingStep::query()
+            ->where('company_id', $company->id)
+            ->update(['status' => 'completed']);
         AttendanceLog::factory()->create([
             'company_id' => $company->id,
             'employee_id' => $employeeA->id,
@@ -95,6 +105,11 @@ class PlatformCompanyHealthApiTest extends TestCase
         $response->assertJsonPath('data.adoption.attendance.logs_30d', 2);
         $response->assertJsonPath('data.adoption.attendance.active_employees_30d', 2);
         $response->assertJsonPath('data.adoption.onboarding.progress_percent', 100);
+        // #7300 — le back-office expose désormais la progression canonique
+        // (`onboarding_steps`) ET l'adoption observée, explicitement distinctes.
+        $response->assertJsonPath('data.adoption.onboarding.source', 'onboarding_steps');
+        $response->assertJsonPath('data.adoption.onboarding.go_live_ready', true);
+        $response->assertJsonPath('data.adoption.onboarding.observed.progress_percent', 100);
         $response->assertJsonPath('data.adoption.anomalies.total_30d', 1);
         $response->assertJsonPath('data.adoption.anomalies.business_impact.late_minutes', 20);
         $response->assertJsonPath('data.next_actions.0.key', 'prepare_upsell');

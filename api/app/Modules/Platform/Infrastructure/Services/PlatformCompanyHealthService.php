@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Infrastructure\Services;
 
-use App\Core\Feature\Infrastructure\Services\FeatureFlag;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
+use App\Modules\Onboarding\Application\Services\OnboardingProgressReader;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +17,7 @@ class PlatformCompanyHealthService
 {
     public function __construct(
         private readonly AttendanceAnomalyService $anomalyService,
+        private readonly OnboardingProgressReader $onboardingProgress,
     ) {}
 
     /**
@@ -174,6 +176,16 @@ class PlatformCompanyHealthService
     }
 
     /**
+     * Volet « onboarding » du bloc `adoption` du back-office.
+     *
+     * #7300 — la progression affichée est désormais la progression CANONIQUE
+     * (table `onboarding_steps`), la même que celle du client : le back-office
+     * ne peut plus annoncer « ONBOARDING 40 % — RISK HIGH » à un client dont
+     * l'assistant affiche « Configuration terminée ». Les faits observés côté
+     * serveur (équipe active, bases de paie, géofence, premier pointage)
+     * restent exposés sous `observed` — c'est de l'**adoption**, pas de
+     * l'onboarding, et les deux ne doivent pas être confondus.
+     *
      * @param  array<string, mixed>  $employees
      * @return array<string, mixed>
      */
@@ -184,19 +196,35 @@ class PlatformCompanyHealthService
             && isset($geofence['lat'], $geofence['lng'], $geofence['radius_meters'])
             && (float) $geofence['radius_meters'] > 0;
 
-        $completed = collect([
+        // Source de vérité (identique à /onboarding-setup/checklist).
+        $canonical = $this->onboardingProgress->read($company->id);
+
+        // Observation serveur — sert au score d'adoption, jamais d'échelle
+        // d'onboarding.
+        $observedCompleted = collect([
             true,
             (int) $employees['active'] > 0,
             (int) $employees['payroll_ready'] >= max(1, (int) $employees['total']),
             $geofenceConfigured,
             AttendanceLog::withoutGlobalScopes()->where('company_id', $company->id)->exists(),
         ])->filter()->count();
-        $total = 5;
+        $observedTotal = 5;
 
         return [
-            'completed_steps' => $completed,
-            'total_steps' => $total,
-            'progress_percent' => (int) round(($completed / $total) * 100),
+            // ── Progression canonique (setup), partagée avec le client
+            'initialized' => $canonical['initialized'],
+            'completed_steps' => $canonical['completed_steps'],
+            'total_steps' => $canonical['total_steps'],
+            'progress_percent' => $canonical['progress_percent'],
+            'go_live_ready' => $canonical['go_live_ready'],
+            'next_actions' => $canonical['next_actions'],
+            'source' => 'onboarding_steps',
+            // ── Adoption observée (≠ onboarding)
+            'observed' => [
+                'completed_steps' => $observedCompleted,
+                'total_steps' => $observedTotal,
+                'progress_percent' => (int) round(($observedCompleted / $observedTotal) * 100),
+            ],
             'geofence_configured' => $geofenceConfigured,
         ];
     }
@@ -276,7 +304,12 @@ class PlatformCompanyHealthService
         if ((int) $attendance['logs_30d'] === 0) {
             $score -= 30;
         }
-        if ((int) $onboarding['progress_percent'] < 80) {
+        // #7300 — le malus « onboarding inachevé » se juge sur la SOURCE DE
+        // VÉRITÉ (go_live_ready), plus sur une échelle parallèle : un client
+        // qui a terminé sa configuration n'est plus pénalisé pour un
+        // onboarding « à 40 % » calculé autrement. L'absence d'usage réel
+        // reste captée par le malus `logs_30d` ci-dessus.
+        if ($onboarding['go_live_ready'] !== true) {
             $score -= 15;
         }
 
@@ -354,4 +387,3 @@ class PlatformCompanyHealthService
         }
     }
 }
-
