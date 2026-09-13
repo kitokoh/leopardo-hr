@@ -34,7 +34,8 @@ type DepartmentsPayload = {
   data?: DepartmentRecord[];
 };
 
-/** Message d'erreur exploitable renvoyé par l'API (localisé côté backend). */
+// Erreur API exploitable : le backend fournit un message deja localise, on le
+// prefere toujours a un repli local.
 function apiErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof ApiError) {
     return error.message || fallback;
@@ -104,7 +105,7 @@ export default function EmployeesPage() {
         await Promise.all([loadEmployees(), loadDepartments()]);
       } catch (err) {
         if (active) {
-          setError(apiErrorMessage(err, i18nT(locale, 'employees.load_error', 'Impossible de charger les employés.')));
+          setError(apiErrorMessage(err, i18nT(locale, 'employees.load_error')));
         }
       } finally {
         if (active) {
@@ -133,7 +134,7 @@ export default function EmployeesPage() {
     event.preventDefault();
     const name = departmentName.trim();
     if (!name) {
-      setDepartmentError(i18nT(locale, 'settingsFieldRequired', 'Champ requis'));
+      setDepartmentError(i18nT(locale, 'settingsFieldRequired'));
       return;
     }
 
@@ -150,7 +151,7 @@ export default function EmployeesPage() {
       await confirmOnboardingStep('first_department');
     } catch (err) {
       setDepartmentError(
-        apiErrorMessage(err, i18nT(locale, 'employees.create_department_error', 'Impossible de créer le département.')),
+        apiErrorMessage(err, i18nT(locale, 'employees.create_department_error')),
       );
     } finally {
       setIsCreatingDepartment(false);
@@ -174,7 +175,7 @@ export default function EmployeesPage() {
     };
 
     if (!payload.first_name || !payload.last_name || !payload.email) {
-      setEmployeeError(i18nT(locale, 'settingsFieldRequired', 'Champ requis'));
+      setEmployeeError(i18nT(locale, 'settingsFieldRequired'));
       return;
     }
 
@@ -197,7 +198,7 @@ export default function EmployeesPage() {
       await confirmOnboardingStep('first_employee');
     } catch (err) {
       setEmployeeError(
-        apiErrorMessage(err, i18nT(locale, 'employees.create_employee_error', "Impossible d'ajouter le collaborateur.")),
+        apiErrorMessage(err, i18nT(locale, 'employees.create_employee_error')),
       );
     } finally {
       setIsCreatingEmployee(false);
@@ -209,8 +210,8 @@ export default function EmployeesPage() {
 
   return (
     <ModulePageShell
-      title={i18nT(locale, 'employees.title', 'Équipe')}
-      subtitle={i18nT(locale, 'employees.subtitle', '')}
+      title={i18nT(locale, 'employees.title')}
+      subtitle={i18nT(locale, 'employees.subtitle')}
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {error ? (
@@ -221,30 +222,30 @@ export default function EmployeesPage() {
 
       {employeeAdded ? (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          {i18nT(locale, 'teamEmployeeAdded', 'Employé ajouté.')}
+          {i18nT(locale, 'teamEmployeeAdded')}
         </div>
       ) : null}
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {i18nT(locale, 'employees.total_team', 'Total équipe')}
+            {i18nT(locale, 'employees.total_team')}
           </p>
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : total}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {i18nT(locale, 'employees.state', 'État')}
+            {i18nT(locale, 'employees.state')}
           </p>
           <p className="mt-3 text-lg font-bold text-slate-950">
             {loading
-              ? i18nT(locale, 'employees.loading_short', 'Chargement')
-              : i18nT(locale, 'employees.connected_api', "Connecté à l'API")}
+              ? i18nT(locale, 'employees.loading_short')
+              : i18nT(locale, 'employees.connected_api')}
           </p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
-            {i18nT(locale, 'dashboard.departments', 'Départements')}
+            {i18nT(locale, 'dashboard.departments')}
           </p>
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : departments.length}</p>
         </div>
@@ -254,14 +255,14 @@ export default function EmployeesPage() {
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
         <div className="border-b border-app-border px-6 py-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-            {i18nT(locale, 'dashboard.departments', 'Départements')}
+            {i18nT(locale, 'dashboard.departments')}
           </h2>
         </div>
 
         <div className="space-y-4 px-6 py-5">
           {departments.length === 0 ? (
             <p className="text-sm text-slate-500">
-              {i18nT(locale, 'employees.empty_departments', 'Aucun département pour le moment.')}
+              {i18nT(locale, 'employees.empty_departments')}
             </p>
           ) : (
             <ul className="flex flex-wrap gap-2">
@@ -281,8 +282,8 @@ export default function EmployeesPage() {
               type="text"
               value={departmentName}
               onChange={(event) => setDepartmentName(event.target.value)}
-              placeholder={i18nT(locale, 'profile.department_label', 'Département')}
-              aria-label={i18nT(locale, 'profile.department_label', 'Département')}
+              placeholder={i18nT(locale, 'profile.department_label')}
+              aria-label={i18nT(locale, 'profile.department_label')}
               className={inputClassName}
             />
             <button
@@ -291,7 +292,7 @@ export default function EmployeesPage() {
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60"
             >
               <Plus className="h-4 w-4" />
-              {i18nT(locale, 'cabinet.screen.create', 'Créer')}
+              {i18nT(locale, 'cabinet.screen.create')}
             </button>
           </form>
 
@@ -303,7 +304,7 @@ export default function EmployeesPage() {
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-app-border px-6 py-4">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-            {i18nT(locale, 'employees.recent_collaborators', 'Collaborateurs récents')}
+            {i18nT(locale, 'employees.recent_collaborators')}
           </h2>
           <button
             type="button"
@@ -314,14 +315,14 @@ export default function EmployeesPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-slate-700"
           >
             {showAddForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-            {i18nT(locale, 'teamAddCollaborator', 'Ajouter un collaborateur')}
+            {i18nT(locale, 'teamAddCollaborator')}
           </button>
         </div>
 
         {showAddForm ? (
           <form onSubmit={handleCreateEmployee} className="grid gap-4 border-b border-app-border bg-slate-50 px-6 py-5 md:grid-cols-2">
             <label className="text-sm font-medium text-slate-700">
-              {i18nT(locale, 'settingsFirstName', 'Prénom')}
+              {i18nT(locale, 'settingsFirstName')}
               <input
                 type="text"
                 value={firstName}
@@ -332,7 +333,7 @@ export default function EmployeesPage() {
             </label>
 
             <label className="text-sm font-medium text-slate-700">
-              {i18nT(locale, 'settingsLastNameLabel', 'Nom')}
+              {i18nT(locale, 'settingsLastNameLabel')}
               <input
                 type="text"
                 value={lastName}
@@ -343,7 +344,7 @@ export default function EmployeesPage() {
             </label>
 
             <label className="text-sm font-medium text-slate-700">
-              {i18nT(locale, 'settingsEmailLabel', 'Email')}
+              {i18nT(locale, 'settingsEmailLabel')}
               <input
                 type="email"
                 value={email}
@@ -354,7 +355,7 @@ export default function EmployeesPage() {
             </label>
 
             <label className="text-sm font-medium text-slate-700">
-              {i18nT(locale, 'teamDepartmentOptional', 'Département (optionnel)')}
+              {i18nT(locale, 'teamDepartmentOptional')}
               <input
                 type="text"
                 value={department}
@@ -377,14 +378,14 @@ export default function EmployeesPage() {
                 disabled={isCreatingEmployee}
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60"
               >
-                {i18nT(locale, 'commonSave', 'Enregistrer')}
+                {i18nT(locale, 'commonSave')}
               </button>
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
                 className="rounded-xl border border-app-border px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100"
               >
-                {i18nT(locale, 'teamConfirmCancel', 'Annuler')}
+                {i18nT(locale, 'teamConfirmCancel')}
               </button>
             </div>
           </form>
@@ -393,11 +394,11 @@ export default function EmployeesPage() {
         <div className="divide-y divide-app-border">
           {loading ? (
             <div className="px-6 py-8 text-sm text-slate-500">
-              {i18nT(locale, 'employees.list_loading', 'Chargement de la liste équipe...')}
+              {i18nT(locale, 'employees.list_loading')}
             </div>
           ) : employees.length === 0 ? (
             <div className="px-6 py-8 text-sm text-slate-500">
-              {i18nT(locale, 'employees.empty_list', 'Aucun employé visible pour ce compte.')}
+              {i18nT(locale, 'employees.empty_list')}
             </div>
           ) : (
             employees.map((employee) => {

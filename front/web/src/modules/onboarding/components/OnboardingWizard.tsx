@@ -492,7 +492,7 @@ export function OnboardingWizard({
                         className="inline-flex w-fit items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-500"
                       >
                         <Users className="h-4 w-4" aria-hidden="true" />
-                        {i18nT(locale, 'employees.open_team', 'Ouvrir la page Équipe')}
+                        {i18nT(locale, 'employees.open_team')}
                       </Link>
                     </div>
                   )}
