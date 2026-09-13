@@ -2,6 +2,17 @@
 > Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
 > Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
 
+> **MAJ 2026-09-13 — BC-27 SHOWCASE (#6862), surface mobile `front/mobile_apps/` touchée
+> par propagation i18n uniquement.** Le lot « Site vitrine — module horizontal de l'espace
+> client » ajoute 51 clés `showcase.*` au catalogue **partagé**
+> (`shared/i18n/locales/*.json`). Ces clés sont propagées par `sync-mobile.js` aux catalogues
+> `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb` — **aucun écran, aucune route ni aucun
+> parcours mobile n'est modifié** : la garde de gouvernance exige néanmoins la mise à jour de ce
+> registre (détection par chemin `front/mobile_apps/`). Les scénarios mobile Flutter existants
+> (`SCENARIOS_TEST_MOBILE_FLUTTER.md`) restent inchangés et valides ; la surface fonctionnelle
+> réellement ajoutée est **web** (`front/web`, page `/showcase` + rendu public `/vitrine/{slug}`).
+
+
 # REGISTRE DES SCENARIOS DE TESTS
 
 > ⚠️ **MAJ 2026-08-17** : les références à `front/mobile/` ci-dessous sont obsolètes

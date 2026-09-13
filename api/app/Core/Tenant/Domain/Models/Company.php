@@ -127,6 +127,12 @@ class Company extends Model
         // plateforme (`PlatformCompanyFeatureController::update`) ni remonté
         // par `/auth/me`. Il est désormais de premier ordre, comme demandé.
         'accounting',
+        // BC-27 SHOWCASE (#6862) — module HORIZONTAL « Site vitrine » : le flag
+        // tenant est `company_showcase` (`ShowcaseFeatures::COMPANY_SHOWCASE`),
+        // lu par le middleware `module.showcase`. Il doit figurer ici pour que
+        // l'admin plateforme (`PlatformCompanyFeatureController::update`)
+        // reconstruise et expose la clé, au même titre que `accounting`/#7235.
+        'company_showcase',
     ];
 
     /**
@@ -161,6 +167,11 @@ class Company extends Model
         'accounting',
         'crm',
         'marketing',
+        // BC-27 SHOWCASE (#6862) — le site vitrine est un outil transverse à
+        // tous les secteurs (commerce, service, industrie). La clé catalogue
+        // est `showcase` (front `client-features.ts`) ; le feature flag tenant
+        // correspondant est `company_showcase` (cf. `mirroredFeatures`).
+        'showcase',
     ];
 
     /**

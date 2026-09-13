@@ -25,6 +25,7 @@ const PROTECTED_PREFIXES = [
   '/social',
   '/social-marketing',
   '/restaurant',
+  '/showcase',
 ];
 
 function isProtectedPath(url) {
