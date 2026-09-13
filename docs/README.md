@@ -30,6 +30,7 @@ Index de la documentation technique et stratégique du projet.
 | [`desktop/`](desktop/) | Documentation desktop (tranches verticales, P06) |
 | [`../dev-hub/tools/`](../dev-hub/tools/) | Outils de garde & vérification (voir REGISTRE_GARDES.md) |
 | [`ops/ETAT_DEV_PROD_2026-09-09.md`](ops/ETAT_DEV_PROD_2026-09-09.md) | État des volets dev/prod vérifié le 2026-09-09 |
+| [`ops/HEALTH_ENDPOINTS.md`](ops/HEALTH_ENDPOINTS.md) | Sondes de santé API (`/health`, `/health/live`, `/health/ready`) : sémantique ok/degraded/fail et quelle sonde brancher où (#7255) |
 
 ---
 
