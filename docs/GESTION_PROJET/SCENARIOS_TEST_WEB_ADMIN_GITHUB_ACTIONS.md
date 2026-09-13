@@ -45,6 +45,7 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - empty state lisible
 - error state actionnable
 - aucun chevauchement evident dans les vues prioritaires
+- **temps reel (#7303)** : sans `VITE_WEBSOCKET_URL` configure, aucune tentative de handshake Socket.IO (pas de `404` en console) ; l'etat degrade est affiche (`Mode secours (polling)` / `Push non configure`) et les notifications continuent d'arriver via le polling REST (couvert par `e2e/notification-fallback-polling.spec.js`, assertion `socketAttempts === 0`)
 
 ### 4. Accessibilite minimum
 
