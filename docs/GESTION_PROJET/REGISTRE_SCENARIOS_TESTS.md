@@ -317,7 +317,9 @@ restent les gates applicables.
   `request.geo` inexistant — donc validait une fiction — est remplace par des tests sur les
   en-tetes reels, un cas d'en-tete invalide, et la priorite du choix de l'utilisateur.
 - **Page tarifs : acces direct aux offres** : la redirection `/signup` sans `?plan=` pointe
-  vers `/pricing?from=signup`, qui affiche immediatement les 4 offres (titre court
+  vers `/pricing#plans` (fragment, pas query : un prefetch de `/signup` suit la
+  redirection, et une cible avec query laissait ce prefetch en suspens — e2e vitrine
+  `marketing-funnel` en timeout a 90 s), qui affiche immediatement les 4 offres (titre court
   « Choisissez votre offre », libelles du tunnel reutilises) sans le hero marketing de 60 vh,
   sans tableau comparatif, sans FAQ ni bandeau final. Mesure au navigateur (viewport 800 px) :
   le nom du premier plan passe de y=1254 a y=357 ; le selecteur de devise, simple confort

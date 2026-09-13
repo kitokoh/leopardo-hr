@@ -361,9 +361,14 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 // Retour fondateur 2026-09-13 : arriver ici en cliquant « Créer un compte »
 // doit montrer LES OFFRES, pas un récit marketing de 60 vh qui les repousse
 // sous la ligne de flottaison (« il me met en dessous de ces textes »).
-// `?from=signup` (posé par la redirection /signup → /pricing) active donc une
+// `#plans` (posé par la redirection /signup → /pricing#plans) active donc une
 // vue resserrée : titre court + cartes d'offres, sans hero, sans tableau
 // comparatif, sans FAQ ni bandeau final.
+//
+// Le marqueur est un FRAGMENT et non une query : un prefetch Next de `/signup`
+// suit la redirection du middleware, et une cible porteuse d'une query laissait
+// ce prefetch en suspens (voir le commentaire du middleware) — `networkidle`
+// n'était alors jamais atteint.
 //
 // Le paramètre est lu côté client (`window.location`) et non via
 // `useSearchParams`, qui imposerait une frontière <Suspense> sur cette page
@@ -389,7 +394,7 @@ export default function PricingPage() {
   // Vue resserrée — voir le commentaire au-dessus du composant.
   const [signupFocus, setSignupFocus] = useState(false);
   useEffect(() => {
-    setSignupFocus(new URLSearchParams(window.location.search).get('from') === 'signup');
+    setSignupFocus(window.location.hash === '#plans');
   }, []);
 
   const isEurSelected = currencyOption.currency === 'EUR';

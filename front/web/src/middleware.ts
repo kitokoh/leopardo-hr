@@ -45,10 +45,21 @@ export function middleware(request: NextRequest) {
   // un compte est créé POUR une offre, et l'offre se choisit sur la page tarifs
   // (d'où l'on arrive avec `?plan=<offre>`). Sans offre choisie, on y renvoie.
   if (pathname === '/signup' && !SUPPORTED_PLANS.includes(request.nextUrl.searchParams.get('plan') ?? '')) {
-    // `?from=signup` : la page tarifs affiche alors LES OFFRES directement
-    // (sans hero marketing ni sections longues) — le prospect qui clique
-    // « Créer un compte » ne doit pas traverser un récit avant de choisir.
-    return NextResponse.redirect(new URL('/pricing?from=signup', request.url));
+    // `#plans` : la page tarifs affiche alors LES OFFRES directement (sans hero
+    // marketing ni sections longues) — le prospect qui clique « Créer un
+    // compte » ne doit pas traverser un récit avant de choisir.
+    //
+    // ⚠️ FRAGMENT, PAS QUERY. Le Navbar pointe vers `/signup`, que Next
+    // **précharge** (lien dans le viewport) : le prefetch suit cette redirection.
+    // Avec une cible porteuse d'une query (`/pricing?from=signup`), ce prefetch
+    // ne se terminait JAMAIS — mesuré en build de production : `page.goto(...,
+    // { waitUntil: 'networkidle' })` échouait par timeout à 90 s sur
+    // `/signup?plan=pilot` (e2e `marketing-funnel`, job requis de la vitrine),
+    // alors que la même page atteint `networkidle` en ~3 s en développement.
+    // Un fragment n'est pas envoyé au serveur : le prefetch reste un GET
+    // `/pricing` ordinaire. Vérifié : `/pricing` → 3,4 s ; `#plans` → 3,4 s ;
+    // `?from=signup` → timeout 90 s.
+    return NextResponse.redirect(new URL('/pricing#plans', request.url));
   }
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
