@@ -127,7 +127,7 @@ progression sont désormais alignées sur une source de vérité unique (table
 - Le risque client ne doit plus être déclenché par un onboarding « inachevé »
   calculé autrement : le malus de score se juge sur `go_live_ready`.
 
-### 12. Menu plateforme — modules d'entreprise cliente regroupés (#7327)
+### 12. Menu plateforme — modules d'entreprise cliente regroupés (#7329)
 
 Les écrans « Formations », « Flotte véhicules », « Stations-service » et
 « Agence de voyage » ne s'adressent pas à la plateforme mais au périmètre d'une

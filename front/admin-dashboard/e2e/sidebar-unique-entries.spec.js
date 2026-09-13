@@ -23,6 +23,21 @@ const ADMIN_USER = {
   language: 'fr',
 }
 
+/**
+ * #7329 — le guard du router (`authStore.checkAuth`) exige explicitement
+ * `role === 'super_admin'` : une session sans ce rôle est détruite et l'admin
+ * est renvoyé sur `/login`. Le bloc ci-dessous simule donc une vraie session
+ * super-admin (l'ancien `ADMIN_USER` du bloc #6741 porte 'superadmin', valeur
+ * qui ne satisfait pas la garde).
+ */
+const SUPER_ADMIN_USER = {
+  id: 1,
+  name: 'Agent E2E',
+  email: 'agent.e2e@leopardo.test',
+  role: 'super_admin',
+  language: 'fr',
+}
+
 test.describe('Sidebar — une entrée par page (#6741)', () => {
   test.skip(!AUTHENTICATED, 'Skipped: requiert PLAYWRIGHT_AUTH_TOKEN (tests authentifiés)')
   test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
@@ -51,7 +66,7 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
 })
 
 /**
- * #7327 — « fuel station », « training », « vehicle » (flotte) et « travel »
+ * #7329 — « fuel station », « training », « vehicle » (flotte) et « travel »
  * sont des écrans du périmètre d'une entreprise CLIENTE : ce ne sont plus des
  * entrées de premier niveau du menu plateforme, mais une section rattachée à
  * « Entreprises ».
@@ -60,7 +75,7 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
  * `web-ci.yml` ne le fournit pas) : la session est simulée comme dans
  * travel-navigation.spec.js, sinon la garde ne s'exécuterait jamais en CI.
  */
-test.describe('Sidebar — modules d’entreprise cliente regroupés (#7327)', () => {
+test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', () => {
   test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
 
   test('les 4 modules clients sont sous « Entreprises », section dépliée par défaut', async ({ page }) => {
@@ -71,13 +86,15 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7327)', (
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/^https?:\/\/[^/]+\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: ADMIN_USER }) }),
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: SUPER_ADMIN_USER }) }),
     )
     await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
     )
 
-    await page.goto('/dashboard')
+    // La route « dashboard » de l'admin est servie sur `/` (cf.
+    // `src/router/index.js`) : `/dashboard` renvoie une page 404.
+    await page.goto('/')
     const nav = page.getByRole('navigation')
     await expect(nav).toBeVisible({ timeout: 15_000 })
 

@@ -31,7 +31,7 @@
     <nav class="mt-6 flex-1 overflow-y-auto px-4 pb-24" role="navigation" :aria-label="t('navigation.mainMenu', 'Menu principal')">
       <div class="space-y-1">
         <template v-for="item in navigation" :key="item.name">
-          <!-- #7327 — titre de section : les modules d'entreprise cliente ne
+          <!-- #7329 — titre de section : les modules d'entreprise cliente ne
                sont plus des entrées de premier niveau. Section repliable,
                ouverte par défaut. -->
           <button
@@ -210,7 +210,7 @@ const travelStore = useTravelStore()
 const route = useRoute()
 
 /**
- * #7327 — Les écrans des modules d'une entreprise cliente (formations, flotte,
+ * #7329 — Les écrans des modules d'une entreprise cliente (formations, flotte,
  * stations-service, agence de voyage) n'étaient que des entrées de PREMIER
  * niveau dans ce menu, alors qu'ils ne s'adressent pas à la plateforme mais au
  * périmètre d'une entreprise cliente. Ils sont désormais regroupés sous une
@@ -326,7 +326,7 @@ const navigation = computed(() => [
     path: '/companies',
     icon: BuildingOfficeIcon
   },
-  // #7327 — section des modules d'entreprise cliente : ces écrans ne
+  // #7329 — section des modules d'entreprise cliente : ces écrans ne
   // s'adressent pas à la plateforme mais au périmètre d'un client.
   {
     type: 'section',
@@ -467,7 +467,7 @@ const navigation = computed(() => [
 ])
 
 /**
- * #7327 — la section contenant l'écran courant est toujours dépliée : sinon le
+ * #7329 — la section contenant l'écran courant est toujours dépliée : sinon le
  * repli mémorisé masquerait du menu la page qu'on est en train de consulter.
  */
 watch(
