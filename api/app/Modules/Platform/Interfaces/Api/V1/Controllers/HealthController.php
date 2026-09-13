@@ -187,20 +187,51 @@ class HealthController extends Controller
     }
 
     /**
-     * GET /api/v1/health/ready — 200 if DB is up.
+     * GET /api/v1/health/ready — 200 uniquement si les dépendances critiques
+     * sont disponibles.
+     *
+     * #7255 — `/health` ne fait dépendre son statut que de la base : Redis ou la
+     * queue pouvaient être morts sans que rien ne le signale (constaté en live :
+     * `checks.redis.ok = false` alors que `status = "ok"` et HTTP 200). Un
+     * monitor externe branché sur un endpoint de readiness n'avait donc aucun
+     * signal exploitable.
+     *
+     * Ce endpoint reflète désormais les dépendances réellement critiques et
+     * répond 503 dès que l'une d'elles est indisponible.
+     *
+     * `/health` reste **volontairement inchangé** : il sert de sonde de
+     * déploiement (Render `healthCheckPath` + attente de nouvelle instance dans
+     * `deploy-main.yml`) et doit continuer à répondre 200 tant que la base
+     * répond, y compris pendant qu'une instance démarre. `/health/live` reste un
+     * liveness pur (le process répond).
      */
     public function ready(): JsonResponse
     {
         $database = $this->checkDatabase();
+        $redis = $this->checkRedis();
+        $queue = $this->checkQueue();
 
-        $status = $database['ok'] ? 'ok' : 'fail';
-        $code = $database['ok'] ? 200 : 503;
+        // Redis n'est critique que s'il est réellement voulu : `checkRedis()`
+        // renvoie `skipped` quand aucun driver applicatif ne l'utilise.
+        $critical = [
+            'database' => $database['ok'],
+            'redis' => $redis['ok'] || ($redis['status'] ?? null) === 'skipped',
+            'queue' => $queue['ok'],
+        ];
+
+        $failed = array_keys(array_filter($critical, static fn (bool $passed): bool => ! $passed));
+        $ok = $failed === [];
 
         return response()->json([
-            'status' => $status,
-            'checks' => ['database' => $database],
+            'status' => $ok ? 'ok' : 'fail',
+            'checks' => [
+                'database' => $database,
+                'redis' => $redis,
+                'queue' => $queue,
+            ],
+            'failed' => array_values($failed),
             'timestamp' => now()->toIso8601String(),
-        ], $code);
+        ], $ok ? 200 : 503);
     }
 
     /**

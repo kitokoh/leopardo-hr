@@ -22,9 +22,29 @@ class HealthLiveReadyTest extends TestCase
         $response->assertOk();
         $response->assertJsonStructure([
             'status',
-            'checks' => ['database' => ['ok']],
+            'checks' => [
+                'database' => ['ok'],
+                // #7255 — la readiness couvre désormais les dépendances
+                // critiques, pas seulement la base.
+                'redis' => ['ok'],
+                'queue' => ['ok'],
+            ],
+            'failed',
             'timestamp',
         ]);
-        $response->assertJson(['status' => 'ok']);
+        $response->assertJson(['status' => 'ok', 'failed' => []]);
+    }
+
+    public function test_ready_exposes_critical_dependencies_not_just_database(): void
+    {
+        // Garde anti-régression #7255 : Redis et la queue étaient absents de la
+        // readiness, si bien qu'une panne Redis/queue restait invisible pour un
+        // monitor externe (le statut ne dépendait que de la base).
+        $checks = $this->getJson('/api/v1/health/ready')->json('checks');
+
+        self::assertIsArray($checks);
+        self::assertArrayHasKey('database', $checks);
+        self::assertArrayHasKey('redis', $checks);
+        self::assertArrayHasKey('queue', $checks);
     }
 }
