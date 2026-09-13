@@ -58,7 +58,10 @@ export function ActivateAccountForm({ token }: { token: string }) {
         const mePayload = (await meResponse.json()) as { data?: StoredAuthUser };
         if (mePayload.data) {
           storeAuthSession(null, mePayload.data);
-          router.replace('/');
+          // #7266 — l'utilisateur vient d'activer son compte : l'envoyer sur la
+          // landing marketing publique le faisait sortir de l'application au
+          // dernier pas de l'onboarding. On va directement au tableau de bord.
+          router.replace('/dashboard');
           return;
         }
       } catch {
