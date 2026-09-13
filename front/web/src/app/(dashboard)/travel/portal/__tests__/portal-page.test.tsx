@@ -30,6 +30,10 @@ const bookingPayload = {
 describe('TravelPortalPage (TRAVEL-702)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Le portail lit la locale via `useVitrineLocale()` : sans préférence
+    // explicite, jsdom retombe sur `navigator.language` (en-US) et les
+    // libellés/placeholders FR attendus ci-dessous ne sont plus rendus.
+    window.localStorage.setItem('preferred_locale', 'fr');
   });
 
   it('affiche le formulaire de suivi', () => {

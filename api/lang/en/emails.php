@@ -166,4 +166,11 @@ return [
     'email_password_reset_body' => 'You requested a password reset. Click the button below. This link expires in 60 minutes.',
     'email_password_reset_button' => 'Reset password',
     'email_password_reset_ignore' => 'If you did not make this request, ignore this email.',
+
+    // E-mail de vérification du code d'inscription (trial self-service)
+    'trial_verification_subject' => 'Verify your Leopardo RH email',
+    'trial_verification_greeting' => 'Hello :name,',
+    'trial_verification_intro' => 'Please use the verification code below to complete the creation of your workspace:',
+    'trial_verification_validity' => 'This code is valid for 30 minutes. If you did not request this, you can safely ignore this email.',
+
 ];
