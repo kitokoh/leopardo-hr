@@ -22,6 +22,8 @@ import {
 import QRCode from 'qrcode';
 import { apiFetch } from '@/lib/api-client';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import Link from 'next/link';
 import { getCopy, normalizeLocale, storeAuthSession, type StoredAuthUser } from '@/lib/i18n';
 
 /**
@@ -352,6 +354,12 @@ export function OnboardingWizard({
   const isInviteManager = currentStep?.step_key === 'invite_manager';
   // #R13 — aide CSV à l'étape first_employee.
   const isFirstEmployee = currentStep?.step_key === 'first_employee';
+  // Audit onboarding 2026-09-13 — ces deux étapes exigent une DONNÉE RÉELLE
+  // (département / second employé). Le wizard disait quoi faire mais n'emmenait
+  // nulle part : on renvoie vers la page Équipe, qui porte désormais les deux
+  // créations.
+  const needsTeamPage =
+    currentStep?.step_key === 'first_department' || currentStep?.step_key === 'first_employee';
 
   if (!isOpen) return null;
 
@@ -476,6 +484,18 @@ export function OnboardingWizard({
 
             {steps !== null && (
               <div className="mt-4 space-y-3">
+                  {needsTeamPage && (
+                    <div className="flex w-full flex-col gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+                      <Link
+                        href="/employees"
+                        onClick={handleDismiss}
+                        className="inline-flex w-fit items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-500"
+                      >
+                        <Users className="h-4 w-4" aria-hidden="true" />
+                        {i18nT(locale, 'employees.open_team', 'Ouvrir la page Équipe')}
+                      </Link>
+                    </div>
+                  )}
                   {isFirstEmployee && (
                     <div className="w-full rounded-2xl border border-blue-100 bg-blue-50 p-4">
                       <p className="text-xs font-medium text-blue-700">{onboarding.csvColumnsHint}</p>
