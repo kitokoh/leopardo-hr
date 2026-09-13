@@ -12,6 +12,7 @@ import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 
 import { inter } from '@/lib/fonts';
 import { SITE_URL as siteUrl } from '@/lib/site-url';
+import { verificationMetadata } from '@/lib/seo-verification';
 import { t } from '@/lib/i18n/locale-catalog';
 import { BRAND_NAME_BY_LOCALE, pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
@@ -62,6 +63,8 @@ const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> =
       'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
   },
 };
+
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
@@ -142,6 +145,8 @@ export async function generateMetadata(): Promise<Metadata> {
     formatDetection: {
       telephone: false,
     },
+    // #SEO-OPS : balises de vérification des consoles (Search Console, Bing).
+    verification: verificationMetadata(),
     alternates: {
       // QA 2026-08-15 (#2656) : le layout racine n'épingle plus de canonical
       // global — chaque page porte le sien (sinon toutes les pages sans
