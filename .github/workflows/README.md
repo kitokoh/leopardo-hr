@@ -117,6 +117,7 @@ ci-dessous.
 | `branch-hygiene.yml` | PR/push | Hygiène des branches (noms, markers) |
 | `branch-protection-guard.yml` | PR → main | Vérifie la cohérence de la protection de branche |
 | `ci-observability.yml` | Schedule + manuel | Observabilité des runs CI |
+| `ci-secrets-doc-guard.yml` | PR/push → `.github/workflows/**`, `docs/CI_CD_SECRETS.md` | Parité doc/secrets : échoue si un `secrets.*`/`vars.*` d'un workflow n'est pas documenté (issue #7271) |
 | `cleanup-orphan-runs.yml` | Schedule + PR close | Annule les runs orphelins (cf. `dev-hub/tools/cancel-orphan-runs.sh`) |
 | `country-catalog-check.yml` | PR → api | Garde catalogue pays (double du check dans `architecture-check.yml`) |
 | `crm-branch-protocol.yml` | PR bc/crm* | Protocole de branche du BC CRM |
