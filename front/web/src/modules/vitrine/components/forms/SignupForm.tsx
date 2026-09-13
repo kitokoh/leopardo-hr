@@ -187,6 +187,9 @@ export function SignupForm({
   // Onboarding sans mailer : le prospect définit son mot de passe avec le
   // provisioning_token qu'il détient déjà (l'email d'accès est best-effort).
   const [passwordSet, setPasswordSet] = useState(false);
+  // #7298 — vrai uniquement si le backend confirme l'envoi du lien d'accès par
+  // e-mail (`access_sent`). Évite d'annoncer un e-mail jamais parti.
+  const [accessSent, setAccessSent] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [settingPassword, setSettingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
@@ -227,6 +230,7 @@ export function SignupForm({
           setTrialStatus('ready');
           setTrialLoginUrl(res.data.login_url || '');
           setPasswordSet(res.data.password_set === true);
+          setAccessSent(res.data.access_sent === true);
           if (intervalId) clearInterval(intervalId);
           return;
         }
@@ -994,11 +998,16 @@ export function SignupForm({
                       {copied ? c.linkCopied : c.copyLink}
                     </button>
                   </div>
-                ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                ) : null}
+                {/* #7298 — n'annoncer un envoi par e-mail que s'il a RÉELLEMENT
+                    eu lieu (`access_sent`, relayé par /api/forms/trial-status).
+                    Dans le parcours guidé (repli sans mailer), le message
+                    s'affichait à tort pendant la saisie du mot de passe. */}
+                {accessSent ? (
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
                     {c.linkEmailed}
                   </p>
-                )}
+                ) : null}
               </>
             ) : trialStatus === 'failed' ? (
               <>
