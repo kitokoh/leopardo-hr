@@ -23,7 +23,7 @@ class TrialDayThreeMail extends Mailable
 
     public function __construct(
         public readonly Company $company,
-        public readonly string  $managerName,
+        public readonly string $managerName,
         ?string $locale = null,
     ) {
         $this->locale = I18nCatalog::normalizeLocale($locale ?? $company->language);
@@ -49,11 +49,11 @@ class TrialDayThreeMail extends Mailable
         return new Content(
             markdown: 'emails.trial.day_three',
             with: [
-                'company'       => $this->company,
-                'managerName'   => $this->managerName,
-                'checkInUrl'    => $base . '/attendance',
-                'mobileAppsUrl' => $base . '/download',
-                'locale'        => $this->locale,
+                'company' => $this->company,
+                'managerName' => $this->managerName,
+                'checkInUrl' => $base.'/attendance',
+                'mobileAppsUrl' => $base.'/download',
+                'locale' => $this->locale,
             ],
         );
     }

@@ -27,8 +27,8 @@ class OnboardingReminderMail extends Mailable
 
     public function __construct(
         public readonly Company $company,
-        public readonly string  $managerName,
-        public readonly string  $managerEmail,
+        public readonly string $managerName,
+        public readonly string $managerEmail,
         ?string $locale = null,
     ) {
         $this->locale = I18nCatalog::normalizeLocale($locale ?? $company->language);
@@ -54,10 +54,10 @@ class OnboardingReminderMail extends Mailable
         return new Content(
             view: 'emails.onboarding.reminder',
             with: [
-                'company'     => $this->company,
+                'company' => $this->company,
                 'managerName' => $this->managerName,
-                'setupUrl'    => $base . '/',
-                'locale'      => $this->locale,
+                'setupUrl' => $base.'/',
+                'locale' => $this->locale,
             ],
         );
     }

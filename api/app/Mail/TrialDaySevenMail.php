@@ -23,8 +23,8 @@ class TrialDaySevenMail extends Mailable
 
     public function __construct(
         public readonly Company $company,
-        public readonly string  $managerName,
-        public readonly int     $employeeCount,
+        public readonly string $managerName,
+        public readonly int $employeeCount,
         ?string $locale = null,
     ) {
         $this->locale = I18nCatalog::normalizeLocale($locale ?? $company->language);
@@ -50,12 +50,12 @@ class TrialDaySevenMail extends Mailable
         return new Content(
             markdown: 'emails.trial.day_seven',
             with: [
-                'company'       => $this->company,
-                'managerName'   => $this->managerName,
+                'company' => $this->company,
+                'managerName' => $this->managerName,
                 'employeeCount' => $this->employeeCount,
-                'pricingUrl'    => $base . '/pricing',
-                'upgradeUrl'    => $base . '/billing',   // /billing/upgrade n'existe pas côté portail
-                'locale'        => $this->locale,
+                'pricingUrl' => $base.'/pricing',
+                'upgradeUrl' => $base.'/billing',   // /billing/upgrade n'existe pas côté portail
+                'locale' => $this->locale,
             ],
         );
     }

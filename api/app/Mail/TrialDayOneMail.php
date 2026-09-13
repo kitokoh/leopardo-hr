@@ -23,8 +23,8 @@ class TrialDayOneMail extends Mailable
 
     public function __construct(
         public readonly Company $company,
-        public readonly string  $managerName,
-        public readonly string  $managerEmail,
+        public readonly string $managerName,
+        public readonly string $managerEmail,
         ?string $locale = null,
     ) {
         // Dispatched from a queued job (no HTTP request/middleware), so
@@ -52,11 +52,11 @@ class TrialDayOneMail extends Mailable
         return new Content(
             markdown: 'emails.trial.day_one',
             with: [
-                'company'     => $this->company,
+                'company' => $this->company,
                 'managerName' => $this->managerName,
-                'loginUrl'    => $base . '/auth/login',
-                'docsUrl'     => $base . '/docs',
-                'locale'      => $this->locale,
+                'loginUrl' => $base.'/auth/login',
+                'docsUrl' => $base.'/docs',
+                'locale' => $this->locale,
             ],
         );
     }
