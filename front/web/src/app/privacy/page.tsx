@@ -3,7 +3,7 @@ import { LegalPageShell } from '@/modules/vitrine/components/LegalPageShell'
 import { SITE_URL } from '@/lib/site-url'
 
 export const metadata: Metadata = {
-  title: 'Politique de confidentialite | Leopardo RH',
+  title: 'Politique de confidentialité',
   description:
     'Politique de confidentialite multilingue de Leopardo RH pour les donnees RH, la conformite, les droits utilisateurs et la securite.',
   alternates: {

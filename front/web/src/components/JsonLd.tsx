@@ -153,6 +153,65 @@ export function BreadcrumbJsonLd({
   );
 }
 
+/**
+ * #AI-SEO — vidéo de démonstration réelle, committée dans `public/videos/`
+ * (mp4 + webm + poster + sous-titres FR/EN). `uploadDate` = date de commit de
+ * l'asset (source vérifiable dans l'historique git), pas une date inventée.
+ *
+ * Sans `VideoObject`, une vidéo pourtant présente et indexable ne produit
+ * aucun rich result vidéo et reste invisible pour les moteurs de réponse.
+ */
+export const PRODUCT_DEMO_VIDEO = {
+  contentUrl: '/videos/product-demo.mp4',
+  contentUrlAlternate: '/videos/product-demo.webm',
+  thumbnailUrl: '/videos/product-demo-poster.jpg',
+  uploadDate: '2026-09-10T21:14:30+03:00',
+  duration: 'PT1M4S',
+} as const;
+
+export function VideoObjectJsonLd({
+  name,
+  description,
+  locale = 'fr',
+}: {
+  name: string;
+  description: string;
+  locale?: string;
+}) {
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        name,
+        description,
+        thumbnailUrl: `${SITE_URL}${PRODUCT_DEMO_VIDEO.thumbnailUrl}`,
+        uploadDate: PRODUCT_DEMO_VIDEO.uploadDate,
+        duration: PRODUCT_DEMO_VIDEO.duration,
+        contentUrl: `${SITE_URL}${PRODUCT_DEMO_VIDEO.contentUrl}`,
+        inLanguage: locale,
+        // Le contenu décrit la page /videos : rattache la vidéo à son URL
+        // canonique (les moteurs de réponse citent l'entité, pas un fichier).
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `${SITE_URL}/videos`,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: BRAND_NAME,
+          alternateName: BRAND_ALTERNATE_NAMES,
+          url: SITE_URL,
+          sameAs: [...SAME_AS],
+          logo: {
+            '@type': 'ImageObject',
+            url: `${SITE_URL}/logo.png`,
+          },
+        },
+      }}
+    />
+  );
+}
+
 // #4403 — JSON-LD localisé par locale (page) ; les plans « sur devis »
 // (Enterprise) n'ont pas de prix machine : schema.org/Offer EXIGE `price`,
 // une offre sans prix est invalide (Google Rich Results). On n'émet donc

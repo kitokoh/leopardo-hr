@@ -33,7 +33,7 @@ export async function generateMetadata({
   // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
   const headerList = await headers();
   const lang = (headerList.get('x-vitrine-lang') ?? 'fr') as AppLocale;
-  const study = getCaseStudy(slug);
+  const study = getCaseStudy(slug, lang);
 
   if (!study) {
     notFound();
@@ -58,7 +58,7 @@ export default async function CaseStudyLayout({
   const { slug } = await params;
   const headerList = await headers();
   const lang = (headerList.get('x-vitrine-lang') ?? 'fr') as AppLocale;
-  const study = getCaseStudy(slug);
+  const study = getCaseStudy(slug, lang);
 
   if (!study) {
     notFound();

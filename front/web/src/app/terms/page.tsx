@@ -3,7 +3,7 @@ import { LegalPageShell } from '@/modules/vitrine/components/LegalPageShell'
 import { SITE_URL } from '@/lib/site-url'
 
 export const metadata: Metadata = {
-  title: 'Conditions generales d utilisation | Leopardo RH',
+  title: 'Conditions générales d’utilisation',
   description:
     "Conditions générales d'utilisation multilingues de Leopardo RH pour les clients, administrateurs, managers, employés et intégrateurs.",
   alternates: {

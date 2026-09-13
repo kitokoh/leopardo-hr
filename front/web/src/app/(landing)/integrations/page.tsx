@@ -34,8 +34,8 @@ type Integration = {
 
 const integrationsByLocale: Record<string, { title: string; subtitle: string; badge: string; docsNote: string; statusLabels: { available: string; coming_soon: string }; categories: string[]; integrations: Integration[] }> = {
   fr: {
-    title: 'Integrations',
-    subtitle: 'Connectez Leopardo RH a vos outils existants',
+    title: 'Intégrations',
+    subtitle: 'Connectez Leopardo RH à vos outils existants',
     badge: 'Ecosysteme',
     docsNote: 'API publique documentee sur',
     statusLabels: { available: 'Disponible', coming_soon: 'Bientot' },

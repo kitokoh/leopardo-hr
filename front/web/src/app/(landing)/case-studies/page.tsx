@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { caseStudiesByLocale } from '@/modules/vitrine/data/case-studies';
+import { getAllCaseStudies } from '@/modules/vitrine/lib/case-studies';
 import { motion } from 'framer-motion';
 import { TrendingUp, Clock, Users, Building2, CheckCircle, Info } from 'lucide-react';
 
@@ -19,6 +21,10 @@ export default function CaseStudiesPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { copy, locale } = useVitrineLocale();
   const caseStudies = caseStudiesByLocale[locale] ?? caseStudiesByLocale.fr;
+  // #AI-SEO : les 12 études de cas détaillées du sitemap. Le hub n'en exposait
+  // AUCUN lien (constaté en production : 0 href vers /case-studies/<slug>) —
+  // elles n'étaient atteignables que depuis les 4 pages module.
+  const detailedStudies = getAllCaseStudies(locale);
   const cs = copy.caseStudies;
   useScrollReveal();
 
@@ -109,6 +115,35 @@ export default function CaseStudiesPage() {
               </motion.article>
             );
           })}
+        </div>
+      </section>
+
+      {/* #AI-SEO : catalogue de liens vers les 12 études de cas détaillées
+          (maillage interne du hub vers les URLs du sitemap). Titres et
+          libellés de module sont localisés via getAllCaseStudies(locale). */}
+      <section className="py-20 bg-slate-50 dark:bg-slate-900/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
+            {cs.catalogTitle}
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400 mb-10 max-w-3xl">{cs.catalogSubtitle}</p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {detailedStudies.map((study) => (
+              <li key={study.slug}>
+                <Link
+                  href={`/case-studies/${study.slug}`}
+                  className="group flex h-full flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-emerald-300 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <span className="mb-3 inline-flex w-fit rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400">
+                    {study.moduleLabel}
+                  </span>
+                  <span className="text-base font-bold leading-snug text-slate-900 group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
+                    {study.title}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
