@@ -84,9 +84,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Pass-through minimal : status + login_url (uniquement quand ready).
+    // Pass-through : status + login_url (uniquement quand ready) + état réel du
+    // mot de passe (#7265). Sans `password_set`, l'écran « définir mon mot de
+    // passe » se réaffichait alors qu'il était déjà défini, et la resoumission
+    // tombait sur `409 TRIAL_PASSWORD_ALREADY_SET` (constaté en live).
     const data = payload.data ?? {};
-    const passthrough: Record<string, string> = {
+    const passthrough: Record<string, string | boolean> = {
       status: String(data.status ?? 'pending'),
     };
     if (typeof data.login_url === 'string' && data.login_url !== '') {
@@ -94,6 +97,14 @@ export async function GET(request: NextRequest) {
     }
     if (typeof data.message === 'string') {
       passthrough.message = data.message;
+    }
+    // Booléens stricts : on ne relaie que de vrais booléens — jamais une chaîne
+    // ou un 1/0 qui serait interprété comme « vrai » côté client.
+    if (typeof data.password_set === 'boolean') {
+      passthrough.password_set = data.password_set;
+    }
+    if (typeof data.access_sent === 'boolean') {
+      passthrough.access_sent = data.access_sent;
     }
 
     return NextResponse.json({ success: true, data: passthrough }, { status: 200 });
