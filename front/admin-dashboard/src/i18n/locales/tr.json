@@ -312,6 +312,30 @@
   "seo": {
     "pricing": {
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 79 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
+    },
+    "llms": {
+      "summary": "Leopardo İK, saha KOBİ'leri için bulut tabanlı bir personel yönetimi (İK) yazılımıdır. Giriş-çıkış, izin, vardiya, çok ülkeli bordro, İK belgeleri ve raporlamayı mobilden kioska tek bir uygulamada birleştirir.",
+      "factsLabel": "Öne çıkan bilgiler",
+      "factCountries": "bordro kataloğunda kapsanan ülke",
+      "factLanguages": "ürün dilleri (FR/EN/TR/AR)",
+      "factTrial": "gün ücretsiz deneme, kredi kartı gerekmez",
+      "factPlans": "planlar: Free, Pilot, Operations, Enterprise",
+      "sectionCore": "Ana sayfalar",
+      "sectionResources": "Rehberler ve kaynaklar",
+      "sectionBlog": "Blog yazıları",
+      "sectionCompany": "Şirket",
+      "sectionContact": "İletişim",
+      "contactLine": "Satış ve destek ekibi: sitenin iletişim sayfasını kullanın.",
+      "fullIntro": "Yanıt motorları ve yapay zekâ asistanları için uzun sürüm: herkese açık sayfaların envanteri, yerelleştirilmiş sık sorulan sorular ve indirilebilir kaynaklar.",
+      "faqSection": "Sık sorulan sorular",
+      "pricingSection": "Planlar ve fiyatlar",
+      "aliasesLabel": "Marka takma adları"
+    },
+    "breadcrumb": {
+      "home": "Ana sayfa",
+      "blog": "Blog",
+      "caseStudies": "Vaka çalışmaları",
+      "guides": "Rehberler"
     }
   },
   "settingsBiometryEnableFirst": "Önce biyometrik kaydı etkinleştirin.",

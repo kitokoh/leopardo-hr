@@ -2,7 +2,35 @@ import { Metadata } from "next";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
+import type { AppLocale } from '@/lib/i18n';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
+
+/**
+ * Entité de marque canonique (AI-search / données structurées).
+ *
+ * Les <title> alternent selon la locale (Leopardo RH / Leopardo HR /
+ * Leopardo İK / ليوباردو) — sans déclaration explicite, les moteurs et
+ * assistants IA traitent ces variantes comme des entités distinctes.
+ * On expose donc UN nom canonique + ses alias (schema.org `alternateName`)
+ * pour consolider l'entité. Source unique : JSON-LD, llms.txt, og:site_name.
+ */
+export const BRAND_NAME = 'Leopardo RH';
+
+/** Variantes de marque reconnues (toutes locales confondues). */
+export const BRAND_ALTERNATE_NAMES = [
+  'Leopardo HR',
+  'Leopardo İK',
+  'Leopardo',
+  'ليوباردو',
+];
+
+/** Nom de marque affiché pour une locale donnée (titres, llms.txt). */
+export const BRAND_NAME_BY_LOCALE: Record<AppLocale, string> = {
+  fr: 'Leopardo RH',
+  en: 'Leopardo HR',
+  tr: 'Leopardo İK',
+  ar: 'ليوباردو',
+};
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
 export interface SEOMetadata {
@@ -71,12 +99,18 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
       return "/";
     }
   })();
-  const localizedAlternates = Object.fromEntries(
-    supportedLocales.map((locale) => [
-      locale,
-      locale === "fr" ? baseUrl : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
-    ])
-  );
+  // #AI-SEO : `x-default` pointe la variante de repli (FR, sans ?lang=) —
+  // sans elle, Google/les assistants choisissent eux-mêmes la page servie aux
+  // visiteurs dont la langue n'est pas couverte (fr/en/tr/ar).
+  const localizedAlternates = {
+    ...Object.fromEntries(
+      supportedLocales.map((locale) => [
+        locale,
+        locale === "fr" ? baseUrl : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
+      ])
+    ),
+    'x-default': baseUrl,
+  };
 
   return {
     title: seo.title,

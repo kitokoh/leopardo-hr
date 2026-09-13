@@ -4,6 +4,9 @@ import { notFound } from 'next/navigation';
 import { SITE_URL } from '@/lib/site-url';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
+import type { AppLocale } from '@/lib/i18n';
+import { BreadcrumbJsonLd } from '@/components/JsonLd';
+import { breadcrumbLabels, localizedUrl } from '@/lib/ai-search';
 
 /**
  * #7192 : metadata PROPRE par étude de cas.
@@ -29,7 +32,7 @@ export async function generateMetadata({
   // #4004 : ?lang= normalisé en en-tête x-vitrine-lang par le middleware
   // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
   const headerList = await headers();
-  const lang = headerList.get('x-vitrine-lang') ?? undefined;
+  const lang = (headerList.get('x-vitrine-lang') ?? 'fr') as AppLocale;
   const study = getCaseStudy(slug);
 
   if (!study) {
@@ -45,10 +48,35 @@ export async function generateMetadata({
   });
 }
 
-export default function CaseStudyLayout({
+export default async function CaseStudyLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ slug: string }>;
 }) {
-  return children;
+  const { slug } = await params;
+  const headerList = await headers();
+  const lang = (headerList.get('x-vitrine-lang') ?? 'fr') as AppLocale;
+  const study = getCaseStudy(slug);
+
+  if (!study) {
+    notFound();
+  }
+
+  // #AI-SEO : fil d'Ariane structuré (Accueil › Études de cas › étude).
+  const labels = breadcrumbLabels(lang);
+
+  return (
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: labels.home, url: localizedUrl('/', lang) },
+          { name: labels.caseStudies, url: localizedUrl('/case-studies', lang) },
+          { name: study.title, url: localizedUrl(`/case-studies/${study.slug}`, lang) },
+        ]}
+      />
+      {children}
+    </>
+  );
 }

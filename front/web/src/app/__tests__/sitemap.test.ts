@@ -87,6 +87,10 @@ describe('sitemap integrity (#3807)', () => {
       en: 'https://www.leopardo-rh.com/pricing?lang=en',
       tr: 'https://www.leopardo-rh.com/pricing?lang=tr',
       ar: 'https://www.leopardo-rh.com/pricing?lang=ar',
+      // #AI-SEO : variante de repli pour les langues non couvertes — doit
+      // pointer la version FR (sans ?lang=), alignée sur seo.ts et le layout
+      // racine.
+      'x-default': 'https://www.leopardo-rh.com/pricing',
     });
   });
 });

@@ -9,16 +9,20 @@ const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {
   const cleanPath = path === '/' ? '' : path;
+  const defaultUrl = `${siteUrl}${cleanPath || '/'}`;
 
   return {
-    languages: Object.fromEntries(
-      locales.map((locale) => [
-        locale,
-        locale === 'fr'
-          ? `${siteUrl}${cleanPath || '/'}`
-          : `${siteUrl}${cleanPath || '/'}?lang=${locale}`,
-      ])
-    ),
+    languages: {
+      ...Object.fromEntries(
+        locales.map((locale) => [
+          locale,
+          locale === 'fr' ? defaultUrl : `${defaultUrl}?lang=${locale}`,
+        ])
+      ),
+      // AI-SEO : variante de repli pour les langues non couvertes (aligné sur
+      // seo.ts generateMetadata et les alternates du layout racine).
+      'x-default': defaultUrl,
+    },
   };
 }
 
