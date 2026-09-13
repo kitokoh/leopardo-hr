@@ -436,7 +436,10 @@ const router = createRouter({
 })
 
 // Guards de navigation
-router.beforeEach(async (to, from, next) => {
+// #7305 — Vue Router 5 déprécie la fonction `next()` (avertissement
+// VUE_ROUTER_R0025) : un guard retourne désormais la route cible (redirection)
+// ou `true` pour laisser passer.
+router.beforeEach(async (to) => {
   NProgress.start()
 
   const authStore = useAuthStore()
@@ -445,19 +448,16 @@ router.beforeEach(async (to, from, next) => {
     if (authStore.token) {
       const isValid = await authStore.checkAuth()
       if (!isValid) {
-        next('/login')
-        return
+        return '/login'
       }
     } else {
-      next('/login')
-      return
+      return '/login'
     }
   }
 
   // Rediriger vers dashboard si déjà connecté et tentative d'accès au login
   if (to.name === 'login' && authStore.isAuthenticated) {
-    next('/')
-    return
+    return '/'
   }
 
   // Mettre à jour le titre de la page dans la locale active.
@@ -467,7 +467,7 @@ router.beforeEach(async (to, from, next) => {
     document.title = `${title} - Leopardo RH Admin`
   }
 
-  next()
+  return true
 })
 
 router.afterEach(() => {
