@@ -350,3 +350,47 @@ restent les gates applicables.
   sont propagees depuis le catalogue partage (suppression des cles `signupPage.proof*`,
   reecriture de `signupPage.sideTitle`/`step1..3`/`subheadline` et du libelle
   `signup.countryDetectionFailed`).
+
+## Mise a jour 2026-09-13 (3) — SEO & AI-Search de la vitrine (PR #7315, issue #7314)
+
+- **Pourquoi ce lot existe** : audit SEO/AI-SEO de la vitrine. Le SEO classique etait deja
+  sain (robots.txt + `Sitemap:`, sitemap 49 URL / 49 en HTTP 200, canonicals, hreflang,
+  titres/descriptions localises x4, `SoftwareApplication`/`FAQPage`/`Article`/`JobPosting`),
+  mais le SEO generatif etait absent : recherche `llms.txt`, `GPTBot`, `ClaudeBot`,
+  `PerplexityBot`, `Google-Extended`, `GEO`, `AEO` dans le depot = **zero occurrence**.
+- **Ajouts** : routes `/llms.txt` et `/llms-full.txt` (localisees `?lang=fr|en|tr|ar`,
+  `text/plain`, composees depuis les sources existantes — aucune duplication de contenu) ;
+  groupe explicite de 17 crawlers IA dans `robots.txt` avec **repetition des prefixes
+  proteges** (un groupe dedie ecrase `*` : l'oublier ouvrait `/dashboard`, `/api`,
+  `/payroll`) ; noeud `WebSite` + `alternateName`/`sameAs` sur `SoftwareApplication` et
+  `Article` ; `BreadcrumbList` serveur (blog, etudes de cas, guides) ; `Article` JSON-LD
+  deplace du composant client `BlogArticle` vers `blog/[slug]/layout.tsx` (il n'existait
+  qu'apres execution du JavaScript, donc invisible aux crawlers sans JS) ; `x-default`
+  hreflang (seo.ts, sitemap.ts, layout racine) ; `VideoObject` serveur sur `/videos`.
+- **Contenu / metadonnees** : 12 etudes de cas reecrites (titres 21-35 -> 47-53 car.,
+  descriptions 39-54 -> 137-154) **et localisees x4** — c'etait la derniere surface vitrine
+  servie en FR sur les pages en/tr/ar ; maillage du hub `/case-studies` retabli (0 -> 12 liens
+  sortants vers les etudes de detail) ; 10 titres > 60 car. retailles -> **0 sur 196
+  pages-locales mesurees** ; marque dupliquee dans le `<title>` de `/terms` et `/privacy`
+  corrigee ; H1 anglais « Integrations » -> « Integrations » accentue ; `<title>` de
+  `/download` aligne sur l'acces pilote reel ; hero d'accueil « 8 pays » -> **21** (verite de
+  `GET /api/v1/supported-countries`, 21 pays tous `available: true`).
+- **Surface web vitrine** : c'est la surface modifiee. Scenario applicable : suite unitaire
+  `jest` (`src/lib/__tests__/ai-search.test.ts`, `src/app/__tests__/robots.test.ts`, garde de
+  longueur des titres dans `seo-locale.test.ts`, `sitemap.test.ts` realigne sur `x-default`).
+  Verification de recette : `196 pages-locales` (49 URL x 4 locales) servies par un build de
+  production -> 0 titre > 60, 0 page sans JSON-LD, `/llms.txt` 200 en `text/plain`, hub a 12
+  liens x4 locales.
+- **Surface API** : aucun changement de code. Aucune route, aucun payload modifie.
+- **Surface mobile / web admin** : **aucun comportement modifie**. Les catalogues
+  `front/admin-dashboard/src/i18n/locales/*.json` et `front/mobile_apps/leopardo_core/lib/l10n/*.arb`
+  evoluent uniquement comme **artefacts generes** par les syncs i18n
+  (`shared/i18n/sync/sync-{web,backend,mobile}.js`), du fait de l'ajout des cles partagees
+  `seo.llms.*` et `seo.breadcrumb.*` (20 cles x 4 langues). Ces cles n'ont pas d'ecran admin :
+  elles alimentent les fichiers AI-search et les fils d'Ariane de la vitrine. Aucun scenario
+  de test admin n'est donc impacte.
+- **Non fait, volontairement** : aucun signal de confiance fabrique (pas de
+  `Review`/`AggregateRating` sur les temoignages et etudes de cas, explicitement fictifs ;
+  pas de bios d'auteur — les 4 auteurs du blog sont des personnes fictives). Migration i18n
+  `?lang=` -> sous-repertoires `/en/ /tr/ /ar/` laissee en chantier dedie (~40 fichiers :
+  middleware, 25 layouts, sitemap, liens internes, 301).
