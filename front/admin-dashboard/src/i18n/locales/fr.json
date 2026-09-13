@@ -1720,7 +1720,11 @@
     "stepProfileLabel": "Profil",
     "stepToolsLabel": "Outils",
     "stepIdentityLabel": "Coordonnées",
-    "soloNote": "Un profil Indépendant n’inclut ni pointage ni gestion d’employés."
+    "soloNote": "Un profil Indépendant n’inclut ni pointage ni gestion d’employés.",
+    "stepPlanLabel": "Offre",
+    "planTitle": "Choisissez votre offre",
+    "planSubtitle": "Votre espace est créé sur l'offre sélectionnée. Essai gratuit, sans carte bancaire.",
+    "planContinue": "Continuer avec cette offre"
   },
   "attendanceDayDetail": "Détail par jour",
   "support_tickets": {

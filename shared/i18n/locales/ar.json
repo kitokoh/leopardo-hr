@@ -1471,7 +1471,11 @@
     "setPasswordTooWeak": "8 أحرف على الأقل، بما في ذلك رقم واحد.",
     "setPasswordMismatch": "كلمتا المرور غير متطابقتين.",
     "setPasswordUnavailable": "تعذّر حفظ كلمة المرور حاليًا. يُرجى إعادة المحاولة.",
-    "goToLogin": "تسجيل الدخول"
+    "goToLogin": "تسجيل الدخول",
+    "stepPlanLabel": "العرض",
+    "planTitle": "اختر عرضك",
+    "planSubtitle": "يتم إنشاء مساحتك على العرض الذي تختاره. تجربة مجانية بدون بطاقة بنكية.",
+    "planContinue": "المتابعة بهذا العرض"
   },
   "companies": {
     "toast": {

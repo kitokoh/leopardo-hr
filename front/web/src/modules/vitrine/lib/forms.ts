@@ -90,6 +90,8 @@ export async function submitSignupForm(
       // vertical : sans cette remontée, l'API provisionnerait un tenant
       // standard et le choix de l'utilisateur serait purement cosmétique.
       company_type: data.company_type,
+      // #7238 — offre choisie dans le tunnel (prime sur `?plan=` de l'URL).
+      plan: data.plan,
       modules: data.modules,
       solutions: data.solutions,
     };
@@ -100,8 +102,10 @@ export async function submitSignupForm(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...sanitizedData,
+        // #7238 — le choix explicite de l'utilisateur prime sur les paramètres
+        // d'URL (`?plan=free` ne doit pas écraser une offre choisie ensuite).
         ...getSearchMetadata(),
+        ...sanitizedData,
         locale: getBrowserLocale(),
         source: getLeadSource(),
         page,

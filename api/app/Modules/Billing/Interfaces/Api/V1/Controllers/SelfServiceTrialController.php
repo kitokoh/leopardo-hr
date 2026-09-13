@@ -32,6 +32,9 @@ use Illuminate\Validation\Rules\Password;
  */
 class SelfServiceTrialController extends Controller
 {
+    /** Offres souscriptibles à l'inscription (#7238). */
+    private const SUPPORTED_PLANS = ['free', 'pilot', 'operations', 'enterprise'];
+
     public function __construct(
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly VerifyTrialSignup $verifyTrialSignup,
@@ -57,7 +60,10 @@ class SelfServiceTrialController extends Controller
             // pays supporté du registre (plus de fallback silencieux DZ).
             'country' => ['required', 'string', 'size:2', new SupportedCountry],
             'phone' => ['nullable', 'string', 'max:40'],
-            'plan' => ['nullable', 'string', 'max:80'],
+            // #7238 : un compte est créé POUR une offre — on n'accepte que les
+            // codes d'offres connus (le choix est obligatoire côté UI, l'API
+            // reste tolérante à l'absence pour les clients historiques).
+            'plan' => ['nullable', 'string', 'max:80', Rule::in(self::SUPPORTED_PLANS)],
             'source' => ['nullable', 'string', 'max:120'],
             'referral_code' => ['nullable', 'string', 'max:50'],
             'requestedWorkflow' => ['nullable', 'string', 'in:guided_trial,self_service'],
