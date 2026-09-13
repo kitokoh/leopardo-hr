@@ -532,3 +532,78 @@ export function getModuleAccessForPath(pathname: string, user?: StoredAuthUser |
   }
   return getClientModuleAccess(user).find((module) => module.key === moduleKey) ?? null;
 }
+
+/**
+ * #7245 — Signature stable de la « surface modules » d'une session.
+ *
+ * Les features du tenant sont figées dans `auth_user` au moment du login
+ * (`storeAuthSession`) : quand la plateforme activait un module ou une
+ * verticale après coup, le client déjà connecté continuait de voir son ancien
+ * menu (« j'ai activé le module, rien ne change »). Le layout recharge
+ * `/auth/me` et ne réécrit la session que si cette signature a bougé.
+ *
+ * Volontairement indépendante de l'ordre des clés JSON : deux payloads
+ * équivalents doivent produire la même signature.
+ */
+export function sessionModuleSignature(user?: StoredAuthUser | null): string {
+  if (!user) {
+    return '';
+  }
+
+  return stableSerialize([
+    user.features ?? null,
+    user.capabilities ?? null,
+    user.company?.features ?? null,
+    user.company?.modules ?? null,
+    user.plan?.features ?? null,
+  ]);
+}
+
+function stableSerialize(value: unknown): string {
+  if (value === null || value === undefined) {
+    return 'null';
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map(stableSerialize).join(',')}]`;
+  }
+
+  if (typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${stableSerialize(item)}`).join(',')}}`;
+  }
+
+  return JSON.stringify(value) ?? 'null';
+}
+
+/**
+ * #7245 — Applique à la session locale la seule « surface d'activation »
+ * renvoyée par `/auth/me` : features du tenant, capacités du manager et
+ * features de la société.
+ *
+ * Le reste (`company.modules` déclaré à l'inscription, `metadata` d'onboarding,
+ * identité…) est conservé tel quel : l'assistant d'onboarding pousse des mises
+ * à jour optimistes côté client, et un rechargement de session ne doit jamais
+ * les écraser. C'est ce qui permet de rafraîchir les modules SANS bloquer le
+ * rafraîchissement quand l'assistant est ouvert (le cas d'un client dont
+ * l'onboarding n'est pas terminé — c'est-à-dire la majorité des comptes).
+ */
+export function mergeActivationSurface(
+  current: StoredAuthUser,
+  fresh: StoredAuthUser,
+): StoredAuthUser {
+  const company = current.company
+    ? {
+        ...current.company,
+        features: fresh.company?.features ?? current.company.features ?? null,
+      }
+    : (fresh.company ?? null);
+
+  return {
+    ...current,
+    features: fresh.features ?? current.features ?? null,
+    capabilities: fresh.capabilities ?? current.capabilities ?? null,
+    company,
+  };
+}
