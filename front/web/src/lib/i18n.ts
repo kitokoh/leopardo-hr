@@ -110,6 +110,10 @@ export type CopyTree = {
     featureLockedPlanRoleTitle: string;
     featureLockedPlanRoleBody: string;
     featureLockedCta: string;
+    /** #7322 — auto-activation d'un module horizontal depuis « Modules & plan » */
+    activate: string;
+    activating: string;
+    activateError: string;
     recent_activity: string;
     noNotifications: string;
     managePreferences: string;
@@ -729,6 +733,9 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & rôle',
       featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calculés depuis les droits, le plan de l'entreprise et le rôle utilisateur.",
       featureLockedCta: "Demander l'activation",
+      activate: 'Activer',
+      activating: 'Activation…',
+      activateError: "L'activation a échoué. Réessayez.",
       recent_activity: 'Activité récente',
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
@@ -1391,6 +1398,9 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'الخطة والدور',
       featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
       featureLockedCta: 'طلب التفعيل',
+      activate: 'تفعيل',
+      activating: 'جارٍ التفعيل…',
+      activateError: 'فشل التفعيل. يرجى المحاولة مرة أخرى.',
       recent_activity: 'النشاط الأخير',
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
@@ -2049,6 +2059,9 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan ve rol',
       featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
       featureLockedCta: 'Aktivasyon iste',
+      activate: 'Etkinleştir',
+      activating: 'Etkinleştiriliyor…',
+      activateError: 'Etkinleştirme başarısız oldu. Tekrar deneyin.',
       recent_activity: 'Son etkinlik',
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
@@ -2707,6 +2720,9 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & role',
       featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
       featureLockedCta: 'Request activation',
+      activate: 'Activate',
+      activating: 'Activating…',
+      activateError: 'Activation failed. Please try again.',
       recent_activity: 'Recent activity',
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',

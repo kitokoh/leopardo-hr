@@ -289,4 +289,8 @@ return [
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
+    // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
+    'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
+    'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
+    'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',
 ];

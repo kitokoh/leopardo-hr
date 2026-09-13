@@ -301,6 +301,7 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'education',
   },
+
   // BC-27 SHOWCASE (#6862) — module HORIZONTAL « Site vitrine » : le
   // responsable du tenant crée, édite et publie le site public de son
   // entreprise en 1 clic (page `/showcase`). Le module backend existe
@@ -321,6 +322,33 @@ export const CLIENT_MODULES: ClientModule[] = [
     upgradeLabel: 'Site vitrine public de l\'entreprise',
   },
 ];
+
+/**
+ * #7322 — Outils HORIZONTAUX que le client (responsable du tenant) peut
+ * s'auto-activer depuis le panneau « Modules & plan ». Miroir strict de
+ * `Company::HORIZONTAL_TOOLS` côté API (allowlist fail-closed) : une clé
+ * inconnue y répond 422. Les VERTICALES (restaurant, travel, fuel, éducation)
+ * en sont exclues — elles requièrent des seeders/dépendances de pack et
+ * passent par l'admin plateforme.
+ */
+export const SELF_ACTIVATABLE_MODULE_KEYS: ClientModuleKey[] = [
+  'employees',
+  'attendance',
+  'absences',
+  'contracts',
+  'payroll',
+  'training',
+  'reports',
+  'accounting',
+  'crm',
+  'marketing',
+  'showcase',
+];
+
+export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
+  return SELF_ACTIVATABLE_MODULE_KEYS.includes(module.key);
+}
+
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/dashboard': 'dashboard',
   '/employees': 'employees',

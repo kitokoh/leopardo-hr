@@ -257,16 +257,11 @@ class ProvisionGuidedTrial
             return [];
         }
 
-        // #7235 / BC-27 #6862 — clé de sélection (`metadata.modules`, catalogue
-        // client) => clé de feature flag plateforme (`config/feature-flags.php`).
-        // La plupart sont identiques ; `showcase` fait exception (le flag tenant
-        // du module vitrine est `company_showcase`). Aucun import cross-BC : la
-        // correspondance reste littérale pour ne pas coupler Billing à Showcase.
-        $platformFlags = [
-            'accounting' => 'accounting',
-            'crm' => 'crm',
-            'showcase' => 'company_showcase',
-        ];
+        // #7235 / BC-27 #6862 / #7322 — clé de sélection (`metadata.modules`,
+        // catalogue client) => clé de feature flag plateforme. La correspondance
+        // vit dans `Company::HORIZONTAL_TOOL_FEATURES` (source unique, partagée
+        // avec l'auto-activation côté tenant) : aucun import cross-BC.
+        $platformFlags = Company::HORIZONTAL_TOOL_FEATURES;
         $features = [];
 
         foreach ($platformFlags as $selectionKey => $featureKey) {
