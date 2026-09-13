@@ -6207,7 +6207,8 @@
     "sectionTestimonials": "Témoignages",
     "sectionProducts": "Produits",
     "sectionContact": "Contact",
-    "sectionFooter": "Pied de page"
+    "sectionFooter": "Pied de page",
+    "notFoundTitle": "Page introuvable"
   },
   "trial": {
     "trialBadge": "Essai",

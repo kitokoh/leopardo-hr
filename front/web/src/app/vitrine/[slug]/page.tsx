@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { normalizeLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 import { SITE_URL } from '@/lib/site-url';
 import {
   getPublicVitrine,
-  vitrineCssVariables,
+  vitrineStyles,
   type VitrinePublic,
   type VitrineSection,
 } from '@/lib/showcase-public-api';
@@ -18,6 +19,9 @@ import {
  * (`?token=`, émis par la page de gestion `/showcase`).
  *
  * Public par nature : cette route NE fait PAS partie de PROTECTED_PREFIXES.
+ * Le thème (couleurs, rayon, police) est appliqué par inline style résolu
+ * dans `src/lib/showcase-public-api.ts` — aucune classe Tailwind arbitraire
+ * `var(...)` ici.
  */
 
 interface VitrinePageProps {
@@ -28,10 +32,11 @@ interface VitrinePageProps {
 export async function generateMetadata({ params, searchParams }: VitrinePageProps): Promise<Metadata> {
   const { slug } = await params;
   const { lang, token } = await searchParams;
-  const vitrine = await getPublicVitrine(slug, { lang: lang ? normalizeLocale(lang) : undefined, token });
+  const locale = normalizeLocale(lang ?? '');
+  const vitrine = await getPublicVitrine(slug, { lang: locale, token });
 
   if (!vitrine) {
-    return { title: 'Site introuvable' };
+    return { title: t(locale, 'showcase.notFoundTitle', 'Page not found') };
   }
 
   return {
@@ -56,21 +61,18 @@ function items(value: unknown): Record<string, unknown>[] {
   return Array.isArray(value) ? value.filter((item): item is Record<string, unknown> => !!item && typeof item === 'object') : [];
 }
 
-function Section({ section }: { section: VitrineSection }) {
+function Section({ section, styles }: { section: VitrineSection; styles: ReturnType<typeof vitrineStyles> }) {
   const content = section.content ?? {};
 
   switch (section.type) {
     case 'hero':
       return (
-        <header className="bg-[var(--vitrine-primary)] px-6 py-20 text-[var(--vitrine-on-primary)]">
+        <header className="px-6 py-20" style={styles.hero}>
           <div className="mx-auto max-w-4xl space-y-4 text-center">
             <h1 className="text-4xl font-black tracking-tight sm:text-5xl">{str(content.heading)}</h1>
             {str(content.subheading) !== '' && <p className="text-lg opacity-90">{str(content.subheading)}</p>}
             {str(content.cta_label) !== '' && (
-              <a
-                href={str(content.cta_url) || '#contact'}
-                className="mt-4 inline-flex rounded-[var(--vitrine-radius)] bg-[var(--vitrine-accent)] px-6 py-3 font-bold text-[var(--vitrine-on-primary)]"
-              >
+              <a href={str(content.cta_url) || '#contact'} className="mt-4 inline-flex px-6 py-3 font-bold" style={styles.heroCta}>
                 {str(content.cta_label)}
               </a>
             )}
@@ -86,7 +88,7 @@ function Section({ section }: { section: VitrineSection }) {
           )}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {items(content.items).map((item, index) => (
-              <article key={index} className="rounded-[var(--vitrine-radius)] border border-slate-200 p-5">
+              <article key={index} className="border border-slate-200 p-5" style={styles.card}>
                 <h3 className="font-bold text-slate-900">{str(item.title)}</h3>
                 {str(item.description) !== '' && <p className="mt-2 text-sm text-slate-600">{str(item.description)}</p>}
               </article>
@@ -103,7 +105,7 @@ function Section({ section }: { section: VitrineSection }) {
           )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items(content.items).map((item, index) => (
-              <figure key={index} className="overflow-hidden rounded-[var(--vitrine-radius)] border border-slate-200">
+              <figure key={index} className="overflow-hidden border border-slate-200" style={styles.card}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- URL publique fournie par l'API, dimensions inconnues */}
                 <img src={str(item.image_url)} alt={str(item.caption)} className="h-56 w-full object-cover" />
                 {str(item.caption) !== '' && (
@@ -123,7 +125,7 @@ function Section({ section }: { section: VitrineSection }) {
           )}
           <div className="grid gap-6 sm:grid-cols-2">
             {items(content.items).map((item, index) => (
-              <blockquote key={index} className="rounded-[var(--vitrine-radius)] bg-slate-50 p-6">
+              <blockquote key={index} className="bg-slate-50 p-6" style={styles.card}>
                 <p className="text-slate-700">“{str(item.quote)}”</p>
                 <footer className="mt-3 text-sm font-semibold text-slate-500">
                   {str(item.author)}
@@ -143,7 +145,7 @@ function Section({ section }: { section: VitrineSection }) {
           )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items(content.items).map((item, index) => (
-              <article key={index} className="rounded-[var(--vitrine-radius)] border border-slate-200 p-5">
+              <article key={index} className="border border-slate-200 p-5" style={styles.card}>
                 <h3 className="font-bold text-slate-900">{str(item.name)}</h3>
                 {str(item.description) !== '' && <p className="mt-2 text-sm text-slate-600">{str(item.description)}</p>}
               </article>
@@ -156,7 +158,7 @@ function Section({ section }: { section: VitrineSection }) {
       return (
         <section id="contact" className="mx-auto max-w-4xl px-6 py-14">
           <h2 className="mb-6 text-2xl font-black tracking-tight text-slate-900">
-            {str(content.title) || 'Contact'}
+            {str(content.title)}
           </h2>
           <div className="space-y-2 text-slate-700">
             {str(content.email) !== '' && (
@@ -200,23 +202,20 @@ function Section({ section }: { section: VitrineSection }) {
 export default async function VitrinePage({ params, searchParams }: VitrinePageProps) {
   const { slug } = await params;
   const { lang, token } = await searchParams;
+  const locale = normalizeLocale(lang ?? '');
 
-  const vitrine: VitrinePublic | null = await getPublicVitrine(slug, {
-    lang: lang ? normalizeLocale(lang) : undefined,
-    token,
-  });
+  const vitrine: VitrinePublic | null = await getPublicVitrine(slug, { lang: locale, token });
 
   if (!vitrine) {
     notFound();
   }
 
-  const cssVars = vitrineCssVariables(vitrine);
-  const style = Object.fromEntries(Object.entries(cssVars)) as React.CSSProperties;
+  const styles = vitrineStyles(vitrine);
 
   return (
-    <div lang={vitrine.lang} dir={vitrine.lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen bg-[var(--vitrine-surface)]" style={style}>
+    <div lang={vitrine.lang} dir={vitrine.lang === 'ar' ? 'rtl' : 'ltr'} className="min-h-screen" style={styles.root}>
       {vitrine.sections.map((section, index) => (
-        <Section key={`${section.type}-${index}`} section={section} />
+        <Section key={`${section.type}-${index}`} section={section} styles={styles} />
       ))}
     </div>
   );

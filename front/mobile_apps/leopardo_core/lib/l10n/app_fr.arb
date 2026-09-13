@@ -3844,5 +3844,6 @@
   "showcaseSectiontestimonials": "Témoignages",
   "showcaseSectionproducts": "Produits",
   "showcaseSectioncontact": "Contact",
-  "showcaseSectionfooter": "Pied de page"
+  "showcaseSectionfooter": "Pied de page",
+  "showcaseNotfoundtitle": "Page introuvable"
 }

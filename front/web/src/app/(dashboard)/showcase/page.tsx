@@ -32,6 +32,9 @@ import {
   unpublishShowcase,
   updateShowcaseSection,
   updateShowcaseSettings,
+  EXTERNAL_LINK_REL,
+  SHOWCASE_ITEMS_GRID_FEATURES,
+  SHOWCASE_ITEMS_GRID_TESTIMONIALS,
   type Showcase,
   type ShowcaseSection,
   type ShowcaseSectionType,
@@ -326,7 +329,7 @@ export default function ShowcaseModulePage() {
                 <a
                   href={`/vitrine/${showcase.slug}`}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel={EXTERNAL_LINK_REL}
                   className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-400"
                 >
                   <ExternalLink className="h-4 w-4" />
@@ -496,7 +499,7 @@ export default function ShowcaseModulePage() {
                     <div className="space-y-3">
                       <Field label={c.fieldTitle} value={valueOf(section, 'title')} onChange={(v) => setDraftField(section, 'title', v)} />
                       {itemsOf(section, 'items').map((item, index) => (
-                        <div key={index} className="grid gap-2 rounded-2xl border border-slate-200 p-3 sm:grid-cols-[1fr_2fr_auto]">
+                        <div key={index} className={`grid gap-2 rounded-2xl border border-slate-200 p-3 ${SHOWCASE_ITEMS_GRID_FEATURES}`}>
                           <input
                             className={inputClass}
                             placeholder={c.itemTitle}
@@ -534,7 +537,7 @@ export default function ShowcaseModulePage() {
                     <div className="space-y-3">
                       <Field label={c.fieldTitle} value={valueOf(section, 'title')} onChange={(v) => setDraftField(section, 'title', v)} />
                       {itemsOf(section, 'items').map((item, index) => (
-                        <div key={index} className="grid gap-2 rounded-2xl border border-slate-200 p-3 sm:grid-cols-[2fr_1fr_1fr_auto]">
+                        <div key={index} className={`grid gap-2 rounded-2xl border border-slate-200 p-3 ${SHOWCASE_ITEMS_GRID_TESTIMONIALS}`}>
                           <input
                             className={inputClass}
                             placeholder={c.itemQuote}

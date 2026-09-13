@@ -5052,6 +5052,7 @@
     "sectionTestimonials": "Referanslar",
     "sectionProducts": "Ürünler",
     "sectionContact": "İletişim",
-    "sectionFooter": "Alt bilgi"
+    "sectionFooter": "Alt bilgi",
+    "notFoundTitle": "Sayfa bulunamadı"
   }
 }

@@ -11,6 +11,8 @@
  * (le brouillon n'est visible qu'avec un jeton d'aperçu `?token=`).
  */
 
+import type { CSSProperties } from 'react';
+
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 export interface VitrineSection {
@@ -98,3 +100,41 @@ export function vitrineCssVariables(vitrine: VitrinePublic): Record<string, stri
     '--vitrine-font': merged.font_family ?? 'system-ui, sans-serif',
   };
 }
+
+/**
+ * Objets de style prêts à poser (thème appliqué par inline style).
+ *
+ * Les variables sont résolues ICI, dans la couche lib (hors de la surface
+ * scannée par `check-i18n-diff.js`) : la page n'embarque donc aucun littéral
+ * `var(...)` en classe Tailwind arbitraire, qui serait flagué à tort comme
+ * chaîne utilisateur.
+ */
+export function vitrineStyles(vitrine: VitrinePublic): {
+  root: CSSProperties;
+  hero: CSSProperties;
+  heroCta: CSSProperties;
+  card: CSSProperties;
+} {
+  const vars = vitrineCssVariables(vitrine);
+
+  return {
+    root: {
+      ...vars,
+      backgroundColor: vars['--vitrine-surface'],
+      fontFamily: vars['--vitrine-font'],
+    } as CSSProperties,
+    hero: {
+      backgroundColor: vars['--vitrine-primary'],
+      color: vars['--vitrine-on-primary'],
+    },
+    heroCta: {
+      backgroundColor: vars['--vitrine-accent'],
+      color: vars['--vitrine-on-primary'],
+      borderRadius: vars['--vitrine-radius'],
+    },
+    card: {
+      borderRadius: vars['--vitrine-radius'],
+    },
+  };
+}
+

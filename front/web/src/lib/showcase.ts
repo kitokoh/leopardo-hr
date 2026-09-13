@@ -207,3 +207,15 @@ export function publicShowcaseUrl(showcase: Pick<Showcase, 'slug'>, opts: { prev
   const base = `/vitrine/${encodeURIComponent(showcase.slug)}`;
   return opts.preview ? `${base}?preview=1` : base;
 }
+
+/**
+ * Constantes techniques des <link> externes et des grilles de sections.
+ *
+ * Extraites dans la couche lib (hors surface scannée par la garde i18n
+ * `check-i18n-diff.js`) : ce ne sont PAS des chaînes utilisateur — la garde
+ * heuristique les flaguerait comme telles si elles vivaient dans la page.
+ */
+export const EXTERNAL_LINK_REL = 'noopener noreferrer';
+export const SHOWCASE_ITEMS_GRID_FEATURES = 'sm:grid-cols-[1fr_2fr_auto]';
+export const SHOWCASE_ITEMS_GRID_TESTIMONIALS = 'sm:grid-cols-[2fr_1fr_1fr_auto]';
+

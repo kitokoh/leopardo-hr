@@ -6201,7 +6201,8 @@
     "sectionTestimonials": "Testimonials",
     "sectionProducts": "Products",
     "sectionContact": "Contact",
-    "sectionFooter": "Footer"
+    "sectionFooter": "Footer",
+    "notFoundTitle": "Page not found"
   },
   "trial": {
     "trialBadge": "Trial",
