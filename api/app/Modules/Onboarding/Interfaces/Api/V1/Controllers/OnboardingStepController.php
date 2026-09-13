@@ -133,6 +133,25 @@ class OnboardingStepController extends Controller
         ]);
     }
 
+    /**
+     * #7268 — reponse d'erreur localisee du module Onboarding.
+     *
+     * `error` et `message` portent le code stable (machine), `localized_message`
+     * porte la traduction `errors.*` dans la langue resolue par SetLocale. Le
+     * portail lit `localized_message` en priorite (cf. `getApiErrorMessage`),
+     * donc aucune chaine affichable n'est codee en dur cote API.
+     */
+    private function errorResponse(string $code, int $status): JsonResponse
+    {
+        $translated = __("errors.{$code}");
+
+        return new JsonResponse([
+            'error' => $code,
+            'message' => $code,
+            'localized_message' => is_string($translated) ? $translated : $code,
+        ], $status);
+    }
+
     public function complete(Request $request, string $stepKey): JsonResponse
     {
         /** @var Employee $user */
@@ -213,24 +232,5 @@ class OnboardingStepController extends Controller
         $step->update(['status' => 'skipped']);
 
         return (new OnboardingStepResource($step->fresh()))->response();
-    }
-
-    /**
-     * #7268 — reponse d'erreur localisee du module Onboarding.
-     *
-     * `error` et `message` portent le code stable (machine), `localized_message`
-     * porte la traduction `errors.*` dans la langue resolue par SetLocale. Le
-     * portail lit `localized_message` en priorite (cf. `getApiErrorMessage`),
-     * donc aucune chaine affichable n'est codee en dur cote API.
-     */
-    private function errorResponse(string $code, int $status): JsonResponse
-    {
-        $translated = __("errors.{$code}");
-
-        return new JsonResponse([
-            'error' => $code,
-            'message' => $code,
-            'localized_message' => is_string($translated) ? $translated : $code,
-        ], $status);
     }
 }
