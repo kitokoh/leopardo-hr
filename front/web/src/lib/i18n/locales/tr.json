@@ -1471,7 +1471,11 @@
     "setPasswordTooWeak": "En az 8 karakter ve bir rakam.",
     "setPasswordMismatch": "İki parola eşleşmiyor.",
     "setPasswordUnavailable": "Parola şu anda kaydedilemiyor. Lütfen tekrar deneyin.",
-    "goToLogin": "Giriş yap"
+    "goToLogin": "Giriş yap",
+    "stepPlanLabel": "Plan",
+    "planTitle": "Planınızı seçin",
+    "planSubtitle": "Çalışma alanınız seçtiğiniz plan üzerinde oluşturulur. Ücretsiz deneme, kredi kartı gerekmez.",
+    "planContinue": "Bu planla devam et"
   },
   "companies": {
     "toast": {

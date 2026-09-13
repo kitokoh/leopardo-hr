@@ -1714,7 +1714,11 @@
     "stepProfileLabel": "Profile",
     "stepToolsLabel": "Tools",
     "stepIdentityLabel": "Details",
-    "soloNote": "An Independent profile does not include time tracking or employee management."
+    "soloNote": "An Independent profile does not include time tracking or employee management.",
+    "stepPlanLabel": "Plan",
+    "planTitle": "Choose your plan",
+    "planSubtitle": "Your workspace is created on the plan you select. Free trial, no credit card.",
+    "planContinue": "Continue with this plan"
   },
   "attendanceDayDetail": "Daily detail",
   "support_tickets": {

@@ -1720,7 +1720,11 @@
     "stepProfileLabel": "Profil",
     "stepToolsLabel": "Araçlar",
     "stepIdentityLabel": "Bilgiler",
-    "soloNote": "Bağımsız profilde puantaj ve çalışan yönetimi yer almaz."
+    "soloNote": "Bağımsız profilde puantaj ve çalışan yönetimi yer almaz.",
+    "stepPlanLabel": "Plan",
+    "planTitle": "Planınızı seçin",
+    "planSubtitle": "Çalışma alanınız seçtiğiniz plan üzerinde oluşturulur. Ücretsiz deneme, kredi kartı gerekmez.",
+    "planContinue": "Bu planla devam et"
   },
   "attendanceDayDetail": "Günlük detay",
   "support_tickets": {

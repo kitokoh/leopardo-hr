@@ -1714,7 +1714,11 @@
     "stepProfileLabel": "الملف",
     "stepToolsLabel": "الأدوات",
     "stepIdentityLabel": "البيانات",
-    "soloNote": "ملف المستقل لا يتضمن تسجيل الحضور ولا إدارة الموظفين."
+    "soloNote": "ملف المستقل لا يتضمن تسجيل الحضور ولا إدارة الموظفين.",
+    "stepPlanLabel": "العرض",
+    "planTitle": "اختر عرضك",
+    "planSubtitle": "يتم إنشاء مساحتك على العرض الذي تختاره. تجربة مجانية بدون بطاقة بنكية.",
+    "planContinue": "المتابعة بهذا العرض"
   },
   "attendanceDayDetail": "تفاصيل يومية",
   "support_tickets": {

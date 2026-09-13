@@ -1471,7 +1471,11 @@
     "setPasswordTooWeak": "At least 8 characters, including one digit.",
     "setPasswordMismatch": "The two passwords do not match.",
     "setPasswordUnavailable": "Unable to save the password right now. Please retry.",
-    "goToLogin": "Sign in"
+    "goToLogin": "Sign in",
+    "stepPlanLabel": "Plan",
+    "planTitle": "Choose your plan",
+    "planSubtitle": "Your workspace is created on the plan you select. Free trial, no credit card.",
+    "planContinue": "Continue with this plan"
   },
   "companies": {
     "toast": {

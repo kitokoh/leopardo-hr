@@ -73,6 +73,8 @@ export function signupFormSchema(locale: AppLocale) {
     // est obligatoire) ; le schéma reste permissif pour ne pas casser le
     // formulaire rapide du hero, qui ne collecte qu'un email.
     company_type: z.enum(['company', 'solo']).optional(),
+    // #7238 — offre choisie à l'inscription (le compte est créé POUR cette offre).
+    plan: z.enum(['free', 'pilot', 'operations', 'enterprise']).optional(),
     // #7235 — Outils horizontaux choisis (allowlist revalidée côté API).
     modules: z.array(z.string().max(40)).max(20).optional(),
     // #7235 — Métier vertical (code du catalogue de solutions).

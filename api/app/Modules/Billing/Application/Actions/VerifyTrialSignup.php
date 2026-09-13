@@ -172,7 +172,12 @@ class VerifyTrialSignup
             ];
         }
 
-        $trialPlan = $this->resolveTrialPlan();
+        // #7238 — le compte est créé pour l'offre CHOISIE à l'inscription
+        // (le choix est obligatoire côté UI) ; repli sur l'offre par défaut
+        // uniquement si aucun plan exploitable n'est transmis.
+        $trialPlan = $this->resolveTrialPlan(
+            is_string($payload['plan'] ?? null) ? $payload['plan'] : null
+        );
         if (! $trialPlan) {
             Log::error('SelfServiceTrial: No active plan found for trial provisioning.');
 
@@ -421,8 +426,25 @@ class VerifyTrialSignup
         } while (true);
     }
 
-    private function resolveTrialPlan(): ?object
+    private function resolveTrialPlan(?string $planCode = null): ?object
     {
+        $requested = $planCode !== null ? strtolower(trim($planCode)) : '';
+
+        if ($requested !== '') {
+            $requestedPlan = DB::table($this->publicTable('plans'))
+                ->where('is_active', true)
+                ->whereRaw('LOWER(name) = ?', [$requested])
+                ->first();
+
+            if ($requestedPlan) {
+                return $requestedPlan;
+            }
+
+            Log::warning('SelfServiceTrial: offre inconnue demandée à l’inscription — repli sur l’offre par défaut', [
+                'plan' => $planCode,
+            ]);
+        }
+
         $plan = DB::table($this->publicTable('plans'))
             ->where('is_active', true)
             ->orderBy('id')

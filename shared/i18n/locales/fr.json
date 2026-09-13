@@ -1471,7 +1471,11 @@
     "setPasswordTooWeak": "8 caractères minimum, dont un chiffre.",
     "setPasswordMismatch": "Les deux mots de passe ne correspondent pas.",
     "setPasswordUnavailable": "Impossible d'enregistrer le mot de passe pour le moment. Réessayez.",
-    "goToLogin": "Se connecter"
+    "goToLogin": "Se connecter",
+    "stepPlanLabel": "Offre",
+    "planTitle": "Choisissez votre offre",
+    "planSubtitle": "Votre espace est créé sur l'offre sélectionnée. Essai gratuit, sans carte bancaire.",
+    "planContinue": "Continuer avec cette offre"
   },
   "companies": {
     "toast": {
