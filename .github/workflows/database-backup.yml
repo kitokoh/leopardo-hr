@@ -11,8 +11,12 @@ on:
         options:
           - backup
           - drill
+          - freshness
   schedule:
     - cron: "15 2 * * *"
+    # #7253 — contrôle de fraîcheur : 2 h 15 après la sauvegarde quotidienne,
+    # pour détecter une chaîne de sauvegarde rompue (RPO non tenu).
+    - cron: "30 4 * * *"
     - cron: "15 3 1 * *"
 
 permissions:
@@ -60,10 +64,14 @@ jobs:
           BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
         run: |
           set -euo pipefail
           missing=()
-          for name in DATABASE_URL BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+          # #7253 — BACKUP_AGE_RECIPIENT est désormais OBLIGATOIRE : la base
+          # contient des données RH et de paie, un dump en clair dans S3 n'est
+          # pas acceptable, même chiffré au repos par SSE-S3.
+          for name in DATABASE_URL BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY BACKUP_AGE_RECIPIENT; do
             if [[ -z "${!name:-}" ]]; then
               missing+=("${name}")
             fi
@@ -96,11 +104,11 @@ jobs:
 
           pg_dump --format=custom --no-owner --no-privileges --file="${dump_file}" "${DATABASE_URL}"
 
-          if [[ -n "${BACKUP_AGE_RECIPIENT:-}" ]]; then
-            age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${dump_file}.age" "${dump_file}"
-            rm -f "${dump_file}"
-            dump_file="${dump_file}.age"
-          fi
+          # #7253 — chiffrement non optionnel (présence garantie par l'étape
+          # de validation des secrets ci-dessus).
+          age --recipient "${BACKUP_AGE_RECIPIENT}" --output "${dump_file}.age" "${dump_file}"
+          rm -f "${dump_file}"
+          dump_file="${dump_file}.age"
 
           object_key="postgres/daily/$(date -u +%Y/%m/%d)/$(basename "${dump_file}")"
           aws s3 cp "${dump_file}" "s3://${BACKUP_S3_BUCKET}/${object_key}" \
@@ -108,7 +116,95 @@ jobs:
             --storage-class STANDARD_IA \
             --sse AES256
 
-          echo "Backup uploaded to s3://${BACKUP_S3_BUCKET}/${object_key}"
+          # #7253 — vérifier que l'objet est réellement présent et complet :
+          # un `aws s3 cp` peut sortir 0 sans que l'objet soit exploitable.
+          remote_size="$(aws s3api head-object --bucket "${BACKUP_S3_BUCKET}" --key "${object_key}" --region "${AWS_REGION}" --query 'ContentLength' --output text)"
+          local_size="$(stat -c %s "${dump_file}")"
+          if [[ "${remote_size}" != "${local_size}" ]]; then
+            echo "::error::Sauvegarde incohérente (issue #7253) : taille distante=${remote_size} octets, taille locale=${local_size} octets."
+            exit 1
+          fi
+
+          echo "Backup verified: s3://${BACKUP_S3_BUCKET}/${object_key} (${local_size} octets)"
+
+  backup-freshness:
+    timeout-minutes: 15
+    name: Backup freshness check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'freshness' || github.event_name == 'schedule' && github.event.schedule == '30 4 * * *'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Install tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v aws >/dev/null 2>&1; then
+            python3 -m pip install --user --break-system-packages awscli
+            echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          fi
+          aws --version
+
+      # #7253 — sans secrets, le contrôle n'a PAS lieu : on échoue bruyamment
+      # plutôt que de laisser un job vert signifier « sauvegardes vérifiées ».
+      - name: Validate freshness secrets
+        id: secrets
+        shell: bash
+        env:
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in BACKUP_S3_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [[ -z "${!name:-}" ]]; then
+              missing+=("${name}")
+            fi
+          done
+
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::Contrôle de fraîcheur IMPOSSIBLE — secrets manquants (issue #7253) : ${missing[*]}"
+            exit 1
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Fail when the latest backup is older than the RPO
+        if: steps.secrets.outputs.configured == 'true'
+        shell: bash
+        env:
+          BACKUP_S3_BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          BACKUP_MAX_AGE_HOURS: "25"
+        run: |
+          set -euo pipefail
+          export TZ=UTC
+
+          # La clé contient la date (postgres/daily/YYYY/MM/DD/...) : un tri
+          # lexicographique suffit à isoler la sauvegarde la plus récente.
+          latest="$(aws s3 ls "s3://${BACKUP_S3_BUCKET}/postgres/daily/" --recursive --region "${AWS_REGION}" | sort | tail -1 || true)"
+
+          if [[ -z "${latest}" ]]; then
+            echo "::error::Aucune sauvegarde trouvée sous s3://${BACKUP_S3_BUCKET}/postgres/daily/ (issue #7253) — RPO non tenu."
+            exit 1
+          fi
+
+          latest_ts="$(echo "${latest}" | awk '{print $1" "$2}')"
+          latest_age_h=$(( ( $(date -u +%s) - $(date -u -d "${latest_ts}" +%s) ) / 3600 ))
+
+          echo "Dernière sauvegarde : ${latest_ts} UTC (il y a ${latest_age_h} h)"
+          echo "Seuil RPO configuré : ${BACKUP_MAX_AGE_HOURS} h"
+
+          if [[ "${latest_age_h}" -gt "${BACKUP_MAX_AGE_HOURS}" ]]; then
+            echo "::error::Dernière sauvegarde vieille de ${latest_age_h} h (> ${BACKUP_MAX_AGE_HOURS} h) — RPO non tenu, chaîne de sauvegarde rompue (issue #7253)."
+            exit 1
+          fi
+
+          echo "OK — sauvegarde récente (${latest_age_h} h)."
 
   monthly-restore-drill:
     timeout-minutes: 60
