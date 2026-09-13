@@ -270,3 +270,34 @@ restent les gates applicables.
 - **#6872 (V-MEDIA, BC-27 SHOWCASE) — médias de vitrine.** Upload/suppression/liste des médias (logo, images de sections) : types et taille validés (`StoreShowcaseMediaRequest`), isolation tenant, rendu public des médias publiés avec en-têtes de cache, UI d'upload dans l'éditeur de vitrine (`ShowcaseMediaUploader.vue`). Scénarios API : `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md` ; UI : `docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`.
 - **#7235 / #7234 — inscription par profil + vitrine.** Surface **mobile** : aucun comportement modifié ; seules les **valeurs traduites** des ARB (`front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb`) sont propagées depuis le catalogue partagé — nouvelles clés `signup.*` (profil d'activité, outils, métier), `signupPage.*` (récit de la page d'inscription) et `trial.*` (jours d'essai restants), et mise à jour des libellés `signup.badge/title/subtitle/submitLabel` + `pricing.plans.*.cta` (fin du discours « essai 14 jours » à l'inscription). Aucun parcours mobile n'est modifié : les gates applicables restent le lint, le build et les suites web/vitrine (`e2e/client-company-profile.spec.ts`, `e2e/marketing-funnel.spec.ts`).
 - **#7238 / #7240 — inscription : le tunnel s'ouvre sur le choix de l'OFFRE (et l'offre pilote la création du compte).** Le parcours `/signup` gagne une **étape 0 « Offre »** (les 4 offres du catalogue tarifaire, pré-sélectionnées par `?plan=` des CTA `/pricing`, `Continuer` bloqué sans sélection) et le tunnel passe à 4 temps (offre → profil → outils/métier → coordonnées). L'offre choisie est désormais **réellement appliquée** : `POST /trial/signup` restreint `plan` aux codes connus (`Rule::in`) et `VerifyTrialSignup::resolveTrialPlan($code)` crée la société sur l'offre **demandée** (au lieu du premier plan actif, soit Free). Surface **web client** : scénarios `e2e/marketing-funnel.spec.ts`, `e2e/client-company-profile.spec.ts`. Surface **web admin** : aucun comportement modifié — seules les **valeurs traduites** des catalogues (`front/admin-dashboard/src/i18n/locales/*.json`) sont propagées depuis le catalogue partagé (4 clés `signup.stepPlanLabel`/`planTitle`/`planSubtitle`/`planContinue`). Surface **mobile** : seules les ARB (`front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb`) sont régénérées, aucun parcours modifié.
+
+## Mise a jour 2026-09-13 — inscription sans friction (PR #7275, issues #7273/#7274)
+
+- **Surface web client / vitrine — parcours d'inscription modifie** : le formulaire ne demande
+  plus le role (fondateur implicite), ni la taille d'equipe, ni le telephone (l'e-mail est
+  verifie par code), ni le pays (resolu cote serveur par geolocalisation `request.geo`, avec
+  repli `COUNTRY_REQUIRED` + selecteur affiche uniquement si la detection echoue). Le choix
+  **entreprise / independant** est conserve. Apres le code de verification, la session est
+  ouverte automatiquement (cookie httpOnly) et l'utilisateur entre directement dans son espace.
+  L'offre choisie (`?plan=`) est rappelee sur le formulaire. Scenarios applicables :
+  `front/web/e2e/marketing-funnel.spec.ts`, `front/web/e2e/client-company-profile.spec.ts`,
+  et la suite unitaire `jest` (desormais executee par le job requis
+  « Frontend — ESLint + TypeScript »).
+- **Surface API** : `POST /api/v1/trial/signup` accepte un champ optionnel `locale`
+  (`fr|en|ar|tr`) qui pilote la langue de l'e-mail de verification **et** la langue du tenant
+  provisionne ; `POST /api/v1/trial/verify` renvoie `data.token` (jeton de session, `null` si
+  l'auto-connexion n'a pas pu etre ouverte). Les chaines de l'e-mail de verification
+  (`api/resources/views/emails/trial-verification.blade.php`) sont desormais externalisees dans
+  `api/lang/*/emails.php` (garde I18N).
+- **Surface mobile** : aucun comportement modifie ; seules les **valeurs traduites** des ARB
+  (`front/mobile_apps/leopardo_core/lib/l10n/app_{fr,en,ar,tr}.arb`) sont propagees depuis le
+  catalogue partage — 3 nouvelles cles `signup.planSelected`, `signup.planChange`,
+  `signup.countryDetectionFailed`. Aucun parcours mobile n'est modifie.
+- **Surface web admin** : aucun comportement modifie ; seules les **valeurs traduites** des
+  catalogues (`front/admin-dashboard/src/i18n/locales/*.json`) sont propagees depuis le
+  catalogue partage (memes 3 cles). Gates applicables : lint, build et suites web/admin.
+- **Suite unitaire web remise au vert** : les 5 tests rouges sur `main` (boutique, travel
+  portal, absences, lettering) sont corriges — aucun n'etait un « timeout jsdom » : selecteur
+  faussement positif, dates figees devenues anterieures au `min` des champs date, periode
+  figee, locale non fixee. La suite `jest` est desormais executee par un job **requis**, ce qui
+  empeche toute regression unitaire silencieuse.

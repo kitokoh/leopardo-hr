@@ -67,8 +67,12 @@ describe('Boutique publique (RESTO-805-front)', () => {
     await userEvent.click(screen.getByLabelText('Panier (1)'));
 
     expect(await screen.findByText('Panier')).toBeInTheDocument();
-    // Total du panier affiché sur le bouton de commande (XOF sans décimales en CLDR).
-    expect(screen.getByText(/Commander/)).toBeInTheDocument();
+    // Bouton de commande (le libellé réel est « Valider la commande » — le
+    // titre de page « Commander en ligne » ne doit pas servir de cible).
+    // Le total du panier est affiché sur le bouton (XOF sans décimales en CLDR).
+    const checkoutButton = screen.getByRole('button', { name: /Valider la commande/ });
+    expect(checkoutButton).toBeInTheDocument();
+    expect(checkoutButton).toHaveTextContent(/Valider la commande\s*—/);
 
     // Commande : le header X-Restaurant-Shop-Token est injecté.
     mockedApiFetch.mockResolvedValueOnce(jsonResponse({
@@ -79,7 +83,7 @@ describe('Boutique publique (RESTO-805-front)', () => {
     }));
 
     await userEvent.type(screen.getByLabelText('Téléphone (optionnel)'), '+22507000000');
-    await userEvent.click(screen.getByText(/Commander/));
+    await userEvent.click(screen.getByRole('button', { name: /Valider la commande/ }));
 
     await waitFor(() => {
       const postCall = mockedApiFetch.mock.calls.find(([url]) => String(url).includes('/public/restaurant/shop/orders'));

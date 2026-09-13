@@ -37,7 +37,7 @@ class VerifyTrialSignup
     ) {}
 
     /**
-     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int}
+     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string, temp_password: string}|array{success: false, error: string, message: string, status: int}
      */
     public function execute(string $email, string $code): array
     {
@@ -194,6 +194,14 @@ class VerifyTrialSignup
 
         $rawRole = $payload['role'] ?? null;
 
+        // Langue du tenant = langue d'interface choisie à l'inscription, sinon
+        // langue par défaut du pays (comportement historique). Sans cela, la
+        // société d'un utilisateur turcophone était créée en arabe/français.
+        $requestedLocale = strtolower(trim((string) ($payload['locale'] ?? '')));
+        $companyLanguage = in_array($requestedLocale, ['fr', 'en', 'ar', 'tr'], true)
+            ? $requestedLocale
+            : strtolower((string) $countryDefaults['language']);
+
         try {
             /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
@@ -205,7 +213,7 @@ class VerifyTrialSignup
                 'email' => $email,
                 'phone' => $payload['phone'] ?? null,
                 'plan_id' => $trialPlan->id,
-                'language' => strtolower($countryDefaults['language']),
+                'language' => $companyLanguage,
                 'currency' => strtoupper($countryDefaults['currency']),
                 'timezone' => $countryDefaults['timezone'],
                 'manager_first_name' => $firstName,
@@ -316,6 +324,12 @@ class VerifyTrialSignup
             'manager_email' => $email,
             'first_name' => $firstName,
             'last_name' => $lastName,
+            // Mot de passe temporaire : sert UNIQUEMENT au contrôleur d'appel
+            // à ouvrir une session immédiatement (auto-connexion après
+            // vérification du code, retour fondateur 2026-09-13) via le chemin
+            // de connexion éprouvé `AuthService::login()`. Il ne doit JAMAIS
+            // être renvoyé au client.
+            'temp_password' => $tempPassword,
         ];
     }
 

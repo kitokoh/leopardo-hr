@@ -545,6 +545,16 @@ jobs:
         working-directory: front/web
         run: npx eslint src --ext .ts,.tsx --max-warnings 0
 
+      # La suite jest du web n'était exécutée par AUCUN workflow : 5 tests
+      # pouvaient rester rouges sur main sans que rien ne le signale (boutique,
+      # travel portal, absences, lettering). Exécutée ici, dans le check requis
+      # « Frontend — ESLint + TypeScript », elle empêche toute régression
+      # silencieuse de la suite unitaire.
+      - name: Jest unit tests
+        if: needs.detect-changes.outputs.web_changed == 'true'
+        working-directory: front/web
+        run: npx jest --ci
+
       # Garde config Vercel (incident 2026-09-10) : un `ignoreCommand` de plus
       # de 256 caractères fait échouer la validation du schéma et met TOUS les
       # déploiements en ERROR ; un pathspec relatif au cwd (`front/web` alors que
