@@ -128,7 +128,10 @@ class OnboardingStepControllerTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create();
         /** @var Employee $manager */
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $manager = Employee::factory()->manager()->create([
+            'company_id' => $company->id,
+            'preferred_language' => 'fr',
+        ]);
 
         $this->step($company, 'first_report', 'pending');
         $this->step($company, 'company_info', 'pending', required: true);
@@ -139,9 +142,39 @@ class OnboardingStepControllerTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', 'skipped');
 
+        // #7268 — le 422 porte un code stable (`error`/`message`) + le message
+        // traduit par le catalogue `errors.*` dans la langue résolue par
+        // SetLocale. Le portail affiche `localized_message` en priorité : plus
+        // aucun littéral anglais en dur n'est renvoyé.
+        $refused = $this->patchJson('/api/v1/onboarding-setup/company_info/skip');
+
+        $refused->assertStatus(422);
+        $refused->assertJsonPath('error', 'ONBOARDING_STEP_REQUIRED');
+        $refused->assertJsonPath('message', 'ONBOARDING_STEP_REQUIRED');
+        $refused->assertJsonPath(
+            'localized_message',
+            'Cette étape est obligatoire et ne peut pas être ignorée.'
+        );
+    }
+
+    public function test_required_step_refusal_is_localized_in_user_language(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create([
+            'company_id' => $company->id,
+            'preferred_language' => 'ar',
+        ]);
+        $this->step($company, 'company_info', 'pending', required: true);
+
+        Sanctum::actingAs($manager);
+
+        // #7268 — même code stable, message réellement localisé (×4 langues).
         $this->patchJson('/api/v1/onboarding-setup/company_info/skip')
             ->assertStatus(422)
-            ->assertJsonPath('message', 'This step is required and cannot be skipped.');
+            ->assertJsonPath('error', 'ONBOARDING_STEP_REQUIRED')
+            ->assertJsonPath('localized_message', 'هذه الخطوة إلزامية ولا يمكن تخطيها.');
     }
 
     public function test_company_cannot_complete_another_company_step(): void

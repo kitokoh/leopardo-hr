@@ -29,7 +29,9 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        abort_if($companyId === null, 403, 'A company context is required.');
+        if ($companyId === null) {
+            return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
+        }
 
         $steps = OnboardingStep::where('company_id', $companyId)
             ->orderBy('order')
@@ -100,7 +102,9 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        abort_if($companyId === null, 403, 'A company context is required.');
+        if ($companyId === null) {
+            return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
+        }
 
         $steps = OnboardingStep::where('company_id', $companyId)->get();
         $total = $steps->count();
@@ -134,7 +138,9 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        abort_if($companyId === null, 403, 'A company context is required.');
+        if ($companyId === null) {
+            return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
+        }
 
         // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
         // si la société n'a aucune étape seedée (provisioning antérieur au
@@ -178,7 +184,9 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        abort_if($companyId === null, 403, 'A company context is required.');
+        if ($companyId === null) {
+            return $this->errorResponse('COMPANY_CONTEXT_REQUIRED', 403);
+        }
 
         // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
         // si la société n'a aucune étape seedée (provisioning antérieur au
@@ -193,7 +201,13 @@ class OnboardingStepController extends Controller
             ->firstOrFail();
 
         if ($step->required) {
-            return response()->json(['message' => 'This step is required and cannot be skipped.'], 422);
+            // #7268 — le refus etait un litteral anglais en dur, affiche tel
+            // quel par le portail alors que le produit est multilingue
+            // (fr/en/ar/tr). On suit la convention d'erreur du module (cf.
+            // OnboardingController::errorResponse) : code stable + code
+            // traduit par le catalogue `errors.*` dans la langue resolue par
+            // le middleware SetLocale. Le portail affiche `localized_message`.
+            return $this->errorResponse('ONBOARDING_STEP_REQUIRED', 422);
         }
 
         $step->update(['status' => 'skipped']);
@@ -201,4 +215,22 @@ class OnboardingStepController extends Controller
         return (new OnboardingStepResource($step->fresh()))->response();
     }
 
+    /**
+     * #7268 — reponse d'erreur localisee du module Onboarding.
+     *
+     * `error` et `message` portent le code stable (machine), `localized_message`
+     * porte la traduction `errors.*` dans la langue resolue par SetLocale. Le
+     * portail lit `localized_message` en priorite (cf. `getApiErrorMessage`),
+     * donc aucune chaine affichable n'est codee en dur cote API.
+     */
+    private function errorResponse(string $code, int $status): JsonResponse
+    {
+        $translated = __("errors.{$code}");
+
+        return new JsonResponse([
+            'error' => $code,
+            'message' => $code,
+            'localized_message' => is_string($translated) ? $translated : $code,
+        ], $status);
+    }
 }
