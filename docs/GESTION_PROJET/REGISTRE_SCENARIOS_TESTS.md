@@ -275,7 +275,9 @@ restent les gates applicables.
 
 - **Surface web client / vitrine — parcours d'inscription modifie** : le formulaire ne demande
   plus le role (fondateur implicite), ni la taille d'equipe, ni le telephone (l'e-mail est
-  verifie par code), ni le pays (resolu cote serveur par geolocalisation `request.geo`, avec
+  verifie par code), ni le pays (resolu cote serveur par geolocalisation via l'en-tete
+  plateforme `x-vercel-ip-country` — `request.geo` n'existe plus en Next 16, correction du
+  2026-09-13 ci-dessous), avec
   repli `COUNTRY_REQUIRED` + selecteur affiche uniquement si la detection echoue). Le choix
   **entreprise / independant** est conserve. Apres le code de verification, la session est
   ouverte automatiquement (cookie httpOnly) et l'utilisateur entre directement dans son espace.
@@ -301,3 +303,37 @@ restent les gates applicables.
   faussement positif, dates figees devenues anterieures au `min` des champs date, periode
   figee, locale non fixee. La suite `jest` est desormais executee par un job **requis**, ce qui
   empeche toute regression unitaire silencieuse.
+
+## Mise a jour 2026-09-13 (2) — tunnel d'inscription : retours fondateur
+
+- **Geolocalisation du pays reellement lue (defaut de la PR #7275, corrige)** : `request.geo`
+  a ete retire de `NextRequest` en Next 16, et `next/headers` n'expose ni `geolocation()` ni
+  `ipAddress()`. Le repli etait donc TOUJOURS `undefined` : le pays n'etait jamais detecte et
+  le selecteur de repli s'affichait pour 100 % des visiteurs, avec un message negatif
+  (« nous n'avons pas pu detecter votre pays »). La route lit desormais l'en-tete injecte par
+  la plateforme (`x-vercel-ip-country`, plus `cf-ipcountry` pour Cloudflare Pages), ne
+  transmet qu'un code ISO a 2 lettres, et le libelle de repli devient neutre
+  (« Selectionnez votre pays. », x4 langues). Le test unitaire qui fabriquait un
+  `request.geo` inexistant — donc validait une fiction — est remplace par des tests sur les
+  en-tetes reels, un cas d'en-tete invalide, et la priorite du choix de l'utilisateur.
+- **Page tarifs : acces direct aux offres** : la redirection `/signup` sans `?plan=` pointe
+  vers `/pricing?from=signup`, qui affiche immediatement les 4 offres (titre court
+  « Choisissez votre offre », libelles du tunnel reutilises) sans le hero marketing de 60 vh,
+  sans tableau comparatif, sans FAQ ni bandeau final. Mesure au navigateur (viewport 800 px) :
+  le nom du premier plan passe de y=1254 a y=357 ; le selecteur de devise, simple confort
+  d'affichage, est masque sur ce chemin. `/pricing` sans parametre est inchange.
+- **Colonne gauche de `/signup` allegee et rendue vraie** : la liste « Ce que vous obtenez
+  tout de suite » (3 preuves) est retiree, et les 3 etapes decrivent le parcours REEL
+  (e-mail + entreprise -> code a 6 chiffres par e-mail -> entree directe, sans mot de passe a
+  creer). Deux des trois textes precedents etaient faux : l'etape « outils et metier » avait
+  ete retiree par #7249 et l'etape « vous definissez votre mot de passe » est remplacee par
+  l'auto-connexion apres verification. Le sous-titre du hero est aligne.
+- **Surface web client / vitrine** : aucun changement de contrat API. Scenarios applicables :
+  `front/web/e2e/marketing-funnel.spec.ts` et la suite unitaire `jest`
+  (`src/app/api/forms/signup/__tests__/route.test.ts`, 8 cas).
+- **Surface API** : aucun changement de code dans ce lot. Le correctif d'auto-connexion
+  (`data.token`) et de langue de l'e-mail de verification est deja sur `main` (PR #7275).
+- **Surface mobile / web admin** : aucun comportement modifie ; seules les valeurs traduites
+  sont propagees depuis le catalogue partage (suppression des cles `signupPage.proof*`,
+  reecriture de `signupPage.sideTitle`/`step1..3`/`subheadline` et du libelle
+  `signup.countryDetectionFailed`).

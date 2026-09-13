@@ -1478,7 +1478,7 @@
     "planContinue": "Bu planla devam et",
     "planSelected": "Seçilen plan",
     "planChange": "Değiştir",
-    "countryDetectionFailed": "Ülkeniz otomatik olarak belirlenemedi. Lütfen aşağıdan seçin."
+    "countryDetectionFailed": "Ülkenizi seçin."
   },
   "companies": {
     "toast": {
@@ -4993,19 +4993,13 @@
   "signupPage": {
     "badge": "2 dakikada kayit",
     "headline": "Leopardo RH yi agir bir kayit akisi olmadan deneyin",
-    "subheadline": "Calisma alaninizi kendiniz olusturun: profil, araclar ve sektor; ardindan dogrudan uygulamaya girin. Kredi karti gerekmez.",
+    "subheadline": "Çalışma alanınızı kendiniz oluşturun: e-postanız, şirketiniz, bir doğrulama kodu — ve uygulamanın içindesiniz. Kredi kartı gerekmez.",
     "cta": "Deneme alanimi olustur",
     "sideBadge": "Alan hemen hazir",
-    "sideTitle": "Hemen elde ettikleriniz",
-    "proof1Title": "Size ozel arayuz",
-    "proof1Desc": "Sirket veya bagimsiz: menu faaliyetinize uyarlanir.",
-    "proof2Title": "Araclariniz, sektorunuz",
-    "proof2Desc": "Gerekli modulleri secip sektorunuzu belirtirsiniz.",
-    "proof3Title": "14 gun, kart yok",
-    "proof3Desc": "Uygulama kalan gunleri ve Pro ya gecisi gosterir.",
+    "sideTitle": "Çalışma alanınız 2 dakikada hazır",
     "stepsTitle": "3 adimda kayit",
-    "step1": "Profilinizi belirtirsiniz: sirket veya bagimsiz.",
-    "step2": "Araclarinizi ve sektorunuzu secersiniz.",
-    "step3": "Parolanizi belirleyip giris yaparsiniz."
+    "step1": "E-postanızı ve şirket adınızı girersiniz.",
+    "step2": "E-postanıza 6 haneli bir kod gelir.",
+    "step3": "Doğrudan çalışma alanınıza girersiniz — şifre oluşturmanız gerekmez."
   }
 }

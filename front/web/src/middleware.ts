@@ -45,7 +45,10 @@ export function middleware(request: NextRequest) {
   // un compte est créé POUR une offre, et l'offre se choisit sur la page tarifs
   // (d'où l'on arrive avec `?plan=<offre>`). Sans offre choisie, on y renvoie.
   if (pathname === '/signup' && !SUPPORTED_PLANS.includes(request.nextUrl.searchParams.get('plan') ?? '')) {
-    return NextResponse.redirect(new URL('/pricing', request.url));
+    // `?from=signup` : la page tarifs affiche alors LES OFFRES directement
+    // (sans hero marketing ni sections longues) — le prospect qui clique
+    // « Créer un compte » ne doit pas traverser un récit avant de choisir.
+    return NextResponse.redirect(new URL('/pricing?from=signup', request.url));
   }
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
