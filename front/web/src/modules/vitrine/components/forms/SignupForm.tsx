@@ -54,9 +54,11 @@ interface SignupFormProps {
   className?: string;
 }
 
-// #7235 — le tunnel s'ouvre désormais sur le choix du PROFIL (entreprise ou
-// indépendant) puis sur les OUTILS + le MÉTIER, avant les coordonnées.
-type Step = 'profile' | 'setup' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+// #7249 — parcours minimal demandé par le propriétaire : le choix du PROFIL
+// (entreprise ou indépendant), puis les coordonnées, puis le code reçu par
+// e-mail. L'étape « outils + métier » a été retirée (trop longue) : les outils
+// se choisissent après la création, dans « Modules & plan ».
+type Step = 'profile' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
 type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
@@ -73,42 +75,6 @@ const TRIAL_POLL_MAX_ATTEMPTS = 12;
  */
 /** Clés du catalogue i18n `signup.*` utilisées par les cartes du parcours. */
 type SignupFormCopyKey = (typeof signupFormKeys)[number];
-
-type HorizontalTool = { key: string; group: 'team' | 'management'; icon: typeof Users; labelKey: SignupFormCopyKey; descKey: SignupFormCopyKey };
-
-const HORIZONTAL_TOOLS: HorizontalTool[] = [
-  { key: 'employees', group: 'team', icon: Users, labelKey: 'toolsEmployees', descKey: 'toolsEmployeesDesc' },
-  { key: 'attendance', group: 'team', icon: Fingerprint, labelKey: 'toolsAttendance', descKey: 'toolsAttendanceDesc' },
-  { key: 'absences', group: 'team', icon: CalendarClock, labelKey: 'toolsAbsences', descKey: 'toolsAbsencesDesc' },
-  { key: 'payroll', group: 'team', icon: Wallet, labelKey: 'toolsPayroll', descKey: 'toolsPayrollDesc' },
-  { key: 'accounting', group: 'management', icon: Calculator, labelKey: 'toolsAccounting', descKey: 'toolsAccountingDesc' },
-  { key: 'crm', group: 'management', icon: Contact, labelKey: 'toolsCrm', descKey: 'toolsCrmDesc' },
-  { key: 'reports', group: 'management', icon: BarChart3, labelKey: 'toolsReports', descKey: 'toolsReportsDesc' },
-  { key: 'marketing', group: 'management', icon: Megaphone, labelKey: 'toolsMarketing', descKey: 'toolsMarketingDesc' },
-];
-
-const TEAM_TOOL_KEYS = HORIZONTAL_TOOLS.filter((tool) => tool.group === 'team').map((tool) => tool.key);
-
-/**
- * Le socle « Employés » entraîne les contrats et les formations : ce sont les
- * mêmes collections de données côté serveur, proposer trois cases distinctes
- * n'apporterait rien à l'utilisateur.
- */
-const TOOL_DEPENDENCIES: Record<string, string[]> = {
-  employees: ['contracts', 'training'],
-};
-
-/** Métiers VERTICAUX : codes du catalogue de solutions serveur (SolutionCatalogue). */
-type VerticalOption = { code: string; icon: typeof Users; labelKey: SignupFormCopyKey; descKey: SignupFormCopyKey };
-
-const VERTICALS: VerticalOption[] = [
-  { code: 'restaurant', icon: UtensilsCrossed, labelKey: 'verticalRestaurant', descKey: 'verticalRestaurantDesc' },
-  { code: 'fuel_station', icon: Fuel, labelKey: 'verticalFuel', descKey: 'verticalFuelDesc' },
-  { code: 'edumanager', icon: GraduationCap, labelKey: 'verticalEdu', descKey: 'verticalEduDesc' },
-];
-
-const DEFAULT_TOOLS_COMPANY = ['employees', 'attendance', 'absences', 'payroll', 'accounting', 'reports'];
-const DEFAULT_TOOLS_SOLO = ['accounting', 'reports'];
 
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
@@ -168,37 +134,13 @@ export function SignupForm({
 
   // Multi-step state
   const [currentStep, setCurrentStep] = useState<Step>('profile');
-  // #7235 — profil, outils horizontaux et métier vertical choisis.
+  // #7249 — seul le profil est demandé avant les coordonnées (2 choix).
   const [profile, setProfile] = useState<SignupProfile | null>(null);
-  const [selectedTools, setSelectedTools] = useState<string[]>(DEFAULT_TOOLS_COMPANY);
-  const [vertical, setVertical] = useState<string>('');
 
   const chooseProfile = (next: SignupProfile) => {
     setProfile(next);
-    setSelectedTools(next === 'solo' ? DEFAULT_TOOLS_SOLO : DEFAULT_TOOLS_COMPANY);
-    if (next === 'solo') {
-      setVertical('');
-    }
-    setCurrentStep('setup');
+    setCurrentStep('form');
   };
-
-  const toggleTool = (key: string) => {
-    setSelectedTools((current) =>
-      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
-    );
-  };
-
-  const visibleTools = HORIZONTAL_TOOLS.filter(
-    (tool) => profile !== 'solo' || !TEAM_TOOL_KEYS.includes(tool.key),
-  );
-
-  /**
-   * Outils réellement transmis à l'API : la sélection + les dépendances
-   * (contrats/formations suivent « Employés »).
-   */
-  const effectiveModules = Array.from(
-    new Set(selectedTools.flatMap((key) => [key, ...(TOOL_DEPENDENCIES[key] ?? [])])),
-  ).sort();
 
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpValues, setOtpValues] = useState<string[]>(['', '', '', '', '', '']);
@@ -335,14 +277,12 @@ export function SignupForm({
     dispatch({ type: 'SUBMIT_START' });
 
     try {
-      // #7235 — le profil, les outils et le métier viennent du parcours
-      // (étapes 1 et 2) : sans cette injection ils ne quitteraient jamais le
-      // navigateur et l'API provisionnerait un tenant standard.
+      // #7249 — le profil (entreprise/indépendant) reste déclaré à
+      // l'inscription ; les outils et le métier ne sont plus demandés dans le
+      // tunnel (choisis ensuite depuis « Modules & plan »).
       const payload: SignupFormData = {
         ...data,
         company_type: profile ?? 'company',
-        modules: effectiveModules,
-        solutions: vertical ? [vertical] : [],
       };
       const response = await submitSignupForm(payload, page);
 
@@ -482,17 +422,16 @@ export function SignupForm({
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
       {/* #7235 — parcours en 3 temps : profil → outils & métier → coordonnées. */}
-      {(currentStep === 'profile' || currentStep === 'setup' || currentStep === 'form') && (
+      {(currentStep === 'profile' || currentStep === 'form') && (
         <ol className="mb-6 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
           {(
             [
               ['profile', c.stepProfileLabel],
-              ['setup', c.stepToolsLabel],
               ['form', c.stepIdentityLabel],
             ] as const
           ).map(([key, label], index) => {
-            const order = { profile: 0, setup: 1, form: 2 } as const;
-            const current = order[currentStep as 'profile' | 'setup' | 'form'];
+            const order = { profile: 0, form: 1 } as const;
+            const current = order[currentStep as 'profile' | 'form'];
             const done = index < current;
             const active = index === current;
             return (
@@ -608,172 +547,6 @@ export function SignupForm({
         )}
 
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 0b: Outils + métier                */}
-        {/* ═══════════════════════════════════════ */}
-        {currentStep === 'setup' && (
-          <motion.div
-            key="step-setup"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <button
-              type="button"
-              onClick={() => setCurrentStep('profile')}
-              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              {c.back}
-            </button>
-
-            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              {c.toolsTitle}
-            </h2>
-            <p className="mb-5 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {c.toolsSubtitle}
-            </p>
-
-            {profile === 'solo' && (
-              <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-                {c.soloNote}
-              </p>
-            )}
-
-            {(['team', 'management'] as const).map((group) => {
-              const tools = visibleTools.filter((tool) => tool.group === group);
-              if (tools.length === 0) return null;
-              return (
-                <div key={group} className="mb-5">
-                  <p className="mb-2 text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                    {group === 'team' ? c.toolsTeamGroup : c.toolsManagementGroup}
-                  </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {tools.map((tool) => {
-                      const Icon = tool.icon;
-                      const on = selectedTools.includes(tool.key);
-                      return (
-                        <button
-                          key={tool.key}
-                          type="button"
-                          onClick={() => toggleTool(tool.key)}
-                          aria-pressed={on}
-                          data-testid={`signup-tool-${tool.key}`}
-                          className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
-                            on
-                              ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
-                              : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
-                          }`}
-                        >
-                          <span
-                            className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 ${
-                              on ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
-                            }`}
-                          >
-                            {on && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
-                          </span>
-                          <Icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                          <span className="min-w-0">
-                            <span className="block text-sm font-bold text-slate-900 dark:text-white">
-                              {c[tool.labelKey]}
-                            </span>
-                            <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">
-                              {c[tool.descKey]}
-                            </span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
-            <p className="mb-6 rounded-xl bg-transparent px-4 py-3 text-xs leading-5 text-slate-500 dark:text-slate-400">
-              {c.toolsHint}
-            </p>
-
-            <div className="mb-5">
-              <p className="mb-2 text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                {c.verticalTitle}
-              </p>
-              <p className="mb-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{c.verticalSubtitle}</p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {VERTICALS.map((option) => {
-                  const Icon = option.icon;
-                  const on = vertical === option.code;
-                  return (
-                    <button
-                      key={option.code}
-                      type="button"
-                      onClick={() => setVertical(on ? '' : option.code)}
-                      aria-pressed={on}
-                      data-testid={`signup-vertical-${option.code}`}
-                      className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
-                        on
-                          ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
-                          : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
-                      }`}
-                    >
-                      <span
-                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                          on ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
-                        }`}
-                      >
-                        {on && <Check className="h-3 w-3" aria-hidden="true" />}
-                      </span>
-                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-bold text-slate-900 dark:text-white">
-                          {c[option.labelKey]}
-                        </span>
-                        <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">
-                          {c[option.descKey]}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  onClick={() => setVertical('')}
-                  aria-pressed={vertical === ''}
-                  data-testid="signup-vertical-none"
-                  className={`flex items-start gap-3 rounded-xl border-2 p-3 text-left transition ${
-                    vertical === ''
-                      ? 'border-emerald-500 bg-emerald-50/70 ring-2 ring-emerald-500/15 dark:bg-emerald-950/30'
-                      : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900'
-                  }`}
-                >
-                  <span
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                      vertical === '' ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 dark:border-slate-600'
-                    }`}
-                  >
-                    {vertical === '' && <Check className="h-3 w-3" aria-hidden="true" />}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-sm font-bold text-slate-900 dark:text-white">{c.verticalNone}</span>
-                    <span className="block text-xs leading-5 text-slate-500 dark:text-slate-400">{c.verticalNoneDesc}</span>
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={() => setCurrentStep('form')}
-            >
-              {c.continueLabel}
-              <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-            </Button>
-          </motion.div>
-        )}
-
-        {/* ═══════════════════════════════════════ */}
         {/* STEP 1: Signup Form                     */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'form' && (
@@ -786,7 +559,7 @@ export function SignupForm({
           >
             <button
               type="button"
-              onClick={() => setCurrentStep('setup')}
+              onClick={() => setCurrentStep('profile')}
               className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />

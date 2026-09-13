@@ -110,8 +110,8 @@ export async function submitSignupForm(
         source: getLeadSource(),
         page,
         timestamp: new Date().toISOString(),
-        requestedWorkflow: "guided_trial",
-        nextStep: "contact_under_24h"
+        requestedWorkflow: "self_service",
+        nextStep: "verify_email"
       }),
     });
 

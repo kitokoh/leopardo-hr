@@ -109,6 +109,18 @@ async function fillField(label: RegExp, value: string): Promise<void> {
 }
 
 
+/**
+ * #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise / indépendant)
+ * depuis #7235, mais ces tests unitaires portent sur le FORMULAIRE : on
+ * traverse donc l'écran de profil comme le ferait un utilisateur. L'écran de
+ * profil lui-même est couvert par les e2e.
+ */
+function renderAtFormStep() {
+  const result = render(<SignupForm />);
+  fireEvent.click(screen.getByTestId('signup-profile-company'));
+  return result;
+}
+
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
 
 // The component is localized via useVitrineLocale(); the test environment
@@ -122,29 +134,29 @@ beforeAll(() => {
 describe('SignupForm Component', () => {
   describe('Rendering', () => {
     it('should render signup form', () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should render email input', () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should render company input', () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
     });
 
     it('should render submit button', () => {
-      render(<SignupForm />);
-      expect(screen.getByRole('button', { name: /recevoir mon code de vérification/i })).toBeInTheDocument();
+      renderAtFormStep();
+      expect(screen.getByRole('button', { name: /créer mon espace/i })).toBeInTheDocument();
     });
   });
 
   describe('Form Validation', () => {
     it('should show error for invalid email', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillField(/email/i, 'invalid-email');
       submitForm();
       
@@ -154,7 +166,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for empty email', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       submitForm();
       
       await waitFor(() => {
@@ -163,7 +175,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for empty company', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillField(/email/i, 'test@example.com');
       submitForm();
       
@@ -173,14 +185,14 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for missing country (#4476)', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
       await userEvent.selectOptions(selects[1], '1-10');
       await userEvent.selectOptions(selects[0], 'founder');
       await userEvent.click(screen.getByRole('checkbox'));
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /créer mon espace/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/pays est requis/i)).toBeInTheDocument();
@@ -188,7 +200,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for invalid phone', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
       await fillField(/téléphone/i, 'not-a-phone');
@@ -202,24 +214,24 @@ describe('SignupForm Component', () => {
 
   describe('Form Submission', () => {
     it('should accept valid trial request fields', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
 
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
+      const submitButton = screen.getByRole('button', { name: /créer mon espace/i });
       expect(submitButton).not.toBeDisabled();
     });
   });
 
   describe('Accessibility', () => {
     it('should have accessible form labels', () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should be keyboard navigable', async () => {
-      render(<SignupForm />);
+      renderAtFormStep();
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       emailInput.focus();
       expect(emailInput).toHaveFocus();
@@ -230,7 +242,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should have proper form structure', () => {
-      const { container } = render(<SignupForm />);
+      const { container } = renderAtFormStep();
       const form = container.querySelector('form');
       expect(form).toBeInTheDocument();
     });
@@ -268,7 +280,7 @@ describe('SignupForm Component', () => {
         data: { nextStep: 'contact_under_24h' },
       });
 
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillValidForm();
       submitForm();
 
@@ -287,7 +299,7 @@ describe('SignupForm Component', () => {
         data: {},
       });
 
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillValidForm();
       submitForm();
 
@@ -331,7 +343,7 @@ describe('SignupForm Component', () => {
         data: { provisioning_token: 'a'.repeat(64) },
       });
 
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillValidForm();
       submitForm();
 
@@ -349,7 +361,7 @@ describe('SignupForm Component', () => {
         data: {},
       });
 
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillValidForm();
       submitForm();
 
@@ -370,7 +382,7 @@ describe('SignupForm Component', () => {
         });
         (fetchTrialStatus as jest.Mock).mockResolvedValue({ success: true, data: { status: 'pending' } });
 
-        render(<SignupForm />);
+        renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
         const selects = screen.getAllByRole('combobox');
@@ -413,7 +425,7 @@ describe('SignupForm Component', () => {
             },
           });
 
-        render(<SignupForm />);
+        renderAtFormStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
         const selects = screen.getAllByRole('combobox');
@@ -466,7 +478,7 @@ describe('SignupForm Component', () => {
             data: { status: 'ready', login_url: '/auth/login', password_set: false },
           });
 
-        render(<SignupForm />);
+        renderAtFormStep();
         await fillValidForm();
         submitForm();
         await screen.findByText(/vérifiez votre email/i);
@@ -479,8 +491,9 @@ describe('SignupForm Component', () => {
 
         expect(await screen.findByText(/votre espace est prêt/i)).toBeInTheDocument();
         // Le prospect choisit lui-même son mot de passe : sans mailer, c'est le
-        // seul chemin d'accès possible.
-        expect(screen.getByLabelText(/confirmer le mot de passe/i)).toBeInTheDocument();
+        // seul chemin d'accès possible. Un seul champ depuis #7243 (la double
+        // saisie a été retirée du parcours).
+        expect(screen.getByLabelText(/^mot de passe$/i)).toBeInTheDocument();
         expect(
           screen.getByRole('button', { name: /définir mon mot de passe/i })
         ).toBeInTheDocument();
@@ -501,7 +514,7 @@ describe('SignupForm Component', () => {
         message: 'Code de vérification envoyé.',
         data: {},
       });
-      render(<SignupForm />);
+      renderAtFormStep();
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
@@ -522,8 +535,8 @@ describe('SignupForm Component', () => {
     });
 
     it('should show loading state during submission', async () => {
-      render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
+      renderAtFormStep();
+      const submitButton = screen.getByRole('button', { name: /créer mon espace/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
     });

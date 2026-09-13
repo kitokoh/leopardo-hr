@@ -93,10 +93,10 @@ test.describe('Marketing funnel preview', () => {
 
     await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
 
-    // #7235 — le tunnel s'ouvre sur le choix du PROFIL puis des OUTILS avant
-    // les coordonnées : on traverse les deux nouveaux écrans.
+    // #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise /
+    // indépendant) puis va directement aux coordonnées : l'écran « outils +
+    // métier » a été retiré (parcours raccourci).
     await page.locator('[data-testid="signup-profile-company"]').click();
-    await page.getByRole('button', { name: /continuer|continue/i }).first().click();
 
     const signupForm = page.locator('main form').first();
     await signupForm.getByLabel(/email professionnel|email/i).fill(email);
