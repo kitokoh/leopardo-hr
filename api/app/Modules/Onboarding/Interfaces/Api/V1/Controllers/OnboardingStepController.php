@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use App\Modules\Onboarding\Application\Actions\SyncOnboardingCompletion;
@@ -207,5 +207,4 @@ class OnboardingStepController extends Controller
 
         return (new OnboardingStepResource($step->fresh()))->response();
     }
-
 }
