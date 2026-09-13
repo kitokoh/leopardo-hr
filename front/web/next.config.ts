@@ -195,6 +195,19 @@ const nextConfig: NextConfig = {
 
   // Redirects for old image paths and SEO
   redirects: async () => [
+    // #7259 : le lien d'activation envoyé par e-mail est construit côté API
+    // (`UserInvitationService` → `{FRONTEND_URL}/activate/{token}`) alors que la
+    // page réellement servie est `/auth/activate/{token}` : le lien répondait
+    // 404 (vérifié en dev et en prod). On redirige ici pour réparer **aussi les
+    // e-mails déjà envoyés**, sans dépendre d'un redéploiement de l'API.
+    // `permanent: false` (307) volontairement : c'est une compatibilité, pas
+    // une règle définitive — un 301 resterait mémorisé par le navigateur si
+    // l'emplacement canonique évoluait encore.
+    {
+      source: "/activate/:token",
+      destination: "/auth/activate/:token",
+      permanent: false,
+    },
     // #7101 : l'i18n vitrine passe par `?lang=` (issue #4004/#4173) — aucune route
     // préfixée n'existe. Les chemins /fr /en /ar /tr (et sous-chemins) répondaient
     // 404 ; on les redirige en 301 vers la forme canonique `?lang=` pour ne jamais
