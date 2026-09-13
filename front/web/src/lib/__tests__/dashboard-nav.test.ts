@@ -1,15 +1,15 @@
-import { buildDashboardNav, HR_SUBMENU_KEYS, isHrEntryActive } from '../dashboard-nav';
-import { CLIENT_MODULES, type ClientModuleAccess, type ClientModuleKey } from '../client-features';
+import { buildDashboardNav, HR_SUBMENU_KEYS, isHrEntryActive, toNavModules, type NavModule } from '../dashboard-nav';
+import { CLIENT_MODULES, type ClientModuleKey } from '../client-features';
 
-function pill(key: ClientModuleKey): ClientModuleAccess {
-  const module = CLIENT_MODULES.find((candidate) => candidate.key === key);
+function pill(key: ClientModuleKey): NavModule {
+  const catalogueEntry = CLIENT_MODULES.find((candidate) => candidate.key === key);
   return {
     key,
-    href: module?.href ?? `/${key}`,
-    label: module?.label ?? key,
+    href: catalogueEntry?.href ?? `/${key}`,
+    label: catalogueEntry?.label ?? key,
     enabled: true,
-    group: module?.group ?? 'general',
-  } as ClientModuleAccess;
+    group: catalogueEntry?.group ?? 'general',
+  } as NavModule;
 }
 
 /**
@@ -45,6 +45,7 @@ describe('dashboard-nav — menu une ligne + sous-menu RH (#7328)', () => {
   it('conserve les liens directs (Paie, Rapports, Comptabilité, CRM, Marketing, Vitrine)', () => {
     const entries = buildDashboardNav([
       pill('employees'),
+      pill('contracts'),
       pill('payroll'),
       pill('reports'),
       pill('accounting'),
@@ -97,5 +98,14 @@ describe('dashboard-nav — menu une ligne + sous-menu RH (#7328)', () => {
     expect(isHrEntryActive(menu, '/employees')).toBe(true);
     expect(isHrEntryActive(menu, '/attendance/geo/sessions')).toBe(true);
     expect(isHrEntryActive(menu, '/payroll')).toBe(false);
+  });
+
+  it('écarte les modules sans href (toNavModules)', () => {
+    const modules = toNavModules([
+      { key: 'dashboard', href: '/dashboard', label: 'Tableau de bord', enabled: true, group: 'general' },
+      { key: 'billing', href: undefined, label: 'Facturation', enabled: true, group: 'platform' },
+    ] as never);
+
+    expect(modules.map((entry) => entry.key)).toEqual(['dashboard']);
   });
 });

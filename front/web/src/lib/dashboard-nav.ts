@@ -14,9 +14,17 @@ export const HR_SUBMENU_KEYS: ClientModuleKey[] = [
   'training',
 ];
 
+/** Un module affichable : `href` garanti par `toNavModules()`. */
+export type NavModule = ClientModuleAccess & { href: string };
+
 export type DashboardNavEntry =
-  | { kind: 'link'; module: ClientModuleAccess }
-  | { kind: 'menu'; id: 'hr'; modules: ClientModuleAccess[] };
+  | { kind: 'link'; module: NavModule }
+  | { kind: 'menu'; id: 'hr'; modules: NavModule[] };
+
+/** Ne garde que les modules réellement navigables (`href` renseigné). */
+export function toNavModules(access: ClientModuleAccess[]): NavModule[] {
+  return access.filter((candidate): candidate is NavModule => typeof candidate.href === 'string' && candidate.href !== '');
+}
 
 /**
  * Construit le menu **d'une seule ligne** (#7328) : les modules RH sont
@@ -27,13 +35,13 @@ export type DashboardNavEntry =
  * reste qu'un seul module RH activé, il est rendu en lien direct (un menu à un
  * seul élément n'apporte rien).
  */
-export function buildDashboardNav(navPills: ClientModuleAccess[]): DashboardNavEntry[] {
-  const hrModules = navPills.filter((module) => HR_SUBMENU_KEYS.includes(module.key));
+export function buildDashboardNav(navPills: NavModule[]): DashboardNavEntry[] {
+  const hrModules = navPills.filter((candidate) => HR_SUBMENU_KEYS.includes(candidate.key));
   const entries: DashboardNavEntry[] = [];
   let placed = false;
 
-  for (const module of navPills) {
-    if (HR_SUBMENU_KEYS.includes(module.key)) {
+  for (const candidate of navPills) {
+    if (HR_SUBMENU_KEYS.includes(candidate.key)) {
       if (placed) {
         continue;
       }
@@ -46,7 +54,7 @@ export function buildDashboardNav(navPills: ClientModuleAccess[]): DashboardNavE
       continue;
     }
 
-    entries.push({ kind: 'link', module });
+    entries.push({ kind: 'link', module: candidate });
   }
 
   return entries;
@@ -58,5 +66,5 @@ export function isHrEntryActive(entry: DashboardNavEntry, pathname: string): boo
     return pathname === entry.module.href;
   }
 
-  return entry.modules.some((module) => pathname === module.href || pathname.startsWith(`${module.href}/`));
+  return entry.modules.some((candidate) => pathname === candidate.href || pathname.startsWith(`${candidate.href}/`));
 }

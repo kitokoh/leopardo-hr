@@ -8,7 +8,7 @@ import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
-import { buildDashboardNav, isHrEntryActive } from '@/lib/dashboard-nav';
+import { buildDashboardNav, isHrEntryActive, toNavModules } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -359,7 +359,7 @@ export default function DashboardLayout({
 
   // #7328 — le bandeau « Entreprise » (2e ligne) est supprimé : le menu vit
   // dans la barre h-16 et les modules RH sont repliés dans un sous-menu.
-  const navEntries = buildDashboardNav(navPills);
+  const navEntries = buildDashboardNav(toNavModules(navPills));
   const modulesNavPanel = 'absolute end-0 top-12 z-30 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl';
   const modulesNavLink = (active: boolean) => [
     'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
