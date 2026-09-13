@@ -121,6 +121,8 @@ export type CopyTree = {
     resumeOnboarding: string;
     /** #7225 — titre de section « Mon métier » (verticales activées) */
     businessSection: string;
+    /** #7328 — libellé du menu RH (regroupe les modules RH en sous-menus) */
+    hrMenu: string;
     /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
     modules: {
       dashboard: string; employees: string; attendance: string; attendance_geo: string;
@@ -741,6 +743,7 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Gérer mes préférences',
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
+      hrMenu: 'RH',
       modules: {
         dashboard: 'Tableau de bord',
         employees: 'Employés',
@@ -1406,6 +1409,7 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'إدارة تفضيلاتي',
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
+      hrMenu: 'الموارد البشرية',
       modules: {
         dashboard: 'لوحة القيادة',
         employees: 'الموظفون',
@@ -2067,6 +2071,7 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Tercihlerimi yönet',
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
+      hrMenu: 'İK',
       modules: {
         dashboard: 'Panel',
         employees: 'Çalışanlar',
@@ -2728,6 +2733,7 @@ const copy: Record<AppLocale, CopyTree> = {
       managePreferences: 'Manage my preferences',
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
+      hrMenu: 'HR',
       modules: {
         dashboard: 'Dashboard',
         employees: 'Employees',

@@ -57,6 +57,17 @@ Sur un tenant équipé, ce bandeau déborde horizontalement et le RH occupe 6 pa
 - Comportement responsive : débordement géré par scroll horizontal sur desktop étroit ; sous `md`, le menu devient un tiroir (comme aujourd'hui).
 - A11y : `aria-expanded`, fermeture `Escape` / clic extérieur, libellés localisés ×4 (fr/en/ar/tr), RTL.
 
+### Mapping retenu (validé par le propriétaire, 2026-09-13)
+
+Menu unique dans la barre : `Tableau de bord` · **`RH ▾`** (Employés · Pointages · Sessions GPS · Absences · Contrats · Formations) · `Paie` · `Rapports` · `Comptabilité` · `CRM` · `Marketing` · `Site vitrine`.
+`Paie`, `Rapports`, `Comptabilité` restent en **liens directs** ; `Facturation` / `Intégrations` restent dans « Modules & plan ».
+
+### Implémentation (#7328)
+
+- `src/lib/dashboard-nav.ts` : `HR_SUBMENU_KEYS`, `buildDashboardNav()` (repli RH, position du premier module RH, ordre du catalogue, pas de menu à un seul élément), `isHrEntryActive()`.
+- `(dashboard)/layout.tsx` : bandeau « Entreprise » supprimé ; `<nav data-testid="dashboard-horizontal-nav">` **dans** la barre `h-16` (`lg+`) ; menu déroulant RH (`aria-expanded`, fermeture à la navigation) ; sous `lg`, panneau `data-testid="dashboard-modules-nav-toggle"` — la barre reste sur une ligne à tous les breakpoints.
+- i18n : clé `dashboard.hrMenu` ×4 (fr/en/ar/tr).
+
 ### État
 
-Partie B **non implémentée** : elle touche le layout principal et mérite sa propre PR (revue isolée, risque UI). Le mapping RH ci-dessus est une proposition à valider par le propriétaire.
+Partie B **implémentée** (branche `feat/7328-nav-single-line-hr-submenu`, empilée sur la partie A).

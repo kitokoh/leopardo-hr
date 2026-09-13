@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-react';
+import { Bell, ChevronDown, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
 import { getClientModuleAccess, getModuleAccessForPath, getSidebarSections, isSelfActivable, mergeActivationSurface, sessionModuleSignature, type ClientModuleAccess, type ClientModuleKey } from '@/lib/client-features';
+import { buildDashboardNav, isHrEntryActive, toNavModules } from '@/lib/dashboard-nav';
 import {
   applyDocumentLocale,
   clearAuthSession,
@@ -57,6 +58,9 @@ export default function DashboardLayout({
   // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
   const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
   const [activateError, setActivateError] = useState('');
+  // #7328 — menu sur une seule ligne : sous-menu RH + menu mobile des modules.
+  const [hrMenuOpen, setHrMenuOpen] = useState(false);
+  const [mobileModulesOpen, setMobileModulesOpen] = useState(false);
   // #7225 — le rail métier (`business-rail`) est `hidden md:flex` : sous 768 px
   // il était inaccessible (aucun déclencheur). Il devient un tiroir piloté par
   // un bouton hamburger, sur le même modèle que l'admin.
@@ -174,6 +178,8 @@ export default function DashboardLayout({
   // Ferme le tiroir à chaque navigation.
   useEffect(() => {
     setMobileNavOpen(false);
+    setHrMenuOpen(false);
+    setMobileModulesOpen(false);
   }, [pathname]);
 
   // Échap ferme le tiroir ; le scroll du document est verrouillé tant qu'il est ouvert.
@@ -351,6 +357,15 @@ export default function DashboardLayout({
   const lockedCore = core.filter((module) => module.group !== 'platform' && module.href && !module.enabled);
   const discoverable = [...lockedCore, ...lockedBusiness];
 
+  // #7328 — le bandeau « Entreprise » (2e ligne) est supprimé : le menu vit
+  // dans la barre h-16 et les modules RH sont repliés dans un sous-menu.
+  const navEntries = buildDashboardNav(toNavModules(navPills));
+  const modulesNavPanel = 'absolute end-0 top-12 z-30 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl';
+  const modulesNavLink = (active: boolean) => [
+    'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[12px] font-bold transition',
+    active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+  ].join(' ');
+
   return (
     <div className="flex min-h-screen bg-transparent">
       {/* Decorative background elements */}
@@ -434,7 +449,109 @@ export default function DashboardLayout({
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
               </div>
             </div>
+          {/* #7328 — menu des modules DANS la barre (plus de 2e ligne). */}
+          {navEntries.length > 0 ? (
+            <nav
+              data-testid="dashboard-horizontal-nav"
+              aria-label={labels.dashboard.sectionEnterprise}
+              className="hidden min-w-0 flex-1 items-center gap-1.5 overflow-x-auto lg:flex"
+            >
+              {navEntries.map((entry) => (
+                entry.kind === 'link' ? (
+                  <NavPill
+                    key={entry.module.key}
+                    module={entry.module}
+                    active={pathname === entry.module.href}
+                    labels={labels}
+                  />
+                ) : (
+                  <div key={`menu-${entry.id}`} className="relative shrink-0">
+                    <button
+                      type="button"
+                      data-testid={`dashboard-${entry.id}-menu`}
+                      aria-expanded={hrMenuOpen}
+                      aria-haspopup="true"
+                      onClick={() => setHrMenuOpen((value) => !value)}
+                      className={[
+                        'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
+                        isHrEntryActive(entry, pathname)
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm'
+                          : 'border-transparent text-slate-500 hover:border-slate-200 hover:bg-white hover:text-slate-900',
+                      ].join(' ')}
+                    >
+                      {labels.dashboard.hrMenu}
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 transition-transform ${hrMenuOpen ? 'rotate-180' : ''}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                    {hrMenuOpen ? (
+                      <div className="absolute start-0 top-10 z-30 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                        {entry.modules.map((module) => (
+                          <Link
+                            key={module.key}
+                            href={module.href}
+                            onClick={() => setHrMenuOpen(false)}
+                            className={modulesNavLink(pathname === module.href)}
+                          >
+                            {labels.dashboard.modules[module.key] ?? module.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              ))}
+            </nav>
+          ) : null}
           <div className="flex items-center gap-2 md:gap-4">
+            {/* #7328 — sous `lg`, le menu vit dans un panneau (la barre reste sur une ligne). */}
+            {navEntries.length > 0 ? (
+              <div className="relative lg:hidden">
+                <button
+                  type="button"
+                  data-testid="dashboard-modules-nav-toggle"
+                  aria-expanded={mobileModulesOpen}
+                  aria-label={labels.dashboard.sectionEnterprise}
+                  onClick={() => setMobileModulesOpen((value) => !value)}
+                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                >
+                  <Menu className="h-4 w-4" aria-hidden="true" />
+                </button>
+                {mobileModulesOpen ? (
+                  <div className={modulesNavPanel}>
+                    {navEntries.map((entry) => (
+                      entry.kind === 'link' ? (
+                        <Link
+                          key={entry.module.key}
+                          href={entry.module.href}
+                          onClick={() => setMobileModulesOpen(false)}
+                          className={modulesNavLink(pathname === entry.module.href)}
+                        >
+                          {labels.dashboard.modules[entry.module.key] ?? entry.module.label}
+                        </Link>
+                      ) : (
+                        <div key={`menu-mobile-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
+                          <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                            {labels.dashboard.hrMenu}
+                          </p>
+                          {entry.modules.map((module) => (
+                            <Link
+                              key={module.key}
+                              href={module.href}
+                              onClick={() => setMobileModulesOpen(false)}
+                              className={`ps-6 ${modulesNavLink(pathname === module.href)}`}
+                            >
+                              {labels.dashboard.modules[module.key] ?? module.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
             {/* #7225 — panneau « Modules & plan » : modules de plateforme +
                 verticales non activées (découverte, sans polluer le menu). */}
             <div className="relative">
@@ -637,15 +754,6 @@ export default function DashboardLayout({
             </div>
           </div>
           </div>
-          </div>
-          {/* Bandeau horizontal — modules transverses de l'entreprise */}
-          <div className="border-t border-slate-100/70 px-4 md:px-8">
-            <div className="flex items-center gap-1.5 overflow-x-auto py-2" aria-label={labels.dashboard.sectionEnterprise}>
-              <span className="shrink-0 pr-2 text-[10px] font-black uppercase tracking-widest text-slate-400">{labels.dashboard.sectionEnterprise}</span>
-              {navPills.map((module) => (
-                <NavPill key={module.key} module={module} active={pathname === module.href} labels={labels} />
-              ))}
-            </div>
           </div>
         </header>
         <main className="mx-auto w-full max-w-7xl p-4 md:p-8">
