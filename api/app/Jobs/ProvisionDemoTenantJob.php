@@ -137,7 +137,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
         // locale par défaut de l'application (`APP_LOCALE`, 'en' par défaut) :
         // le manager recevait « Welcome! ... » en anglais.
         $locale = $manager->preferred_language
-            ?: ($manager->company?->language ?? config('app.locale', 'fr'));
+            ?: ($manager->company->language ?? config('app.locale', 'fr'));
         App::setLocale((string) $locale);
 
         $frontUrl = config('app.frontend_url', config('app.url'));
