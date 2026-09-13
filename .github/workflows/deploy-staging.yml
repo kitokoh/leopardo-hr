@@ -7,16 +7,23 @@ name: Deploy Staging - Leopardo RH
 # file GitHub Actions sous rafale de merges) → should_deploy=false → gate VERT
 # + deploy sauté avec un simple `core.warning` noyé (échec silencieux).
 #
+# #7256 (décision PM 2026-09-13) — le déclenchement automatique sur `push: main`
+# est RETIRÉ : aucun tier staging n'existe, donc chaque push produisait un run
+# dont le job de déploiement était systématiquement `skipped` — un run vert qui
+# ne déployait rien, et des runners consommés sur un CI déjà saturé
+# (`docs/infra/02_alignement/CI_SATURATION.md`). Le workflow reste intact et
+# fonctionnel en dispatch manuel dès qu'un staging sera provisionné.
+#
 # Nouveau pattern (identique à deploy-main) :
-#   - `push: main` = unique source de vérité (pas de workflow_run redondant) ;
+#   - délégation explicite (dispatch) ou vérification des runs du SHA ;
 #   - le gate poll les runs du SHA (borné 30 min, intervalle 60 s) au lieu de
 #     lire la conclusion d'un parent — le run du DERNIER SHA aboutit toujours ;
 #   - garde anti-stale : on ne déploie jamais un SHA devenu obsolète pendant
 #     l'attente ;
 #   - skip EXPLICITE (`::warning::` + step summary), jamais un gate vert muet.
 on:
-  push:
-    branches: [main]
+  # #7256 — manuel uniquement (voir l'en-tête). Rien à déployer tant qu'aucun
+  # environnement staging n'est provisionné.
   workflow_dispatch:
 
 permissions:
