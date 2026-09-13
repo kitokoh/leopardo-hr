@@ -59,6 +59,7 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [total, setTotal] = useState(0);
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
+  const [departmentsLoading, setDepartmentsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,6 +95,8 @@ export default function EmployeesPage() {
       // Un non-manager n'a pas accès aux départements : la liste reste vide,
       // la page fonctionne malgré tout.
       setDepartments([]);
+    } finally {
+      setDepartmentsLoading(false);
     }
   }, []);
 
@@ -102,7 +105,8 @@ export default function EmployeesPage() {
 
     async function load() {
       try {
-        await Promise.all([loadEmployees(), loadDepartments()]);
+        // Seuls les employés conditionnent l'état de chargement de la page.
+        await loadEmployees();
       } catch (err) {
         if (active) {
           setError(apiErrorMessage(err, i18nT(locale, 'employees.load_error')));
@@ -115,6 +119,13 @@ export default function EmployeesPage() {
     }
 
     void load();
+
+    // Les départements sont chargés EN PARALLÈLE mais ne conditionnent plus
+    // l'affichage de l'équipe : auparavant un `Promise.all` liait les deux, et
+    // un GET /departments lent ou indisponible laissait la liste des
+    // collaborateurs sur « Chargement… » indéfiniment — la donnée principale
+    // était bloquée par un panneau secondaire (constaté en e2e, #7321).
+    void loadDepartments();
 
     return () => {
       active = false;
@@ -247,7 +258,7 @@ export default function EmployeesPage() {
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
             {i18nT(locale, 'dashboard.departments')}
           </p>
-          <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : departments.length}</p>
+          <p className="mt-3 text-4xl font-black text-slate-950">{departmentsLoading ? '...' : departments.length}</p>
         </div>
       </section>
 
@@ -260,7 +271,9 @@ export default function EmployeesPage() {
         </div>
 
         <div className="space-y-4 px-6 py-5">
-          {departments.length === 0 ? (
+          {departmentsLoading ? (
+            <p className="text-sm text-slate-500">{i18nT(locale, 'employees.loading_short')}</p>
+          ) : departments.length === 0 ? (
             <p className="text-sm text-slate-500">
               {i18nT(locale, 'employees.empty_departments')}
             </p>

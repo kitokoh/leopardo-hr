@@ -111,6 +111,15 @@ async function mockManagerSession(page: Page) {
     });
   });
 
+  // #7321 : mock des départements (chargés par /employees).
+  await page.route('**/api/v1/departments**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
+
   await page.route('**/api/v1/attendance/today', async (route) => {
     await route.fulfill({
       status: 200,

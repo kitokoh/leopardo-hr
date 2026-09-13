@@ -72,6 +72,17 @@ test.describe('Client web feature gates', () => {
       });
     });
 
+    // #7321 : /employees charge aussi les départements. Sans ce mock la
+    // requête part sur le vrai réseau et l'assertion sur la liste peut
+    // tomber avant son rendu (test non déterministe).
+    await page.route('**/api/v1/departments**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: [], meta: { total: 0 } }),
+      });
+    });
+
     await seedSession(page, {
       capabilities: {
         employees: true,
