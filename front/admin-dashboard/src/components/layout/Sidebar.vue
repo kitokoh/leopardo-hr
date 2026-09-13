@@ -30,37 +30,59 @@
     <!-- Navigation -->
     <nav class="mt-6 flex-1 overflow-y-auto px-4 pb-24" role="navigation" :aria-label="t('navigation.mainMenu', 'Menu principal')">
       <div class="space-y-1">
-        <router-link
-          v-for="item in navigation"
-          :key="item.name"
-          :to="item.path"
-          :class="[
-            'group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
-            $route.name === item.name
-              ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-          ]"
-          @click="$emit('close')"
-        >
-          <component
-            :is="item.icon"
-            :class="[
-              'mr-3 h-5 w-5 flex-shrink-0 transition-colors',
-              $route.name === item.name
-                ? 'text-white'
-                : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
-            ]"
-          />
-          {{ item.title }}
-
-          <!-- Badge for notifications -->
-          <span
-            v-if="item.badge && item.badge > 0"
-            class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800"
+        <template v-for="item in navigation" :key="item.name">
+          <!-- #7327 — titre de section : les modules d'entreprise cliente ne
+               sont plus des entrées de premier niveau. Section repliable,
+               ouverte par défaut. -->
+          <button
+            v-if="item.type === 'section'"
+            type="button"
+            class="group flex w-full items-center justify-between rounded-xl px-3 pt-5 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+            :aria-expanded="isGroupOpen(item.group) ? 'true' : 'false'"
+            :data-nav-section="item.group"
+            @click="toggleGroup(item.group)"
           >
-            {{ item.badge > 99 ? '99+' : item.badge }}
-          </span>
-        </router-link>
+            <span>{{ item.title }}</span>
+            <ChevronDownIcon
+              :class="[
+                'h-4 w-4 flex-shrink-0 transition-transform duration-200',
+                isGroupOpen(item.group) ? 'rotate-180' : ''
+              ]"
+            />
+          </button>
+
+          <router-link
+            v-else
+            v-show="!item.group || isGroupOpen(item.group)"
+            :to="item.path"
+            :class="[
+              'group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+              $route.name === item.name
+                ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+            ]"
+            @click="$emit('close')"
+          >
+            <component
+              :is="item.icon"
+              :class="[
+                'mr-3 h-5 w-5 flex-shrink-0 transition-colors',
+                $route.name === item.name
+                  ? 'text-white'
+                  : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+              ]"
+            />
+            {{ item.title }}
+
+            <!-- Badge for notifications -->
+            <span
+              v-if="item.badge && item.badge > 0"
+              class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800"
+            >
+              {{ item.badge > 99 ? '99+' : item.badge }}
+            </span>
+          </router-link>
+        </template>
       </div>
 
       <!-- System Status -->
@@ -137,7 +159,8 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import {
@@ -146,6 +169,7 @@ import {
   GlobeAltIcon,
   UsersIcon,
   BuildingOfficeIcon,
+  ChevronDownIcon,
   CreditCardIcon,
   ChatBubbleLeftRightIcon,
   CogIcon,
@@ -183,6 +207,52 @@ const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const travelStore = useTravelStore()
+const route = useRoute()
+
+/**
+ * #7327 — Les écrans des modules d'une entreprise cliente (formations, flotte,
+ * stations-service, agence de voyage) n'étaient que des entrées de PREMIER
+ * niveau dans ce menu, alors qu'ils ne s'adressent pas à la plateforme mais au
+ * périmètre d'une entreprise cliente. Ils sont désormais regroupés sous une
+ * section « Modules des entreprises clientes », rattachée à l'entrée
+ * « Entreprises ».
+ *
+ * La section est repliable mais OUVERTE par défaut : les entrées restent
+ * atteignables en un clic (et visibles dans l'arbre d'accessibilité, ce dont
+ * dépendent les specs e2e travel-navigation / sidebar-unique-entries).
+ */
+const CLIENT_MODULES_GROUP = 'clientModules'
+const OPEN_GROUPS_KEY = 'admin.nav.openGroups'
+
+function readOpenGroups() {
+  try {
+    const raw = window.localStorage.getItem(OPEN_GROUPS_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === 'object' ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+// Défaut = ouvert : une section repliée par défaut masquerait des écrans
+// existants (régression d'accessibilité et de discoverabilité).
+const openGroups = ref({ [CLIENT_MODULES_GROUP]: true, ...(readOpenGroups() || {}) })
+
+function isGroupOpen(group) {
+  if (!group) return true
+  return openGroups.value[group] !== false
+}
+
+function toggleGroup(group) {
+  if (!group) return
+  openGroups.value = { ...openGroups.value, [group]: !isGroupOpen(group) }
+  try {
+    window.localStorage.setItem(OPEN_GROUPS_KEY, JSON.stringify(openGroups.value))
+  } catch {
+    /* stockage indisponible : l'état reste en mémoire */
+  }
+}
 
 /**
  * TRAVEL-601 (#6078) — l'entrée « Agence de voyage » n'est proposée que si le
@@ -256,23 +326,27 @@ const navigation = computed(() => [
     path: '/companies',
     icon: BuildingOfficeIcon
   },
+  // #7327 — section des modules d'entreprise cliente : ces écrans ne
+  // s'adressent pas à la plateforme mais au périmètre d'un client.
   {
-    name: 'subscriptions',
-    title: t('navigation.subscriptions', 'Abonnements'),
-    path: '/subscriptions',
-    icon: CreditCardIcon
+    type: 'section',
+    name: 'section-client-modules',
+    group: CLIENT_MODULES_GROUP,
+    title: t('navigation.clientModules', 'Modules des entreprises clientes')
   },
   {
     name: 'training',
     title: t('navigation.training', 'Formations'),
     path: '/training',
-    icon: AcademicCapIcon
+    icon: AcademicCapIcon,
+    group: CLIENT_MODULES_GROUP
   },
   {
     name: 'fleet',
     title: t('navigation.fleet', 'Flotte véhicules'),
     path: '/fleet',
-    icon: TruckIcon
+    icon: TruckIcon,
+    group: CLIENT_MODULES_GROUP
   },
   // TRAVEL-601 (#6078) : entrée conditionnée par le flag travelagency réel
   // (GET /travel/ping → 200). Masquée tant que la sonde n'a pas répondu, si
@@ -283,7 +357,8 @@ const navigation = computed(() => [
           name: 'travel',
           title: t('navigation.travelAgency', 'Agence de voyage'),
           path: '/travel',
-          icon: GlobeAltIcon
+          icon: GlobeAltIcon,
+          group: CLIENT_MODULES_GROUP
         }
       ]
     : []),
@@ -291,7 +366,14 @@ const navigation = computed(() => [
     name: 'fuelStation',
     title: t('navigation.fuelStation', 'Stations-service'),
     path: '/fuel-station',
-    icon: BoltIcon
+    icon: BoltIcon,
+    group: CLIENT_MODULES_GROUP
+  },
+  {
+    name: 'subscriptions',
+    title: t('navigation.subscriptions', 'Abonnements'),
+    path: '/subscriptions',
+    icon: CreditCardIcon
   },
   {
     name: 'chat',
@@ -383,6 +465,22 @@ const navigation = computed(() => [
     icon: CogIcon
   },
 ])
+
+/**
+ * #7327 — la section contenant l'écran courant est toujours dépliée : sinon le
+ * repli mémorisé masquerait du menu la page qu'on est en train de consulter.
+ */
+watch(
+  () => route.name,
+  (name) => {
+    if (!name) return
+    const active = navigation.value.find((item) => item.name === name)
+    if (active?.group && !isGroupOpen(active.group)) {
+      openGroups.value = { ...openGroups.value, [active.group]: true }
+    }
+  },
+  { immediate: true }
+)
 
 // Computed properties
 const userInitials = computed(() => {

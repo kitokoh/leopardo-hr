@@ -4894,7 +4894,8 @@
     "surveyStats": "استبيانات الحلول",
     "solutionSurveys": "استبيانات الحلول",
     "travel": "وكالة السفر",
-    "showcase": "موقع الشركة"
+    "showcase": "موقع الشركة",
+    "clientModules": "وحدات شركات العملاء"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",

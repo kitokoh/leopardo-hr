@@ -49,3 +49,68 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
     await expect(page.getByRole('navigation').getByRole('link', { name: /Stations-service/i })).toHaveCount(1)
   })
 })
+
+/**
+ * #7327 — « fuel station », « training », « vehicle » (flotte) et « travel »
+ * sont des écrans du périmètre d'une entreprise CLIENTE : ce ne sont plus des
+ * entrées de premier niveau du menu plateforme, mais une section rattachée à
+ * « Entreprises ».
+ *
+ * Ce bloc est volontairement NON conditionné à PLAYWRIGHT_AUTH_TOKEN (le job
+ * `web-ci.yml` ne le fournit pas) : la session est simulée comme dans
+ * travel-navigation.spec.js, sinon la garde ne s'exécuterait jamais en CI.
+ */
+test.describe('Sidebar — modules d’entreprise cliente regroupés (#7327)', () => {
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('les 4 modules clients sont sous « Entreprises », section dépliée par défaut', async ({ page }) => {
+    await page.addInitScript(() => {
+      sessionStorage.setItem('admin_token', 'e2e-sidebar-token')
+    })
+    await page.route('**/api/v1/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
+    )
+    await page.route(/^https?:\/\/[^/]+\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: ADMIN_USER }) }),
+    )
+    await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({}) }),
+    )
+
+    await page.goto('/dashboard')
+    const nav = page.getByRole('navigation')
+    await expect(nav).toBeVisible({ timeout: 15_000 })
+
+    // Un titre de section annonce le regroupement, déplié par défaut.
+    const header = nav.getByRole('button', { name: /Modules des entreprises clientes/i })
+    await expect(header).toBeVisible()
+    await expect(header).toHaveAttribute('aria-expanded', 'true')
+
+    // Les 4 écrans du périmètre client restent atteignables en un clic.
+    const modules = [/Formations/i, /Flotte véhicules/i, /Stations-service/i, /Agence de voyage/i]
+    for (const label of modules) {
+      await expect(nav.getByRole('link', { name: label })).toBeVisible()
+    }
+
+    // Géométrie : les 4 écrans sont SOUS le titre de section, lui-même sous
+    // « Entreprises ». C'est ce qui en fait des sous-entrées, plus des rails.
+    const companiesBox = await nav.getByRole('link', { name: /^Entreprises$/i }).boundingBox()
+    const headerBox = await header.boundingBox()
+    expect(companiesBox).not.toBeNull()
+    expect(headerBox).not.toBeNull()
+    expect(headerBox.y).toBeGreaterThan(companiesBox.y)
+    for (const label of modules) {
+      const box = await nav.getByRole('link', { name: label }).boundingBox()
+      expect(box, `entrée ${label} absente du menu`).not.toBeNull()
+      expect(box.y).toBeGreaterThan(headerBox.y)
+    }
+
+    // Le repli est réellement fonctionnel (et réversible).
+    await header.click()
+    await expect(header).toHaveAttribute('aria-expanded', 'false')
+    await expect(nav.getByRole('link', { name: /Formations/i })).toBeHidden()
+    await header.click()
+    await expect(header).toHaveAttribute('aria-expanded', 'true')
+    await expect(nav.getByRole('link', { name: /Formations/i })).toBeVisible()
+  })
+})
