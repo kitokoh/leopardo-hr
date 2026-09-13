@@ -1727,7 +1727,7 @@
     "planContinue": "Continuer avec cette offre",
     "planSelected": "Offre choisie",
     "planChange": "Modifier",
-    "countryDetectionFailed": "Nous n'avons pas pu détecter votre pays automatiquement. Merci de le préciser ci-dessous."
+    "countryDetectionFailed": "Sélectionnez votre pays."
   },
   "attendanceDayDetail": "Détail par jour",
   "support_tickets": {
@@ -6177,10 +6177,10 @@
   "signupPage": {
     "badge": "Inscription en 2 minutes",
     "headline": "Testez Leopardo RH sans tunnel complique",
-    "subheadline": "Créez votre espace vous-même : profil, outils et métier, puis vous entrez directement dans l'application. Aucune carte bancaire.",
+    "subheadline": "Créez votre espace vous-même : votre e-mail, votre entreprise, un code de vérification — et vous êtes dans l'application. Aucune carte bancaire.",
     "cta": "Créer mon espace d'essai",
     "sideBadge": "Espace disponible immédiatement",
-    "sideTitle": "Ce que vous obtenez tout de suite",
+    "sideTitle": "Votre espace en 2 minutes",
     "proof1Title": "Interface sur mesure",
     "proof1Desc": "Entreprise ou indépendant : le menu s'adapte à votre activité.",
     "proof2Title": "Vos outils, votre métier",
@@ -6188,8 +6188,8 @@
     "proof3Title": "14 jours, sans carte",
     "proof3Desc": "L'application affiche les jours restants et le passage à Pro.",
     "stepsTitle": "Votre inscription en 3 temps",
-    "step1": "Vous indiquez votre profil : entreprise ou indépendant.",
-    "step2": "Vous choisissez vos outils et votre métier.",
-    "step3": "Vous définissez votre mot de passe et vous vous connectez."
+    "step1": "Vous indiquez votre e-mail et le nom de votre entreprise.",
+    "step2": "Vous recevez un code à 6 chiffres par e-mail.",
+    "step3": "Vous entrez directement dans votre espace, sans mot de passe à créer."
   }
 }

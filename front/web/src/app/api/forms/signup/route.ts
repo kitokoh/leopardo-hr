@@ -62,11 +62,34 @@ export async function POST(request: NextRequest) {
     // la demande sera rejetée en 422 et le prospect verra une erreur honnête
     // (jamais un faux succès).
     //
-    // `geo` n'est pas typé sur NextRequest (augmentation Vercel runtime) —
-    // accès typé pour satisfaire ESLint/TS sans `any`.
-    const geo = (request as unknown as { geo?: { country?: string } }).geo;
-    const geoCountry = geo?.country?.toUpperCase() ?? '';
-    const effectiveCountry = validatedData.country || geoCountry || undefined;
+    // ⚠️ `request.geo` N'EXISTE PLUS : Next 16 a retiré les extensions
+    // `geo`/`ip` de `NextRequest` (et `next/headers` n'expose ni
+    // `geolocation()` ni `ipAddress()`). Le repli historique était donc
+    // TOUJOURS `undefined` → le pays n'était jamais détecté et le sélecteur de
+    // repli s'affichait pour 100 % des visiteurs (constaté en live le
+    // 2026-09-13 : `POST /api/forms/signup` → 422 COUNTRY_REQUIRED sur le
+    // déploiement Vercel).
+    //
+    // La source de vérité est l'EN-TÊTE injecté par la plateforme d'hébergement
+    // — `x-vercel-ip-country` sur Vercel (équivalent documenté de l'ancien
+    // `request.geo`), `cf-ipcountry` sur Cloudflare Pages. On lit les deux :
+    // l'application est servie depuis Vercel aujourd'hui, l'admin depuis
+    // Cloudflare, et le code ne doit pas dépendre d'un hébergeur précis.
+    const platformCountry = (
+      request.headers.get('x-vercel-ip-country') ??
+      request.headers.get('cf-ipcountry') ??
+      ''
+    ).trim().toUpperCase();
+
+    // Repli de compatibilité si un runtime fournit encore `request.geo`.
+    const legacyGeo = (request as unknown as { geo?: { country?: string } }).geo;
+    const legacyGeoCountry = legacyGeo?.country?.trim().toUpperCase() ?? '';
+
+    // Un code pays ISO 3166-1 alpha-2 est requis par le backend (2 lettres).
+    const isCountryCode = (value: string) => /^[A-Z]{2}$/.test(value);
+    const detectedCountry = [platformCountry, legacyGeoCountry].find(isCountryCode) ?? '';
+
+    const effectiveCountry = validatedData.country?.trim().toUpperCase() || detectedCountry || undefined;
 
     if (!effectiveCountry) {
       // Le formulaire simplifié ne demande plus le pays : il vient de la

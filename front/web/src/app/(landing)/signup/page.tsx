@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
-import { CheckCircle, Clock3, ShieldCheck, Sparkles } from 'lucide-react';
+import { Clock3, ShieldCheck, Sparkles } from 'lucide-react';
 import { Footer, HeroSection, Navbar, useScrollReveal } from '@/modules/vitrine';
 import { SignupForm } from '@/modules/vitrine/components/forms';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -18,7 +18,6 @@ type SignupCopy = {
   };
   sideBadge: string;
   title: string;
-  proof: Array<{ title: string; desc: string }>;
   stepsTitle: string;
   steps: string[];
 };
@@ -40,11 +39,6 @@ function buildSignupCopy(locale: AppLocale): SignupCopy {
     },
     sideBadge: k('sideBadge'),
     title: k('sideTitle'),
-    proof: [
-      { title: k('proof1Title'), desc: k('proof1Desc') },
-      { title: k('proof2Title'), desc: k('proof2Desc') },
-      { title: k('proof3Title'), desc: k('proof3Desc') },
-    ],
     stepsTitle: k('stepsTitle'),
     steps: [k('step1'), k('step2'), k('step3')],
   };
@@ -85,21 +79,8 @@ export default function SignupPage() {
             <h2 className="mb-8 text-3xl font-black tracking-tight text-slate-950 dark:text-white sm:text-4xl">
               {copy.title}
             </h2>
-            <div className="space-y-5">
-              {copy.proof.map((item) => (
-                <div key={item.title} className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white">{item.title}</h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
 
-            <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
               <div className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
                 <Clock3 className="h-4 w-4 text-emerald-500" />
                 {copy.stepsTitle}
