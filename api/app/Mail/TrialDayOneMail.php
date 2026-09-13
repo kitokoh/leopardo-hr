@@ -45,13 +45,17 @@ class TrialDayOneMail extends Mailable
     {
         App::setLocale($this->locale);
 
+        // #7238 — domaine PRODUIT (portail) : un CTA d'e-mail ouvre l'UI,
+        // jamais l'API (même convention que TrialWelcomeMail).
+        $base = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+
         return new Content(
             markdown: 'emails.trial.day_one',
             with: [
                 'company'     => $this->company,
                 'managerName' => $this->managerName,
-                'loginUrl'    => config('app.url') . '/auth/login',
-                'docsUrl'     => config('app.url') . '/docs',
+                'loginUrl'    => $base . '/auth/login',
+                'docsUrl'     => $base . '/docs',
                 'locale'      => $this->locale,
             ],
         );
