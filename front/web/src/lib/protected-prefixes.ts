@@ -34,6 +34,10 @@ export const PROTECTED_PREFIXES = [
   // collision de routes est traitée dans middleware.ts : visiteurs anonymes de
   // /restaurant redirigés vers la vitrine, session valide → hub applicatif).
   '/restaurant',
+  // BC-27 SHOWCASE — gestion du site vitrine du tenant (création 1-clic,
+  // sections, thème, publication). Le site PUBLIC rendu vit sous
+  // `/vitrine/{slug}` (hors de cette liste : il est public par nature).
+  '/showcase',
 ] as const;
 
 /**

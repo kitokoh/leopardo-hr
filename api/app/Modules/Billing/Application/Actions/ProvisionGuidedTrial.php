@@ -257,12 +257,21 @@ class ProvisionGuidedTrial
             return [];
         }
 
-        $platformFlags = ['accounting', 'crm'];
+        // #7235 / BC-27 #6862 — clé de sélection (`metadata.modules`, catalogue
+        // client) => clé de feature flag plateforme (`config/feature-flags.php`).
+        // La plupart sont identiques ; `showcase` fait exception (le flag tenant
+        // du module vitrine est `company_showcase`). Aucun import cross-BC : la
+        // correspondance reste littérale pour ne pas coupler Billing à Showcase.
+        $platformFlags = [
+            'accounting' => 'accounting',
+            'crm' => 'crm',
+            'showcase' => 'company_showcase',
+        ];
         $features = [];
 
-        foreach ($platformFlags as $flag) {
-            if (array_key_exists($flag, $selection)) {
-                $features[$flag] = $selection[$flag];
+        foreach ($platformFlags as $selectionKey => $featureKey) {
+            if (array_key_exists($selectionKey, $selection)) {
+                $features[$featureKey] = $selection[$selectionKey];
             }
         }
 

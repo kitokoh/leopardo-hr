@@ -124,5 +124,21 @@ return [
             'killable' => true,
             'description' => 'Solution Agence de voyage (ventes, réservations, check-in).',
         ],
+        // BC-27 SHOWCASE — module HORIZONTAL « Site vitrine » (site public de
+        // l'entreprise créé en 1 clic par le responsable du tenant). Le module
+        // serveur existait (`app/Modules/Showcase`, routes `/api/v1/showcase/*`,
+        // gate `module.showcase`) et le drapeau tenant était bien lu par
+        // `Company::hasFeature('company_showcase')` — mais il était ABSENT de ce
+        // registre et de `Company::KNOWN_MODULES` : `FeatureFlag::for()`
+        // l'ignorait donc et /auth/me ne remontait jamais la clé (même classe de
+        // défaut que #7235 pour accounting/crm/travel). Déclaré ici, le module
+        // devient activable par l'admin plateforme et visible côté client.
+        'company_showcase' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.32.0',
+            'killable' => true,
+            'description' => 'Site vitrine public de l\'entreprise (création 1-clic, sections, thème, publication).',
+        ],
     ],
 ];

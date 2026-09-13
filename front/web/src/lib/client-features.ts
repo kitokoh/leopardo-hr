@@ -19,7 +19,8 @@ export type ClientModuleKey =
   | 'restaurant_kitchen'
   | 'edu_manager'
   | 'travel'
-  | 'fuel';
+  | 'fuel'
+  | 'showcase';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -300,6 +301,25 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'education',
   },
+  // BC-27 SHOWCASE (#6862) — module HORIZONTAL « Site vitrine » : le
+  // responsable du tenant crée, édite et publie le site public de son
+  // entreprise en 1 clic (page `/showcase`). Le module backend existe
+  // (`app/Modules/Showcase`, routes `/api/v1/showcase/*`) et son site public
+  // est servi par `/public/vitrine/{slug}` ; il manquait l'entrée d'espace
+  // client. Deux clés de résolution : la sélection d'inscription
+  // (`company.modules.showcase`) ET le feature flag tenant
+  // (`company_showcase`) — l'ordre de `featureKeys` fait autorité pour la
+  // sélection explicite (même sémantique que #7235).
+  {
+    key: 'showcase',
+    href: '/showcase',
+    label: 'Site vitrine',
+    group: 'general',
+    capabilityKeys: ['company_showcase', 'showcase', 'can_view_showcase', 'can_manage_showcase'],
+    featureKeys: ['showcase', 'company_showcase'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Site vitrine public de l\'entreprise',
+  },
 ];
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/dashboard': 'dashboard',
@@ -338,6 +358,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/edu-manager/assessments': 'edu_manager',
   '/edu-manager/report-cards': 'edu_manager',
   '/edu-manager/teacher': 'edu_manager',
+  '/showcase': 'showcase',
 };
 function normalizedRole(user?: StoredAuthUser | null): string {
   if (!user?.role) {
@@ -356,6 +377,12 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
       return ['principal', 'marketing'].includes(managerRole);
     }
     if (module.key === 'crm') {
+      return ['principal', 'rh'].includes(managerRole);
+    }
+    if (module.key === 'showcase') {
+      // BC-27 : l'API réserve la gestion de la vitrine au responsable du
+      // tenant (`api.manager:principal,rh`). On rejoue la même règle côté
+      // navigation pour ne jamais exposer un module qui répondrait 403.
       return ['principal', 'rh'].includes(managerRole);
     }
     if (module.key === 'edu_manager') {

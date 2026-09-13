@@ -36,6 +36,7 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/social',
   '/social-marketing',
   '/restaurant',
+  '/showcase',
 ];
 
 export function middleware(request: NextRequest) {
@@ -131,6 +132,7 @@ export const config = {
     '/social/:path*',
     '/social-marketing/:path*',
     '/restaurant/:path*', // BC-25 portail client (split /restaurant → /restaurateur)
+    '/showcase/:path*', // BC-27 site vitrine tenant (management) — gate session
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

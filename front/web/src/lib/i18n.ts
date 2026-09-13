@@ -123,7 +123,7 @@ export type CopyTree = {
       absences: string; contracts: string; payroll: string; training: string;
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
-      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string;
+      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; showcase: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -755,6 +755,7 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Scolarité',
         travel: 'Agence de voyage',
         fuel: 'Station-service',
+        showcase: 'Site vitrine',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1416,6 +1417,7 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'الإدارة المدرسية',
         travel: 'وكالة سفر',
         fuel: 'محطة وقود',
+        showcase: 'موقع التعريف',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2073,6 +2075,7 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Okul yönetimi',
         travel: 'Seyahat acentesi',
         fuel: 'Akaryakıt istasyonu',
+        showcase: 'Tanıtım sitesi',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2730,6 +2733,7 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'School management',
         travel: 'Travel agency',
         fuel: 'Fuel station',
+        showcase: 'Showcase site',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',
