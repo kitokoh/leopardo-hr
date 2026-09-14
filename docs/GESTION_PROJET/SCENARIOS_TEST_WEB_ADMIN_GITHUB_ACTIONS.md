@@ -250,6 +250,52 @@ Spécification : `docs/specifications/ISSUE_7339_PLATFORM_COMPANIES_HEALTH_PAGIN
 Limite connue (suivie hors de ce lot) : au-delà de 50 sociétés, les lignes de l'annuaire
 (chargé sur 100) situées après la page 1 restent sans score (« — »).
 
+### 17. Actions destructives confirmées et échecs visibles (#7433)
+
+Audit d'ergonomie destructrice de la console admin : cinq actions partaient au
+premier clic (sans confirmation) et plusieurs échecs d'API étaient avalés sans
+message (l'écran restait « normal »). Aucune action destructive ne doit plus
+partir sans confirmation, et aucun échec ne doit rester silencieux.
+
+Confirmations (composant existant `ConfirmDialog`, aucun `window.confirm`) :
+
+- **Agence de voyage › Contenu** : « Supprimer » sur un référentiel (types,
+  positions, tarifs) et sur un site touristique ouvre la confirmation en nommant
+  l'élément ; l'erreur de suppression est remontée en toast (message de l'API).
+- **Agence de voyage › Contenu › Contacts** : la bascule d'un consentement
+  (email/SMS/WhatsApp) qui échoue affiche un toast **et remet la case à l'état
+  réel** — jamais un consentement affiché comme enregistré.
+- **Agence de voyage › Contenu** : les actions du cycle de vie des annonces
+  (payer, valider, renouveler) affichent l'échec en toast.
+- **Agence de voyage › Contenu** : enregistrer un formulaire qui échoue **laisse
+  la modale ouverte et la saisie intacte**, avec l'erreur de l'API en toast.
+- **Agence de voyage › Catalogue** : la croix de suppression d'une image de
+  véhicule passe par la confirmation (elle supprimait au premier clic).
+- **Agence de voyage › Annonces / Quiz / Sites** : plus aucun dialogue natif du
+  navigateur (les 12 appels `confirm`/`alert` des trois écrans sont remplacés par
+  `ConfirmDialog` + toast), y compris l'échec du paiement/renouvellement d'annonce.
+- **Vitrine** (`/showcase`) : la suppression d'une section est confirmée.
+- **Utilisateurs** : l'action groupée « Désactiver » demande confirmation **en
+  annonçant le nombre de comptes concernés** (`:count`) ; « Activer » et
+  « Exporter » restent immédiats (non destructifs).
+
+Véracité des états (jamais un état faux affiché comme réel) :
+
+- **Paramètres › Assistant IA** : si `GET /admin/platform/ai/health` échoue,
+  l'en-tête affiche « état de l'assistant indisponible » — **jamais
+  « assistant désactivé »** ; si `GET .../monitoring` échoue, l'onglet Suivi
+  affiche « suivi indisponible » — **jamais « 0 requête »** (le zéro trompeur
+  reste réservé à une réponse API réelle valant zéro).
+- **Paramètres › E-mails** : une liste vide affiche un état vide explicite
+  (« aucun modèle d'e-mail disponible »), distinct du bandeau « chargement
+  impossible ».
+
+À vérifier (recette) :
+
+- Les 4 locales (fr/en/ar/tr) rendent les nouveaux libellés, y compris en RTL.
+- `eslint .` et `vite build` restent verts ; `grep -rn "window.confirm\|window.alert" src` est vide.
+- Les nouveaux libellés passent par le catalogue (`check-i18n-diff.js` vert).
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright

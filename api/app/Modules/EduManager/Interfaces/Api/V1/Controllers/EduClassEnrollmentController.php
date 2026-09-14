@@ -14,6 +14,7 @@ use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * API des inscriptions aux classes — EDU-011 (issue #5827).
@@ -94,8 +95,11 @@ class EduClassEnrollmentController extends Controller
         ];
 
         try {
+            // SAVEPOINT (cf. 25P02) : la violation d'unicité doit être
+            // contenue pour que la transaction appelante reste utilisable et
+            // que le rejeu idempotent ci-dessous aboutisse.
             /** @var EduClassEnrollment $enrollment */
-            $enrollment = EduClassEnrollment::query()->create($payload);
+            $enrollment = DB::transaction(fn (): EduClassEnrollment => EduClassEnrollment::query()->create($payload));
         } catch (UniqueConstraintViolationException) {
             /** @var EduClassEnrollment $enrollment */
             $enrollment = EduClassEnrollment::query()

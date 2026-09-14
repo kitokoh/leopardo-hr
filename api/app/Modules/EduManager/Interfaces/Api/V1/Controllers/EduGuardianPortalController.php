@@ -9,12 +9,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
 use App\Modules\EduManager\Domain\Models\GuardianAccessToken;
+use App\Modules\EduManager\Infrastructure\Services\EduGuardianPortalService;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\IssueGuardianAccessLinkRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\RedeemGuardianAccessLinkRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
@@ -39,6 +41,69 @@ use Illuminate\Support\Str;
 class EduGuardianPortalController extends Controller
 {
     use ChecksEduSolution;
+
+    /**
+     * Durée de validité par défaut d'un lien de portail (jours).
+     */
+    private const DEFAULT_PORTAL_TTL_DAYS = 7;
+
+    public function __construct(private readonly EduGuardianPortalService $portal) {}
+
+    /**
+     * Émet un lien de portail parents (direction uniquement) — EDU-013 (#5829).
+     *
+     * Le service `EduGuardianPortalService` (createLink/resolveToken/logAccess/
+     * summary) et les tables `edu_guardian_portal_links` / `edu_portal_access_logs`
+     * existaient déjà : seule la surface HTTP manquait, le portail parents
+     * répondait 404 en toutes circonstances (constat 2026-09-14).
+     *
+     * RBAC d'abord (403), isolation ensuite (404) : un non-admin n'apprend pas
+     * si le responsable existe.
+     */
+    public function issuePortalLink(Request $request, EduGuardian $guardian): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_FEE_ADMIN_ONLY');
+        abort_if($guardian->company_id !== $actor->company_id, 404);
+
+        $days = (int) ($request->input('expires_in_days') ?? self::DEFAULT_PORTAL_TTL_DAYS);
+
+        $link = $this->portal->createLink($actor, $guardian, $days);
+        $token = (string) $link->portal_token;
+
+        return response()->json([
+            'data' => [
+                'id' => (int) $link->getAttribute('id'),
+                'guardian_id' => (int) $link->guardian_id,
+                'token' => $token,
+                'url' => url('/api/v1/edu-manager/portal/'.$token),
+                'expires_at' => $link->expires_at->toIso8601String(),
+            ],
+        ], 201);
+    }
+
+    /**
+     * Portail parents en LECTURE, ouvert par le token lui-même (route publique).
+     *
+     * Le token EST la credential : aucune session, aucun jeton Sanctum. Il est
+     * résolu sans scope tenant (la société vient du lien, jamais de la requête),
+     * expiré ou révoqué → 404. Chaque consultation est journalisée
+     * (`edu_portal_access_logs`) et le périmètre reste borné aux enfants
+     * explicitement liés — aucune énumération possible.
+     */
+    public function portal(string $token): JsonResponse
+    {
+        $link = $this->portal->resolveToken($token);
+
+        abort_if($link === null, 404);
+
+        $this->portal->logAccess($link);
+
+        return response()->json(['data' => $this->portal->summary($link->refresh())]);
+    }
 
     public function me(Request $request): JsonResponse
     {

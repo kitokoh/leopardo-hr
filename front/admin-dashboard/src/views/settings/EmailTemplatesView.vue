@@ -39,6 +39,13 @@
             {{ t('emailsAdmin.overridden') }}
           </span>
         </button>
+        <!-- #7433 — état vide explicite ; jamais « aucun modèle » quand le chargement a échoué (le bandeau d'erreur porte déjà l'information). -->
+        <p
+          v-if="templates.length === 0 && !loadError"
+          class="px-3 py-6 text-center text-sm text-slate-500 dark:text-slate-400"
+        >
+          {{ t('emailsAdmin.emptyList') }}
+        </p>
       </aside>
 
       <!-- Éditeur -->

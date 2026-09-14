@@ -118,6 +118,13 @@ return new class extends Migration
 
     public function down(): void
     {
+        // Tables dépendantes (FK composites vers `edu_admissions`) : elles
+        // doivent partir AVANT la table parente, sinon PostgreSQL refuse le
+        // DROP (2BP01). Chacune possède sa propre migration, rejouée par le
+        // `up()` du cycle complet. Gardé : uniquement si présente.
+        Schema::dropIfExists('edu_admission_followups');
+        Schema::dropIfExists('edu_fees');
+
         Schema::dropIfExists('edu_admissions');
     }
 };
