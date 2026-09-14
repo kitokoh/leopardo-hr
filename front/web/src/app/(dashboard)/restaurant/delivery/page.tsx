@@ -182,7 +182,7 @@ export default function RestaurantDeliveryPage() {
                       <div className="flex justify-end gap-2 text-xs font-medium">
                         {d.status === 'pending' ? <button className="text-blue-600 hover:underline" onClick={() => void transition(d.id, 'assign')}>{t(locale, 'restaurant.del.assign', 'Assigner')}</button> : null}
                         {d.status === 'assigned' ? <button className="text-cyan-600 hover:underline" onClick={() => void transition(d.id, 'out-for-delivery')}>{t(locale, 'restaurant.del.out')}</button> : null}
-                        {d.status === 'out_for_delivery' ? <button className="text-emerald-600 hover:underline" onClick={() => void transition(d.id, 'deliver')}>{t(locale, 'restaurant.del.deliver')}</button> : null}
+                        {d.status === 'out_for_delivery' ? <button className="text-emerald-700 hover:underline" onClick={() => void transition(d.id, 'deliver')}>{t(locale, 'restaurant.del.deliver')}</button> : null}
                         {['pending', 'assigned', 'out_for_delivery'].includes(d.status) ? <button className="text-red-600 hover:underline" onClick={() => void transition(d.id, 'cancel')}>{t(locale, 'restaurant.del.cancel', 'Annuler')}</button> : null}
                       </div>
                     </td>

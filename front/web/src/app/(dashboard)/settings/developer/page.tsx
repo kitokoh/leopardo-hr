@@ -212,7 +212,7 @@ export default function DeveloperSettingsPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <section className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 border-b border-app-border pb-4">
-              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-600">
+              <div className="rounded-xl bg-emerald-50 p-2 text-emerald-700">
                 <Key className="h-5 w-5" />
               </div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.apiKeysTitle}</h2>

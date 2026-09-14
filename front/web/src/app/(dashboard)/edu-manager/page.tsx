@@ -145,7 +145,7 @@ export default function EduManagerHomePage() {
                 <Link key={counter.href} href={counter.href} className="group">
                   <Card className="transition-shadow group-hover:shadow-md">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 text-emerald-600">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 text-emerald-700">
                         <Icon className="h-5 w-5" aria-hidden="true" />
                       </div>
                       <div>
@@ -170,7 +170,7 @@ export default function EduManagerHomePage() {
                     href={link.href}
                     className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/60 px-4 py-3 text-sm font-bold text-slate-700 transition-colors hover:border-emerald-300 hover:bg-emerald-50/50"
                   >
-                    <Icon className="h-4 w-4 text-emerald-600" aria-hidden="true" />
+                    <Icon className="h-4 w-4 text-emerald-700" aria-hidden="true" />
                     {link.label}
                   </Link>
                 );

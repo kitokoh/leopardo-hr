@@ -88,7 +88,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
   if (status === 'success') {
     return (
       <div className="p-6 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-start gap-3">
-        <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+        <CheckCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
         <div>
           <p className="font-semibold text-emerald-900 dark:text-emerald-100">{copy.form.successTitle}</p>
           <p className="text-sm text-emerald-800 dark:text-emerald-200 mt-1">
@@ -155,7 +155,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
         </label>
         <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:border-emerald-500/50 transition-colors">
           {resume ? (
-            <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+            <FileText className="w-4 h-4 text-emerald-700 dark:text-emerald-400 flex-shrink-0" />
           ) : (
             <Upload className="w-4 h-4 text-slate-400 flex-shrink-0" />
           )}

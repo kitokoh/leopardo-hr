@@ -186,7 +186,7 @@ export default function AssessmentsPage() {
               </Button>
             </>
           ) : (
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">{t(locale, 'edu.assessments.published')}</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">{t(locale, 'edu.assessments.published')}</span>
           )}
         </div>
       ),

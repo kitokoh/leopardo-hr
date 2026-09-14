@@ -255,7 +255,7 @@ export default function SocialCalendarPage() {
               type="button"
               onClick={() => setComposerDay(new Date())}
               disabled={accountConnected === false}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
             >
               <Plus className="h-3.5 w-3.5" /> Nouvelle publication
             </button>
@@ -293,7 +293,7 @@ export default function SocialCalendarPage() {
                 >
                   <span
                     className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
-                      isToday ? 'bg-brand-600 text-white' : inMonth ? 'text-slate-700' : 'text-slate-400'
+                      isToday ? 'bg-brand-700 text-white' : inMonth ? 'text-slate-700' : 'text-slate-400'
                     }`}
                   >
                     {day.getDate()}
@@ -396,7 +396,7 @@ export default function SocialCalendarPage() {
                   type="button"
                   onClick={() => void handlePublishNow(selectedPost)}
                   disabled={postActionPending}
-                  className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
                 >
                   Publier maintenant
                 </button>

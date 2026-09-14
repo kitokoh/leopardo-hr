@@ -152,7 +152,7 @@ export default function TrainingPage() {
   const statCards = [
     { label: 'Total formations', value: total, icon: GraduationCap, accent: 'text-ia-dark bg-ia-light' },
     { label: 'Categories', value: Object.keys(categoryCounts).length, icon: BookOpen, accent: 'text-security-dark bg-security-light' },
-    { label: 'Certifications', value: courses.filter((c) => c.type === 'certification').length, icon: Award, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Certifications', value: courses.filter((c) => c.type === 'certification').length, icon: Award, accent: 'text-emerald-700 bg-emerald-50' },
     { label: 'Capacite totale', value: courses.reduce((s, c) => s + (c.max_participants || 0), 0), icon: Users, accent: 'text-amber-600 bg-amber-50' },
   ];
 
@@ -166,7 +166,7 @@ export default function TrainingPage() {
         <div className="flex justify-end">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700"
           >
             <Plus className="h-4 w-4" /> Nouvelle formation
           </button>
@@ -189,7 +189,7 @@ export default function TrainingPage() {
                 <stat.icon className="h-5 w-5" />
               </div>
               <p className="text-2xl font-black text-slate-950">{stat.value}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
             </motion.div>
           ))}
         </section>
@@ -354,7 +354,7 @@ export default function TrainingPage() {
                 <button
                   onClick={handleCreate}
                   disabled={!newCourse.title.trim() || creating}
-                  className="flex-1 rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50"
                 >
                   {creating ? 'Creation...' : 'Creer'}
                 </button>

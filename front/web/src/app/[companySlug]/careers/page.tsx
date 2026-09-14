@@ -141,7 +141,7 @@ export default async function CareersPortalPage({ params, searchParams }: Career
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h2 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {job.title}
                       </h2>
                       {job.description && (
@@ -178,7 +178,7 @@ export default async function CareersPortalPage({ params, searchParams }: Career
           <div className="mt-10 text-center">
             <a
               href={`/api/v1/public/careers/${companySlug}/feed.xml`}
-              className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400"
+              className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400"
               rel="nofollow"
             >
               <Rss className="w-3.5 h-3.5" />
