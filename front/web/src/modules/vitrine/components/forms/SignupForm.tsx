@@ -37,6 +37,7 @@ import {
   UtensilsCrossed,
   Wallet,
 } from 'lucide-react';
+import { GoogleAuthButton } from '@/modules/vitrine/components/GoogleAuthButton';
 import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
 import { Card } from '@/modules/vitrine/components/common/Card';
@@ -71,9 +72,16 @@ type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
 const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
-// Repli après ~60 s de polling (12 × 5 s).
+// Budget de polling : le job de provisioning peut légitimement épuiser ses
+// 5 essais (backoff 30/60/120/300 → ~8 min) avant de basculer à `failed`.
+// QA onboarding 2026-09-14 : avec un budget de 60 s (12 × 5 s), l'UI
+// abandonnait AVANT que le backend ne tranche et affichait un message
+// d'attente trompeur (« nous vous enverrons le lien par email ») alors que le
+// statut réel était `failed` et qu'aucun email ne partait. On laisse au
+// backend le temps d'écrire la vérité (5 min), avec un écran d'attente qui
+// explique l'attente et permet d'actualiser.
 const TRIAL_POLL_INTERVAL_MS = 5000;
-const TRIAL_POLL_MAX_ATTEMPTS = 12;
+const TRIAL_POLL_MAX_ATTEMPTS = 60;
 
 /**
  * #7235 — Outils HORIZONTAUX proposés à l'inscription. Les clés sont celles
@@ -92,7 +100,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'verifiedByGoogle', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -116,6 +124,7 @@ export function SignupForm({
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
     watch,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupFormSchema(locale)),
@@ -155,6 +164,10 @@ export function SignupForm({
       cancelled = true;
     };
   }, []);
+
+  // QA onboarding 2026-09-14 — identité Google vérifiée (parcours « créer mon
+  // compte avec Google ») : elle pré-remplit l'e-mail au lieu de le redemander.
+  const [googleIdentity, setGoogleIdentity] = useState<{ email: string } | null>(null);
 
   // Multi-step state
   const [currentStep, setCurrentStep] = useState<Step>('profile');
@@ -216,6 +229,72 @@ export function SignupForm({
     } catch {
       // sessionStorage indisponible (SSR/sandboxé) — le suivi restera en mémoire
     }
+  };
+
+  const forgetTrialToken = () => {
+    setTrialToken(null);
+    try {
+      sessionStorage.removeItem(TRIAL_TOKEN_STORAGE_KEY);
+    } catch {
+      // idem : rien à nettoyer si sessionStorage est indisponible
+    }
+  };
+
+  // QA onboarding 2026-09-14 — reprise après rechargement. Le token de
+  // provisioning était déjà persisté en sessionStorage, mais l'UI repartait
+  // systématiquement de l'étape « profil » : recharger la page pendant la
+  // création de l'espace faisait perdre le parcours (l'utilisateur devait
+  // re-saisir le formulaire). On reprend le suivi au MONTAGE uniquement — un
+  // token obtenu en cours de session doit suivre le parcours normal (écran OTP
+  // puis suivi explicite), pas court-circuiter les étapes.
+  const mountHandledRef = useRef(false);
+  useEffect(() => {
+    if (mountHandledRef.current) return;
+    mountHandledRef.current = true;
+    if (!trialToken) return;
+    setIsTracking(true);
+    setTrialStatus('pending');
+    setTrialTimedOut(false);
+    setCurrentStep('tracking');
+  }, [trialToken]);
+
+  // Inscription via Google : le callback OAuth a déposé l'identité vérifiée
+  // dans un cookie httpOnly à usage unique (jamais dans l'URL), relu ici. On
+  // ouvre directement l'étape « coordonnées » avec l'e-mail pré-rempli — le
+  // compte Google prouve l'adresse, la redemander serait de la friction pure.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (new URLSearchParams(window.location.search).get('google') !== '1') return;
+
+    let cancelled = false;
+
+    fetch('/api/forms/google-signup', { headers: { Accept: 'application/json' } })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((payload: { success?: boolean; data?: { email?: unknown } } | null) => {
+        if (cancelled || payload?.success !== true || typeof payload.data?.email !== 'string') return;
+        const email = payload.data.email;
+        setGoogleIdentity({ email });
+        setProfile('company');
+        setCurrentStep('form');
+        setValue('email', email, { shouldValidate: false });
+      })
+      .catch(() => undefined);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setValue]);
+
+  // Repartir de zéro depuis un écran d'échec : on oublie le token (sinon il
+  // serait repris au prochain montage) et on rend la main au formulaire.
+  const restartSignup = () => {
+    forgetTrialToken();
+    setTrialStatus('pending');
+    setTrialTimedOut(false);
+    setPasswordSet(false);
+    setAccessSent(false);
+    setPasswordError('');
+    setCurrentStep('profile');
   };
 
   // #2469 — polling du statut (pending → ready/failed) tant que l'écran de
@@ -280,6 +359,9 @@ export function SignupForm({
 
     if (res.success) {
       setPasswordSet(true);
+      // Parcours terminé : on n'a plus besoin de reprendre ce suivi au
+      // prochain montage (sinon /signup ré-afficherait un suivi obsolète).
+      forgetTrialToken();
       const loginUrl = res.data?.login_url;
       if (typeof loginUrl === 'string' && loginUrl !== '') {
         setTrialLoginUrl(loginUrl);
@@ -291,6 +373,7 @@ export function SignupForm({
     // l'utilisateur, on bascule simplement sur la connexion.
     if (res.error === 'TRIAL_PASSWORD_ALREADY_SET') {
       setPasswordSet(true);
+      forgetTrialToken();
       return;
     }
 
@@ -658,6 +741,27 @@ export function SignupForm({
             <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {c.subtitle}
             </p>
+
+            {googleIdentity ? (
+              <div className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+                <ShieldCheck className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                <span className="truncate">
+                  {c.verifiedByGoogle} · {googleIdentity.email}
+                </span>
+              </div>
+            ) : (
+              <>
+                {/* QA onboarding 2026-09-14 — création de compte en un clic :
+                    le bouton Google est placé AVANT les champs (chemin le plus
+                    court). Le parcours de provisioning est ensuite identique. */}
+                <GoogleAuthButton intent="signup" plan={selectedPlan} className="mb-4" />
+                <div className="mb-6 flex items-center gap-3 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                  <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+                  {t(locale, 'common.or', 'or')}
+                  <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+                </div>
+              </>
+            )}
 
             {formState.isError && (
               <motion.div
@@ -1051,8 +1155,27 @@ export function SignupForm({
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {c.failedBody}
-                   
                 </p>
+                {/* QA onboarding 2026-09-14 : l'écran d'échec était un cul-de-sac
+                    (aucune action). On rend la main : ré-interroger le statut, ou
+                    repartir du formulaire. */}
+                <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="lg"
+                    fullWidth
+                    onClick={() => {
+                      setTrialStatus('pending');
+                      setPollNonce((value) => value + 1);
+                    }}
+                  >
+                    {c.refreshStatus}
+                  </Button>
+                  <Button type="button" variant="ghost" size="lg" fullWidth onClick={restartSignup}>
+                    {c.back}
+                  </Button>
+                </div>
               </>
             ) : trialTimedOut ? (
               <>
@@ -1064,7 +1187,6 @@ export function SignupForm({
                 </h2>
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {c.timeoutBody}
-                   
                 </p>
                 <Button
                   type="button"
@@ -1079,6 +1201,16 @@ export function SignupForm({
                   }}
                 >
                   {c.refreshStatus}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="lg"
+                  fullWidth
+                  className="mt-3"
+                  onClick={restartSignup}
+                >
+                  {c.back}
                 </Button>
               </>
             ) : (
