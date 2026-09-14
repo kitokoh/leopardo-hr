@@ -1158,9 +1158,11 @@ export function SignupForm({
                 <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   {c.failedBody}
                 </p>
-                {/* QA onboarding 2026-09-14 : l'écran d'échec était un cul-de-sac
-                    (aucune action). On rend la main : ré-interroger le statut, ou
-                    repartir du formulaire. */}
+                {/*
+                 * QA onboarding 2026-09-14 : l'écran d'échec était un cul-de-sac
+                 * (aucune action). On rend la main : ré-interroger le statut, ou
+                 * repartir du formulaire.
+                 */}
                 <div className="space-y-3">
                   <Button
                     type="button"

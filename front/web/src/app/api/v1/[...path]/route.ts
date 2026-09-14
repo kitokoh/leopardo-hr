@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { rescopeSessionCookie } from '@/lib/cookie-scope';
 import { getSiteUrl } from '@/lib/site';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
@@ -32,41 +33,6 @@ function isGoogleAuthInitiation(path: string[]): boolean {
 
 function isRedirectStatus(status: number): boolean {
   return status >= 300 && status < 400;
-}
-
-/**
- * Rescope un cookie de session posé par l'API sur l'origine qui répond
- * (la vitrine).
- *
- * QA onboarding 2026-09-14 : le state anti-CSRF du flux Google vit dans la
- * session de l'API, et cette session doit revenir au callback pour être
- * validée. Or l'API émet son `Set-Cookie` avec SON domaine : relayé tel quel
- * à travers le proxy, le navigateur le refuse sur le domaine vitrine → la
- * session était perdue et tout retour de Google finissait en
- * `INVALID_OAUTH_STATE`. On retire donc `Domain` (le cookie appartient alors à
- * l'hôte qui répond), on force `Path=/`, et on garde le reste (HttpOnly,
- * Secure, Max-Age) inchangé.
- */
-function rescopeSessionCookie(cookie: string, request: NextRequest): string {
-  const isHttps = request.nextUrl.protocol === 'https:';
-  const kept: string[] = [];
-
-  for (const part of cookie.split(';')) {
-    const trimmed = part.trim();
-    if (trimmed === '') continue;
-
-    const attribute = trimmed.split('=')[0].trim().toLowerCase();
-    if (['domain', 'path', 'samesite'].includes(attribute)) continue;
-    // Un cookie `Secure` ne peut pas être posé en clair (dev local).
-    if (attribute === 'secure' && !isHttps) continue;
-
-    kept.push(trimmed);
-  }
-
-  kept.push('Path=/');
-  kept.push('SameSite=Lax');
-
-  return kept.join('; ');
 }
 
 function toBackendUrl(request: NextRequest, path: string[]): string {
@@ -162,7 +128,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     if (setCookies.length > 0) {
       headers.delete('set-cookie');
       for (const cookie of setCookies) {
-        headers.append('set-cookie', rescopeSessionCookie(cookie, request));
+        headers.append('set-cookie', rescopeSessionCookie(cookie, request.nextUrl.protocol === 'https:'));
       }
     }
   }
