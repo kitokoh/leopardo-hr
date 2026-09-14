@@ -7,7 +7,7 @@ import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lea
 
 /**
  * Cookie de session — mêmes nom/attributs que `app/api/v1/auth/login/route.ts`
- * pour que le middleware du dashboard (`leopardo_token`, cf. `middleware.ts`)
+ * pour que le proxy du dashboard (`leopardo_token`, cf. `proxy.ts`)
  * reconnaisse immédiatement la session après la vérification du code.
  */
 const COOKIE_NAME = 'leopardo_token';

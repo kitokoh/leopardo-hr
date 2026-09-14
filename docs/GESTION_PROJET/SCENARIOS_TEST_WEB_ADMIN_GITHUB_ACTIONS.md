@@ -66,7 +66,9 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 
 - la page d'accueil charge une synthese via `/api/v1/platform/companies/health`, `/api/v1/platform/metrics/overview` et `/api/v1/platform/company-requests?status=pending`
 - les priorites clients, MRR, ARR, ARPA, encaissements 30 jours, impayes, adoption terrain et demandes entrantes remplacent les anciens widgets mockes
-- la vue Entreprises charge le portefeuille via `/api/v1/platform/companies/health`
+- la vue Entreprises charge l'**annuaire** via `/api/v1/platform/companies` (< 1 s) et affiche les lignes **sans attendre** le scoring ; les scores (`/api/v1/platform/companies/health`, coûteux) sont hydratés **en tâche de fond** avec l'indicateur « Calcul des scores en cours… » (#7302, couvert par `e2e/companies-progressive-portfolio.spec.js`)
+- colonnes de score en placeholder « — » tant que le scoring n'est pas revenu (jamais `null%` ni `SANS PLAN` trompeur)
+- repli sur l'ancien chemin (`companies/health` seul) si l'annuaire est indisponible
 - le detail Entreprise charge health client, abonnement et catalogue plans
 - le formulaire abonnement met a jour plan, statut, dates et notes sans hardcoder les `plan_id`
 - la vue Abonnements affiche le catalogue `/api/v1/platform/plans`, les metriques `/api/v1/platform/metrics/overview`, le MRR portefeuille, les impayes et les clients prioritaires
@@ -128,7 +130,61 @@ progression sont désormais alignées sur une source de vérité unique (table
 - Le risque client ne doit plus être déclenché par un onboarding « inachevé »
   calculé autrement : le malus de score se juge sur `go_live_ready`.
 
-### 12. Menu plateforme — modules d'entreprise cliente regroupés (#7329)
+### 12. Portefeuille clients — l'API ne recalcule plus société par société (#7302)
+
+La vue `/companies` restait sur « Syncing portfolio… » pendant de longues secondes.
+Deux chantiers distincts :
+
+- **Affichage** (déjà livré) : la vue charge d'abord **l'annuaire**
+  (`GET /platform/companies?per_page=100`) pour rendre la page utilisable tout de suite, puis
+  les **scores** en tâche de fond et fusionne les deux (`isScoring` / `scoringFailed`).
+- **Cause racine** (ce lot) : l'API recalculait la santé **société par société** — ~15 requêtes
+  par tenant, mesurées à **674 requêtes** pour 45 sociétés, soit les ~27 s constatées en
+  production. Le calcul est désormais **groupé** (une poignée de requêtes, indépendantes du
+  nombre de sociétés) et mis en cache.
+
+À vérifier :
+
+- La liste s'affiche **sans attendre** les scores (colonnes de score à « — » le temps du calcul).
+- Le compteur de requêtes de `GET /platform/companies/health` **ne dépend pas** du nombre de
+  sociétés : c'est ce que verrouille
+  `test_portfolio_query_count_does_not_grow_with_company_count` (avec l'implémentation
+  précédente, 2 sociétés coûtaient déjà 33 requêtes).
+- Le clic sur **« Actualiser »** envoie `?refresh=1` et déclenche un **recalcul réel** : le
+  portefeuille est mis en cache 60 s (`PORTFOLIO_CACHE_TTL_SECONDS`, donnée dérivée,
+  invalidation temporelle), donc un rafraîchissement explicite ne doit pas resservir une valeur
+  périmée. Un simple rechargement de page, lui, peut être instantané (cache).
+- **Cohérence portefeuille ↔ fiche société** : les deux doivent annoncer les mêmes chiffres
+  (score, risque, employés actifs, pointages 30 j, anomalies critiques, MRR, plan, prochaine
+  action) — `test_portfolio_and_company_detail_agree_on_shared_metrics`. Deux chemins de calcul
+  pour une même donnée sont exactement ce qui avait produit les trois progressions d'onboarding
+  divergentes (#7300).
+
+### 13. Console propre du back-office — plus d'attribut perdu sur `<Sidebar>` (#7305)
+
+`DashboardLayout.vue` passait `class="fixed inset-y-0 left-0 z-50"` au composant `<Sidebar>`.
+Or `Sidebar.vue` a une **racine fragmentaire** (l'overlay mobile `<transition>` et la sidebar
+sont deux nœuds frères) : Vue ne pouvait pas hériter l'attribut et le **perdait silencieusement**
+en émettant à chaque montage
+
+```
+[Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be
+automatically inherited because component renders fragment or text or teleport root nodes. at <Sidebar …>
+```
+
+Correctif : le composant déclare `inheritAttrs: false` et rebranche explicitement `v-bind="$attrs"`
+sur la racine « sidebar » ; le `class` redondant du layout (déjà porté par cette racine) est retiré.
+
+À vérifier :
+
+- Le dashboard se monte **sans aucun avertissement Vue** de ce type —
+  `e2e/sidebar-attrs-console-clean.spec.js` (le test **échoue** si l'avertissement réapparaît :
+  vérifié en réintroduisant le défaut).
+- La sidebar reste **en position fixe**, calée à gauche et au-dessus du contenu
+  (`position: fixed`, `left: 0`, `z-index >= 50` mesurés sur l'élément) : retirer le `class` du
+  layout ne doit pas casser la mise en page.
+
+### 14. Menu plateforme — modules d'entreprise cliente regroupés (#7329)
 
 Les écrans « Formations », « Flotte véhicules », « Stations-service » et
 « Agence de voyage » ne s'adressent pas à la plateforme mais au périmètre d'une

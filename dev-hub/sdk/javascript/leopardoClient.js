@@ -1605,6 +1605,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/company/branding", options);
     },
 
+    /** Activer un module horizontal de l'entreprise (#7322) */
+    postCompanyModulesByModuleActivate(options = {}) {
+      return request("POST", "/company/modules/{module}/activate", options);
+    },
+
     /** Generer le QR onboarding entreprise */
     getCompanyQrOnboarding(options = {}) {
       return request("GET", "/company/qr-onboarding", options);

@@ -1304,6 +1304,10 @@ class LeopardoClient:
         """Mettre a jour l'identite visuelle entreprise"""
         return self.request("PATCH", "/company/branding", **kwargs)
 
+    def post_company_modules_by_module_activate(self, **kwargs):
+        """Activer un module horizontal de l'entreprise (#7322)"""
+        return self.request("POST", "/company/modules/{module}/activate", **kwargs)
+
     def get_company_qr_onboarding(self, **kwargs):
         """Generer le QR onboarding entreprise"""
         return self.request("GET", "/company/qr-onboarding", **kwargs)

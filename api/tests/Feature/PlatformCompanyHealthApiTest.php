@@ -8,7 +8,9 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
+use App\Modules\Platform\Infrastructure\Services\PlatformCompanyHealthService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -235,6 +237,156 @@ class PlatformCompanyHealthApiTest extends TestCase
         $this->getJson("/api/v1/platform/companies/{$company->id}/features")
             ->assertOk()
             ->assertJsonPath('data.company_id', $company->id);
+    }
+
+    /**
+     * #7302 — le coût du portefeuille ne doit PAS suivre le nombre de sociétés.
+     *
+     * Avant ce correctif, `portfolio()` appelait `build()` en boucle : ~15
+     * requêtes par société (dont 3 `SET search_path` et un `Company::find`
+     * redondant dans les anomalies). Mesuré sur 45 sociétés réelles : **674
+     * requêtes** et ~27 s en production. Ce test échoue si un N+1 est
+     * réintroduit : il compare le nombre de requêtes pour 2 sociétés puis pour
+     * 10, et exige qu'il n'augmente pas.
+     */
+    public function test_portfolio_query_count_does_not_grow_with_company_count(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
+
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Pilot',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'max_employees' => 30,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $this->seedPortfolioCompanies(2);
+        Cache::flush();
+        $queriesForTwo = $this->countPortfolioQueries(10);
+
+        $this->seedPortfolioCompanies(10);
+        Cache::flush();
+        $queriesForTen = $this->countPortfolioQueries(20);
+
+        $this->assertLessThan(30, $queriesForTwo, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
+        $this->assertLessThan(30, $queriesForTen, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
+
+        // Le point clé : passer de 2 à 10 sociétés ne doit rien coûter de plus
+        // qu'une poignée de requêtes (avant : ~15 par société, soit +120).
+        $this->assertLessThanOrEqual(
+            $queriesForTwo + 2,
+            $queriesForTen,
+            "Le portefeuille redevient linéaire en nombre de sociétés ({$queriesForTwo} requêtes pour 2, {$queriesForTen} pour 10).",
+        );
+
+        Carbon::setTestNow();
+    }
+
+    /**
+     * #7302 — portefeuille et fiche société doivent annoncer les MÊMES chiffres.
+     *
+     * Le portefeuille calcule désormais par requêtes groupées au lieu d'appeler
+     * `build()` par société. Ce test verrouille l'équivalence : deux chemins de
+     * calcul pour une même donnée sont exactement ce qui avait produit trois
+     * progressions d'onboarding divergentes (#7300).
+     */
+    public function test_portfolio_and_company_detail_agree_on_shared_metrics(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
+
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Pilot',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'max_employees' => 30,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $this->seedPortfolioCompanies(3);
+        Cache::flush();
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        /** @var list<array<string, mixed>> $items */
+        $items = $this->getJson('/api/v1/platform/companies/health?limit=10')->assertOk()->json('data.items');
+        $this->assertNotEmpty($items);
+
+        foreach ($items as $item) {
+            $detail = $this->getJson("/api/v1/platform/companies/{$item['company']['id']}/health")
+                ->assertOk()
+                ->json('data');
+
+            $this->assertSame($detail['adoption']['health_score'], $item['health_score']);
+            $this->assertSame($detail['adoption']['risk_level'], $item['risk_level']);
+            $this->assertSame($detail['adoption']['employees']['active'], $item['employees_active']);
+            $this->assertSame($detail['adoption']['attendance']['logs_30d'], $item['attendance_logs_30d']);
+            $this->assertSame($detail['adoption']['anomalies']['critical_30d'], $item['critical_anomalies_30d']);
+            $this->assertSame($detail['subscription']['mrr'], $item['subscription']['mrr']);
+            $this->assertSame($detail['plan']['name'], $item['plan']['name']);
+            $this->assertSame($detail['next_actions'][0] ?? null, $item['next_action']);
+        }
+
+        Carbon::setTestNow();
+    }
+
+    /**
+     * Crée `$count` sociétés avec un employé et un pointage récent.
+     */
+    private function seedPortfolioCompanies(int $count): void
+    {
+        for ($i = 0; $i < $count; $i++) {
+            $company = Company::factory()->create([
+                'plan_id' => 1,
+                'timezone' => 'UTC',
+            ]);
+
+            app()->instance('current_company', $company);
+
+            // `currentCompany()` est typé `Company` : la variable de fabrique
+            // est un `Model` pour larastan, et le baseline PHPStan strict
+            // compte les accès `Model::$id` par fichier.
+            $current = currentCompany();
+
+            /** @var Employee $employee */
+            $employee = Employee::factory()->create([
+                'company_id' => $current->id,
+                'salary_base' => 173330,
+            ]);
+
+            AttendanceLog::factory()->create([
+                'company_id' => $current->id,
+                'employee_id' => $employee->id,
+                'date' => '2026-05-08',
+                'check_in' => Carbon::parse('2026-05-08 08:00:00', 'UTC'),
+                'check_out' => Carbon::parse('2026-05-08 17:00:00', 'UTC'),
+            ]);
+
+            app()->forgetInstance('current_company');
+        }
+    }
+
+    /**
+     * Compte les requêtes émises par UN appel à `portfolio()` (#7302).
+     *
+     * Mesuré au niveau du service (et non de la route) pour ne pas compter les
+     * requêtes d'authentification : ce qui est verrouillé ici est le coût du
+     * calcul du portefeuille lui-même.
+     */
+    private function countPortfolioQueries(int $limit): int
+    {
+        $count = 0;
+        DB::listen(function () use (&$count): void {
+            $count++;
+        });
+
+        app(PlatformCompanyHealthService::class)->portfolio($limit);
+
+        return $count;
     }
 
     private function superAdmin(): SuperAdmin

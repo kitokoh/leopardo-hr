@@ -11,6 +11,9 @@ import {
 } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+// #7307 — le nombre de moteurs de paie vient de la source unique, pas d'un
+// litteral qui peut diverger d'une page (ou d'une locale) a l'autre.
+import { PAYROLL_RULE_ENGINES_COUNT } from '@/modules/vitrine/data/vitrine-numbers';
 import { motion } from 'framer-motion';
 import { Calendar, Building2, Users, CheckCircle } from 'lucide-react';
 
@@ -72,7 +75,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'Ce que vous decouvrirez',
     benefits: [
       { title: 'Gestion complete des employés', desc: 'Pointage, absences, contrats et documents dans une experience unifiee.' },
-      { title: 'Paie multi-pays automatisee', desc: '9 moteurs de regles (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) avec cotisations, IR et bulletins PDF.' },
+      { title: 'Paie multi-pays automatisee', desc: `${PAYROLL_RULE_ENGINES_COUNT} moteurs de regles (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie, Royaume-Uni, Etats-Unis) avec cotisations, IR et bulletins PDF.` },
       { title: 'Dashboard temps reel', desc: 'KPIs, alertes et donnees operationnelles pour les RH et managers.' },
       { title: 'Sécurité enterprise', desc: 'Isolation tenant, roles, audit trail, chiffrement et workflows controles.' },
     ],
@@ -111,7 +114,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'What you will discover',
     benefits: [
       { title: 'Complete employee management', desc: 'Attendance, leave, contracts and documents in one unified experience.' },
-      { title: 'Automated multi-country payroll', desc: '9 rule engines (Algeria, Canada, ECOWAS, CEMAC, France, Morocco, Senegal, Tunisia, Turkey) with contributions, income tax and PDF pay slips.' },
+      { title: 'Automated multi-country payroll', desc: `${PAYROLL_RULE_ENGINES_COUNT} rule engines (Algeria, Canada, ECOWAS, CEMAC, France, Morocco, Senegal, Tunisia, Turkey, United Kingdom, United States) with contributions, income tax and PDF pay slips.` },
       { title: 'Real-time dashboard', desc: 'KPIs, alerts and operational data for HR teams and managers.' },
       { title: 'Enterprise security', desc: 'Tenant isolation, roles, audit trail, encryption and controlled workflows.' },
     ],
@@ -150,7 +153,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'Neleri goreceksiniz',
     benefits: [
       { title: 'Tam calisan yonetimi', desc: 'Devam takibi, izinler, sozlesmeler ve belgeler tek deneyimde.' },
-      { title: 'Cok ulkeli otomatik bordro', desc: '9 kural motoru (Cezayir, Kanada, ECOWAS, CEMAC, Fransa, Fas, Senegal, Tunus, Turkiye); kesintiler, gelir vergisi ve PDF bordro.' },
+      { title: 'Cok ulkeli otomatik bordro', desc: `${PAYROLL_RULE_ENGINES_COUNT} kural motoru (Cezayir, Kanada, ECOWAS, CEMAC, Fransa, Fas, Senegal, Tunus, Turkiye, Birlesik Krallik, Amerika Birlesik Devletleri); kesintiler, gelir vergisi ve PDF bordro.` },
       { title: 'Gercek zamanli panel', desc: 'IK ekipleri ve yoneticiler icin KPI, uyari ve operasyon verileri.' },
       { title: 'Kurumsal guvenlik', desc: 'Tenant izolasyonu, roller, denetim kaydi, sifreleme ve kontrollu is akislar.' },
     ],
@@ -189,7 +192,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'ما الذي ستكتشفه',
     benefits: [
       { title: 'إدارة كاملة للموظفين', desc: 'الحضور، الإجازات، العقود والمستندات في تجربة موحدة.' },
-      { title: 'رواتب آلية متعددة الدول', desc: '9 محركات قواعد (الجزائر، كندا، إكواس، سيماك، فرنسا، المغرب، السنغال، تونس، تركيا) مع الاشتراكات والضريبة وقسائم PDF.' },
+      { title: 'رواتب آلية متعددة الدول', desc: `${PAYROLL_RULE_ENGINES_COUNT} محركات قواعد (الجزائر، كندا، إكواس، سيماك، فرنسا، المغرب، السنغال، تونس، تركيا، المملكة المتحدة، الولايات المتحدة) مع الاشتراكات والضريبة وقسائم PDF.` },
       { title: 'لوحة بيانات فورية', desc: 'مؤشرات وتنبيهات وبيانات تشغيلية لفرق الموارد البشرية والمديرين.' },
       { title: 'أمان مؤسسي', desc: 'عزل الشركات، الأدوار، سجل التدقيق، التشفير ومسارات عمل مضبوطة.' },
     ],

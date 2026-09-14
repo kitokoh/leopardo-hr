@@ -75,6 +75,54 @@ final class OnboardingProgressReader
     }
 
     /**
+     * #7302 — lecture GROUPÉE : une seule requête pour N sociétés.
+     *
+     * Le portefeuille du back-office affiche une progression par société ;
+     * l'appeler en boucle coûtait une requête par tenant et participait aux
+     * 674 requêtes mesurées sur `GET /platform/companies/health`. Ici : une
+     * requête, puis la **même** règle `summarize()` par société — les valeurs
+     * sont donc identiques à celles de `read()`, sans la boucle de requêtes.
+     *
+     * Un identifiant sans aucune étape renvoie la progression vide
+     * (`initialized: false`), comme `read()`.
+     *
+     * @param  list<string>  $companyIds
+     * @return array<string, array{
+     *     initialized: bool,
+     *     completed_steps: int,
+     *     total_steps: int,
+     *     progress_percent: int,
+     *     progress: int,
+     *     go_live_ready: bool,
+     *     next_actions: list<array{key: string, label: string}>,
+     *     steps: Collection<int, OnboardingStep>
+     * }>
+     */
+    public function readMany(array $companyIds): array
+    {
+        if ($companyIds === []) {
+            return [];
+        }
+
+        /** @var Collection<int, OnboardingStep> $allSteps */
+        $allSteps = OnboardingStep::query()
+            ->whereIn('company_id', $companyIds)
+            ->orderBy('order')
+            ->get();
+
+        $grouped = $allSteps->groupBy('company_id');
+
+        $result = [];
+        foreach ($companyIds as $companyId) {
+            /** @var Collection<int, OnboardingStep> $companySteps */
+            $companySteps = $grouped->get((string) $companyId, new Collection);
+            $result[(string) $companyId] = $this->summarize($companySteps->values());
+        }
+
+        return $result;
+    }
+
+    /**
      * Calcule la progression canonique à partir d'une collection déjà chargée.
      *
      * Exposé pour éviter une seconde requête quand l'appelant détient déjà les

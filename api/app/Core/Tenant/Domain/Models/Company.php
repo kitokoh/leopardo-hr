@@ -175,6 +175,59 @@ class Company extends Model
     ];
 
     /**
+     * Correspondance outil horizontal (`metadata.modules`, catalogue client) =>
+     * feature flag plateforme (`config/feature-flags.php`). Les clés ABSENTES
+     * de cette table ne sont pas des flags plateforme : leur activation vit
+     * uniquement dans `metadata.modules`, que le client web consomme
+     * directement (`explicitToolValue` de `client-features.ts`).
+     *
+     * Source unique partagée par le provisioning (`ProvisionGuidedTrial`) et
+     * l'auto-activation côté tenant (`CompanyModuleController`) — sans import
+     * cross-BC : la correspondance est littérale (#7235, BC-27 #6862, #7322).
+     *
+     * @var array<string, string>
+     */
+    public const HORIZONTAL_TOOL_FEATURES = [
+        'accounting' => 'accounting',
+        'crm' => 'crm',
+        'showcase' => 'company_showcase',
+    ];
+
+    /**
+     * #7322 — active un outil horizontal pour CE tenant : écrit la sélection
+     * client (`metadata.modules[key] = true`) ET le flag plateforme miroir
+     * lorsqu'il existe (`HORIZONTAL_TOOL_FEATURES`).
+     *
+     * ⚠️ N'appelle PAS `save()` : l'appelant persiste (le contrôleur tenant le
+     * fait par une requête qualifiée `public.companies` pour éviter le piège
+     * search_path). Retourne `true` si l'outil vient d'être activé, `false`
+     * s'il l'était déjà (idempotence).
+     *
+     * @throws \InvalidArgumentException clé hors `HORIZONTAL_TOOLS` (fail-closed)
+     */
+    public function activateHorizontalTool(string $key): bool
+    {
+        if (! in_array($key, self::HORIZONTAL_TOOLS, true)) {
+            throw new \InvalidArgumentException("Outil horizontal inconnu : {$key}");
+        }
+
+        $metadata = $this->metadata ?? [];
+        $modules = is_array($metadata['modules'] ?? null) ? $metadata['modules'] : [];
+
+        $alreadyActive = ($modules[$key] ?? null) === true;
+
+        $modules[$key] = true;
+        $metadata['modules'] = $modules;
+        $this->metadata = $metadata;
+
+        if (isset(self::HORIZONTAL_TOOL_FEATURES[$key])) {
+            $this->setFeature(self::HORIZONTAL_TOOL_FEATURES[$key], true);
+        }
+
+        return ! $alreadyActive;
+    }
+
+    /**
      * #7235 — Outils HORIZONTAUX d'ÉQUIPE. Un profil `solo` (indépendant)
      * n'en a aucun usage : ils sont explicitement désactivés à l'inscription
      * pour ne pas encombrer son interface (demande produit : « le solo n'a pas

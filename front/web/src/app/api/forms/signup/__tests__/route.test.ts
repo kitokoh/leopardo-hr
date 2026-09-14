@@ -14,6 +14,8 @@ jest.mock('../../_lib/lead-capture', () => ({
     id: 'signup_test',
     emailForwarded: false,
     crmForwarded: false,
+    // #7301 — la route expose désormais l'état RÉEL de la persistance du lead.
+    persisted: 'persisted',
   })),
 }));
 
@@ -158,6 +160,23 @@ describe('POST /api/forms/signup — contrat de la demande d’essai', () => {
     expect(payload.provisioned).toBe(true);
     expect(payload.data.nextStep).toBe('verify');
     expect(payload.data.status).toBe('pending_verification');
+  });
+
+  it('#7301 — expose l’état réel de persistance du lead (jamais un succès muet)', async () => {
+    mockedLeadCapture.captureMarketingLead.mockResolvedValueOnce({
+      id: 'signup_pending',
+      emailForwarded: false,
+      crmForwarded: false,
+      persisted: 'pending',
+    });
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ', locale: 'fr' }),
+    );
+    const payload = (await response.json()) as { data: { leadPersisted: string } };
+
+    // Le lead sera écrit APRÈS la réponse : l'appelant doit pouvoir le savoir.
+    expect(payload.data.leadPersisted).toBe('pending');
   });
 
   it('répond COUNTRY_REQUIRED (422) quand la géolocalisation est indisponible', async () => {

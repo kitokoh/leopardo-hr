@@ -63,7 +63,105 @@ class AttendanceAnomalyService
             ->orderByDesc('id')
             ->get();
 
-        $items = collect()
+        return [
+            'data' => $this->summarizeItems($this->items($logs, $company), $dateFrom, $dateTo, $limit),
+        ];
+    }
+
+    /**
+     * #7302 — résumés GROUPÉS pour plusieurs sociétés, en DEUX requêtes.
+     *
+     * Le back-office appelait `summarize()` une fois par société : 3 requêtes
+     * par tenant (dont un `Company::find` redondant alors que l'appelant
+     * détient déjà la société), soit 135 requêtes sur un portefeuille de 45
+     * sociétés, et l'essentiel du temps de `GET /platform/companies/health`.
+     *
+     * Ici les pointages de **toutes** les sociétés sont chargés en une requête
+     * (plus une pour les employés des pointages), puis la **même** chaîne de
+     * détection est appliquée société par société sur les collections en
+     * mémoire : les valeurs sont identiques à `summarize()`, sans la boucle de
+     * requêtes.
+     *
+     * Volontairement limité au portefeuille : pas de `$scopeActor` (le
+     * back-office plateforme n'est pas un manager d'équipe) ; les filtres
+     * `employee_id` et le cloisonnement par département n'ont donc pas de sens
+     * ici et ne sont pas acceptés. Seuls `date_from`, `date_to` et `per_page`
+     * sont honorés.
+     *
+     * @param  Collection<int, Company>  $companies
+     * @param  array<string, mixed>  $filters
+     * @return array<string, array<string, mixed>> indexé par identifiant de société
+     */
+    public function summarizeMany(Collection $companies, array $filters = []): array
+    {
+        $byId = $companies->keyBy('id');
+
+        if ($byId->isEmpty()) {
+            return [];
+        }
+
+        $dateTo = Carbon::parse($filters['date_to'] ?? now('UTC')->toDateString())->toDateString();
+        $dateFrom = Carbon::parse($filters['date_from'] ?? Carbon::parse($dateTo)->subDays(30)->toDateString())->toDateString();
+        $limit = max(1, min(100, (int) ($filters['per_page'] ?? 50)));
+
+        /** @var Collection<int, AttendanceLog> $logs */
+        $logs = AttendanceLog::query()
+            ->with(['employee:id,company_id,first_name,last_name,matricule'])
+            ->select([
+                'id',
+                'company_id',
+                'employee_id',
+                'date',
+                'check_in',
+                'check_out',
+                'method',
+                'source_device_code',
+                'status',
+                'hours_worked',
+                'overtime_hours',
+                'late_minutes',
+                'corrected_by',
+                'gps_lat',
+                'gps_lng',
+            ])
+            ->whereIn('company_id', $byId->keys()->all())
+            // Même borne haute que `summarize()` : `date` est stockée en
+            // timestamp, une borne « jour » exclurait les pointages du dernier
+            // jour de la période.
+            ->whereBetween('date', [$dateFrom, Carbon::parse($dateTo)->endOfDay()])
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->get();
+
+        $grouped = $logs->groupBy('company_id');
+
+        $summaries = [];
+        foreach ($byId as $companyId => $company) {
+            /** @var Collection<int, AttendanceLog> $companyLogs */
+            $companyLogs = $grouped->get((string) $companyId, new Collection);
+
+            $summaries[(string) $companyId] = $this->summarizeItems(
+                $this->items($companyLogs->values(), $company),
+                $dateFrom,
+                $dateTo,
+                $limit,
+            )['summary'];
+        }
+
+        return $summaries;
+    }
+
+    /**
+     * Chaîne de détection d'anomalies commune à `summarize()` et
+     * `summarizeMany()` — extraite pour que les deux chemins ne puissent pas
+     * diverger.
+     *
+     * @param  Collection<int, AttendanceLog>  $logs
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function items(Collection $logs, ?Company $company): Collection
+    {
+        return collect()
             ->merge($this->lateArrivals($logs))
             ->merge($this->missingCheckOuts($logs))
             ->merge($this->manualCorrections($logs))
@@ -73,33 +171,40 @@ class AttendanceAnomalyService
             ->merge($this->outOfGeofencePunches($logs, $company))
             ->sortByDesc('detected_at')
             ->values();
+    }
 
+    /**
+     * Bloc `data` (period + summary + items) calculé depuis les anomalies.
+     *
+     * @param  Collection<int, array<string, mixed>>  $items
+     * @return array<string, mixed>
+     */
+    private function summarizeItems(Collection $items, string $dateFrom, string $dateTo, int $limit): array
+    {
         $counts = $items
             ->groupBy('type')
             ->map(fn (Collection $group): int => $group->count())
             ->all();
 
         return [
-            'data' => [
-                'period' => [
-                    'date_from' => $dateFrom,
-                    'date_to' => $dateTo,
-                ],
-                'summary' => [
-                    'total' => $items->count(),
-                    'critical' => $items->where('severity', 'critical')->count(),
-                    'warning' => $items->where('severity', 'warning')->count(),
-                    'info' => $items->where('severity', 'info')->count(),
-                    'by_type' => (object) $counts,
-                    'business_impact' => [
-                        'late_minutes' => (int) $items->sum(fn (array $item): int => (int) ($item['details']->late_minutes ?? 0)),
-                        'missing_check_outs' => $items->where('type', 'missing_check_out')->count(),
-                        'manual_corrections' => $items->where('type', 'manual_correction')->count(),
-                        'critical_actions' => $items->where('requires_manager_action', true)->count(),
-                    ],
-                ],
-                'items' => $items->take($limit)->values(),
+            'period' => [
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
             ],
+            'summary' => [
+                'total' => $items->count(),
+                'critical' => $items->where('severity', 'critical')->count(),
+                'warning' => $items->where('severity', 'warning')->count(),
+                'info' => $items->where('severity', 'info')->count(),
+                'by_type' => (object) $counts,
+                'business_impact' => [
+                    'late_minutes' => (int) $items->sum(fn (array $item): int => (int) ($item['details']->late_minutes ?? 0)),
+                    'missing_check_outs' => $items->where('type', 'missing_check_out')->count(),
+                    'manual_corrections' => $items->where('type', 'manual_correction')->count(),
+                    'critical_actions' => $items->where('requires_manager_action', true)->count(),
+                ],
+            ],
+            'items' => $items->take($limit)->values(),
         ];
     }
 

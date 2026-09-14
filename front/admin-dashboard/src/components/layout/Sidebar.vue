@@ -12,6 +12,7 @@
 
   <!-- Sidebar -->
   <div
+    v-bind="$attrs"
     :class="[
       'fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden transform bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-800/50 shadow-premium transition-all duration-300 ease-in-out md:translate-x-0',
       isOpen ? 'translate-x-0' : '-translate-x-full'
@@ -190,6 +191,17 @@ import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
 import { useTravelStore } from '@/stores/travel'
+
+// #7305 — ce composant a une racine FRAGMENTAIRE (l'overlay mobile
+// `<transition>` ET la sidebar sont deux nœuds frères). Vue ne peut donc pas
+// hériter automatiquement d'un attribut passé par le parent
+// (`[Vue warn]: Extraneous non-props attributes (class) were passed to
+// component … renders fragment or text or teleport root nodes`) : l'attribut
+// était silencieusement PERDU. On désactive l'héritage implicite et on le
+// rebranche explicitement sur la racine « sidebar » ci-dessous.
+defineOptions({
+  inheritAttrs: false
+})
 
 defineProps({
   isOpen: {

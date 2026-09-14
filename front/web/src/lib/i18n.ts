@@ -110,6 +110,10 @@ export type CopyTree = {
     featureLockedPlanRoleTitle: string;
     featureLockedPlanRoleBody: string;
     featureLockedCta: string;
+    /** #7322 — auto-activation d'un module horizontal depuis « Modules & plan » */
+    activate: string;
+    activating: string;
+    activateError: string;
     recent_activity: string;
     noNotifications: string;
     managePreferences: string;
@@ -117,6 +121,8 @@ export type CopyTree = {
     resumeOnboarding: string;
     /** #7225 — titre de section « Mon métier » (verticales activées) */
     businessSection: string;
+    /** #7328 — libellé du menu RH (regroupe les modules RH en sous-menus) */
+    hrMenu: string;
     /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
     modules: {
       dashboard: string; employees: string; attendance: string; attendance_geo: string;
@@ -729,11 +735,15 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & rôle',
       featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calculés depuis les droits, le plan de l'entreprise et le rôle utilisateur.",
       featureLockedCta: "Demander l'activation",
+      activate: 'Activer',
+      activating: 'Activation…',
+      activateError: "L'activation a échoué. Réessayez.",
       recent_activity: 'Activité récente',
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
+      hrMenu: 'RH',
       modules: {
         dashboard: 'Tableau de bord',
         employees: 'Employés',
@@ -1391,11 +1401,15 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'الخطة والدور',
       featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
       featureLockedCta: 'طلب التفعيل',
+      activate: 'تفعيل',
+      activating: 'جارٍ التفعيل…',
+      activateError: 'فشل التفعيل. يرجى المحاولة مرة أخرى.',
       recent_activity: 'النشاط الأخير',
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
+      hrMenu: 'الموارد البشرية',
       modules: {
         dashboard: 'لوحة القيادة',
         employees: 'الموظفون',
@@ -2049,11 +2063,15 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan ve rol',
       featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
       featureLockedCta: 'Aktivasyon iste',
+      activate: 'Etkinleştir',
+      activating: 'Etkinleştiriliyor…',
+      activateError: 'Etkinleştirme başarısız oldu. Tekrar deneyin.',
       recent_activity: 'Son etkinlik',
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
+      hrMenu: 'İK',
       modules: {
         dashboard: 'Panel',
         employees: 'Çalışanlar',
@@ -2707,11 +2725,15 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & role',
       featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
       featureLockedCta: 'Request activation',
+      activate: 'Activate',
+      activating: 'Activating…',
+      activateError: 'Activation failed. Please try again.',
       recent_activity: 'Recent activity',
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
+      hrMenu: 'HR',
       modules: {
         dashboard: 'Dashboard',
         employees: 'Employees',
