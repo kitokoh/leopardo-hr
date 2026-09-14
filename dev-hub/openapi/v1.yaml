@@ -2740,6 +2740,58 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /company/modules/{module}/activate:
+    post:
+      tags:
+      - HR Referentials
+      summary: Activer un module horizontal de l'entreprise (#7322)
+      description: |
+        Le responsable du tenant (principal/rh) active lui-meme un module
+        HORIZONTAL de son entreprise : met a jour `metadata.modules` (selection
+        client) et le flag plateforme miroir (`companies.features`). Allowlist
+        FAIL-CLOSED (`Company::HORIZONTAL_TOOLS`) : une cle inconnue ou une
+        VERTICALE (restaurant, travel, fuel, education) est refusee en 422 sans
+        aucune ecriture. Idempotent : reactiver un module deja actif renvoie
+        activated=false / already_active=true.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: module
+        in: path
+        required: true
+        description: Cle du module horizontal a activer (ex. accounting, crm, company_showcase).
+        schema:
+          type: string
+          pattern: '^[a-z_]{1,40}$'
+      responses:
+        '200':
+          description: Module active, ou deja actif
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      module:
+                        type: string
+                      activated:
+                        type: boolean
+                      already_active:
+                        type: boolean
+                      modules:
+                        type: object
+                      features:
+                        type: object
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /company-requests:
     get:
       tags:

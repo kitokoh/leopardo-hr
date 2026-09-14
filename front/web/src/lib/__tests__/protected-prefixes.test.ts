@@ -10,7 +10,7 @@ import robots from '@/app/robots';
  * est la garde anti-dérive entre les deux fichiers.
  */
 describe('protected prefixes (source unique #3377)', () => {
-  const middlewareSrc = readFileSync(join(__dirname, '../../middleware.ts'), 'utf8');
+  const middlewareSrc = readFileSync(join(__dirname, '../../proxy.ts'), 'utf8');
 
   it.each(PROTECTED_PREFIXES)('%s est déclaré dans le matcher middleware', (prefix) => {
     expect(middlewareSrc).toContain(`'${prefix}/:path*'`);

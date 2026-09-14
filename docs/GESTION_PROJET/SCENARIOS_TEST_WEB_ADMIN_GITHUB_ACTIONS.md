@@ -160,6 +160,57 @@ Deux chantiers distincts :
   pour une même donnée sont exactement ce qui avait produit les trois progressions d'onboarding
   divergentes (#7300).
 
+### 13. Console propre du back-office — plus d'attribut perdu sur `<Sidebar>` (#7305)
+
+`DashboardLayout.vue` passait `class="fixed inset-y-0 left-0 z-50"` au composant `<Sidebar>`.
+Or `Sidebar.vue` a une **racine fragmentaire** (l'overlay mobile `<transition>` et la sidebar
+sont deux nœuds frères) : Vue ne pouvait pas hériter l'attribut et le **perdait silencieusement**
+en émettant à chaque montage
+
+```
+[Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be
+automatically inherited because component renders fragment or text or teleport root nodes. at <Sidebar …>
+```
+
+Correctif : le composant déclare `inheritAttrs: false` et rebranche explicitement `v-bind="$attrs"`
+sur la racine « sidebar » ; le `class` redondant du layout (déjà porté par cette racine) est retiré.
+
+À vérifier :
+
+- Le dashboard se monte **sans aucun avertissement Vue** de ce type —
+  `e2e/sidebar-attrs-console-clean.spec.js` (le test **échoue** si l'avertissement réapparaît :
+  vérifié en réintroduisant le défaut).
+- La sidebar reste **en position fixe**, calée à gauche et au-dessus du contenu
+  (`position: fixed`, `left: 0`, `z-index >= 50` mesurés sur l'élément) : retirer le `class` du
+  layout ne doit pas casser la mise en page.
+
+### 14. Menu plateforme — modules d'entreprise cliente regroupés (#7329)
+
+Les écrans « Formations », « Flotte véhicules », « Stations-service » et
+« Agence de voyage » ne s'adressent pas à la plateforme mais au périmètre d'une
+**entreprise cliente** : ce ne sont plus des entrées de premier niveau du menu
+superadmin.
+
+- « Entreprises » reste le rail de premier niveau ; les quatre écrans sont
+  regroupés sous un titre de section **« Modules des entreprises clientes »**,
+  rendu juste après l'entrée « Entreprises ».
+- La section est repliable, mais **ouverte par défaut** : une section repliée
+  par défaut masquerait des écrans existants. Le repli est mémorisé
+  (`localStorage`) et la section contenant la route courante est toujours
+  dépliée.
+- Non-régression : les quatre écrans restent atteignables en un clic et présents
+  dans l'arbre d'accessibilité — `travel-navigation.spec.js` échoue si l'entrée
+  « Agence de voyage » disparaît du menu.
+- `e2e/sidebar-unique-entries.spec.js` vérifie le regroupement par la géométrie
+  (les 4 entrées sont **sous** le titre, lui-même **sous** « Entreprises ») puis
+  le repli/dépli réel. Ce bloc n'est **pas** conditionné à
+  `PLAYWRIGHT_AUTH_TOKEN` (absent du job `web-ci.yml`) : la session y est
+  simulée, sinon la garde ne s'exécuterait jamais en CI.
+- Convention : toute nouvelle entrée d'un module d'entreprise cliente rejoint ce
+  groupe, pas le rail principal.
+
+### 16. Portefeuille clients — l'endpoint de scoring est paginé (#7339)
+
 **MAJ 2026-09-14 (#7339) — l'endpoint est désormais paginé, sans changement pour la vue.**
 La réponse gagne un bloc `meta` (`current_page`, `per_page`, `total`, `last_page`,
 `from`/`to`) et accepte `?page=&per_page=` (`limit` reste un alias). C'est **additif** :

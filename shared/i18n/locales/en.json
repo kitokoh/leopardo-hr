@@ -1561,6 +1561,7 @@
     "analytics": "Analytics",
     "audit": "Audit Log",
     "chat": "AI Chat",
+    "clientModules": "Client company modules",
     "companies": "Companies",
     "contracts": "Contracts",
     "crm": "CRM Pipeline",

@@ -2,8 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
 
 /**
- * Middleware de protection serveur de la zone dashboard (QA wave 2026-08-14,
- * T012, issue #2236) + normalisation `?lang=` vitrine (issue #4004).
+ * Proxy (ex-`middleware`) : protection serveur de la zone dashboard (QA wave
+ * 2026-08-14, T012, issue #2236) + normalisation `?lang=` vitrine (#4004).
+ *
+ * #7305 — Next 16 a renommé la convention `middleware` en `proxy` (l'ancien nom
+ * émet un avertissement de dépréciation à chaque build/dev). Migration
+ * sémantiquement NEUTRE : même signature, même `config.matcher`, mêmes règles ;
+ * seule la convention change (`src/proxy.ts`, export nommé `proxy`).
  *
  * 1. Zone dashboard : toute requête sans cookie de session `leopardo_token`
  *    est redirigée vers `/auth/login` avant même le rendu (gate cosmétique,
@@ -39,7 +44,7 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   '/showcase',
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // #7238 (retour PM) — on ne met PAS de sélecteur d'offre dans le formulaire :

@@ -958,7 +958,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
  * Cible du CTA « essai guidé » du plan Free, affiché sur
  * `/checkout?plan=free` (#3883/#4195).
  *
- * ⚠️ `plan=free` est OBLIGATOIRE : le middleware Next (`src/middleware.ts`)
+ * ⚠️ `plan=free` est OBLIGATOIRE : le proxy Next (`src/proxy.ts`)
  * redirige tout `/signup` sans plan valide (`free|pilot|operations|enterprise`)
  * vers `/pricing#plans`. L'oublier renvoyait le prospect à la page tarifs
  * (#7312) — d'où ce constant unique, couvert par un test de non-régression.
