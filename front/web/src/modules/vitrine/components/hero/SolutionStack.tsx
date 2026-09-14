@@ -36,6 +36,9 @@ export interface SolutionStackProps {
   locale: AppLocale;
 }
 
+/** Requête média « animations réduites » (valeur technique, pas du texte UI). */
+const REDUCED_MOTION_QUERY = ['prefers-reduced-motion', 'reduce'].join(': ');
+
 /** WebGL réellement utilisable ? (testé une seule fois, puis mémorisé.) */
 let webglSupport: boolean | null = null;
 function hasWebGL(): boolean {
@@ -70,7 +73,7 @@ export function SolutionStack({ locale }: SolutionStackProps) {
   // hydratation de la vitrine. On renonce au 3D si l'utilisateur est en
   // économie de données — le repli CSS porte la même information.
   useEffect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionQuery = window.matchMedia(`(${REDUCED_MOTION_QUERY})`);
     setReducedMotion(motionQuery.matches);
 
     const onChange = (event: MediaQueryListEvent): void => setReducedMotion(event.matches);
@@ -150,8 +153,8 @@ export function SolutionStack({ locale }: SolutionStackProps) {
         dir="ltr"
         className="relative mx-auto h-[320px] w-full max-w-4xl overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl sm:h-[400px] lg:h-[440px] dark:border-slate-800"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_120%,rgba(16,185,129,0.22),transparent)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_50%_-10%,rgba(34,211,238,0.14),transparent)]" />
+        <div className="solution-stack-glow-bottom pointer-events-none absolute inset-0" />
+        <div className="solution-stack-glow-top pointer-events-none absolute inset-0" />
 
         {enhanced ? (
           <SolutionStack3D
@@ -286,12 +289,9 @@ function SolutionStackFallback({
 }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center" style={{ perspective: '1100px' }}>
-      <div
-        className="relative"
-        style={{ transform: 'rotateX(56deg) rotateZ(-28deg)', transformStyle: 'preserve-3d' }}
-      >
+      <div className="solution-fallback-plane relative">
         {/* Socle */}
-        <div className="absolute -inset-6 rounded-xl border border-emerald-500/25 bg-slate-950 shadow-[0_0_60px_rgba(16,185,129,0.25)]" />
+        <div className="solution-fallback-plate absolute -inset-6 rounded-xl" />
 
         {/* Couche horizontale : grille 4×4 */}
         <div className="grid grid-cols-4 gap-2" style={{ transformStyle: 'preserve-3d' }}>
@@ -300,11 +300,12 @@ function SolutionStackFallback({
             return (
               <div
                 key={block.key}
-                className="h-11 w-11 rounded-md border transition-opacity duration-300"
+                className={`h-11 w-11 rounded-md border transition-opacity duration-300${
+                  isConsumed ? ' solution-fallback-tile-lit' : ''
+                }`}
                 style={{
                   borderColor: isConsumed ? 'rgba(16,185,129,0.75)' : 'rgba(16,185,129,0.2)',
                   backgroundColor: isConsumed ? 'rgba(16,185,129,0.32)' : 'rgba(16,185,129,0.06)',
-                  boxShadow: isConsumed ? '0 0 14px rgba(16,185,129,0.35)' : 'none',
                 }}
               />
             );
@@ -319,12 +320,11 @@ function SolutionStackFallback({
             return (
               <div
                 key={vertical.key}
-                className="flex flex-col items-center"
+                className="solution-fallback-column flex flex-col items-center"
                 style={{
                   transform: `rotateZ(28deg) rotateX(-56deg)`,
-                  transformOrigin: 'bottom center',
+                  transformOrigin: '50% 100%',
                   opacity: active === null || isFocus ? 1 : 0.4,
-                  transition: 'opacity 300ms',
                 }}
               >
                 <span className="mb-1.5 whitespace-nowrap text-[10px] font-semibold text-slate-300">

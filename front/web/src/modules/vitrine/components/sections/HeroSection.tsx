@@ -103,7 +103,7 @@ export function HeroSection({
         <div
           className={
             isSplit
-              ? 'grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.18fr)] lg:gap-12 xl:gap-16'
+              ? 'grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-12 xl:gap-16'
               : 'mx-auto max-w-5xl'
           }
         >
@@ -169,7 +169,7 @@ export function HeroSection({
                 {ctaPrimary && (
                   <Link
                     href={withLocaleHref(ctaPrimary.href, search)}
-                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] active:scale-[0.98]"
+                    className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                   >
                     <span className="relative z-10 flex items-center gap-2.5 text-base">
                       {ctaPrimary.text}
