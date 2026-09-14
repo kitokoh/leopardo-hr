@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, LayoutGrid, LockKeyhole, Menu, Plus, Sparkles, X } from 'lucide-react';
+import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
@@ -54,6 +54,12 @@ export default function DashboardLayout({
   const [notificationPreview, setNotificationPreview] = useState<ClientNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  // Retour propriétaire : une seule entrée de compte (avatar) au lieu du nom +
+  // e-mail affichés en clair et d'une icône de déconnexion isolée.
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  // Retour propriétaire : le badge de présence ne garde que sa pastille, le
+  // libellé « PRÉSENTS » passe en `sr-only` (il reste lu par les lecteurs
+  // d'écran et sert de `title` au survol).
   const [modulesOpen, setModulesOpen] = useState(false);
   // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
   const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
@@ -441,9 +447,18 @@ export default function DashboardLayout({
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </button>
               ) : null}
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-                <span className="text-xs font-black text-white">LRH</span>
-              </div>
+              {/* Retour propriétaire — le badge LRH est déjà porté par l'en-tête
+                  du rail métier : le rejouer ici faisait doublon à l'écran et
+                  consommait la largeur dont le menu a besoin (mesuré : la zone
+                  de navigation tombait à 0 px de large à 1440 px, « RH »
+                  recouvert par le groupe de droite). Il est conservé pour les
+                  tenants SANS rail métier (aucune verticale activée), qui
+                  n'auraient sinon aucun repère de marque. */}
+              {business.length === 0 ? (
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
+                  <span className="text-xs font-black text-white">LRH</span>
+                </div>
+              ) : null}
               <div className="min-w-0">
                 <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{labels.dashboard.heading}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
@@ -559,10 +574,16 @@ export default function DashboardLayout({
                 type="button"
                 onClick={() => setModulesOpen((value) => !value)}
                 aria-expanded={modulesOpen}
-                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                aria-label={labels.dashboard.sectionModules}
+                title={labels.dashboard.sectionModules}
+                data-testid="dashboard-modules-plan-toggle"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
               >
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">{labels.dashboard.sectionModules}</span>
+                {/* Retour propriétaire — le libellé « Modules & plan » reste lu
+                    par les lecteurs d'écran et servi en infobulle, mais ne
+                    consomme plus la largeur du menu sur une seule ligne. */}
+                <span className="sr-only">{labels.dashboard.sectionModules}</span>
               </button>
               {modulesOpen ? (
                 <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
@@ -699,22 +720,75 @@ export default function DashboardLayout({
                 </div>
               ) : null}
             </div>
-            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-slate-200 to-slate-300 text-[10px] font-black text-slate-600">
-                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
-              </div>
-              <div className="hidden max-w-[10rem] overflow-hidden lg:block">
-                <p className="truncate text-[11px] font-black text-slate-900">{getDisplayName(user)}</p>
-                <p className="truncate text-[9px] font-medium text-slate-500">{user?.email}</p>
-              </div>
+            {/* Retour propriétaire — nom et e-mail ne sont plus affichés en
+                clair dans la barre : un seul avatar ouvre les options du compte,
+                avec une unique entrée « Déconnexion ». */}
+            <div className="relative">
               <button
-                onClick={handleLogout}
-                className="group rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                title={labels.dashboard.logout}
-                aria-label={labels.dashboard.logout}
+                type="button"
+                onClick={() => setUserMenuOpen((value) => !value)}
+                aria-expanded={userMenuOpen}
+                aria-haspopup="menu"
+                aria-label={labels.dashboard.userMenuAccount}
+                title={getDisplayName(user)}
+                data-testid="user-menu-toggle"
+                className="group flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-gradient-to-br from-slate-100 to-slate-200 text-[11px] font-black text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
               >
-                <LockKeyhole className="h-4 w-4 transition-transform group-hover:scale-110" />
+                {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
               </button>
+              {userMenuOpen ? (
+                <div
+                  role="menu"
+                  data-testid="user-menu"
+                  className="absolute right-0 top-11 z-30 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                >
+                  <div className="border-b border-slate-100 px-4 py-3">
+                    <p className="truncate text-sm font-black text-slate-900">{getDisplayName(user)}</p>
+                    <p className="truncate text-xs text-slate-500">{user?.email}</p>
+                  </div>
+                  <div className="p-1.5">
+                    <Link
+                      href="/settings/account"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    >
+                      <UserCircle className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {labels.dashboard.userMenuAccount}
+                    </Link>
+                    <Link
+                      href="/settings/account#password"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    >
+                      <KeyRound className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {labels.dashboard.userMenuPassword}
+                    </Link>
+                    <Link
+                      href="/settings/security/2fa"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    >
+                      <ShieldCheck className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      {labels.dashboard.userMenuSecurity}
+                    </Link>
+                  </div>
+                  <div className="border-t border-slate-100 p-1.5">
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleLogout}
+                      data-testid="user-menu-logout"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
+                      {labels.dashboard.logout}
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
             {/* #7238 (retour PM) — l'essai et la reprise de configuration sont
                 des pastilles de la barre du haut, plus des lignes pleine largeur. */}
@@ -730,8 +804,12 @@ export default function DashboardLayout({
               ) : null}
               <TrialBanner user={user} locale={locale} variant="compact" />
             </div>
-            <label className="hidden items-center gap-2 text-sm text-slate-600 md:flex">
-              <span>{labels.dashboard.language}</span>
+            <label
+              className="hidden items-center gap-1.5 text-sm text-slate-600 md:flex"
+              title={labels.dashboard.language}
+            >
+              <Globe className="h-4 w-4 text-slate-400" aria-hidden="true" />
+              <span className="sr-only">{labels.dashboard.language}</span>
               <select
                 className="rounded-md border border-slate-300 bg-white px-2 py-1 text-sm text-slate-700"
                 value={locale}
@@ -743,7 +821,7 @@ export default function DashboardLayout({
                 <option value="en">English</option>
               </select>
             </label>
-            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 lg:flex"
+            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 xl:flex"
               title={labels.dashboard.present}
             >
               <div className="relative flex h-2 w-2">
@@ -752,7 +830,7 @@ export default function DashboardLayout({
               </div>
               {/* Issue #2720 — statistique « Live » codée en dur retirée :
                   aucun endpoint ne la fournit (honnêteté des données). */}
-              {labels.dashboard.present}
+              <span className="sr-only">{labels.dashboard.present}</span>
             </div>
           </div>
           </div>

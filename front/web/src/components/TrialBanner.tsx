@@ -60,20 +60,25 @@ export function TrialBanner({
       : t(locale, 'trial.daysLeft').replace('{n}', String(daysLeft));
 
   if (variant === 'compact') {
+    // Retour propriétaire — dans la barre du haut, la pastille d'essai ne garde
+    // que son icône : le décompte (« il vous reste 14 jours d'essai ») part en
+    // `sr-only` (lu par les lecteurs d'écran) et en infobulle au survol. Le
+    // message reste donc accessible sans occuper la largeur du menu.
     return (
       <Link
         href="/billing"
         data-testid="trial-badge"
         data-trial-days-left={daysLeft}
+        aria-label={expired ? t(locale, 'trial.endedTitle') : message}
         title={expired ? t(locale, 'trial.endedTitle') : message}
-        className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
+        className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition ${
           expired
             ? 'border-red-300 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300'
             : 'border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
         }`}
       >
-        {expired ? <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> : <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />}
-        <span>{message}</span>
+        {expired ? <CalendarClock className="h-4 w-4" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
+        <span className="sr-only">{message}</span>
       </Link>
     );
   }
