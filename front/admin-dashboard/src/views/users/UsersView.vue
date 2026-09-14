@@ -94,7 +94,7 @@
             {{ $t('users.bulkPanel.activate', 'Activer') }}
           </button>
           <button
-            @click="bulkAction('deactivate')"
+            @click="askBulkAction('deactivate')"
             class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
             {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
@@ -205,6 +205,18 @@
     @confirm="confirmDeleteUser"
     @cancel="deleteOpen = false"
   />
+  <!-- #7433 : la désactivation groupée est destructive → confirmation in-app
+       (le composant ConfirmDialog n'était même pas importé auparavant : la
+       confirmation de suppression ne s'affichait pas). -->
+  <ConfirmDialog
+    :open="bulkConfirmOpen"
+    :title="bulkConfirmTitle"
+    :message="t('users.bulkConfirm.body', 'Les utilisateurs sélectionnés perdront immédiatement l’accès à leur espace.')"
+    :confirm-label="t('users.bulkConfirm.action', 'Désactiver la sélection')"
+    :busy="bulkBusy"
+    @confirm="confirmBulkAction"
+    @cancel="cancelBulkAction"
+  />
 </div>
 </template>
 
@@ -225,6 +237,7 @@ import { useLocaleStore } from '@/stores/locale.js'
 import UserTable from '@/components/users/UserTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import UserDetailModal from '@/components/users/UserDetailModal.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -244,6 +257,42 @@ const totalItems = ref(0)
 const isLoading = ref(true)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
+// #7433 : confirmation in-app avant toute désactivation groupée.
+const bulkConfirmOpen = ref(false)
+const bulkConfirmAction = ref('')
+const bulkBusy = ref(false)
+const destructiveBulkActions = ['deactivate', 'suspend']
+
+// Le nombre d'utilisateurs concernés est déjà affiché par le bandeau de
+// sélection au-dessus du tableau : le titre reste une phrase i18n fixe (aucun
+// placeholder à interpoler côté vue).
+const bulkConfirmTitle = computed(() => t('users.bulkConfirm.title', 'Désactiver les utilisateurs sélectionnés ?'))
+
+function askBulkAction(action) {
+  if (!destructiveBulkActions.includes(action)) {
+    bulkAction(action)
+    return
+  }
+  bulkConfirmAction.value = action
+  bulkConfirmOpen.value = true
+}
+
+function cancelBulkAction() {
+  bulkConfirmOpen.value = false
+  bulkConfirmAction.value = ''
+}
+
+async function confirmBulkAction() {
+  const action = bulkConfirmAction.value
+  bulkConfirmOpen.value = false
+  bulkConfirmAction.value = ''
+  bulkBusy.value = true
+  try {
+    await bulkAction(action)
+  } finally {
+    bulkBusy.value = false
+  }
+}
 // Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
   status: ''

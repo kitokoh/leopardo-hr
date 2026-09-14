@@ -1,0 +1,10 @@
+# Allowlist — check-admin-destructive-actions.py (issue #7433)
+#
+# `catch` volontairement muets : le stockage navigateur peut être indisponible
+# (SSR, iframe sandboxée, mode privé) et l'échec n'a AUCUN impact utilisateur —
+# la valeur reste en mémoire. Toute autre entrée doit être motivée ici.
+#
+# Format : un chemin (relatif à la racine du dépôt) par ligne ; `#` = commentaire.
+
+front/admin-dashboard/src/components/layout/Sidebar.vue  # préférence de sidebar non persistable
+front/admin-dashboard/src/services/api.js                # cache ETag en sessionStorage indisponible

@@ -11,6 +11,14 @@
 
     <TravelGate :mode="gateMode" :message="loadError" @retry="init" />
 
+    <p
+      v-if="actionError"
+      class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-300"
+      role="alert"
+    >
+      {{ actionError }}
+    </p>
+
     <template v-if="!gateMode">
       <div class="flex flex-wrap gap-2">
         <button
@@ -167,6 +175,15 @@
         @save="submitValidate"
         @close="closeValidateModal"
       />
+
+      <ConfirmDialog
+        :open="confirmDialog.state.open"
+        :title="confirmDialog.state.title"
+        :message="confirmDialog.state.message"
+        :confirm-label="confirmDialog.state.confirmLabel"
+        @confirm="confirmDialog.resolve(true)"
+        @cancel="confirmDialog.resolve(false)"
+      />
     </template>
   </div>
 </template>
@@ -179,6 +196,9 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { errorMessage } from '@/utils/errorMessage'
 import { createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert, listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog, travelList } from '@/services/travel'
 
 const localeStore = useLocaleStore()
@@ -186,6 +206,10 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
 const loadError = ref('')
+// #7433 : confirmation in-app (jamais window.confirm) + erreur visible pour
+// toute action de ligne (payer/renouveler/supprimer) qui échoue.
+const confirmDialog = useConfirmDialog()
+const actionError = ref('')
 const activeTab = ref('adverts')
 const searchQuery = ref('')
 const statusFilter = ref('all')
@@ -317,12 +341,18 @@ async function saveCatalog(values) {
 }
 
 async function askCatalogDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cet élément ?'))) return
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteAdvertCatalog(catalogResource.value, row.id)
     await loadCatalog()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 
@@ -399,11 +429,13 @@ async function createAdvert(values) {
 }
 
 async function payAdvertRow(row) {
+  actionError.value = ''
   try {
     await payAdvert(row.id, { provider: 'cash' })
     await loadAdverts()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    // #7433 : action facturée — un échec doit être annoncé.
+    actionError.value = errorMessage(err, t('travel.adverts.payError', 'Paiement impossible.'))
   }
 }
 
@@ -428,21 +460,28 @@ async function submitValidate(values) {
 }
 
 async function renewAdvertRow(row) {
+  actionError.value = ''
   try {
     await renewAdvert(row.id, { provider: 'cash' })
     await loadAdverts()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.adverts.renewError', 'Renouvellement impossible.'))
   }
 }
 
 async function askAdvertDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cette annonce ?'))) return
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.adverts.confirmDeleteTitle', 'Supprimer cette annonce ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteTravel('adverts', row.id)
     await loadAdverts()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 

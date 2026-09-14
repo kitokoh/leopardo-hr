@@ -4851,6 +4851,11 @@
       "empty": "Aucun utilisateur",
       "emptyHint": "Aucun utilisateur ne correspond aux critères de recherche.",
       "viewDetails": "Voir les détails"
+    },
+    "bulkConfirm": {
+      "title": "Désactiver les utilisateurs sélectionnés ?",
+      "body": "Les utilisateurs sélectionnés perdront immédiatement l’accès à leur espace.",
+      "action": "Désactiver la sélection"
     }
   },
   "settingsBiometryEnrollment": "Preparation biometrie",
@@ -5020,7 +5025,9 @@
       "city": "Ville",
       "carrier": "Compagnie",
       "saving": "Enregistrement…",
-      "selectPlaceholder": "— Sélectionner —"
+      "selectPlaceholder": "— Sélectionner —",
+      "saveError": "Enregistrement impossible.",
+      "deleteError": "Suppression impossible."
     },
     "home": {
       "title": "Agence de voyage",
@@ -5217,7 +5224,8 @@
       "availableFrom": "Disponible du",
       "availableUntil": "Disponible jusqu'au",
       "owner": "Propriétaire",
-      "description": "Description"
+      "description": "Description",
+      "confirmDeleteImage": "Cette action est irréversible. Voulez-vous vraiment supprimer cette image ?"
     },
     "countries": {
       "name": "Nom",
@@ -5552,7 +5560,9 @@
       "hint": {
         "options": "Une option par ligne.",
         "correctIndex": "Commence à 0 (première ligne = 0)."
-      }
+      },
+      "confirmDeleteTitle": "Supprimer ce quiz ?",
+      "confirmDeleteQuestionTitle": "Supprimer cette question ?"
     },
     "quizStatus": {
       "draft": "Brouillon",
@@ -5590,7 +5600,11 @@
         "reject": "Rejeter"
       },
       "rejectTitle": "Rejeter l’annonce",
-      "rejectTarget": "Annonce"
+      "rejectTarget": "Annonce",
+      "actionError": "Action impossible sur cette annonce.",
+      "payError": "Paiement impossible.",
+      "renewError": "Renouvellement impossible.",
+      "confirmDeleteTitle": "Supprimer cette annonce ?"
     },
     "sites": {
       "title": "Sites touristiques",
@@ -5601,7 +5615,8 @@
       "field": {
         "latitude": "Latitude",
         "longitude": "Longitude"
-      }
+      },
+      "confirmDeleteTitle": "Supprimer ce site ?"
     },
     "contacts": {
       "formTitle": "Formulaire de contact",
@@ -5631,7 +5646,9 @@
         "toggleConsent": "Basculer le consentement",
         "notify": "Notifier",
         "send": "Envoyer"
-      }
+      },
+      "consentError": "Consentement non enregistré.",
+      "notifyError": "Notification non envoyée."
     },
     "advertStatus": {
       "draft": "Brouillon",
@@ -6243,7 +6260,9 @@
     "sectionProducts": "Produits",
     "sectionContact": "Contact",
     "sectionFooter": "Pied de page",
-    "notFoundTitle": "Page introuvable"
+    "notFoundTitle": "Page introuvable",
+    "confirm_delete_title": "Supprimer cette section ?",
+    "confirm_delete_body": "Le contenu de la section sera définitivement supprimé de la vitrine."
   },
   "trial": {
     "trialBadge": "Essai",
@@ -6290,7 +6309,8 @@
     "overridden": "personnalisé",
     "preview": "Aperçu",
     "previewFailed": "Aperçu indisponible",
-    "loadFailed": "Chargement impossible"
+    "loadFailed": "Chargement impossible",
+    "empty": "Aucun modèle d’e-mail disponible."
   },
   "aiAssistant": {
     "title": "Assistant IA",
@@ -6337,6 +6357,9 @@
     "awaitingConfirmation": "En attente de confirmation",
     "failures": "Échecs",
     "recentErrors": "Erreurs récentes",
-    "loadError": "Impossible de charger les réglages."
+    "loadError": "Impossible de charger les réglages.",
+    "stateUnavailable": "État IA indisponible",
+    "monitoringUnavailable": "Suivi IA indisponible",
+    "retry": "Réessayer"
   }
 }

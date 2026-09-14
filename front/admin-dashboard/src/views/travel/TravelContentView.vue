@@ -26,6 +26,15 @@
         </button>
       </div>
 
+      <!-- #7433 : une action (pay/validate/renew/consent) qui échoue doit le dire. -->
+      <p
+        v-if="actionError"
+        class="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-300"
+        role="alert"
+      >
+        {{ actionError }}
+      </p>
+
       <!-- ══════════ QUIZ ══════════ -->
       <section v-if="activeTab === 'quiz'">
         <div class="mb-3 flex items-center justify-between">
@@ -61,7 +70,12 @@
                   </button>
                 </td>
               </tr>
-              <tr v-if="quizzes.length === 0">
+              <tr v-if="listErrors.quizzes">
+                <td colspan="4" class="px-4 py-8 text-center text-sm text-rose-600" role="alert">
+                  {{ listErrors.quizzes }}
+                </td>
+              </tr>
+              <tr v-else-if="quizzes.length === 0">
                 <td colspan="4" class="px-4 py-8 text-center text-sm text-slate-400">
                   {{ t('travel.common.empty', 'Aucune donnée.') }}
                 </td>
@@ -99,9 +113,14 @@
           <DataTable
             :columns="advertTabColumns()"
             :rows="advertTabRows()"
+            :error="listErrors[advertTab] || ''"
+            :empty-message="t('travel.common.noData', 'Aucune donnée')"
             :search-keys="advertTabSearchKeys()"
           >
-            <template #actions="{ row }">
+            <!-- #7433 : `#actions` est le slot de BARRE D'ACTIONS (sans ligne) —
+                 les boutons de ligne doivent utiliser `#row-actions`, sinon
+                 `row` est indéfini et la suppression ne cible rien. -->
+            <template #row-actions="{ row }">
               <button v-if="advertTabCanDelete()" type="button" class="btn-secondary" @click="removeRow(advertTab, row)">
                 {{ t('travel.common.delete', 'Supprimer') }}
               </button>
@@ -157,7 +176,12 @@
                     </button>
                   </td>
                 </tr>
-                <tr v-if="adverts.length === 0">
+                <tr v-if="listErrors.adverts">
+                  <td colspan="5" class="px-4 py-8 text-center text-sm text-rose-600" role="alert">
+                    {{ listErrors.adverts }}
+                  </td>
+                </tr>
+                <tr v-else-if="adverts.length === 0">
                   <td colspan="5" class="px-4 py-8 text-center text-sm text-slate-400">{{ t('travel.common.empty', 'Aucune donnée.') }}</td>
                 </tr>
               </tbody>
@@ -198,7 +222,12 @@
                   <button type="button" class="btn-secondary" @click="openContactNotify(c)">{{ t('travel.contacts.notify', 'Notifier') }}</button>
                 </td>
               </tr>
-              <tr v-if="contacts.length === 0">
+              <tr v-if="listErrors.contacts">
+                <td colspan="4" class="px-4 py-8 text-center text-sm text-rose-600" role="alert">
+                  {{ listErrors.contacts }}
+                </td>
+              </tr>
+              <tr v-else-if="contacts.length === 0">
                 <td colspan="4" class="px-4 py-8 text-center text-sm text-slate-400">{{ t('travel.common.empty', 'Aucune donnée.') }}</td>
               </tr>
             </tbody>
@@ -273,9 +302,11 @@
         <DataTable
           :columns="entityConfigs.sites.columns()"
           :rows="lists.sites"
+          :error="listErrors.sites"
+          :empty-message="t('travel.common.noData', 'Aucune donnée')"
           :search-keys="entityConfigs.sites.searchKeys"
         >
-          <template #actions="{ row }">
+          <template #row-actions="{ row }">
             <button type="button" class="btn-secondary" @click="openEdit('sites', row)">{{ t('travel.common.edit', 'Modifier') }}</button>
             <button type="button" class="btn-secondary ml-2" @click="removeRow('sites', row)">{{ t('travel.common.delete', 'Supprimer') }}</button>
           </template>
@@ -290,6 +321,8 @@
       :title="modalTitle"
       :fields="modalFields"
       :values="editing || {}"
+      :busy="saving"
+      :error="modalError"
       @save="saveRow"
       @cancel="closeModal"
     />
@@ -321,6 +354,8 @@
       :title="t('travel.quiz.addQuestion', 'Ajouter une question')"
       :fields="questionFields"
       :values="{}"
+      :busy="saving"
+      :error="modalError"
       @save="saveQuestion"
       @cancel="closeQuestionModal"
     />
@@ -358,6 +393,8 @@
       :title="t('travel.contacts.notify', 'Notifier le contact')"
       :fields="notifyFields"
       :values="{}"
+      :busy="saving"
+      :error="modalError"
       @save="saveNotify"
       @cancel="closeNotify"
     />
@@ -369,8 +406,21 @@
       :title="t('travel.adverts.reject', 'Rejeter')"
       :fields="rejectFields"
       :values="{}"
+      :busy="saving"
+      :error="modalError"
       @save="saveReject"
       @cancel="closeReject"
+    />
+
+    <!-- #7433 : confirmation in-app (jamais window.confirm) avant toute
+         suppression depuis cet écran. -->
+    <ConfirmDialog
+      :open="confirmDialog.state.open"
+      :title="confirmDialog.state.title"
+      :message="confirmDialog.state.message"
+      :confirm-label="confirmDialog.state.confirmLabel"
+      @confirm="confirmDialog.resolve(true)"
+      @cancel="confirmDialog.resolve(false)"
     />
   </div>
 </template>
@@ -387,10 +437,27 @@ import StatusBadge from '@/components/common/StatusBadge.vue'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelList, travelItem } from '@/services/travel'
 import api from '@/services/api'
 import { travelAction } from '@/services/travel'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { errorMessage } from '@/utils/errorMessage'
 
 const localeStore = useLocaleStore()
 const travelStore = useTravelStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+
+// #7433 : toute action destructive passe par ce dialogue ; toute action qui
+// échoue affiche un message — plus de gestion d'erreur muette.
+const confirmDialog = useConfirmDialog()
+const actionError = ref('')
+const listErrors = reactive({
+  quizzes: '', types: '', positions: '', prices: '', sites: '', adverts: '', contacts: '',
+})
+const saving = ref(false)
+const modalError = ref('')
+
+function loadFallback() {
+  return t('travel.common.loadErrorBody', 'Une erreur est survenue en interrogeant l’API travel.')
+}
 
 const activeTab = ref('quiz')
 const advertTab = ref('types')
@@ -437,16 +504,19 @@ const modalFields = ref([])
 const editing = ref(null)
 
 async function loadQuizzes() {
+  listErrors.quizzes = ''
   try {
     const response = await listTravel('quizzes')
     quizzes.value = travelList(response)
-  } catch {
+  } catch (e) {
     quizzes.value = []
+    listErrors.quizzes = errorMessage(e, loadFallback())
   }
 }
 
 function openQuizCreate() {
   editing.value = null
+  modalError.value = ''
   modalTitle.value = t('travel.quiz.create', 'Créer un quiz')
   modalFields.value = entityConfigs.quizzes.fields()
   modalOpen.value = true
@@ -456,16 +526,19 @@ function openQuizCreate() {
 async function openQuizQuestions(quiz) {
   selectedQuiz.value = quiz
   quizQuestionsOpen.value = true
+  actionError.value = ''
   try {
     const response = await listTravel(`quizzes/${quiz.id}`)
     const payload = travelItem(response)
     selectedQuizQuestions.value = payload.questions ?? []
-  } catch {
+  } catch (e) {
     selectedQuizQuestions.value = []
+    actionError.value = errorMessage(e, loadFallback())
   }
 }
 
 function openQuestionCreate() {
+  modalError.value = ''
   questionModalOpen.value = true
 }
 
@@ -474,6 +547,8 @@ async function saveQuestion(payload) {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean)
+  saving.value = true
+  modalError.value = ''
   try {
     await createTravel(`quizzes/${selectedQuiz.value.id}/questions`, {
       question: payload.question,
@@ -483,19 +558,24 @@ async function saveQuestion(payload) {
     })
     questionModalOpen.value = false
     await openQuizQuestions(selectedQuiz.value)
-  } catch {
-    questionModalOpen.value = false
+  } catch (e) {
+    // #7433 : la modale reste ouverte — la saisie n'est pas perdue.
+    modalError.value = errorMessage(e, t('travel.common.saveError', 'Enregistrement impossible.'))
+  } finally {
+    saving.value = false
   }
 }
 
 async function openQuizResults(quiz) {
   selectedQuiz.value = quiz
   resultsOpen.value = true
+  actionError.value = ''
   try {
     const response = await listTravel(`quizzes/${quiz.id}/results`)
     quizResults.value = travelList(response)
-  } catch {
+  } catch (e) {
     quizResults.value = []
+    actionError.value = errorMessage(e, loadFallback())
   }
 }
 
@@ -634,11 +714,13 @@ async function loadList(key) {
   // Le tableau quiz est piloté par loadQuizzes() (quizzes.value), pas par lists.
   if (key === 'quizzes') return loadQuizzes()
   const cfg = entityConfigs[key]
+  listErrors[key] = ''
   try {
     const response = await listTravel(cfg.resource)
     lists[key] = travelList(response)
-  } catch {
+  } catch (e) {
     lists[key] = []
+    listErrors[key] = errorMessage(e, loadFallback())
   }
 }
 
@@ -658,6 +740,7 @@ function switchTab(key) {
 
 function openCreate(key) {
   editing.value = null
+  modalError.value = ''
   modalTitle.value = t('travel.common.create', 'Créer')
   modalFields.value = entityConfigs[key].fields()
   modalOpen.value = true
@@ -666,6 +749,7 @@ function openCreate(key) {
 
 function openEdit(key, row) {
   editing.value = { ...row }
+  modalError.value = ''
   modalTitle.value = t('travel.common.edit', 'Modifier')
   modalFields.value = entityConfigs[key].fields()
   modalOpen.value = true
@@ -677,6 +761,8 @@ const saveTargetKey = ref('types')
 async function saveRow(payload) {
   const key = saveTargetKey.value
   const cfg = entityConfigs[key]
+  saving.value = true
+  modalError.value = ''
   try {
     if (editing.value?.id) {
       await updateTravel(cfg.resource, editing.value.id, payload)
@@ -690,33 +776,47 @@ async function saveRow(payload) {
     } else {
       await loadList(key)
     }
-  } catch {
-    modalOpen.value = false
+  } catch (e) {
+    // #7433 : un échec d'enregistrement CONSERVE la saisie (la modale reste
+    // ouverte) et affiche l'erreur — plus de perte de saisie silencieuse.
+    modalError.value = errorMessage(e, t('travel.common.saveError', 'Enregistrement impossible.'))
+  } finally {
+    saving.value = false
   }
 }
 
 async function removeRow(key, row) {
   const cfg = entityConfigs[key]
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteTravel(cfg.resource, row.id)
     await loadList(key)
-  } catch {
-    // best-effort
+  } catch (e) {
+    actionError.value = errorMessage(e, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 
 // ── Annonces : cycle de vie ──────────────────────────────────────────
 async function loadAdverts() {
+  listErrors.adverts = ''
   try {
     const response = await listTravel('adverts', { status: advertStatusFilter.value || undefined })
     adverts.value = travelList(response)
-  } catch {
+  } catch (e) {
     adverts.value = []
+    listErrors.adverts = errorMessage(e, loadFallback())
   }
 }
 
 function openAdvertCreate() {
   editing.value = null
+  modalError.value = ''
   modalTitle.value = t('travel.adverts.create', 'Soumettre une annonce')
   modalFields.value = entityConfigs.adverts.fields()
   modalOpen.value = true
@@ -724,11 +824,13 @@ function openAdvertCreate() {
 }
 
 async function advertAction(ad, action) {
+  actionError.value = ''
   try {
     await travelAction('adverts', ad.id, action)
     await loadAdverts()
-  } catch {
-    // best-effort
+  } catch (e) {
+    // #7433 : une action facturée (pay/validate/renew) qui échoue doit le dire.
+    actionError.value = errorMessage(e, t('travel.adverts.actionError', 'Action impossible sur cette annonce.'))
   }
 }
 
@@ -739,17 +841,22 @@ const rejectFields = computed(() => [
 ])
 
 function openAdvertReject(ad) {
+  modalError.value = ''
   rejectTarget.value = ad
   rejectOpen.value = true
 }
 
 async function saveReject(payload) {
+  saving.value = true
+  modalError.value = ''
   try {
     await travelAction('adverts', rejectTarget.value.id, 'reject', payload)
     rejectOpen.value = false
     await loadAdverts()
-  } catch {
-    rejectOpen.value = false
+  } catch (e) {
+    modalError.value = errorMessage(e, t('travel.adverts.actionError', 'Action impossible sur cette annonce.'))
+  } finally {
+    saving.value = false
   }
 }
 
@@ -768,34 +875,43 @@ const consentChannels = computed(() => [
 ])
 
 async function loadContacts() {
+  listErrors.contacts = ''
   try {
     const response = await listTravel('contacts', { email: contactSearch.value || undefined })
     contacts.value = travelList(response)
-  } catch {
+  } catch (e) {
     contacts.value = []
+    listErrors.contacts = errorMessage(e, loadFallback())
   }
 }
 
 async function toggleConsent(contact, channel, given) {
+  actionError.value = ''
   try {
     await travelAction('contacts', contact.id, 'consent', { [`${channel}_consent`]: given })
     contact[`${channel}_consent_given`] = given
-  } catch {
-    // best-effort
+  } catch (e) {
+    // #7433 : un consentement qui n'a pas été enregistré doit le dire.
+    actionError.value = errorMessage(e, t('travel.contacts.consentError', 'Consentement non enregistré.'))
   }
 }
 
 function openContactNotify(contact) {
+  modalError.value = ''
   notifyTarget.value = contact
   notifyOpen.value = true
 }
 
 async function saveNotify(payload) {
+  saving.value = true
+  modalError.value = ''
   try {
     await travelAction('contacts', notifyTarget.value.id, 'notify', payload)
     notifyOpen.value = false
-  } catch {
-    notifyOpen.value = false
+  } catch (e) {
+    modalError.value = errorMessage(e, t('travel.contacts.notifyError', 'Notification non envoyée.'))
+  } finally {
+    saving.value = false
   }
 }
 

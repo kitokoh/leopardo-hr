@@ -19,6 +19,13 @@
     <div class="grid gap-6 lg:grid-cols-4">
       <!-- Liste des modèles -->
       <aside class="rounded-2xl border border-slate-200 bg-white p-3 lg:col-span-1 dark:border-slate-800 dark:bg-slate-900">
+        <!-- #7433 : catalogue vide = message explicite, jamais une colonne blanche. -->
+        <p
+          v-if="!loading && templates.length === 0"
+          class="px-3 py-6 text-center text-sm text-slate-500 dark:text-slate-400"
+        >
+          {{ t('emailsAdmin.empty') }}
+        </p>
         <button
           v-for="template in templates"
           :key="template.key"
@@ -170,6 +177,7 @@ const meta = ref({ locales: ['fr', 'en', 'ar', 'tr'] })
 const selectedKey = ref(null)
 const locale = ref('fr')
 const saving = ref(false)
+const loading = ref(true)
 const loadError = ref(false)
 const previewHtml = ref('')
 
@@ -215,6 +223,7 @@ function setLocale(value) {
 }
 
 async function load() {
+  loading.value = true
   try {
     const { data } = await api.get('/admin/email-templates')
     templates.value = data?.data || []
@@ -224,8 +233,11 @@ async function load() {
     }
     syncForm()
   } catch (e) {
+    templates.value = []
     loadError.value = true
     console.warn('[admin] email templates load failed', e)
+  } finally {
+    loading.value = false
   }
 }
 

@@ -4845,6 +4845,11 @@
       "empty": "No user",
       "emptyHint": "No user matches the search criteria.",
       "viewDetails": "View details"
+    },
+    "bulkConfirm": {
+      "title": "Deactivate the selected users?",
+      "body": "The selected users will immediately lose access to their workspace.",
+      "action": "Deactivate selection"
     }
   },
   "settingsBiometryEnrollment": "Biometric enrollment",
@@ -5014,7 +5019,9 @@
       "city": "City",
       "carrier": "Carrier",
       "saving": "Saving…",
-      "selectPlaceholder": "— Select —"
+      "selectPlaceholder": "— Select —",
+      "saveError": "Unable to save.",
+      "deleteError": "Unable to delete."
     },
     "home": {
       "title": "Travel Agency",
@@ -5211,7 +5218,8 @@
       "availableFrom": "Available from",
       "availableUntil": "Available until",
       "owner": "Owner",
-      "description": "Description"
+      "description": "Description",
+      "confirmDeleteImage": "This action is irreversible. Delete this image?"
     },
     "countries": {
       "name": "Name",
@@ -5546,7 +5554,9 @@
       "hint": {
         "options": "One option per line.",
         "correctIndex": "Starts at 0 (first line = 0)."
-      }
+      },
+      "confirmDeleteTitle": "Delete this quiz?",
+      "confirmDeleteQuestionTitle": "Delete this question?"
     },
     "quizStatus": {
       "draft": "Draft",
@@ -5584,7 +5594,11 @@
         "reject": "Reject"
       },
       "rejectTitle": "Reject advert",
-      "rejectTarget": "Advert"
+      "rejectTarget": "Advert",
+      "actionError": "The action could not be completed on this advert.",
+      "payError": "Payment failed.",
+      "renewError": "Renewal failed.",
+      "confirmDeleteTitle": "Delete this advert?"
     },
     "sites": {
       "title": "Tourist sites",
@@ -5595,7 +5609,8 @@
       "field": {
         "latitude": "Latitude",
         "longitude": "Longitude"
-      }
+      },
+      "confirmDeleteTitle": "Delete this site?"
     },
     "contacts": {
       "formTitle": "Contact form",
@@ -5625,7 +5640,9 @@
         "toggleConsent": "Toggle consent",
         "notify": "Notify",
         "send": "Send"
-      }
+      },
+      "consentError": "Consent was not saved.",
+      "notifyError": "Notification was not sent."
     },
     "advertStatus": {
       "draft": "Draft",
@@ -6237,7 +6254,9 @@
     "sectionProducts": "Products",
     "sectionContact": "Contact",
     "sectionFooter": "Footer",
-    "notFoundTitle": "Page not found"
+    "notFoundTitle": "Page not found",
+    "confirm_delete_title": "Delete this section?",
+    "confirm_delete_body": "The section content will be permanently removed from the showcase."
   },
   "trial": {
     "trialBadge": "Trial",
@@ -6284,7 +6303,8 @@
     "overridden": "customised",
     "preview": "Preview",
     "previewFailed": "Preview unavailable",
-    "loadFailed": "Could not load"
+    "loadFailed": "Could not load",
+    "empty": "No email template available."
   },
   "aiAssistant": {
     "title": "AI Assistant",
@@ -6331,6 +6351,9 @@
     "awaitingConfirmation": "Awaiting confirmation",
     "failures": "Failures",
     "recentErrors": "Recent errors",
-    "loadError": "Could not load the settings."
+    "loadError": "Could not load the settings.",
+    "stateUnavailable": "AI state unavailable",
+    "monitoringUnavailable": "AI monitoring unavailable",
+    "retry": "Retry"
   }
 }

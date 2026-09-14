@@ -92,6 +92,12 @@
 | `check-runbooks.sh`, `check-architecture-docs-parity.sh` | runbooks présents, docs ↔ architecture | bloque/rapporte |
 | `check-governance.ps1`, `repository-hygiene-report.ps1` | gouvernance & hygiène globale | rapporte |
 
+## 9bis. Front admin (console super-admin)
+
+| Garde | Vérifie | Bloque / rapporte |
+|---|---|---|
+| `check-admin-destructive-actions.py` (+ auto-test `-test.sh`, workflow `web-ci.yml`) | zéro `window.confirm`/`window.alert`, zéro `catch` muet non allowlisté (`admin-silent-catch-allowlist.txt`) dans `front/admin-dashboard/src` (issue #7433) | bloque |
+
 ## 10. Sécurité
 
 Secret scanning (TruffleHog), CodeQL, `owasp-zap.yml`, `secret-history-scan.yml`,

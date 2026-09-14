@@ -4851,6 +4851,11 @@
       "empty": "Kullanıcı yok",
       "emptyHint": "Arama kriterlerine uyan kullanıcı yok.",
       "viewDetails": "Detayları gör"
+    },
+    "bulkConfirm": {
+      "title": "Seçili kullanıcılar devre dışı bırakılsın mı?",
+      "body": "Seçili kullanıcılar çalışma alanlarına erişimini hemen kaybedecek.",
+      "action": "Seçimi devre dışı bırak"
     }
   },
   "settingsBiometryEnrollment": "Biyometrik kayıt",
@@ -5388,7 +5393,9 @@
       "participant": "Katılımcı",
       "questions": "Sorular",
       "results": "Sonuçlar",
-      "score": "Skor"
+      "score": "Skor",
+      "confirmDeleteTitle": "Bu test silinsin mi?",
+      "confirmDeleteQuestionTitle": "Bu soru silinsin mi?"
     },
     "quizStatus": {
       "draft": "Taslak",
@@ -5448,7 +5455,11 @@
       "price": "Fiyat",
       "reject": "Reddet",
       "renew": "Yenile",
-      "validate": "Onayla"
+      "validate": "Onayla",
+      "actionError": "Bu ilan üzerinde işlem yapılamadı.",
+      "payError": "Ödeme başarısız.",
+      "renewError": "Yenileme başarısız.",
+      "confirmDeleteTitle": "Bu ilan silinsin mi?"
     },
     "sites": {
       "title": "Turistik yerler",
@@ -5460,7 +5471,8 @@
         "latitude": "Enlem",
         "longitude": "Boylam"
       },
-      "name": "Ad"
+      "name": "Ad",
+      "confirmDeleteTitle": "Bu site silinsin mi?"
     },
     "contacts": {
       "formTitle": "İletişim formu",
@@ -5514,7 +5526,9 @@
       "consentRefused": "Reddedildi",
       "never": "Hiç ifade edilmedi",
       "email": "E-posta",
-      "app": "Uygulama"
+      "app": "Uygulama",
+      "consentError": "Onay kaydedilemedi.",
+      "notifyError": "Bildirim gönderilemedi."
     },
     "advertStatus": {
       "draft": "Taslak",
@@ -5566,7 +5580,8 @@
       "tabRentalBookings": "Kiralama rezervasyonları",
       "tabRentals": "Kiralık araçlar",
       "title": "Başlık",
-      "hotelRoomsTitle": "Otel odaları"
+      "hotelRoomsTitle": "Otel odaları",
+      "confirmDeleteImage": "Bu işlem geri alınamaz. Bu görsel silinsin mi?"
     },
     "cities": {
       "country": "Ülkeler",
@@ -5610,7 +5625,9 @@
       "selectPlaceholder": "— Seçin —",
       "status": "Durum",
       "tenantRequiredTitle": "Tenant bağlamı gerekli",
-      "yes": "Evet"
+      "yes": "Evet",
+      "saveError": "Kaydedilemedi.",
+      "deleteError": "Silinemedi."
     },
     "countries": {
       "name": "Ad",
@@ -6376,7 +6393,9 @@
     "sectionProducts": "Ürünler",
     "sectionContact": "İletişim",
     "sectionFooter": "Alt bilgi",
-    "notFoundTitle": "Sayfa bulunamadı"
+    "notFoundTitle": "Sayfa bulunamadı",
+    "confirm_delete_title": "Bu bölüm silinsin mi?",
+    "confirm_delete_body": "Bölüm içeriği vitrinden kalıcı olarak silinecek."
   },
   "trial": {
     "trialBadge": "Deneme",
@@ -6423,7 +6442,8 @@
     "overridden": "özelleştirilmiş",
     "preview": "Önizleme",
     "previewFailed": "Önizleme kullanılamıyor",
-    "loadFailed": "Yüklenemedi"
+    "loadFailed": "Yüklenemedi",
+    "empty": "Kullanılabilir e-posta şablonu yok."
   },
   "aiAssistant": {
     "title": "Yapay Zekâ Asistanı",
@@ -6470,6 +6490,9 @@
     "awaitingConfirmation": "Onay bekliyor",
     "failures": "Başarısızlıklar",
     "recentErrors": "Son hatalar",
-    "loadError": "Ayarlar yüklenemedi."
+    "loadError": "Ayarlar yüklenemedi.",
+    "stateUnavailable": "Yapay zeka durumu kullanılamıyor",
+    "monitoringUnavailable": "Yapay zeka izleme kullanılamıyor",
+    "retry": "Yeniden dene"
   }
 }

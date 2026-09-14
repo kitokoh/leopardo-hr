@@ -11,6 +11,15 @@
 
     <TravelGate :mode="gateMode" :message="loadError" @retry="init" />
 
+    <!-- #7433 : une suppression qui échoue ne doit jamais être silencieuse. -->
+    <p
+      v-if="actionError"
+      class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-300"
+      role="alert"
+    >
+      {{ actionError }}
+    </p>
+
     <template v-if="!gateMode">
       <div v-if="selectedQuiz" class="mb-4">
         <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="resetQuizDetail">
@@ -147,6 +156,15 @@
         @save="saveQuestion"
         @close="closeQuestionModal"
       />
+
+      <ConfirmDialog
+        :open="confirmDialog.state.open"
+        :title="confirmDialog.state.title"
+        :message="confirmDialog.state.message"
+        :confirm-label="confirmDialog.state.confirmLabel"
+        @confirm="confirmDialog.resolve(true)"
+        @cancel="confirmDialog.resolve(false)"
+      />
     </template>
   </div>
 </template>
@@ -159,6 +177,9 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { errorMessage } from '@/utils/errorMessage'
 import { createTravel, deleteTravel, getTravel, listTravel, updateTravel, travelItem, travelList, createQuizQuestion, updateQuizQuestion, deleteQuizQuestion, quizParticipations } from '@/services/travel'
 
 const localeStore = useLocaleStore()
@@ -166,6 +187,9 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
 const loadError = ref('')
+// #7433 : confirmation in-app (jamais window.confirm) + erreur visible.
+const confirmDialog = useConfirmDialog()
+const actionError = ref('')
 const statusFilter = ref('all')
 const quizzes = ref([])
 const loading = ref(false)
@@ -317,12 +341,18 @@ async function saveQuiz(values) {
 }
 
 async function askDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer ce quiz ?'))) return
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.quiz.confirmDeleteTitle', 'Supprimer ce quiz ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteTravel('quizzes', row.id)
     await loadQuizzes()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 
@@ -393,12 +423,18 @@ async function saveQuestion(values) {
 
 async function askQuestionDelete(row) {
   if (!selectedQuiz.value) return
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer cette question ?'))) return
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.quiz.confirmDeleteQuestionTitle', 'Supprimer cette question ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteQuizQuestion(selectedQuiz.value.id, row.id)
     await loadQuestions()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 

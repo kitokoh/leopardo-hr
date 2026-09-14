@@ -9,11 +9,17 @@ on:
     branches: [main]
     paths:
       - 'front/admin-dashboard/**'
+      - 'dev-hub/tools/check-admin-*.py'
+      - 'dev-hub/tools/check-admin-*-test.sh'
+      - 'dev-hub/tools/admin-silent-catch-allowlist.txt'
       - '.github/workflows/web-ci.yml'
   pull_request:
     branches: [main]
     paths:
       - 'front/admin-dashboard/**'
+      - 'dev-hub/tools/check-admin-*.py'
+      - 'dev-hub/tools/check-admin-*-test.sh'
+      - 'dev-hub/tools/admin-silent-catch-allowlist.txt'
       - '.github/workflows/web-ci.yml'
 
 permissions:
@@ -58,6 +64,21 @@ jobs:
       - name: Run ESLint
         working-directory: front/admin-dashboard
         run: npm run lint
+
+      # Issue #7433 : garde « actions destructives / échecs silencieux » —
+      # zéro window.confirm|alert, zéro `catch` muet non allowlisté dans
+      # front/admin-dashboard/src (+ auto-test de la garde).
+      - name: Admin destructive-actions guard (issue #7433)
+        run: python3 dev-hub/tools/check-admin-destructive-actions.py
+
+      - name: Admin destructive-actions guard self-test (issue #7433)
+        run: bash dev-hub/tools/check-admin-destructive-actions-test.sh
+
+      # Tests unitaires Vitest de la console admin (introduits par #7433 :
+      # le dossier n'avait que des tests Playwright e2e).
+      - name: Unit tests (vitest)
+        working-directory: front/admin-dashboard
+        run: npm run test
 
   web-build:
     timeout-minutes: 30

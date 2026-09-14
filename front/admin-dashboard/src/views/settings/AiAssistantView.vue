@@ -30,8 +30,29 @@
 
     <!-- ══════════ CONFIGURATION ══════════ -->
     <template v-if="activeTab === 'config'">
-      <!-- État réel : ce que le superviseur doit voir en premier -->
+      <!-- État réel : ce que le superviseur doit voir en premier.
+           #7433 : un échec de chargement n'est PAS « IA désactivée » —
+           on affiche un état « indisponible » distinct (sinon la
+           supervision ment, classe « mailer muet » #7389). -->
       <div
+        v-if="healthError"
+        class="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-rose-200 bg-rose-50 p-4 dark:border-rose-800 dark:bg-rose-900/20"
+        role="alert"
+      >
+        <span class="text-sm font-semibold text-rose-700 dark:text-rose-300">
+          {{ t('aiAssistant.stateUnavailable') }}
+        </span>
+        <span class="text-sm text-rose-600 dark:text-rose-300">{{ healthError }}</span>
+        <button
+          type="button"
+          class="rounded-lg border border-rose-300 px-3 py-1 text-sm font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-700 dark:text-rose-200 dark:hover:bg-rose-900/40"
+          @click="loadHealth"
+        >
+          {{ t('aiAssistant.retry') }}
+        </button>
+      </div>
+      <div
+        v-else
         class="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border p-4"
         :class="
           health.enabled
@@ -172,9 +193,28 @@
         </select>
       </div>
 
+      <!-- #7433 : un échec de chargement du suivi n'est pas « 0 requête ». -->
+      <div
+        v-if="monitoringError"
+        class="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-center dark:border-rose-800 dark:bg-rose-900/20"
+        role="alert"
+      >
+        <p class="text-sm font-semibold text-rose-700 dark:text-rose-300">
+          {{ t('aiAssistant.monitoringUnavailable') }}
+        </p>
+        <p class="mt-1 text-sm text-rose-600 dark:text-rose-300">{{ monitoringError }}</p>
+        <button
+          type="button"
+          class="mt-4 rounded-lg border border-rose-300 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-700 dark:text-rose-200 dark:hover:bg-rose-900/40"
+          @click="loadMonitoring"
+        >
+          {{ t('aiAssistant.retry') }}
+        </button>
+      </div>
+
       <!-- Aucune donnée : état vide honnête, pas un zéro trompeur -->
       <div
-        v-if="!monitoringLoading && totals.requests === 0"
+        v-else-if="!monitoringLoading && totals.requests === 0"
         class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400"
       >
         {{ t('aiAssistant.noData') }}
@@ -279,6 +319,7 @@ import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
+import { errorMessage } from '@/utils/errorMessage'
 
 const localeStore = useLocaleStore()
 const t = (key, vars = {}) => {
@@ -303,6 +344,10 @@ const settings = ref({})
 const health = ref({})
 const form = reactive({})
 const loadError = ref('')
+// #7433 : un échec de chargement ne doit jamais s'afficher comme un état
+// réel (« IA désactivée », « 0 requête »).
+const healthError = ref('')
+const monitoringError = ref('')
 
 const saving = ref(false)
 const testing = ref(false)
@@ -380,16 +425,19 @@ async function load() {
 }
 
 async function loadHealth() {
+  healthError.value = ''
   try {
     const { data } = await api.get(`${BASE}/health`)
     health.value = data?.data || {}
   } catch (e) {
-    console.warn('[admin] ai health load failed', e)
+    health.value = {}
+    healthError.value = errorMessage(e, t('aiAssistant.loadError'))
   }
 }
 
 async function loadMonitoring() {
   monitoringLoading.value = true
+  monitoringError.value = ''
   try {
     const to = new Date()
     const from = new Date(to.getTime() - periodDays.value * 24 * 3600 * 1000)
@@ -399,7 +447,9 @@ async function loadMonitoring() {
     })
     monitoring.value = data?.data || null
   } catch (e) {
-    console.warn('[admin] ai monitoring load failed', e)
+    // monitoring reste null : l'écran affiche « indisponible », pas « 0 ».
+    monitoring.value = null
+    monitoringError.value = errorMessage(e, t('aiAssistant.loadError'))
   } finally {
     monitoringLoading.value = false
   }

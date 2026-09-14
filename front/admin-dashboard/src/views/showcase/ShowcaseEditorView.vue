@@ -173,6 +173,16 @@
         </ul>
       </div>
     </template>
+
+    <!-- #7433 : la suppression d'une section est destructive → confirmation. -->
+    <ConfirmDialog
+      :open="confirmDialog.state.open"
+      :title="confirmDialog.state.title"
+      :message="confirmDialog.state.message"
+      :confirm-label="confirmDialog.state.confirmLabel"
+      @confirm="confirmDialog.resolve(true)"
+      @cancel="confirmDialog.resolve(false)"
+    />
   </div>
 </template>
 
@@ -181,13 +191,19 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import ShowcaseMediaUploader from '@/components/showcase/ShowcaseMediaUploader.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { listShowcaseMedia, showcaseMediaErrorMessage } from '@/services/showcase'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+
+// #7433 : confirmation in-app obligatoire avant suppression d'une section
+// (l'écran possédait déjà ConfirmDialog mais ne s'en servait pas ici).
+const confirmDialog = useConfirmDialog()
 
 const loading = ref(false)
 const busy = ref(false)
@@ -388,6 +404,12 @@ async function saveSection(section) {
 }
 
 async function removeSection(section) {
+  const confirmed = await confirmDialog.ask({
+    title: t('showcase.confirm_delete_title', 'Supprimer cette section ?'),
+    message: t('showcase.confirm_delete_body', 'Le contenu de la section sera définitivement supprimé de la vitrine.'),
+    confirmLabel: t('showcase.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
   busy.value = true
   try {
     await api.delete(`/showcase/sections/${section.id}`)

@@ -13,7 +13,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'playwright-report/**', 'test-results/**'],
+    ignores: ['dist/**', 'node_modules/**', 'playwright-report/**', 'test-results/**', 'coverage/**'],
   },
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
@@ -52,6 +52,24 @@ export default [
       'vue/no-side-effects-in-computed-properties': 'warn',
       'vue/require-toggle-inside-transition': 'warn',
       'vue/multi-word-component-names': 'off',
+    },
+  },
+  {
+    // Tests unitaires Vitest (#7433) — `describe`/`it`/`expect`/`vi` globaux.
+    files: ['src/**/*.spec.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
     },
   },
   {

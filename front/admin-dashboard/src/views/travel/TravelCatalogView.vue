@@ -81,7 +81,8 @@
               <button
                 class="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white shadow"
                 :aria-label="t('travel.common.delete', 'Supprimer')"
-                @click="deleteImage(image)"
+                :title="t('travel.common.delete', 'Supprimer')"
+                @click="askDeleteImage(image)"
               >
                 <XMarkIcon class="h-3 w-3" />
               </button>
@@ -526,15 +527,6 @@ async function openRentalImages(rental) {
     errors.rentals = apiError(error)
   }
 }
-async function deleteImage(image) {
-  if (!selectedRental.value) return
-  try {
-    await deleteTravelSub('rental-vehicles', selectedRental.value.id, 'images', image.id)
-    await openRentalImages(selectedRental.value)
-  } catch (error) {
-    errors.rentals = apiError(error)
-  }
-}
 
 /* ─── Réservations location ─── */
 function openRentalCancel(row) {
@@ -632,6 +624,17 @@ function askDeleteRoom(room) {
 }
 
 /* ─── Suppression générique ─── */
+function askDeleteImage(image) {
+  // #7433 : la croix de suppression d'image ne doit plus supprimer
+  // immédiatement — confirmation in-app + état d'erreur en cas d'échec.
+  deleteAction.value = () => deleteTravelSub('rental-vehicles', selectedRental.value.id, 'images', image.id)
+    .then(async () => {
+      await openRentalImages(selectedRental.value)
+    })
+  deleteMessage.value = t('travel.catalog.confirmDeleteImage', 'Cette action est irréversible. Voulez-vous vraiment supprimer cette image ?')
+  deleteOpen.value = true
+}
+
 function askDelete(collection, row) {
   const label = row.code || row.name || row.title || String(row.id)
   if (collection === 'rentals') {
@@ -654,6 +657,7 @@ async function confirmDelete() {
   try {
     await deleteAction.value()
   } catch (error) {
+    // #7433 : jamais de suppression silencieusement ratée.
     errors[activeTab.value] = apiError(error)
   } finally {
     deleteOpen.value = false

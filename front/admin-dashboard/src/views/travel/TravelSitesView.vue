@@ -11,6 +11,15 @@
 
     <TravelGate :mode="gateMode" :message="loadError" @retry="init" />
 
+    <!-- #7433 : une suppression qui échoue ne doit jamais être silencieuse. -->
+    <p
+      v-if="actionError"
+      class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-300"
+      role="alert"
+    >
+      {{ actionError }}
+    </p>
+
     <template v-if="!gateMode">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-wrap gap-2">
@@ -70,6 +79,15 @@
         @save="save"
         @close="closeModal"
       />
+
+      <ConfirmDialog
+        :open="confirmDialog.state.open"
+        :title="confirmDialog.state.title"
+        :message="confirmDialog.state.message"
+        :confirm-label="confirmDialog.state.confirmLabel"
+        @confirm="confirmDialog.resolve(true)"
+        @cancel="confirmDialog.resolve(false)"
+      />
     </template>
   </div>
 </template>
@@ -82,6 +100,9 @@ import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { errorMessage } from '@/utils/errorMessage'
 import { createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites } from '@/services/travel'
 
 const localeStore = useLocaleStore()
@@ -149,6 +170,10 @@ const formFields = computed(() => [
   },
 ])
 
+// #7433 : confirmation in-app (jamais window.confirm) + erreur visible.
+const confirmDialog = useConfirmDialog()
+const actionError = ref('')
+
 const modalOpen = ref(false)
 const editing = ref(null)
 const saving = ref(false)
@@ -185,12 +210,18 @@ async function save(values) {
 }
 
 async function askDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer ce site ?'))) return
+  const confirmed = await confirmDialog.ask({
+    title: t('travel.sites.confirmDeleteTitle', 'Supprimer ce site ?'),
+    message: t('travel.common.confirmDeleteBody', 'Cette action est irréversible.'),
+    confirmLabel: t('travel.common.delete', 'Supprimer'),
+  })
+  if (!confirmed) return
+  actionError.value = ''
   try {
     await deleteTravel('tourist-sites', row.id)
     await loadSites()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    actionError.value = errorMessage(err, t('travel.common.deleteError', 'Suppression impossible.'))
   }
 }
 

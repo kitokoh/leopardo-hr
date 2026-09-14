@@ -4845,6 +4845,11 @@
       "empty": "لا يوجد مستخدم",
       "emptyHint": "لا يوجد مستخدم يطابق معايير البحث.",
       "viewDetails": "عرض التفاصيل"
+    },
+    "bulkConfirm": {
+      "title": "تعطيل المستخدمين المحددين؟",
+      "body": "سيفقد المستخدمون المحددون الوصول إلى مساحتهم فورًا.",
+      "action": "تعطيل التحديد"
     }
   },
   "settingsBiometryEnrollment": "تسجيل البيانات الحيوية",
@@ -5382,7 +5387,9 @@
       "participant": "المشارك",
       "questions": "الأسئلة",
       "results": "النتائج",
-      "score": "النتيجة"
+      "score": "النتيجة",
+      "confirmDeleteTitle": "حذف هذا الاختبار؟",
+      "confirmDeleteQuestionTitle": "حذف هذا السؤال؟"
     },
     "quizStatus": {
       "draft": "مسودة",
@@ -5442,7 +5449,11 @@
       "price": "السعر",
       "reject": "رفض",
       "renew": "تجديد",
-      "validate": "اعتماد"
+      "validate": "اعتماد",
+      "actionError": "تعذّر تنفيذ الإجراء على هذا الإعلان.",
+      "payError": "تعذّر الدفع.",
+      "renewError": "تعذّر التجديد.",
+      "confirmDeleteTitle": "حذف هذا الإعلان؟"
     },
     "sites": {
       "title": "المواقع السياحية",
@@ -5454,7 +5465,8 @@
         "latitude": "خط العرض",
         "longitude": "خط الطول"
       },
-      "name": "الاسم"
+      "name": "الاسم",
+      "confirmDeleteTitle": "حذف هذا الموقع؟"
     },
     "contacts": {
       "formTitle": "نموذج الاتصال",
@@ -5508,7 +5520,9 @@
       "consentRefused": "مرفوض",
       "never": "لم يُعبَّر عنه",
       "email": "البريد الإلكتروني",
-      "app": "التطبيق"
+      "app": "التطبيق",
+      "consentError": "لم يتم حفظ الموافقة.",
+      "notifyError": "لم يتم إرسال الإشعار."
     },
     "advertStatus": {
       "draft": "مسودة",
@@ -5560,7 +5574,8 @@
       "tabRentalBookings": "حجوزات الإيجار",
       "tabRentals": "مركبات للإيجار",
       "title": "العنوان",
-      "hotelRoomsTitle": "غرف الفندق"
+      "hotelRoomsTitle": "غرف الفندق",
+      "confirmDeleteImage": "هذا الإجراء نهائي. هل تريد حذف هذه الصورة؟"
     },
     "cities": {
       "country": "الدول",
@@ -5604,7 +5619,9 @@
       "selectPlaceholder": "— اختر —",
       "status": "الحالة",
       "tenantRequiredTitle": "سياق العميل مطلوب",
-      "yes": "نعم"
+      "yes": "نعم",
+      "saveError": "تعذّر الحفظ.",
+      "deleteError": "تعذّر الحذف."
     },
     "countries": {
       "name": "الاسم",
@@ -6370,7 +6387,9 @@
     "sectionProducts": "المنتجات",
     "sectionContact": "اتصال",
     "sectionFooter": "التذييل",
-    "notFoundTitle": "الصفحة غير موجودة"
+    "notFoundTitle": "الصفحة غير موجودة",
+    "confirm_delete_title": "حذف هذا القسم؟",
+    "confirm_delete_body": "سيُحذف محتوى القسم نهائيًا من الواجهة."
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -6417,7 +6436,8 @@
     "overridden": "مخصّص",
     "preview": "معاينة",
     "previewFailed": "المعاينة غير متاحة",
-    "loadFailed": "تعذّر التحميل"
+    "loadFailed": "تعذّر التحميل",
+    "empty": "لا يوجد قالب بريد متاح."
   },
   "aiAssistant": {
     "title": "مساعد الذكاء الاصطناعي",
@@ -6464,6 +6484,9 @@
     "awaitingConfirmation": "بانتظار التأكيد",
     "failures": "الإخفاقات",
     "recentErrors": "الأخطاء الأخيرة",
-    "loadError": "تعذّر تحميل الإعدادات."
+    "loadError": "تعذّر تحميل الإعدادات.",
+    "stateUnavailable": "حالة الذكاء الاصطناعي غير متاحة",
+    "monitoringUnavailable": "مراقبة الذكاء الاصطناعي غير متاحة",
+    "retry": "إعادة المحاولة"
   }
 }
