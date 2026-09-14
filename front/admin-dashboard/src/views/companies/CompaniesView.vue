@@ -16,15 +16,32 @@
           <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
           {{ t('companies.refresh', 'Actualiser') }}
         </button>
+        <!-- #7302 — le scoring du portefeuille est asynchrone : on l'annonce
+             explicitement plutôt que d'afficher des colonnes vides. -->
+        <span
+          v-if="isScoring"
+          class="inline-flex items-center gap-2 self-center rounded-xl bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 dark:bg-brand-900/30 dark:text-brand-400"
+        >
+          <span class="h-3 w-3 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></span>
+          {{ t('companies.scoringPortfolio', 'Calcul des scores en cours…') }}
+        </span>
+        <button
+          v-else-if="scoringFailed"
+          type="button"
+          class="inline-flex items-center gap-2 self-center rounded-xl bg-amber-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-amber-700 transition hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400"
+          @click="fetchPortfolio"
+        >
+          {{ t('companies.scoringUnavailable', 'Scores indisponibles — réessayer') }}
+        </button>
       </div>
     </div>
 
     <!-- Summary Stats -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-      <StatsCard :title="t('companies.statsFollowed', 'Clients Suivis')" :value="summary.companies" icon="BuildingOffice2Icon" color="blue" />
-      <StatsCard :title="t('companies.statsActive', 'Clients Actifs')" :value="summary.active_companies" icon="UsersIcon" color="green" />
-      <StatsCard :title="t('companies.statsGlobalMrr', 'MRR Global')" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
-      <StatsCard :title="t('companies.statsRiskAlert', 'Alerte Risque')" :value="summary.risk.high" icon="ExclamationTriangleIcon" color="red" />
+      <StatsCard :title="t('companies.statsFollowed', 'Clients Suivis')" :value="isScoring ? '—' : summary.companies" icon="BuildingOffice2Icon" color="blue" />
+      <StatsCard :title="t('companies.statsActive', 'Clients Actifs')" :value="isScoring ? '—' : summary.active_companies" icon="UsersIcon" color="green" />
+      <StatsCard :title="t('companies.statsGlobalMrr', 'MRR Global')" :value="isScoring ? '—' : formattedMrr" icon="BanknotesIcon" color="purple" />
+      <StatsCard :title="t('companies.statsRiskAlert', 'Alerte Risque')" :value="isScoring ? '—' : summary.risk.high" icon="ExclamationTriangleIcon" color="red" />
     </div>
 
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
@@ -87,18 +104,32 @@
                 </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.plan.name || t('companies.noPlan', 'SANS PLAN') }}</div>
-                <div class="text-xs font-black text-brand-600 dark:text-brand-400 mt-0.5">{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/m</div>
+                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">
+                  {{ item.plan?.name || (isScoring ? '…' : t('companies.noPlan', 'SANS PLAN')) }}
+                </div>
+                <div class="text-xs font-black text-brand-600 dark:text-brand-400 mt-0.5">
+                  <template v-if="item.subscription?.mrr == null">—</template>
+                  <template v-else>{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/m</template>
+                </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="flex items-center gap-3">
+                <div v-if="item.health_score == null" class="flex items-center gap-2 text-slate-400">
+                  <div v-if="isScoring" class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
+                  <span class="text-xs font-bold">{{ isScoring ? t('companies.scoring', 'Calcul…') : '—' }}</span>
+                </div>
+                <div v-else class="flex items-center gap-3">
                   <span :class="riskClass(item.risk_level)">{{ item.risk_level }}</span>
                   <span class="text-sm font-black text-slate-900 dark:text-white">{{ item.health_score }}%</span>
                 </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d }} {{ t('companies.logsUnit', 'logs') }}</div>
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active }} {{ t('companies.activeUnit', 'actifs') }}</div>
+                <template v-if="item.attendance_logs_30d == null && item.employees_active == null">
+                  <span class="text-xs font-bold text-slate-400">—</span>
+                </template>
+                <template v-else>
+                  <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d ?? 0 }} {{ t('companies.logsUnit', 'logs') }}</div>
+                  <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active ?? 0 }} {{ t('companies.activeUnit', 'actifs') }}</div>
+                </template>
               </td>
               <td class="px-6 py-5">
                 <div v-if="item.next_action" class="flex items-center gap-2">
@@ -268,6 +299,14 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 const isLoading = ref(true)
+// #7302 — le scoring du portefeuille (GET /platform/companies/health) coûte
+// ~27 s pour 43 sociétés : on affiche d'abord l'ANNUAIRE (GET
+// /platform/companies, < 1 s) puis on hydrate les scores en tâche de fond.
+// `isScoring` indique que des colonnes sont encore en cours de calcul.
+const isScoring = ref(false)
+// Le scoring peut échouer (timeout 30 s du client face à un endpoint à ~25 s,
+// instance froide…) : on l'affiche au lieu de laisser des colonnes vides.
+const scoringFailed = ref(false)
 const errorMessage = ref('')
 const showCreateModal = ref(false)
 const isCreating = ref(false)
@@ -295,7 +334,13 @@ const sortedItems = computed(() => {
   const rank = { high: 0, medium: 1, low: 2 }
   return [...items.value].sort((a, b) => {
     const riskDiff = (rank[a.risk_level] ?? 3) - (rank[b.risk_level] ?? 3)
-    return riskDiff !== 0 ? riskDiff : a.health_score - b.health_score
+    // #7302 — `health_score` peut être `null` tant que le scoring n'est pas
+    // revenu : on trie alors par nom pour rester déterministe (sinon NaN).
+    if (riskDiff !== 0) return riskDiff
+    const scoreA = a.health_score ?? -1
+    const scoreB = b.health_score ?? -1
+    if (scoreA !== scoreB) return scoreA - scoreB
+    return String(a.company?.name || '').localeCompare(String(b.company?.name || ''))
   })
 })
 
@@ -308,17 +353,87 @@ const selectedCountryDefault = computed(() => {
 async function fetchPortfolio() {
   isLoading.value = true
   errorMessage.value = ''
+  isScoring.value = false
+  scoringFailed.value = false
 
+  // #7302 — 1) ANNUAIRE d'abord (rapide) pour rendre la page utilisable tout
+  // de suite ; 2) SCORES en tâche de fond (coûteux : scoring de tout le
+  // portefeuille). Si l'annuaire échoue, on retombe sur l'ancien chemin
+  // (health seul) pour ne rien régresser.
+  let directoryItems = null
   try {
-    const response = await api.get('/platform/companies/health')
-    summary.value = response.data?.data?.summary || summary.value
-    items.value = response.data?.data?.items || []
+    // L'annuaire est paginé (20 par défaut) : on demande explicitement tout le
+    // portefeuille, sinon la vue afficherait moins de sociétés que l'ancien
+    // endpoint `health` (mesuré : 20 lignes au lieu de 44).
+    const response = await api.get('/platform/companies', { params: { per_page: 100 } })
+    const list = response.data?.data || []
+    directoryItems = list.map(toDirectoryRow)
+    items.value = directoryItems
+    isLoading.value = false
+  } catch (error) {
+    console.warn('Annuaire clients indisponible, repli sur le cockpit scoré:', error)
+  }
+
+  isScoring.value = true
+  try {
+    // Endpoint connu pour être lent (~25 s à chaud pour 44 sociétés, au-delà du
+    // timeout axios global de 30 s sur instance froide) : c'est un appel de
+    // fond, on lui accorde un délai dédié — sinon le back-office n'obtient
+    // JAMAIS les scores et n'affiche que des « — ».
+    const response = await api.get('/platform/companies/health', { timeout: 90000 })
+    const data = response.data?.data || {}
+    if (data.summary) {
+      summary.value = data.summary
+    }
+    const healthItems = data.items || []
+    items.value = directoryItems
+      ? mergeHealthIntoDirectory(directoryItems, healthItems)
+      : healthItems
+    errorMessage.value = ''
   } catch (error) {
     console.error('Failed to load company portfolio:', error)
-    errorMessage.value = t('companies.loadError', 'Impossible de charger le cockpit clients.')
+    // Sans annuaire, l'échec du scoring reste une erreur franche ; sinon la
+    // liste reste affichée (colonnes de score à « — ») — pas de page blanche.
+    if (!directoryItems) {
+      errorMessage.value = t('companies.loadError', 'Impossible de charger le cockpit clients.')
+    } else {
+      // La liste reste utilisable ; on signale seulement que les scores
+      // manquent (colonnes à « — ») plutôt que de laisser croire à des zéros.
+      scoringFailed.value = true
+    }
   } finally {
     isLoading.value = false
+    isScoring.value = false
   }
+}
+
+/**
+ * #7302 — ligne « annuaire » (GET /platform/companies) : seuls les champs
+ * d'identité sont disponibles ; les colonnes de score sont laissées à `null`
+ * et affichées en placeholder tant que le scoring n'est pas revenu.
+ */
+function toDirectoryRow(company) {
+  return {
+    company: {
+      id: company.id,
+      name: company.name,
+      status: company.status,
+      country: company.country,
+    },
+    plan: { name: '' },
+    subscription: { mrr: null, currency: company.currency || 'EUR' },
+    risk_level: null,
+    health_score: null,
+    attendance_logs_30d: null,
+    employees_active: null,
+    next_action: null,
+  }
+}
+
+/** Fusionne les scores dans l'annuaire, par identifiant de société. */
+function mergeHealthIntoDirectory(directoryItems, healthItems) {
+  const byId = new Map(healthItems.map((item) => [item.company?.id, item]))
+  return directoryItems.map((row) => byId.get(row.company?.id) || row)
 }
 
 
