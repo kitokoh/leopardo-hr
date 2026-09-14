@@ -50,6 +50,7 @@ import {
 import {
   HORIZONTAL_BLOCKS,
   VERTICALS,
+  verticalGlow,
   type HorizontalKey,
   type VerticalKey,
 } from '@/modules/vitrine/data/solution-stack';
@@ -93,8 +94,19 @@ const COLUMN_SIZE = 0.4;
 const COLUMN_Z = -1.45;
 const COLUMN_SPREAD = 0.95;
 
-const EMERALD = '#10b981';
-const EMERALD_GLOW = '#34d399';
+const EMERALD = '#10B981'; // RH/émeraude — COULEURS.md
+
+/**
+ * Teinte claire d'une verticale (chapeau, pied, faisceaux, libellé).
+ *
+ * DÉRIVÉE de la couleur de base plutôt qu'écrite en dur : la garde
+ * `check-web-design-tokens.sh` interdit les hex hors palette dans
+ * `front/web/src`, et une variante de halo n'a pas à devenir un token produit.
+ * Éclaircir vers le blanc donne le même effet que les anciens `*-400`.
+ */
+function glowOf(color: string): Color {
+  return new Color(verticalGlow(color));
+}
 
 /** Hauteur d'une colonne : plus une verticale consomme de briques, plus elle monte. */
 function columnHeight(consumesCount: number): number {
@@ -149,17 +161,18 @@ export function SolutionStack3D({
     renderer.domElement.style.height = '100%';
 
     // ── Lumières ─────────────────────────────────────────────────────────
-    scene.add(new AmbientLight('#93c5fd', 0.55));
+    // Ambiance bleue « Sécurité » (#3B82F6) — couleur de la palette produit.
+    scene.add(new AmbientLight('#3b82f6', 0.55));
 
     const key = new DirectionalLight('#ffffff', 2.1);
     key.position.set(3.4, 5.4, 3.2);
     scene.add(key);
 
-    const fill = new DirectionalLight(EMERALD_GLOW, 1.15);
+    const fill = new DirectionalLight(EMERALD, 1.15);
     fill.position.set(-3.6, 2.2, -2.4);
     scene.add(fill);
 
-    const rim = new PointLight('#22d3ee', 22, 14, 2);
+    const rim = new PointLight('#06B6D4', 22, 14, 2) // cyan palette;
     rim.position.set(0, 2.6, -3.4);
     scene.add(rim);
 
@@ -179,11 +192,11 @@ export function SolutionStack3D({
     // Le socle a ses propres arêtes, plus franches : c'est le niveau qui doit
     // se distinguer du damier horizontal.
     const socleEdgeMaterial = track(
-      new LineBasicMaterial({ color: EMERALD_GLOW, transparent: true, opacity: 0.9 }),
+      new LineBasicMaterial({ color: glowOf(EMERALD), transparent: true, opacity: 0.9 }),
     );
     const postMaterial = track(
       new MeshStandardMaterial({
-        color: '#1b2739',
+        color: '#0f172a', // slate-900 — palette neutres
         metalness: 0.1,
         roughness: 0.45,
         emissive: new Color(EMERALD),
@@ -204,7 +217,7 @@ export function SolutionStack3D({
     // simplement et la scène se réduisait à un damier.
     const socleSide = track(
       new MeshStandardMaterial({
-        color: '#0d1526',
+        color: '#0f172a', // slate-900 — palette neutres
         metalness: 0.12,
         roughness: 0.5,
         emissive: new Color('#3b82f6'),
@@ -213,7 +226,7 @@ export function SolutionStack3D({
     );
     const socleTop = track(
       new MeshStandardMaterial({
-        color: '#1e293b',
+        color: '#1e293b', // slate-800 — palette neutres
         metalness: 0.06,
         roughness: 0.34,
         emissive: new Color('#3b82f6'),
@@ -302,6 +315,7 @@ export function SolutionStack3D({
       const group = new Group();
       group.position.set((index - 1.5) * COLUMN_SPREAD, SOCLE_TOP + height / 2, COLUMN_Z);
 
+      const glow = glowOf(vertical.color);
       const body = track(
         new MeshStandardMaterial({
           color: vertical.color,
@@ -321,10 +335,10 @@ export function SolutionStack3D({
       const capGeometry = track(new BoxGeometry(COLUMN_SIZE * 1.18, 0.06, COLUMN_SIZE * 1.18));
       const cap = track(
         new MeshStandardMaterial({
-          color: vertical.glow,
+          color: glow,
           metalness: 0.05,
           roughness: 0.25,
-          emissive: new Color(vertical.glow),
+          emissive: glow,
           emissiveIntensity: 1.5,
         }),
       );
@@ -336,10 +350,10 @@ export function SolutionStack3D({
       const footGeometry = track(new BoxGeometry(COLUMN_SIZE * 1.35, 0.05, COLUMN_SIZE * 1.35));
       const foot = track(
         new MeshStandardMaterial({
-          color: vertical.glow,
+          color: glow,
           metalness: 0.05,
           roughness: 0.45,
-          emissive: new Color(vertical.glow),
+          emissive: glow,
           emissiveIntensity: 0.8,
         }),
       );
@@ -355,7 +369,7 @@ export function SolutionStack3D({
     // Reconstruits uniquement au changement de verticale active : coût nul
     // dans la boucle de rendu.
     const beamMaterial = track(
-      new LineBasicMaterial({ color: EMERALD_GLOW, transparent: true, opacity: 0.85 }),
+      new LineBasicMaterial({ color: glowOf(EMERALD), transparent: true, opacity: 0.85 }),
     );
     let beams: LineSegments | null = null;
 
@@ -377,7 +391,7 @@ export function SolutionStack3D({
 
       // Les faisceaux prennent la couleur de la verticale : l'association
       // « cette colonne consomme ces briques » se lit sans légende.
-      beamMaterial.color.set(vertical.glow);
+      beamMaterial.color.copy(glowOf(vertical.color));
 
       const origin = new Vector3(
         column.group.position.x,
@@ -640,7 +654,7 @@ export function SolutionStack3D({
             style={{
               borderColor: `${vertical.color}66`,
               backgroundColor: `${vertical.color}1f`,
-              color: vertical.glow,
+              color: verticalGlow(vertical.color),
             }}
           >
             {labels[vertical.key]}

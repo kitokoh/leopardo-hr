@@ -23,6 +23,7 @@ import {
   HORIZONTAL_BLOCKS,
   VERTICALS,
   getSolutionStackCopy,
+  verticalGlow,
   type VerticalKey,
 } from '@/modules/vitrine/data/solution-stack';
 
@@ -334,8 +335,8 @@ function SolutionStackFallback({
                   style={{
                     height: `${height}px`,
                     borderColor: vertical.color,
-                    background: `linear-gradient(to top, ${vertical.color}44, ${vertical.glow}cc)`,
-                    boxShadow: `0 0 22px ${vertical.glow}66`,
+                    background: `linear-gradient(to top, ${vertical.color}44, ${verticalGlow(vertical.color)}cc)`,
+                    boxShadow: `0 0 22px ${verticalGlow(vertical.color)}66`,
                   }}
                 />
               </div>

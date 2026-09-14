@@ -64,10 +64,16 @@ export interface HorizontalBlock {
 
 export interface VerticalSolution {
   key: VerticalKey;
-  /** Couleur d'accent de la colonne 3D. */
+  /**
+   * Couleur d'accent de la colonne 3D.
+   *
+   * DOIT provenir de `docs/REFERENTIEL_PRODUIT/COULEURS.md` : la garde CI
+   * `check-web-design-tokens.sh` refuse tout `#rrggbb` hors palette dans
+   * `front/web/src`. La teinte claire (halo, chapeau, faisceaux) n'est PAS
+   * écrite en dur — elle est DÉRIVÉE de cette couleur au chargement de la
+   * scène (voir `SolutionStack3D`), ce qui évite d'inventer des variantes.
+   */
   color: string;
-  /** Couleur d'émission (halo) de la colonne 3D. */
-  glow: string;
   /**
    * Briques horizontales réellement consommées par cette verticale,
    * dérivées de ses `requiredModules`/`optionalModules` (voir en-tête).
@@ -110,24 +116,21 @@ export const HORIZONTAL_BLOCKS: HorizontalBlock[] = [
 export const VERTICALS: VerticalSolution[] = [
   {
     key: 'restaurant',
-    color: '#f59e0b',
-    glow: '#fbbf24',
+    color: '#F59E0B', // Finance/ambre — COULEURS.md
     // Manifest : rh, documents, notifications, crm, accounting, marketing
     consumes: ['employees', 'contracts', 'absences', 'crm', 'accounting', 'marketing'],
     extraModules: ['documents', 'notifications'],
   },
   {
     key: 'travel',
-    color: '#06b6d4',
-    glow: '#22d3ee',
+    color: '#06B6D4', // cyan de la palette vitrine — COULEURS.md
     // Manifest : rh, documents, notifications, crm, accounting, marketing
     consumes: ['employees', 'contracts', 'absences', 'crm', 'accounting', 'marketing'],
     extraModules: ['documents', 'notifications'],
   },
   {
     key: 'education',
-    color: '#8b5cf6',
-    glow: '#a78bfa',
+    color: '#7C3AED', // IA/violet — COULEURS.md
     // Manifest : rh, documents, notifications, crm, marketing, accounting,
     //            payroll, attendance
     consumes: [
@@ -145,8 +148,7 @@ export const VERTICALS: VerticalSolution[] = [
   },
   {
     key: 'fuel',
-    color: '#f43f5e',
-    glow: '#fb7185',
+    color: '#EF4444', // Danger/rouge — COULEURS.md
     // Manifest : rh, attendance, documents, notifications, crm, accounting,
     //            payroll, marketing, fleet
     consumes: [
@@ -380,6 +382,33 @@ const COPY: Record<AppLocale, SolutionStackCopy> = {
 
 export function getSolutionStackCopy(locale: AppLocale): SolutionStackCopy {
   return COPY[locale] ?? COPY.fr;
+}
+
+/**
+ * Teinte claire d'une verticale — chapeau de colonne, faisceaux, libellé,
+ * et repli CSS. **Dérivée** de la couleur de base, jamais écrite en dur :
+ * la garde CI `check-web-design-tokens.sh` refuse les hex hors palette dans
+ * `front/web/src`, et une variante de halo n'a pas à devenir un token produit.
+ *
+ * @param amount proportion de blanc mélangée (0 = couleur d'origine, 1 = blanc)
+ */
+export function verticalGlow(color: string, amount = 0.42): string {
+  const raw = color.replace('#', '').trim();
+  const full =
+    raw.length === 3
+      ? raw
+          .split('')
+          .map((char) => char + char)
+          .join('')
+      : raw;
+
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) return color;
+
+  const value = Number.parseInt(full, 16);
+  const channels = [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+  const lighten = (channel: number): number => Math.round(channel + (255 - channel) * amount);
+
+  return `#${channels.map((c) => lighten(c).toString(16).padStart(2, '0')).join('')}`;
 }
 
 /** Libellés traduits des modules sans brique visible (documents, notifications, fleet). */
