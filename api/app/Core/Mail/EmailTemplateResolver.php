@@ -51,10 +51,13 @@ final class EmailTemplateResolver
         $ctaLabel = $this->field($override['cta_label'] ?? null, $overridden, 'cta_label');
         $body = $this->field($override['body'] ?? null, $overridden, 'body');
 
-        $subject ??= __($definition['subject'], [], $locale);
-        $heading ??= __($definition['heading'], [], $locale);
+        // `__()` est declaree `string|array|null` par le framework : le cast
+        // explicite est la convention du depot (cf. app/AI/...) et garantit au
+        // niveau 8 que ces champs restent des chaines.
+        $subject ??= (string) __($definition['subject'], [], $locale);
+        $heading ??= (string) __($definition['heading'], [], $locale);
         $ctaLabel ??= $definition['cta_label'] !== null
-            ? __($definition['cta_label'], [], $locale)
+            ? (string) __($definition['cta_label'], [], $locale)
             : null;
         $body ??= $this->defaultBody($definition['body'], $locale);
 

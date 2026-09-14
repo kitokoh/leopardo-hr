@@ -30,7 +30,7 @@ class EdgeNodeSilentNotification extends Notification implements ShouldQueue
         $nodeName = $this->node->name;
         $companyName = $this->node->company?->name ?? 'Entreprise inconnue';
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject(__('emails.edge_node_silent_subject', ['node' => $nodeName, 'company' => $companyName]))
             ->greeting(__('emails.edge_node_silent_greeting'))
             ->line(__('emails.edge_node_silent_body', ['node' => $nodeName, 'company' => $companyName, 'duration' => $silenceDuration]))

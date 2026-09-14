@@ -38,7 +38,7 @@ class EdgeNodeSilentAlert extends Notification implements ShouldQueue
     {
         $silenceDuration = $this->lastSeenAt?->diffForHumans() ?? '—';
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject(__('emails.edge_node_silent_subject', ['node' => $this->nodeName, 'company' => $this->companyName]))
             ->greeting(__('emails.edge_node_silent_greeting'))
             ->line(__('emails.edge_node_silent_body', ['node' => $this->nodeName, 'company' => $this->companyName, 'duration' => $silenceDuration]))

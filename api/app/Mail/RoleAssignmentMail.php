@@ -43,7 +43,7 @@ class RoleAssignmentMail extends Mailable
     {
         App::setLocale($this->locale);
 
-        $tpl = app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('role_assignment', $this->locale ?? app()->getLocale(), [
+        $tpl = app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('role_assignment', $this->locale, [
             ':role' => $this->roleLabel,
             ':company' => $this->company->name,
             ':assignedBy' => $this->assignedByName,

@@ -31,7 +31,7 @@ class EdgeLicenseExpiringNotification extends Notification implements ShouldQueu
         $companyName = $node?->company?->name ?? '—';
         $expiresAt = $this->license->expires_at?->format('d/m/Y') ?? '—';
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject(__('emails.edge_license_expiring_subject', ['node' => $nodeName, 'company' => $companyName]))
             ->greeting(__('emails.edge_node_silent_greeting'))
             ->line(__('emails.edge_license_expiring_body', ['node' => $nodeName, 'company' => $companyName, 'date' => $expiresAt]))

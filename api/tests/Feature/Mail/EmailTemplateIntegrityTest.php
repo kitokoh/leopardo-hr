@@ -64,7 +64,10 @@ class EmailTemplateIntegrityTest extends TestCase
             try {
                 // TOKEN_PARSE demande au tokenizer de PARSER le code : une erreur
                 // de syntaxe lève une ParseError que l'on peut rapporter.
-                token_get_all($compiled, TOKEN_PARSE);
+                // Le resultat est conserve : `token_get_all()` est une fonction
+                // pure, PHPStan strict refuse un appel sans effet.
+                $tokens = token_get_all($compiled, TOKEN_PARSE);
+                $this->assertNotEmpty($tokens);
             } catch (\ParseError $e) {
                 $this->fail(sprintf(
                     'Template e-mail invalide : %s — %s (ligne %d du PHP compilé)',
@@ -73,8 +76,6 @@ class EmailTemplateIntegrityTest extends TestCase
                     $e->getLine()
                 ));
             }
-
-            $this->assertIsString($compiled);
         }
     }
 
