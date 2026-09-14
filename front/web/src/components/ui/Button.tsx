@@ -28,7 +28,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const variantBase: Record<ButtonVariant, string> = {
   // Gradients emerald (design system Leopardo) — base commune, surchargeable
   // par className (ex. boutons auth full-width rounded-2xl uppercase).
-  primary: 'bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-70',
+  primary: 'bg-emerald-700 text-white hover:bg-emerald-800 disabled:opacity-70',
   secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-60',
   outline: 'border border-slate-200 text-slate-700 hover:border-emerald-300 hover:text-emerald-700 disabled:opacity-60',
   ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-800 disabled:opacity-50',

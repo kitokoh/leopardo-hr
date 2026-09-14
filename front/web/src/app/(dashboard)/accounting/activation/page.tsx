@@ -225,7 +225,7 @@ export default function AccountingActivationPage() {
           className="rounded-3xl border border-emerald-200 bg-white p-10 text-center shadow-sm"
         >
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+            <CheckCircle2 className="h-8 w-8 text-emerald-700" />
           </div>
           <h2 className="text-xl font-black text-slate-950">{t(locale, 'accountingActivation.completedTitle')}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-slate-600">{t(locale, 'accountingActivation.completedBody')}</p>

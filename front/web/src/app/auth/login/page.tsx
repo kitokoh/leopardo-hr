@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { GoogleGlyph } from '@/components/GoogleGlyph';
 import { Button } from '@/components/ui/Button';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
@@ -125,6 +126,11 @@ function resolveGoogleError(code: string, labels: CopyTree): string | null {
       return labels.login.errors.googleAuthFailed;
     case 'google_no_account':
       return labels.login.errors.googleNoAccount;
+    // Audit onboarding 2026-09-14 : OAuth Google pas encore configuré côté API
+    // (503 GOOGLE_OAUTH_NOT_CONFIGURED). Sans ce cas, l'utilisateur voyait le
+    // JSON brut de l'API — on affiche désormais un message actionnable.
+    case 'google_unavailable':
+      return labels.login.errors.googleUnavailable;
     case 'google':
       return labels.login.errors.google;
     default:
@@ -383,21 +389,7 @@ function LoginInner() {
               <h1 className="max-w-md text-4xl font-bold leading-tight tracking-normal">
                 {labels.login.heroTitle}
               </h1>
-              <p className="max-w-md text-sm leading-6 text-slate-300">
-                {labels.login.heroCopy}
-              </p>
             </div>
-          </div>
-
-          <div className="relative grid gap-3">
-            {labels.login.trustPoints.map((item) => (
-              <div key={item} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-slate-200">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-teal-300/15 text-teal-100">
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
-                </span>
-                {item}
-              </div>
-            ))}
           </div>
         </section>
 
@@ -535,14 +527,8 @@ function LoginInner() {
                 href={googleAuthHref()}
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
               >
-                <Globe2 className="h-4 w-4" aria-hidden="true" />
-                {locale === 'fr'
-                  ? 'Continuer avec Google'
-                  : locale === 'tr'
-                    ? 'Google ile devam et'
-                    : locale === 'ar'
-                      ? 'المتابعة عبر Google'
-                      : 'Continue with Google'}
+                <GoogleGlyph />
+                {i18nT(locale, 'auth.continue_with_google')}
               </a>
 
               {/* Entrée permanente vers la création de compte : elle n’existait

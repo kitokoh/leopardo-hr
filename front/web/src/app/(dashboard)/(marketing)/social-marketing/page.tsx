@@ -202,9 +202,9 @@ export default function MarketingPage() {
   }), [posts]);
 
   const statCards = [
-    { label: 'Publications', value: stats.total, icon: Megaphone, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Publications', value: stats.total, icon: Megaphone, accent: 'text-emerald-700 bg-emerald-50' },
     { label: 'Planifiees', value: stats.scheduled, icon: Clock, accent: 'text-info bg-info/10' },
-    { label: 'Publiees', value: stats.published, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Publiees', value: stats.published, icon: CheckCircle2, accent: 'text-emerald-700 bg-emerald-50' },
     { label: 'Echecs', value: stats.failed, icon: AlertTriangle, accent: 'text-red-500 bg-red-50' },
   ];
 
@@ -302,7 +302,7 @@ export default function MarketingPage() {
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <p className="text-2xl font-black text-slate-950">{stat.value}</p>
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
               </motion.div>
             ))}
           </section>
@@ -408,7 +408,7 @@ export default function MarketingPage() {
                             onClick={() => handlePublishNow(post)}
                             disabled={pendingActionId === post.id}
                             title="Publier maintenant"
-                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600 disabled:opacity-50"
+                            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700 disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
                           </button>

@@ -1535,7 +1535,10 @@
     "ibanPlaceholderDZ": "Algerian IBAN or RIB (20 digits)",
     "saveBanking": "Save bank details",
     "sepaNotReady": "SEPA not configured",
-    "sepaReady": "SEPA ready"
+    "sepaReady": "SEPA ready",
+    "company": "Company",
+    "manage2fa": "Manage two-factor authentication",
+    "tenantSubtitle": "Manage your account information and its security."
   },
   "settingsPersonalContacts": "Personal contacts",
   "attendancePersonalTracking": "Personal tracking",

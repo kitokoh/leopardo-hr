@@ -33,7 +33,7 @@ const resource: CrudResource = {
       key: 'pii',
       header: 'PII',
       render: () => (
-        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">
           <Lock className="h-3 w-3" aria-hidden="true" />
           chiffré
         </span>

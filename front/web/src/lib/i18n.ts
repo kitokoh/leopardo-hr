@@ -84,6 +84,7 @@ export type CopyTree = {
       googleAuthFailed: string;
       googleNoAccount: string;
       googleNoAccountCta: string;
+      googleUnavailable: string;
     };
   };
   dashboard: {
@@ -99,6 +100,9 @@ export type CopyTree = {
     settings: string;
     logout: string;
     language: string;
+    userMenuAccount: string;
+    userMenuPassword: string;
+    userMenuSecurity: string;
     presentBadge: string;
     employeeLabel: string;
     checkInAt: string;
@@ -202,6 +206,10 @@ export type CopyTree = {
     close: string;
     retry: string;
     errorGeneric: string;
+    /** Audit 2026-09-14 — étapes « required » à action réelle (créer un département / un employé) */
+    actionCreateDepartment: string;
+    actionAddEmployee: string;
+    actionResumeHint: string;
     allStepsDone: string;
     quickStart: string;
     later: string;
@@ -709,6 +717,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
         googleNoAccountCta: 'Démarrer un essai sans invitation',
+        googleUnavailable: 'La connexion Google n’est pas encore disponible. Utilisez votre email et votre mot de passe.',
       },
     },
     dashboard: {
@@ -723,6 +732,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Paie',
       settings: 'Paramètres',
       logout: 'Déconnexion',
+      userMenuAccount: 'Mon compte',
+      userMenuPassword: 'Changer mon mot de passe',
+      userMenuSecurity: 'Sécurité (2FA)',
       language: 'Langue',
       presentBadge: 'Présent',
       employeeLabel: 'Employé',
@@ -832,6 +844,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: "Fermer l'assistant de configuration",
       retry: 'Réessayer',
       errorGeneric: 'Impossible de charger les étapes de configuration.',
+      actionCreateDepartment: 'Créer un département',
+      actionAddEmployee: 'Ajouter un employé',
+      actionResumeHint: "L'assistant reprendra automatiquement dès que ce sera fait.",
       allStepsDone: 'Configuration terminée !',
       quickStart: 'Quick Start',
       later: 'Recommandé plus tard',
@@ -1375,6 +1390,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
         googleNoAccountCta: 'ابدأ تجربة دون دعوة',
+        googleUnavailable: 'تسجيل الدخول عبر Google غير متاح بعد. استخدم بريدك وكلمة المرور.',
       },
     },
     dashboard: {
@@ -1389,6 +1405,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'الرواتب',
       settings: 'الإعدادات',
       logout: 'تسجيل الخروج',
+      userMenuAccount: 'حسابي',
+      userMenuPassword: 'تغيير كلمة المرور',
+      userMenuSecurity: 'الأمان (2FA)',
       language: 'اللغة',
       presentBadge: 'حاضر',
       employeeLabel: 'موظف',
@@ -1498,6 +1517,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'إغلاق مساعد الإعداد',
       retry: 'إعادة المحاولة',
       errorGeneric: 'تعذر تحميل خطوات الإعداد.',
+      actionCreateDepartment: 'إنشاء قسم',
+      actionAddEmployee: 'إضافة موظف',
+      actionResumeHint: "يستأنف المساعد تلقائياً بمجرد إنجاز ذلك.",
       allStepsDone: 'اكتمل الإعداد!',
       quickStart: 'بداية سريعة',
       later: 'موصى به لاحقًا',
@@ -2037,6 +2059,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
         googleNoAccountCta: 'Davet olmadan deneme başlat',
+        googleUnavailable: 'Google ile giris henuz kullanilamiyor. E-posta ve sifrenizle giris yapin.',
       },
     },
     dashboard: {
@@ -2051,6 +2074,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Bordro',
       settings: 'Ayarlar',
       logout: 'Cikis yap',
+      userMenuAccount: 'Hesabım',
+      userMenuPassword: 'Parolamı değiştir',
+      userMenuSecurity: 'Güvenlik (2FA)',
       language: 'Dil',
       presentBadge: 'Burada',
       employeeLabel: 'Calisan',
@@ -2160,6 +2186,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'Kurulum asistanını kapat',
       retry: 'Tekrar dene',
       errorGeneric: 'Kurulum adımları yüklenemedi.',
+      actionCreateDepartment: 'Departman olustur',
+      actionAddEmployee: 'Calisan ekle',
+      actionResumeHint: "Bu adim tamamlaninca asistan otomatik devam eder.",
       allStepsDone: 'Kurulum tamamlandı!',
       quickStart: 'Hızlı Başlangıç',
       later: 'Daha sonra önerilir',
@@ -2699,6 +2728,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
         googleNoAccountCta: 'Start a trial without an invitation',
+        googleUnavailable: 'Google sign-in is not available yet. Use your email and password instead.',
       },
     },
     dashboard: {
@@ -2713,6 +2743,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Payroll',
       settings: 'Settings',
       logout: 'Sign out',
+      userMenuAccount: 'My account',
+      userMenuPassword: 'Change my password',
+      userMenuSecurity: 'Security (2FA)',
       language: 'Language',
       presentBadge: 'Present',
       employeeLabel: 'Employee',
@@ -2822,6 +2855,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'Close the setup assistant',
       retry: 'Retry',
       errorGeneric: 'Unable to load the setup steps.',
+      actionCreateDepartment: 'Create a department',
+      actionAddEmployee: 'Add an employee',
+      actionResumeHint: "The wizard resumes automatically once it is done.",
       allStepsDone: 'Setup complete!',
       quickStart: 'Quick Start',
       later: 'Recommended later',

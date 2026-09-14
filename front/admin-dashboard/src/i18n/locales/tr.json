@@ -1541,7 +1541,10 @@
     "ibanPlaceholderDZ": "Cezayir IBAN veya RIB (20 hane)",
     "saveBanking": "Banka bilgilerini kaydet",
     "sepaNotReady": "SEPA yapılandırılmadı",
-    "sepaReady": "SEPA hazır"
+    "sepaReady": "SEPA hazır",
+    "company": "Şirket",
+    "manage2fa": "İki adımlı doğrulamayı yönet",
+    "tenantSubtitle": "Hesap bilgilerinizi ve güvenliğini yönetin."
   },
   "settingsPersonalContacts": "Kişisel iletişim",
   "attendancePersonalTracking": "Kişisel takip",

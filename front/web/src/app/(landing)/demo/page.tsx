@@ -333,7 +333,7 @@ export default function DemoPage() {
                     transition={{ duration: 0.4, delay: i * 0.1 }}
                     className="flex gap-4"
                   >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex items-center justify-center">
                       {benefitIcons[i]}
                     </div>
                     <div>
@@ -357,7 +357,7 @@ export default function DemoPage() {
             >
               {isSubmitted ? (
                 <div className="p-8 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-center">
-                  <CheckCircle className="w-16 h-16 text-emerald-600 dark:text-emerald-400 mx-auto mb-4" />
+                  <CheckCircle className="w-16 h-16 text-emerald-700 dark:text-emerald-400 mx-auto mb-4" />
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
                     {copy.successTitle}
                   </h3>
@@ -490,7 +490,7 @@ export default function DemoPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold transition-colors"
+                      className="w-full py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold transition-colors"
                     >
                       {isSubmitting ? copy.submitting : copy.submit}
                     </button>

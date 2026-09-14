@@ -1,6 +1,33 @@
 import type { NextConfig } from "next";
 
 /**
+ * ── #7305 — racine du workspace explicite (Turbopack) ─────────────────────
+ * Le dépôt contient DEUX lockfiles : `/package-lock.json` (stub du monorepo,
+ * « no npm workspaces, each sub-project manages its own lockfile ») et
+ * `/front/web/package-lock.json` (le vrai, celui de cette app). Next en
+ * déduisait la racine du workspace au niveau du monorepo et le build
+ * affichait :
+ *   ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ *     We detected multiple lockfiles and selected the directory of
+ *     /…/package-lock.json as the root directory.
+ *   ⚠ Detected additional lockfiles: /…/front/web/package-lock.json
+ *
+ * `turbopack.root` fixé sur le répertoire de CE fichier (= `front/web`) rend la
+ * racine déterministe et supprime l'inférence : `front/web` est autonome et
+ * n'importe aucun fichier hors de son répertoire (le catalogue i18n partagé y
+ * est **recopié** par `shared/i18n/sync/sync-web.js`, il n'est pas résolu à
+ * l'exécution).
+ *
+ * ⚠ Ne PAS pointer cette racine vers le monorepo : Next propage la valeur à
+ * `outputFileTracingRoot` (cf. `server/config.js`), qui vaut aujourd'hui
+ * `front/web` — c'est le défaut (`config.outputFileTracingRoot || dir`). Élargir
+ * la trace au monorepo a déjà cassé le déploiement Vercel de la vitrine
+ * (entrée CHANGELOG « déploiement Vercel de la vitrine en échec depuis le
+ * 2026-07-19 » → retrait de `outputFileTracingRoot` + `turbopack.root`). Ici la
+ * trace ne bouge pas : seul l'avertissement d'inférence disparaît.
+ * ───────────────────────────────────────────────────────────────────────────
+ */
+/**
  * Content-Security-Policy (Report-Only for now).
  *
  * Issue #1300: front/web had every other common security header (HSTS,
@@ -77,6 +104,17 @@ const cspDirectives = [
 const enforceCsp = process.env.CSP_ENFORCE === "true";
 
 const nextConfig: NextConfig = {
+  /**
+   * Next bloque les ressources de développement (`/_next/*`) quand l'en-tête
+   * `Origin` ne correspond pas à l'hôte du serveur : ouvrir
+   * `http://127.0.0.1:3000` (ou l'IP LAN depuis un téléphone) donne une **page
+   * affichée mais non interactive** — les chunks JS sont refusés, React ne
+   * s'hydrate jamais, et aucun clic ne répond (constaté le 2026-09-14 sur le
+   * tunnel d'inscription). `localhost` passe nativement ; on autorise donc
+   * explicitement l'hôte de boucle numérique. Développement uniquement.
+   */
+  allowedDevOrigins: ['127.0.0.1'],
+
   // #7305 — racine du workspace explicite.
   //
   // Le dépôt est un monorepo à DEUX lockfiles (`/package-lock.json` et

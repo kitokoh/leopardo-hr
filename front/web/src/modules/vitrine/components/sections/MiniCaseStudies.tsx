@@ -218,7 +218,7 @@ export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
               </div>
 
               <div className="mb-3">
-                <div className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Challenge</div>
+                <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Challenge</div>
                 <p className="text-sm text-slate-600 dark:text-slate-300">{miniCase.challenge}</p>
               </div>
 
@@ -232,7 +232,7 @@ export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
 
         {/* Issue #3488 : profils illustratifs, pas des clients réels — même
             traitement que /testimonials (#3440). */}
-        <p className="mt-10 text-center text-slate-400 dark:text-slate-500 text-xs">
+        <p className="mt-10 text-center text-slate-400 text-xs">
           {data.disclaimer}
         </p>
       </div>

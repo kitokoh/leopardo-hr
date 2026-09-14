@@ -134,7 +134,7 @@ export default async function JobDetailPage({ params, searchParams }: JobDetailP
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link
           href={`/${companySlug}/careers`}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 mb-8"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 mb-8"
           style={{ color: brandColor }}
         >
           <ArrowLeft className="w-4 h-4" />

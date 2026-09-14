@@ -57,7 +57,7 @@ export function GuidePageContent({
           <div className="space-y-4">
             {copy.sections.map((section, index) => (
               <div key={section.title} className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="flex-shrink-0 w-8 h-8 bg-emerald-700 rounded-full flex items-center justify-center text-white font-bold">
                   {index + 1}
                 </div>
                 <div>

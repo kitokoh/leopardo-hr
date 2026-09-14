@@ -234,7 +234,7 @@ export function PaySlipDetailModal({ slip, loading, error, labels, formatCurrenc
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="rounded-2xl border border-app-border bg-transparent p-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnNet}</p>
-                  <p className="mt-1 text-2xl font-black tabular-nums text-emerald-600">{formatCurrency(slip.net_salary)}</p>
+                  <p className="mt-1 text-2xl font-black tabular-nums text-emerald-700">{formatCurrency(slip.net_salary)}</p>
                 </div>
                 <div className="rounded-2xl border border-app-border bg-transparent p-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</p>

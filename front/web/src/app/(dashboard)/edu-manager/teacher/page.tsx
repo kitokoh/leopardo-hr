@@ -69,7 +69,7 @@ export default function TeacherHomePage() {
               <Card className="transition-shadow group-hover:shadow-md">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 text-emerald-600">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/15 text-emerald-700">
                       <GraduationCap className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
