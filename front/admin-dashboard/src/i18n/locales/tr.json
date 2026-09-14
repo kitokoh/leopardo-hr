@@ -1122,8 +1122,8 @@
         "visibility": "Sifreyi goster veya gizle"
       }
     },
-    "access_key_label": "Erişim Anahtarı",
-    "access_key_required": "Erişim anahtarı gereklidir.",
+    "access_key_label": "Parola",
+    "access_key_required": "Parola gerekli.",
     "connection_error": "Bağlantı hatası.",
     "disable_two_fa_failed": "2FA devre dışı bırakılamadı.",
     "hide_password": "Şifreyi gizle",

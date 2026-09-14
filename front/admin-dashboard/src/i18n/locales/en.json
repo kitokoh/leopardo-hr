@@ -1116,8 +1116,8 @@
         "visibility": "Show or hide password"
       }
     },
-    "access_key_label": "Access Key",
-    "access_key_required": "The access key is required.",
+    "access_key_label": "Password",
+    "access_key_required": "Password is required.",
     "connection_error": "Connection error.",
     "disable_two_fa_failed": "2FA disable failed.",
     "hide_password": "Hide password",

@@ -1116,8 +1116,8 @@
         "visibility": "إظهار أو إخفاء كلمة المرور"
       }
     },
-    "access_key_label": "مفتاح الوصول",
-    "access_key_required": "مفتاح الوصول مطلوب.",
+    "access_key_label": "كلمة المرور",
+    "access_key_required": "كلمة المرور مطلوبة.",
     "connection_error": "خطأ في الاتصال.",
     "disable_two_fa_failed": "فشل تعطيل التحقق بخطوتين.",
     "hide_password": "إخفاء كلمة المرور",

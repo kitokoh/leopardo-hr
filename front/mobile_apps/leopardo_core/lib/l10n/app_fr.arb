@@ -1160,7 +1160,7 @@
   "a11yNextMonth": "Mois suivant",
   "shellConnected": "Connecte",
   "shellFallbackpolling": "Mode secours (polling)",
-  "shellPushunconfigured": "Push non configure",
+  "shellPushunconfigured": "Push non configuré",
   "shellDisconnected": "Deconnecte",
   "shellSearch": "Rechercher",
   "shellNotifications": "Notifications",

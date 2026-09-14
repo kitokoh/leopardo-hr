@@ -1608,7 +1608,7 @@
   "shell": {
     "connected": "Connecte",
     "fallbackPolling": "Mode secours (polling)",
-    "pushUnconfigured": "Push non configure",
+    "pushUnconfigured": "Push non configuré",
     "disconnected": "Deconnecte",
     "search": "Rechercher",
     "notifications": "Notifications",
