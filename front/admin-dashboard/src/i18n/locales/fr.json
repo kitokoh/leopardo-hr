@@ -1651,9 +1651,9 @@
     "linkCopied": "Lien copié !",
     "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
     "failedTitle": "Création interrompue",
-    "failedBody": "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
+    "failedBody": "Une erreur est survenue pendant la création de votre espace. Réessayez : la création repart de zéro en quelques secondes. Si le problème se reproduit, contactez le support.",
     "timeoutTitle": "Création toujours en cours",
-    "timeoutBody": "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
+    "timeoutBody": "La création de votre espace dépasse le délai habituel. Actualisez le statut ci-dessous pour voir où elle en est, ou réessayez dans quelques minutes.",
     "refreshStatus": "Rafraîchir le statut",
     "preparingTitle": "Préparation de votre espace",
     "preparingBody": "Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.",
@@ -1755,7 +1755,8 @@
     "planContinue": "Continuer avec cette offre",
     "planSelected": "Offre choisie",
     "planChange": "Modifier",
-    "countryDetectionFailed": "Sélectionnez votre pays."
+    "countryDetectionFailed": "Sélectionnez votre pays.",
+    "verifiedByGoogle": "Adresse vérifiée par Google"
   },
   "attendanceDayDetail": "Détail par jour",
   "support_tickets": {

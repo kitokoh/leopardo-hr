@@ -1651,9 +1651,9 @@
     "linkCopied": "Bağlantı kopyalandı!",
     "linkEmailed": "Erişim bağlantınız e-postayla da gönderildi.",
     "failedTitle": "Oluşturma kesintiye uğradı",
-    "failedBody": "Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.",
-    "timeoutTitle": "Oluşturma hâlâ sürüyor",
-    "timeoutBody": "Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.",
+    "failedBody": "Çalışma alanınız oluşturulurken bir hata oluştu. Tekrar deneyin — birkaç saniye içinde baştan başlar. Sorun sürerse destek ekibiyle iletişime geçin.",
+    "timeoutTitle": "Çalışma alanınız hâlâ oluşturuluyor",
+    "timeoutBody": "Çalışma alanınızın oluşturulması normalden uzun sürüyor. Nerede kaldığını görmek için aşağıdaki durumu yenileyin veya birkaç dakika sonra tekrar deneyin.",
     "refreshStatus": "Durumu yenile",
     "preparingTitle": "Alanınız hazırlanıyor",
     "preparingBody": "Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.",
@@ -1755,7 +1755,8 @@
     "planContinue": "Bu planla devam et",
     "planSelected": "Seçilen plan",
     "planChange": "Değiştir",
-    "countryDetectionFailed": "Ülkenizi seçin."
+    "countryDetectionFailed": "Ülkenizi seçin.",
+    "verifiedByGoogle": "E-posta Google ile doğrulandı"
   },
   "attendanceDayDetail": "Günlük detay",
   "support_tickets": {
