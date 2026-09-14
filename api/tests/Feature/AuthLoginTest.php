@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -59,6 +59,9 @@ class AuthLoginTest extends TestCase
         $response->assertJsonPath('data.role', 'manager');
         $response->assertJsonPath('data.language', 'fr');
         $response->assertJsonPath('data.capabilities.can_view_dashboard', true);
+        // #7400 — la flotte (véhicules/positions/itinéraires) est pilotée par
+        // les routes `api.manager` : la capacité rejoue ce gate pour la nav.
+        $response->assertJsonPath('data.capabilities.can_view_fleet', true);
         $response->assertJsonStructure(['token']);
         $response->assertJsonPath('token_type', 'Bearer');
         $this->assertNotNull($response->json('token_expires_at'));
@@ -174,4 +177,3 @@ class AuthLoginTest extends TestCase
         $this->assertNotNull($response->json('localized_message'));
     }
 }
-

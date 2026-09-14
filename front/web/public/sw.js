@@ -28,6 +28,8 @@ const PROTECTED_PREFIXES = [
   '/showcase',
   // BC-19 (#7425) — mur de caméras et détail caméra (zone dashboard).
   '/cameras',
+  // #7400 — flotte & véhicules de service (zone dashboard).
+  '/fleet',
 ];
 
 function isProtectedPath(url) {
