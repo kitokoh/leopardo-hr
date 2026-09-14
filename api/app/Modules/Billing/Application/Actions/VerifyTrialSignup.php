@@ -13,6 +13,7 @@ use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
 use App\Jobs\SendTrialDripEmailJob;
 use App\Mail\TrialWelcomeMail;
+use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Support\CountryDefaults;
 use Illuminate\Database\QueryException;
@@ -34,6 +35,7 @@ class VerifyTrialSignup
         private readonly RequestTrialSignup $requestTrialSignup,
         private readonly SolutionActivator $solutionActivator,
         private readonly SolutionCatalogue $solutionCatalogue,
+        private readonly HorizontalToolSelection $toolSelection,
     ) {}
 
     /**
@@ -202,6 +204,21 @@ class VerifyTrialSignup
             ? $requestedLocale
             : strtolower((string) $countryDefaults['language']);
 
+        // #7235 — outils horizontaux choisis à l'inscription + profil
+        // d'activité. `solo` force les outils d'ÉQUIPE à false (règle
+        // serveur). Sélection vide = comportement historique préservé.
+        $modules = [];
+        foreach ((array) ($payload['modules'] ?? []) as $moduleCode) {
+            if (\is_string($moduleCode)) {
+                $modules[] = $moduleCode;
+            }
+        }
+        $modules = array_values(array_unique($modules));
+
+        $companyType = \is_string($payload['company_type'] ?? null)
+            ? (string) $payload['company_type']
+            : Company::TYPE_COMPANY;
+
         try {
             /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
@@ -223,6 +240,13 @@ class VerifyTrialSignup
                 'temp_password' => $tempPassword,
                 'employees_range' => $payload['employees'] ?? null,
                 'referral_code' => $payload['referral_code'] ?? null,
+                // #7235 — le chemin self-service applique désormais la même
+                // règle que le chemin guidé : les outils horizontaux cochés à
+                // l'inscription et le profil d'activité (`solo`) étaient
+                // acceptés, validés, stockés dans `signup_payload`… puis
+                // jamais appliqués au tenant (constat 2026-09-14).
+                'modules' => $modules,
+                'company_type' => $companyType,
             ]);
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Provisioning failed', [
@@ -295,6 +319,30 @@ class VerifyTrialSignup
             'otp_locked_until' => null,
         ]);
 
+        // Issue #2437 (parité guidé) : la ligne de suivi créée au signup passe
+        // à `ready`, ce qui rend opérationnels `GET /trial/status` et
+        // `POST /trial/set-password` pour un prospect self-service (le client
+        // web les utilise déjà). Best-effort : l'absence de ligne ne doit
+        // jamais faire échouer un provisioning réussi.
+        try {
+            DB::table('trial_provisionings')
+                ->where('email', $email)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'ready',
+                    'company_id' => $result['company']->id,
+                    'company_name' => $companyName,
+                    'login_url' => '/auth/login',
+                    'provisioned_at' => now(),
+                    'updated_at' => now(),
+                ]);
+        } catch (\Throwable $e) {
+            Log::warning('trial.self_service.provisioning_row_ready_failed', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
         Log::info('SelfServiceTrial: Company provisioned after verification', [
             'company_id' => $result['company']->id,
             'company_name' => $companyName,
@@ -358,6 +406,19 @@ class VerifyTrialSignup
                     $rawSlug = $payload['slug'];
                     $slug = $this->resolveUniqueSlug(\is_string($rawSlug) ? $rawSlug : 'company');
 
+                    // #7235 — sélection normalisée des outils horizontaux.
+                    $requestedModules = [];
+                    foreach ((array) ($payload['modules'] ?? []) as $requestedModule) {
+                        if (\is_string($requestedModule)) {
+                            $requestedModules[] = $requestedModule;
+                        }
+                    }
+
+                    $moduleSelection = $this->toolSelection->resolve(
+                        array_values(array_unique($requestedModules)),
+                        (string) ($payload['company_type'] ?? Company::TYPE_COMPANY),
+                    );
+
                     $company = Company::query()->create([
                         'name' => $payload['name'],
                         'slug' => $slug,
@@ -375,10 +436,22 @@ class VerifyTrialSignup
                         'language' => $payload['language'],
                         'timezone' => $payload['timezone'],
                         'currency' => $payload['currency'],
-                        'metadata' => [
-                            'provisioned_by' => 'self_service_trial',
-                            'employees_range' => $payload['employees_range'],
-                        ],
+                        // #7235 — `modules` reste ABSENT quand aucune
+                        // sélection n'a été déclarée (aucun verrouillage
+                        // rétroactif du comportement historique).
+                        'metadata' => array_filter(
+                            [
+                                'provisioned_by' => 'self_service_trial',
+                                'employees_range' => $payload['employees_range'],
+                                'company_type' => $payload['company_type'] ?? null,
+                                'modules' => $moduleSelection,
+                            ],
+                            static fn (mixed $value): bool => $value !== null,
+                        ),
+                        // Les clés qui sont aussi des feature flags plateforme
+                        // sont miroirées dans `features` (résolues par
+                        // `FeatureFlag::for()`, donc visibles dans /auth/me).
+                        'features' => $this->toolSelection->mirroredFeatures($moduleSelection),
                     ]);
 
                     $referralCode = $payload['referral_code'] ?? null;
