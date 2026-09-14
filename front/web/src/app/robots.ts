@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 import { PROTECTED_PREFIXES } from '@/lib/protected-prefixes';
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 
-// Miroir du matcher middleware (src/middleware.ts) — routes session-protégées
+// Miroir du matcher du proxy (#7305, ex-middleware — src/proxy.ts) — routes session-protégées
 // (#3375). Source unique : src/lib/protected-prefixes.ts (#3377).
 const DISALLOWED = [
   ...PROTECTED_PREFIXES,

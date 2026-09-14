@@ -6,26 +6,26 @@ import robots from '@/app/robots';
 
 /**
  * Issue #3377 — la liste des préfixes protégés doit rester une source unique.
- * Next.js exige des littéraux dans `config.matcher` du middleware : ce test
+ * Next.js exige des littéraux dans `config.matcher` du proxy (ex-middleware, #7305) : ce test
  * est la garde anti-dérive entre les deux fichiers.
  */
 describe('protected prefixes (source unique #3377)', () => {
-  const middlewareSrc = readFileSync(join(__dirname, '../../middleware.ts'), 'utf8');
+  const proxySrc = readFileSync(join(__dirname, '../../proxy.ts'), 'utf8');
 
-  it.each(PROTECTED_PREFIXES)('%s est déclaré dans le matcher middleware', (prefix) => {
-    expect(middlewareSrc).toContain(`'${prefix}/:path*'`);
+  it.each(PROTECTED_PREFIXES)('%s est déclaré dans le matcher du proxy', (prefix) => {
+    expect(proxySrc).toContain(`'${prefix}/:path*'`);
   });
 
-    it('le matcher middleware ne déclare que des préfixes connus (sources uniques #3377/#4004)', () => {
+    it('le matcher du proxy ne déclare que des préfixes connus (sources uniques #3377/#4004)', () => {
     const known = [...PROTECTED_PREFIXES, ...VITRINE_LANG_PREFIXES];
-    const matcherEntries = [...middlewareSrc.matchAll(/'(\/[a-z-]+)\/:path\*'/g)].map((m) => m[1]);
+    const matcherEntries = [...proxySrc.matchAll(/'(\/[a-z-]+)\/:path\*'/g)].map((m) => m[1]);
     for (const entry of matcherEntries) {
       expect(known).toContain(entry);
     }
   });
 
-  it.each(VITRINE_LANG_PREFIXES)('%s est déclaré dans le matcher middleware (normalisation ?lang= #4004)', (prefix) => {
-    expect(middlewareSrc).toContain(`'${prefix}/:path*'`);
+  it.each(VITRINE_LANG_PREFIXES)('%s est déclaré dans le matcher du proxy (normalisation ?lang= #4004)', (prefix) => {
+    expect(proxySrc).toContain(`'${prefix}/:path*'`);
   });
 
   it.each(PROTECTED_PREFIXES)('sw.js ne met pas en cache le préfixe protégé %s (issue #3729)', (prefix) => {

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * Issue #6679 (P0) — le middleware de garde du dashboard doit accepter le
+ * Issue #6679 (P0) — le proxy de garde du dashboard (ex-`middleware`) doit accepter le
  * format de token Sanctum posé dans le cookie de session :
  * `id|secret` (ex. `1001|HVs0OH…`) et sa forme URL-encodée `%7C`.
  *
@@ -13,18 +13,18 @@ import { join } from 'node:path';
  * faux négatif ici boucle l'utilisateur vers /auth/login après un login
  * réussi.
  */
-describe('session token format vs middleware guard (#6679)', () => {
-  it('le middleware accepte le format Sanctum id|secret et sa forme encodée %7C', async () => {
-    // Test comportemental (pattern middleware-session-token.test.ts #6726) :
+describe('session token format vs proxy guard (#6679, ex-middleware #7305)', () => {
+  it('le proxy accepte le format Sanctum id|secret et sa forme encodée %7C', async () => {
+    // Test comportemental (pattern proxy-session-token.test.ts #6726) :
     // on exécute le middleware avec le cookie au format réel posé par
     // login/route.ts, au lieu d'introspecter le source (fragile).
     const { NextRequest } = await import('next/server');
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
     for (const token of ['1001|HVs0OHabcdefghijklmnopqrstuvwxyz', '1001%7CHVs0OHabcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyz0123456789.-_']) {
       const req = new NextRequest('https://app.example.com/dashboard');
       req.cookies.set('leopardo_token', token);
-      const res = middleware(req);
+      const res = proxy(req);
       expect(res.status).toBe(200);
     }
   });

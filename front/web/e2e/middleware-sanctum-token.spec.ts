@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * Issue #6726 — le middleware Next.js (`src/middleware.ts`) rejetait les
+ * Issue #6726 — le proxy Next.js (#7305, ex-`src/middleware.ts`) rejetait les
  * tokens Sanctum `{id}|{plaintext}` : la regex de format excluait le
  * séparateur `|`, donc toute navigation vers la zone dashboard était
  * redirigée en boucle vers /auth/login en production (cookie posé par le

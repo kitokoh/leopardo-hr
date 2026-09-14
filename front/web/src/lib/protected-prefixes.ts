@@ -2,7 +2,8 @@
  * Source de vérité unique des préfixes de routes session-protégées (issue #3377).
  *
  * Consommateurs :
- * - `src/middleware.ts` — matcher Edge (redirection login si cookie absent/invalide).
+ * - `src/proxy.ts` (#7305, ex-`middleware.ts`) — matcher (redirection login si
+ *   cookie absent/invalide).
  *   ⚠️ Next.js exige des littéraux statiquement analysables dans `config.matcher` :
  *   le middleware garde sa liste littérale, le test `protected-prefixes.test.ts`
  *   garantit qu'elle ne dérive pas de cette source.
@@ -31,7 +32,7 @@ export const PROTECTED_PREFIXES = [
   '/social-marketing',
   // BC-25 Restaurant — portail client (/restaurant + sous-routes kitchen/pos/
   // stock/…). La vitrine « Je suis restaurateur » vit sur /restaurateur (la
-  // collision de routes est traitée dans middleware.ts : visiteurs anonymes de
+  // collision de routes est traitée dans src/proxy.ts : visiteurs anonymes de
   // /restaurant redirigés vers la vitrine, session valide → hub applicatif).
   '/restaurant',
   // BC-27 SHOWCASE — gestion du site vitrine du tenant (création 1-clic,
