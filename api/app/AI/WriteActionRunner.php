@@ -251,6 +251,7 @@ class WriteActionRunner
             'status' => 'assigned',
         ];
     }
+
     /**
      * B3c (#6858) — envoi d'un message à une équipe, exécuté APRÈS
      * confirmation humaine (flux A4). Passe par le service canonique
@@ -353,7 +354,6 @@ class WriteActionRunner
         ];
     }
 
-
     /**
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
@@ -395,10 +395,22 @@ class WriteActionRunner
 
         $absenceType = $this->resolveAbsenceType($companyId, $arguments);
 
+        // #7357 — `absences.absence_type_id` est NOT NULL. Un tenant sans
+        // catalogue `absence_types` (société fraîchement provisionnée, aucune
+        // template sectorielle appliquée) faisait tomber l'insertion en
+        // SQLSTATE[23502] → 500 brut sur la confirmation. On refuse
+        // proprement AVANT toute écriture (422 côté contrôleur).
+        if ($absenceType === null) {
+            return [
+                'error' => 'ABSENCE_TYPE_UNAVAILABLE',
+                'message' => "Aucun type d'absence n'est configuré pour cette société : créez au moins un type de congé avant d'utiliser l'assistant.",
+            ];
+        }
+
         $absence = Absence::create([
             'company_id' => $companyId,
             'employee_id' => $employeeId,
-            'absence_type_id' => $absenceType?->id,
+            'absence_type_id' => $absenceType->id,
             'start_date' => $startDate->toDateString(),
             'end_date' => $endDate->toDateString(),
             'days_count' => $startDate->diffInDays($endDate) + 1,

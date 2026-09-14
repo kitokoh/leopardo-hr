@@ -53,6 +53,14 @@ class DatabaseSeeder extends Seeder
         // avant ses insertions (cf. DatabaseSeeder::run() qui force public).
         $this->call([
             FeaturePlanMatrixSeeder::class, // Matrice features × plans (free/pilot/operations/enterprise)
+            // #7358 — le registre d'outils de l'assistant IA (BC-23) est une
+            // donnée de référence GLOBALE (shared_tenants.ai_tool_registry, pas
+            // de company_id) : sans lui, `GET /api/v1/ai/tools` renvoie [] et
+            // l'orchestrateur n'expose AUCUN outil au LLM, même avec une clé
+            // fournisseur valide — quel que soit l'état des flags tenant.
+            // Placé après FeaturePlanMatrixSeeder qui laisse le search_path à
+            // `shared_tenants,public` ; semeur idempotent (updateOrInsert).
+            AIToolRegistrySeeder::class,
         ]);
 
         $this->command->info('');
