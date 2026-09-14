@@ -138,6 +138,14 @@ beforeAll(() => {
 
 
 describe('SignupForm Component', () => {
+  // QA onboarding 2026-09-14 : le composant reprend désormais le suivi au
+  // montage quand un provisioning_token est présent en sessionStorage. Sans
+  // nettoyage systématique, un token posé par un test de suivi « fuit » vers
+  // les tests suivants (qui attendent l'écran de profil).
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   describe('Rendering', () => {
     it('should render signup form', () => {
       renderAtFormStep();
@@ -322,6 +330,41 @@ describe('SignupForm Component', () => {
         expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
       });
       expect(screen.getByRole('button', { name: /suivre l'état de mon espace/i })).toBeInTheDocument();
+    });
+
+    it('reprend le suivi au montage quand un token est déjà en sessionStorage (après rechargement)', async () => {
+      sessionStorage.setItem('lp_trial_provisioning_token', 'r'.repeat(64));
+      (fetchTrialStatus as jest.Mock).mockResolvedValue({
+        success: true,
+        data: { status: 'ready', login_url: '/auth/login', password_set: false, access_sent: false },
+      });
+
+      render(<SignupForm />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/votre espace est prêt/i)).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('signup-profile-company')).not.toBeInTheDocument();
+    });
+
+    it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
+      sessionStorage.setItem('lp_trial_provisioning_token', 'f'.repeat(64));
+      (fetchTrialStatus as jest.Mock).mockResolvedValue({
+        success: true,
+        data: { status: 'failed', provisioned_at: null, password_set: false, access_sent: false },
+      });
+
+      render(<SignupForm />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/création interrompue/i)).toBeInTheDocument();
+      });
+      expect(screen.getByRole('button', { name: /rafraîchir le statut/i })).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: /retour/i }));
+
+      expect(screen.getByTestId('signup-profile-company')).toBeInTheDocument();
+      expect(sessionStorage.getItem('lp_trial_provisioning_token')).toBeNull();
     });
 
     it('does not show the tracking link without a provisioning token', async () => {

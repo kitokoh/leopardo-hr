@@ -34,6 +34,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly ?string $companyType = null,
         /** @var list<string> $modules #7235 : outils horizontaux choisis à l'inscription. */
         public readonly array $modules = [],
+        /**
+         * Langue d'interface choisie par l'utilisateur (fr|en|ar|tr) — QA
+         * onboarding 2026-09-14 : elle était perdue entre la validation et le
+         * provisioning, le tenant prenait la langue du pays.
+         */
+        public readonly ?string $locale = null,
     ) {}
 
     // Issue #3600 : provisioning trial = opération lourde et critique — retries
@@ -53,7 +59,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
 
         try {
             /** @var array{company: Company, manager: Employee} $result */
-            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions, $this->companyType, $this->modules);
+            $result = $provisioner->execute($this->email, $this->companyName, $this->country, $this->solutions, $this->companyType, $this->modules, $this->locale);
 
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail

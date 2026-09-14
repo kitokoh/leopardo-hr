@@ -109,7 +109,7 @@ class SelfServiceTrialController extends Controller
             'modules.*' => ['string', 'max:40', 'distinct', Rule::in(Company::HORIZONTAL_TOOLS)],
         ]);
 
-        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null} $validated */
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null, solutions?: list<string>|null, solution?: string|null, company_type?: string|null, modules?: list<string>|null, locale?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
@@ -227,6 +227,10 @@ class SelfServiceTrialController extends Controller
                 // = inscription rapide : aucun verrouillage rétroactif).
                 $validated['company_type'] ?? null,
                 $validated['modules'] ?? [],
+                // QA onboarding 2026-09-14 : le choix de langue de l'utilisateur
+                // était validé puis jeté ici — le tenant naissait dans la langue
+                // du pays, pas la sienne.
+                $validated['locale'] ?? null,
             );
 
             return new JsonResponse([
@@ -507,7 +511,7 @@ class SelfServiceTrialController extends Controller
 
         // Même politique que la réinitialisation de mot de passe (#5620).
         $validated = $request->validate([
-            'password' => ['required', 'string', Password::min(8)->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
         ]);
 
         $row = DB::table('trial_provisionings')
