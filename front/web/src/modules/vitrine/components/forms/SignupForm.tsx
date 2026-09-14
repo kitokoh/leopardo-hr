@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   ArrowLeft,
@@ -32,7 +31,6 @@ import {
   Phone,
   Rocket,
   ShieldCheck,
-  Sparkles,
   Users,
   UtensilsCrossed,
   Wallet,
@@ -66,7 +64,10 @@ interface SignupFormProps {
 // (entreprise ou indépendant), puis les coordonnées, puis le code reçu par
 // e-mail. L'étape « outils + métier » a été retirée (trop longue) : les outils
 // se choisissent après la création, dans « Modules & plan ».
-type Step = 'profile' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+// #7249 — le tunnel s'ouvre directement sur le formulaire : l'écran
+// interstitiel « profil » (entreprise / indépendant) devient deux pastilles
+// dans le formulaire.
+type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
 type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
@@ -92,7 +93,77 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'profileTitle', 'profileSubtitle', 'profileCompanyTitle', 'profileCompanyDesc', 'profileCompanyBullet1', 'profileCompanyBullet2', 'profileCompanyBullet3', 'profileSoloTitle', 'profileSoloDesc', 'profileSoloBullet1', 'profileSoloBullet2', 'profileSoloBullet3', 'profileCompanyBadge', 'profileSoloBadge', 'toolsTitle', 'toolsSubtitle', 'toolsTeamGroup', 'toolsManagementGroup', 'toolsEmployees', 'toolsEmployeesDesc', 'toolsAttendance', 'toolsAttendanceDesc', 'toolsAbsences', 'toolsAbsencesDesc', 'toolsPayroll', 'toolsPayrollDesc', 'toolsAccounting', 'toolsAccountingDesc', 'toolsCrm', 'toolsCrmDesc', 'toolsReports', 'toolsReportsDesc', 'toolsMarketing', 'toolsMarketingDesc', 'toolsHint', 'verticalTitle', 'verticalSubtitle', 'verticalRestaurant', 'verticalRestaurantDesc', 'verticalFuel', 'verticalFuelDesc', 'verticalEdu', 'verticalEduDesc', 'verticalNone', 'verticalNoneDesc', 'continueLabel', 'stepProfileLabel', 'stepToolsLabel', 'stepIdentityLabel', 'soloNote', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'setPasswordTitle', 'setPasswordSubtitle', 'setPasswordLabel', 'setPasswordConfirmLabel', 'setPasswordSubmit', 'setPasswordSubmitting', 'setPasswordSuccess', 'setPasswordTooWeak', 'setPasswordMismatch', 'setPasswordUnavailable', 'goToLogin', 'planSelected', 'planChange', 'countryDetectionFailed', 'defaultError'] as const;
+const signupFormKeys = [
+  'title',
+  'subtitle',
+  'profileTitle',
+  'profileCompanyTitle',
+  'profileSoloTitle',
+  'soloNote',
+  'labelEmail',
+  'placeholderEmail',
+  'labelCompany',
+  'placeholderCompany',
+  'labelCountry',
+  'countryPlaceholder',
+  'agreePrefix',
+  'termsLink',
+  'privacyLink',
+  'agreeSuffix',
+  'submitLabel',
+  'submittingLabel',
+  'codeHint',
+  'haveAccount',
+  'loginCta',
+  'back',
+  'otpTitle',
+  'otpSentTo',
+  'otpInvalidLength',
+  'otpInvalidCode',
+  'otpVerifyError',
+  'verifyLabel',
+  'verifyingLabel',
+  'codeValidity',
+  'trackStatus',
+  'pendingTitle',
+  'pendingFallback',
+  'pendingNote',
+  'readyTitle',
+  'readySubtitle',
+  'accessCta',
+  'copyLink',
+  'linkCopied',
+  'linkEmailed',
+  'failedTitle',
+  'failedBody',
+  'timeoutTitle',
+  'timeoutBody',
+  'refreshStatus',
+  'preparingTitle',
+  'preparingBody',
+  'statusFor',
+  'statusEvery5s',
+  'successTitle',
+  'emailVerified',
+  'credsLabel',
+  'fieldEmail',
+  'credsEmailed',
+  'trialNote',
+  'trialDaysUnit',
+  'trialNoteSuffix',
+  'downloadApp',
+  'changePasswordNote',
+  'setPasswordSubtitle',
+  'setPasswordLabel',
+  'setPasswordSubmit',
+  'setPasswordSubmitting',
+  'setPasswordTooWeak',
+  'setPasswordUnavailable',
+  'planSelected',
+  'planChange',
+  'countryDetectionFailed',
+  'defaultError',
+] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -157,14 +228,10 @@ export function SignupForm({
   }, []);
 
   // Multi-step state
-  const [currentStep, setCurrentStep] = useState<Step>('profile');
-  // #7249 — seul le profil est demandé avant les coordonnées (2 choix).
-  const [profile, setProfile] = useState<SignupProfile | null>(null);
-
-  const chooseProfile = (next: SignupProfile) => {
-    setProfile(next);
-    setCurrentStep('form');
-  };
+  const [currentStep, setCurrentStep] = useState<Step>('form');
+  // #7249 — le profil (entreprise / indépendant) reste déclaré à l'inscription
+  // (il qualifie le tenant via `company_type`) ; il n'ouvre plus un écran à part.
+  const [profile, setProfile] = useState<SignupProfile>('company');
 
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpValues, setOtpValues] = useState<string[]>(['', '', '', '', '', '']);
@@ -501,87 +568,26 @@ export function SignupForm({
   // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
-      {/* #7235 — parcours en 3 temps : profil → outils & métier → coordonnées. */}
-      {(currentStep === 'profile' || currentStep === 'form') && (
-        <ol className="mb-6 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
-          {(
-            [
-              ['profile', c.stepProfileLabel],
-              ['form', c.stepIdentityLabel],
-            ] as const
-          ).map(([key, label], index) => {
-            const order = { profile: 0, form: 1 } as const;
-            const current = order[currentStep as 'profile' | 'form'];
-            const done = index < current;
-            const active = index === current;
-            return (
-              <li key={key} className="flex flex-1 items-center gap-2">
-                <span
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                    done
-                      ? 'bg-emerald-500 text-white'
-                      : active
-                        ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-300'
-                        : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'
-                  }`}
-                >
-                  {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
-                </span>
-                <span className={active ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}>
-                  {label}
-                </span>
-                {index < 2 && (
-                  <span className={`h-0.5 flex-1 rounded ${done ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-slate-800'}`} />
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      )}
-
-      <AnimatePresence mode="wait">
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 0: Profil (entreprise / indép.)    */}
+        {/* STEP 1: Signup Form                     */}
         {/* ═══════════════════════════════════════ */}
-        {currentStep === 'profile' && (
-          <motion.div
-            key="step-profile"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              {c.badge}
-            </div>
-
+        {currentStep === 'form' && (
+          <div key="step-form">
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              {c.profileTitle}
+              {c.title}
             </h2>
             <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {c.profileSubtitle}
+              {c.subtitle}
             </p>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* #7249 — le profil qualifie le tenant (`company_type`) : deux
+                pastilles suffisent, là où un écran entier masquait le
+                formulaire. Le créateur du compte reste le fondateur. */}
+            <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label={c.profileTitle}>
               {(
                 [
-                  {
-                    key: 'company' as const,
-                    icon: Building2,
-                    title: c.profileCompanyTitle,
-                    desc: c.profileCompanyDesc,
-                    bullets: [c.profileCompanyBullet1, c.profileCompanyBullet2, c.profileCompanyBullet3],
-                    badge: c.profileCompanyBadge,
-                  },
-                  {
-                    key: 'solo' as const,
-                    icon: Briefcase,
-                    title: c.profileSoloTitle,
-                    desc: c.profileSoloDesc,
-                    bullets: [c.profileSoloBullet1, c.profileSoloBullet2, c.profileSoloBullet3],
-                    badge: c.profileSoloBadge,
-                  },
+                  { key: 'company' as const, icon: Building2, label: c.profileCompanyTitle },
+                  { key: 'solo' as const, icon: Briefcase, label: c.profileSoloTitle },
                 ]
               ).map((option) => {
                 const Icon = option.icon;
@@ -590,61 +596,21 @@ export function SignupForm({
                   <button
                     key={option.key}
                     type="button"
-                    onClick={() => chooseProfile(option.key)}
+                    onClick={() => setProfile(option.key)}
                     aria-pressed={active}
                     data-testid={`signup-profile-${option.key}`}
-                    className={`group relative flex h-full flex-col items-start rounded-2xl border-2 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-500/10 dark:bg-slate-900 ${
+                    className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition ${
                       active
-                        ? 'border-emerald-500 ring-2 ring-emerald-500/20'
-                        : 'border-slate-200 hover:border-emerald-400 dark:border-slate-700'
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
                     }`}
                   >
-                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white shadow-lg shadow-emerald-500/25">
-                      <Icon className="h-6 w-6" aria-hidden="true" />
-                    </span>
-                    <span className="text-lg font-black tracking-tight text-slate-950 dark:text-white">
-                      {option.title}
-                    </span>
-                    <span className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                      {option.desc}
-                    </span>
-                    <ul className="mt-4 space-y-1.5">
-                      {option.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
-                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <span className="mt-4 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                      {option.badge}
-                    </span>
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    {option.label}
                   </button>
                 );
               })}
             </div>
-          </motion.div>
-        )}
-
-        {/* ═══════════════════════════════════════ */}
-        {/* STEP 1: Signup Form                     */}
-        {/* ═══════════════════════════════════════ */}
-        {currentStep === 'form' && (
-          <motion.div
-            key="step-form"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <button
-              type="button"
-              onClick={() => setCurrentStep('profile')}
-              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              {c.back}
-            </button>
 
             {profile === 'solo' && (
               <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
@@ -652,24 +618,13 @@ export function SignupForm({
               </p>
             )}
 
-            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              {c.title}
-            </h2>
-            <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {c.subtitle}
-            </p>
-
             {formState.isError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
-              >
+              <div>
                 <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
                 <div>
                   <p className="font-semibold text-red-900 dark:text-red-100">{formState.message}</p>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -790,21 +745,14 @@ export function SignupForm({
                 </Link>
               </p>
             </form>
-          </motion.div>
+          </div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2: OTP Vérification                */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
-          <motion.div
-            key="step-otp"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="text-center"
-          >
+          <div key="step-otp">
             <button
               type="button"
               onClick={() => {
@@ -857,13 +805,9 @@ export function SignupForm({
             </div>
 
             {otpError && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mb-4 text-sm font-medium text-red-600 dark:text-red-400"
-              >
+              <p>
                 {otpError}
-              </motion.p>
+              </p>
             )}
 
             <Button
@@ -892,21 +836,14 @@ export function SignupForm({
                 {c.trackStatus}
               </button>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2b: Pending (cold-start fallback)   */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'pending' && (
-          <motion.div
-            key="step-pending"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="text-center"
-          >
+          <div key="step-pending">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
               <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
@@ -942,21 +879,14 @@ export function SignupForm({
                 {c.trackStatus}
               </button>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2c: Tracking (guided trial status) */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'tracking' && (
-          <motion.div
-            key="step-tracking"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="text-center"
-          >
+          <div key="step-tracking">
             {trialStatus === 'ready' ? (
               <>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
@@ -1098,19 +1028,14 @@ export function SignupForm({
                 </p>
               </>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 3: Success                         */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'success' && (
-          <motion.div
-            key="step-success"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-          >
+          <div key="step-success">
             <div className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60 dark:border-emerald-800 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20">
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
@@ -1185,9 +1110,8 @@ export function SignupForm({
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </Card>
   );
 }

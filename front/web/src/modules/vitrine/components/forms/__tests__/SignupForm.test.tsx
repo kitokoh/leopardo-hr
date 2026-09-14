@@ -116,10 +116,10 @@ async function fillField(label: RegExp, value: string): Promise<void> {
 
 
 /**
- * #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise / indépendant)
- * depuis #7235, mais ces tests unitaires portent sur le FORMULAIRE : on
- * traverse donc l'écran de profil comme le ferait un utilisateur. L'écran de
- * profil lui-même est couvert par les e2e.
+ * #7249 — le tunnel s'ouvre désormais DIRECTEMENT sur le formulaire : l'écran
+ * interstitiel « profil » a été remplacé par deux pastilles dans le formulaire.
+ * Ce helper ne fait plus que traverser le rendu initial (il clique la pastille
+ * « Entreprise », qui est le profil par défaut, pour rester fidèle au parcours).
  */
 function renderAtFormStep() {
   const result = render(<SignupForm />);
@@ -157,6 +157,48 @@ describe('SignupForm Component', () => {
     it('should render submit button', () => {
       renderAtFormStep();
       expect(screen.getByRole('button', { name: /créer mon espace/i })).toBeInTheDocument();
+    });
+  });
+
+  // #7249 — l'écran interstitiel « Quel est votre profil ? » (entreprise /
+  // indépendant) masquait le formulaire : le tunnel s'ouvre maintenant sur les
+  // champs, et le profil se déclare avec deux pastilles.
+  describe("Entrée dans le tunnel (plus d'écran interstitiel)", () => {
+    it('ouvre le formulaire sans étape intermédiaire', () => {
+      render(<SignupForm />);
+      expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
+    });
+
+    it('déclare le profil « entreprise » par défaut dans le payload', async () => {
+      mockedSubmitSignupForm.mockClear();
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de vérification envoyé.',
+        data: {},
+      });
+      render(<SignupForm />);
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      fireEvent.click(screen.getByRole('checkbox'));
+      submitForm();
+
+      await waitFor(() => expect(mockedSubmitSignupForm).toHaveBeenCalled());
+      const [payload] = mockedSubmitSignupForm.mock.calls[0] as [Record<string, unknown>, unknown];
+      expect(payload.company_type).toBe('company');
+    });
+
+    it('bascule en profil indépendant et affiche le rappel associé', () => {
+      render(<SignupForm />);
+      const solo = screen.getByTestId('signup-profile-solo');
+      expect(solo).toHaveAttribute('aria-pressed', 'false');
+
+      fireEvent.click(solo);
+
+      expect(screen.getByTestId('signup-profile-solo')).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getByTestId('signup-profile-company')).toHaveAttribute('aria-pressed', 'false');
+      expect(screen.getByText(/Un profil Indépendant/)).toBeInTheDocument();
     });
   });
 
