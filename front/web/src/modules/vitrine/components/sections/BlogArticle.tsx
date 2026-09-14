@@ -191,7 +191,7 @@ export function BlogArticle({
                       <li key={item.id}>
                         <a
                           href={`#${item.id}`}
-                          className="text-sm text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
+                          className="text-sm text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                         >
                           {item.title}
                         </a>
@@ -287,7 +287,7 @@ export function BlogArticle({
 
                       {/* Content */}
                       <div className="p-6 flex flex-col flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
                           {relatedPost.title}
                         </h3>
                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4 flex-1 line-clamp-2">
@@ -297,7 +297,7 @@ export function BlogArticle({
                           <span className="text-xs text-slate-500 dark:text-slate-400">
                             {relatedPost.readingTime} min
                           </span>
-                          <ArrowRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>

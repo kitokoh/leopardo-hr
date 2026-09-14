@@ -107,7 +107,7 @@ function SectorCard({ sector, label }: { sector: Sector; label: string }) {
     <div className="flex-shrink-0 mx-3">
       <div className="flex items-center gap-3 px-5 py-3 rounded-xl border bg-gradient-to-br from-emerald-500/10 to-cyan-500/5 border-emerald-500/20 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
         <div className="w-10 h-10 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-sm">
-          <Icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+          <Icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
           {label}

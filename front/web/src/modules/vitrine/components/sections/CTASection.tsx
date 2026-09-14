@@ -131,7 +131,7 @@ export function CTASection({
           {resolvedPrimaryCta && (
             <Link
               href={withLocaleHref(resolvedPrimaryCta.href, search)}
-              className="group relative px-8 py-4 bg-white text-emerald-700 font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] hover:scale-[1.03] active:scale-[0.98]"
+              className="group relative px-8 py-4 bg-white text-emerald-600 font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
                 {resolvedPrimaryCta.text}

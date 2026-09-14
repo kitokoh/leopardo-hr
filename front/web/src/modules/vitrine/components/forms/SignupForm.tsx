@@ -852,18 +852,18 @@ export function SignupForm({
                 <input
                   type="checkbox"
                   id="agreeToTerms"
-                  className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-emerald-700 focus:ring-emerald-500"
+                  className="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                   aria-invalid={errors.agreeToTerms ? true : undefined}
                   aria-describedby={errors.agreeToTerms ? 'signup-agree-terms-error' : undefined}
                   {...register('agreeToTerms')}
                 />
                 <label htmlFor="agreeToTerms" className="text-sm text-slate-600 dark:text-slate-400">
                   {c.agreePrefix}{' '}
-                  <Link href="/terms" className="font-semibold text-emerald-700 hover:text-emerald-700">
+                  <Link href="/terms" className="font-semibold text-emerald-600 hover:text-emerald-700">
                     {c.termsLink}
                   </Link>{' '}
                   {c.agreeSuffix}{' '}
-                  <Link href="/privacy" className="font-semibold text-emerald-700 hover:text-emerald-700">
+                  <Link href="/privacy" className="font-semibold text-emerald-600 hover:text-emerald-700">
                     {c.privacyLink}
                   </Link>
                 </label>
@@ -891,7 +891,7 @@ export function SignupForm({
 
               <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 {c.haveAccount}{' '}
-                <Link href="/auth/login" className="font-semibold text-emerald-700 hover:text-emerald-700">
+                <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                   {c.loginCta}
                 </Link>
               </p>
@@ -925,7 +925,7 @@ export function SignupForm({
             </button>
 
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
-              <ShieldCheck className="h-8 w-8 text-emerald-700 dark:text-emerald-400" />
+              <ShieldCheck className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
@@ -934,7 +934,7 @@ export function SignupForm({
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {c.otpSentTo}
             </p>
-            <p className="mb-6 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+            <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
               {pendingEmail}
             </p>
 
@@ -992,7 +992,7 @@ export function SignupForm({
               <button
                 type="button"
                 onClick={startTracking}
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 transition hover:text-emerald-700 dark:text-emerald-400"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
               >
                 <Rocket className="h-4 w-4" />
                 {c.trackStatus}
@@ -1023,7 +1023,7 @@ export function SignupForm({
             <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
               {pendingMessage}
             </p>
-            <p className="mb-6 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+            <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
               {pendingEmail}
             </p>
 
@@ -1033,7 +1033,7 @@ export function SignupForm({
 
             <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
               {c.haveAccount}{' '}
-              <Link href="/auth/login" className="font-semibold text-emerald-700 hover:text-emerald-700">
+              <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                 {c.loginCta}
               </Link>
             </p>
@@ -1042,7 +1042,7 @@ export function SignupForm({
               <button
                 type="button"
                 onClick={startTracking}
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 transition hover:text-emerald-700 dark:text-emerald-400"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
               >
                 <Rocket className="h-4 w-4" />
                 {c.trackStatus}
@@ -1066,7 +1066,7 @@ export function SignupForm({
             {trialStatus === 'ready' ? (
               <>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
-                  <CheckCircle className="h-8 w-8 text-emerald-700 dark:text-emerald-400" />
+                  <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
                   {c.readyTitle}
@@ -1249,7 +1249,7 @@ export function SignupForm({
           >
             <div className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60 dark:border-emerald-800 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20">
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
-                <Rocket className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
+                <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
                   {c.successTitle}
                 </h3>
@@ -1258,7 +1258,7 @@ export function SignupForm({
               <div className="space-y-4 p-5">
                 <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-100 dark:bg-slate-800/60 dark:ring-slate-700">
                   <div className="flex items-center gap-2 text-center justify-center mb-3">
-                    <CheckCircle className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
+                    <CheckCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       {c.emailVerified}
                     </p>
@@ -1292,7 +1292,7 @@ export function SignupForm({
                 {provisionedData?.trial && (
                   <p className="text-center text-sm text-slate-500 dark:text-slate-400">
                     {c.trialNote}{' '}
-                    <span className="font-bold text-emerald-700">
+                    <span className="font-bold text-emerald-600">
                       {provisionedData.trial.days} {c.trialDaysUnit}
                     </span>{' '}
                     — {c.trialNoteSuffix}

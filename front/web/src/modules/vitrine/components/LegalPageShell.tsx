@@ -26,14 +26,14 @@ export function LegalPageShell({ page }: LegalPageShellProps) {
         <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6 md:flex-row md:items-center md:justify-between">
           <Link
             href="/"
-            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-400"
+            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-slate-600 transition-colors hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {copy.backLabel}
           </Link>
 
           <label className="flex w-full max-w-xs items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-            <Globe2 className="h-4 w-4 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
+            <Globe2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
             <span className="sr-only">{copy.languageLabel}</span>
             <select
               aria-label={copy.languageLabel}
