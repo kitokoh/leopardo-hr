@@ -112,6 +112,8 @@ tags:
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 - name: Catalog
   description: 'BC-28 CATALOG — gestion du catalogue produits B2B des tenants (categories, produits, publication).'
+- name: Travel
+  description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
 paths:
   /attendance/config:
     get:
@@ -28145,6 +28147,51 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /public/travel/shop/bookings/{reference}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation en ligne d'une réservation par le passager (espace voyageur)
+      description: >-
+        BC-24 TRAVEL (#7395) — surface PUBLIQUE du portail passager : ni compte
+        employe, ni jeton boutique tenant. La reference de la reservation et le
+        CODE DE CONTROLE du billet (secret partage, imprime sur l'e-billet)
+        sont exiges. La reponse est minimisee (statut, trajet, billets) :
+        aucune donnee personnelle. 422 TRAVEL_BOOKING_CODE_INVALID si le code
+        ne correspond a aucun billet de la reservation, 422
+        TRAVEL_BOOKING_DEPARTURE_PAST si le depart est passe, 422
+        VALIDATION_ERROR si le motif (obligatoire, conserve pour l'audit)
+        manque ou est trop court.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, reason]
+              properties:
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 32
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée (statut annule, sieges liberes)
         '404':
           $ref: '#/components/responses/Error404'
         '422':

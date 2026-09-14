@@ -3970,6 +3970,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/public/catalog/sitemap.xml", options);
     },
 
+    /** Annulation en ligne d'une réservation par le passager (espace voyageur) */
+    postPublicTravelShopBookingsByReferenceCancel(options = {}) {
+      return request("POST", "/public/travel/shop/bookings/{reference}/cancel", options);
+    },
+
     /** Vitrine publique d'un tenant (BC-27 #6867) */
     getPublicVitrineBySlug(options = {}) {
       return request("GET", "/public/vitrine/{slug}", options);
