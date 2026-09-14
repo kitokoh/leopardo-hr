@@ -2175,6 +2175,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/readiness", options);
     },
 
+    /** Lister les types de frais scolaires */
+    getEduManagerFeeTypes(options = {}) {
+      return request("GET", "/edu-manager/fee-types", options);
+    },
+
+    /** Créer un type de frais scolaire */
+    postEduManagerFeeTypes(options = {}) {
+      return request("POST", "/edu-manager/fee-types", options);
+    },
+
+    /** Consommer un lien d'accès parents (portail public) */
+    postEduManagerGuardianPortalAccessLinksByTokenConsume(options = {}) {
+      return request("POST", "/edu-manager/guardian-portal/access-links/{token}/consume", options);
+    },
+
+    /** Lister les responsables légaux du tenant */
+    getEduManagerGuardians(options = {}) {
+      return request("GET", "/edu-manager/guardians", options);
+    },
+
+    /** Créer un responsable légal (parent / tuteur) */
+    postEduManagerGuardians(options = {}) {
+      return request("POST", "/edu-manager/guardians", options);
+    },
+
+    /** Émettre un lien d'accès au portail parents (forme par chemin) */
+    postEduManagerGuardiansByGuardianAccessLinks(options = {}) {
+      return request("POST", "/edu-manager/guardians/{guardian}/access-links", options);
+    },
+
+    /** Rattacher un responsable légal à un élève */
+    postEduManagerStudentsByStudentGuardians(options = {}) {
+      return request("POST", "/edu-manager/students/{student}/guardians", options);
+    },
+
+    /** Retirer le rattachement d'un responsable légal à un élève */
+    deleteEduManagerStudentsByStudentGuardiansByGuardian(options = {}) {
+      return request("DELETE", "/edu-manager/students/{student}/guardians/{guardian}", options);
+    },
+
     /** Lister les documents des dossiers employes (checklist G3) */
     getEmployeeDocuments(options = {}) {
       return request("GET", "/employee-documents", options);

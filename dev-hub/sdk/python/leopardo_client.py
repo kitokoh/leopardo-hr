@@ -1760,6 +1760,38 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_edu_manager_fee_types(self, **kwargs):
+        """Lister les types de frais scolaires"""
+        return self.request("GET", "/edu-manager/fee-types", **kwargs)
+
+    def post_edu_manager_fee_types(self, **kwargs):
+        """Créer un type de frais scolaire"""
+        return self.request("POST", "/edu-manager/fee-types", **kwargs)
+
+    def post_edu_manager_guardian_portal_access_links_by_token_consume(self, **kwargs):
+        """Consommer un lien d'accès parents (portail public)"""
+        return self.request("POST", "/edu-manager/guardian-portal/access-links/{token}/consume", **kwargs)
+
+    def get_edu_manager_guardians(self, **kwargs):
+        """Lister les responsables légaux du tenant"""
+        return self.request("GET", "/edu-manager/guardians", **kwargs)
+
+    def post_edu_manager_guardians(self, **kwargs):
+        """Créer un responsable légal (parent / tuteur)"""
+        return self.request("POST", "/edu-manager/guardians", **kwargs)
+
+    def post_edu_manager_guardians_by_guardian_access_links(self, **kwargs):
+        """Émettre un lien d'accès au portail parents (forme par chemin)"""
+        return self.request("POST", "/edu-manager/guardians/{guardian}/access-links", **kwargs)
+
+    def post_edu_manager_students_by_student_guardians(self, **kwargs):
+        """Rattacher un responsable légal à un élève"""
+        return self.request("POST", "/edu-manager/students/{student}/guardians", **kwargs)
+
+    def delete_edu_manager_students_by_student_guardians_by_guardian(self, **kwargs):
+        """Retirer le rattachement d'un responsable légal à un élève"""
+        return self.request("DELETE", "/edu-manager/students/{student}/guardians/{guardian}", **kwargs)
+
     def get_employee_documents(self, **kwargs):
         """Lister les documents des dossiers employes (checklist G3)"""
         return self.request("GET", "/employee-documents", **kwargs)
