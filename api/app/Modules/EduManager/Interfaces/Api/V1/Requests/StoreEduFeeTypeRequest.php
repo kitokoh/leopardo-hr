@@ -37,7 +37,17 @@ class StoreEduFeeTypeRequest extends FormRequest
                     fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
                 ),
             ],
-            'code' => ['required', 'string', 'max:50'],
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                // Unicité PAR TENANT (la table porte un index unique
+                // (company_id, code)) : un doublon répond 422, jamais un 500
+                // d'index violé.
+                Rule::unique('edu_fee_types', 'code')->where(
+                    fn (Builder $query): Builder => $query->where('company_id', $actor?->company_id)
+                ),
+            ],
             'label' => ['required', 'string', 'max:191'],
             'amount' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
             'currency' => ['required', 'string', 'size:3'],
