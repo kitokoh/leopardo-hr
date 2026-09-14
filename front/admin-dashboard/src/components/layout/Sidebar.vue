@@ -165,6 +165,7 @@ import { useRoute } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import {
+  EnvelopeIcon,
   HomeIcon,
   ChartBarIcon,
   GlobeAltIcon,
@@ -410,6 +411,12 @@ const navigation = computed(() => [
     title: t('marketing.oauth.nav_title'),
     path: '/marketing/oauth',
     icon: MegaphoneIcon
+  },
+  {
+    name: 'settings-email-templates',
+    title: t('navigation.emailTemplates'),
+    path: '/settings/emails',
+    icon: EnvelopeIcon
   },
   {
     name: 'exports',

@@ -104,8 +104,9 @@ return [
     'communication_unsubscribe_link' => 'Manage your notification preferences',
 
     // Premium layout (emails/layouts/premium.blade.php)
-    'premium_layout_rights_reserved' => 'All rights reserved.',
-    'premium_layout_footer_note' => 'You are receiving this email because you are registered on our platform.<br>For any question, contact <a href="mailto::supportEmail">support</a>.',
+    'layout_rights_reserved' => 'All rights reserved.',
+    'layout_footer_context' => 'You are receiving this email as part of your :brand account.',
+    'layout_footer_support' => 'Questions? Write to us:',
     // S-5 (#1665) — Localized transactional emails
     'email_welcome_subject' => 'Welcome to Leopardo RH',
     'email_welcome_greeting' => 'Hello :name,',
@@ -168,6 +169,20 @@ return [
     'email_password_reset_ignore' => 'If you did not make this request, ignore this email.',
 
     // E-mail de vérification du code d'inscription (trial self-service)
+    'email_password_reset_code_label' => 'Your reset code (valid for 60 minutes, single use):',
+    'invitation_heading' => 'Invitation to join :company',
+    'invitation_intro' => ':inviter invites you to join :company on :brand.',
+    'invitation_role_line' => 'You will be invited as :role.',
+    'invitation_accept_button' => 'Accept the invitation',
+    'invitation_expiry' => 'This link expires in 48 hours. If you were not expecting this email, ignore it.',
+    'edge_node_silent_subject' => 'Time clock terminal unreachable — :node (:company)',
+    'edge_node_silent_greeting' => 'Hello,',
+    'edge_node_silent_body' => 'The time clock terminal :node at :company has not reported for :duration.',
+    'edge_node_silent_note' => 'Clock-ins recorded during this period will be synced automatically as soon as the connection is restored.',
+    'edge_node_silent_support' => 'If the issue persists, check the terminal network connection or write to us:',
+    'edge_license_expiring_subject' => 'Time clock terminal subscription to renew — :node (:company)',
+    'edge_license_expiring_body' => 'The subscription of the time clock terminal :node at :company expires on :date. After that, the terminal will keep recording clock-ins but will no longer send them.',
+    'edge_license_expiring_support' => 'To renew or ask a question, write to us:',
     'trial_verification_subject' => 'Verify your Leopardo RH email',
     'trial_verification_greeting' => 'Hello :name,',
     'trial_verification_intro' => 'Please use the verification code below to complete the creation of your workspace:',

@@ -1804,3 +1804,33 @@ Note 2026-09-06 (fix auth #6956) : login super-admin — hash stocké invalide �
 - Couverture : `api/tests/Feature/PlatformAuthTest.php` (login 2FA off/on, verrouillage 5 échecs, session plateforme). Le cas hash NULL n'est pas reproductible en schéma propre (`password_hash` NOT NULL en migration) — couvert par la garde défensive + contrôle ops de la ligne `super_admins` (cf. issue #6956).
 
 Note 2026-09-07 (Part of #6974) : login super-admin — toute exception inattendue est loggée (structured `platform.login.unexpected_error[.web]`) et répond en erreur générique 500 / message web générique ; aucun détail serveur exposé au client. Scénarios : email inconnu → 401 ; mauvais mot de passe → 401 ; hash NULL/invalide (dérive DEV) → 401 (jamais 500, garde #6956) ; exception imprévue → 500 générique + log structuré exploitable (diagnostic DEV en cours, #6974).
+
+## Addendum 2026-09-14 — contenus d'e-mails éditables depuis l'admin (#7347)
+
+Nouvelle surface plateforme (guard `super_admin_api`, préfixe `/v1/admin`) : surcharge du
+contenu des e-mails par `(template_key, locale)`. Table `public.email_templates`
+(migration `2026_09_14_000001_7347`).
+
+- `GET /api/v1/admin/email-templates` → liste des modèles éditables (clé, variables
+  autorisées) avec, **par langue** (fr/en/ar/tr), la valeur **effective** (surcharge si
+  elle existe, sinon valeur par défaut du catalogue) et les drapeaux `overridden`.
+- `PUT /api/v1/admin/email-templates` → surcharge **partielle** de `(template_key, locale)`
+  sur `subject` / `heading` / `body` / `cta_label` ; le corps est du **texte** (échappé au
+  rendu, retours à la ligne conservés) et seules les variables déclarées par le registre
+  sont substituées. Clé inconnue ou locale non supportée → **422**.
+- `DELETE /api/v1/admin/email-templates` → **retour au défaut** (suppression de la surcharge).
+- `POST /api/v1/admin/email-templates/preview` → rendu réel dans le layout
+  (`emails/layouts/base.blade.php`), `dir` déduit de la locale.
+
+Scénarios verrouillés par `api/tests/Feature/Mail/EmailTemplateEditingTest.php` :
+**sans surcharge, la valeur rendue est identique à celle du catalogue** (propriété
+centrale : un template non modifié ne change pas de rendu) ; la surcharge prime champ par
+champ et journalise `updated_by` ; un champ vidé revient au défaut ; le corps est échappé
+et une variable non déclarée n'est **pas** substituée ; les 4 langues sont indépendantes ;
+la réinitialisation supprime la surcharge ; les endpoints exigent une session super-admin
+(**401** sinon).
+
+Garde de rendu : `api/tests/Feature/Mail/EmailTemplateIntegrityTest.php` compile **tous**
+les templates d'e-mail et vérifie que le PHP produit est valide (la CI ne compile aucune
+vue Blade), plus le RTL, le pré-en-tête, l'adresse de contact ≠ adresse d'envoi et
+l'absence de terme interne (ex. « node Edge », `localhost`, `/admin/edge-nodes`).
