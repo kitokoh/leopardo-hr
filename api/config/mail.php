@@ -139,4 +139,50 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Leopardo RH')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Identité de marque des e-mails (issue #7346)
+    |--------------------------------------------------------------------------
+    |
+    | Source UNIQUE de la charte e-mail, consommée par
+    | `resources/views/emails/layouts/base.blade.php` : plus aucune couleur,
+    | police ou nom de marque ne doit être écrit en dur dans un template.
+    |
+    | ⚠️ `name` ne retombe JAMAIS sur `config('app.name')` ni sur `APP_NAME` :
+    | le défaut de Laravel est la chaîne « Laravel », qui s'est déjà retrouvée
+    | dans des e-mails clients. Le repli est la marque produit, explicitement.
+    |
+    | ⚠️ `support_address` est DISTINCT de `from.address` : `from` reçoit
+    | `noreply@…` (adresse d'envoi, non relevée). Répondre à un e-mail doit
+    | écrire à une adresse réellement lue — le pied de page utilisait `from`,
+    | donc « écrivez au support » envoyait vers une boîte sans lecteur.
+    |
+    */
+
+    'brand' => [
+        // Marque produit, PAS `APP_NAME` : le défaut de Laravel est la chaîne
+        // « Laravel », qui s'est déjà retrouvée dans des e-mails clients. La
+        // marque e-mail est donc explicite et vérifiée par un test.
+        'name' => env('MAIL_BRAND_NAME', 'Leopardo RH'),
+        'tagline' => env('MAIL_BRAND_TAGLINE'),
+        // Logo facultatif : les clients de messagerie bloquent les images par
+        // défaut, le nom de marque reste donc toujours affiché en texte.
+        'logo_url' => env('MAIL_BRAND_LOGO_URL'),
+        // Tokens produit (teal) — miroir de `--color-brand-*` côté web/admin.
+        'primary_color' => env('MAIL_BRAND_PRIMARY_COLOR', '#0d9488'),
+        // Pile de polices des e-mails — ici et pas dans le layout : c'est un
+        // token de charte, et la surface `resources/views/emails` est surveillée
+        // par la garde i18n (aucun littéral ajouté dans un template).
+        'font_stack' => env(
+            'MAIL_BRAND_FONT_STACK',
+            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        ),
+        'primary_dark_color' => env('MAIL_BRAND_PRIMARY_DARK_COLOR', '#042f2e'),
+        'support_address' => env('MAIL_SUPPORT_ADDRESS', 'support@leopardo-rh.com'),
+        'website_url' => env('MAIL_BRAND_WEBSITE_URL', env('FRONTEND_URL', 'https://leopardo-rh.com')),
+        // Mentions légales (raison sociale, adresse) : affichées si renseignées.
+        'legal_name' => env('MAIL_BRAND_LEGAL_NAME'),
+        'legal_address' => env('MAIL_BRAND_LEGAL_ADDRESS'),
+    ],
+
 ];
