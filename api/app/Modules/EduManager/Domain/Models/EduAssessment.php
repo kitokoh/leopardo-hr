@@ -47,14 +47,30 @@ class EduAssessment extends Model
 
     public const TYPE_PROJECT = 'project';
 
+    /**
+     * Contrôle continu (« test ») — vocabulaire v2 (#5823). La colonne
+     * historique `type` porte une contrainte CHECK limitée à
+     * exam|quiz|homework|project ; la génération v2 écrit `assessment_type`
+     * (nullable, sans CHECK) → `TYPE_TEST` ne peut PAS vivre dans `type`.
+     */
+    public const TYPE_TEST = 'test';
+
     public const TYPES = [
         self::TYPE_EXAM,
         self::TYPE_QUIZ,
         self::TYPE_HOMEWORK,
         self::TYPE_PROJECT,
+        self::TYPE_TEST,
     ];
 
+    public const STATUS_DRAFT = 'draft';
+
     public const STATUS_PUBLISHED = 'published';
+
+    public const STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_PUBLISHED,
+    ];
 
     protected $table = 'edu_assessments';
 
@@ -65,6 +81,8 @@ class EduAssessment extends Model
         'academic_year_id',
         'title',
         'type',
+        'assessment_type',
+        'status',
         'coefficient',
         'max_score',
         'assessment_date',
@@ -80,6 +98,7 @@ class EduAssessment extends Model
         'max_score' => 'string',
         'assessment_date' => 'date',
         'published_at' => 'datetime',
+        'status' => 'string',
     ];
 
     /**

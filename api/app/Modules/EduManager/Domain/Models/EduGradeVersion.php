@@ -41,12 +41,25 @@ class EduGradeVersion extends Model
         'score',
         'comment',
         'changed_by',
+        // Génération v2 (#5823) : la version documente la transition
+        // (previous → new) avec son motif. Colonnes présentes en base mais
+        // absentes du modèle → `GradeService::correctGrade` écrivait des
+        // lignes vides (previous_score = 0 par défaut).
+        'previous_score',
+        'new_score',
+        'previous_status',
+        'new_status',
+        'reason',
+        'changed_at',
     ];
 
     protected $casts = [
         'grade_id' => 'integer',
         'version' => 'integer',
         'score' => 'string',
+        'previous_score' => 'string',
+        'new_score' => 'string',
+        'changed_at' => 'datetime',
     ];
 
     /**

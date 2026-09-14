@@ -6,6 +6,7 @@ namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
 use Illuminate\Database\Eloquent\Model;
@@ -129,17 +130,7 @@ class EduReportCardPolicy
      */
     private function isTeacher(Employee $actor): bool
     {
-        /** @var class-string<Model> $teacherModel */
-        $teacherModel = 'App\Modules\EduManager\Domain\Models\EduTeacher';
-
-        if (! class_exists($teacherModel)) {
-            return false;
-        }
-
-        return $teacherModel::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::isTeacher($actor);
     }
 
     /**
@@ -152,40 +143,6 @@ class EduReportCardPolicy
      */
     private function teachesClass(Employee $actor, int $classId): bool
     {
-        if ($classId <= 0 || ! $this->isTeacher($actor)) {
-            return false;
-        }
-
-        /** @var class-string<Model> $teacherModel */
-        $teacherModel = 'App\Modules\EduManager\Domain\Models\EduTeacher';
-
-        $teacher = $teacherModel::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof Model) {
-            return false;
-        }
-
-        /** @var class-string<Model> $slotModel */
-        $slotModel = 'App\Modules\EduManager\Domain\Models\EduTimetableSlot';
-
-        if (class_exists($slotModel)) {
-            return $slotModel::query()
-                ->where('class_id', $classId)
-                ->where('teacher_id', (int) $teacher->getKey())
-                ->where('company_id', $actor->company_id)
-                ->exists();
-        }
-
-        if (method_exists($teacher, 'classes')) {
-            /** @var \Illuminate\Database\Eloquent\Builder $classesQuery */
-            $classesQuery = $teacher->{'classes'}();
-
-            return $classesQuery->whereKey($classId)->exists();
-        }
-
-        return false;
+        return EduAccess::teachesClass($actor, $classId);
     }
 }

@@ -50,7 +50,7 @@ return new class extends Migration
 
                 // Cross-tenant impossible : la paire (academic_year_id, company_id)
                 // doit exister chez le MÊME tenant.
-                $table->foreign(['academic_year_id', 'company_id'], 'edu_classes_academic_year_company_fk')
+                $table->foreign(['academic_year_id', 'company_id'], 'edu_classes_year_company_fk')
                     ->references(['id', 'company_id'])
                     ->on('edu_academic_years')
                     ->cascadeOnDelete();

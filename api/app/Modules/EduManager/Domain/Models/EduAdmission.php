@@ -53,6 +53,13 @@ class EduAdmission extends Model
 
     public const STATUS_NEW = 'new';
 
+    /**
+     * Statut d'entrée « en attente » — vocabulaire v2 (#5820). Il existe DÉJÀ
+     * dans la contrainte CHECK `edu_admissions_status_check` (vocabulaire
+     * unifié par la migration de réparation) : seule la constante manquait.
+     */
+    public const STATUS_PENDING = 'pending';
+
     public const STATUS_DOCUMENT_PENDING = 'document_pending';
 
     public const STATUS_REVIEW = 'review';
@@ -69,6 +76,7 @@ class EduAdmission extends Model
 
     public const STATUSES = [
         self::STATUS_NEW,
+        self::STATUS_PENDING,
         self::STATUS_DOCUMENT_PENDING,
         self::STATUS_REVIEW,
         self::STATUS_ACCEPTED,
@@ -99,6 +107,20 @@ class EduAdmission extends Model
         'applicant_email',
         'applicant_phone',
         'applicant_birth_date',
+        // Génération v2 (#5820) : nom consolidé + référence de contact
+        // chiffrée au repos. Colonnes présentes en base (migration de
+        // réparation) mais absentes du modèle → `AdmissionService` (v2)
+        // lisait `null`, la conversion d'un dossier créait un élève sans nom
+        // (violation NOT NULL sur `edu_students.display_name`).
+        'applicant_name',
+        'contact_reference',
+        'consent_marketing',
+        'consent_at',
+        'consent_revoked_at',
+        'submitted_at',
+        'decided_at',
+        'decided_by',
+        'metadata',
         'status',
         'source',
         'external_id',
@@ -118,6 +140,16 @@ class EduAdmission extends Model
         'applicant_birth_date' => 'date',
         'consent_contact' => 'boolean',
         'consented_at' => 'datetime',
+        // v2 : PII chiffrée au repos (enveloppe Laravel) + consentement
+        // marketing horodaté.
+        'contact_reference' => 'encrypted',
+        'consent_marketing' => 'boolean',
+        'consent_at' => 'datetime',
+        'consent_revoked_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'decided_at' => 'datetime',
+        'decided_by' => 'integer',
+        'metadata' => 'array',
         'applied_at' => 'date',
         'converted_at' => 'datetime',
     ];

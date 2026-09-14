@@ -48,6 +48,11 @@ class EduTeacherSubject extends Model
         'class_id',
         'subject_id',
         'teacher_id',
+        // v2 (#5819) : l'affectation est bornée à une année scolaire. La
+        // colonne existait et était NULLABLE, mais absente du `fillable` :
+        // le champ était silencieusement PERDU à la création et la relation
+        // `academicYear` ressortait nulle.
+        'academic_year_id',
         'status',
         'created_by',
     ];
@@ -56,6 +61,7 @@ class EduTeacherSubject extends Model
         'class_id' => 'integer',
         'subject_id' => 'integer',
         'teacher_id' => 'integer',
+        'academic_year_id' => 'integer',
         'status' => 'string',
     ];
 

@@ -183,6 +183,16 @@ final class GradeService
                 EduGradeVersion::query()->create([
                     'company_id' => $grade->company_id,
                     'grade_id' => $grade->id,
+                    // Colonne historique `version` (NOT NULL, génération v1) :
+                    // elle n'est pas écrite par le contrat v2 mais reste
+                    // obligatoire en base → numérotation monotone par note.
+                    'version' => 1 + (int) EduGradeVersion::query()
+                        ->where('company_id', $grade->company_id)
+                        ->where('grade_id', $grade->id)
+                        ->max('version'),
+                    // Colonne historique `score` (NOT NULL, génération v1) :
+                    // même contrainte — elle porte la note résultante.
+                    'score' => $newScore,
                     'previous_score' => $grade->score,
                     'new_score' => $newScore,
                     'previous_status' => $grade->status,

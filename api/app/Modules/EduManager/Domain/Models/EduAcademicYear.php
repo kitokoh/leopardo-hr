@@ -38,9 +38,17 @@ class EduAcademicYear extends Model
 
     public const STATUS_CLOSED = 'closed';
 
+    /**
+     * Année archivée (historique conservé, plus d'écritures) — vocabulaire v2
+     * (#5819). Déjà autorisé par la contrainte CHECK
+     * `edu_academic_years_status_check` (active|inactive|archived).
+     */
+    public const STATUS_ARCHIVED = 'archived';
+
     public const STATUSES = [
         self::STATUS_ACTIVE,
         self::STATUS_CLOSED,
+        self::STATUS_ARCHIVED,
     ];
 
     protected $table = 'edu_academic_years';

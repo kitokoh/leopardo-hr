@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduTeacher;
 use App\Modules\EduManager\Domain\Models\EduTimetableSlot;
@@ -50,7 +51,10 @@ class EduAssessmentPolicy
 
     public function create(Employee $actor): bool
     {
-        return $this->isManager($actor);
+        // Une évaluation ne vise pas encore de classe à l'autorisation :
+        // direction OU enseignant (le périmètre de classe est contrôlé à
+        // l'écriture et par `update`).
+        return $this->isManager($actor) || EduAccess::isTeacher($actor);
     }
 
     public function update(Employee $actor, EduAssessment $assessment): bool
@@ -82,10 +86,7 @@ class EduAssessmentPolicy
      */
     private function isTeacher(Employee $actor): bool
     {
-        return EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::isTeacher($actor);
     }
 
     /**
@@ -97,24 +98,6 @@ class EduAssessmentPolicy
      */
     private function teachesClass(Employee $actor, int $classId): bool
     {
-        if ($classId <= 0) {
-            return false;
-        }
-
-        /** @var EduTeacher|null $teacher */
-        $teacher = EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof EduTeacher) {
-            return false;
-        }
-
-        return EduTimetableSlot::query()
-            ->where('class_id', $classId)
-            ->where('teacher_id', (int) $teacher->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::teachesClass($actor, $classId);
     }
 }

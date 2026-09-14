@@ -111,6 +111,15 @@ return new class extends Migration
 
     public function down(): void
     {
+        // `edu_report_card_lines` porte une FK composite
+        // (`edu_report_card_lines_card_company_fk`) vers cette table : selon
+        // l'ordre des migrations, le `down()` de la carte peut précéder celui
+        // des lignes — PostgreSQL refuse alors le DROP (2BP01 « dependent
+        // objects still exist »). Les dépendantes sont donc supprimées
+        // d'abord (gardé : chacune possède sa propre migration, rejouée par le
+        // `up()` complet du cycle de tests).
+        Schema::dropIfExists('edu_report_card_lines');
+
         Schema::dropIfExists('edu_report_cards');
     }
 };

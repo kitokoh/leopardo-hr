@@ -6,6 +6,7 @@ namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduTeacher;
 use App\Modules\EduManager\Domain\Models\EduTimetableSlot;
@@ -92,10 +93,7 @@ class EduGradePolicy
      */
     private function isTeacher(Employee $actor): bool
     {
-        return EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::isTeacher($actor);
     }
 
     /**
@@ -105,27 +103,7 @@ class EduGradePolicy
      */
     private function teachesAssessment(Employee $actor, EduGrade $grade): bool
     {
-        $classId = $this->assessmentClassId($grade);
-
-        if ($classId <= 0) {
-            return false;
-        }
-
-        /** @var EduTeacher|null $teacher */
-        $teacher = EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof EduTeacher) {
-            return false;
-        }
-
-        return EduTimetableSlot::query()
-            ->where('class_id', $classId)
-            ->where('teacher_id', (int) $teacher->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::teachesClass($actor, $this->assessmentClassId($grade));
     }
 
     /**
