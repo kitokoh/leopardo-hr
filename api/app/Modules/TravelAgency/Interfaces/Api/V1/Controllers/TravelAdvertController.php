@@ -48,7 +48,13 @@ class TravelAdvertController extends Controller
 
         $query = TravelAdvert::query()->where('company_id', $actor->company_id);
 
-        $manage = $actor->can('moderate', TravelAdvert::class);
+        // #7418 : `$actor->can('moderate', TravelAdvert::class)` passait la
+        // CLASSE au résolveur de policy, qui appelait alors
+        // `TravelAdvertPolicy::moderate(Employee)` avec un seul argument →
+        // ArgumentCountError → 500 sur GET /travel/adverts. Le mode gestion est
+        // une capacité de COLLECTION (pas d'instance à contrôler) : on applique
+        // la même condition que la policy, comme manageIndex() juste en dessous.
+        $manage = $actor->hasManagerRole('principal', 'rh', 'manager');
 
         if (! $manage) {
             $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
@@ -215,6 +221,34 @@ class TravelAdvertController extends Controller
             'id' => $advert->id,
             'status' => $advert->status->value,
         ]]);
+    }
+
+    /**
+     * Suppression d'une annonce (#7398).
+     *
+     * La route `DELETE /adverts/{travelAdvert}` existait mais pointait vers
+     * `destroyAdvert`, méthode inexistante — et aucune équivalente n'était
+     * implémentée, alors que `TravelAdvertPolicy::delete()` existait déjà
+     * (preuve que l'opération était prévue). Convention du module : 404 si
+     * l'annonce appartient à un autre tenant (on ne révèle pas son existence),
+     * 403 si le rôle est insuffisant.
+     */
+    public function destroy(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->company_id !== $travelAdvert->company_id) {
+            abort(404);
+        }
+
+        if ($actor->cannot('delete', $travelAdvert)) {
+            abort(403);
+        }
+
+        $travelAdvert->delete();
+
+        return new JsonResponse(null, 204);
     }
 
     public function renew(Request $request, TravelAdvert $travelAdvert): JsonResponse

@@ -287,13 +287,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/advert-prices', [TravelAdvertPriceController::class, 'store']);
         Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']);
         Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
-        Route::get('/adverts', [TravelAdvertController::class, 'indexAdverts']);
-        Route::post('/adverts', [TravelAdvertController::class, 'storeAdvert']);
-        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'showAdvert']);
-        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'payAdvert']);
+        // #7398 — noms de méthodes alignés sur TravelAdvertController.
+        // Ce bloc appelait `indexAdverts` / `storeAdvert` / `showAdvert` /
+        // `payAdvert` / `renewAdvert` / `destroyAdvert` : six méthodes qui n'ont
+        // JAMAIS existé sur le contrôleur (500 `Call to undefined method` sur
+        // tout l'écran annonces/publicités de la verticale).
+        // `/adverts/manage` est déclaré AVANT `/adverts/{travelAdvert}` pour ne
+        // pas être avalé par le binding de route (sinon « manage » est
+        // interprété comme un id d'annonce).
+        Route::get('/adverts', [TravelAdvertController::class, 'index']);
+        Route::post('/adverts', [TravelAdvertController::class, 'store']);
+        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']);
+        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
+        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
         Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
-        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renewAdvert']);
-        Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroyAdvert']);
+        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
+        Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroy']);
         Route::get('/articles', [TravelArticleController::class, 'index']);
         Route::post('/articles', [TravelArticleController::class, 'store']);
         Route::get('/articles/{travelArticle}', [TravelArticleController::class, 'show']);
@@ -375,10 +384,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
         Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
         Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
-        Route::get('/adverts/manage', [TravelAdvertController::class, 'indexManage']);
-        Route::post('/adverts/{advert}/pay', [TravelAdvertController::class, 'pay']);
-        Route::post('/adverts/{advert}/validate', [TravelAdvertController::class, 'validateAd']);
-        Route::post('/adverts/{advert}/renew', [TravelAdvertController::class, 'renew']);
+        // #7398 — les routes annonces sont désormais définies une seule fois,
+        // avec les vrais noms de méthodes, dans le bloc « réseau & contenu »
+        // plus haut. Ce second bloc en redéfinissait quatre avec des noms
+        // inexistants (`indexManage`, `validateAd`) ou en doublon
+        // (`{advert}/pay`, `{advert}/renew`) — le doublon le plus vicieux
+        // masquait `validateAdvert` (implémentée) par `validateAd` (inexistante),
+        // rendant invalide une route pourtant testée.
+        // Seul `reject` reste ici (défini une seule fois, plus bas).
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);

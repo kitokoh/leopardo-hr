@@ -48,7 +48,7 @@ class TravelAdvertExpirationTest extends TestCase
 
     private function makePublishedAdvert(Company $company, ?\Illuminate\Support\Carbon $expiresAt = null): TravelAdvert
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($expiresAt): TravelAdvert {
+        return app(TenantManager::class)->withinTenant($company, function () use ($company, $expiresAt): TravelAdvert {
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
                 'code' => 'image_banner',

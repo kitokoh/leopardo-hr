@@ -48,7 +48,7 @@ class TravelAdvertLifecycleTest extends TestCase
 
     private function makeCatalog(Company $company, int $image = 50000, int $perChar = 25): array
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($image, $perChar): array {
+        return app(TenantManager::class)->withinTenant($company, function () use ($company, $image, $perChar): array {
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
                 'code' => 'image_banner',
