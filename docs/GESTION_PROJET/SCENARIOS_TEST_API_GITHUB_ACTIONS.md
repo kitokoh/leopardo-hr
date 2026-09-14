@@ -1943,3 +1943,44 @@ unique, hash seul en base, routes de lecture muettes, suivi public 200/404, PDF 
 `api/tests/Feature/Travel/TravelPublicShopPassengerPortalTest.php` (suivi, PDF, annulation sans
 jeton boutique ; 401/404/422 ; cross-tenant ; suivi staff qui refuse `code`), plus le golden
 journey GJ-TRAVEL-01 requalifié.
+
+## Addendum 2026-09-14 — 27 routes appelaient une méthode de contrôleur inexistante (#7398)
+
+`Route::getRoutes()` listait **27 routes** dont l'action pointait vers une méthode **non définie**
+(`500 Call to undefined method`) et rien ne le voyait. L'audit route → méthode (1728 routes) est
+désormais à **broken=0**.
+
+BC-24 TRAVEL — `api/routes/modules/travelagency.php` (8 routes)
+- Alias périmés réalignés sur les méthodes réellement définies : `indexAdverts→index`,
+  `storeAdvert→store`, `showAdvert→show`, `payAdvert→pay`, `renewAdvert→renew`,
+  `indexManage→manageIndex`, `validateAd→validateAdvert`.
+- `destroyAdvert` **implémentée** (`DELETE /travel/adverts/{travelAdvert}`) : policy `delete`,
+  annonce d'un autre tenant ⇒ **404** (comme `show`/`pay`/`renew`), succès ⇒ **204**.
+- Les **deux blocs d'annonces** qui déclaraient les mêmes URI avec des méthodes divergentes sont
+  fusionnés : une seule déclaration par couple (verbe, URI). `/adverts/manage` est déclaré **avant**
+  `/adverts/{travelAdvert}` — sinon « manage » est capturé comme identifiant d'annonce (404 de
+  l'écran de modération).
+
+BC-15 FUEL — `api/routes/modules/fuel_station.php` (19 routes)
+- `FuelReportController` : `dailyVolumes`/`sales`/`stock`/`variances`/`shifts` délèguent au rapport
+  typé `show()` ; `createExport` (pending + job), `exports`, `download` (409/410).
+- `FuelStockController` : `deliveries` et `verifyDelivery` implémentées (isolation tenant, acte
+  tracé) ; `movements`/`storeAdjustment` = alias canoniques de `index`/`store`.
+- `FuelIncidentController` : `transition` (graphe de transitions du modèle, **422** si illégal) et
+  `attach` (allowlist MIME/taille **avant** écriture).
+- Divers : `FuelImportController@show`, `FuelStationController@sitesIndex`, `FuelProductController@show`.
+
+Garde ajoutée : `api/tests/Feature/RouteControllerMethodContractTest.php` parcourt `Route::getRoutes()`,
+résout l'action (`uses`) et **échoue si la classe existe mais la méthode est absente**. Elle
+**échoue sur `main`** (27 routes listées) et passe après correctif — c'est la garde qui manquait pour
+que 27 routes cassées passent inaperçues.
+
+Scénarios verrouillés par `api/tests/Feature/Travel/TravelAdvertDestroyTest.php` : suppression d'une
+annonce de son tenant ⇒ **204** ; annonce d'un autre tenant ⇒ **404** ; `/adverts/manage` n'est pas
+capturé par `/adverts/{travelAdvert}`.
+
+Réserve documentée : les suites `TravelAdvert*` citées par l'issue portent des défauts **préexistants**
+(closures sans `use ($company)`, contrat d'une autre génération d'API, `$fillable` `label` vs colonne
+`name` sur `TravelAdvertType`/`TravelAdvertPosition`, `principal()` typé `string` appelé avec `null`) ;
+même constat côté Fuel (`fuel_stock_movements` inexistante, désyncs de schéma). Ensembles en échec
+**identiques avant/après** — aucune régression introduite par cet audit.
