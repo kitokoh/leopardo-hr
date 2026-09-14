@@ -218,7 +218,7 @@ function ContactPageInner() {
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                        <item.icon className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <item.icon className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                       </div>
                       <div>
                         <p className="text-sm text-slate-500 dark:text-slate-400">{item.label}</p>
@@ -316,7 +316,7 @@ function ContactPageInner() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
+                      className="w-full sm:w-auto px-8 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors disabled:opacity-50 flex items-center gap-2"
                     >
                       <Send className="w-4 h-4" />
                       {isSubmitting ? copy.form.sending : copy.form.send}

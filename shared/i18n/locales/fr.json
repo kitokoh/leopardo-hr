@@ -1848,6 +1848,7 @@
   },
   "settingsPage": {
     "cancel": "Annuler",
+    "company": "Société",
     "confirmPassword": "Confirmer le mot de passe",
     "currentPassword": "Mot de passe actuel",
     "disable2fa": "Désactiver le 2FA",
@@ -1859,6 +1860,7 @@
     "fullName": "Nom complet",
     "generateSecret": "Générer un secret 2FA",
     "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
+    "manage2fa": "Gérer l'authentification à deux facteurs",
     "manualSecret": "Secret manuel :",
     "minLengthHint": "Minimum 12 caractères.",
     "newPassword": "Nouveau mot de passe",
@@ -1873,6 +1875,7 @@
     "saveChanges": "Enregistrer les modifications",
     "scanStep": "1. Scannez ce lien / secret dans votre application 2FA :",
     "subtitle": "Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.",
+    "tenantSubtitle": "Gérez les informations de votre compte et sa sécurité.",
     "title": "Mon compte",
     "twoFactorActiveHint": "Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.",
     "twoFactorDisabled": "2FA désactivé.",

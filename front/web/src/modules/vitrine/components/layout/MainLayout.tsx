@@ -55,7 +55,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               onClick={scrollToTopHandler}
-              className="fixed bottom-8 right-8 z-40 p-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-full shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all hover:scale-110"
+              className="fixed bottom-8 right-8 z-40 p-3 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-full shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all hover:scale-110"
               aria-label="Scroll to top"
             >
               <svg

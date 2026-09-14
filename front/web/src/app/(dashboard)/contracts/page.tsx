@@ -96,10 +96,10 @@ export default function ContractsPage() {
   };
 
   const statCards = [
-    { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-700 bg-emerald-50' },
     { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, accent: 'text-amber-600 bg-amber-50' },
     { label: 'Suspendus', value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
-    { label: 'Total', value: stats.total, icon: FileText, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Total', value: stats.total, icon: FileText, accent: 'text-emerald-700 bg-emerald-50' },
   ];
 
   return (
@@ -127,7 +127,7 @@ export default function ContractsPage() {
               <stat.icon className="h-5 w-5" />
             </div>
             <p className="text-2xl font-black text-slate-950">{stat.value}</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
           </motion.div>
         ))}
       </section>
@@ -187,7 +187,7 @@ export default function ContractsPage() {
                   <td className="px-4 py-4 text-slate-600">{c.end_date || 'Indefini'}</td>
                   <td className="px-4 py-4 text-center">{statusBadge(c.status)}</td>
                   <td className="px-6 py-4 text-right">
-                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title="Telecharger PDF">
+                    <button onClick={() => downloadPdf(c.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
                       <Download className="h-4 w-4" />
                     </button>
                   </td>

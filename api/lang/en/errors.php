@@ -12,6 +12,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'This employee account is not active.',
     'COMPANY_NOT_FOUND' => 'Company not found.',
     'INVALID_CURRENT_PASSWORD' => 'The current password is incorrect.',
+    'PASSWORD_TOO_COMMON' => 'Your password is too common or too predictable. Choose a longer, unique password (at least 10 characters, with letters and numbers).',
     'UNAUTHENTICATED' => 'Authentication required.',
 
     // Attendance
@@ -105,6 +106,7 @@ return [
     'ALREADY_PROCESSED' => 'This trial request has already been processed.',
     'INVALID_OR_EXPIRED_CODE' => 'Invalid or expired verification code.',
     'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
+    'SESSION_ALREADY_ACTIVE' => 'You are already signed in to a Leopardo workspace. Sign out before creating a new one.',
     'INVALID_SOLUTION' => 'Unknown or unavailable sectorial solution: :solution.',
     'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
     'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',

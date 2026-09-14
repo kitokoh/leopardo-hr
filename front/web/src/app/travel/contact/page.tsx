@@ -226,7 +226,7 @@ export default function TravelPublicContactPage() {
         <button
           type="submit"
           disabled={sending}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-60"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-60"
         >
           <Send className="h-4 w-4" />
           {sending

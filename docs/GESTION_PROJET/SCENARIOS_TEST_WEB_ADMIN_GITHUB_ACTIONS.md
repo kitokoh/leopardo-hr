@@ -45,6 +45,9 @@ Donner une base de scenarios stable pour le dashboard `front/admin-dashboard/`, 
 - empty state lisible
 - error state actionnable
 - aucun chevauchement evident dans les vues prioritaires
+- **attributs herites (#7305)** : charger une vue du back-office (le `<Sidebar>` de `DashboardLayout`) et verifier qu'aucun avertissement
+  `[Vue warn]: Extraneous non-props attributes (class)` n'est emis — le composant a deux noeuds racines, ses attributs sont donc lies
+  explicitement au panneau (`inheritAttrs: false` + `v-bind="$attrs"`)
 - **temps reel (#7303)** : sans `VITE_WEBSOCKET_URL` configure, aucune tentative de handshake Socket.IO (pas de `404` en console) ; l'etat degrade est affiche (`Mode secours (polling)` / `Push non configure`) et les notifications continuent d'arriver via le polling REST (couvert par `e2e/notification-fallback-polling.spec.js`, assertion `socketAttempts === 0`)
 
 ### 4. Accessibilite minimum
@@ -302,3 +305,14 @@ Nouvel ecran `front/admin-dashboard/src/views/settings/AiAssistantView.vue`, rou
   cle (verifier ensuite l'etat « cle enregistree »)
 - Les 4 locales (fr/en/ar/tr) doivent rendre l'ecran, y compris le RTL arabe
 - `eslint --max-warnings 0` et `vite build` doivent rester verts
+## Note de conservation — propagation i18n (PR #7350, Refs #7351, 2026-09-14)
+
+**Aucun scénario de l'admin plateforme n'est modifié.** Le diff touche
+`front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que
+ces fichiers sont **générés** par `shared/i18n/sync/sync-web.js` : trois clés de
+l'écran « Mon compte » du **client web** (`settingsPage.company`,
+`settingsPage.manage2fa`, `settingsPage.tenantSubtitle`) sont propagées
+mécaniquement à tous les targets du catalogue. Aucun écran de l'admin
+plateforme ne consomme ces clés ; les scénarios listés ci-dessus restent valides
+et inchangés. Même situation que la note mobile du 2026-09-13 (PR #7333).
+>

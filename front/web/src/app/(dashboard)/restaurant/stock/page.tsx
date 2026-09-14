@@ -228,7 +228,7 @@ export default function RestaurantStockPage() {
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2 text-xs font-medium">
                         {po.status === 'draft' ? <button className="text-blue-600 hover:underline" onClick={() => void poAction(po.id, 'send')}>{t(locale, 'restaurant.stock.send', 'Envoyer')}</button> : null}
-                        {po.status === 'sent' ? <button className="text-emerald-600 hover:underline" onClick={() => void poAction(po.id, 'receive')}>{t(locale, 'restaurant.stock.receive', 'Réceptionner')}</button> : null}
+                        {po.status === 'sent' ? <button className="text-emerald-700 hover:underline" onClick={() => void poAction(po.id, 'receive')}>{t(locale, 'restaurant.stock.receive', 'Réceptionner')}</button> : null}
                       </div>
                     </td>
                   </tr>

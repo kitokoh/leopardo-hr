@@ -17,7 +17,7 @@ export function Spinner({ label }: { label?: string }) {
   const locale = getPreferredLocale();
   return (
     <div className="flex items-center justify-center gap-3 py-16 text-slate-500" role="status">
-      <Loader2 className="h-6 w-6 animate-spin text-emerald-600" aria-hidden="true" />
+      <Loader2 className="h-6 w-6 animate-spin text-emerald-700" aria-hidden="true" />
       {label ? <span className="text-sm font-medium">{label}</span> : <span className="text-sm font-medium">{t(locale, 'edu.common.loading')}</span>}
     </div>
   );

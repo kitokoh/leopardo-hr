@@ -160,6 +160,41 @@ const checklistPayload = {
   },
 };
 
+/**
+ * #7351 — `stepActions` ne couvre que `first_department` et `first_employee`
+ * (étapes dont la donnée est constatée CÔTÉ SERVEUR). Les autres étapes gardent
+ * le bouton principal « Suivant » → `PATCH …/complete` : c'est ce chemin que
+ * couvrent les tests de flux ci-dessous.
+ */
+const checklistPayloadNoAction = {
+  data: {
+    completed_steps: 0,
+    total_steps: 2,
+    progress_percent: 0,
+    go_live_ready: false,
+    steps: [
+      {
+        id: 1,
+        step_key: 'company_info',
+        title: 'Informations entreprise',
+        description: null,
+        status: 'pending',
+        order: 1,
+        required: true,
+      },
+      {
+        id: 2,
+        step_key: 'configure_schedules',
+        title: 'Configurer les horaires',
+        description: null,
+        status: 'pending',
+        order: 2,
+        required: false,
+      },
+    ],
+  },
+};
+
 beforeAll(() => {
   window.localStorage.setItem('preferred_locale', 'fr');
 });
@@ -185,18 +220,18 @@ describe('OnboardingWizard', () => {
 
   it('completes each real step via PATCH, then marks onboarding finished', async () => {
     mockedApiFetch.mockResolvedValue({
-      json: async () => checklistPayload,
+      json: async () => checklistPayloadNoAction,
     } as Response);
 
     const onComplete = jest.fn();
     render(<OnboardingWizard user={managerUser} onComplete={onComplete} />);
 
-    await screen.findAllByText('Premier employé');
+    await screen.findAllByText('Informations entreprise');
 
-    // Étape 1 (requise) : « Suivant » → PATCH complete.
+    // Étape 1 (requise, sans action dédiée) : « Suivant » → PATCH complete.
     await userEvent.click(screen.getByRole('button', { name: /Suivant/i }));
     await waitFor(() =>
-      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/first_employee/complete', {
+      expect(mockedApiFetch).toHaveBeenCalledWith('/onboarding-setup/company_info/complete', {
         method: 'PATCH',
       })
     );
@@ -217,14 +252,43 @@ describe('OnboardingWizard', () => {
     expect(onComplete).toHaveBeenCalled();
   });
 
-  it('skips an optional step via PATCH skip', async () => {
+  it("étape requise constatée côté serveur : l'action principale ouvre la page Équipe (#7351)", async () => {
     mockedApiFetch.mockResolvedValue({
       json: async () => checklistPayload,
     } as Response);
 
-    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+    const onComplete = jest.fn();
+    render(<OnboardingWizard user={managerUser} onComplete={onComplete} />);
 
     await screen.findAllByText('Premier employé');
+
+    // Audit onboarding 2026-09-14 — `first_employee` exige une DONNÉE réelle :
+    // un « Suivant » répondait 422 ONBOARDING_STEP_NOT_DONE en boucle. L'action
+    // principale EST désormais le CTA vers la page où la donnée se crée.
+    const action = screen.getByTestId('onboarding-step-action');
+    expect(action).toHaveAttribute('href', '/employees');
+    expect(action).toHaveTextContent('Ajouter un employé');
+    expect(screen.getByText("L'assistant reprendra automatiquement dès que ce sera fait.")).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Suivant/i })).not.toBeInTheDocument();
+
+    // Le clic ferme l'assistant : l'utilisateur retrouve la page Équipe, et
+    // l'étape se validera seule dès que la donnée existera.
+    await userEvent.click(action);
+    expect(onComplete).toHaveBeenCalled();
+    expect(screen.queryByText('Premier employé')).not.toBeInTheDocument();
+    expect(mockedApiFetch).not.toHaveBeenCalledWith('/onboarding-setup/first_employee/complete', {
+      method: 'PATCH',
+    });
+  });
+
+  it('skips an optional step via PATCH skip', async () => {
+    mockedApiFetch.mockResolvedValue({
+      json: async () => checklistPayloadNoAction,
+    } as Response);
+
+    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+
+    await screen.findAllByText('Informations entreprise');
     await userEvent.click(screen.getByRole('button', { name: /Suivant/i }));
 
     await screen.findAllByText('Configurer les horaires');

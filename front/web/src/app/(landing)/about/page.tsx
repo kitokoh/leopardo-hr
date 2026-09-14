@@ -102,7 +102,7 @@ export default function AboutPage() {
                 >
                   <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-10 blur-xl transition-opacity duration-500" />
                   <div className="relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-8 transition-all duration-300 group-hover:border-emerald-200/50 dark:group-hover:border-emerald-800/50 group-hover:shadow-xl">
-                    <div className="text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <div className="text-emerald-700 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300">
                       <Icon className="w-8 h-8" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{value.title}</h3>
@@ -150,7 +150,7 @@ export default function AboutPage() {
                   </div>
                   <div className="p-6">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{member.name}</h3>
-                    <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-3">{member.role}</p>
+                    <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400 mb-3">{member.role}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{member.bio}</p>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
-          <p className="mt-8 text-center text-slate-400 dark:text-slate-500 text-xs">{content.stats.footnote}</p>
+          <p className="mt-8 text-center text-slate-400 text-xs">{content.stats.footnote}</p>
         </div>
       </section>
 
@@ -229,7 +229,7 @@ export default function AboutPage() {
               href="/careers"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition-colors"
             >
               {content.join.cta}
               <ArrowRight className="w-5 h-5" />

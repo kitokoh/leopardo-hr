@@ -90,11 +90,20 @@ export async function submitSignupForm(
       // vertical : sans cette remontée, l'API provisionnerait un tenant
       // standard et le choix de l'utilisateur serait purement cosmétique.
       company_type: data.company_type,
-      // #7238 — offre choisie dans le tunnel (prime sur `?plan=` de l'URL).
-      plan: data.plan,
       modules: data.modules,
       solutions: data.solutions,
     };
+
+    // #7238 — offre choisie dans le tunnel (prime sur `?plan=` de l'URL).
+    // Audit onboarding 2026-09-14 : `plan: data.plan` était posé incondition-
+    // nellement à `undefined` (le formulaire minimal ne remplit pas ce champ).
+    // Étant répandu APRÈS `getSearchMetadata()`, il écrasait le `?plan=` de
+    // l'URL puis disparaissait au `JSON.stringify` : l'offre choisie sur
+    // /pricing n'atteignait JAMAIS l'API (tout le monde partait sur l'offre
+    // par défaut). On ne pose la clé que lorsqu'elle existe réellement.
+    if (data.plan) {
+      (sanitizedData as Record<string, unknown>).plan = data.plan;
+    }
 
     const response = await fetch("/api/forms/signup", {
       method: "POST",

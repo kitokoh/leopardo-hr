@@ -347,15 +347,15 @@ export default function ShopPage() {
                 </div>
                 <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{t(locale, 'restaurant.shop.orderRef')}</dt>
+                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderRef')}</dt>
                     <dd className="font-mono font-black text-slate-900">{order.reference}</dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{t(locale, 'restaurant.shop.orderStatus')}</dt>
+                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.orderStatus')}</dt>
                     <dd className="font-bold text-slate-800">{order.status}</dd>
                   </div>
                   <div>
-                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{t(locale, 'restaurant.shop.total')}</dt>
+                    <dt className="text-[10px] font-black uppercase tracking-widest text-emerald-700">{t(locale, 'restaurant.shop.total')}</dt>
                     <dd className="font-black text-slate-900">{money(order.total_minor, order.currency, locale)}</dd>
                   </div>
                 </dl>
