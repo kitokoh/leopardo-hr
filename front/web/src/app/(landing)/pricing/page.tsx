@@ -935,7 +935,20 @@ export default function PricingPage() {
 
           {/* Accordion */}
           <div className="space-y-3">
-            <AnimatePresence mode="wait">
+            {/*
+              #7305 — PAS de `mode="wait"` ici : cette liste rend PLUSIEURS
+              enfants à la fois (un par question filtrée), or `mode="wait"`
+              n’accepte qu’UN seul enfant animé et avertissait à chaque rendu
+              (`You're attempting to animate multiple children within
+              AnimatePresence…`), 6 fois de suite sur `/pricing`, avec un rendu
+              « odd visual behaviour » à la clé lors du changement de catégorie.
+              Le mode par défaut (synchrone) est le mode CORRECT pour une liste
+              filtrée : les entrées ajoutées/retirées s'animent en parallèle.
+              `initial={false}` évite d'animer les questions déjà présentes au
+              premier rendu (même convention que l'autre `AnimatePresence` de
+              cette page).
+            */}
+            <AnimatePresence initial={false}>
               {filteredFaq.map((item) => (
                 <motion.div
                   key={item.id}
