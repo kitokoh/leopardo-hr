@@ -22,7 +22,6 @@ import {
 import QRCode from 'qrcode';
 import { apiFetch } from '@/lib/api-client';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import Link from 'next/link';
 import { getCopy, normalizeLocale, storeAuthSession, type StoredAuthUser } from '@/lib/i18n';
 
@@ -331,6 +330,25 @@ export function OnboardingWizard({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onComplete]);
 
+  /**
+   * Audit onboarding 2026-09-14 — étapes « required » dont la validation est
+   * constatée CÔTÉ SERVEUR (StepCompletionGuard) : tant que la donnée n'existe
+   * pas, `PATCH …/complete` répond 422 ONBOARDING_STEP_NOT_DONE. Le bouton
+   * principal restait « Suivant » et échouait en boucle avec un message
+   * technique, pendant que l'action réellement attendue vivait dans un CTA
+   * secondaire — et la modale recouvrait la page à utiliser.
+   *
+   * Désormais, sur ces étapes, le bouton principal EST l'action : il ouvre la
+   * page où la donnée se crée et ferme l'assistant (l'utilisateur retrouve
+   * ensuite « Reprendre la configuration », et l'étape se valide seule dès que
+   * la donnée existe).
+   */
+  const stepActions: Record<string, { href: string; label: string }> = {
+    first_department: { href: '/employees', label: onboarding.actionCreateDepartment },
+    first_employee: { href: '/employees', label: onboarding.actionAddEmployee },
+  };
+  const stepAction = currentStep?.required ? stepActions[currentStep.step_key] : undefined;
+
   const handlePrimary = async () => {
     if (done) {
       completeLocalOnboarding();
@@ -354,13 +372,6 @@ export function OnboardingWizard({
   const isInviteManager = currentStep?.step_key === 'invite_manager';
   // #R13 — aide CSV à l'étape first_employee.
   const isFirstEmployee = currentStep?.step_key === 'first_employee';
-  // Audit onboarding 2026-09-13 — ces deux étapes exigent une DONNÉE RÉELLE
-  // (département / second employé). Le wizard disait quoi faire mais n'emmenait
-  // nulle part : on renvoie vers la page Équipe, qui porte désormais les deux
-  // créations.
-  const needsTeamPage =
-    currentStep?.step_key === 'first_department' || currentStep?.step_key === 'first_employee';
-
   if (!isOpen) return null;
 
   return (
@@ -484,16 +495,11 @@ export function OnboardingWizard({
 
             {steps !== null && (
               <div className="mt-4 space-y-3">
-                  {needsTeamPage && (
+                  {stepAction && (
                     <div className="flex w-full flex-col gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
-                      <Link
-                        href="/employees"
-                        onClick={handleDismiss}
-                        className="inline-flex w-fit items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-800"
-                      >
-                        <Users className="h-4 w-4" aria-hidden="true" />
-                        {i18nT(locale, 'employees.open_team')}
-                      </Link>
+                      <p className="text-xs leading-5 text-emerald-900">
+                        {onboarding.actionResumeHint}
+                      </p>
                     </div>
                   )}
                   {isFirstEmployee && (
@@ -577,24 +583,39 @@ export function OnboardingWizard({
                     {onboarding.skip}
                   </button>
                 )}
-                <button
-                  onClick={() => void handlePrimary()}
-                  disabled={loading || actionKey !== null}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
-                >
-                  {actionKey !== null ? (
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  ) : done ? (
-                    onboarding.finish
-                  ) : pendingSteps.length === 1 ? (
-                    onboarding.finish
-                  ) : (
-                    onboarding.next
-                  )}
-                  {!actionKey && pendingSteps.length > 1 && (
+                {stepAction ? (
+                  /* Étape « required » à action réelle : on emmène l'utilisateur
+                     là où la donnée se crée, au lieu d'un « Suivant » qui ne peut
+                     pas aboutir. */
+                  <Link
+                    href={stepAction.href}
+                    onClick={handleDismiss}
+                    data-testid="onboarding-step-action"
+                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800"
+                  >
+                    {stepAction.label}
                     <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                  )}
-                </button>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => void handlePrimary()}
+                    disabled={loading || actionKey !== null}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
+                  >
+                    {actionKey !== null ? (
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                    ) : done ? (
+                      onboarding.finish
+                    ) : pendingSteps.length === 1 ? (
+                      onboarding.finish
+                    ) : (
+                      onboarding.next
+                    )}
+                    {!actionKey && pendingSteps.length > 1 && (
+                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                )}
               </div>
             )}
           </div>

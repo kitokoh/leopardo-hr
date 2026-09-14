@@ -11,6 +11,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'حساب الموظف غير نشط.',
     'COMPANY_NOT_FOUND' => 'الشركة غير موجودة.',
     'INVALID_CURRENT_PASSWORD' => 'كلمة المرور الحالية غير صحيحة.',
+    'PASSWORD_TOO_COMMON' => 'كلمة المرور شائعة أو يمكن تخمينها بسهولة. اختر كلمة مرور أطول وفريدة (10 أحرف على الأقل مع أحرف وأرقام).',
     'UNAUTHENTICATED' => 'يجب تسجيل الدخول.',
 
     // Pointage

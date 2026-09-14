@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Rules\NotCommonPassword;
 use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -91,7 +92,7 @@ class PasswordResetController
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string', 'max:64'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'confirmed'],
         ]);
 
         $email = strtolower(trim($validated['email']));

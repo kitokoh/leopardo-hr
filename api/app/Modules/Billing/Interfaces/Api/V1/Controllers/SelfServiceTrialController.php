@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Shared\Rules\NotCommonPassword;
 use App\Core\Auth\Infrastructure\Services\AuthService;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
@@ -511,7 +512,7 @@ class SelfServiceTrialController extends Controller
 
         // Même politique que la réinitialisation de mot de passe (#5620).
         $validated = $request->validate([
-            'password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'confirmed'],
         ]);
 
         $row = DB::table('trial_provisionings')
