@@ -94,7 +94,7 @@
             {{ $t('users.bulkPanel.activate', 'Activer') }}
           </button>
           <button
-            @click="bulkAction('deactivate')"
+            @click="askBulkDeactivate"
             class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
             {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
@@ -205,6 +205,15 @@
     @confirm="confirmDeleteUser"
     @cancel="deleteOpen = false"
   />
+  <!-- Action groupée destructive (#7433) : confirmation explicite avec le NOMBRE. -->
+  <ConfirmDialog
+    :open="bulkDeactivateOpen"
+    :title="t('users.bulkPanel.deactivateConfirmTitle', 'Désactiver les utilisateurs sélectionnés ?')"
+    :message="t('users.bulkPanel.deactivateConfirmBody', 'Cette action désactivera :count utilisateur(s) sélectionné(s). Ils ne pourront plus se connecter tant que leur compte n\u2019est pas réactivé.').replace(':count', String(selectedUsers.length))"
+    :confirm-label="t('users.bulkPanel.deactivate', 'Désactiver')"
+    @confirm="confirmBulkDeactivate"
+    @cancel="closeBulkDeactivate"
+  />
 </div>
 </template>
 
@@ -225,6 +234,7 @@ import { useLocaleStore } from '@/stores/locale.js'
 import UserTable from '@/components/users/UserTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import UserDetailModal from '@/components/users/UserDetailModal.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -387,6 +397,24 @@ async function bulkAction(action) {
     console.error('Bulk action failed:', error)
     toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupée"))
   }
+}
+
+// #7433 — « Désactiver » sur une sélection passe par une confirmation qui dit
+// combien de comptes elle affecte (aucune désactivation au premier clic).
+const bulkDeactivateOpen = ref(false)
+
+function closeBulkDeactivate() {
+  bulkDeactivateOpen.value = false
+}
+
+function askBulkDeactivate() {
+  if (selectedUsers.value.length === 0) return
+  bulkDeactivateOpen.value = true
+}
+
+function confirmBulkDeactivate() {
+  bulkDeactivateOpen.value = false
+  bulkAction('deactivate')
 }
 
 async function viewUser(user) {

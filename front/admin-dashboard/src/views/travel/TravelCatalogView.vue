@@ -81,7 +81,7 @@
               <button
                 class="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white shadow"
                 :aria-label="t('travel.common.delete', 'Supprimer')"
-                @click="deleteImage(image)"
+                @click="askDeleteImage(image)"
               >
                 <XMarkIcon class="h-3 w-3" />
               </button>
@@ -534,6 +534,14 @@ async function deleteImage(image) {
   } catch (error) {
     errors.rentals = apiError(error)
   }
+}
+
+/* #7433 — suppression d'image confirmée (aucun DELETE au premier clic). */
+function askDeleteImage(image) {
+  if (!selectedRental.value) return
+  deleteAction.value = () => deleteImage(image)
+  deleteMessage.value = t('travel.catalog.confirmDeleteImage', "Supprimer cette image ? Elle sera retirée de la galerie du véhicule.")
+  deleteOpen.value = true
 }
 
 /* ─── Réservations location ─── */
