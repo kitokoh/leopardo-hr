@@ -256,14 +256,17 @@ class EduGuardianPortalController extends Controller
                     'last_30_days' => $attendances->groupBy('status')->map->count()->all(),
                     'recorded_days' => $attendances->count(),
                 ],
+                // Tableaux PHP (pas de Collection) : évite la covariance de
+                // template de `Collection` que PHPStan refuse et fige le
+                // contrat JSON (`report_cards` = liste d'objets).
                 'report_cards' => $cards->map(fn (EduReportCard $card): array => [
                     'id' => (int) $card->getAttribute('id'),
-                    'period' => $card->period,
+                    'period' => (string) $card->period,
                     'average' => $card->getAttribute('average_score'),
                     'published_at' => $card->published_at?->toIso8601String(),
-                ])->values(),
+                ])->values()->all(),
             ];
-        })->values();
+        })->values()->all();
 
         return response()->json([
             'data' => [

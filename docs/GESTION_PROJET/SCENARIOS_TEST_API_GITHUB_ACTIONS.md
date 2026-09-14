@@ -1904,3 +1904,45 @@ sans hôte (« URI must include a scheme and host »). Les trois `base_url` (Gro
 Anthropic) passent en `env(...) ?: 'défaut'`. Un `orderBy` sur une requête d'agrégation
 (`max(created_at)`) faisait échouer Postgres en `SQLSTATE 42803` — soit un **500** sur
 l'écran de santé.
+
+## Addendum 2026-09-14 — verticale EDU : portail parents, responsables légaux et tarifs scolaires (#7409, #7408)
+
+Recette **tenant propriétaire d'école** (base fraîche v4.24.0). Le module EDU était
+inatteignable dès la première action de mise en route ; ce lot raccorde trois surfaces
+développées séparément et jamais reliées.
+
+### Scénarios verrouillés par `api/tests/Feature/EduManager/EduGuardianCrudTest.php`
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians` (direction) | **201**, `data.id` > 0, `contact_reference` relu en clair (cast `encrypted`) |
+| `POST /edu-manager/students/{student}/guardians` | **201**, `data.can_view_grades` = true |
+| Ré-appel du même rattachement | **201** (idempotent, UNIQUE `company_id, student_id, guardian_id`) |
+| `POST /edu-manager/guardians/access-links` sur un responsable fraîchement créé | **201** (chaînage qui était impossible) |
+| `GET|POST /edu-manager/guardians` par un employé lambda | **403** |
+| Rattachement avec un `guardian_id` d'un autre tenant | **422** (jamais inséré) |
+| Rattachement sur un élève d'un autre tenant | **404** (isolation fail-closed) |
+
+### Scénarios vérifiés manuellement (API réelle, ANONYME pour le portail)
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians/{guardian}/access-links` | **201**, token affiché une seule fois, `expires_at` |
+| `POST /edu-manager/guardian-portal/access-links/{token}/consume` (sans session) | **200**, `data.guardian` + `data.children[]` (présence + bulletins publiés si `can_view_grades`) |
+| Réutilisation du même lien | **410** (expiré ou déjà utilisé — indistinguables côté client) |
+| Jeton inconnu | **404** |
+| `GET|POST /edu-manager/fee-types` (direction) | **200** / **201** ; code dupliqué dans le tenant → **422** |
+| `GET|POST /edu-manager/fee-types` par un employé lambda | **403** |
+| `GET /edu-manager/fee-types` sans authentification | **401** |
+
+### Scénarios de mise en route (base fraîche, bout en bout)
+
+campus → année scolaire → matières → classe → élèves → inscriptions → évaluation → notes →
+**bulletin généré (201) → validé → publié** → frais de scolarité. Avant ce lot, les trois
+premiers `POST` répondaient **500** (`SQLSTATE 42703`, colonnes absentes) et
+`report-cards/generate` répondait **403** (ability `create` absente de la policy).
+
+Contrat OpenAPI : les 8 routes ajoutées sont documentées dans `api/openapi.yaml`
+(tag `EduManager`) et le miroir + SDK sont régénérés —
+`python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` → 0 nouvelle route
+non couverte.
