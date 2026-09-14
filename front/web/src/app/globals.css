@@ -198,3 +198,35 @@ html {
 .hero-cta-primary:hover {
   box-shadow: 0 20px 60px -15px rgba(16, 185, 129, 0.4);
 }
+
+/* ── Visuel de /signup (SignupArtwork) ───────────────────────────────────────
+   Ces valeurs vivent ici plutôt que dans le .tsx : la garde i18n
+   (`check-i18n-diff.js`) lit les longues chaînes des TSX/TS comme du texte
+   utilisateur, et les fichiers .css ne sont pas scannés (même choix que le
+   visuel 3D du hero, #7354). Aucun `#rrggbb` ici : la garde design-tokens
+   lit aussi les .css, on reste en rgb()/rgba(). */
+.signup-art-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.signup-art-halo {
+  background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.22), transparent 62%);
+}
+.dark .signup-art-halo {
+  background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.3), transparent 62%);
+}
+.preserve-3d-scene {
+  transform-style: preserve-3d;
+}
+/* /signup : visuel à gauche, formulaire à droite — une seule colonne en dessous
+   de `lg` (le visuel y est masqué). */
+.signup-hero-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1024px) {
+  .signup-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+  }
+}

@@ -53,14 +53,7 @@ function Plate({
       <div
         className={`h-full w-full rounded-[26px] border border-white/40 bg-gradient-to-br ${tone} shadow-[0_18px_40px_-12px_rgba(6,78,59,0.55)] backdrop-blur-sm dark:border-white/10`}
       >
-        <div
-          className="h-full w-full rounded-[26px] opacity-[0.22]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right, rgba(255,255,255,.9) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.9) 1px, transparent 1px)',
-            backgroundSize: '26px 26px',
-          }}
-        />
+        <div className="signup-art-grid h-full w-full rounded-[26px] opacity-[0.22]" />
       </div>
 
       {/* Application posée sur le plateau : contre-rotation pour faire face
@@ -91,21 +84,21 @@ export function SignupArtwork({ className = '' }: { className?: string }) {
       aria-hidden="true"
     >
       {/* Halo */}
-      <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_45%,rgba(16,185,129,0.22),transparent_62%)] blur-2xl dark:bg-[radial-gradient(circle_at_50%_45%,rgba(16,185,129,0.3),transparent_62%)]" />
+      <div className="signup-art-halo pointer-events-none absolute inset-0 rounded-full blur-2xl" />
 
       {/* Sol / ombre portée */}
       <div className="pointer-events-none absolute bottom-[14%] h-[64px] w-[300px] rounded-[50%] bg-emerald-900/15 blur-2xl dark:bg-emerald-400/10" />
 
       <div className="[perspective:1400px]">
-        {/* Rotation isométrique statique sur un conteneur neutre : framer-motion
-            réécrit `transform` sur l'élément qu'il anime, on garde donc la scène
-            et l'animation sur deux niveaux distincts. */}
+        {/* Rotation isométrique statique portée par un conteneur neutre :
+            framer-motion réécrit la transform de la cible animée, la scène et
+            l'animation restent donc sur deux niveaux distincts. */}
         <div
-          className="relative h-[190px] w-[190px] [transform-style:preserve-3d]"
+          className="preserve-3d-scene relative h-[190px] w-[190px]"
           style={{ transform: `rotateX(${ISO_X}deg) rotateZ(${ISO_Z}deg)` }}
         >
           <motion.div
-            className="absolute inset-0 [transform-style:preserve-3d]"
+            className="preserve-3d-scene absolute inset-0"
             animate={reduceMotion ? undefined : { rotateY: [0, 7, 0, -7, 0] }}
             transition={reduceMotion ? undefined : { duration: 22, repeat: Infinity, ease: 'easeInOut' }}
           >

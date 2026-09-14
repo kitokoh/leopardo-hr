@@ -39,7 +39,7 @@ export default function SignupPage() {
       <main id="signup-form" className="relative overflow-hidden py-10 sm:py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/60 to-white dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950" />
 
-        <div className="relative mx-auto grid w-full max-w-5xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_minmax(0,28rem)] lg:px-8">
+        <div className="signup-hero-grid relative mx-auto grid w-full max-w-5xl grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:px-8">
           <SignupArtwork className="hidden lg:flex" />
 
           <div className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
