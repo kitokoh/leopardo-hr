@@ -10,11 +10,24 @@ import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
  * sémantiquement NEUTRE : même signature, même `config.matcher`, mêmes règles ;
  * seule la convention change (`src/proxy.ts`, export nommé `proxy`).
  *
+ * #7305 — Next 16 déprécie la convention de fichier `middleware` :
+ *   ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+ * Le fichier est donc `src/proxy.ts` et la fonction exportée `proxy` (exigence
+ * de la convention : `proxy` ou un export par défaut — cf.
+ * `next/dist/build/templates/middleware.js`). La migration est SANS effet de
+ * bord : `config.matcher`, `NextResponse.redirect/next()` et les en-têtes sont
+ * identiques. En revanche, un proxy s'exécute TOUJOURS sur le runtime Node.js
+ * (plus de segment `runtime` possible) — ce fichier n'en déclarait aucun.
+ *
+ * Les 3 responsabilités ci-dessous sont verrouillées par
+ * `src/lib/__tests__/proxy-responsibilities.test.ts` (#7305) :
  * 1. Zone dashboard : toute requête sans cookie de session `leopardo_token`
  *    est redirigée vers `/auth/login` avant même le rendu (gate cosmétique,
  *    la vraie auth reste serveur — issue #3522).
- * 2. Vitrine `(landing)` : la locale SSR est propagée dans l'en-tête
- *    `x-vitrine-lang` pour les layouts. Next 15 ne passe PAS `searchParams`
+ * 2. `/signup` sans offre souscriptible (`?plan=`) est renvoyé sur
+ *    `/pricing#plans` (le choix de l'offre précède la création du compte).
+ * 3. Vitrine `(landing)` : la locale SSR est propagée dans l'en-tête
+ *    `x-vitrine-lang` pour les layouts. Next ne passe PAS `searchParams`
  *    aux `generateMetadata` des LAYOUTS (pages seulement) → les layouts
  *    landing lisent `headers()`. `?lang=` (liens hreflang, #4173) prime ;
  *    sinon Accept-Language est normalisé (#4393) — sans cela les metadata
@@ -133,6 +146,9 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
+// #7305 — la convention `proxy` conserve `config.matcher` tel quel (littéraux
+// obligatoires : Next les analyse statiquement) ; `protected-prefixes.test.ts`
+// garde l'alignement avec `PROTECTED_PREFIXES` / `VITRINE_LANG_PREFIXES`.
 export const config = {
   matcher: [
     // Zone dashboard protégée (source PROTECTED_PREFIXES, garde #3377).
