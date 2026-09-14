@@ -5,12 +5,14 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Core\Mail\UsesEditableEmailTemplate;
 
+/**
+ * #7347 — le sujet n'est plus codé en dur dans 4 langues (il portait aussi la
+ * marque en dur) : il vient du registre d'e-mails, donc du catalogue, et devient
+ * modifiable depuis l'admin (Paramètres › E-mails).
+ */
 class TrialVerificationMail extends Mailable
 {
-    use UsesEditableEmailTemplate;
-
     use Queueable;
     use SerializesModels;
 
@@ -28,7 +30,7 @@ class TrialVerificationMail extends Mailable
             // l'application (français/anglais) alors que le sujet était déjà
             // localisé — e-mail hybride.
             ->locale($this->emailLocale)
-            ->subject($this->editableEmailTemplate('trial_verification', $this->emailLocale, [
+            ->subject(app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_verification', $this->emailLocale, [
                 ':name' => $this->managerName,
                 ':brand' => config('mail.brand.name'),
             ])->subject)
@@ -36,16 +38,10 @@ class TrialVerificationMail extends Mailable
                 'managerName' => $this->managerName,
                 'verificationToken' => $this->verificationToken,
                 'locale' => $this->emailLocale,
-                'tpl' => $this->editableEmailTemplate('trial_verification', $this->emailLocale, [
+                'tpl' => app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_verification', $this->emailLocale, [
                     ':name' => $this->managerName,
                     ':brand' => \App\Core\Mail\MailBrand::name(),
                 ]),
             ]);
     }
-
-    /**
-     * #7347 — le sujet n'est plus codé en dur dans 4 langues (il portait aussi
-     * la marque en dur) : il vient du registre, donc du catalogue, et devient
-     * modifiable depuis l'admin.
-     */
 }

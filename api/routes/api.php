@@ -49,10 +49,10 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
@@ -61,8 +61,8 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\TranslationCatalogController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\CandidateApplicationController;
 use App\Modules\Recruitment\Interfaces\Api\V1\Controllers\PublicCareerController;

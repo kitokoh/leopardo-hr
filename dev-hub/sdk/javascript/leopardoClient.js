@@ -475,6 +475,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/edge-nodes/{nodeId}/sync", options);
     },
 
+    /** Revenir au contenu par defaut d'un e-mail (super-admin) */
+    deleteAdminEmailTemplates(options = {}) {
+      return request("DELETE", "/admin/email-templates", options);
+    },
+
+    /** Contenus d'e-mails editables et valeurs effectives (super-admin) */
+    getAdminEmailTemplates(options = {}) {
+      return request("GET", "/admin/email-templates", options);
+    },
+
+    /** Surcharger le contenu d'un e-mail (super-admin) */
+    putAdminEmailTemplates(options = {}) {
+      return request("PUT", "/admin/email-templates", options);
+    },
+
+    /** Apercu rendu d'un e-mail dans le layout canonique (super-admin) */
+    postAdminEmailTemplatesPreview(options = {}) {
+      return request("POST", "/admin/email-templates/preview", options);
+    },
+
     /** Alertes flotte cross-tenant (super-admin) */
     getAdminFleetAlerts(options = {}) {
       return request("GET", "/admin/fleet/alerts", options);
@@ -1603,6 +1623,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mettre a jour l'identite visuelle entreprise */
     patchCompanyBranding(options = {}) {
       return request("PATCH", "/company/branding", options);
+    },
+
+    /** Activer un module horizontal de l'entreprise (#7322) */
+    postCompanyModulesByModuleActivate(options = {}) {
+      return request("POST", "/company/modules/{module}/activate", options);
     },
 
     /** Generer le QR onboarding entreprise */

@@ -17,9 +17,7 @@ class EdgeNodeSilentNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(private readonly EdgeNode $node)
-    {
-    }
+    public function __construct(private readonly EdgeNode $node) {}
 
     public function via(mixed $notifiable): array
     {

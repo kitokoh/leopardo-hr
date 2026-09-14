@@ -9,12 +9,9 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Core\Mail\UsesEditableEmailTemplate;
 
 class TrialWelcomeMail extends Mailable
 {
-    use UsesEditableEmailTemplate;
-
     use Queueable;
     use SerializesModels;
 
@@ -39,7 +36,7 @@ class TrialWelcomeMail extends Mailable
         \Illuminate\Support\Facades\App::setLocale($locale);
 
         return $this
-            ->subject($this->editableEmailTemplate('trial_welcome', $locale, [
+            ->subject(app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_welcome', $locale, [
                 ':company' => $this->company->name,
                 ':name' => $this->manager->first_name,
                 ':brand' => config('mail.brand.name'),
@@ -54,7 +51,7 @@ class TrialWelcomeMail extends Mailable
                 // pointer sur l'UI produit (page de connexion), jamais sur
                 // l'API — même convention que TrialDripMail.
                 'appUrl' => rtrim((string) config('app.frontend_url', config('app.url')), '/'),
-                'tpl' => $this->editableEmailTemplate('trial_welcome', $locale, [
+                'tpl' => app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_welcome', $locale, [
                     ':company' => $this->company->name,
                     ':name' => $this->manager->first_name,
                     ':brand' => \App\Core\Mail\MailBrand::name(),
@@ -95,5 +92,4 @@ class TrialWelcomeMail extends Mailable
 
         return 14;
     }
-
 }

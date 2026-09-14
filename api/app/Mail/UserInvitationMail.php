@@ -2,19 +2,16 @@
 
 namespace App\Mail;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
-use App\Core\Mail\UsesEditableEmailTemplate;
 
 class UserInvitationMail extends Mailable
 {
-    use UsesEditableEmailTemplate;
-
     use Queueable;
     use SerializesModels;
 
@@ -37,7 +34,7 @@ class UserInvitationMail extends Mailable
     {
         App::setLocale($this->locale);
 
-        $tpl = $this->editableEmailTemplate('user_invitation', $this->locale, [
+        $tpl = app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('user_invitation', $this->locale, [
             ':company' => $this->company->name,
             ':role' => $this->employee->manager_role ?? '',
             ':email' => $this->employee->email,
@@ -49,4 +46,3 @@ class UserInvitationMail extends Mailable
             ->view('emails.user-invitation', ['locale' => $this->locale, 'tpl' => $tpl]);
     }
 }
-
