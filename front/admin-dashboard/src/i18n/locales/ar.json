@@ -2641,7 +2641,10 @@
     "cancel": "إلغاء",
     "noResults": "لا توجد نتائج.",
     "reload": "إعادة التحميل",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل",
+    "search": "بحث…"
   },
   "settingsProfileUpdated": "تم تحديث الملف الشخصي.",
   "attendanceHoursWorkedLabel": "ساعات العمل",
@@ -4846,7 +4849,17 @@
       "loading": "جارٍ تحميل المستخدمين...",
       "empty": "لا يوجد مستخدم",
       "emptyHint": "لا يوجد مستخدم يطابق معايير البحث.",
-      "viewDetails": "عرض التفاصيل"
+      "viewDetails": "عرض التفاصيل",
+      "company": "الشركة",
+      "createdAt": "التسجيل",
+      "name": "المستخدم",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "pending": "قيد الانتظار",
+      "suspended": "موقوف"
     }
   },
   "settingsBiometryEnrollment": "تسجيل البيانات الحيوية",
