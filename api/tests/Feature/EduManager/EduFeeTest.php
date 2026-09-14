@@ -13,6 +13,7 @@ use App\Modules\EduManager\Domain\Models\EduFeePayment;
 use App\Modules\EduManager\Domain\Models\EduOutboxEvent;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -140,6 +141,12 @@ class EduFeeTest extends TestCase
         ])->assertStatus(422);
 
         // Unauthenticated : 401.
+        // `Sanctum::actingAs()` persiste pour tout le test : sans purge des
+        // gardes, l'appel ci-dessous était authentifié et l'assertion 401 ne
+        // pouvait pas passer (elle n'était donc jamais atteinte, le test
+        // échouant avant). Même helper que
+        // `tests/Feature/Travel/TravelAdvertDestroyTest.php`.
+        Auth::forgetGuards();
         $this->getJson($this->baseUrl().'/fee-types')->assertStatus(401);
     }
 

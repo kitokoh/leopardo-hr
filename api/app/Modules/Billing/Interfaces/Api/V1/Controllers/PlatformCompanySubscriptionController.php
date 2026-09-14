@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -74,4 +74,3 @@ class PlatformCompanySubscriptionController extends Controller
         ];
     }
 }
-

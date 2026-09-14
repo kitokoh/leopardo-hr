@@ -1760,6 +1760,22 @@ class LeopardoClient:
         """Readiness probe du nœud edge (schéma SQLite)"""
         return self.request("GET", "/edge/readiness", **kwargs)
 
+    def get_edu_manager_fee_accounting_entries(self, **kwargs):
+        """Lister les écritures comptables des frais scolaires"""
+        return self.request("GET", "/edu-manager/fee-accounting-entries", **kwargs)
+
+    def post_edu_manager_fee_charges(self, **kwargs):
+        """Facturer un frais scolaire à un élève"""
+        return self.request("POST", "/edu-manager/fee-charges", **kwargs)
+
+    def post_edu_manager_fee_charges_by_charge_payments(self, **kwargs):
+        """Encaisser un paiement sur une charge de frais"""
+        return self.request("POST", "/edu-manager/fee-charges/{charge}/payments", **kwargs)
+
+    def post_edu_manager_fee_charges_by_charge_waive(self, **kwargs):
+        """Abandonner le solde restant d''une charge"""
+        return self.request("POST", "/edu-manager/fee-charges/{charge}/waive", **kwargs)
+
     def get_edu_manager_fee_types(self, **kwargs):
         """Lister les types de frais scolaires"""
         return self.request("GET", "/edu-manager/fee-types", **kwargs)
@@ -1783,6 +1799,14 @@ class LeopardoClient:
     def post_edu_manager_guardians_by_guardian_access_links(self, **kwargs):
         """Émettre un lien d'accès au portail parents (forme par chemin)"""
         return self.request("POST", "/edu-manager/guardians/{guardian}/access-links", **kwargs)
+
+    def post_edu_manager_guardians_by_guardian_portal_link(self, **kwargs):
+        """Émettre un lien d''accès au portail parents"""
+        return self.request("POST", "/edu-manager/guardians/{guardian}/portal-link", **kwargs)
+
+    def get_edu_manager_portal_by_token(self, **kwargs):
+        """Consulter le portail parents (lecture, sans session)"""
+        return self.request("GET", "/edu-manager/portal/{token}", **kwargs)
 
     def post_edu_manager_students_by_student_guardians(self, **kwargs):
         """Rattacher un responsable légal à un élève"""

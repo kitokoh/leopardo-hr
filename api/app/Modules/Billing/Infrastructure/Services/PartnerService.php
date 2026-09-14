@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Infrastructure\Services;
 
-use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
-use App\Modules\Payroll\Domain\Models\Commission;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerAuditLog;
+use App\Modules\Payroll\Domain\Models\Commission;
 use App\Modules\Payroll\Domain\Models\Payment;
-use App\Exceptions\DomainException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -113,13 +112,14 @@ class PartnerService
             ->where('status', 'active')
             ->first();
 
-        if (!$partner) {
+        if (! $partner) {
             return false;
         }
 
         // Vérification d'auto-référencement
         if ($company->email === $partner->user->email) {
             Log::warning("Tentative d'auto-référencement bloquée pour le partenaire: {$partner->id}");
+
             return false;
         }
 
@@ -136,7 +136,6 @@ class PartnerService
 
         return true;
     }
-
 
     /**
      * Approuve les commissions en attente après le délai de 14 jours.
@@ -187,11 +186,11 @@ class PartnerService
             $available = $totalEarned - $totalRequested;
 
             if ($amountCents > $available) {
-                throw new \App\Exceptions\DomainException("Solde insuffisant.", 422, "INSUFFICIENT_BALANCE");
+                throw new \App\Exceptions\DomainException('Solde insuffisant.', 422, 'INSUFFICIENT_BALANCE');
             }
 
             if ($amountCents < $lockedPartner->payout_threshold) {
-                throw new \App\Exceptions\DomainException("Montant sous le seuil.", 422, "BELOW_PAYOUT_THRESHOLD");
+                throw new \App\Exceptions\DomainException('Montant sous le seuil.', 422, 'BELOW_PAYOUT_THRESHOLD');
             }
 
             return \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::create([
@@ -327,9 +326,9 @@ class PartnerService
         DB::transaction(function () use ($commission, $newStatus, $adminId, $reason, $oldStatus) {
             $commission->status = $newStatus;
 
-            if ($newStatus === 'approved' && !$commission->approved_at) {
+            if ($newStatus === 'approved' && ! $commission->approved_at) {
                 $commission->approved_at = now();
-            } elseif ($newStatus === 'paid' && !$commission->paid_at) {
+            } elseif ($newStatus === 'paid' && ! $commission->paid_at) {
                 $commission->paid_at = now();
             }
 
@@ -347,4 +346,3 @@ class PartnerService
         });
     }
 }
-

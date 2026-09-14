@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduTeacher;
-use App\Modules\EduManager\Domain\Models\EduTimetableSlot;
 
 /**
  * Issue #5823 (EDU-007) — Policy des évaluations.
@@ -50,12 +50,25 @@ class EduAssessmentPolicy
 
     public function create(Employee $actor): bool
     {
-        return $this->isManager($actor);
+        // Une évaluation ne vise pas encore de classe : la direction crée, et
+        // le TITULAIRE d'au moins une classe (pédagogie de sa classe). Un
+        // enseignant qui n'assure qu'une séance n'est pas administrateur.
+        return $this->isManager($actor) || EduAccess::isClassReferent($actor);
     }
 
     public function update(Employee $actor, EduAssessment $assessment): bool
     {
-        return $this->isManager($actor) && $assessment->company_id === $actor->company_id;
+        if ($assessment->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        if ($this->isManager($actor)) {
+            return true;
+        }
+
+        // Titulaire de LA classe de l'évaluation (le simple enseignant de
+        // séance lit sans modifier).
+        return EduAccess::isClassReferent($actor, (int) $assessment->class_id);
     }
 
     public function delete(Employee $actor, EduAssessment $assessment): bool
@@ -82,10 +95,7 @@ class EduAssessmentPolicy
      */
     private function isTeacher(Employee $actor): bool
     {
-        return EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::isTeacher($actor);
     }
 
     /**
@@ -97,24 +107,6 @@ class EduAssessmentPolicy
      */
     private function teachesClass(Employee $actor, int $classId): bool
     {
-        if ($classId <= 0) {
-            return false;
-        }
-
-        /** @var EduTeacher|null $teacher */
-        $teacher = EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof EduTeacher) {
-            return false;
-        }
-
-        return EduTimetableSlot::query()
-            ->where('class_id', $classId)
-            ->where('teacher_id', (int) $teacher->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::teachesClass($actor, $classId);
     }
 }

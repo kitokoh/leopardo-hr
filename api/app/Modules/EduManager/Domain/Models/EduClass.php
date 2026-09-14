@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $grade_level
  *
  * @mixin Builder<static>
  */
@@ -59,6 +60,10 @@ class EduClass extends Model
         'code',
         'name',
         'level',
+        // v2 (#5819) : niveau libellé (`grade_level`) attendu par l'API et
+        // les écrans — la colonne existe en base, le modèle ne la portait pas
+        // (les créations la perdaient silencieusement).
+        'grade_level',
         'teacher_id',
         'capacity',
         'status',
