@@ -49,6 +49,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
@@ -105,9 +106,31 @@ Route::prefix('v1')->group(function (): void {
         // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
         Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
-        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
-        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
+
+        // QA onboarding 2026-09-14 — le flux Google a besoin d'une SESSION.
+        // Le state anti-CSRF (#2619) et l'intention de parcours
+        // (`google_oauth_intent` / `google_oauth_plan`) vivent dans la session,
+        // et le callback de la vitrine relaie le cookie
+        // (front/web/src/app/api/v1/auth/google/callback/route.ts). Or le groupe
+        // `api` ne comporte AUCUN middleware de session : mesuré en dev ET en
+        // prod, `GET /auth/google` échouait en
+        // `auth.google.redirect_failed { "Session store not set on request." }`
+        // → 503 GOOGLE_OAUTH_UNAVAILABLE. Le flux était donc structurellement
+        // inutilisable, même clés configurées.
+        //
+        // On n'ajoute la session QU'À ces deux routes : l'imposer à tout le
+        // groupe `api` activerait la protection CSRF Sanctum sur les routes
+        // utilisées par la SPA admin et les clients mobiles.
+        Route::middleware([
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            'throttle:auth-sensitive',
+        ])->group(function (): void {
+            Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+            Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+        });
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
     });
 
@@ -492,6 +515,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/webhooks/{webhookEndpoint}/test', [PlatformAdminWebhookController::class, 'test'])->whereNumber('webhookEndpoint');
         Route::get('/webhooks/{webhookEndpoint}/dead-letters', [PlatformAdminWebhookController::class, 'deadLetters'])->whereNumber('webhookEndpoint');
         Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [PlatformAdminWebhookController::class, 'replayDeadLetter'])->whereNumber('webhookEndpoint')->whereNumber('delivery');
+
+        // #7347 — édition des contenus d'e-mails depuis la plateforme admin
+        // (Paramètres › E-mails). Surcharge par (template, locale) ; sans
+        // surcharge, l'e-mail garde sa valeur par défaut du catalogue.
+        Route::get('/email-templates', [PlatformEmailTemplateController::class, 'index']);
+        Route::put('/email-templates', [PlatformEmailTemplateController::class, 'update']);
+        Route::delete('/email-templates', [PlatformEmailTemplateController::class, 'reset']);
+        Route::post('/email-templates/preview', [PlatformEmailTemplateController::class, 'preview']);
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);

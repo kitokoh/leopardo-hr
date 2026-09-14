@@ -91,7 +91,10 @@ test.describe('Marketing funnel preview', () => {
       waitUntil: 'networkidle',
     });
 
-    await expect(page.locator('body')).toContainText(/Try Leopardo RH|Testez Leopardo RH/i);
+    // QA onboarding 2026-09-14 : la page /signup n'affiche plus de hero
+    // marketing (le formulaire EST l'écran, plus de récit à gauche/droite).
+    // L'assertion porte donc sur le tunnel réellement présenté.
+    await expect(page.locator('[data-testid="signup-profile-company"]')).toBeVisible();
 
     // #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise /
     // indépendant) puis va directement aux coordonnées : l'écran « outils +

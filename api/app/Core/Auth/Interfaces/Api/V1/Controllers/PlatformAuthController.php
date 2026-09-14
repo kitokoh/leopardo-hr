@@ -229,7 +229,7 @@ class PlatformAuthController extends Controller
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'new_password' => ['required', 'string', Password::min(8)->numbers(), 'max:255', 'confirmed'],
+            'new_password' => ['required', 'string', Password::min(12)->numbers(), 'max:255', 'confirmed'],
         ]);
 
         /** @var SuperAdmin $superAdmin */

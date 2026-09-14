@@ -2098,6 +2098,24 @@ paths:
       tags:
       - Auth
       summary: 'Redirection vers le flux OAuth Google (state anti-CSRF en session, #2619)'
+      parameters:
+      - name: intent
+        in: query
+        required: false
+        description: 'Intention du parcours. `signup` (bouton « Continuer avec Google » de /signup) prépare la CRÉATION de compte : sur un email inconnu, le callback renvoie l''identité vérifiée par Google au lieu de 401 UNKNOWN_ACCOUNT, et le tenant reste créé par le tunnel d''essai. Absent ou `login` = parcours invitation-first inchangé (#3724).'
+        schema:
+          type: string
+          enum:
+          - login
+          - signup
+          default: login
+      - name: plan
+        in: query
+        required: false
+        description: Code d'offre choisi dans le tunnel, mémorisé avec l'intention et renvoyé au callback (informatif).
+        schema:
+          type: string
+          maxLength: 80
       responses:
         '302':
           description: Redirection vers la page de consentement Google
@@ -5065,6 +5083,160 @@ paths:
           description: Nœud révoqué
         '404':
           $ref: '#/components/responses/Error404'
+  /admin/email-templates:
+    get:
+      tags:
+      - Platform
+      summary: Contenus d'e-mails editables et valeurs effectives (super-admin)
+      description: 'Issue #7347 - catalogue du registre d''e-mails : pour chacun des modeles, le contenu effectif des 4 locales (surcharge enregistree, sinon defaut du catalogue).'
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Modeles editables et valeurs effectives par locale
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+    put:
+      tags:
+      - Platform
+      summary: Surcharger le contenu d'un e-mail (super-admin)
+      description: 'Issue #7347 - surcharge partielle par (template_key, locale). Seuls les champs fournis sont remplaces ; champ vide = valeur par defaut conservee.'
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - template_key
+              - locale
+              properties:
+                template_key:
+                  type: string
+                locale:
+                  type: string
+                  enum:
+                  - fr
+                  - en
+                  - ar
+                  - tr
+                subject:
+                  type: string
+                  nullable: true
+                heading:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+                cta_label:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Surcharge enregistree (valeur effective renvoyee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+    delete:
+      tags:
+      - Platform
+      summary: Revenir au contenu par defaut d'un e-mail (super-admin)
+      description: 'Issue #7347 - supprime la surcharge (template_key, locale) et renvoie la valeur par defaut du catalogue.'
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - template_key
+              - locale
+              properties:
+                template_key:
+                  type: string
+                locale:
+                  type: string
+                  enum:
+                  - fr
+                  - en
+                  - ar
+                  - tr
+      responses:
+        '200':
+          description: Surcharge supprimee (defaut renvoye)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/email-templates/preview:
+    post:
+      tags:
+      - Platform
+      summary: Apercu rendu d'un e-mail dans le layout canonique (super-admin)
+      description: 'Issue #7347 - rend la surcharge en cours d''edition dans le layout e-mail reel, avec les variables fournies par l''ecran admin.'
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - locale
+              properties:
+                locale:
+                  type: string
+                  enum:
+                  - fr
+                  - en
+                  - ar
+                  - tr
+                heading:
+                  type: string
+                  nullable: true
+                body:
+                  type: string
+                  nullable: true
+                cta_label:
+                  type: string
+                  nullable: true
+                variables:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '200':
+          description: HTML rendu de l'apercu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      html:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '422':
+          $ref: '#/components/responses/Error422'
   /admin/ai/conversations:
     get:
       tags:

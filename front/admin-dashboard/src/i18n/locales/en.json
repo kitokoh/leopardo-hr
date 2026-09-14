@@ -18,7 +18,7 @@
       "name": "First name"
     },
     "min": {
-      "chars": "8 characters minimum"
+      "chars": "12 characters minimum"
     },
     "password": "Password",
     "required": "Required",
@@ -1116,8 +1116,8 @@
         "visibility": "Show or hide password"
       }
     },
-    "access_key_label": "Access Key",
-    "access_key_required": "The access key is required.",
+    "access_key_label": "Password",
+    "access_key_required": "Password is required.",
     "connection_error": "Connection error.",
     "disable_two_fa_failed": "2FA disable failed.",
     "hide_password": "Hide password",
@@ -1504,7 +1504,7 @@
     "generateSecret": "Generate 2FA secret",
     "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
     "manualSecret": "Manual secret:",
-    "minLengthHint": "Minimum 8 characters.",
+    "minLengthHint": "Minimum 12 characters.",
     "newPassword": "New password",
     "password": "Password",
     "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
@@ -1645,9 +1645,9 @@
     "linkCopied": "Link copied!",
     "linkEmailed": "Your access link was also sent by email.",
     "failedTitle": "Creation interrupted",
-    "failedBody": "An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.",
-    "timeoutTitle": "Still being created",
-    "timeoutBody": "Your workspace is being prepared. We will email you the access link as soon as it is ready.",
+    "failedBody": "Something went wrong while creating your workspace. Try again — it restarts from scratch in a few seconds. If it keeps happening, contact support.",
+    "timeoutTitle": "Still creating your workspace",
+    "timeoutBody": "Creating your workspace is taking longer than usual. Refresh the status below to see where it stands, or try again in a few minutes.",
     "refreshStatus": "Refresh status",
     "preparingTitle": "Preparing your workspace",
     "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
@@ -1689,7 +1689,7 @@
     "setPasswordSubmit": "Set my password",
     "setPasswordSubmitting": "Saving…",
     "setPasswordSuccess": "Password saved. You can sign in.",
-    "setPasswordTooWeak": "At least 8 characters, including one digit.",
+    "setPasswordTooWeak": "At least 12 characters, including one digit.",
     "setPasswordMismatch": "The two passwords do not match.",
     "setPasswordUnavailable": "Unable to save the password right now. Please retry.",
     "goToLogin": "Sign in",
@@ -1749,7 +1749,8 @@
     "planContinue": "Continue with this plan",
     "planSelected": "Selected plan",
     "planChange": "Change",
-    "countryDetectionFailed": "Select your country."
+    "countryDetectionFailed": "Select your country.",
+    "verifiedByGoogle": "Email verified by Google"
   },
   "attendanceDayDetail": "Daily detail",
   "support_tickets": {
@@ -3023,7 +3024,7 @@
     "password": {
       "changed": "Password changed.",
       "min": {
-        "length": "Minimum 8 characters"
+        "length": "Minimum 12 characters"
       },
       "mismatch": "Passwords do not match"
     },
@@ -3997,7 +3998,7 @@
     "statusSuspended": "Suspended",
     "valid": "Valid"
   },
-  "settingsPasswordMinCharacters": "Minimum 8 characters",
+  "settingsPasswordMinCharacters": "Minimum 12 characters",
   "notifications": {
     "channel_inapp": "In-app",
     "channel_email_desc": "Important messages and confirmations.",
@@ -4809,7 +4810,7 @@
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
       "fix_fields": "Please fix the highlighted fields",
-      "password_min": "Password must be at least 8 characters",
+      "password_min": "Password must be at least 12 characters",
       "search_no_match": "No page matches your search",
       "update_failed": "Failed to update user"
     },
@@ -4895,7 +4896,8 @@
     "solutionSurveys": "Solution surveys",
     "travel": "Travel Agency",
     "showcase": "Showcase site",
-    "clientModules": "Client company modules"
+    "clientModules": "Client company modules",
+    "emailTemplates": "Emails"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -6259,5 +6261,25 @@
     "step1": "You enter your email and your company name.",
     "step2": "You receive a 6-digit code by email.",
     "step3": "You go straight into your workspace — no password to create."
+  },
+  "emailsAdmin": {
+    "title": "Email templates",
+    "subtitle": "Customise the content of emails sent by the platform. Until you change it, the default text is used.",
+    "locale": "Language",
+    "subject": "Subject",
+    "heading": "Heading",
+    "body": "Message body",
+    "ctaLabel": "Button label",
+    "variables": "Available variables",
+    "bodyHint": "Plain text: line breaks are kept, HTML is not interpreted.",
+    "save": "Save",
+    "saved": "Template saved",
+    "saveFailed": "Could not save",
+    "reset": "Restore default",
+    "resetDone": "Template reset",
+    "overridden": "customised",
+    "preview": "Preview",
+    "previewFailed": "Preview unavailable",
+    "loadFailed": "Could not load"
   }
 }

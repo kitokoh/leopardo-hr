@@ -50,7 +50,7 @@ class TrialDayOneMail extends Mailable
         $base = rtrim((string) config('app.frontend_url', config('app.url')), '/');
 
         return new Content(
-            markdown: 'emails.trial.day_one',
+            view: 'emails.trial.day_one',
             with: [
                 'company' => $this->company,
                 'managerName' => $this->managerName,

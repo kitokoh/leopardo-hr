@@ -368,7 +368,9 @@ class IntentEngine
         }
 
         $limit = min($this->intArgument($args, 'limit', 20), 50);
-        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'post', 'department_id', 'status'])
+        // #7356 — `post` n'existe pas sur `employees` (le schéma porte
+        // `position_id`) : la sélection levait SQLSTATE[42703] à chaque appel.
+        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'department_id', 'status'])
             ->limit($limit)
             ->get();
 
@@ -388,9 +390,12 @@ class IntentEngine
             return ['error' => 'Employee not found'];
         }
 
+        // #7356 — `post` et `hire_date` n'existent pas sur `employees` : le
+        // schéma porte `position_id` et `contract_start` (même mapping que
+        // EmployeeResource::hire_date, cf. GenerateTurnoverReportAction).
         $employee = Employee::where('company_id', $companyId)
             ->where('id', $requestedId)
-            ->select(['id', 'first_name', 'last_name', 'email', 'post', 'department_id', 'status', 'phone', 'hire_date'])
+            ->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'department_id', 'status', 'phone', 'contract_start'])
             ->first();
 
         if (! $employee) {
@@ -439,15 +444,19 @@ class IntentEngine
         $search = $this->stringArgument($args, 'query', '');
 
         if ($search !== '') {
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search): void {
                 $q->where('first_name', 'ilike', "%{$search}%")
                     ->orWhere('last_name', 'ilike', "%{$search}%")
                     ->orWhere('email', 'ilike', "%{$search}%")
-                    ->orWhere('post', 'ilike', "%{$search}%");
+                    // #7356 — l'intitulé de poste vit dans `extra_data.job_title`
+                    // (JSONB) et dans le catalogue `positions` ; la colonne
+                    // `post` n'existe pas sur `employees`.
+                    ->orWhere('extra_data->job_title', 'ilike', "%{$search}%")
+                    ->orWhereHas('position', fn ($position) => $position->where('name', 'ilike', "%{$search}%"));
             });
         }
 
-        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'post', 'status'])
+        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'status'])
             ->limit(20)
             ->get();
 

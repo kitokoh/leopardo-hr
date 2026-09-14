@@ -18,7 +18,7 @@
       "name": "الاسم الأول"
     },
     "min": {
-      "chars": "8 أحرف على الأقل"
+      "chars": "12 حرفًا على الأقل"
     },
     "password": "كلمة المرور",
     "required": "مطلوب",
@@ -1116,8 +1116,8 @@
         "visibility": "إظهار أو إخفاء كلمة المرور"
       }
     },
-    "access_key_label": "مفتاح الوصول",
-    "access_key_required": "مفتاح الوصول مطلوب.",
+    "access_key_label": "كلمة المرور",
+    "access_key_required": "كلمة المرور مطلوبة.",
     "connection_error": "خطأ في الاتصال.",
     "disable_two_fa_failed": "فشل تعطيل التحقق بخطوتين.",
     "hide_password": "إخفاء كلمة المرور",
@@ -1504,7 +1504,7 @@
     "generateSecret": "إنشاء رمز 2FA السري",
     "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
     "manualSecret": "الرمز اليدوي:",
-    "minLengthHint": "8 أحرف على الأقل.",
+    "minLengthHint": "12 حرفًا على الأقل.",
     "newPassword": "كلمة المرور الجديدة",
     "password": "كلمة المرور",
     "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
@@ -1645,9 +1645,9 @@
     "linkCopied": "تم نسخ الرابط!",
     "linkEmailed": "تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.",
     "failedTitle": "تم إيقاف الإنشاء",
-    "failedBody": "حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.",
-    "timeoutTitle": "لا يزال الإنشاء جاريًا",
-    "timeoutBody": "مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.",
+    "failedBody": "حدث خطأ أثناء إنشاء مساحتك. أعد المحاولة — تبدأ العملية من جديد في ثوانٍ. إذا تكرر الأمر، تواصل مع الدعم.",
+    "timeoutTitle": "لا يزال إنشاء مساحتك جاريًا",
+    "timeoutBody": "يستغرق إنشاء مساحتك وقتًا أطول من المعتاد. حدّث الحالة أدناه لمعرفة ما وصلت إليه، أو أعد المحاولة بعد دقائق.",
     "refreshStatus": "تحديث الحالة",
     "preparingTitle": "تجهيز مساحتك",
     "preparingBody": "نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.",
@@ -1689,7 +1689,7 @@
     "setPasswordSubmit": "تعيين كلمة المرور",
     "setPasswordSubmitting": "جارٍ الحفظ…",
     "setPasswordSuccess": "تم حفظ كلمة المرور. يمكنك تسجيل الدخول.",
-    "setPasswordTooWeak": "8 أحرف على الأقل، بما في ذلك رقم واحد.",
+    "setPasswordTooWeak": "12 حرفًا على الأقل، مع رقم واحد.",
     "setPasswordMismatch": "كلمتا المرور غير متطابقتين.",
     "setPasswordUnavailable": "تعذّر حفظ كلمة المرور حاليًا. يُرجى إعادة المحاولة.",
     "goToLogin": "تسجيل الدخول",
@@ -1749,7 +1749,8 @@
     "planContinue": "المتابعة بهذا العرض",
     "planSelected": "العرض المختار",
     "planChange": "تغيير",
-    "countryDetectionFailed": "اختر بلدك."
+    "countryDetectionFailed": "اختر بلدك.",
+    "verifiedByGoogle": "تم التحقق من البريد عبر Google"
   },
   "attendanceDayDetail": "تفاصيل يومية",
   "support_tickets": {
@@ -3023,7 +3024,7 @@
     "password": {
       "changed": "تم تغيير كلمة المرور.",
       "min": {
-        "length": "8 أحرف كحد أدنى"
+        "length": "12 حرفًا على الأقل"
       },
       "mismatch": "كلمات المرور غير متطابقة"
     },
@@ -3997,7 +3998,7 @@
     "statusSuspended": "موقوف",
     "valid": "صالح"
   },
-  "settingsPasswordMinCharacters": "8 أحرف كحد أدنى",
+  "settingsPasswordMinCharacters": "12 حرفًا على الأقل",
   "notifications": {
     "channel_inapp": "داخل التطبيق",
     "channel_email_desc": "رسائل مهمة وتأكيدات.",
@@ -4809,7 +4810,7 @@
       "name_required": "الاسم الكامل مطلوب.",
       "password_required": "كلمة المرور مطلوبة.",
       "fix_fields": "يرجى تصحيح الحقول المميزة",
-      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "password_min": "يجب أن تحتوي كلمة المرور على 12 حرفًا على الأقل",
       "search_no_match": "لا توجد صفحة تطابق بحثك",
       "update_failed": "فشل تحديث المستخدم"
     },
@@ -4895,7 +4896,8 @@
     "solutionSurveys": "استبيانات الحلول",
     "travel": "وكالة السفر",
     "showcase": "موقع الشركة",
-    "clientModules": "وحدات شركات العملاء"
+    "clientModules": "وحدات شركات العملاء",
+    "emailTemplates": "البريد الإلكتروني"
   },
   "companydetailCoreModuleAlwaysActive": "الوحدة الأساسية نشطة دائمًا",
   "smartAttendanceSessionsTitle": "جلسات الحضور الذكي",
@@ -6392,5 +6394,25 @@
     "step1": "تُدخل بريدك الإلكتروني واسم شركتك.",
     "step2": "تستلم رمزًا من 6 أرقام عبر البريد الإلكتروني.",
     "step3": "تدخل مساحتك مباشرة، دون إنشاء كلمة مرور."
+  },
+  "emailsAdmin": {
+    "title": "قوالب البريد الإلكتروني",
+    "subtitle": "خصّص محتوى الرسائل التي ترسلها المنصة. ما لم تعدّله، يُستخدم النص الافتراضي.",
+    "locale": "اللغة",
+    "subject": "الموضوع",
+    "heading": "العنوان",
+    "body": "نص الرسالة",
+    "ctaLabel": "نص الزر",
+    "variables": "المتغيرات المتاحة",
+    "bodyHint": "نص عادي: تُحفظ أسطر جديدة ولا يُفسَّر HTML.",
+    "save": "حفظ",
+    "saved": "تم حفظ القالب",
+    "saveFailed": "تعذّر الحفظ",
+    "reset": "العودة إلى الافتراضي",
+    "resetDone": "تمت إعادة تعيين القالب",
+    "overridden": "مخصّص",
+    "preview": "معاينة",
+    "previewFailed": "المعاينة غير متاحة",
+    "loadFailed": "تعذّر التحميل"
   }
 }

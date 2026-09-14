@@ -20,6 +20,7 @@ export { ParticleField } from './ParticleField';
 // WebGL chargé en import dynamique, repli CSS 3D si indisponible.
 export { SolutionStack } from './hero/SolutionStack';
 export { LegalPageShell } from './LegalPageShell';
+export { GoogleAuthButton } from './GoogleAuthButton';
 export { RestaurantSolutionWizard } from './RestaurantSolutionWizard';
 
 // Common Components

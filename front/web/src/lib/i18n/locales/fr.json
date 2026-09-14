@@ -321,7 +321,7 @@
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
       "fix_fields": "Veuillez corriger les champs en rouge",
-      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+      "password_min": "Le mot de passe doit contenir au moins 12 caractères",
       "search_no_match": "Aucune page ne correspond à votre recherche",
       "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
     },
@@ -1424,9 +1424,9 @@
     "linkCopied": "Lien copié !",
     "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
     "failedTitle": "Création interrompue",
-    "failedBody": "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
+    "failedBody": "Une erreur est survenue pendant la création de votre espace. Réessayez : la création repart de zéro en quelques secondes. Si le problème se reproduit, contactez le support.",
     "timeoutTitle": "Création toujours en cours",
-    "timeoutBody": "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
+    "timeoutBody": "La création de votre espace dépasse le délai habituel. Actualisez le statut ci-dessous pour voir où elle en est, ou réessayez dans quelques minutes.",
     "refreshStatus": "Rafraîchir le statut",
     "preparingTitle": "Préparation de votre espace",
     "preparingBody": "Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.",
@@ -1434,6 +1434,7 @@
     "statusEvery5s": "Statut vérifié toutes les 5 secondes.",
     "successTitle": "Votre espace est prêt !",
     "emailVerified": "Votre adresse email a bien été vérifiée.",
+    "verifiedByGoogle": "Adresse vérifiée par Google",
     "credsLabel": "Identifiants de connexion",
     "fieldEmail": "Email",
     "fieldPassword": "Mot de passe",
@@ -1468,7 +1469,7 @@
     "setPasswordSubmit": "Définir mon mot de passe",
     "setPasswordSubmitting": "Enregistrement…",
     "setPasswordSuccess": "Mot de passe enregistré. Vous pouvez vous connecter.",
-    "setPasswordTooWeak": "8 caractères minimum, dont un chiffre.",
+    "setPasswordTooWeak": "12 caractères minimum, dont un chiffre.",
     "setPasswordMismatch": "Les deux mots de passe ne correspondent pas.",
     "setPasswordUnavailable": "Impossible d'enregistrer le mot de passe pour le moment. Réessayez.",
     "goToLogin": "Se connecter",
@@ -1593,7 +1594,8 @@
     "legalRates": "Taux legaux",
     "account": "Mon compte",
     "notFound": "Page non trouvee",
-    "travelAgency": "Agence de voyage"
+    "travelAgency": "Agence de voyage",
+    "emailTemplates": "E-mails"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -1607,7 +1609,7 @@
   "shell": {
     "connected": "Connecte",
     "fallbackPolling": "Mode secours (polling)",
-    "pushUnconfigured": "Push non configure",
+    "pushUnconfigured": "Push non configuré",
     "disconnected": "Deconnecte",
     "search": "Rechercher",
     "notifications": "Notifications",
@@ -1858,7 +1860,7 @@
     "generateSecret": "Générer un secret 2FA",
     "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
     "manualSecret": "Secret manuel :",
-    "minLengthHint": "Minimum 8 caractères.",
+    "minLengthHint": "Minimum 12 caractères.",
     "newPassword": "Nouveau mot de passe",
     "password": "Mot de passe",
     "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
@@ -2067,7 +2069,7 @@
       "name": "Prénom"
     },
     "min": {
-      "chars": "8 caractères minimum"
+      "chars": "12 caractères minimum"
     },
     "password": "Mot de passe",
     "required": "Obligatoire",
@@ -2325,7 +2327,7 @@
     "password": {
       "changed": "Mot de passe modifié.",
       "min": {
-        "length": "8 caractères minimum"
+        "length": "12 caractères minimum"
       },
       "mismatch": "Mots de passe différents"
     },
@@ -3035,7 +3037,7 @@
   "teamEmployeeIdOptional": "Matricule (optionnel)",
   "teamMonthlyFixed": "Mensuel / fixe",
   "settingsPasswordUpdateTitle": "Mettre a jour le mot de passe",
-  "settingsPasswordMinCharacters": "Minimum 8 caracteres",
+  "settingsPasswordMinCharacters": "Minimum 12 caractères",
   "teamSalaryMode": "Mode salaire",
   "settingsMyEmployeeQr": "Mon QR employe",
   "teamAmountRequired": "Montant obligatoire",
@@ -5083,5 +5085,25 @@
     "sectionContact": "Contact",
     "sectionFooter": "Pied de page",
     "notFoundTitle": "Page introuvable"
+  },
+  "emailsAdmin": {
+    "title": "Modèles d'e-mails",
+    "subtitle": "Personnalisez le contenu des e-mails envoyés par la plateforme. Sans modification, le texte par défaut est utilisé.",
+    "locale": "Langue",
+    "subject": "Objet",
+    "heading": "Titre",
+    "body": "Corps du message",
+    "ctaLabel": "Libellé du bouton",
+    "variables": "Variables disponibles",
+    "bodyHint": "Texte brut : les retours à la ligne sont conservés, le HTML n'est pas interprété.",
+    "save": "Enregistrer",
+    "saved": "Modèle enregistré",
+    "saveFailed": "Enregistrement impossible",
+    "reset": "Revenir au défaut",
+    "resetDone": "Modèle réinitialisé",
+    "overridden": "personnalisé",
+    "preview": "Aperçu",
+    "previewFailed": "Aperçu indisponible",
+    "loadFailed": "Chargement impossible"
   }
 }

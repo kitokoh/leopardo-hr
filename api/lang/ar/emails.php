@@ -104,8 +104,9 @@ return [
     'communication_unsubscribe_link' => 'إدارة تفضيلات الإشعارات',
 
     // Premium layout (emails/layouts/premium.blade.php)
-    'premium_layout_rights_reserved' => 'جميع الحقوق محفوظة.',
-    'premium_layout_footer_note' => 'تتلقى هذا البريد الإلكتروني لأنك مسجل في منصتنا.<br>لأي سوال، يرجى الاتصال بالدعم عبر <a href="mailto::supportEmail">الدعم</a>.',
+    'layout_rights_reserved' => 'جميع الحقوق محفوظة.',
+    'layout_footer_context' => 'أنت تتلقى هذا البريد الإلكتروني في إطار حسابك على :brand.',
+    'layout_footer_support' => 'هل لديك سؤال؟ راسلنا على:',
     // S-5 (#1665) — رسائل البريد الإلكتروني المترجمة
     'email_welcome_subject' => 'مرحبا بك في ليوباردو HR',
     'email_welcome_greeting' => 'مرحبا :name،',
@@ -168,6 +169,20 @@ return [
     'email_password_reset_ignore' => 'إذا لم تقم بهذا الطلب، تجاهل هذا البريد.',
 
     // E-mail de vérification du code d'inscription (trial self-service)
+    'email_password_reset_code_label' => 'رمز إعادة التعيين الخاص بك (صالح لمدة 60 دقيقة، يُستخدم مرة واحدة):',
+    'invitation_heading' => 'دعوة للانضمام إلى :company',
+    'invitation_intro' => ':inviter يدعوك للانضمام إلى :company على :brand.',
+    'invitation_role_line' => 'ستتم دعوتك بصفة :role.',
+    'invitation_accept_button' => 'قبول الدعوة',
+    'invitation_expiry' => 'تنتهي صلاحية هذا الرابط خلال 48 ساعة. إذا لم تكن تتوقع هذا البريد، فتجاهله.',
+    'edge_node_silent_subject' => 'جهاز تسجيل الحضور غير متصل — :node (:company)',
+    'edge_node_silent_greeting' => 'مرحبًا،',
+    'edge_node_silent_body' => 'لم يتصل جهاز تسجيل الحضور :node الخاص بـ :company منذ :duration.',
+    'edge_node_silent_note' => 'سيتم مزامنة تسجيلات الحضور التي تمت خلال هذه الفترة تلقائيًا بمجرد عودة الاتصال.',
+    'edge_node_silent_support' => 'إذا استمرت المشكلة، تحقق من اتصال الجهاز بالشبكة أو راسلنا على:',
+    'edge_license_expiring_subject' => 'اشتراك جهاز تسجيل الحضور بحاجة إلى تجديد — :node (:company)',
+    'edge_license_expiring_body' => 'ينتهي اشتراك جهاز تسجيل الحضور :node الخاص بـ :company في :date. بعد ذلك سيواصل الجهاز تسجيل الحضور لكنه لن يرسلها.',
+    'edge_license_expiring_support' => 'للتجديد أو للاستفسار، راسلنا على:',
     'trial_verification_subject' => 'تحقق من بريدك الإلكتروني في Leopardo RH',
     'trial_verification_greeting' => 'مرحباً :name،',
     'trial_verification_intro' => 'يرجى استخدام رمز التحقق أدناه لإكمال إنشاء مساحة العمل الخاصة بك:',

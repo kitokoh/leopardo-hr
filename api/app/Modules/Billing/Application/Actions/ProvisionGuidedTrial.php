@@ -31,6 +31,7 @@ class ProvisionGuidedTrial
      * @param  list<string>  $solutions  Codes de solutions sectorielles demandées (#6693)
      * @param  string|null  $companyType  #7235 — `company` (défaut) | `solo`
      * @param  list<string>  $modules  #7235 — outils horizontaux choisis à l'inscription
+     * @param  string|null  $locale  Langue d'interface choisie par l'utilisateur (fr|en|ar|tr)
      * @return array<string, mixed>
      */
     public function execute(
@@ -40,6 +41,7 @@ class ProvisionGuidedTrial
         array $solutions = [],
         ?string $companyType = null,
         array $modules = [],
+        ?string $locale = null,
     ): array {
         // BC-25 (#6693) : les solutions demandées doivent exister au catalogue
         // (fail-closed) AVANT tout provisioning — jamais de tenant partiel.
@@ -99,7 +101,13 @@ class ProvisionGuidedTrial
             throw new \InvalidArgumentException('Le pays du tenant est obligatoire et doit être supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
         }
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection): array {
+        // QA onboarding 2026-09-14 : la langue d'interface demandée à l'inscription
+        // était validée (in:fr,en,ar,tr) puis PERDUE — le tenant prenait
+        // toujours la langue par défaut du pays (inscription en anglais dans un
+        // pays francophone => espace en français). Le choix explicite prime.
+        $language = $this->resolveLanguage($locale, $countryDefaults);
+
+        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection, $language): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -113,7 +121,7 @@ class ProvisionGuidedTrial
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
                 'subscription_end' => now()->addDays($this->trialDays())->toDateString(),
-                'language' => strtolower($countryDefaults['language']),
+                'language' => $language,
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
                 // #7235 — profil d'activité, métier vertical et outils
@@ -374,5 +382,26 @@ class ProvisionGuidedTrial
         $days = config('billing.trial_days');
 
         return \is_int($days) ? $days : 14;
+    }
+
+    /**
+     * Langue d'interface du tenant.
+     *
+     * QA onboarding 2026-09-14 : le choix de l'utilisateur (`locale`, déjà
+     * validé en `in:fr,en,ar,tr` à l'inscription) doit primer sur la langue par
+     * défaut du pays. Sans ce paramètre, un utilisateur inscrit en anglais
+     * recevait un espace en français.
+     *
+     * @param  array<string, mixed>  $countryDefaults
+     */
+    private function resolveLanguage(?string $locale, array $countryDefaults): string
+    {
+        $normalized = is_string($locale) ? strtolower(trim($locale)) : '';
+
+        if (in_array($normalized, ['fr', 'en', 'ar', 'tr'], true)) {
+            return $normalized;
+        }
+
+        return strtolower((string) ($countryDefaults['language'] ?? 'fr'));
     }
 }

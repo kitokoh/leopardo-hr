@@ -1,9 +1,14 @@
-<div style="font-family: Arial, sans-serif; color: #0f172a; white-space: pre-line;">
-    <p>{{ $bodyText }}</p>
-    @if($unsubscribeUrl)
-        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0 12px;">
-        <p style="font-size: 12px; color: #64748b;">
-            <a href="{{ $unsubscribeUrl }}">{{ __('emails.communication_unsubscribe_link') }}</a>
-        </p>
-    @endif
-</div>
+{{--
+    Message de communication générique (issue #7346).
+
+    Était un fragment nu (aucun en-tête ni pied de page) : le destinataire
+    recevait un texte sans identité visuelle. Passé au layout canonique, avec
+    lien de désinscription quand il est fourni (le layout l’affiche lui-même).
+--}}
+@extends('emails.layouts.base')
+
+@section('heading', $subjectLine ?? config('mail.brand.name'))
+
+@section('content')
+    <p style="margin:0; white-space:pre-line;">{{ $bodyText }}</p>
+@endsection
