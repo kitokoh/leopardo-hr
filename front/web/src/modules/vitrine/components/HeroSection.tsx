@@ -113,7 +113,7 @@ export function QuickTrialEmailForm({ locale, copy }: { locale: AppLocale; copy:
         <button
           type="submit"
           disabled={status === 'submitting' || status === 'success'}
-          className="inline-flex min-h-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 text-sm font-black text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-600 hover:to-cyan-600 disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex min-h-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-6 text-sm font-black text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-800 hover:to-cyan-700 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {status === 'submitting' ? copy.submitting : copy.submit}
         </button>

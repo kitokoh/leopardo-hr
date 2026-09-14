@@ -119,7 +119,7 @@ export function HeroSection({
                 {badgeConfig.icon && <span className="animate-pulse">{badgeConfig.icon}</span>}
                 <span>{badgeConfig.text}</span>
                 {badgeConfig.label && (
-                  <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
                     {badgeConfig.label}
                   </span>
                 )}
@@ -169,7 +169,7 @@ export function HeroSection({
                 {ctaPrimary && (
                   <Link
                     href={withLocaleHref(ctaPrimary.href, search)}
-                    className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                    className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
                   >
                     <span className="relative z-10 flex items-center gap-2.5 text-base">
                       {ctaPrimary.text}
@@ -190,7 +190,7 @@ export function HeroSection({
                       </div>
                     ) : (
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 transition-transform duration-300 group-hover:scale-110 dark:from-emerald-900/40 dark:to-emerald-900/20">
-                        <Play className="ml-0.5 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <Play className="ml-0.5 h-4 w-4 text-emerald-700 dark:text-emerald-400" />
                       </div>
                     )}
                     {ctaSecondary.text}
@@ -244,7 +244,7 @@ export function HeroSection({
                   {stat.value}
                   {stat.suffix}
                 </div>
-                <div className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-500">{stat.label}</div>
+                <div className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</div>
               </div>
             ))}
           </motion.div>

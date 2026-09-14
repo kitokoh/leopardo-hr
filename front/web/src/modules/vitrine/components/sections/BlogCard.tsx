@@ -69,7 +69,7 @@ export function BlogCard({
             />
             {/* Category badge */}
             <div className="absolute top-4 left-4 flex items-center gap-2">
-              <div className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+              <div className="px-3 py-1 rounded-full bg-emerald-700/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                 {category}
               </div>
               {archived && (
@@ -114,7 +114,7 @@ export function BlogCard({
                 </div>
                 <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{author.name}</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>

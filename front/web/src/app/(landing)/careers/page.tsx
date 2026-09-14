@@ -47,7 +47,7 @@ export default function CareersPage() {
                   className="text-center p-6"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                    <Icon className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+                    <Icon className="w-7 h-7 text-emerald-700 dark:text-emerald-400" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{val.title}</h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{val.description}</p>

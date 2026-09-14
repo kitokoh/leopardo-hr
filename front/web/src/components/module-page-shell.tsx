@@ -42,7 +42,7 @@ export function ModulePageShell({
 
           <div className="flex items-center gap-3">
             {Icon ? (
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white shadow-lg">
+              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white shadow-lg">
                 <Icon className="h-6 w-6" />
               </span>
             ) : null}

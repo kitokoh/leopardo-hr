@@ -236,7 +236,7 @@ function DropdownMenu({
             aria-current={pathname === item.href ? 'page' : undefined}
             className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
           >
-            <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
+            <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
               {item.icon}
             </div>
             <div>
@@ -349,7 +349,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             </div>
             <div className="flex flex-col">
               <span className="font-black text-xl text-slate-900 dark:text-white leading-none">Leopardo</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">{copy.nav.brandTagline}</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">{copy.nav.brandTagline}</span>
             </div>
           </Link>
 
@@ -385,7 +385,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                   aria-current={pathname === entry.href ? 'page' : undefined}
                   className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${
                     entry.href === '/download'
-                      ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5'
+                      ? 'text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1.5'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -442,7 +442,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             <Link
               href="/signup"
               prefetch={false}
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {copy.nav.trial}
               <ArrowRight className="w-4 h-4" />
@@ -545,7 +545,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                       href={withLocaleHref(entry.href, search)}
                       className={`block px-4 py-3 text-lg font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
                         entry.href === '/download'
-                          ? 'text-emerald-600 dark:text-emerald-400 flex items-center gap-2'
+                          ? 'text-emerald-700 dark:text-emerald-400 flex items-center gap-2'
                           : 'text-slate-900 dark:text-white'
                       }`}
                       onClick={() => setMobileOpen(false)}
@@ -568,7 +568,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 <Link
                   href="/signup"
                   prefetch={false}
-                  className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                  className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                   onClick={() => setMobileOpen(false)}
                 >
                   {copy.nav.trial}

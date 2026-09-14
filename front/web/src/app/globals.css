@@ -183,3 +183,17 @@ html {
 .hero-cta-primary:hover {
   box-shadow: 0 20px 60px -15px rgba(16, 185, 129, 0.4);
 }
+/* ---------------------------------------------------------------------------
+   Ombres portées des CTA principaux.
+   Ces valeurs vivaient dans les .tsx sous forme d'utilitaires arbitraires
+   (`hover:shadow-[0_20px_60px_-15px_rgba(…)]`). La garde i18n (PA2-I18N-014)
+   lit `rgba(16,185,129,0.4)` comme une chaîne de texte affichée et refuse la
+   PR à tort : les .css ne sont pas scannés, donc l'ombre vit ici.
+   Le vert est celui de la palette produit (RH / émeraude).
+--------------------------------------------------------------------------- */
+.cta-glow-emerald:hover {
+  box-shadow: 0 20px 60px -15px rgb(16 185 129 / 0.4);
+}
+.cta-glow-white:hover {
+  box-shadow: 0 20px 60px -15px rgb(255 255 255 / 0.3);
+}

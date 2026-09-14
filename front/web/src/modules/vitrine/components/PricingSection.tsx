@@ -114,7 +114,7 @@ export function PricingSection() {
                 <div className="relative h-full rounded-[23px] bg-white dark:bg-slate-950 p-8">
                   {plan.popular && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/30">
+                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-xs font-black uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/30">
                         {copy.pricing.recommended}
                       </span>
                     </div>
@@ -123,7 +123,7 @@ export function PricingSection() {
                   <div className="text-center mb-8">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{plan.name}</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{plan.description}</p>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400 mb-6">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 mb-6">
                       <Users className="w-3 h-3" />
                       {plan.employeeLimit}
                     </div>
@@ -134,7 +134,7 @@ export function PricingSection() {
                         </span>
                       ) : (
                         <>
-                          {hasNumericPrice && <span className="text-sm text-slate-500">{copy.pricing.currency}</span>}
+                          {hasNumericPrice && <span className="text-sm text-slate-500 dark:text-slate-400">{copy.pricing.currency}</span>}
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                             {displayPrice}
                           </span>
@@ -142,14 +142,14 @@ export function PricingSection() {
                       )}
                     </div>
                     {displayPeriod && (
-                      <span className="text-sm text-slate-500">{displayPeriod}</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">{displayPeriod}</span>
                     )}
                     {plan.priceNote && (
                       <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{plan.priceNote}</p>
                     )}
                     {isAnnual && hasNumericPrice && (
                       <div className="mt-1">
-                        <span className="text-xs text-slate-400 line-through">{copy.pricing.currency} {plan.price}</span>
+                        <span className="text-xs text-slate-500 line-through dark:text-slate-400">{copy.pricing.currency} {plan.price}</span>
                       </div>
                     )}
                   </div>
@@ -167,7 +167,7 @@ export function PricingSection() {
                     href={getPlanCtaHref(displayPrice, plan.name, isAnnual)}
                     className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 ${
                       plan.popular
-                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
+                        ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-emerald-900 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -183,7 +183,7 @@ export function PricingSection() {
         <div className="mt-12 text-center">
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
           >
             {t(locale, 'pricing.section.fullComparison')}
             <ArrowRight className="w-4 h-4" />
