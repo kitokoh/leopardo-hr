@@ -8,13 +8,9 @@ import {
   Footer,
   useScrollReveal,
   SocialProofMetrics,
-  TestimonialHighlight,
-  MiniCaseStudies,
   ProductScreenshots,
   MarketingReadinessSection,
   TrustedBrands,
-  OperationalProofSection,
-  LaunchOperatingSystemSection,
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
@@ -28,7 +24,6 @@ import {
 import { FeaturesSection as ModernFeaturesSection } from '@/modules/vitrine/components/sections/FeaturesSection';
 // PricingSection: keep the self-contained locale-aware version (not the generic sections/ one)
 import { PricingSection as LocalePricingSection } from '@/modules/vitrine/components/PricingSection';
-import { DemoSection } from '@/modules/vitrine/components/DemoSection';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getFeatures } from '@/modules/vitrine/data/features';
 import { getFaqItems } from '@/modules/vitrine/data/faq';
@@ -114,7 +109,6 @@ export default function LandingPage() {
         {/* ─── SOCIAL PROOF ─── */}
         <TrustedBrands locale={locale} />
         <SocialProofMetrics locale={locale} />
-        <OperationalProofSection locale={locale} />
 
         {/* ─── PRODUCT DEMO VIDEO ─── PA2-MKT-014 */}
         <ProductDemoVideo locale={locale} />
@@ -140,14 +134,11 @@ export default function LandingPage() {
 
         {/* ─── PRODUCT VISUAL ─── */}
         <ProductScreenshots locale={locale} />
-        <LaunchOperatingSystemSection locale={locale} />
         <MarketingReadinessSection locale={locale} />
 
         {/* ─── DEMO ─── */}
-        <DemoSection />
 
         {/* ─── TESTIMONIALS ─── Phase-3 */}
-        <TestimonialHighlight locale={locale} />
         <TestimonialsSection
           badge={{ text: copy.testimonials.badge }}
           title={copy.testimonials.title}
@@ -163,7 +154,6 @@ export default function LandingPage() {
           }))}
           columns={3}
         />
-        <MiniCaseStudies locale={locale} />
 
         {/* ─── PRICING ─── locale-aware self-contained component */}
         <LocalePricingSection />
