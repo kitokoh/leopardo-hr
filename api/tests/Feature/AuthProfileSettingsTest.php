@@ -208,12 +208,12 @@ class AuthProfileSettingsTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/v1/auth/change-password', [
                 'current_password' => 'password123',
-                'new_password' => 'password456',
-                'new_password_confirmation' => 'password456',
+                'new_password' => 'password456789',
+                'new_password_confirmation' => 'password456789',
             ]);
 
         $response->assertOk();
-        $this->assertTrue(Hash::check('password456', $employee->fresh()->password_hash));
+        $this->assertTrue(Hash::check('password456789', $employee->fresh()->password_hash));
 
         // Sanctum tokens issued before the password change (this request's own
         // token included) must all be revoked, and a fresh token returned for
@@ -271,8 +271,8 @@ class AuthProfileSettingsTest extends TestCase
         $response = $this->withHeader('Authorization', "Bearer {$token}")
             ->postJson('/api/v1/auth/change-password', [
                 'current_password' => 'wrong-password',
-                'new_password' => 'password456',
-                'new_password_confirmation' => 'password456',
+                'new_password' => 'password456789',
+                'new_password_confirmation' => 'password456789',
             ]);
 
         $response->assertStatus(422);

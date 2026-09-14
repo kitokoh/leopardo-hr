@@ -4,12 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, LockKeyhole } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { PASSWORD_MIN_LENGTH } from '@/lib/password-policy';
 import { Button } from '@/components/ui/Button';
 import { PasswordStrengthBar } from '@/components/ui/PasswordStrengthBar';
 import { getCopy, normalizeLocale, type AppLocale } from '@/lib/i18n';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
-const MIN_PASSWORD_LENGTH = 8;
+// Longueur minimale partagée (voir @/lib/password-policy) — alignée sur l'API.
+const MIN_PASSWORD_LENGTH = PASSWORD_MIN_LENGTH;
 
 export function ResetPasswordForm({
   token,

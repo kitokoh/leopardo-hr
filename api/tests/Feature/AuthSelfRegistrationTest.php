@@ -84,8 +84,8 @@ class AuthSelfRegistrationTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'password123456',
+            'password_confirmation' => 'password123456',
             'invitation_token' => 'missing-token',
         ])->assertStatus(422)
             ->assertJsonPath('error', 'REGISTRATION_NOT_AVAILABLE');
@@ -101,8 +101,8 @@ class AuthSelfRegistrationTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'password123456',
+            'password_confirmation' => 'password123456',
             'invitation_token' => $token,
         ]);
 

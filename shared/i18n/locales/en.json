@@ -321,7 +321,7 @@
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
       "fix_fields": "Please fix the highlighted fields",
-      "password_min": "Password must be at least 8 characters",
+      "password_min": "Password must be at least 12 characters",
       "search_no_match": "No page matches your search",
       "update_failed": "Failed to update user"
     },
@@ -1424,9 +1424,9 @@
     "linkCopied": "Link copied!",
     "linkEmailed": "Your access link was also sent by email.",
     "failedTitle": "Creation interrupted",
-    "failedBody": "An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.",
-    "timeoutTitle": "Still being created",
-    "timeoutBody": "Your workspace is being prepared. We will email you the access link as soon as it is ready.",
+    "failedBody": "Something went wrong while creating your workspace. Try again — it restarts from scratch in a few seconds. If it keeps happening, contact support.",
+    "timeoutTitle": "Still creating your workspace",
+    "timeoutBody": "Creating your workspace is taking longer than usual. Refresh the status below to see where it stands, or try again in a few minutes.",
     "refreshStatus": "Refresh status",
     "preparingTitle": "Preparing your workspace",
     "preparingBody": "We are provisioning your demo sandbox. This usually takes less than 30 seconds.",
@@ -1434,6 +1434,7 @@
     "statusEvery5s": "Status checked every 5 seconds.",
     "successTitle": "Your workspace is ready!",
     "emailVerified": "Your email address has been verified.",
+    "verifiedByGoogle": "Email verified by Google",
     "credsLabel": "Sign-in credentials",
     "fieldEmail": "Email",
     "fieldPassword": "Password",
@@ -1468,7 +1469,7 @@
     "setPasswordSubmit": "Set my password",
     "setPasswordSubmitting": "Saving…",
     "setPasswordSuccess": "Password saved. You can sign in.",
-    "setPasswordTooWeak": "At least 8 characters, including one digit.",
+    "setPasswordTooWeak": "At least 12 characters, including one digit.",
     "setPasswordMismatch": "The two passwords do not match.",
     "setPasswordUnavailable": "Unable to save the password right now. Please retry.",
     "goToLogin": "Sign in",
@@ -1859,7 +1860,7 @@
     "generateSecret": "Generate 2FA secret",
     "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
     "manualSecret": "Manual secret:",
-    "minLengthHint": "Minimum 8 characters.",
+    "minLengthHint": "Minimum 12 characters.",
     "newPassword": "New password",
     "password": "Password",
     "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
@@ -2068,7 +2069,7 @@
       "name": "First name"
     },
     "min": {
-      "chars": "8 characters minimum"
+      "chars": "12 characters minimum"
     },
     "password": "Password",
     "required": "Required",
@@ -2326,7 +2327,7 @@
     "password": {
       "changed": "Password changed.",
       "min": {
-        "length": "Minimum 8 characters"
+        "length": "Minimum 12 characters"
       },
       "mismatch": "Passwords do not match"
     },
@@ -3036,7 +3037,7 @@
   "teamEmployeeIdOptional": "Employee ID (optional)",
   "teamMonthlyFixed": "Monthly / fixed",
   "settingsPasswordUpdateTitle": "Update password",
-  "settingsPasswordMinCharacters": "Minimum 8 characters",
+  "settingsPasswordMinCharacters": "Minimum 12 characters",
   "teamSalaryMode": "Salary mode",
   "settingsMyEmployeeQr": "My employee QR",
   "teamAmountRequired": "Amount required",

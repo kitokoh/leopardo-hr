@@ -174,31 +174,6 @@ export function validateEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export function validatePassword(password: string): {
-  isValid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
-
-  if (password.length < 8) {
-    errors.push("Le mot de passe doit contenir au moins 8 caracteres");
-  }
-  if (!/[A-Z]/.test(password)) {
-    errors.push("Le mot de passe doit contenir au moins une majuscule");
-  }
-  if (!/[0-9]/.test(password)) {
-    errors.push("Le mot de passe doit contenir au moins un chiffre");
-  }
-  if (!/[^A-Za-z0-9]/.test(password)) {
-    errors.push("Le mot de passe doit contenir au moins un caractère spécial");
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-  };
-}
-
 export function validatePhoneNumber(phone: string): boolean {
   const digits = phone.replace(/\D/g, "");
   if (digits.length < 10 || digits.length > 15) {

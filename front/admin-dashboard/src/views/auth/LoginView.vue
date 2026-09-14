@@ -66,7 +66,7 @@
 
               <FormField
                 id="password"
-                :label="t('auth.access_key_label', 'Clé d\'Accès')"
+                :label="t('auth.access_key_label', 'Mot de passe')"
                 required
                 :error="fieldErrors.password"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -291,7 +291,7 @@ const fieldErrors = computed(() => {
     errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
   }
   if (!form.password) {
-    errors.password = t('auth.access_key_required', "La clé d'accès est requise.")
+    errors.password = t('auth.access_key_required', 'Le mot de passe est requis.')
   }
   if (requiresTwoFactor.value && !form.twoFactorCode) {
     errors.twoFactorCode = t('auth.two_factor_required', 'Le code 2FA est requis.')
