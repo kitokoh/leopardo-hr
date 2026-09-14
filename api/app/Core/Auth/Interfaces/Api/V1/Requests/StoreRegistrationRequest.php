@@ -27,7 +27,7 @@ class StoreRegistrationRequest extends FormRequest
             // jeton d'invitation (issu de UserInvitationService::createAndSend).
             'email' => ['required', 'email', 'max:150'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
             'device_name' => ['nullable', 'string', 'max:100'],
             // Issue #2617 : inscription réservée aux invitations valides.
             'invitation_token' => ['required', 'string', 'max:64'],

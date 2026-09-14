@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Infrastructure\Services\SuperAdminService;
-use App\Shared\Rules\NotCommonPassword;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Shared\Rules\NotCommonPassword;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -230,7 +230,7 @@ class PlatformAuthController extends Controller
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'max:255', 'confirmed'],
+            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'max:255', 'confirmed'],
         ]);
 
         /** @var SuperAdmin $superAdmin */

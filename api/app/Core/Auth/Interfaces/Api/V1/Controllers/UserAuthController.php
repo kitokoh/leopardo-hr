@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\User;
-use App\Shared\Rules\NotCommonPassword;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Shared\Rules\NotCommonPassword;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -34,7 +34,7 @@ class UserAuthController extends Controller
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword()],
+            'password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword],
             'phone' => ['nullable', 'string', 'max:20'],
         ]);
 
@@ -192,7 +192,7 @@ class UserAuthController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'confirmed'],
+            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed'],
         ]);
 
         /** @var User $user */

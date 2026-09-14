@@ -33,7 +33,7 @@ class ChangePasswordRequest extends FormRequest
         return [
             'current_password' => ['required', 'string'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'max:255', 'confirmed'],
+            'new_password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'max:255', 'confirmed'],
         ];
     }
 }

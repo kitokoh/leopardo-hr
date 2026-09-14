@@ -23,6 +23,6 @@ class ActivateInvitationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword(), 'confirmed']];
+        return ['password' => ['required', 'string', Password::min(12)->numbers(), new NotCommonPassword, 'confirmed']];
     }
 }
