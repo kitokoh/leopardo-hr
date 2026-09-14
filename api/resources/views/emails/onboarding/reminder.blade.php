@@ -1,21 +1,20 @@
 {{--
-    Relance d'onboarding (issue #7346) — migré du thème Markdown Laravel
+    Relance d’onboarding (issue #7346) — migré du thème Markdown Laravel
     (pied de page anglais, bouton gris) vers le layout canonique.
 --}}
+
 @extends('emails.layouts.base')
 
-@section('heading', trans('emails.onboarding_reminder_heading', ['name' => $managerName]))
+@section('heading', $tpl->heading)
 
 @section('content')
-    <p style="margin:0 0 16px 0;">
-        {!! trans('emails.onboarding_reminder_intro', ['company' => $company->name]) !!}
-    </p>
+    <div style="margin:0 0 16px 0;">{!! $tpl->bodyHtml() !!}</div>
 
     <p style="margin:0 0 4px 0;">{{ trans('emails.onboarding_reminder_steps') }}</p>
 
     @include('emails.partials.button', [
         'url' => $setupUrl,
-        'label' => trans('emails.onboarding_reminder_cta'),
+        'label' => $tpl->ctaLabel ?? trans('emails.onboarding_reminder_cta'),
         'align' => 'center',
     ])
 

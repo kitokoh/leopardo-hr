@@ -10,9 +10,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use App\Core\Mail\UsesEditableEmailTemplate;
 
 class RoleAssignmentMail extends Mailable
 {
+    use UsesEditableEmailTemplate;
+
     use Queueable;
     use SerializesModels;
 
@@ -42,9 +45,17 @@ class RoleAssignmentMail extends Mailable
     {
         App::setLocale($this->locale);
 
+        $tpl = $this->editableEmailTemplate('role_assignment', $this->locale ?? app()->getLocale(), [
+            ':role' => $this->roleLabel,
+            ':company' => $this->company->name,
+            ':assignedBy' => $this->assignedByName,
+            ':name' => $this->employee->first_name ?? '',
+            ':brand' => \App\Core\Mail\MailBrand::name(),
+        ]);
+
         return $this
-            ->subject(__('emails.role_assignment_subject', ['role' => $this->roleLabel]))
-            ->view('emails.role-assignment');
+            ->subject($tpl->subject)
+            ->view('emails.role-assignment', ['tpl' => $tpl]);
     }
 }
 

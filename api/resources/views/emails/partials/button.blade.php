@@ -1,14 +1,14 @@
 {{--
-    Bouton d'appel à l'action (issue #7346).
+    Bouton d’appel à l’action (issue #7346).
 
-    Bouton « bulletproof » en TABLE avec `bgcolor` + styles inline : c'est la
+    Bouton « bulletproof » en TABLE avec `bgcolor` + styles inline : c’est la
     seule forme qui survit à Gmail, Outlook (Word) et Apple Mail. Avant, trois
     mécanismes coexistaient (classe CSS dans un `<style>` supprimé par Gmail,
     styles inline ad hoc, composant `mail::button` au thème Laravel par défaut).
 
     Variables attendues :
       $url    – cible (obligatoire)
-      $label  – libellé (obligatoire, déjà traduit par l'appelant)
+      $label  – libellé (obligatoire, déjà traduit par l’appelant)
       $align  – 'left' | 'center' | 'right' (défaut : hérite du contexte)
 --}}
 @php

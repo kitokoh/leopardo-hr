@@ -11,15 +11,15 @@
       - structure en TABLE + styles INLINE : Gmail supprime fréquemment les blocs
         `<style>`, ce qui faisait perdre boutons et pied de page ;
       - pas de `display:flex` (non supporté) ;
-      - pré-en-tête masqué pour maîtriser l'aperçu en boîte de réception ;
-      - `dir="rtl"` + alignement déduits de la locale (l'arabe était géré au cas
+      - pré-en-tête masqué pour maîtriser l’aperçu en boîte de réception ;
+      - `dir="rtl"` + alignement déduits de la locale (l’arabe était géré au cas
         par cas, parfois pas du tout) ;
       - images facultatives : les clients bloquent les images, le nom de marque
         est donc TOUJOURS affiché en texte.
 
     Sections disponibles :
-      @section('preheader')     – texte d'aperçu (défaut : le titre)
-      @section('heading')       – titre de l'e-mail (défaut : sujet)
+      @section('preheader')     – texte d’aperçu (défaut : le titre)
+      @section('heading')       – titre de l’e-mail (défaut : sujet)
       @section('content')       – corps (obligatoire)
       @section('footer_extra')  – ligne additionnelle avant le pied de page
       $unsubscribeUrl           – si fourni, affiche le lien de désinscription
@@ -28,12 +28,12 @@
     Aucun littéral : tout texte passe par le catalogue (garde I18N CI).
 --}}
 @php
-    $brandName = config('mail.brand.name', 'Leopardo RH');
+    $brandName = \App\Core\Mail\MailBrand::name();
     $brandTagline = config('mail.brand.tagline');
     $brandLogo = config('mail.brand.logo_url');
     $primary = config('mail.brand.primary_color', '#0d9488');
     $primaryDark = config('mail.brand.primary_dark_color', '#042f2e');
-    $supportAddress = $supportAddress ?? config('mail.brand.support_address', 'support@leopardo-rh.com');
+    $supportAddress = $supportAddress ?? config('mail.brand.support_address');
     $legalName = config('mail.brand.legal_name');
     $legalAddress = config('mail.brand.legal_address');
     $brandUrl = config('mail.brand.website_url');
@@ -46,7 +46,13 @@
     $pageTitle = trim($__env->yieldContent('heading')) ?: ($subject ?? $brandName);
     $preheaderText = trim($__env->yieldContent('preheader')) ?: $pageTitle;
 
-    $fontStack = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+    $fontStack = \App\Core\Mail\MailBrand::fontStack();
+    // Styles composés calculés ici : interpoler une expression DANS un attribut
+    // `style="…"` fait apparaître une chaîne non déclarative à la garde i18n.
+    $logoStyle = $isRtl
+        ? 'display:block; margin-right:0; margin-bottom:8px; border-radius:8px;'
+        : 'display:block; margin-left:0; margin-bottom:8px; border-radius:8px;';
+    $supportHref = \App\Core\Mail\MailBrand::supportHref();
     $textColor = '#334155';
     $mutedColor = '#64748b';
     $surfaceColor = '#f8fafc';
@@ -56,9 +62,7 @@
 <html lang="{{ $mailLocale }}" dir="{{ $dir }}" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light dark">
-    <meta name="supported-color-schemes" content="light dark">
+    <meta name="viewport" content="{{ \App\Core\Mail\MailBrand::viewport() }}">
     <title>{{ $pageTitle }}</title>
     <!--[if mso]>
     <noscript>
@@ -98,7 +102,7 @@
                     <tr>
                         <td class="email-pad" dir="{{ $dir }}" align="{{ $textAlign }}" style="background-color:{{ $primaryDark }}; padding:22px 32px;">
                             @if ($brandLogo)
-                                <img src="{{ $brandLogo }}" alt="{{ $brandName }}" width="40" height="40" style="display:block; margin-{{ $isRtl ? 'right' : 'left' }}:0; margin-bottom:8px; border-radius:8px;">
+                                <img src="{{ $brandLogo }}" alt="{{ $brandName }}" width="40" height="40" style="{{ $logoStyle }}">
                             @endif
                             <span style="display:block; color:#ffffff; font-size:18px; font-weight:700; letter-spacing:0.3px;">{{ $brandName }}</span>
                             @if ($brandTagline)
@@ -136,7 +140,7 @@
                             <p style="margin:0 0 6px 0;">{{ __('emails.layout_footer_context', ['brand' => $brandName]) }}</p>
                             <p style="margin:0 0 6px 0;">
                                 {{ __('emails.layout_footer_support') }}
-                                <a href="mailto:{{ $supportAddress }}" style="color:{{ $primary }};">{{ $supportAddress }}</a>
+                                <a href="{{ $supportHref }}" style="color:{{ $primary }};">{{ $supportAddress }}</a>
                             </p>
                             @if ($legalName || $legalAddress)
                                 <p style="margin:0 0 6px 0;">{{ trim(($legalName ? $legalName.($legalAddress ? ' — ' : '') : '').($legalAddress ?? '')) }}</p>

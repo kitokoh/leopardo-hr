@@ -1592,7 +1592,8 @@
     "legalRates": "Yasal oranlar",
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
-    "travelAgency": "Seyahat acentesi"
+    "travelAgency": "Seyahat acentesi",
+    "emailTemplates": "E-postalar"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -5082,5 +5083,25 @@
     "sectionContact": "İletişim",
     "sectionFooter": "Alt bilgi",
     "notFoundTitle": "Sayfa bulunamadı"
+  },
+  "emailsAdmin": {
+    "title": "E-posta şablonları",
+    "subtitle": "Platformun gönderdiği e-postaların içeriğini özelleştirin. Değiştirmezseniz varsayılan metin kullanılır.",
+    "locale": "Dil",
+    "subject": "Konu",
+    "heading": "Başlık",
+    "body": "Mesaj gövdesi",
+    "ctaLabel": "Düğme etiketi",
+    "variables": "Kullanılabilir değişkenler",
+    "bodyHint": "Düz metin: satır sonları korunur, HTML yorumlanmaz.",
+    "save": "Kaydet",
+    "saved": "Şablon kaydedildi",
+    "saveFailed": "Kaydedilemedi",
+    "reset": "Varsayılana dön",
+    "resetDone": "Şablon sıfırlandı",
+    "overridden": "özelleştirilmiş",
+    "preview": "Önizleme",
+    "previewFailed": "Önizleme kullanılamıyor",
+    "loadFailed": "Yüklenemedi"
   }
 }

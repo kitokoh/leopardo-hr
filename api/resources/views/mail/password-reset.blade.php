@@ -4,24 +4,23 @@
     Ce template était rendu en **Markdown** (`mail::message`) : thème Laravel par
     défaut, bouton gris, pied de page ANGLAIS, et surtout trois phrases codées en
     dur en français (« Votre code de réinitialisation… », « Cordialement, »,
-    « L'équipe Leopardo RH ») alors que le reste était traduit → e-mail hybride
+    « L’équipe Leopardo RH ») alors que le reste était traduit → e-mail hybride
     pour un destinataire en/ar/tr.
 
     Désormais rendu par le layout canonique (`view:` et non `markdown:`), donc
     localisé ×4, styles inline (Gmail-safe) et pied de page unique.
 --}}
+
 @extends('emails.layouts.base')
 
-@section('heading', __('emails.email_password_reset_subject'))
+@section('heading', $tpl->heading)
 
 @section('content')
     <p style="margin:0 0 16px 0;">
         {{ __('emails.email_password_reset_greeting', ['name' => $userName ?? $email]) }}
     </p>
 
-    <p style="margin:0 0 20px 0;">
-        {{ __('emails.email_password_reset_body') }}
-    </p>
+    <div style="margin:0 0 20px 0;">{!! $tpl->bodyHtml() !!}</div>
 
     <p style="margin:0 0 10px 0; font-size:14px;">{{ __('emails.email_password_reset_code_label') }}</p>
 
@@ -45,7 +44,7 @@
 
     @include('emails.partials.button', [
         'url' => $resetUrl,
-        'label' => __('emails.email_password_reset_button'),
+        'label' => $tpl->ctaLabel ?? __('emails.email_password_reset_button'),
         'align' => 'center',
     ])
 

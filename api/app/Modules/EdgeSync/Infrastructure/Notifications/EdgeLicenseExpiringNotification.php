@@ -17,7 +17,9 @@ class EdgeLicenseExpiringNotification extends Notification implements ShouldQueu
 {
     use Queueable;
 
-    public function __construct(private readonly EdgeLicense $license) {}
+    public function __construct(private readonly EdgeLicense $license)
+    {
+    }
 
     public function via(mixed $notifiable): array
     {

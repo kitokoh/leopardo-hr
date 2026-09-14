@@ -17,7 +17,9 @@ class EdgeNodeSilentNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(private readonly EdgeNode $node) {}
+    public function __construct(private readonly EdgeNode $node)
+    {
+    }
 
     public function via(mixed $notifiable): array
     {
@@ -42,7 +44,7 @@ class EdgeNodeSilentNotification extends Notification implements ShouldQueue
     public function toArray(mixed $notifiable): array
     {
         return [
-            'node_id'   => $this->node->id,
+            'node_id' => $this->node->id,
             'node_name' => $this->node->name,
             'last_seen' => $this->node->last_seen_at?->toIso8601String(),
         ];

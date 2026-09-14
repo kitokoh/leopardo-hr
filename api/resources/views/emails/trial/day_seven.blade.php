@@ -1,6 +1,6 @@
 {{--
     Essai - jour 7 (issue #7346) — migré du thème Markdown Laravel vers le layout
-    canonique ; la marque du pied de signature n'est plus codée en dur.
+    canonique ; la marque du pied de signature n’est plus codée en dur.
 --}}
 @extends('emails.layouts.base')
 

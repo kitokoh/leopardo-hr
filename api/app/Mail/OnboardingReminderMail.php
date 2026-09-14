@@ -12,6 +12,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use App\Core\Mail\UsesEditableEmailTemplate;
 
 /**
  * #R12 — Rappel d'onboarding J+1.
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\App;
  */
 class OnboardingReminderMail extends Mailable
 {
+    use UsesEditableEmailTemplate;
+
     use Queueable;
     use SerializesModels;
 
@@ -39,7 +42,11 @@ class OnboardingReminderMail extends Mailable
         App::setLocale($this->locale);
 
         return new Envelope(
-            subject: __('emails.onboarding_reminder_subject'),
+            subject: $this->editableEmailTemplate('onboarding_reminder', $this->locale, [
+                ':name' => $this->managerName,
+                ':company' => $this->company->name,
+                ':brand' => config('mail.brand.name'),
+            ])->subject,
         );
     }
 
@@ -58,6 +65,11 @@ class OnboardingReminderMail extends Mailable
                 'managerName' => $this->managerName,
                 'setupUrl' => $base.'/',
                 'locale' => $this->locale,
+                'tpl' => $this->editableEmailTemplate('onboarding_reminder', $this->locale, [
+                    ':name' => $this->managerName,
+                    ':company' => $this->company->name,
+                    ':brand' => \App\Core\Mail\MailBrand::name(),
+                ]),
             ],
         );
     }

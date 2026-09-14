@@ -1,21 +1,20 @@
 {{--
-    Bienvenue dans l'essai (issue #7346).
+    Bienvenue dans l’essai (issue #7346).
 
     Migré de `emails/layouts/premium` (dont les couleurs venaient de classes CSS
     dans un bloc `<style>` supprimé par Gmail) vers le layout canonique : styles
     inline, en-tête de marque, pré-en-tête et pied de page uniques.
 --}}
+
 @extends('emails.layouts.base')
 
-@section('heading', __('emails.email_trial_welcome_subject', ['company' => $company->name]))
+@section('heading', $tpl->heading)
 
 @section('content')
     <p style="margin:0 0 16px 0;">
         {{ __('emails.email_trial_welcome_heading', ['name' => $manager->first_name]) }}
     </p>
-    <p style="margin:0 0 20px 0;">
-        {{ __('emails.email_trial_welcome_intro', ['company' => $company->name]) }}
-    </p>
+    <div style="margin:0 0 20px 0;">{!! $tpl->bodyHtml() !!}</div>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin:0 0 20px 0;">
         <tr>
@@ -50,7 +49,7 @@
 
     @include('emails.partials.button', [
         'url' => $appUrl.'/auth/login',
-        'label' => __('emails.email_trial_welcome_button'),
+        'label' => $tpl->ctaLabel ?? __('emails.email_trial_welcome_button'),
         'align' => 'center',
     ])
 @endsection

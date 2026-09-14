@@ -5,26 +5,28 @@
         : ($employee->role === 'manager' ? __('employees.role_manager') : __('employees.role_employee'));
 @endphp
 {{--
-    Invitation d'un collaborateur (issue #7346).
+    Invitation d’un collaborateur (issue #7346).
 
     Migré du layout `premium` vers le layout canonique. Le pied de page et
-    l'en-tête viennent désormais du layout : ce template ne porte plus que son
+    l’en-tête viennent désormais du layout : ce template ne porte plus que son
     corps. Les variables `:role`, `:email`, `:company`… restent rendues en gras
     via des substitutions échappées (`e()`), jamais de HTML brut concaténé.
 --}}
+
 @extends('emails.layouts.base')
 
-@section('heading', __('emails.user_invitation_title'))
+@section('heading', $tpl->heading)
 
 @section('content')
     <p style="margin:0 0 16px 0;">
         {{ str_replace(':name', trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')), trans('emails.user_invitation_greeting')) }}
     </p>
 
+    <div style="margin:0 0 16px 0;">{!! $tpl->bodyHtml() !!}</div>
+
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin:0 0 20px 0;">
         <tr>
             <td style="padding:16px 18px; font-size:14px; line-height:23px;">
-                <p style="margin:0 0 8px 0;">{!! str_replace(':company', '<strong>'.e($company->name).'</strong>', e(trans('emails.user_invitation_intro'))) !!}</p>
                 <p style="margin:0 0 8px 0;">{!! str_replace(':role', '<strong>'.e($__roleLabel).'</strong>', e(trans('emails.user_invitation_role_line'))) !!}</p>
                 <p style="margin:0 0 8px 0;">{!! str_replace(':email', '<strong>'.e($employee->email).'</strong>', e(trans('emails.user_invitation_email_line'))) !!}</p>
                 <p style="margin:0 0 8px 0;">{!! str_replace(':invitedBy', '<strong>'.e($invitedByEmail).'</strong>', e(trans('emails.user_invitation_invited_by_line'))) !!}</p>
@@ -38,7 +40,7 @@
 
     @include('emails.partials.button', [
         'url' => $activationUrl,
-        'label' => __('emails.user_invitation_activate_line'),
+        'label' => $tpl->ctaLabel ?? __('emails.user_invitation_activate_line'),
         'align' => 'center',
     ])
 

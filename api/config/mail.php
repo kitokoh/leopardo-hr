@@ -170,6 +170,13 @@ return [
         'logo_url' => env('MAIL_BRAND_LOGO_URL'),
         // Tokens produit (teal) — miroir de `--color-brand-*` côté web/admin.
         'primary_color' => env('MAIL_BRAND_PRIMARY_COLOR', '#0d9488'),
+        // Pile de polices des e-mails — ici et pas dans le layout : c'est un
+        // token de charte, et la surface `resources/views/emails` est surveillée
+        // par la garde i18n (aucun littéral ajouté dans un template).
+        'font_stack' => env(
+            'MAIL_BRAND_FONT_STACK',
+            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        ),
         'primary_dark_color' => env('MAIL_BRAND_PRIMARY_DARK_COLOR', '#042f2e'),
         'support_address' => env('MAIL_SUPPORT_ADDRESS', 'support@leopardo-rh.com'),
         'website_url' => env('MAIL_BRAND_WEBSITE_URL', env('FRONTEND_URL', 'https://leopardo-rh.com')),

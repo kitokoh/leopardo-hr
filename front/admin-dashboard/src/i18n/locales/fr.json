@@ -4900,7 +4900,8 @@
     "surveyStats": "Surveys de solutions",
     "solutionSurveys": "Surveys de solutions",
     "travel": "Agence de voyage",
-    "showcase": "Site vitrine"
+    "showcase": "Site vitrine",
+    "emailTemplates": "E-mails"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -6264,5 +6265,25 @@
     "step1": "Vous indiquez votre e-mail et le nom de votre entreprise.",
     "step2": "Vous recevez un code à 6 chiffres par e-mail.",
     "step3": "Vous entrez directement dans votre espace, sans mot de passe à créer."
+  },
+  "emailsAdmin": {
+    "title": "Modèles d'e-mails",
+    "subtitle": "Personnalisez le contenu des e-mails envoyés par la plateforme. Sans modification, le texte par défaut est utilisé.",
+    "locale": "Langue",
+    "subject": "Objet",
+    "heading": "Titre",
+    "body": "Corps du message",
+    "ctaLabel": "Libellé du bouton",
+    "variables": "Variables disponibles",
+    "bodyHint": "Texte brut : les retours à la ligne sont conservés, le HTML n'est pas interprété.",
+    "save": "Enregistrer",
+    "saved": "Modèle enregistré",
+    "saveFailed": "Enregistrement impossible",
+    "reset": "Revenir au défaut",
+    "resetDone": "Modèle réinitialisé",
+    "overridden": "personnalisé",
+    "preview": "Aperçu",
+    "previewFailed": "Aperçu indisponible",
+    "loadFailed": "Chargement impossible"
   }
 }

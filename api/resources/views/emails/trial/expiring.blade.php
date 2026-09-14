@@ -1,8 +1,8 @@
 {{--
     Essai - expire bientôt, cron historique (issue #7346).
 
-    CORRECTION DE CONTENU : le titre utilisait `trial_day3_heading`, c'est-à-dire
-    la SALUTATION du mail du jour 3 (« Bonjour :name, ») → l'e-mail s'ouvrait sur
+    CORRECTION DE CONTENU : le titre utilisait `trial_day3_heading`, c’est-à-dire
+    la SALUTATION du mail du jour 3 (« Bonjour :name, ») → l’e-mail s’ouvrait sur
     un titre faux. Il utilise désormais le sujet traduit dédié.
 --}}
 @extends('emails.layouts.base')

@@ -3,7 +3,7 @@
 
     Était un fragment nu (aucun en-tête ni pied de page) : le destinataire
     recevait un texte sans identité visuelle. Passé au layout canonique, avec
-    lien de désinscription quand il est fourni (le layout l'affiche lui-même).
+    lien de désinscription quand il est fourni (le layout l’affiche lui-même).
 --}}
 @extends('emails.layouts.base')
 

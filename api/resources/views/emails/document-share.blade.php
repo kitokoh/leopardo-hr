@@ -1,5 +1,5 @@
 {{--
-    Partage d'un document comptable (issue #7346) — fragment nu migré sur le
+    Partage d’un document comptable (issue #7346) — fragment nu migré sur le
     layout canonique (une seule charte ; la couleur #0f766e codée en dur est
     remplacée par le token de marque et le bouton du layout).
 --}}

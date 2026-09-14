@@ -2,9 +2,9 @@
     Invitation à rejoindre une entreprise (issue #7346).
 
     Le sujet était traduit mais le CORPS était intégralement en français codé en
-    dur (titre, invitation, libellé du rôle, bouton, mention d'expiration,
+    dur (titre, invitation, libellé du rôle, bouton, mention d’expiration,
     signature) : un invité en/ar/tr recevait un e-mail hybride. Tout passe
-    désormais par le catalogue, et la marque n'est plus écrite en dur.
+    désormais par le catalogue, et la marque n’est plus écrite en dur.
 --}}
 @extends('emails.layouts.base')
 

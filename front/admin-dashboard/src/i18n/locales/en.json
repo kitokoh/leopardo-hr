@@ -4894,7 +4894,8 @@
     "surveyStats": "Solution surveys",
     "solutionSurveys": "Solution surveys",
     "travel": "Travel Agency",
-    "showcase": "Showcase site"
+    "showcase": "Showcase site",
+    "emailTemplates": "Emails"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",
@@ -6258,5 +6259,25 @@
     "step1": "You enter your email and your company name.",
     "step2": "You receive a 6-digit code by email.",
     "step3": "You go straight into your workspace — no password to create."
+  },
+  "emailsAdmin": {
+    "title": "Email templates",
+    "subtitle": "Customise the content of emails sent by the platform. Until you change it, the default text is used.",
+    "locale": "Language",
+    "subject": "Subject",
+    "heading": "Heading",
+    "body": "Message body",
+    "ctaLabel": "Button label",
+    "variables": "Available variables",
+    "bodyHint": "Plain text: line breaks are kept, HTML is not interpreted.",
+    "save": "Save",
+    "saved": "Template saved",
+    "saveFailed": "Could not save",
+    "reset": "Restore default",
+    "resetDone": "Template reset",
+    "overridden": "customised",
+    "preview": "Preview",
+    "previewFailed": "Preview unavailable",
+    "loadFailed": "Could not load"
   }
 }

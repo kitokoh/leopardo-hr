@@ -9,9 +9,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use App\Core\Mail\UsesEditableEmailTemplate;
 
 class UserInvitationMail extends Mailable
 {
+    use UsesEditableEmailTemplate;
+
     use Queueable;
     use SerializesModels;
 
@@ -34,9 +37,16 @@ class UserInvitationMail extends Mailable
     {
         App::setLocale($this->locale);
 
+        $tpl = $this->editableEmailTemplate('user_invitation', $this->locale, [
+            ':company' => $this->company->name,
+            ':role' => $this->employee->manager_role ?? '',
+            ':email' => $this->employee->email,
+            ':brand' => \App\Core\Mail\MailBrand::name(),
+        ]);
+
         return $this
-            ->subject(__('emails.user_invitation_subject'))
-            ->view('emails.user-invitation', ['locale' => $this->locale]);
+            ->subject($tpl->subject)
+            ->view('emails.user-invitation', ['locale' => $this->locale, 'tpl' => $tpl]);
     }
 }
 

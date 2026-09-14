@@ -27,7 +27,8 @@ class EdgeNodeSilentAlert extends Notification implements ShouldQueue
         public readonly string $companyName,
         public readonly ?Carbon $lastSeenAt,
         public readonly int $thresholdMins,
-    ) {}
+    ) {
+    }
 
     public function via(mixed $notifiable): array
     {

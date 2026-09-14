@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use App\Core\Mail\UsesEditableEmailTemplate;
 
 /**
  * Issue #2626 — email de réinitialisation de mot de passe.
@@ -22,6 +23,8 @@ use Illuminate\Queue\SerializesModels;
  */
 class PasswordResetMail extends Mailable
 {
+    use UsesEditableEmailTemplate;
+
     use Queueable;
     use SerializesModels;
 
@@ -33,18 +36,30 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('emails.email_password_reset_subject'),
+            subject: $this->editableEmailTemplate('password_reset', app()->getLocale(), [
+                ':name' => $this->email,
+                ':brand' => config('mail.brand.name'),
+            ])->subject,
         );
     }
 
     public function content(): Content
     {
+        // #7347 — le contenu éditable est résolu ICI (PHP) et passé à la vue :
+        // la vue ne fait que rendre, elle ne construit aucune table de
+        // variables (et n'ajoute donc aucun littéral dans un template).
+        $tpl = $this->editableEmailTemplate('password_reset', app()->getLocale(), [
+            ':name' => $this->email,
+            ':brand' => \App\Core\Mail\MailBrand::name(),
+        ]);
+
         return new Content(
             view: 'mail.password-reset',
             with: [
                 'token' => $this->token,
                 'email' => $this->email,
                 'userName' => $this->email,
+                'tpl' => $tpl,
             ],
         );
     }
