@@ -19,12 +19,18 @@ use Illuminate\Support\Facades\DB;
  * evenement outbox `travel.booking.cancelled.v1` apres commit. Le motif
  * est obligatoire (Request) et conserve dans le payload (audit). Une
  * reservation deja annulee est idempotente.
+ *
+ * #7395 : l'annulation peut venir du PASSAGER lui-meme (espace voyageur,
+ * preuve = code de validation du billet) — `$actor` est alors nul et le
+ * payload porte `cancelled_by_channel = passenger` (audit : on distingue
+ * une annulation guichet d'une annulation en ligne anonyme, comme le fait
+ * deja l'expiration automatique avec `cancelled_by = null`).
  */
 final class CancelBookingAction
 {
     public function __construct(private readonly TravelOutboxPublisher $outbox) {}
 
-    public function execute(TravelBooking $booking, Employee $actor, string $reason): TravelBooking
+    public function execute(TravelBooking $booking, ?Employee $actor, string $reason): TravelBooking
     {
         if ($booking->status === BookingStatus::CANCELLED) {
             return $booking;
@@ -52,7 +58,8 @@ final class CancelBookingAction
         $this->outbox->publish($booking->company_id, 'travel.booking.cancelled.v1', [
             'booking_reference' => $booking->reference,
             'trip_id' => $booking->trip_id,
-            'cancelled_by' => $actor->id,
+            'cancelled_by' => $actor?->id,
+            'cancelled_by_channel' => $actor === null ? 'passenger' : 'staff',
             'cancelled_at' => now()->toIso8601String(),
             'reason' => $reason,
         ]);

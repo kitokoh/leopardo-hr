@@ -1904,3 +1904,42 @@ sans hôte (« URI must include a scheme and host »). Les trois `base_url` (Gro
 Anthropic) passent en `env(...) ?: 'défaut'`. Un `orderBy` sur une requête d'agrégation
 (`max(created_at)`) faisait échouer Postgres en `SQLSTATE 42803` — soit un **500** sur
 l'écran de santé.
+## Addendum 2026-09-14 — Espace voyageur : code de contrôle délivré et surface publique (#7394, #7395)
+
+Deux bugs de recette BC-24 TRAVEL rendaient le parcours passager inutilisable. **(1) Le code
+de contrôle n'était délivré à personne** : `IssueTicketsAction` le générait puis n'en
+persistait que le SHA-256 ; la réponse d'émission ne portait que `ticket_number`, et le PDF
+imprimait ce même numéro sous l'étiquette « Code de contrôle » — le passager saisissait donc
+un code que l'API refusait (**404**). Le code est désormais une **dérivation canonique** du
+billet (HMAC-SHA256 + `APP_KEY`, `XXXX-XXXX-XXXX`), **délivré une seule fois** par
+`POST /api/v1/travel/bookings/{booking}/issue-ticket` (clé `validation_code` sur chaque
+billet) et imprimé sur l'e-billet ; la saisie tolère minuscules et absence de tirets ; un
+rejeu d'émission ne redélivre rien. **(2) Le portail passager appelait la surface STAFF**
+(`/travel/shop/bookings/{ref}`, `/travel/tickets/{id}/pdf`, `POST /travel/shop/bookings/{ref}/cancel`)
+→ **401** pour un passager, et `code` y était ignoré en silence (faux contrôle d'accès).
+
+Surface PUBLIQUE de l'espace voyageur (aucun compte, aucun jeton boutique du tenant) :
+
+- `GET /api/v1/public/travel/shop/bookings/{reference}?code=` → suivi (statut, trajet,
+  `passenger_count`, billets `{id, ticket_number, status}`) ; **422** sans code, **404** si le
+  code ne correspond à aucun billet de la réservation.
+- `GET /api/v1/public/travel/tickets/{ticket}/pdf?code=` → URL signée du PDF ; **403** si le
+  code est faux, **410** si le billet est révoqué.
+- `POST /api/v1/public/travel/shop/bookings/{reference}/cancel` (`{code, reason}`) → annulation
+  en ligne, sièges libérés, motif conservé (audit) ; **422** `TRAVEL_BOOKING_CODE_INVALID` /
+  `TRAVEL_BOOKING_DEPARTURE_PAST` / `VALIDATION_ERROR`, **404** si la référence est inconnue.
+
+Règles d'accès : le tenant est résolu **par la ressource** (référence ou billet) quand aucune
+route n'est bornée (recherche, réservation, paiement → jeton `X-Travel-Shop-Token` toujours
+exigé, **401** sinon) ; une référence ambiguë ou inconnue est un **404** (fail-closed) ; la
+preuve de possession (code du billet) est vérifiée **avant** toute donnée. Le suivi staff
+`GET /api/v1/travel/shop/bookings/{reference}` reste réservé aux employés authentifiés et
+**refuse désormais le paramètre `code`** (422 `TRAVEL_SHOP_CODE_NOT_SUPPORTED`) au lieu de
+l'ignorer. Côté front, `front/web/src/app/(dashboard)/travel/portal/page.tsx` consomme
+exclusivement ces endpoints publics.
+
+Couverture : `api/tests/Feature/Travel/TravelTicketValidationCodeDeliveryTest.php` (délivrance
+unique, hash seul en base, routes de lecture muettes, suivi public 200/404, PDF réel) et
+`api/tests/Feature/Travel/TravelPublicShopPassengerPortalTest.php` (suivi, PDF, annulation sans
+jeton boutique ; 401/404/422 ; cross-tenant ; suivi staff qui refuse `code`), plus le golden
+journey GJ-TRAVEL-01 requalifié.

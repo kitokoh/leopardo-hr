@@ -11,7 +11,7 @@
 4. Paiement : `POST /api/v1/travel/payments/initiate` → redirect/url provider ou comptant.
 5. Callback : `POST /api/v1/travel/payments/callback` (signé) → `confirmed`.
 6. Billet : `POST /api/v1/travel/bookings/{booking}/issue-ticket` → PDF + QR + statut `issued`.
-7. Suivi : `GET /api/v1/travel/shop/bookings/{reference}` avec code de validation.
+7. Suivi (espace voyageur, sans compte) : `GET /api/v1/public/travel/shop/bookings/{reference}?code=<code de contrôle>` — le code imprimé sur l'e-billet, PAS le numéro de billet (#7394) ; le suivi staff `GET /travel/shop/bookings/{reference}` n'accepte pas de `code` (#7395).
 8. Embarquement : `POST /api/v1/travel/tickets/{ticket}/check-in` → `checked_in`.
 
 **Critère :** rejeu du callback → 1 seule confirmation ; double issue-ticket → idempotent.
@@ -27,6 +27,7 @@ Liste des passagers par trajet ; check-in individuel ; manifeste exportable.
 ## R4 — Annulation / remboursement
 
 Annulation (motif obligatoire) → `cancelled` ; remboursement (réservé `travel.manage`) → `refunded`, audit tracé.
+Annulation EN LIGNE par le passager (#7395) : `POST /api/v1/public/travel/shop/bookings/{reference}/cancel` avec `{code, reason}` — sans compte ni jeton boutique ; code invalide → 422 `TRAVEL_BOOKING_CODE_INVALID`, départ passé → 422 `TRAVEL_BOOKING_DEPARTURE_PAST`, motif manquant → 422 `VALIDATION_ERROR`.
 
 ## R5 — Correspondances
 
@@ -48,6 +49,7 @@ Articles (CRUD + modération draft/published/flagged), commentaires (modération
 ## R9 — Sécurité & isolation
 
 Cross-tenant → 404 sûr ; RBAC `travel.*` fail-closed ; payloads outbox redigés ; callback signé HMAC ; rejeu idempotent partout.
+Espace voyageur (#7395) : surface PUBLIQUE bornée à une ressource (`{reference}`/`{ticket}`), tenant résolu par la ressource, preuve = code de contrôle du billet (secret partagé) vérifié AVANT toute donnée ; le paramètre `code` est refusé (422 `TRAVEL_SHOP_CODE_NOT_SUPPORTED`) sur le suivi staff, qui reste réservé aux employés authentifiés (401 sinon).
 
 ## Signatures
 
@@ -105,7 +107,7 @@ Chaque scénario doit être **signé par le métier** avec : date, exécutant, r
 4. Paiement : `POST /api/v1/travel/payments/initiate` → redirect/url provider ou comptant.
 5. Callback : `POST /api/v1/travel/payments/callback` (signé) → `confirmed`.
 6. Billet : `POST /api/v1/travel/bookings/{booking}/issue-ticket` → PDF + QR + statut `issued`.
-7. Suivi : `GET /api/v1/travel/shop/bookings/{reference}` avec code de validation.
+7. Suivi (espace voyageur, sans compte) : `GET /api/v1/public/travel/shop/bookings/{reference}?code=<code de contrôle>` — le code imprimé sur l'e-billet, PAS le numéro de billet (#7394) ; le suivi staff `GET /travel/shop/bookings/{reference}` n'accepte pas de `code` (#7395).
 8. Embarquement : `POST /api/v1/travel/tickets/{ticket}/check-in` → `checked_in`.
 
 **Critère :** rejeu du callback → 1 seule confirmation ; double issue-ticket → idempotent.
@@ -121,6 +123,7 @@ Liste des passagers par trajet ; check-in individuel ; manifeste exportable.
 ## R4 — Annulation / remboursement
 
 Annulation (motif obligatoire) → `cancelled` ; remboursement (réservé `travel.manage`) → `refunded`, audit tracé.
+Annulation EN LIGNE par le passager (#7395) : `POST /api/v1/public/travel/shop/bookings/{reference}/cancel` avec `{code, reason}` — sans compte ni jeton boutique ; code invalide → 422 `TRAVEL_BOOKING_CODE_INVALID`, départ passé → 422 `TRAVEL_BOOKING_DEPARTURE_PAST`, motif manquant → 422 `VALIDATION_ERROR`.
 
 ## R5 — Correspondances
 
@@ -142,6 +145,7 @@ Articles (CRUD + modération draft/published/flagged), commentaires (modération
 ## R9 — Sécurité & isolation
 
 Cross-tenant → 404 sûr ; RBAC `travel.*` fail-closed ; payloads outbox redigés ; callback signé HMAC ; rejeu idempotent partout.
+Espace voyageur (#7395) : surface PUBLIQUE bornée à une ressource (`{reference}`/`{ticket}`), tenant résolu par la ressource, preuve = code de contrôle du billet (secret partagé) vérifié AVANT toute donnée ; le paramètre `code` est refusé (422 `TRAVEL_SHOP_CODE_NOT_SUPPORTED`) sur le suivi staff, qui reste réservé aux employés authentifiés (401 sinon).
 
 ## Signatures
 

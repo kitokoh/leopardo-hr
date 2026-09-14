@@ -3196,6 +3196,10 @@ class LeopardoClient:
         """Sitemap des produits publies (BC-28 C-SEO #6888)"""
         return self.request("GET", "/public/catalog/sitemap.xml", **kwargs)
 
+    def post_public_travel_shop_bookings_by_reference_cancel(self, **kwargs):
+        """Annulation en ligne d'une réservation par le passager (espace voyageur)"""
+        return self.request("POST", "/public/travel/shop/bookings/{reference}/cancel", **kwargs)
+
     def get_public_vitrine_by_slug(self, **kwargs):
         """Vitrine publique d'un tenant (BC-27 #6867)"""
         return self.request("GET", "/public/vitrine/{slug}", **kwargs)
