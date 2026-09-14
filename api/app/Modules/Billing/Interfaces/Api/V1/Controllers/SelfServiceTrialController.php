@@ -227,6 +227,10 @@ class SelfServiceTrialController extends Controller
                 // = inscription rapide : aucun verrouillage rétroactif).
                 $validated['company_type'] ?? null,
                 $validated['modules'] ?? [],
+                // QA onboarding 2026-09-14 : le choix de langue de l'utilisateur
+                // était validé puis jeté ici — le tenant naissait dans la langue
+                // du pays, pas la sienne.
+                $validated['locale'] ?? null,
             );
 
             return new JsonResponse([
