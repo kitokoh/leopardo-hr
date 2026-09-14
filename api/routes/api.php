@@ -43,6 +43,8 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardCon
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiMonitoringController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
@@ -526,6 +528,18 @@ Route::prefix('v1')->group(function (): void {
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
+
+        // #7384 — assistant IA : réglages éditables depuis le cockpit. Les
+        // valeurs sensibles sont chiffrées au repos et ne sont JAMAIS renvoyées.
+        Route::get('/platform/ai/settings', [PlatformAiSettingsController::class, 'index']);
+        Route::put('/platform/ai/settings', [PlatformAiSettingsController::class, 'update']);
+        Route::post('/platform/ai/settings/reset', [PlatformAiSettingsController::class, 'reset']);
+        // Test à blanc du fournisseur : valider une clé AVANT d'activer l'IA.
+        Route::post('/platform/ai/test-connection', [PlatformAiSettingsController::class, 'testConnection']);
+
+        // #7385 — suivi de l'assistant, tous tenants (usage, coûts, erreurs).
+        Route::get('/platform/ai/monitoring', [PlatformAiMonitoringController::class, 'index']);
+        Route::get('/platform/ai/health', [PlatformAiMonitoringController::class, 'health']);
 
         // Public holidays (issue #1811) — super-admin : CRUD fériés nationaux.
         Route::get('/public-holidays', [PublicHolidayController::class, 'index']);

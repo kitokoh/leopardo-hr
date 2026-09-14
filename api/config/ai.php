@@ -28,17 +28,17 @@ return [
             // un compte gratuit (le plan que la doc recommande). Défaut aligné sur
             // un modèle gratuit ET tool-calling. `AI_GROQ_MODEL` reste prioritaire.
             'model' => env('AI_GROQ_MODEL', 'openai/gpt-oss-120b'),
-            'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
+            'base_url' => env('GROQ_BASE_URL') ?: 'https://api.groq.com/openai/v1',
         ],
         'openai' => [
             'key' => env('OPENAI_API_KEY'),
             'model' => env('AI_MODEL', 'gpt-4o'),
-            'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+            'base_url' => env('OPENAI_BASE_URL') ?: 'https://api.openai.com/v1',
         ],
         'claude' => [
             'key' => env('ANTHROPIC_API_KEY'),
             'model' => env('AI_MODEL', 'claude-sonnet-4-20250514'),
-            'base_url' => env('ANTHROPIC_BASE_URL', 'https://api.anthropic.com/v1'),
+            'base_url' => env('ANTHROPIC_BASE_URL') ?: 'https://api.anthropic.com/v1',
         ],
     ],
 

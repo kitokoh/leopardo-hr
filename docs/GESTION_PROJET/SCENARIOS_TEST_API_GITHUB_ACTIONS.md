@@ -1853,3 +1853,54 @@ l'absence de terme interne (ex. « node Edge », `localhost`, `/admin/edge-nodes
   avec e-mail inconnu → identité Google **vérifiée** renvoyée pour pré-remplir le tunnel
   (aucun tenant créé depuis le callback — #3724) ; `intent=login` avec e-mail inconnu →
   `401 UNKNOWN_ACCOUNT` ; state absent ou invalide → `400 INVALID_OAUTH_STATE`.
+
+## Addendum 2026-09-14 — réglages et suivi de l'assistant IA (#7384, #7385)
+
+Les réglages de l'assistant vivaient **uniquement dans l'environnement** : aucun endpoint
+ne permettait de les lire ni de les modifier, et chaque changement de modèle ou de clé
+imposait un redéploiement. Six opérations super-admin (`auth:super_admin_api` +
+`throttle:platform-sensitive`) :
+
+- `GET /api/v1/admin/platform/ai/settings` → catalogue (clé, type, groupe, libellé,
+  `secret`) + valeurs publiques + état effectif. **Aucune clé n'est renvoyée, même à un
+  super-admin** : seuls `has_value`, `updated_at` et `updated_by` sont exposés.
+- `PUT /api/v1/admin/platform/ai/settings` → surcharge partielle. Une valeur **vide sur un
+  réglage secret conserve la clé enregistrée** (changer de modèle ne doit pas effacer la
+  clé) ; une clé inconnue est refusée en **422 `AI_SETTING_UNKNOWN`** plutôt qu'ignorée en
+  silence (une faute de frappe côté client ne doit pas passer pour un enregistrement
+  réussi) ; `null` supprime la surcharge.
+- `POST /api/v1/admin/platform/ai/settings/reset` → retour à la valeur d'environnement.
+- `POST /api/v1/admin/platform/ai/test-connection` → appel minimal au fournisseur
+  configuré, pour valider une clé **avant** d'activer l'assistant pour tous les tenants.
+  Le message est actionnable : **401** → clé refusée par le fournisseur, **429** → quota
+  atteint, timeout → connectivité sortante du serveur ; driver `fake` → réponse explicite
+  **sans appel réseau** (jamais un faux « succès »).
+- `GET /api/v1/admin/platform/ai/monitoring?from=&to=` → agrégats de la période (requêtes,
+  tokens, coût, erreurs, taux d'erreur, p95) + répartition **par entreprise** (nom de
+  société résolu — un UUID seul est inexploitable en supervision), **par outil** (appels /
+  confirmations en attente / échecs) et **par workflow**, + dernières erreurs **tronquées à
+  300 caractères** : on veut la cause, jamais le contenu des échanges.
+- `GET /api/v1/admin/platform/ai/health` → assistant actif, driver, modèle, clé fournisseur
+  configurée, activité des 24 h.
+
+**Priorité base > environnement**, appliquée au boot (`PlatformAiSettingsApplier`) : tout
+le code IA existant (`AIFeatureCheck`, `Orchestrator`, `AiCloudPolicy`, clients
+fournisseurs) lit la valeur éditée **sans une seule ligne modifiée**. Une base vide
+reproduit exactement le comportement d'avant ; table absente ou cache indisponible → repli
+silencieux sur l'environnement, **jamais d'exception au boot** (fail-safe).
+
+Les secrets sont **chiffrés au repos** (`Crypt::encryptString`), modèle calqué sur
+l'existant `PlatformMarketingOAuthConfigController`.
+
+Scénarios verrouillés par `api/tests/Feature/Platform/PlatformAiSettingsTest.php` : la clé
+n'est **pas** renvoyée par le `GET` et n'apparaît en clair dans **aucune** colonne ; un
+`PUT` sans nouvelle valeur **préserve** la clé ; une clé inconnue est refusée en **422** ;
+la base prime sur l'environnement ; les agrégats de suivi sont calculés (dont le taux
+d'erreur) ; l'accès est refusé sans session super-admin (**401**).
+
+Corrigé dans le même lot : `.env.example` livrait `GROQ_BASE_URL=` **vide**, et
+`env($cle, 'défaut')` renvoie la chaîne vide, pas le défaut — le client Groq postait donc
+sans hôte (« URI must include a scheme and host »). Les trois `base_url` (Groq, OpenAI,
+Anthropic) passent en `env(...) ?: 'défaut'`. Un `orderBy` sur une requête d'agrégation
+(`max(created_at)`) faisait échouer Postgres en `SQLSTATE 42803` — soit un **500** sur
+l'écran de santé.

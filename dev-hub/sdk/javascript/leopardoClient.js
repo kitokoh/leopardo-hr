@@ -550,6 +550,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/payroll/simulate", options);
     },
 
+    /** Etat de l'assistant IA (actif, driver, cle configuree, derniers appels) */
+    getAdminPlatformAiHealth(options = {}) {
+      return request("GET", "/admin/platform/ai/health", options);
+    },
+
+    /** Suivi de l'assistant IA, tous tenants */
+    getAdminPlatformAiMonitoring(options = {}) {
+      return request("GET", "/admin/platform/ai/monitoring", options);
+    },
+
+    /** Reglages de l'assistant IA (super-admin) */
+    getAdminPlatformAiSettings(options = {}) {
+      return request("GET", "/admin/platform/ai/settings", options);
+    },
+
+    /** Enregistrer les reglages de l'assistant IA */
+    putAdminPlatformAiSettings(options = {}) {
+      return request("PUT", "/admin/platform/ai/settings", options);
+    },
+
+    /** Retirer une surcharge de reglage (retour a l'environnement) */
+    postAdminPlatformAiSettingsReset(options = {}) {
+      return request("POST", "/admin/platform/ai/settings/reset", options);
+    },
+
+    /** Tester la connexion au fournisseur LLM */
+    postAdminPlatformAiTestConnection(options = {}) {
+      return request("POST", "/admin/platform/ai/test-connection", options);
+    },
+
     /** Config OAuth marketing (super-admin) */
     getAdminPlatformMarketingOauthConfig(options = {}) {
       return request("GET", "/admin/platform/marketing/oauth-config", options);

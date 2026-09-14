@@ -16,4 +16,12 @@ return [
     'conversation_not_found' => 'Conversation introuvable.',
     'conversations_unavailable' => 'Conversations indisponibles.',
     'oauth_save_failed' => 'تعذر حفظ الإعدادات.',
+    'ai_settings_unknown_keys' => 'إعداد/إعدادات غير معروفة: :keys',
+    'ai_settings_unknown_key' => 'إعداد غير معروف: :key',
+    'ai_test_driver_fake' => 'المشغّل «fake»: لا يتم أي اتصال بالشبكة. اختر مزوّدًا حقيقيًا لاختبار المفتاح.',
+    'ai_test_ok' => 'استجاب المزوّد بشكل صحيح.',
+    'ai_test_unauthorized' => 'المفتاح مرفوض من المزوّد (401). تحقّق من المفتاح المحفوظ لهذا المشغّل.',
+    'ai_test_quota' => 'تم بلوغ حصة المزوّد (429). أعد المحاولة لاحقًا أو غيّر العرض.',
+    'ai_test_timeout' => 'انتهت المهلة أثناء الوصول إلى المزوّد. تحقّق من الاتصال الصادر للخادم.',
+    'ai_test_failed' => 'فشل الاختبار: :error',
 ];

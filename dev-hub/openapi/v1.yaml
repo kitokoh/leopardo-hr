@@ -6013,6 +6013,132 @@ paths:
           description: Config enregistrée
         '422':
           $ref: '#/components/responses/Validation422'
+  /admin/platform/ai/settings:
+    get:
+      tags:
+      - Platform
+      summary: Reglages de l'assistant IA (super-admin)
+      description: Renvoie le catalogue des reglages, les valeurs publiques et l'etat effectif.
+        Les cles d'API ne sont JAMAIS renvoyees - seul un booleen `has_value` indique
+        qu'une cle est enregistree.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Catalogue + reglages + etat effectif (aucun secret)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+    put:
+      tags:
+      - Platform
+      summary: Enregistrer les reglages de l'assistant IA
+      description: Une valeur vide sur un reglage secret CONSERVE la cle deja enregistree.
+        Une cle inconnue est refusee (422).
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - settings
+              properties:
+                settings:
+                  type: object
+                  additionalProperties:
+                    type: string
+                    nullable: true
+      responses:
+        '200':
+          description: Reglages enregistres
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/platform/ai/settings/reset:
+    post:
+      tags:
+      - Platform
+      summary: Retirer une surcharge de reglage (retour a l'environnement)
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - setting_key
+              properties:
+                setting_key:
+                  type: string
+      responses:
+        '200':
+          description: Surcharge supprimee
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /admin/platform/ai/test-connection:
+    post:
+      tags:
+      - Platform
+      summary: Tester la connexion au fournisseur LLM
+      description: Appel minimal au fournisseur configure. Repond 502 avec un message
+        actionnable (cle refusee, quota, delai depasse) au lieu d'un 500 muet.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Le fournisseur a repondu correctement
+        '502':
+          description: Echec du test (message actionnable)
+  /admin/platform/ai/monitoring:
+    get:
+      tags:
+      - Platform
+      summary: Suivi de l'assistant IA, tous tenants
+      description: Agregats d'usage (requetes, tokens, cout, erreurs, p95), repartition
+        par entreprise, par outil et par workflow, et dernieres erreurs (messages tronques,
+        jamais le contenu des echanges).
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Agregats de la periode (30 jours par defaut)
+        '401':
+          $ref: '#/components/responses/Error401'
+  /admin/platform/ai/health:
+    get:
+      tags:
+      - Platform
+      summary: Etat de l'assistant IA (actif, driver, cle configuree, derniers appels)
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Etat courant + activite des dernieres 24 h
+        '401':
+          $ref: '#/components/responses/Error401'
   /pay-slips:
     get:
       tags:

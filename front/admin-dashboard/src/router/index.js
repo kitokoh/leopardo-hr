@@ -413,6 +413,16 @@ const routes = [
         }
       },
       {
+        // #7384/#7385 — assistant IA : réglages éditables + suivi (Paramètres › Assistant IA).
+        path: '/settings/ai',
+        name: 'settings-ai-assistant',
+        component: () => import('@/views/settings/AiAssistantView.vue'),
+        meta: {
+          title: 'navigation.aiAssistant',
+          icon: 'CpuChipIcon'
+        }
+      },
+      {
         path: '/settings/payroll/holidays',
         name: 'payroll-holidays',
         component: () => import('../views/settings/HolidaysView.vue'),

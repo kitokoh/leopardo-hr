@@ -16,4 +16,12 @@ return [
     'conversation_not_found' => 'Conversation not found.',
     'conversations_unavailable' => 'Conversations unavailable.',
     'oauth_save_failed' => 'Unable to save the configuration.',
+    'ai_settings_unknown_keys' => 'Unknown setting(s): :keys',
+    'ai_settings_unknown_key' => 'Unknown setting: :key',
+    'ai_test_driver_fake' => 'Driver "fake": no network call is made. Choose a real provider to test a key.',
+    'ai_test_ok' => 'The provider responded correctly.',
+    'ai_test_unauthorized' => 'Key rejected by the provider (401). Check the key stored for this driver.',
+    'ai_test_quota' => 'Provider quota reached (429). Try again later or change plan.',
+    'ai_test_timeout' => 'Timeout while reaching the provider. Check the server outbound connectivity.',
+    'ai_test_failed' => 'Test failed: :error',
 ];

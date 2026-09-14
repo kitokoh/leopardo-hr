@@ -419,6 +419,12 @@ const navigation = computed(() => [
     icon: EnvelopeIcon
   },
   {
+    name: 'settings-ai-assistant',
+    title: t('navigation.aiAssistant'),
+    path: '/settings/ai',
+    icon: SparklesIcon
+  },
+  {
     name: 'exports',
     title: t('navigation.exports', 'Exports & Rapports'),
     path: '/exports',

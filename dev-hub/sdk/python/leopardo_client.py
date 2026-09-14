@@ -460,6 +460,30 @@ class LeopardoClient:
         """Simuler l''impact d''un barème (platform_admin, dry-run) — issue #1814"""
         return self.request("POST", "/admin/payroll/simulate", **kwargs)
 
+    def get_admin_platform_ai_health(self, **kwargs):
+        """Etat de l'assistant IA (actif, driver, cle configuree, derniers appels)"""
+        return self.request("GET", "/admin/platform/ai/health", **kwargs)
+
+    def get_admin_platform_ai_monitoring(self, **kwargs):
+        """Suivi de l'assistant IA, tous tenants"""
+        return self.request("GET", "/admin/platform/ai/monitoring", **kwargs)
+
+    def get_admin_platform_ai_settings(self, **kwargs):
+        """Reglages de l'assistant IA (super-admin)"""
+        return self.request("GET", "/admin/platform/ai/settings", **kwargs)
+
+    def put_admin_platform_ai_settings(self, **kwargs):
+        """Enregistrer les reglages de l'assistant IA"""
+        return self.request("PUT", "/admin/platform/ai/settings", **kwargs)
+
+    def post_admin_platform_ai_settings_reset(self, **kwargs):
+        """Retirer une surcharge de reglage (retour a l'environnement)"""
+        return self.request("POST", "/admin/platform/ai/settings/reset", **kwargs)
+
+    def post_admin_platform_ai_test_connection(self, **kwargs):
+        """Tester la connexion au fournisseur LLM"""
+        return self.request("POST", "/admin/platform/ai/test-connection", **kwargs)
+
     def get_admin_platform_marketing_oauth_config(self, **kwargs):
         """Config OAuth marketing (super-admin)"""
         return self.request("GET", "/admin/platform/marketing/oauth-config", **kwargs)
