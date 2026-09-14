@@ -84,6 +84,7 @@ export type CopyTree = {
       googleAuthFailed: string;
       googleNoAccount: string;
       googleNoAccountCta: string;
+      googleUnavailable: string;
     };
   };
   dashboard: {
@@ -709,6 +710,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
         googleNoAccountCta: 'Démarrer un essai sans invitation',
+        googleUnavailable: 'La connexion Google n’est pas encore disponible. Utilisez votre email et votre mot de passe.',
       },
     },
     dashboard: {
@@ -1375,6 +1377,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
         googleNoAccountCta: 'ابدأ تجربة دون دعوة',
+        googleUnavailable: 'تسجيل الدخول عبر Google غير متاح بعد. استخدم بريدك وكلمة المرور.',
       },
     },
     dashboard: {
@@ -2037,6 +2040,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
         googleNoAccountCta: 'Davet olmadan deneme başlat',
+        googleUnavailable: 'Google ile giris henuz kullanilamiyor. E-posta ve sifrenizle giris yapin.',
       },
     },
     dashboard: {
@@ -2699,6 +2703,7 @@ const copy: Record<AppLocale, CopyTree> = {
         googleAuthFailed: 'Google refused the sign-in. Please try again.',
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
         googleNoAccountCta: 'Start a trial without an invitation',
+        googleUnavailable: 'Google sign-in is not available yet. Use your email and password instead.',
       },
     },
     dashboard: {

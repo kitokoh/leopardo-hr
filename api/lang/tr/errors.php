@@ -11,6 +11,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'Bu çalışan hesabı aktif değil.',
     'COMPANY_NOT_FOUND' => 'Şirket bulunamadı.',
     'INVALID_CURRENT_PASSWORD' => 'Mevcut şifre hatalı.',
+    'PASSWORD_TOO_COMMON' => 'Sifreniz cok yaygin veya tahmin edilmesi kolay. En az 10 karakter, harf ve rakam iceren benzersiz bir sifre secin.',
     'UNAUTHENTICATED' => 'Giriş yapmanız gerekiyor.',
 
     // Pointage

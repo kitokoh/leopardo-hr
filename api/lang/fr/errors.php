@@ -12,6 +12,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'Ce compte employé n\'est pas actif.',
     'COMPANY_NOT_FOUND' => 'Entreprise introuvable.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',
+    'PASSWORD_TOO_COMMON' => 'Votre mot de passe est trop courant ou trop prévisible. Choisissez un mot de passe unique d\'au moins 10 caractères, avec des lettres et des chiffres.',
     'UNAUTHENTICATED' => 'Connexion requise.',
 
     // Pointage

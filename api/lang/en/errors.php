@@ -12,6 +12,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'This employee account is not active.',
     'COMPANY_NOT_FOUND' => 'Company not found.',
     'INVALID_CURRENT_PASSWORD' => 'The current password is incorrect.',
+    'PASSWORD_TOO_COMMON' => 'Your password is too common or too predictable. Choose a longer, unique password (at least 10 characters, with letters and numbers).',
     'UNAUTHENTICATED' => 'Authentication required.',
 
     // Attendance

@@ -1,11 +1,13 @@
 'use client';
 
+import { PASSWORD_MIN_LENGTH } from '@/lib/password-policy';
+
 /**
  * PasswordStrengthBar — indicateur visuel de force de mot de passe (#5620)
  *
  * Calcul de force natif (aucune dépendance réseau) :
- *   score 0 : longueur < 8 (trop court)
- *   score 1 : longueur ≥ 8 uniquement (faible)
+ *   score 0 : longueur < PASSWORD_MIN_LENGTH (trop court)
+ *   score 1 : longueur ≥ PASSWORD_MIN_LENGTH uniquement (faible)
  *   score 2 : + majuscule ou chiffre (moyen)
  *   score 3 : + majuscule ET chiffre (bon)
  *   score 4 : + caractère spécial (fort)
@@ -15,7 +17,8 @@
  *   locale    — 'fr' | 'ar' | 'tr' | 'en'  (défaut : 'fr')
  */
 
-const MIN_LENGTH = 8;
+/** Audit 2026-09-14 — aligné sur la source unique `password-policy` (12). */
+const MIN_LENGTH = PASSWORD_MIN_LENGTH;
 
 type Locale = 'fr' | 'ar' | 'tr' | 'en';
 
