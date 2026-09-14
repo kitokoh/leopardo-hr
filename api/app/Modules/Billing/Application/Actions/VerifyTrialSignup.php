@@ -16,12 +16,12 @@ use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Support\CountryDefaults;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Str;
+use Psr\Log\LoggerInterface;
 
 /**
  * Vérifie le code OTP d'une demande d'essai self-service et provisionne
@@ -36,6 +36,10 @@ class VerifyTrialSignup
         private readonly SolutionActivator $solutionActivator,
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly HorizontalToolSelection $toolSelection,
+        private readonly DatabaseManager $db,
+        private readonly Hasher $hasher,
+        private readonly LoggerInterface $logger,
+        private readonly Mailer $mailer,
     ) {}
 
     /**
@@ -43,8 +47,8 @@ class VerifyTrialSignup
      */
     public function execute(string $email, string $code): array
     {
-        if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO public');
+        if ($this->db->connection()->getDriverName() === 'pgsql') {
+            $this->db->connection()->statement('SET search_path TO public');
         }
 
         // #6547 (audit) : verrouillage anti-brute-force — après 5 mauvais
@@ -70,7 +74,7 @@ class VerifyTrialSignup
         // approved sans verrou). La CompanyRequest est maintenant CLAIMÉE en
         // `processing` sous transaction (lockForUpdate) : le 2e appel voit un
         // statut non-pending et refuse, sans jamais provisionner deux fois.
-        $claimed = DB::transaction(function () use ($email, $code): ?CompanyRequest {
+        $claimed = $this->db->transaction(function () use ($email, $code): ?CompanyRequest {
             $request = CompanyRequest::query()
                 ->where('email', $email)
                 ->where('status', 'pending')
@@ -117,7 +121,7 @@ class VerifyTrialSignup
 
                 if ((int) $pending->otp_attempts >= 5) {
                     $pending->update(['otp_locked_until' => now()->addMinutes(15)]);
-                    Log::warning('trial.verify_otp_locked', ['email' => $email]);
+                    $this->logger->warning('trial.verify_otp_locked', ['email' => $email]);
 
                     return [
                         'success' => false,
@@ -149,7 +153,7 @@ class VerifyTrialSignup
         if ($existingManager !== null) {
             // Terminer proprement la demande (état terminal, pas de reprocessing).
             $companyRequest->update(['status' => 'rejected']);
-            Log::info('trial.verify_duplicate_manager', ['email' => $email]);
+            $this->logger->info('trial.verify_duplicate_manager', ['email' => $email]);
 
             return [
                 'success' => false,
@@ -181,7 +185,7 @@ class VerifyTrialSignup
             is_string($payload['plan'] ?? null) ? $payload['plan'] : null
         );
         if (! $trialPlan) {
-            Log::error('SelfServiceTrial: No active plan found for trial provisioning.');
+            $this->logger->error('SelfServiceTrial: No active plan found for trial provisioning.');
 
             return [
                 'success' => false,
@@ -249,7 +253,7 @@ class VerifyTrialSignup
                 'company_type' => $companyType,
             ]);
         } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Provisioning failed', [
+            $this->logger->error('SelfServiceTrial: Provisioning failed', [
                 'email' => $email,
                 'company' => $companyName,
                 'error' => $e->getMessage(),
@@ -260,7 +264,7 @@ class VerifyTrialSignup
             try {
                 $companyRequest->update(['status' => 'pending']);
             } catch (\Throwable $revertError) {
-                Log::error('SelfServiceTrial: Failed to revert claim after provisioning failure', [
+                $this->logger->error('SelfServiceTrial: Failed to revert claim after provisioning failure', [
                     'email' => $email,
                     'error' => $revertError->getMessage(),
                 ]);
@@ -292,7 +296,7 @@ class VerifyTrialSignup
         try {
             foreach ($solutions as $solutionCode) {
                 if (! $this->solutionCatalogue->has($solutionCode)) {
-                    Log::warning('SelfServiceTrial: unknown solution requested at verify', [
+                    $this->logger->warning('SelfServiceTrial: unknown solution requested at verify', [
                         'email' => $email,
                         'solution' => $solutionCode,
                     ]);
@@ -325,7 +329,7 @@ class VerifyTrialSignup
         // web les utilise déjà). Best-effort : l'absence de ligne ne doit
         // jamais faire échouer un provisioning réussi.
         try {
-            DB::table('trial_provisionings')
+            $this->db->table('trial_provisionings')
                 ->where('email', $email)
                 ->where('status', 'pending')
                 ->update([
@@ -337,13 +341,13 @@ class VerifyTrialSignup
                     'updated_at' => now(),
                 ]);
         } catch (\Throwable $e) {
-            Log::warning('trial.self_service.provisioning_row_ready_failed', [
+            $this->logger->warning('trial.self_service.provisioning_row_ready_failed', [
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
         }
 
-        Log::info('SelfServiceTrial: Company provisioned after verification', [
+        $this->logger->info('SelfServiceTrial: Company provisioned after verification', [
             'company_id' => $result['company']->id,
             'company_name' => $companyName,
             'manager_email' => $email,
@@ -351,11 +355,11 @@ class VerifyTrialSignup
         ]);
 
         try {
-            Mail::to($email)->send(
+            $this->mailer->to($email)->send(
                 new TrialWelcomeMail($result['company'], $result['manager'], $tempPassword)
             );
         } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: Failed to send welcome email', [
+            $this->logger->error('SelfServiceTrial: Failed to send welcome email', [
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
@@ -395,14 +399,14 @@ class VerifyTrialSignup
 
         do {
             $savepoint = 'trial_signup_slug_retry';
-            $hasOuterTransaction = DB::getDriverName() === 'pgsql' && DB::transactionLevel() > 0;
+            $hasOuterTransaction = $this->db->connection()->getDriverName() === 'pgsql' && $this->db->connection()->transactionLevel() > 0;
 
             if ($hasOuterTransaction) {
-                DB::statement("SAVEPOINT {$savepoint}");
+                $this->db->connection()->statement("SAVEPOINT {$savepoint}");
             }
 
             try {
-                return DB::transaction(function () use ($payload): array {
+                return $this->db->transaction(function () use ($payload): array {
                     $rawSlug = $payload['slug'];
                     $slug = $this->resolveUniqueSlug(\is_string($rawSlug) ? $rawSlug : 'company');
 
@@ -459,8 +463,8 @@ class VerifyTrialSignup
                         $this->partnerService->attributeCompanyToPartner($company, $referralCode);
                     }
 
-                    if (DB::getDriverName() === 'pgsql') {
-                        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+                    if ($this->db->connection()->getDriverName() === 'pgsql') {
+                        $this->db->connection()->statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
                     }
                     $this->tenantManager->setTenant($company);
 
@@ -485,7 +489,7 @@ class VerifyTrialSignup
                         $manager->forceFill([
                             'company_id' => $company->id,
                             // Issue #4496 : password_hash non mass-assignable.
-                            'password_hash' => Hash::make(\is_string($tempPassword) ? $tempPassword : Str::random(16)),
+                            'password_hash' => $this->hasher->make(\is_string($tempPassword) ? $tempPassword : Str::random(16)),
                             'role' => 'manager',
                             'manager_role' => 'principal',
                             'status' => 'active',
@@ -502,13 +506,13 @@ class VerifyTrialSignup
                 });
             } catch (QueryException $e) {
                 if ($hasOuterTransaction) {
-                    DB::statement("ROLLBACK TO SAVEPOINT {$savepoint}");
+                    $this->db->connection()->statement("ROLLBACK TO SAVEPOINT {$savepoint}");
                 }
 
                 if ($e->getCode() !== '23505' || ++$attempts >= 5) {
                     throw $e;
                 }
-                Log::warning('trial.signup.slug_collision_retry', ['attempt' => $attempts, 'base_slug' => $payload['slug']]);
+                $this->logger->warning('trial.signup.slug_collision_retry', ['attempt' => $attempts, 'base_slug' => $payload['slug']]);
             }
         } while (true);
     }
@@ -518,7 +522,7 @@ class VerifyTrialSignup
         $requested = $planCode !== null ? strtolower(trim($planCode)) : '';
 
         if ($requested !== '') {
-            $requestedPlan = DB::table($this->publicTable('plans'))
+            $requestedPlan = $this->db->table($this->publicTable('plans'))
                 ->where('is_active', true)
                 ->whereRaw('LOWER(name) = ?', [$requested])
                 ->first();
@@ -527,16 +531,16 @@ class VerifyTrialSignup
                 return $requestedPlan;
             }
 
-            Log::warning('SelfServiceTrial: unknown plan requested at signup - falling back to the default plan', [
+            $this->logger->warning('SelfServiceTrial: unknown plan requested at signup - falling back to the default plan', [
                 'plan' => $planCode,
             ]);
         }
 
-        $plan = DB::table($this->publicTable('plans'))
+        $plan = $this->db->table($this->publicTable('plans'))
             ->where('is_active', true)
             ->orderBy('id')
             ->first()
-            ?? DB::table($this->publicTable('plans'))
+            ?? $this->db->table($this->publicTable('plans'))
                 ->orderBy('id')
                 ->first();
 
@@ -550,7 +554,7 @@ class VerifyTrialSignup
     private function createFallbackTrialPlan(): ?object
     {
         try {
-            $id = DB::table($this->publicTable('plans'))->insertGetId([
+            $id = $this->db->table($this->publicTable('plans'))->insertGetId([
                 'name' => 'Trial',
                 'price_monthly' => 0,
                 'price_yearly' => 0,
@@ -565,9 +569,9 @@ class VerifyTrialSignup
                 'is_active' => true,
             ]);
 
-            return DB::table($this->publicTable('plans'))->where('id', $id)->first();
+            return $this->db->table($this->publicTable('plans'))->where('id', $id)->first();
         } catch (\Throwable $e) {
-            Log::warning('SelfServiceTrial: unable to create fallback trial plan', [
+            $this->logger->warning('SelfServiceTrial: unable to create fallback trial plan', [
                 'error' => $e->getMessage(),
             ]);
 
@@ -577,7 +581,7 @@ class VerifyTrialSignup
 
     private function publicTable(string $table): string
     {
-        return DB::getDriverName() === 'pgsql' ? 'public.'.$table : $table;
+        return $this->db->connection()->getDriverName() === 'pgsql' ? 'public.'.$table : $table;
     }
 
     protected function resolveUniqueSlug(string $baseSlug): string

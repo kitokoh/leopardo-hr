@@ -13,16 +13,9 @@ api/app/Modules/Accounting/Application/Services/DocumentWorkflowService.php:22:u
 api/app/Modules/Accounting/Domain/Contracts/PaymentGatewayInterface.php:7:use App\Modules\Accounting\Application\DTOs\PaymentCheckout;
 api/app/Modules/Accounting/Domain/Contracts/PaymentGatewayInterface.php:8:use App\Modules\Accounting\Application\DTOs\PaymentWebhookData;
 api/app/Modules/Attendance/Application/Actions/ApproveGeoSession.php:14:use Illuminate\Support\Facades\DB;
-api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:13:use Illuminate\Support\Facades\DB;
-api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:14:use Illuminate\Support\Facades\Hash;
-api/app/Modules/Billing/Application/Actions/ProvisionGuidedTrial.php:15:use Illuminate\Support\Facades\Log;
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:11:use Illuminate\Support\Facades\DB;
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:12:use Illuminate\Support\Facades\Log;
 api/app/Modules/Billing/Application/Actions/RequestTrialSignup.php:13:use Illuminate\Support\Facades\Mail;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:19:use Illuminate\Support\Facades\DB;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:20:use Illuminate\Support\Facades\Hash;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:21:use Illuminate\Support\Facades\Log;
-api/app/Modules/Billing/Application/Actions/VerifyTrialSignup.php:22:use Illuminate\Support\Facades\Mail;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:10:use Illuminate\Support\Facades\Log;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:11:use Illuminate\Support\Facades\Schema;
 api/app/Modules/CRM/Application/Actions/AutomationActions/CreateTaskAction.php:9:use Illuminate\Support\Facades\DB;

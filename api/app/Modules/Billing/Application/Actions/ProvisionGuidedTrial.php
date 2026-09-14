@@ -11,10 +11,10 @@ use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Support\CountryDefaults;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Str;
+use Psr\Log\LoggerInterface;
 
 class ProvisionGuidedTrial
 {
@@ -22,6 +22,9 @@ class ProvisionGuidedTrial
         private readonly TenantManager $tenantManager,
         private readonly SolutionActivator $solutionActivator,
         private readonly HorizontalToolSelection $toolSelection,
+        private readonly DatabaseManager $db,
+        private readonly Hasher $hasher,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -72,7 +75,7 @@ class ProvisionGuidedTrial
             }
 
             if ($manager instanceof Employee) {
-                Log::info('Guided trial : tenant sandbox existant réutilisé', ['company_id' => $existing->id, 'email' => $email]);
+                $this->logger->info('Guided trial : tenant sandbox existant réutilisé', ['company_id' => $existing->id, 'email' => $email]);
 
                 return [
                     'success' => true,
@@ -83,7 +86,7 @@ class ProvisionGuidedTrial
 
             // Entreprise existante sans manager (provisioning interrompu) :
             // on poursuit la création du manager sous ce tenant.
-            Log::warning('Guided trial : company existante sans manager, re-provisioning', ['company_id' => $existing->id, 'email' => $email]);
+            $this->logger->warning('Guided trial : company existante sans manager, re-provisioning', ['company_id' => $existing->id, 'email' => $email]);
         }
 
         $slug = Str::slug($companyName);
@@ -109,7 +112,7 @@ class ProvisionGuidedTrial
         // pays francophone => espace en français). Le choix explicite prime.
         $language = $this->resolveLanguage($locale, $countryDefaults);
 
-        return DB::transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection, $language): array {
+        return $this->db->transaction(function () use ($email, $companyName, $slug, $countryDefaults, $solutions, $companyType, $moduleSelection, $language): array {
             $company = Company::query()->create([
                 'name' => $companyName,
                 'slug' => $slug,
@@ -147,8 +150,8 @@ class ProvisionGuidedTrial
                 'features' => $this->toolSelection->mirroredFeatures($moduleSelection),
             ]);
 
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+            if ($this->db->connection()->getDriverName() === 'pgsql') {
+                $this->db->connection()->statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
             }
             $this->tenantManager->setTenant($company);
 
@@ -175,7 +178,7 @@ class ProvisionGuidedTrial
                 // s'exécuter (régression #4558, non couverte par le fix #4947).
                 $manager->forceFill([
                     'company_id' => $company->id,
-                    'password_hash' => Hash::make(Str::random(16)),
+                    'password_hash' => $this->hasher->make(Str::random(16)),
                     'role' => 'manager',
                     'manager_role' => 'principal',
                     'status' => 'active',
@@ -213,12 +216,12 @@ class ProvisionGuidedTrial
     private function resolveTrialPlanId(): int
     {
         /** @var object{id: int}|null $plan */
-        $plan = DB::table('plans')->where('is_active', true)->first();
+        $plan = $this->db->table('plans')->where('is_active', true)->first();
         if ($plan) {
             return $plan->id;
         }
 
-        return DB::table('plans')->insertGetId([
+        return $this->db->table('plans')->insertGetId([
             'name' => 'Sandbox Plan',
             'price_monthly' => 0,
             'price_yearly' => 0,
@@ -232,7 +235,7 @@ class ProvisionGuidedTrial
     private function seedBasicSandboxData(string $companyId, int $managerId): void
     {
         // 1. Department
-        $deptId = DB::table('shared_tenants.departments')->insertGetId([
+        $deptId = $this->db->table('shared_tenants.departments')->insertGetId([
             'company_id' => $companyId,
             'name' => 'Opérations',
             'manager_id' => $managerId,
@@ -240,7 +243,7 @@ class ProvisionGuidedTrial
         ]);
 
         // 2. Schedule
-        $scheduleId = DB::table('shared_tenants.schedules')->insertGetId([
+        $scheduleId = $this->db->table('shared_tenants.schedules')->insertGetId([
             'company_id' => $companyId,
             'name' => 'Standard 8h-17h',
             'start_time' => '08:00:00',
@@ -264,14 +267,14 @@ class ProvisionGuidedTrial
         // code : si elle existe déjà, on saute le seed (département/horaire du
         // nouveau tenant restent créés — seuls alice + sa trace sont omis).
         if (config('app.demo_mode_enabled')
-            && ! DB::table('shared_tenants.employees')->where('email', 'alice@demo.local')->exists()) {
-            $empId = DB::table('shared_tenants.employees')->insertGetId([
+            && ! $this->db->table('shared_tenants.employees')->where('email', 'alice@demo.local')->exists()) {
+            $empId = $this->db->table('shared_tenants.employees')->insertGetId([
                 'company_id' => $companyId,
                 'matricule' => 'EMP-001',
                 'first_name' => 'Alice',
                 'last_name' => 'Dupont',
                 'email' => 'alice@demo.local',
-                'password_hash' => Hash::make('password'),
+                'password_hash' => $this->hasher->make('password'),
                 'role' => 'employee',
                 'department_id' => $deptId,
                 'schedule_id' => $scheduleId,
@@ -283,7 +286,7 @@ class ProvisionGuidedTrial
                 'updated_at' => now(),
             ]);
 
-            DB::table('public.user_lookups')->insert([
+            $this->db->table('public.user_lookups')->insert([
                 'email' => 'alice@demo.local',
                 'company_id' => $companyId,
                 'schema_name' => 'shared_tenants',
@@ -292,7 +295,7 @@ class ProvisionGuidedTrial
             ]);
 
             // 4. Attendance log
-            DB::table('shared_tenants.attendance_logs')->insert([
+            $this->db->table('shared_tenants.attendance_logs')->insert([
                 'company_id' => $companyId,
                 'employee_id' => $empId,
                 'date' => now()->format('Y-m-d'),
