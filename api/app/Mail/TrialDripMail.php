@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -47,9 +47,12 @@ class TrialDripMail extends Mailable
                 'companyName' => $this->company->name,
                 'managerName' => $this->manager->first_name,
                 'appName' => $appName,
-                'appUrl' => config('app.frontend_url', 'http://localhost:3000'),
+                // #7346 — le repli était `http://localhost:3000` : sans
+                // FRONTEND_URL configurée, TOUS les boutons du mail pointaient
+                // vers la machine du développeur. On retombe sur le site public
+                // de la marque, jamais sur une adresse locale.
+                'appUrl' => rtrim((string) (config('app.frontend_url') ?: config('mail.brand.website_url')), '/'),
                 'locale' => $this->locale,
             ]);
     }
 }
-

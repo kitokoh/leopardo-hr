@@ -2,8 +2,8 @@
 
 namespace App\Mail;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Infrastructure\Services\RoleInvitationService;
 use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
@@ -17,6 +17,7 @@ class RoleAssignmentMail extends Mailable
     use SerializesModels;
 
     public readonly array $appLinks;
+
     public readonly string $roleLabel;
 
     public function __construct(
@@ -42,9 +43,16 @@ class RoleAssignmentMail extends Mailable
     {
         App::setLocale($this->locale);
 
+        $tpl = app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('role_assignment', $this->locale, [
+            ':role' => $this->roleLabel,
+            ':company' => $this->company->name,
+            ':assignedBy' => $this->assignedByName,
+            ':name' => $this->employee->first_name ?? '',
+            ':brand' => \App\Core\Mail\MailBrand::name(),
+        ]);
+
         return $this
-            ->subject(__('emails.role_assignment_subject', ['role' => $this->roleLabel]))
-            ->view('emails.role-assignment');
+            ->subject($tpl->subject)
+            ->view('emails.role-assignment', ['tpl' => $tpl]);
     }
 }
-

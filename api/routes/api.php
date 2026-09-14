@@ -49,6 +49,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformEmailTemplateController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformFeatureKillSwitchController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
@@ -492,6 +493,14 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/webhooks/{webhookEndpoint}/test', [PlatformAdminWebhookController::class, 'test'])->whereNumber('webhookEndpoint');
         Route::get('/webhooks/{webhookEndpoint}/dead-letters', [PlatformAdminWebhookController::class, 'deadLetters'])->whereNumber('webhookEndpoint');
         Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [PlatformAdminWebhookController::class, 'replayDeadLetter'])->whereNumber('webhookEndpoint')->whereNumber('delivery');
+
+        // #7347 — édition des contenus d'e-mails depuis la plateforme admin
+        // (Paramètres › E-mails). Surcharge par (template, locale) ; sans
+        // surcharge, l'e-mail garde sa valeur par défaut du catalogue.
+        Route::get('/email-templates', [PlatformEmailTemplateController::class, 'index']);
+        Route::put('/email-templates', [PlatformEmailTemplateController::class, 'update']);
+        Route::delete('/email-templates', [PlatformEmailTemplateController::class, 'reset']);
+        Route::post('/email-templates/preview', [PlatformEmailTemplateController::class, 'preview']);
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);
