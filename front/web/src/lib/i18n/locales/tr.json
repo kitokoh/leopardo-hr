@@ -1846,6 +1846,7 @@
   },
   "settingsPage": {
     "cancel": "İptal",
+    "company": "Şirket",
     "confirmPassword": "Parolayı doğrula",
     "currentPassword": "Mevcut parola",
     "disable2fa": "2FA'yı devre dışı bırak",
@@ -1857,6 +1858,7 @@
     "fullName": "Ad soyad",
     "generateSecret": "2FA sırrı oluştur",
     "generateSecretHint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
+    "manage2fa": "İki adımlı doğrulamayı yönet",
     "manualSecret": "Manuel sır:",
     "minLengthHint": "En az 8 karakter.",
     "newPassword": "Yeni parola",
@@ -1871,6 +1873,7 @@
     "saveChanges": "Değişiklikleri kaydet",
     "scanStep": "1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:",
     "subtitle": "Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.",
+    "tenantSubtitle": "Hesap bilgilerinizi ve güvenliğini yönetin.",
     "title": "Hesabım",
     "twoFactorActiveHint": "2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.",
     "twoFactorDisabled": "2FA devre dışı bırakıldı.",

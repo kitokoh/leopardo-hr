@@ -1846,6 +1846,7 @@
   },
   "settingsPage": {
     "cancel": "Cancel",
+    "company": "Company",
     "confirmPassword": "Confirm password",
     "currentPassword": "Current password",
     "disable2fa": "Disable 2FA",
@@ -1857,6 +1858,7 @@
     "fullName": "Full name",
     "generateSecret": "Generate 2FA secret",
     "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manage2fa": "Manage two-factor authentication",
     "manualSecret": "Manual secret:",
     "minLengthHint": "Minimum 8 characters.",
     "newPassword": "New password",
@@ -1871,6 +1873,7 @@
     "saveChanges": "Save changes",
     "scanStep": "1. Scan this link / secret in your 2FA app:",
     "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "tenantSubtitle": "Manage your account information and its security.",
     "title": "My account",
     "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
     "twoFactorDisabled": "2FA disabled.",
