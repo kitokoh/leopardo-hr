@@ -4792,7 +4792,9 @@
       "deactivate": "Desactiver",
       "suspend": "Suspendre",
       "export": "Exporter",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "deactivateConfirmTitle": "Désactiver les utilisateurs sélectionnés ?",
+      "deactivateConfirmBody": "Cette action désactivera :count utilisateur(s) sélectionné(s). Ils ne pourront plus se connecter tant que leur compte n'est pas réactivé."
     },
     "toast": {
       "loadError": "Erreur lors du chargement des utilisateurs",
@@ -5020,7 +5022,8 @@
       "city": "Ville",
       "carrier": "Compagnie",
       "saving": "Enregistrement…",
-      "selectPlaceholder": "— Sélectionner —"
+      "selectPlaceholder": "— Sélectionner —",
+      "actionError": "L'action a échoué. Réessayez."
     },
     "home": {
       "title": "Agence de voyage",
@@ -5217,7 +5220,8 @@
       "availableFrom": "Disponible du",
       "availableUntil": "Disponible jusqu'au",
       "owner": "Propriétaire",
-      "description": "Description"
+      "description": "Description",
+      "confirmDeleteImage": "Supprimer cette image ? Elle sera retirée de la galerie du véhicule."
     },
     "countries": {
       "name": "Nom",
@@ -6243,7 +6247,9 @@
     "sectionProducts": "Produits",
     "sectionContact": "Contact",
     "sectionFooter": "Pied de page",
-    "notFoundTitle": "Page introuvable"
+    "notFoundTitle": "Page introuvable",
+    "delete_section_title": "Supprimer cette section ?",
+    "delete_section_body": "La section et son contenu seront supprimés définitivement."
   },
   "trial": {
     "trialBadge": "Essai",
@@ -6290,7 +6296,8 @@
     "overridden": "personnalisé",
     "preview": "Aperçu",
     "previewFailed": "Aperçu indisponible",
-    "loadFailed": "Chargement impossible"
+    "loadFailed": "Chargement impossible",
+    "emptyList": "Aucun modèle d'e-mail disponible."
   },
   "aiAssistant": {
     "title": "Assistant IA",
@@ -6337,6 +6344,8 @@
     "awaitingConfirmation": "En attente de confirmation",
     "failures": "Échecs",
     "recentErrors": "Erreurs récentes",
-    "loadError": "Impossible de charger les réglages."
+    "loadError": "Impossible de charger les réglages.",
+    "healthUnavailable": "État de l'assistant indisponible — le chargement a échoué. Rechargez la page pour réessayer.",
+    "monitoringUnavailable": "Suivi indisponible — le chargement des statistiques a échoué. Aucun chiffre n'est affiché plutôt qu'un zéro trompeur."
   }
 }

@@ -70,21 +70,34 @@
         @save="save"
         @close="closeModal"
       />
+
+      <!-- Confirmation de suppression (#7433) -->
+      <ConfirmDialog
+        :open="deleteOpen"
+        :title="t('travel.common.confirmDeleteTitle', 'Supprimer cet élément ?')"
+        :message="deleteMessage"
+        :confirm-label="t('travel.common.delete', 'Supprimer')"
+        @confirm="confirmDelete"
+        @cancel="closeDelete"
+      />
     </template>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import { createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites } from '@/services/travel'
 
 const localeStore = useLocaleStore()
+const toast = useToast()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const gateMode = ref('')
@@ -153,6 +166,12 @@ const modalOpen = ref(false)
 const editing = ref(null)
 const saving = ref(false)
 const formError = ref('')
+// Confirmation de suppression (#7433) : dialogues natifs du navigateur remplacés
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+const deleteMessage = computed(() => (deleteTarget.value
+  ? t('travel.common.confirmDeleteBody', 'Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?').replace('{name}', deleteTarget.value.name || String(deleteTarget.value.id))
+  : ''))
 
 function openCreate() {
   editing.value = null
@@ -184,13 +203,26 @@ async function save(values) {
   }
 }
 
-async function askDelete(row) {
-  if (!window.confirm(t('travel.common.confirmDelete', 'Supprimer ce site ?'))) return
+function askDelete(row) {
+  deleteTarget.value = row
+  deleteOpen.value = true
+}
+
+function closeDelete() {
+  deleteOpen.value = false
+  deleteTarget.value = null
+}
+
+async function confirmDelete() {
+  const target = deleteTarget.value
+  deleteOpen.value = false
+  deleteTarget.value = null
+  if (!target) return
   try {
-    await deleteTravel('tourist-sites', row.id)
+    await deleteTravel('tourist-sites', target.id)
     await loadSites()
   } catch (err) {
-    window.alert(err?.response?.data?.message || String(err))
+    toast.error(err?.response?.data?.message || err?.message || t('travel.common.actionError', "L'action a échoué. Réessayez."))
   }
 }
 

@@ -4792,7 +4792,9 @@
       "deactivate": "Devre disi birak",
       "suspend": "Askiya al",
       "export": "Disa Aktar",
-      "cancel": "Vazgec"
+      "cancel": "Vazgec",
+      "deactivateConfirmTitle": "Seçili kullanıcılar devre dışı bırakılsın mı?",
+      "deactivateConfirmBody": "Bu işlem seçili :count kullanıcıyı devre dışı bırakır. Hesapları yeniden etkinleştirilene kadar oturum açamayacaklar."
     },
     "toast": {
       "loadError": "Kullanicilar yuklenirken hata olustu",
@@ -5566,7 +5568,8 @@
       "tabRentalBookings": "Kiralama rezervasyonları",
       "tabRentals": "Kiralık araçlar",
       "title": "Başlık",
-      "hotelRoomsTitle": "Otel odaları"
+      "hotelRoomsTitle": "Otel odaları",
+      "confirmDeleteImage": "Bu görsel silinsin mi? Araç galerisinden kaldırılacak."
     },
     "cities": {
       "country": "Ülkeler",
@@ -5610,7 +5613,8 @@
       "selectPlaceholder": "— Seçin —",
       "status": "Durum",
       "tenantRequiredTitle": "Tenant bağlamı gerekli",
-      "yes": "Evet"
+      "yes": "Evet",
+      "actionError": "İşlem başarısız oldu. Lütfen tekrar deneyin."
     },
     "countries": {
       "name": "Ad",
@@ -6376,7 +6380,9 @@
     "sectionProducts": "Ürünler",
     "sectionContact": "İletişim",
     "sectionFooter": "Alt bilgi",
-    "notFoundTitle": "Sayfa bulunamadı"
+    "notFoundTitle": "Sayfa bulunamadı",
+    "delete_section_title": "Bu bölüm silinsin mi?",
+    "delete_section_body": "Bölüm ve içeriği kalıcı olarak silinecek."
   },
   "trial": {
     "trialBadge": "Deneme",
@@ -6423,7 +6429,8 @@
     "overridden": "özelleştirilmiş",
     "preview": "Önizleme",
     "previewFailed": "Önizleme kullanılamıyor",
-    "loadFailed": "Yüklenemedi"
+    "loadFailed": "Yüklenemedi",
+    "emptyList": "Kullanılabilir e-posta şablonu yok."
   },
   "aiAssistant": {
     "title": "Yapay Zekâ Asistanı",
@@ -6470,6 +6477,8 @@
     "awaitingConfirmation": "Onay bekliyor",
     "failures": "Başarısızlıklar",
     "recentErrors": "Son hatalar",
-    "loadError": "Ayarlar yüklenemedi."
+    "loadError": "Ayarlar yüklenemedi.",
+    "healthUnavailable": "Asistan durumu kullanılamıyor — yükleme başarısız oldu. Yeniden denemek için sayfayı yenileyin.",
+    "monitoringUnavailable": "İzleme kullanılamıyor — istatistikler yüklenemedi. Yanıltıcı bir sıfır yerine hiçbir sayı gösterilmiyor."
   }
 }

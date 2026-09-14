@@ -4786,7 +4786,9 @@
       "deactivate": "Deactivate",
       "suspend": "Suspend",
       "export": "Export",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "deactivateConfirmTitle": "Deactivate the selected users?",
+      "deactivateConfirmBody": "This will deactivate :count selected user(s). They will not be able to sign in until their account is reactivated."
     },
     "toast": {
       "loadError": "Failed to load users",
@@ -5014,7 +5016,8 @@
       "city": "City",
       "carrier": "Carrier",
       "saving": "Saving…",
-      "selectPlaceholder": "— Select —"
+      "selectPlaceholder": "— Select —",
+      "actionError": "The action failed. Please try again."
     },
     "home": {
       "title": "Travel Agency",
@@ -5211,7 +5214,8 @@
       "availableFrom": "Available from",
       "availableUntil": "Available until",
       "owner": "Owner",
-      "description": "Description"
+      "description": "Description",
+      "confirmDeleteImage": "Delete this image? It will be removed from the vehicle gallery."
     },
     "countries": {
       "name": "Name",
@@ -6237,7 +6241,9 @@
     "sectionProducts": "Products",
     "sectionContact": "Contact",
     "sectionFooter": "Footer",
-    "notFoundTitle": "Page not found"
+    "notFoundTitle": "Page not found",
+    "delete_section_title": "Delete this section?",
+    "delete_section_body": "The section and its content will be permanently deleted."
   },
   "trial": {
     "trialBadge": "Trial",
@@ -6284,7 +6290,8 @@
     "overridden": "customised",
     "preview": "Preview",
     "previewFailed": "Preview unavailable",
-    "loadFailed": "Could not load"
+    "loadFailed": "Could not load",
+    "emptyList": "No email template available."
   },
   "aiAssistant": {
     "title": "AI Assistant",
@@ -6331,6 +6338,8 @@
     "awaitingConfirmation": "Awaiting confirmation",
     "failures": "Failures",
     "recentErrors": "Recent errors",
-    "loadError": "Could not load the settings."
+    "loadError": "Could not load the settings.",
+    "healthUnavailable": "Assistant state unavailable — loading failed. Reload the page to try again.",
+    "monitoringUnavailable": "Monitoring unavailable — statistics failed to load. No figures are shown instead of a misleading zero."
   }
 }
