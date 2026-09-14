@@ -7,6 +7,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\Concerns\AuthorizesAdvertCatalogWrite;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelAdvertPositionRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelAdvertPositionRequest;
 use Illuminate\Http\JsonResponse;
@@ -17,6 +18,8 @@ use Illuminate\Http\Request;
  */
 class TravelAdvertPositionController extends Controller
 {
+    use AuthorizesAdvertCatalogWrite;
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -35,6 +38,8 @@ class TravelAdvertPositionController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeAdvertCatalogWrite($actor);
 
         $position = TravelAdvertPosition::query()->create([
             'company_id' => $actor->company_id,
@@ -74,6 +79,8 @@ class TravelAdvertPositionController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeAdvertCatalogWrite($actor);
 
         if ($actor->company_id !== $travelAdvertPosition->company_id) {
             abort(404);

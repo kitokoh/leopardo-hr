@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\TravelAgency\Providers;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelOutboxDispatchCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Contracts\SolutionManifest;
@@ -60,6 +61,13 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->commands([
             TravelOutboxDispatchCommand::class,
             TravelWebhookDispatchCommand::class,
+            // #7420 : `travel:expire-adverts` n'était PAS enregistrée ici ; la
+            // commande racine homonyme (App\Console\Commands\...) la masquait et
+            // ne connaissait ni `--company` ni le scoping tenant — le test
+            // d'expiration échouait en InvalidOptionException. La version du
+            // module (tenant-aware, --company/--limit, expire + archive) est
+            // désormais l'unique implémentation, le doublon racine est supprimé.
+            TravelExpireAdvertsCommand::class,
         ]);
     }
 
