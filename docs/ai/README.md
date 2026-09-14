@@ -32,6 +32,11 @@ together, not because they are "AI".
 > `AbsenteeismPredictor` / `TurnoverPredictor` under `App\AI\Predictions` — read the code before
 > quoting them as forecasting.
 
+## 🆓 Free setup guide
+
+For a turnkey free stack (Groq free tier for the model and speech-to-text, `edge-tts`
+for French voice output), see **[INSTALLATION_GRATUITE.md](INSTALLATION_GRATUITE.md)**.
+
 ## ⚙️ Activation
 
 The assistant is **off by default** (fail-closed). All of the following are required:
@@ -68,7 +73,7 @@ graph LR
 
 ## 🛠 Tech Stack
 
-- **Providers:** OpenAI (`gpt-4o`), Groq (`llama-3.3-70b-versatile`), Anthropic
+- **Providers:** OpenAI (`gpt-4o`), Groq (`openai/gpt-oss-120b`, free tier), Anthropic
   (`claude-sonnet-4-20250514`) — plain HTTP adapters behind the `App\AI\LLMClient` interface
   (`App\AI\Providers\*`). No LangChain.
 - **Queue:** Laravel's database queue (`QUEUE_CONNECTION=database`). Horizon is **not** installed.

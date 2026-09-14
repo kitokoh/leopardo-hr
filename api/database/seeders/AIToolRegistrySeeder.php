@@ -318,6 +318,66 @@ class AIToolRegistrySeeder extends Seeder
                 'required_role' => 'employee',
                 'module' => 'rh',
             ],
+            // A7 (#7377) — création d'un employé depuis l'assistant. Le rôle
+            // créé est toujours `employee` (pas d'élévation de privilège) et
+            // une invitation est envoyée : le tool le dit explicitement au LLM
+            // pour que la confirmation annonce l'effet externe.
+            [
+                'name' => 'create_employee',
+                'description' => 'Create an employee record (always role=employee) and send an invitation email so they set their own password. Requires a principal or RH manager. Cannot set a password, department or manager role.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'first_name' => ['type' => 'string', 'description' => 'Given name'],
+                        'last_name' => ['type' => 'string', 'description' => 'Family name'],
+                        'email' => ['type' => 'string', 'description' => 'Professional email (invitation recipient), unique in the company'],
+                        'phone' => ['type' => 'string', 'description' => 'Optional phone number'],
+                        'job_title' => ['type' => 'string', 'description' => 'Optional job title'],
+                        'contract_type' => ['type' => 'string', 'description' => 'Optional contract type, e.g. CDI, CDD, Stage'],
+                        'hire_date' => ['type' => 'string', 'format' => 'date', 'description' => 'Optional hire date (YYYY-MM-DD), defaults to today'],
+                        'salary_type' => ['type' => 'string', 'enum' => ['fixed', 'hourly', 'daily'], 'description' => 'Optional salary type'],
+                        'salary_base' => ['type' => 'number', 'description' => 'Optional base salary amount'],
+                    ],
+                    'required' => ['first_name', 'last_name', 'email'],
+                ]),
+                'required_permissions' => '["employees.create"]',
+                'required_role' => 'manager',
+                'module' => 'rh',
+            ],
+            // A8 (#7378) — pointage assisté. Un employé ne pointe que pour
+            // lui-même ; un manager peut pointer pour son équipe.
+            [
+                'name' => 'check_in_employee',
+                'description' => 'Record a check-in (clock-in) for an employee. Employees can only clock in for themselves; managers can clock in a team member. Subject to the company geofence/GPS rules.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'employee_id' => ['type' => 'integer', 'description' => 'Target employee (managers only; defaults to the caller)'],
+                        'gps_lat' => ['type' => 'number', 'description' => 'Optional GPS latitude'],
+                        'gps_lng' => ['type' => 'number', 'description' => 'Optional GPS longitude'],
+                        'note' => ['type' => 'string', 'description' => 'Optional punch note'],
+                    ],
+                ]),
+                'required_permissions' => '["attendance.punch"]',
+                'required_role' => 'employee',
+                'module' => 'rh',
+            ],
+            [
+                'name' => 'check_out_employee',
+                'description' => 'Record a check-out (clock-out) for an employee. Employees can only clock out for themselves; managers can clock out a team member. Subject to the company geofence/GPS rules.',
+                'parameters' => json_encode([
+                    'type' => 'object',
+                    'properties' => [
+                        'employee_id' => ['type' => 'integer', 'description' => 'Target employee (managers only; defaults to the caller)'],
+                        'gps_lat' => ['type' => 'number', 'description' => 'Optional GPS latitude'],
+                        'gps_lng' => ['type' => 'number', 'description' => 'Optional GPS longitude'],
+                        'note' => ['type' => 'string', 'description' => 'Optional punch note'],
+                    ],
+                ]),
+                'required_permissions' => '["attendance.punch"]',
+                'required_role' => 'employee',
+                'module' => 'rh',
+            ],
         ];
 
         foreach ($tools as $tool) {
