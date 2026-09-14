@@ -45,6 +45,23 @@ final class TravelActivateCommand extends Command
 
         $this->activateAction->execute($company);
 
+        // #7393 : la commande annonçait « activée » sans qu'aucune écriture
+        // n'ait eu lieu. On relit désormais l'état réel depuis la base avant
+        // d'affirmer quoi que ce soit — un échec silencieux coûte des heures
+        // de diagnostic (403 FEATURE_NOT_ENABLED sur toute la verticale).
+        $persisted = Company::query()
+            ->whereKey($company->getKey())
+            ->first();
+
+        if ($persisted === null || ! $persisted->hasFeature('travelagency')) {
+            $this->error(
+                "Échec : le flag « travelagency » n'a pas été persisté pour {$company->id} "
+                .'(companies.features.travelagency est resté absent).'
+            );
+
+            return self::FAILURE;
+        }
+
         $this->info("Verticale TravelAgency activée pour « {$company->name} » ({$company->id}).");
 
         return self::SUCCESS;

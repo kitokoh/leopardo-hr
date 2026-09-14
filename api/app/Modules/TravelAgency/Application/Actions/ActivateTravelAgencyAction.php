@@ -26,6 +26,12 @@ final class ActivateTravelAgencyAction
     public function execute(Company $company): void
     {
         $company->setFeature('travelagency', true);
+        // #7393 : `setFeature()` ne mute que l'instance en mémoire — sans ce
+        // `save()`, la commande `leopardo:travel:activate` annonçait « activée »
+        // alors que `companies.features.travelagency` restait absent et que
+        // TOUTE route `/api/v1/travel/*` répondait 403 FEATURE_NOT_ENABLED.
+        // Aligné sur l'action sœur ActivateRestaurantManagerAction (#6162).
+        $company->save();
 
         $this->geoSeeder->seed($company);
     }
