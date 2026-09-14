@@ -63,7 +63,7 @@ export function NewsletterForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400"
+        className="flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400"
       >
         <CheckCircle className="w-5 h-5" />
         <span className="font-medium">{message}</span>
@@ -94,7 +94,7 @@ export function NewsletterForm({
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold transition-colors whitespace-nowrap"
+          className="px-6 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-600 text-white font-bold transition-colors whitespace-nowrap"
         >
           {status === 'loading' ? submittingLabel : submitLabel}
         </button>

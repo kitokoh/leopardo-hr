@@ -100,7 +100,7 @@ export function TestimonialHighlight({ locale = 'fr' }: TestimonialHighlightProp
                   )}
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">{testimonial.role}</div>
-                <div className="text-sm text-slate-400 dark:text-slate-500">{testimonial.company}</div>
+                <div className="text-sm text-slate-400">{testimonial.company}</div>
               </div>
             </div>
           </div>

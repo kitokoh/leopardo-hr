@@ -112,7 +112,7 @@ export function BlogGrid({
               onClick={() => handleCategoryChange(null)}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === null
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-emerald-700 text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
               }`}
             >
@@ -126,7 +126,7 @@ export function BlogGrid({
                   onClick={() => handleCategoryChange(category)}
                   className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-emerald-500 text-white'
+                      ? 'bg-emerald-700 text-white'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -176,7 +176,7 @@ export function BlogGrid({
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 rounded-lg font-medium transition-all duration-300 ${
                     currentPage === page
-                      ? 'bg-emerald-500 text-white'
+                      ? 'bg-emerald-700 text-white'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >

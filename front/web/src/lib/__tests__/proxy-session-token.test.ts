@@ -6,12 +6,12 @@ import { NextRequest } from 'next/server';
 import { proxy } from '@/proxy';
 
 /**
- * Issue #6726 — le gate cosmétique du middleware doit accepter le cookie de
+ * Issue #6726 — le gate cosmétique du proxy (ex-`middleware`) doit accepter le cookie de
  * session Sanctum `{id}|{plaintext}` posé par `app/api/v1/auth/login/route.ts`.
  * Avant le fix, le regex excluait le séparateur `|` → toute la zone dashboard
  * redirigeait en boucle vers /auth/login en production.
  */
-describe('middleware — gate de session zone dashboard (#6726)', () => {
+describe('proxy — gate de session zone dashboard (#6726, migré de middleware #7305)', () => {
   const base = 'https://app.example.com';
 
   function request(path: string, token?: string) {

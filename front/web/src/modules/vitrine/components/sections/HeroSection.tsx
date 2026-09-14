@@ -33,6 +33,16 @@ export interface HeroSectionProps {
     icon?: React.ReactNode;
   }>;
   animated?: boolean;
+  /**
+   * Disposition du hero.
+   *  · `centered` (défaut) — texte centré, visuel empilé dessous. Comportement
+   *    historique : les pages qui n'optent pas explicitement restent
+   *    strictement inchangées.
+   *  · `split` — deux colonnes sur grand écran : le récit à gauche, le visuel
+   *    à droite, à hauteur d'œil. Utilisé par la page d'accueil pour que le
+   *    visuel 3D soit dans le hero, sans scroller.
+   */
+  layout?: 'centered' | 'split';
   /** Optional inline quick-trial form rendered below CTAs (e.g. QuickTrialEmailForm) */
   quickTrialForm?: React.ReactNode;
 }
@@ -46,6 +56,7 @@ export function HeroSection({
   visual,
   stats,
   animated = true,
+  layout = 'centered',
   quickTrialForm,
 }: HeroSectionProps) {
   const ref = useRef<HTMLElement>(null);
@@ -56,6 +67,10 @@ export function HeroSection({
   const searchParams = useSearchParams();
   const search = searchParams.toString();
   const badgeConfig = typeof badge === 'string' ? { text: badge } : badge;
+
+  /** Deux colonnes dès `lg` seulement si une visuel est fourni. */
+  const isSplit = layout === 'split' && Boolean(visual);
+  const align = isSplit ? 'text-center lg:text-left' : 'text-center';
 
   return (
     <section ref={ref} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
@@ -79,127 +94,161 @@ export function HeroSection({
       <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-cyan-400/15 rounded-full blur-[120px] animate-pulse [animation-delay:2s]" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-full blur-[100px]" />
 
-      <motion.div style={animated ? { y, opacity, scale } : {}} className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        <div className="text-center max-w-5xl mx-auto">
-          {/* Badge */}
-          {badgeConfig && (
-            <motion.div
-              initial={animated ? { opacity: 0, y: 20, filter: 'blur(10px)' } : {}}
-              animate={animated ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-              transition={{ duration: 0.8 }}
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/[0.08] border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium mb-10 backdrop-blur-sm"
+      <motion.div
+        style={animated ? { y, opacity, scale } : {}}
+        className={`relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 ${
+          isSplit ? 'pt-32 pb-20 lg:pt-40' : 'pt-32 pb-24'
+        }`}
+      >
+        <div
+          className={
+            isSplit
+              ? 'grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-12 xl:gap-16'
+              : 'mx-auto max-w-5xl'
+          }
+        >
+          {/* ── Colonne « récit » ─────────────────────────────────────── */}
+          <div className={align}>
+            {badgeConfig && (
+              <motion.div
+                initial={animated ? { opacity: 0, y: 20, filter: 'blur(10px)' } : {}}
+                animate={animated ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+                transition={{ duration: 0.8 }}
+                className="mb-10 inline-flex items-center gap-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-4 py-2 text-sm font-medium text-emerald-700 backdrop-blur-sm dark:text-emerald-400"
+              >
+                {badgeConfig.icon && <span className="animate-pulse">{badgeConfig.icon}</span>}
+                <span>{badgeConfig.text}</span>
+                {badgeConfig.label && (
+                  <span className="rounded-full bg-emerald-700 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+                    {badgeConfig.label}
+                  </span>
+                )}
+              </motion.div>
+            )}
+
+            {/* Heading */}
+            <motion.h1
+              initial={animated ? { opacity: 0, y: 30 } : {}}
+              animate={animated ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              className={`mb-8 text-balance font-black leading-[0.95] tracking-tight ${
+                isSplit
+                  ? 'text-4xl sm:text-5xl lg:text-[3.6rem] xl:text-[4.1rem]'
+                  : 'text-5xl sm:text-6xl lg:text-[5.5rem]'
+              }`}
             >
-              {badgeConfig.icon && <span className="animate-pulse">{badgeConfig.icon}</span>}
-              <span>{badgeConfig.text}</span>
-              {badgeConfig.label && (
-                <span className="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-wider rounded-full">
-                  {badgeConfig.label}
-                </span>
-              )}
-            </motion.div>
-          )}
+              <span className="block bg-gradient-to-b from-slate-900 via-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-white dark:via-slate-200 dark:to-slate-400">
+                {headline}
+              </span>
+            </motion.h1>
 
-          {/* Heading */}
-          <motion.h1
-            initial={animated ? { opacity: 0, y: 30 } : {}}
-            animate={animated ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl sm:text-6xl lg:text-[5.5rem] font-black tracking-tight leading-[0.95] mb-8"
-          >
-            <span className="block bg-gradient-to-b from-slate-900 via-slate-800 to-slate-600 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent">
-              {headline}
-            </span>
-          </motion.h1>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={animated ? { opacity: 0, y: 20 } : {}}
-            animate={animated ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.35 }}
-            className="text-lg sm:text-xl lg:text-2xl text-slate-500 dark:text-slate-400 mb-14 max-w-3xl mx-auto leading-relaxed font-light"
-          >
-            {subheadline}
-          </motion.p>
-
-          {/* CTAs */}
-          {(ctaPrimary || ctaSecondary) && (
-            <motion.div
+            {/* Subtitle */}
+            <motion.p
               initial={animated ? { opacity: 0, y: 20 } : {}}
               animate={animated ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              transition={{ duration: 0.8, delay: 0.35 }}
+              className={`font-light leading-relaxed text-slate-500 dark:text-slate-400 ${
+                isSplit
+                  ? 'mb-10 text-base sm:text-lg lg:max-w-xl lg:text-lg'
+                  : 'mx-auto mb-14 max-w-3xl text-lg sm:text-xl lg:text-2xl'
+              }`}
             >
-              {ctaPrimary && (
-                <Link
-                  href={withLocaleHref(ctaPrimary.href, search)}
-                  className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
-                >
-                  <span className="relative z-10 flex items-center gap-2.5 text-base">
-                    {ctaPrimary.text}
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </Link>
-              )}
+              {subheadline}
+            </motion.p>
 
-              {ctaSecondary && (
-              <Link
-                href={withLocaleHref(ctaSecondary.href, search)}
-                className="group flex items-center gap-3.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-xl"
+            {/* CTAs */}
+            {(ctaPrimary || ctaSecondary) && (
+              <motion.div
+                initial={animated ? { opacity: 0, y: 20 } : {}}
+                animate={animated ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className={`flex flex-col items-center gap-4 sm:flex-row ${
+                  isSplit ? 'justify-center lg:justify-start' : 'justify-center'
+                }`}
               >
-                {ctaSecondary.icon ? (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    {ctaSecondary.icon}
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
-                  </div>
+                {ctaPrimary && (
+                  <Link
+                    href={withLocaleHref(ctaPrimary.href, search)}
+                    className="hero-cta-primary group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-800 px-8 py-4 font-bold text-white transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                  >
+                    <span className="relative z-10 flex items-center gap-2.5 text-base">
+                      {ctaPrimary.text}
+                      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  </Link>
                 )}
-                {ctaSecondary.text}
-              </Link>
-              )}
-            </motion.div>
-          )}
 
-          {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
-          {quickTrialForm}
+                {ctaSecondary && (
+                  <Link
+                    href={withLocaleHref(ctaSecondary.href, search)}
+                    className="group flex items-center gap-3.5 rounded-2xl border border-slate-200 bg-white px-8 py-4 font-semibold text-slate-900 transition-all duration-300 hover:border-emerald-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:border-emerald-800"
+                  >
+                    {ctaSecondary.icon ? (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 transition-transform duration-300 group-hover:scale-110 dark:from-emerald-900/40 dark:to-emerald-900/20">
+                        {ctaSecondary.icon}
+                      </div>
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 transition-transform duration-300 group-hover:scale-110 dark:from-emerald-900/40 dark:to-emerald-900/20">
+                        <Play className="ml-0.5 h-4 w-4 text-emerald-700 dark:text-emerald-400" />
+                      </div>
+                    )}
+                    {ctaSecondary.text}
+                  </Link>
+                )}
+              </motion.div>
+            )}
 
-          {/* Real product visual — proves the product exists before the visitor scrolls (PA2-MKT-001) */}
+            {/* Optional quick-trial inline form (e.g. QuickTrialEmailForm with source=hero_email_trial) */}
+            {quickTrialForm}
+          </div>
+
+          {/* ── Visuel ────────────────────────────────────────────────── */}
           {visual && (
-            <motion.div
-              initial={animated ? { opacity: 0, y: 40, scale: 0.97 } : {}}
-              animate={animated ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-16 max-w-4xl mx-auto"
-            >
-              {visual}
-            </motion.div>
-          )}
-
-          {/* Stats */}
-          {stats && stats.length > 0 && (
-            <motion.div
-              initial={animated ? { opacity: 0, y: 40 } : {}}
-              animate={animated ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 1, delay: 0.7 }}
-              className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-            >
-              {stats.map((stat, i) => (
-                <div key={i} className="text-center group">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 mb-4 group-hover:scale-110 transition-transform duration-300">
-                    {stat.icon}
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                    {stat.value}
-                    {stat.suffix}
-                  </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-500 mt-1.5 font-medium">{stat.label}</div>
-                </div>
-              ))}
-            </motion.div>
+            isSplit ? (
+              <motion.div
+                initial={animated ? { opacity: 0, x: 40, scale: 0.96 } : {}}
+                animate={animated ? { opacity: 1, x: 0, scale: 1 } : {}}
+                transition={{ duration: 1, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                className="w-full"
+              >
+                {visual}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={animated ? { opacity: 0, y: 40, scale: 0.97 } : {}}
+                animate={animated ? { opacity: 1, y: 0, scale: 1 } : {}}
+                transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="mx-auto mt-16 max-w-4xl"
+              >
+                {visual}
+              </motion.div>
+            )
           )}
         </div>
+
+        {/* Stats */}
+        {stats && stats.length > 0 && (
+          <motion.div
+            initial={animated ? { opacity: 0, y: 40 } : {}}
+            animate={animated ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="mx-auto mt-24 grid max-w-4xl grid-cols-2 gap-8 md:grid-cols-4"
+          >
+            {stats.map((stat, i) => (
+              <div key={i} className="group text-center">
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 transition-transform duration-300 group-hover:scale-110">
+                  {stat.icon}
+                </div>
+                <div className="bg-gradient-to-b from-slate-900 to-slate-600 bg-clip-text text-3xl font-black text-transparent sm:text-4xl dark:from-white dark:to-slate-400">
+                  {stat.value}
+                  {stat.suffix}
+                </div>
+                <div className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Scroll indicator */}
@@ -213,12 +262,12 @@ export function HeroSection({
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-6 h-10 rounded-full border-2 border-slate-300 dark:border-slate-700 flex items-start justify-center p-1.5"
+            className="flex w-6 items-start justify-center rounded-full border-2 border-slate-300 p-1.5 dark:border-slate-700"
           >
             <motion.div
               animate={{ opacity: [1, 0.3, 1], y: [0, 12, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-1.5 h-1.5 rounded-full bg-emerald-500"
+              className="h-1.5 w-1.5 rounded-full bg-emerald-500"
             />
           </motion.div>
         </motion.div>

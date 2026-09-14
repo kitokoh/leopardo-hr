@@ -59,7 +59,7 @@ export default function AccountingHomePage() {
 
   const tiles = [
     { href: '/accounting/chart', icon: BookOpen, label: t(locale, 'accountingModule.navChart'), accent: 'bg-sky-50 text-sky-600' },
-    { href: '/accounting/ledger', icon: ListOrdered, label: t(locale, 'accountingModule.navLedger'), accent: 'bg-emerald-50 text-emerald-600' },
+    { href: '/accounting/ledger', icon: ListOrdered, label: t(locale, 'accountingModule.navLedger'), accent: 'bg-emerald-50 text-emerald-700' },
     { href: '/accounting/balance', icon: Scale, label: t(locale, 'accountingModule.navBalance'), accent: 'bg-amber-50 text-amber-600' },
     { href: '/accounting/statements', icon: FileBarChart2, label: t(locale, 'accountingModule.navStatements'), accent: 'bg-violet-50 text-violet-600' },
     { href: '/accounting/fiscal-years', icon: CalendarRange, label: t(locale, 'accountingModule.navFiscalYears'), accent: 'bg-rose-50 text-rose-600' },
@@ -105,7 +105,7 @@ export default function AccountingHomePage() {
                   return (
                     <li key={step.key} className="flex items-center gap-2 text-xs text-amber-800">
                       {done ? (
-                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-700" />
                       ) : (
                         <Circle className="h-3.5 w-3.5 shrink-0 text-amber-400" />
                       )}

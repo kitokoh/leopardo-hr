@@ -65,7 +65,7 @@ const featureIcons = [ImageIcon, Type, Palette, Smartphone, Monitor, Shield] as 
 const colorMap: Record<string, { bg: string; icon: string; border: string; light: string }> = {
   emerald: {
     bg: 'bg-emerald-50 dark:bg-emerald-900/20',
-    icon: 'text-emerald-600 dark:text-emerald-400',
+    icon: 'text-emerald-700 dark:text-emerald-400',
     border: 'border-emerald-200 dark:border-emerald-800',
     light: 'bg-emerald-400',
   },

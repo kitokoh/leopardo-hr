@@ -106,7 +106,7 @@ export function LaunchOperatingSystemSection({ locale }: { locale: AppLocale }) 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/signup?source=launch_os_section"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-emerald-600 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-300"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-emerald-800 dark:bg-emerald-700 dark:text-slate-950 dark:hover:bg-emerald-300"
               >
                 {copy.primary}
                 <ArrowRight className={`h-4 w-4 ${isRtl ? 'rotate-180' : ''}`} />
@@ -133,7 +133,7 @@ export function LaunchOperatingSystemSection({ locale }: { locale: AppLocale }) 
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="rounded-3xl border border-slate-200 bg-transparent/80 p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-950/5 dark:border-slate-800 dark:bg-slate-900/70 dark:hover:border-emerald-900"
                 >
-                  <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+                  <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-700 text-white shadow-lg shadow-emerald-500/20">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="text-lg font-black text-slate-950 dark:text-white">{item.title}</h3>

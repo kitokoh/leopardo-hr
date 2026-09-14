@@ -1848,6 +1848,7 @@
   },
   "settingsPage": {
     "cancel": "إلغاء",
+    "company": "الشركة",
     "confirmPassword": "تأكيد كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",
     "disable2fa": "إيقاف المصادقة الثنائية",
@@ -1859,6 +1860,7 @@
     "fullName": "الاسم الكامل",
     "generateSecret": "إنشاء رمز 2FA السري",
     "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
+    "manage2fa": "إدارة التحقق بخطوتين",
     "manualSecret": "الرمز اليدوي:",
     "minLengthHint": "12 حرفًا على الأقل.",
     "newPassword": "كلمة المرور الجديدة",
@@ -1873,6 +1875,7 @@
     "saveChanges": "حفظ التغييرات",
     "scanStep": "1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:",
     "subtitle": "إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.",
+    "tenantSubtitle": "أدر معلومات حسابك وأمانه.",
     "title": "حسابي",
     "twoFactorActiveHint": "المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.",
     "twoFactorDisabled": "تم إيقاف المصادقة الثنائية.",

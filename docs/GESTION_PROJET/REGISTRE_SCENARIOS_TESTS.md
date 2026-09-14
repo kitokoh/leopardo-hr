@@ -470,3 +470,35 @@ restent les gates applicables.
   et `auth.access_key_required`, x4 langues), ainsi que l'accent de `shell.pushUnconfigured` en francais. Les scories
   de test admin existantes (`login-smoke.spec.js`, `login-ux.spec.js`, `platform-auth-smoke.spec.js`) ne dependent pas
   de ce libelle : aucun scenario admin n'est impacte, aucune nouvelle spec n'est requise.
+## Mise a jour 2026-09-14 — dette front : `middleware` -> `proxy` (Next 16), racine Turbopack, `AnimatePresence`, attributs Vue (PR #7305)
+
+- **Surface web client / vitrine — proxy serveur renomme (aucun changement de comportement)** : la convention
+  de fichier Next 16 est passee de `middleware` (depreciee : « The "middleware" file convention is deprecated.
+  Please use "proxy" instead. ») a `proxy`. `front/web/src/middleware.ts` -> `front/web/src/proxy.ts`, fonction
+  exportee `middleware` -> `proxy`. Les **trois responsabilites critiques portees par ce fichier sont
+  inchangees** et couvertes individuellement par le nouveau test unitaire
+  `front/web/src/lib/__tests__/proxy-responsibilities.test.ts` : (1) gate d'auth de la zone dashboard (sans
+  cookie `leopardo_token` valide -> `/auth/login`) ; (2) `/signup` sans offre souscriptible -> `/pricing#plans` ;
+  (3) normalisation de la locale vitrine (`?lang=` puis `Accept-Language`) -> en-tete `x-vitrine-lang`. Les
+  suites existantes sont realignees (`proxy-session-token.test.ts`, `session-token-format.test.ts`,
+  `protected-prefixes.test.ts`). Scenario de recette manuelle : `curl` sur le dev server — `/signup` 307 ->
+  `/pricing#plans`, `/signup?plan=pilot` 200, `/dashboard` 307 -> `/auth/login`, `/employees/42` 307 ->
+  `/auth/login`, `/restaurant` 307 -> `/restaurateur`, `/pricing?lang=en` -> `x-vitrine-lang: en`.
+- **Surface web vitrine — avertissement framer-motion du funnel** : la `AnimatePresence mode="wait"` de la FAQ
+  de `/pricing` recevait une **liste mappee** (`filteredFaq.map(...)`) donc plusieurs enfants par passe ;
+  c'est la page servie par la redirection `/signup` sans `?plan=`, d'ou le constat d'audit « reproduit sur
+  `/signup` ». Le mode est retire (mode par defaut = liste qui filtre). Garde de non-regression :
+  `front/web/src/lib/__tests__/animate-presence-mode-wait.test.ts` (analyse AST : aucune `AnimatePresence`
+  `mode="wait"` ne recoit un `xxx.map(...)` comme enfant direct ; reste rouge avant le correctif). Les
+  transitions d'etapes du tunnel (`SignupForm`, `checkout`, `RestaurantSolutionWizard`) sont inchangees : leurs
+  blocs conditionnels sont mutuellement exclusifs (un seul enfant par passe), verifie par la meme garde.
+- **Surface web admin** : la racine du composant `<Sidebar>` (deux noeuds racines : overlay mobile + panneau) ne
+  pouvait rien heriter, ce qui produisait a chaque montage du back-office
+  `[Vue warn]: Extraneous non-props attributes (class)`. `inheritAttrs: false` + `v-bind="$attrs"` sur le
+  panneau rendent l'attribut du consommateur (`DashboardLayout` passe `class="fixed inset-y-0 left-0 z-50"`)
+  heritable, rendu inchange. Scenario de non-regression : charger une vue du back-office et verifier l'absence
+  de l'avertissement dans la console (cf. `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`, section 3).
+- **Surface API / mobile** : aucun changement de code, aucun contrat modifie.
+- **Non traite, hors perimetre de ce lot** : avertissement Next `scroll-behavior: smooth` (attribut
+  `data-scroll-behavior` a poser sur `<html>`) et migration i18n `?lang=` -> sous-repertoires `/en/ /tr/ /ar/`.
+>

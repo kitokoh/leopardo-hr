@@ -96,11 +96,11 @@ export default function AttendancePage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Mode</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Mode</p>
           <p className="mt-3 text-3xl font-black text-slate-950">{loading ? '...' : mode === 'collection' ? 'Manager' : 'Employe'}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Lignes</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Lignes</p>
           <p className="mt-3 text-3xl font-black text-slate-950">{loading ? '...' : items.length}</p>
         </div>
       </section>
