@@ -393,8 +393,20 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
         echo "Skipping demo seed (APP_ENV=production)."
     fi
 
+    # QA onboarding 2026-09-14 : un BACKFILL ne doit jamais empêcher le
+    # conteneur de démarrer. Constaté en dev : une erreur *transitoire* du
+    # pooler Postgres (« SQLSTATE[0A000]: cached plan must not change result
+    # type », survenue juste après une migration appliquée par un autre
+    # chantier) faisait sortir la commande en erreur ; sous `set -e` le
+    # démarrage s'arrêtait là et le déploiement Render partait en
+    # `update_failed` — deux déploiements perdus d'affilée, sans aucun lien
+    # avec le contenu livré. La commande est idempotente et rejouée à chaque
+    # démarrage : on journalise bruyamment (statut + sortie d'erreur
+    # conservées) et on poursuit le boot.
     echo "Backfilling notification preferences for active employees..."
-    php artisan notifications:backfill-preferences
+    php artisan notifications:backfill-preferences || {
+        echo "[entrypoint] ATTENTION : backfill des preferences de notification en echec (statut $?). Demarrage poursuivi — la commande sera rejouee au prochain demarrage." >&2
+    }
 
     mark_test_database_reset_complete
 fi
@@ -429,10 +441,19 @@ fi
 echo "Starting background queue worker (web container, respawn loop)..."
 (
     while true; do
+        # QA onboarding 2026-09-14 : la sortie du worker était jetée
+        # (`>/dev/null 2>&1`). Conséquence constatée en dev : un
+        # ProvisionDemoTenantJob épuisait ses 5 essais (statut `failed`, ligne
+        # `failed_jobs`) sans qu'AUCUNE exception ne soit exploitable dans les
+        # logs Render — 16 failed_jobs indiagnosticables. Le worker écrit
+        # désormais sur la sortie d'erreur du conteneur, collectée par la
+        # plateforme (LOG_CHANNEL=stderr) ; ses lignes sont déjà identifiables
+        # par le canal (`production.ERROR:`), et le `$?` ci-dessous reste celui
+        # de `queue:work` (un `| sed` le remplacerait par celui du pipe).
         php artisan queue:work \
             --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
             --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600 \
-            >/dev/null 2>&1
+            >&2
         echo "[entrypoint] queue worker exited ($?), respawn in 2s..." >&2
         sleep 2
     done

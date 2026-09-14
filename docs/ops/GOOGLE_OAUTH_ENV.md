@@ -84,6 +84,47 @@ Résultat attendu :
 | `503` + `error: GOOGLE_OAUTH_NOT_CONFIGURED` | Une variable manque encore (ou est vide) | revérifier §1/§3 |
 | `500` | Bug applicatif (ne doit plus arriver pour ce cas) | ouvrir une issue, joindre les logs Sentry |
 
+## 5. État au 2026-09-14 — écran de consentement **non publiable** (domaine), mode « Testing » assumé
+
+**Ce qui fonctionne désormais** : les 3 variables sont renseignées sur **dev ET prod** (client OAuth du projet
+Google Cloud `leopardo-508608`, URI de redirection = callback **vitrine** de chaque environnement). Vérifié en ligne
+sur les deux : `GET /api/v1/auth/google?intent=signup` → **302** vers `accounts.google.com`, `redirect_uri` vitrine,
+cookie de session posé, `state` anti-CSRF présent. Le parcours navigateur atteint la page Google
+(« Sign in with Google — to continue to gestionemployer-backend.vercel.app »).
+
+**Blocage restant — la publication de l'écran de consentement** : elle est **impossible aujourd'hui**, faute de
+**domaine vérifiable**. Google exige, pour publier l'application (et pour renseigner les liens Accueil /
+Confidentialité / CGU), des **« domaines autorisés » dont la propriété est prouvée via Search Console**. Or la vitrine
+vit sous `*.vercel.app` : ce domaine appartient à Vercel, **nous ne pouvons pas le vérifier**. Tant que **#3452**
+(`leopardo-rh.com` **NXDOMAIN**) n'est pas résolu, il n'existe aucun domaine à nous à déclarer.
+
+**Décision du propriétaire (2026-09-14)** : rester en mode **« Testing »** et s'appuyer sur la **liste d'utilisateurs
+test** de l'écran de consentement (limite Google : 100 comptes) **jusqu'à l'achat et la configuration d'un nom de
+domaine**. Aucune conséquence sur le code ; c'est un état opérationnel assumé, pas une régression.
+
+**Symptôme observé en mode Testing** (documenté pour ne pas le rediagnostiquer) : après le choix du compte Google, le
+navigateur revient sur **`https://gestionemployer-backend.vercel.app/auth/login`**. C'est le comportement **voulu** du
+callback vitrine lorsque Google **ne renvoie aucun `code`** (`error=access_denied`) : il redirige vers la connexion au
+lieu d'afficher du JSON. Le message affiché identifie la cause :
+
+| URL d'arrivée | Message affiché | Signification |
+|---|---|---|
+| `/auth/login?error=google` | « La connexion avec Google a échoué. Veuillez réessayer. » | **Google n'a rien renvoyé** → compte hors liste d'utilisateurs test (**mode Testing**), ou autorisation refusée/annulée |
+| `?error=google_auth_failed` | « Google a refusé la connexion. » | L'**API** a rejeté l'échange (code ou `state` invalide) |
+| `?error=google_no_account` | « Aucun compte Leopardo RH n'est associé… » | Parcours connexion (`intent=login`), e-mail inconnu (#3724) |
+| `?error=google_network` | « Impossible de contacter Google… » | API injoignable |
+
+> Pour tester malgré tout, **avant** publication : Google Cloud Console → *Google Auth Platform* → **Audience** →
+> **Utilisateurs test** → ajouter les comptes Google autorisés (les 100 places sont gratuites et suffisent au pilote).
+
+**À faire le jour où un domaine est acheté et configuré** :
+1. créer le domaine, le faire résoudre (DNS + certificat) et **vérifier sa propriété dans Search Console** ;
+2. le déclarer comme **domaine autorisé** de l'écran de consentement ;
+3. **publier l'application** (statut « En production » — les scopes `openid`/`email`/`profile` étant **non sensibles**,
+   la publication ne déclenche **aucune revue Google**) ;
+4. retirer la dépendance à la liste d'utilisateurs test ;
+5. basculer `GOOGLE_REDIRECT_URL` **et** les URI de la console sur le domaine (cf. §2), puis rejouer §4.
+
 ## Références
 
 - Issues : **#5170** (P0 prod onboarding — ce runbook), **#2277** (callback sur la vitrine), **#3452** (DNS `leopardo-rh.com` NXDOMAIN)

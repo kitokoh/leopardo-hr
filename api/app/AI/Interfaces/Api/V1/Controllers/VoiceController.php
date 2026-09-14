@@ -11,7 +11,6 @@ use App\Core\AI\Domain\ValueObjects\SpeechToTextRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -74,6 +73,18 @@ class VoiceController extends Controller
             $validated['voice'] ?? null,
             $provider,
         );
+
+        // #7359 — fail-closed, contrat aligné sur /voice/transcribe : sans
+        // fournisseur TTS opérationnel (binaire edge-tts absent, clé
+        // ElevenLabs absente/invalide), l'ancienne réponse était un 200 avec
+        // `audio_url: null` — un succès apparent que le client ne pouvait pas
+        // distinguer d'un vrai audio. On répond désormais une erreur explicite.
+        if ($audioUrl === null) {
+            return response()->json([
+                'error' => 'TTS_UNAVAILABLE',
+                'message' => (string) __('errors.TTS_UNAVAILABLE'),
+            ], 503);
+        }
 
         return response()->json([
             'data' => [

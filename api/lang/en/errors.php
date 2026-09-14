@@ -291,6 +291,7 @@ return [
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Too many attempts. The code was invalidated, please sign in again.',
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'A payroll run already exists for this period.',
     'STT_UNAVAILABLE' => 'Voice transcription is temporarily unavailable (service not configured).',
+    'TTS_UNAVAILABLE' => 'Voice synthesis is temporarily unavailable (service not configured).',
     'AI_ACTION_REJECTED' => 'Action rejected by the user.',
     // #7268 — Onboarding: localized step messages (no more hardcoded literals)
     'ONBOARDING_STEP_REQUIRED' => 'This step is required and cannot be skipped.',

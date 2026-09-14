@@ -1,7 +1,8 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { rescopeSessionCookie } from '@/lib/cookie-scope';
 import { getSiteUrl } from '@/lib/site';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
@@ -20,6 +21,19 @@ const HOP_BY_HOP_HEADERS = new Set([
 ]);
 
 // resolveBackendBaseUrl importé depuis @/lib/backend-url (audit #1701)
+
+/**
+ * Chemins d'INITIATION du flux OAuth Google (le navigateur y est envoyé par un
+ * lien). `/auth/google/callback` est exclu : il est déjà servi par sa propre
+ * route, qui pose le cookie de session (QA #2277).
+ */
+function isGoogleAuthInitiation(path: string[]): boolean {
+  return path.length === 2 && path[0] === 'auth' && path[1] === 'google';
+}
+
+function isRedirectStatus(status: number): boolean {
+  return status >= 300 && status < 400;
+}
 
 function toBackendUrl(request: NextRequest, path: string[]): string {
   const url = new URL(request.url);
@@ -80,6 +94,12 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
       error: error instanceof Error ? error.message : String(error),
     });
 
+    // Même raison que plus bas pour l'initiation Google : un lien de
+    // navigation ne doit jamais rendre du JSON.
+    if (isGoogleAuthInitiation(path)) {
+      return NextResponse.redirect(new URL('/auth/login?error=google_network', request.url));
+    }
+
     return Response.json(
       {
         error: 'backend_unavailable',
@@ -93,6 +113,33 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   headers.delete('content-encoding');
   headers.delete('content-length');
   headers.set('Cache-Control', 'no-store');
+
+  // QA onboarding 2026-09-14 : le bouton « Continuer avec Google » est un LIEN
+  // de navigation. Quand le backend ne peut pas démarrer le flux OAuth, il
+  // répond une erreur JSON (503 GOOGLE_OAUTH_NOT_CONFIGURED, 500, …) : la
+  // relayer telle quelle affichait une page de JSON brut à l'utilisateur, qui
+  // n'avait plus aucun chemin de retour vers le formulaire. On renvoie la
+  // personne sur /auth/login avec un code d'erreur — la page sait déjà
+  // afficher `google_auth_failed` (bannière dédiée, issue #5173).
+  if (isGoogleAuthInitiation(path) && isRedirectStatus(response.status)) {
+    const setCookies =
+      typeof response.headers.getSetCookie === 'function' ? response.headers.getSetCookie() : [];
+
+    if (setCookies.length > 0) {
+      headers.delete('set-cookie');
+      for (const cookie of setCookies) {
+        headers.append('set-cookie', rescopeSessionCookie(cookie, request.nextUrl.protocol === 'https:'));
+      }
+    }
+  }
+
+  if (isGoogleAuthInitiation(path) && !isRedirectStatus(response.status)) {
+    console.error('[api-proxy] google oauth initiation failed', {
+      status: response.status,
+    });
+
+    return NextResponse.redirect(new URL('/auth/login?error=google_auth_failed', request.url));
+  }
 
   return new Response(response.body, {
     status: response.status,

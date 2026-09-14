@@ -85,13 +85,13 @@ class PasswordResetController
 
     public function reset(Request $request): JsonResponse
     {
-        // #5620 — Password::min(8)->numbers() : au moins un chiffre,
+        // #5620 — Password::min(12)->numbers() : au moins un chiffre,
         // cohérent avec l'indicateur de force du frontend.
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string', 'max:64'],
             // Issue #5620 : min 8 caractères + au moins 1 chiffre.
-            'password' => ['required', 'string', Password::min(8)->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
         ]);
 
         $email = strtolower(trim($validated['email']));

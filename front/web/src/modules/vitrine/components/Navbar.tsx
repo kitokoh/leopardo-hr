@@ -429,8 +429,19 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               {copy.nav.login}
             </Link>
 
+            {/*
+             * QA onboarding 2026-09-14 — `prefetch={false}` : un compte se cree
+             * POUR une offre, et le proxy redirige /signup sans `plan=` vers
+             * /pricing#plans. Prefetcher cette URL ne prepare donc rien d'utile ;
+             * pire, sur la page /signup elle-meme (dont l'URL porte `?plan=`)
+             * Next re-emettait ce prefetch en boucle — ~560 requetes
+             * `GET /signup?_rsc=…` en 6 s mesurees en build de production, ce qui
+             * empechait `networkidle` de se stabiliser (echec E2E
+             * `marketing-funnel`).
+             */}
             <Link
               href="/signup"
+              prefetch={false}
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {copy.nav.trial}
@@ -556,6 +567,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 </Link>
                 <Link
                   href="/signup"
+                  prefetch={false}
                   className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                   onClick={() => setMobileOpen(false)}
                 >

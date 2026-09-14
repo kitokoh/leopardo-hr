@@ -450,3 +450,23 @@ restent les gates applicables.
   pas de bios d'auteur — les 4 auteurs du blog sont des personnes fictives). Migration i18n
   `?lang=` -> sous-repertoires `/en/ /tr/ /ar/` laissee en chantier dedie (~40 fichiers :
   middleware, 25 layouts, sitemap, liens internes, 301).
+
+## Mise a jour 2026-09-14 — onboarding client : tunnel honnete, Google, mot de passe (PR #7353, issue #7352)
+
+- **Contexte** : test de bout en bout de l'inscription d'un compte client (navigateur reel + API, dev et prod).
+  Le tunnel n'aboutissait pas et le prospect ne pouvait pas le savoir (« Still being created — we will email you the
+  access link » alors que le job de provisioning etait en echec).
+- **Surface API** : `POST /api/v1/trial/signup` (repli `guided_trial`), `GET /api/v1/trial/status`,
+  `POST /api/v1/trial/set-password` (politique de mot de passe : 12 caracteres minimum + 1 chiffre),
+  `GET /api/v1/auth/google` (nouveau parametre `intent=signup`), `GET /api/v1/auth/google/callback`
+  (renvoie l'identite verifiee sur e-mail inconnu **uniquement** avec l'intention d'inscription ; le parcours
+  invitation-first reste inchange). Scenarios a couvrir par les suites existantes
+  (`AuthGoogleSignInTest`, `GoogleOAuthStateTest`, tests du module Billing) — aucune suite retiree.
+- **Surface web vitrine** : `/signup` (page epuree, bouton « Continuer avec Google », reprise du suivi apres
+  rechargement), ecran de suivi du provisioning (message d'echec actionnable), copie FR de la connexion,
+  `e2e/marketing-funnel.spec.ts` (assertion alignee sur le formulaire, plus sur le hero retire).
+- **Surface mobile / web admin** : **aucun comportement admin modifie.** Seul le libelle du champ de mot de passe de
+  la connexion plateforme passe de « Access Key » / « Cle d'Acces » a « Mot de passe » (cles `auth.access_key_label`
+  et `auth.access_key_required`, x4 langues), ainsi que l'accent de `shell.pushUnconfigured` en francais. Les scories
+  de test admin existantes (`login-smoke.spec.js`, `login-ux.spec.js`, `platform-auth-smoke.spec.js`) ne dependent pas
+  de ce libelle : aucun scenario admin n'est impacte, aucune nouvelle spec n'est requise.

@@ -7,26 +7,35 @@ Leopardo RH integrates advanced AI layers to transform raw HR data into actionab
 The `App\AI\Orchestrator` is the central hub for all intelligent features. It manages the lifecycle of AI requests, from data ingestion to LLM processing and response delivery.
 
 ### Key Components:
--   **Context Provider:** Collects relevant tenant-scoped data (attendance logs, employee profiles) while ensuring privacy.
--   **Model Wrapper:** Supports multiple LLMs (OpenAI, Anthropic, or self-hosted Llama via LangChain).
--   **Prompt Templates:** Standardized prompts for consistent, professional HR analysis.
+-   **Context Provider:** Collects tenant-scoped data (attendance logs, employee profiles) through the
+    same read tools the REST API uses — never raw table dumps.
+-   **Model Wrapper:** `App\AI\LLMClient` with plain HTTP adapters for OpenAI, Groq and Anthropic
+    (`App\AI\Providers\*`). There is no LangChain dependency and no self-hosted Llama integration.
+-   **Prompt Templates:** A versioned system prompt loaded from `resources/ai/system_prompt.md`.
 
 ---
 
 ## 📈 Predictive Capabilities
 
-### 1. Attendance Anomaly Detection
--   **Pattern Matching:** Identifies deviations from standard working hours.
--   **Risk Scoring:** Flags potential burn-out or absenteeism risks before they impact productivity.
--   **Geo-Verification:** AI-assisted validation of GPS-fenced check-ins to prevent "buddy punching."
+Everything in this section is **deterministic SQL over tenant data** — no model is called. It is
+grouped here for product reasons, not because it is machine learning.
 
-### 2. Salary & Payroll Forecasting
--   **Projection Engine:** Predicts monthly payroll costs based on real-time attendance and overtime trends.
--   **Budget Optimization:** Suggests adjustments to reduce unnecessary overtime costs.
+### 1. Attendance Anomaly Detection
+-   **Pattern Matching:** Flags employees with no check-in and no approved absence over a period.
+-   **Severity Levels:** Rules assign a severity to each anomaly; human review is expected.
+-   **Geo-Verification:** GPS-fenced check-in validation exists **as a product rule**, not as an AI
+    service — there is no AI geo-verification component in the codebase.
+
+### 2. Payroll Readiness (not forecasting)
+-   **Projection Engine:** There is no statistical payroll forecast. `PreparePayrollWorkflow`
+    reports what is *missing* before closing a period (employees without a salary structure,
+    pending absences) so payroll can be prepared safely.
+-   **Absenteeism / turnover indicators:** `AbsenteeismPredictor` and `TurnoverPredictor` compute
+    rolling averages and ratios with fixed multipliers. They are heuristics, **not regression models**.
 
 ### 3. Smart Recruitment (Roadmap)
--   **Candidate Ranking:** AI-driven scoring of applicants against job descriptions.
--   **Bias Mitigation:** Built-in filters to ensure fair, data-driven hiring decisions.
+-   **Candidate Ranking:** AI-driven scoring of applicants against job descriptions — **not implemented**.
+-   **Bias Mitigation:** Not implemented.
 
 ---
 
@@ -40,10 +49,17 @@ The `App\AI\Orchestrator` is the central hub for all intelligent features. It ma
 
 ## 🚀 Voice & Multimodal Interaction
 
-Leopardo RH supports **Natural Language Commands** for mobile users:
+`POST /api/v1/ai/voice/command` exists and accepts natural-language commands from mobile users:
+
 -   "Check my remaining leave balance."
 -   "Clock me in for the morning shift."
 -   "Show me the attendance report for last week."
+
+**Status: experimental and fail-closed.** Speech-to-text and text-to-speech require a configured
+provider (Groq Whisper for STT; ElevenLabs or the external `edge-tts` binary for TTS). Without one,
+both endpoints answer `503 STT_UNAVAILABLE` / `503 TTS_UNAVAILABLE` — they never return a fake
+transcript or a silent `null` audio. Per `docs/ai/STATUS.md`, voice is **out of the FOCUS critical
+path** and carries no customer-support commitment.
 
 ---
 
