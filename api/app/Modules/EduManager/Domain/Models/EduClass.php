@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $grade_level
  *
  * @mixin Builder<static>
  */

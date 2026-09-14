@@ -141,7 +141,7 @@ class EduFeeChargeController extends Controller
             'method' => (string) $payment->method,
             'reference' => $payment->reference,
             'external_id' => $payment->external_id,
-            'paid_at' => $payment->paid_at?->toIso8601String(),
+            'paid_at' => $payment->paid_at->toIso8601String(),
         ];
     }
 

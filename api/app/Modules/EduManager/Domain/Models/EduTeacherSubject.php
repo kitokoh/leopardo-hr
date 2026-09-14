@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $academic_year_id
  *
  * @mixin Builder<static>
  */

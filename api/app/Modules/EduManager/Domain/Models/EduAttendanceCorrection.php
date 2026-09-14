@@ -26,6 +26,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $corrected_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $attendance_record_id
+ * @property Carbon|null $corrected_at
  *
  * @mixin Builder<static>
  */

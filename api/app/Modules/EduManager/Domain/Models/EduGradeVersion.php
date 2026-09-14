@@ -25,6 +25,12 @@ use Illuminate\Support\Carbon;
  * @property int|null $changed_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $previous_score
+ * @property string|null $new_score
+ * @property string|null $previous_status
+ * @property string|null $new_status
+ * @property string|null $reason
+ * @property Carbon|null $changed_at
  *
  * @mixin Builder<static>
  */

@@ -124,15 +124,6 @@ class EduReportCardPolicy
     }
 
     /**
-     * Enseignant : lien EduTeacher → employee_id (fallback sûr : modèle non
-     * livré → refus, jamais de fuite).
-     */
-    private function isTeacher(Employee $actor): bool
-    {
-        return EduAccess::isTeacher($actor);
-    }
-
-    /**
      * Best-effort : l'enseignant n'est autorisé que sur SES classes.
      *
      * Le lien enseignant → classe est porté par edu_timetable_slots (EDU-006,

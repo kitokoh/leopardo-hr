@@ -56,7 +56,7 @@ class EduAccountingEntryController extends Controller
                 'id' => (int) $entry->getAttribute('id'),
                 'source_type' => (string) $entry->source_type,
                 'source_id' => (int) $entry->source_id,
-                'entry_date' => $entry->entry_date?->toDateString(),
+                'entry_date' => $entry->entry_date->toDateString(),
                 'account_code' => (string) $entry->account_code,
                 'account_label' => (string) $entry->account_label,
                 'debit' => $this->numeric($entry->debit),

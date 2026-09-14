@@ -44,6 +44,15 @@ use Illuminate\Support\Carbon;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $applicant_name
+ * @property string|null $contact_reference
+ * @property bool $consent_marketing
+ * @property Carbon|null $consent_at
+ * @property Carbon|null $consent_revoked_at
+ * @property Carbon|null $submitted_at
+ * @property Carbon|null $decided_at
+ * @property int|null $decided_by
+ * @property array<string, mixed>|null $metadata
  *
  * @mixin Builder<static>
  */

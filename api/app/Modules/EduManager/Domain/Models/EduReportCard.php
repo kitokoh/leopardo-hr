@@ -30,6 +30,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $class_id
+ * @property string|null $period_label
+ * @property Carbon|null $period_start
+ * @property Carbon|null $period_end
+ * @property string|null $average_score
+ * @property array<string, mixed>|null $data
+ * @property int|null $created_by
  *
  * @mixin Builder<static>
  */
