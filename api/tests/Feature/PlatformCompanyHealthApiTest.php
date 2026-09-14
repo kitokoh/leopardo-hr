@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -240,14 +241,15 @@ class PlatformCompanyHealthApiTest extends TestCase
     }
 
     /**
-     * #7302 — le coût du portefeuille ne doit PAS suivre le nombre de sociétés.
+     * #7302/#7339 — le coût d'une PAGE ne doit PAS suivre le nombre de sociétés
+     * hors page.
      *
-     * Avant ce correctif, `portfolio()` appelait `build()` en boucle : ~15
-     * requêtes par société (dont 3 `SET search_path` et un `Company::find`
-     * redondant dans les anomalies). Mesuré sur 45 sociétés réelles : **674
-     * requêtes** et ~27 s en production. Ce test échoue si un N+1 est
-     * réintroduit : il compare le nombre de requêtes pour 2 sociétés puis pour
-     * 10, et exige qu'il n'augmente pas.
+     * Avant #7302, `portfolio()` appelait `build()` en boucle : ~15 requêtes par
+     * société (dont 3 `SET search_path` et un `Company::find` redondant dans les
+     * anomalies). Mesuré sur 45 sociétés réelles : **674 requêtes** et ~27 s en
+     * production. #7339 ajoute la pagination : la page mesurée reste de 5
+     * sociétés, et l'on passe de 5 à 15 sociétés — 10 sont donc **hors page**.
+     * Le nombre de requêtes doit rester borné et identique.
      */
     public function test_portfolio_query_count_does_not_grow_with_company_count(): void
     {
@@ -263,24 +265,148 @@ class PlatformCompanyHealthApiTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->seedPortfolioCompanies(2);
+        // 5 sociétés, page de 5 : aucune société hors page.
+        $this->seedPortfolioCompanies(5);
         Cache::flush();
-        $queriesForTwo = $this->countPortfolioQueries(10);
+        $queriesForFive = $this->countPortfolioQueries(page: 1, perPage: 5);
 
+        // 10 sociétés DE PLUS (15 au total), page toujours de 5 : les 10 autres
+        // sont hors page et ne doivent rien coûter.
         $this->seedPortfolioCompanies(10);
         Cache::flush();
-        $queriesForTen = $this->countPortfolioQueries(20);
+        $queriesForFifteen = $this->countPortfolioQueries(page: 1, perPage: 5);
 
-        $this->assertLessThan(30, $queriesForTwo, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
-        $this->assertLessThan(30, $queriesForTen, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
+        $this->assertLessThan(30, $queriesForFive, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
+        $this->assertLessThan(30, $queriesForFifteen, 'Le portefeuille doit tenir en un nombre borné de requêtes.');
 
-        // Le point clé : passer de 2 à 10 sociétés ne doit rien coûter de plus
-        // qu'une poignée de requêtes (avant : ~15 par société, soit +120).
+        // Le point clé : 10 sociétés hors page ne doivent rien coûter de plus
+        // qu'une poignée de requêtes (avant #7302 : ~15 par société, soit +150).
         $this->assertLessThanOrEqual(
-            $queriesForTwo + 2,
-            $queriesForTen,
-            "Le portefeuille redevient linéaire en nombre de sociétés ({$queriesForTwo} requêtes pour 2, {$queriesForTen} pour 10).",
+            $queriesForFive + 2,
+            $queriesForFifteen,
+            "Le coût d'une page redevient linéaire en nombre de sociétés hors page ({$queriesForFive} requêtes pour 5 sociétés, {$queriesForFifteen} pour 15 dont 10 hors page).",
         );
+
+        Carbon::setTestNow();
+    }
+
+    /**
+     * #7339 — `GET /platform/companies/health` doit PAGINER (`?page=&per_page=`).
+     *
+     * Avant ce lot, l'endpoint ne connaissait que `limit`, plafonné à 100 : un
+     * portefeuille de plus de 100 sociétés n'était **pas atteignable**, et la
+     * réponse n'exposait aucune métadonnée de pagination. Ce test verrouille le
+     * contrat : découpage en pages disjointes, dernière page partielle, page
+     * hors bornes vide (sans erreur), synthèse bornée à la page et `meta`.
+     */
+    public function test_portfolio_exposes_page_metadata_and_disjoint_pages(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
+
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Pilot',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'max_employees' => 30,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $this->seedPortfolioCompanies(5);
+        Cache::flush();
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        // Page 1 sur 3 (per_page = 2).
+        $first = $this->getJson('/api/v1/platform/companies/health?page=1&per_page=2')->assertOk();
+        $first->assertJsonPath('meta.current_page', 1);
+        $first->assertJsonPath('meta.per_page', 2);
+        $first->assertJsonPath('meta.total', 5);
+        $first->assertJsonPath('meta.last_page', 3);
+        $first->assertJsonPath('meta.from', 1);
+        $first->assertJsonPath('meta.to', 2);
+        $first->assertJsonCount(2, 'data.items');
+        // La synthèse décrit la PAGE — même sémantique que l'ancien `limit`.
+        $first->assertJsonPath('data.summary.companies', 2);
+        $firstIds = $this->portfolioCompanyIds($first);
+
+        // Page 2 : deux autres sociétés, aucune recouvrante.
+        $second = $this->getJson('/api/v1/platform/companies/health?page=2&per_page=2')->assertOk();
+        $second->assertJsonPath('meta.current_page', 2);
+        $second->assertJsonPath('meta.from', 3);
+        $second->assertJsonPath('meta.to', 4);
+        $second->assertJsonCount(2, 'data.items');
+        $secondIds = $this->portfolioCompanyIds($second);
+
+        $this->assertSame([], array_values(array_intersect($firstIds, $secondIds)), 'Deux pages consécutives ne doivent jamais servir la même société.');
+
+        // Dernière page : partielle.
+        $third = $this->getJson('/api/v1/platform/companies/health?page=3&per_page=2')->assertOk();
+        $third->assertJsonPath('meta.from', 5);
+        $third->assertJsonPath('meta.to', 5);
+        $third->assertJsonCount(1, 'data.items');
+        $thirdIds = $this->portfolioCompanyIds($third);
+
+        // Les trois pages couvrent le portefeuille, sans trou ni doublon.
+        $this->assertCount(5, array_unique(array_merge($firstIds, $secondIds, $thirdIds)));
+
+        // Page hors bornes : vide, sans erreur, et `from`/`to` nuls (contrat
+        // Laravel) — un client qui pagine ne doit pas recevoir un 500.
+        $beyond = $this->getJson('/api/v1/platform/companies/health?page=4&per_page=2')->assertOk();
+        $beyond->assertJsonCount(0, 'data.items');
+        $beyond->assertJsonPath('meta.from', null);
+        $beyond->assertJsonPath('meta.to', null);
+        $beyond->assertJsonPath('data.summary.companies', 0);
+
+        Carbon::setTestNow();
+    }
+
+    /**
+     * #7339 — le contrat historique reste servi tel quel.
+     *
+     * `GET /platform/companies/health` sans paramètre doit rendre EXACTEMENT la
+     * page d'avant la pagination (page 1, 50 sociétés), et `limit` reste accepté
+     * comme alias de `per_page` (c'est le paramètre du contrat #7302, encore
+     * envoyé par des appels existants). `per_page` est plafonné.
+     */
+    public function test_portfolio_defaults_and_legacy_limit_param_stay_compatible(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
+
+        DB::table('plans')->insert([
+            'id' => 1,
+            'name' => 'Pilot',
+            'price_monthly' => 29,
+            'price_yearly' => 290,
+            'max_employees' => 30,
+            'trial_days' => 14,
+            'is_active' => true,
+        ]);
+
+        $this->seedPortfolioCompanies(3);
+        Cache::flush();
+
+        Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
+
+        // Appel historique SANS paramètre : page 1, taille de page 50.
+        $legacy = $this->getJson('/api/v1/platform/companies/health')->assertOk();
+        $legacy->assertJsonPath('meta.current_page', 1);
+        $legacy->assertJsonPath('meta.per_page', 50);
+        $legacy->assertJsonPath('meta.total', 3);
+        $legacy->assertJsonPath('meta.last_page', 1);
+        $legacy->assertJsonCount(3, 'data.items');
+
+        // `limit` reste un alias de `per_page` (ancien contrat #7302).
+        $limit = $this->getJson('/api/v1/platform/companies/health?limit=2')->assertOk();
+        $limit->assertJsonPath('meta.per_page', 2);
+        $limit->assertJsonPath('meta.last_page', 2);
+        $limit->assertJsonCount(2, 'data.items');
+
+        // `per_page` est plafonné (PORTFOLIO_MAX_PER_PAGE) : pas de « tout le
+        // portefeuille en un appel ».
+        $clamped = $this->getJson('/api/v1/platform/companies/health?per_page=500')->assertOk();
+        $clamped->assertJsonPath('meta.per_page', 100);
 
         Carbon::setTestNow();
     }
@@ -376,17 +502,40 @@ class PlatformCompanyHealthApiTest extends TestCase
      * Mesuré au niveau du service (et non de la route) pour ne pas compter les
      * requêtes d'authentification : ce qui est verrouillé ici est le coût du
      * calcul du portefeuille lui-même.
+     *
+     * #7339 — on passe par le journal de requêtes de la connexion
+     * (`flushQueryLog()` + `enableQueryLog()`) et non par `DB::listen()`. Un
+     * écouteur `DB::listen()` n'est jamais retiré : la DEUXIÈME mesure d'un
+     * même test voyait chaque requête comptée deux fois, et la borne de coût
+     * devenait un artefact de comptage (mesure faussée dans les deux sens).
      */
-    private function countPortfolioQueries(int $limit): int
+    private function countPortfolioQueries(int $page, int $perPage): int
     {
-        $count = 0;
-        DB::listen(function () use (&$count): void {
-            $count++;
-        });
+        DB::flushQueryLog();
+        DB::enableQueryLog();
 
-        app(PlatformCompanyHealthService::class)->portfolio($limit);
+        app(PlatformCompanyHealthService::class)->portfolio(page: $page, perPage: $perPage);
+
+        $count = count(DB::getQueryLog());
+        DB::disableQueryLog();
 
         return $count;
+    }
+
+    /**
+     * Identifiants des sociétés d'une page de portefeuille (#7339).
+     *
+     * @return list<string>
+     */
+    private function portfolioCompanyIds(TestResponse $response): array
+    {
+        /** @var list<array{company: array{id: string}}> $items */
+        $items = $response->json('data.items');
+
+        return array_values(array_map(
+            static fn (array $item): string => (string) $item['company']['id'],
+            $items,
+        ));
     }
 
     private function superAdmin(): SuperAdmin
