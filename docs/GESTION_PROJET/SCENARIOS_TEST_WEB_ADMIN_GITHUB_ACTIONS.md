@@ -233,6 +233,19 @@ le **corps** et le **libellé du bouton** des e-mails transactionnels, **par lan
 Côté API, `tests/Feature/Mail/EmailTemplateEditingTest.php` verrouille la résolution
 (surcharge > défaut), l'échappement du corps, l'ignorance des variables non
 déclarées, la séparation des langues et la traçabilité (`updated_by`).
+### 16. Portefeuille clients — l'endpoint de scoring est paginé (#7339)
+
+**MAJ 2026-09-14 (#7339) — l'endpoint est désormais paginé, sans changement pour la vue.**
+La réponse gagne un bloc `meta` (`current_page`, `per_page`, `total`, `last_page`,
+`from`/`to`) et accepte `?page=&per_page=` (`limit` reste un alias). C'est **additif** :
+`CompaniesView` / `DashboardView` / `SubscriptionsView` continuent de lire
+`data.items` / `data.summary` sans modification, et un appel **sans paramètre** rend
+exactement la même page qu'avant (page 1, 50 sociétés). À vérifier : la vue Entreprises
+reste fonctionnelle telle quelle (aucun paramètre de pagination ajouté au scoring côté
+admin) ; `summary` décrit la page — le total réel du portefeuille est dans `meta.total`.
+Spécification : `docs/specifications/ISSUE_7339_PLATFORM_COMPANIES_HEALTH_PAGINATION.md`.
+Limite connue (suivie hors de ce lot) : au-delà de 50 sociétés, les lignes de l'annuaire
+(chargé sur 100) situées après la page 1 restent sans score (« — »).
 
 ## Artefacts obligatoires
 

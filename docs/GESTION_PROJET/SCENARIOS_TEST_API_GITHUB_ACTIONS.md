@@ -317,6 +317,12 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Aucun contrat admin ne doit reintroduire des routes `/admin/auth/*` inexistantes
 - `GET /api/v1/platform/companies/{company}/health` retourne plan/MRR, features, adoption pointage 30 jours, onboarding, anomalies et next actions
 - `GET /api/v1/platform/companies/health` retourne le portefeuille client avec MRR total, repartition des risques et prochaine action par company
+- `GET /api/v1/platform/companies/health` est **pagine** (#7339) : `?page=` (defaut 1) et `?per_page=` (defaut 50, plafond 100) ; `limit` reste accepte comme alias de `per_page` (retro-compatibilite #7302) ; `?refresh=1` purge le cache de la page demandee
+- La reponse du portefeuille expose `meta` (`current_page`, `per_page`, `total`, `last_page`, `from`/`to` — nuls sur une page vide) ; une page hors bornes renvoie `200` avec `items: []`, jamais une erreur
+- Deux pages consecutives ne servent jamais la meme societe (ordre total `created_at DESC, id DESC`) et les pages couvrent le portefeuille sans trou ni doublon
+- `data.summary` decrit la PAGE (meme semantique que l'ancien `limit` de #7302) ; le total reel du portefeuille est dans `meta.total`, sans scorer les societes hors page
+- Le nombre de requetes d'une page ne depend pas du nombre de societes **hors page** (`test_portfolio_query_count_does_not_grow_with_company_count`, `test_portfolio_exposes_page_metadata_and_disjoint_pages`)
+- `GET /api/v1/platform/companies` (annuaire) expose son defaut de pagination dans `meta.per_page` (20 par defaut, 100 au maximum) : un client ne doit plus croire qu'il a recu « toutes les societes »
 - `GET /api/v1/platform/plans` retourne le catalogue des plans pour alimenter les formulaires d'abonnement super-admin
 - `GET/PATCH /api/v1/platform/companies/{company}/subscription` lit et met a jour plan, statut, dates d'abonnement et notes client
 - `GET /api/v1/platform/metrics/overview` retourne les agregats plateforme MRR/ARR, encaissements 30 jours, impayes, companies, abonnements, facturation et systeme
