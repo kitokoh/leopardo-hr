@@ -2641,7 +2641,10 @@
     "cancel": "إلغاء",
     "noResults": "لا توجد نتائج.",
     "reload": "إعادة التحميل",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "search": "بحث…",
+    "edit": "تعديل"
   },
   "settingsProfileUpdated": "تم تحديث الملف الشخصي.",
   "attendanceHoursWorkedLabel": "ساعات العمل",
@@ -4844,12 +4847,22 @@
       "loading": "جارٍ تحميل المستخدمين...",
       "empty": "لا يوجد مستخدم",
       "emptyHint": "لا يوجد مستخدم يطابق معايير البحث.",
-      "viewDetails": "عرض التفاصيل"
+      "viewDetails": "عرض التفاصيل",
+      "name": "المستخدم",
+      "status": "الحالة",
+      "company": "الشركة",
+      "createdAt": "التسجيل"
     },
     "bulkConfirm": {
       "title": "تعطيل المستخدمين المحددين؟",
       "body": "سيفقد المستخدمون المحددون الوصول إلى مساحتهم فورًا.",
       "action": "تعطيل التحديد"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "suspended": "موقوف",
+      "pending": "قيد الانتظار"
     }
   },
   "settingsBiometryEnrollment": "تسجيل البيانات الحيوية",

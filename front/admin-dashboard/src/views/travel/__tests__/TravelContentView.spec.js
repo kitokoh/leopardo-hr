@@ -119,6 +119,39 @@ describe('TravelContentView (#7433)', () => {
     expect(wrapper.text()).toContain('Nom déjà utilisé')
   })
 
+  it('#7434 — les actions de ligne restent conditionnées par le statut', async () => {
+    listTravel.mockImplementation((resource) => {
+      if (resource === 'adverts') {
+        return Promise.resolve({
+          data: {
+            data: [
+              { id: 1, title: 'Payée', status: 'paid', price_minor: 1000, currency: 'XOF' },
+              { id: 2, title: 'Brouillon', status: 'draft', price_minor: 1000, currency: 'XOF' },
+            ],
+          },
+        })
+      }
+      return Promise.resolve({ data: { data: [] } })
+    })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    // Onglet principal « Annonces » puis sous-onglet « Annonces payantes ».
+    await wrapper.findAll('button').find((b) => b.text() === 'Annonces').trigger('click')
+    await flushPromises()
+    const subTab = wrapper.findAll('button').find((b) => b.text() === 'Annonces payantes')
+    expect(subTab, 'sous-onglet « Annonces payantes » introuvable').toBeTruthy()
+    await subTab.trigger('click')
+    await flushPromises()
+
+    const labels = wrapper.findAll('button').map((b) => b.attributes('aria-label')).filter(Boolean)
+    expect(labels).toContain('Valider') // annonce payée
+    expect(labels).toContain('Rejeter') // annonce payée
+    expect(labels).toContain('Payer') // annonce brouillon
+    expect(labels).not.toContain('Renouveler') // aucun statut validé/expiré
+  })
+
   it('un échec de chargement affiche un état d’erreur, jamais « aucune donnée »', async () => {
     listTravel.mockRejectedValue({ response: { data: { message: 'API indisponible' } } })
 

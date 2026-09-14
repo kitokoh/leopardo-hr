@@ -2647,7 +2647,10 @@
     "cancel": "Annuler",
     "noResults": "Aucun résultat trouvé.",
     "reload": "Recharger",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "actions": "Actions",
+    "search": "Rechercher…",
+    "edit": "Modifier"
   },
   "settingsProfileUpdated": "Profil mis a jour.",
   "attendanceHoursWorkedLabel": "Heures travaillées",
@@ -4850,12 +4853,22 @@
       "loading": "Chargement des utilisateurs...",
       "empty": "Aucun utilisateur",
       "emptyHint": "Aucun utilisateur ne correspond aux critères de recherche.",
-      "viewDetails": "Voir les détails"
+      "viewDetails": "Voir les détails",
+      "name": "Utilisateur",
+      "status": "Statut",
+      "company": "Entreprise",
+      "createdAt": "Inscription"
     },
     "bulkConfirm": {
       "title": "Désactiver les utilisateurs sélectionnés ?",
       "body": "Les utilisateurs sélectionnés perdront immédiatement l’accès à leur espace.",
       "action": "Désactiver la sélection"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "suspended": "Suspendu",
+      "pending": "Attente"
     }
   },
   "settingsBiometryEnrollment": "Preparation biometrie",

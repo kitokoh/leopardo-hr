@@ -59,12 +59,18 @@
         </template>
         <template #row-actions="{ row }">
           <div class="flex justify-end gap-2">
-            <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openEdit(row)">
-              {{ t('travel.common.edit', 'Modifier') }}
-            </button>
-            <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDelete(row)">
-              {{ t('travel.common.delete', 'Supprimer') }}
-            </button>
+            <RowActionButton
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
+              @click="openEdit(row)"
+            />
+            <RowActionButton
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
+              @click="askDelete(row)"
+            />
           </div>
         </template>
       </DataTable>
@@ -104,6 +110,8 @@ import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { errorMessage } from '@/utils/errorMessage'
 import { createTravel, deleteTravel, listTravel, updateTravel, travelList, listTouristSites } from '@/services/travel'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)

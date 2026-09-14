@@ -57,8 +57,20 @@
               <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ c.cap === null ? '∞' : money(c.cap) }}</td>
               <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ c.effective_from }}</td>
               <td class="py-2.5 text-right whitespace-nowrap">
-                <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="busy" @click="openEdit(c)">{{ $t('social_contrib.edit') }}</button>
-                <button class="btn-danger py-1 px-2.5" :disabled="busy" @click="askRemoveItem(c)">{{ $t('social_contrib.delete') }}</button>
+                <RowActionButton
+                  :icon="PencilSquareIcon"
+                  tone="primary"
+                  :label="t('social_contrib.edit')"
+                  :disabled="busy"
+                  @click="openEdit(c)"
+                />
+                <RowActionButton
+                  :icon="TrashIcon"
+                  tone="danger"
+                  :label="t('social_contrib.delete')"
+                  :disabled="busy"
+                  @click="askRemoveItem(c)"
+                />
               </td>
             </tr>
             <tr v-if="items.length === 0">
@@ -195,6 +207,8 @@ import { useToast } from 'vue-toastification'
 import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useSupportedCountries } from '@/composables/useSupportedCountries'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 const supportedCountries = useSupportedCountries()
 
 const toast = useToast()

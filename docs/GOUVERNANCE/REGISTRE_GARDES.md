@@ -97,6 +97,7 @@
 | Garde | Vérifie | Bloque / rapporte |
 |---|---|---|
 | `check-admin-destructive-actions.py` (+ auto-test `-test.sh`, workflow `web-ci.yml`) | zéro `window.confirm`/`window.alert`, zéro `catch` muet non allowlisté (`admin-silent-catch-allowlist.txt`) dans `front/admin-dashboard/src` (issue #7433) | bloque |
+| `check-admin-action-labels.py` (+ auto-test `-test.sh`, workflow `web-ci.yml`) | libellés d'action en dur dans les templates (en-tête « Actions », « Modifier »/« Supprimer »/« Edit »/« Delete ») et actions de ligne sans nom accessible — convention unique `RowActionButton` (issue #7434) | bloque |
 
 ## 10. Sécurité
 

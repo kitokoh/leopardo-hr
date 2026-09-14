@@ -2641,7 +2641,10 @@
     "cancel": "Cancel",
     "noResults": "No results found.",
     "reload": "Reload",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "actions": "Actions",
+    "search": "Search…",
+    "edit": "Edit"
   },
   "settingsProfileUpdated": "Profile updated.",
   "attendanceHoursWorkedLabel": "Hours worked",
@@ -4844,12 +4847,22 @@
       "loading": "Loading users...",
       "empty": "No user",
       "emptyHint": "No user matches the search criteria.",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "name": "User",
+      "status": "Status",
+      "company": "Company",
+      "createdAt": "Registered"
     },
     "bulkConfirm": {
       "title": "Deactivate the selected users?",
       "body": "The selected users will immediately lose access to their workspace.",
       "action": "Deactivate selection"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "pending": "Pending"
     }
   },
   "settingsBiometryEnrollment": "Biometric enrollment",

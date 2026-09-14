@@ -74,6 +74,14 @@ jobs:
       - name: Admin destructive-actions guard self-test (issue #7433)
         run: bash dev-hub/tools/check-admin-destructive-actions-test.sh
 
+      # Issue #7434 : convention unique d'action de ligne (RowActionButton) +
+      # libellés d'action internationalisés dans les tableaux.
+      - name: Admin action-labels guard (issue #7434)
+        run: python3 dev-hub/tools/check-admin-action-labels.py
+
+      - name: Admin action-labels guard self-test (issue #7434)
+        run: bash dev-hub/tools/check-admin-action-labels-test.sh
+
       # Tests unitaires Vitest de la console admin (introduits par #7433 :
       # le dossier n'avait que des tests Playwright e2e).
       - name: Unit tests (vitest)
