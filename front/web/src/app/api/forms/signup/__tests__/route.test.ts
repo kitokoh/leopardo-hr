@@ -277,3 +277,74 @@ describe('#7251 — repli sur le parcours guidé si la vérification e-mail est 
     expect(payload.data.nextStep).toBe('verify');
   });
 });
+
+/**
+ * Audit 2026-09-13 — garde anti multi-compte. Un navigateur déjà connecté ne
+ * doit pas pouvoir créer un second espace : le proxy transmet la session
+ * ouverte au backend (sinon l'API ne voit qu'un appel anonyme) et remonte son
+ * refus tel quel, sans le déguiser en « on vous contacte sous 24h ».
+ */
+describe('garde anti multi-compte (session déjà ouverte)', () => {
+  let fetchMock: jest.Mock;
+
+  beforeEach(() => {
+    fetchMock = jest.fn();
+    global.fetch = fetchMock as unknown as typeof fetch;
+  });
+
+  const sessionHeaders = { Cookie: 'leopardo_token=jeton-session' };
+
+  it('transmet le cookie de session en Bearer au backend', async () => {
+    fetchMock.mockResolvedValue(
+      backendResponse({
+        success: true,
+        data: { email: 'fondateur@techcorp.dz', status: 'pending_verification' },
+      }),
+    );
+
+    await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }, sessionHeaders),
+    );
+
+    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/trial/signup'));
+    const headers = (call?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers.Authorization).toBe('Bearer jeton-session');
+  });
+
+  it("ne pose pas d'en-tête Authorization sans session", async () => {
+    fetchMock.mockResolvedValue(
+      backendResponse({
+        success: true,
+        data: { email: 'fondateur@techcorp.dz', status: 'pending_verification' },
+      }),
+    );
+
+    await POST(makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }));
+
+    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/trial/signup'));
+    const headers = (call?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers.Authorization).toBeUndefined();
+  });
+
+  it('remonte le refus 409 SESSION_ALREADY_ACTIVE tel quel', async () => {
+    fetchMock.mockResolvedValue(
+      backendResponse(
+        {
+          success: false,
+          error: 'SESSION_ALREADY_ACTIVE',
+          message: 'Une session est déjà ouverte dans ce navigateur.',
+        },
+        409,
+      ),
+    );
+
+    const response = await POST(
+      makeRequest({ email: 'fondateur@techcorp.dz', company: 'TechCorp', country: 'DZ' }, sessionHeaders),
+    );
+    const payload = (await response.json()) as { error: string; message?: string; success: boolean };
+
+    expect(response.status).toBe(409);
+    expect(payload.error).toBe('SESSION_ALREADY_ACTIVE');
+    expect(payload.success).toBe(false);
+  });
+});

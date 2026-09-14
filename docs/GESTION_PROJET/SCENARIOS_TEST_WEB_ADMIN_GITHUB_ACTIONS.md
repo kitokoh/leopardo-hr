@@ -302,3 +302,14 @@ Nouvel ecran `front/admin-dashboard/src/views/settings/AiAssistantView.vue`, rou
   cle (verifier ensuite l'etat « cle enregistree »)
 - Les 4 locales (fr/en/ar/tr) doivent rendre l'ecran, y compris le RTL arabe
 - `eslint --max-warnings 0` et `vite build` doivent rester verts
+## Note de conservation — propagation i18n (PR #7350, Refs #7351, 2026-09-14)
+
+**Aucun scénario de l'admin plateforme n'est modifié.** Le diff touche
+`front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que
+ces fichiers sont **générés** par `shared/i18n/sync/sync-web.js` : trois clés de
+l'écran « Mon compte » du **client web** (`settingsPage.company`,
+`settingsPage.manage2fa`, `settingsPage.tenantSubtitle`) sont propagées
+mécaniquement à tous les targets du catalogue. Aucun écran de l'admin
+plateforme ne consomme ces clés ; les scénarios listés ci-dessus restent valides
+et inchangés. Même situation que la note mobile du 2026-09-13 (PR #7333).
+>

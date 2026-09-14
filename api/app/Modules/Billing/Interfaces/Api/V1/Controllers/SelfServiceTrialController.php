@@ -52,6 +52,21 @@ class SelfServiceTrialController extends Controller
      */
     public function signup(Request $request): JsonResponse
     {
+        // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne doit pas pouvoir
+        // créer un second espace : `/signup` restait accessible et cet endpoint
+        // répondait 201 avec une session Sanctum active, provisionnant un
+        // second tenant pour le même utilisateur.
+        // Le garde est posé ICI (et non seulement dans le middleware Next, qui
+        // n'est qu'un filtre cosmétique) : les clients directs — mobile, cURL,
+        // SDK — ne traversent pas le middleware web.
+        if ($request->user('sanctum') !== null) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'SESSION_ALREADY_ACTIVE',
+                'message' => __('errors.SESSION_ALREADY_ACTIVE'),
+            ], 409);
+        }
+
         $validated = $request->validate([
             'email' => ['required', 'email', 'max:255'],
             'company' => ['required', 'string', 'min:2', 'max:120'],

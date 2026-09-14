@@ -100,6 +100,9 @@ export type CopyTree = {
     settings: string;
     logout: string;
     language: string;
+    userMenuAccount: string;
+    userMenuPassword: string;
+    userMenuSecurity: string;
     presentBadge: string;
     employeeLabel: string;
     checkInAt: string;
@@ -729,6 +732,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Paie',
       settings: 'Paramètres',
       logout: 'Déconnexion',
+      userMenuAccount: 'Mon compte',
+      userMenuPassword: 'Changer mon mot de passe',
+      userMenuSecurity: 'Sécurité (2FA)',
       language: 'Langue',
       presentBadge: 'Présent',
       employeeLabel: 'Employé',
@@ -1399,6 +1405,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'الرواتب',
       settings: 'الإعدادات',
       logout: 'تسجيل الخروج',
+      userMenuAccount: 'حسابي',
+      userMenuPassword: 'تغيير كلمة المرور',
+      userMenuSecurity: 'الأمان (2FA)',
       language: 'اللغة',
       presentBadge: 'حاضر',
       employeeLabel: 'موظف',
@@ -2065,6 +2074,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Bordro',
       settings: 'Ayarlar',
       logout: 'Cikis yap',
+      userMenuAccount: 'Hesabım',
+      userMenuPassword: 'Parolamı değiştir',
+      userMenuSecurity: 'Güvenlik (2FA)',
       language: 'Dil',
       presentBadge: 'Burada',
       employeeLabel: 'Calisan',
@@ -2731,6 +2743,9 @@ const copy: Record<AppLocale, CopyTree> = {
       payroll: 'Payroll',
       settings: 'Settings',
       logout: 'Sign out',
+      userMenuAccount: 'My account',
+      userMenuPassword: 'Change my password',
+      userMenuSecurity: 'Security (2FA)',
       language: 'Language',
       presentBadge: 'Present',
       employeeLabel: 'Employee',
