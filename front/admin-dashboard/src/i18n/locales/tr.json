@@ -4901,7 +4901,8 @@
     "solutionSurveys": "Çözüm anketleri",
     "travel": "Seyahat acentesi",
     "showcase": "Vitrin sitesi",
-    "clientModules": "Müşteri şirket modülleri"
+    "clientModules": "Müşteri şirket modülleri",
+    "emailTemplates": "E-postalar"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
@@ -6398,5 +6399,25 @@
     "step1": "E-postanızı ve şirket adınızı girersiniz.",
     "step2": "E-postanıza 6 haneli bir kod gelir.",
     "step3": "Doğrudan çalışma alanınıza girersiniz — şifre oluşturmanız gerekmez."
+  },
+  "emailsAdmin": {
+    "title": "E-posta şablonları",
+    "subtitle": "Platformun gönderdiği e-postaların içeriğini özelleştirin. Değiştirmezseniz varsayılan metin kullanılır.",
+    "locale": "Dil",
+    "subject": "Konu",
+    "heading": "Başlık",
+    "body": "Mesaj gövdesi",
+    "ctaLabel": "Düğme etiketi",
+    "variables": "Kullanılabilir değişkenler",
+    "bodyHint": "Düz metin: satır sonları korunur, HTML yorumlanmaz.",
+    "save": "Kaydet",
+    "saved": "Şablon kaydedildi",
+    "saveFailed": "Kaydedilemedi",
+    "reset": "Varsayılana dön",
+    "resetDone": "Şablon sıfırlandı",
+    "overridden": "özelleştirilmiş",
+    "preview": "Önizleme",
+    "previewFailed": "Önizleme kullanılamıyor",
+    "loadFailed": "Yüklenemedi"
   }
 }

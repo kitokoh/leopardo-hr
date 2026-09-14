@@ -104,8 +104,9 @@ return [
     'communication_unsubscribe_link' => 'Bildirim tercihlerimi yonet',
 
     // Premium layout (emails/layouts/premium.blade.php)
-    'premium_layout_rights_reserved' => 'Tüm hakları saklıdır.',
-    'premium_layout_footer_note' => 'Bu e-postayı platformumuza kayıtlı olduğunuz için alıyorsunuz.<br>Herhangi bir sorunuz için <a href="mailto::supportEmail">destek</a> ile iletişime geçin.',
+    'layout_rights_reserved' => 'Tüm hakları saklıdır.',
+    'layout_footer_context' => ':brand hesabınız kapsamında bu e-postayı alıyorsunuz.',
+    'layout_footer_support' => 'Sorunuz mu var? Bize yazın:',
     // S-5 (#1665) — Yerelleştirilmiş işlem e-postaları
     'email_welcome_subject' => 'Leopardo RH\'ye hoş geldiniz',
     'email_welcome_greeting' => 'Merhaba :name,',
@@ -168,6 +169,20 @@ return [
     'email_password_reset_ignore' => 'Bu talebi siz yapmadıysanız bu e-postayı yok sayın.',
 
     // E-mail de vérification du code d'inscription (trial self-service)
+    'email_password_reset_code_label' => 'Sıfırlama kodunuz (60 dakika geçerli, tek kullanımlık):',
+    'invitation_heading' => ':company ekibine davet',
+    'invitation_intro' => ':inviter sizi :company ekibine :brand üzerinde katılmaya davet ediyor.',
+    'invitation_role_line' => ':role olarak davet edileceksiniz.',
+    'invitation_accept_button' => 'Daveti kabul et',
+    'invitation_expiry' => 'Bu bağlantı 48 saat içinde sona erer. Bu e-postayı beklemiyorduysanız yok sayın.',
+    'edge_node_silent_subject' => 'Giriş terminaline ulaşılamıyor — :node (:company)',
+    'edge_node_silent_greeting' => 'Merhaba,',
+    'edge_node_silent_body' => ':company şirketindeki :node giriş terminali :duration boyunca bağlantı kurmadı.',
+    'edge_node_silent_note' => 'Bu dönemde kaydedilen girişler, bağlantı geri geldiğinde otomatik olarak eşitlenecek.',
+    'edge_node_silent_support' => 'Sorun devam ederse terminalin ağ bağlantısını kontrol edin veya bize yazın:',
+    'edge_license_expiring_subject' => 'Giriş terminali aboneliği yenilenmeli — :node (:company)',
+    'edge_license_expiring_body' => ':company şirketindeki :node giriş terminalinin aboneliği :date tarihinde sona eriyor. Bu süreden sonra terminal girişleri kaydetmeye devam eder ancak artık iletmez.',
+    'edge_license_expiring_support' => 'Yenilemek veya soru sormak için bize yazın:',
     'trial_verification_subject' => 'Leopardo RH e-postanızı doğrulayın',
     'trial_verification_greeting' => 'Merhaba :name,',
     'trial_verification_intro' => 'Çalışma alanınızın oluşturulmasını tamamlamak için lütfen aşağıdaki doğrulama kodunu kullanın:',
