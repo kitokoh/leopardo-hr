@@ -7,13 +7,15 @@ namespace App\Modules\TravelAgency\Domain\Contracts;
 /**
  * Contrat de manifest d'une solution verticale (TRAVEL-106, issue #6011).
  *
- * Déclare l'identité, la maturité, les dépendances et les permissions d'une
- * solution opérationnelle activable par tenant. Implémentation de référence :
- * TravelAgencyManifest.
+ * @deprecated #7220-bis (2026-09-14) — contrat historique local au module,
+ * incompatible avec le catalogue core (`App\Core\Solutions\Contracts\SolutionManifest`) :
+ * il manquait `description()` et `permissions()` retournait une liste au lieu
+ * d'une map `code => libellé`. `TravelAgencyManifest` implémente désormais le
+ * contrat core. Ce fichier n'est plus référencé : ne pas l'utiliser pour de
+ * nouveaux manifests, et ne pas le supprimer tant que des greffons externes
+ * peuvent le résoudre (cf. Delivery/RestaurantManager, mêmes contrats locaux).
  *
- * Le catalogue central des solutions (PLAT-001, provisioning orchestrator)
- * n'étant pas encore sur main, ce contrat vit DANS le module et sera branché
- * sur le catalogue lorsqu'il sera livré — aucun couplage vers du code absent.
+ * Implémentation de référence : TravelAgencyManifest.
  */
 interface SolutionManifest
 {
