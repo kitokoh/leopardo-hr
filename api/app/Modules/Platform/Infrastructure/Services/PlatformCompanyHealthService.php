@@ -23,29 +23,24 @@ class PlatformCompanyHealthService
     ) {}
 
     /**
-     * @return array<string, mixed>
+     * Taille de page par défaut du portefeuille (#7339).
+     *
+     * 50 est la valeur historique de `limit` (#7302) : la conserver comme défaut
+     * garantit qu'un appel sans paramètre (`GET /platform/companies/health`)
+     * rend exactement la même page qu'avant la pagination.
      */
+    public const PORTFOLIO_DEFAULT_PER_PAGE = 50;
+
     /**
-     * Portefeuille de sociétés avec leur santé (#7302).
+     * Plafond de `per_page` (#7339).
      *
-     * AVANT : `build()` était appelé en boucle — ~15 requêtes par société
-     * (dont 3 `SET search_path` et un `Company::find` redondant dans les
-     * anomalies), soit **674 requêtes** mesurées pour 45 sociétés. À ~40 ms
-     * l'aller-retour sur la base distante, cela explique à lui seul les ~27 s
-     * constatées en production (#7302).
-     *
-     * MAINTENANT : les agrégats de tout le portefeuille sont calculés par
-     * requêtes **groupées** (`group by company_id`). Les valeurs sont
-     * identiques à celles de `build()` : mêmes prédicats, même fenêtre par
-     * société. Le nombre de requêtes ne dépend plus du nombre de tenants.
-     *
-     * Note sur le `search_path` : tous les tenants partagent le schéma
-     * `shared_tenants` (le mode « un schéma par tenant » est verrouillé — voir
-     * `Company::booted()`), il n'y a donc qu'un seul `search_path` à poser pour
-     * tout le portefeuille.
-     *
-     * @return array<string, mixed>
+     * Un plafond est nécessaire : chaque société de la page ajoute des lignes à
+     * agréger, et un client ne doit pas pouvoir demander « tout le portefeuille »
+     * en un seul appel. Au-delà, il pagine — c'est précisément ce que l'ancien
+     * `limit` (plafonné à 100) ne permettait pas.
      */
+    public const PORTFOLIO_MAX_PER_PAGE = 100;
+
     /**
      * Durée de mise en cache du portefeuille (#7302).
      *
@@ -66,54 +61,116 @@ class PlatformCompanyHealthService
     private const PORTFOLIO_CACHE_TTL_SECONDS = 60;
 
     /**
+     * Une page du portefeuille de sociétés avec leur santé (#7302, #7339).
+     *
+     * AVANT #7302 : `build()` était appelé en boucle — ~15 requêtes par société
+     * (dont 3 `SET search_path` et un `Company::find` redondant dans les
+     * anomalies), soit **674 requêtes** mesurées pour 45 sociétés. À ~40 ms
+     * l'aller-retour sur la base distante, cela explique à lui seul les ~27 s
+     * constatées en production (#7302).
+     *
+     * DEPUIS #7302 : les agrégats sont calculés par requêtes **groupées**
+     * (`group by company_id`). Les valeurs sont identiques à celles de
+     * `build()` : mêmes prédicats, même fenêtre par société. Le nombre de
+     * requêtes ne dépend plus du nombre de tenants.
+     *
+     * Note sur le `search_path` : tous les tenants partagent le schéma
+     * `shared_tenants` (le mode « un schéma par tenant » est verrouillé — voir
+     * `Company::booted()`), il n'y a donc qu'un seul `search_path` à poser pour
+     * tout le portefeuille.
+     *
+     * #7339 — **pagination** : le portefeuille est servi page par page
+     * (`page` / `per_page`). Le coût d'une page ne dépend que des sociétés
+     * **de la page** : les agrégats groupés sont restreints à leurs
+     * identifiants (`whereIn('company_id', …)`), donc le nombre de requêtes —
+     * comme les lignes scannées — est indépendant du nombre de sociétés **hors
+     * page**. `limit` reste accepté comme alias de `per_page`
+     * (rétro-compatibilité #7302). La réponse porte `data.summary` (synthèse de
+     * la page), `data.items` et `meta` (`current_page`, `per_page`, `total`,
+     * `last_page`, `from`, `to`).
+     *
      * @return array<string, mixed>
      */
-    public function portfolio(int $limit = 50): array
+    public function portfolio(int $page = 1, int $perPage = self::PORTFOLIO_DEFAULT_PER_PAGE): array
     {
-        $limit = max(1, min(100, $limit));
+        $page = max(1, $page);
+        $perPage = self::normalizePerPage($perPage);
 
         /** @var array<string, mixed> $result */
         $result = Cache::remember(
-            self::portfolioCacheKey($limit),
+            self::portfolioCacheKey($page, $perPage),
             self::PORTFOLIO_CACHE_TTL_SECONDS,
-            fn (): array => $this->buildPortfolio($limit),
+            fn (): array => $this->buildPortfolio($page, $perPage),
         );
 
         return $result;
     }
 
     /**
-     * Purge le cache du portefeuille (#7302).
+     * Purge le cache d'UNE page du portefeuille (#7302, #7339).
      *
      * Exposé pour que l'action « Actualiser » du back-office demande un
      * recalcul réel au lieu de resservir une valeur mise en cache jusqu'à
      * `PORTFOLIO_CACHE_TTL_SECONDS`.
      */
-    public function forgetPortfolioCache(int $limit = 50): void
+    public function forgetPortfolioCache(int $page = 1, int $perPage = self::PORTFOLIO_DEFAULT_PER_PAGE): void
     {
-        Cache::forget(self::portfolioCacheKey($limit));
+        Cache::forget(self::portfolioCacheKey(max(1, $page), self::normalizePerPage($perPage)));
     }
 
     /**
-     * Clé de cache du portefeuille — normalisée au même bornage que
-     * `portfolio()`, pour que purge et lecture ne puissent pas diverger.
+     * Clé de cache d'une page — normalisée au même bornage que `portfolio()`,
+     * pour que purge et lecture ne puissent pas diverger.
      */
-    private static function portfolioCacheKey(int $limit): string
+    private static function portfolioCacheKey(int $page, int $perPage): string
     {
-        return 'platform.companies.health.limit.'.max(1, min(100, $limit));
+        return 'platform.companies.health.page.'.max(1, $page).'.per_page.'.self::normalizePerPage($perPage);
     }
 
     /**
-     * Calcul effectif du portefeuille (hors cache) — voir `portfolio()`.
+     * Borne `per_page` : une seule règle de bornage, partagée par la lecture,
+     * la purge et le calcul — sinon une purge viserait une autre clé que la
+     * lecture.
+     */
+    private static function normalizePerPage(int $perPage): int
+    {
+        return max(1, min(self::PORTFOLIO_MAX_PER_PAGE, $perPage));
+    }
+
+    /**
+     * Calcul effectif d'une page du portefeuille (hors cache) — voir
+     * `portfolio()`.
+     *
+     * `created_at` seul ne définit pas un ordre **total** : des sociétés créées
+     * dans la même seconde (cas courant en test, horloge figée) seraient
+     * ordonnées de façon instable, et deux pages consécutives pourraient
+     * répéter ou sauter une société. `id` sert donc de départage.
      *
      * @return array<string, mixed>
      */
-    private function buildPortfolio(int $limit): array
+    private function buildPortfolio(int $page, int $perPage): array
     {
+        $total = Company::query()->count();
+
+        /** @var Collection<int, Company> $companies */
         $companies = Company::query()
-            ->latest()
-            ->limit(max(1, min(100, $limit)))
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->forPage($page, $perPage)
             ->get();
+
+        $offset = ($page - 1) * $perPage;
+        $onPage = $companies->count();
+
+        /** @var array<string, mixed> $meta */
+        $meta = [
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'last_page' => max(1, (int) ceil($total / $perPage)),
+            'from' => $onPage > 0 ? $offset + 1 : null,
+            'to' => $onPage > 0 ? $offset + $onPage : null,
+        ];
 
         if ($companies->isEmpty()) {
             return [
@@ -126,10 +183,10 @@ class PlatformCompanyHealthService
                     ],
                     'items' => [],
                 ],
+                'meta' => $meta,
             ];
         }
 
-        /** @var list<string> $companyIds */
         /** @var list<string> $companyIds */
         $companyIds = array_values($companies->pluck('id')->map(static fn ($id): string => (string) $id)->all());
 
@@ -247,6 +304,12 @@ class PlatformCompanyHealthService
 
         return [
             'data' => [
+                // #7339 — la synthèse porte sur les sociétés DE LA PAGE (elle
+                // était déjà bornée par `limit` dans #7302 : au-delà de la
+                // fenêtre, elle ne décrivait déjà plus tout le portefeuille).
+                // Le total réel du portefeuille est exposé séparément dans
+                // `meta.total`, sans obliger à scorer les sociétés hors page —
+                // ce qui serait exactement le coût linéaire que #7302 a supprimé.
                 'summary' => [
                     'companies' => $items->count(),
                     'active_companies' => $items->where('company.status', 'active')->count(),
@@ -259,6 +322,7 @@ class PlatformCompanyHealthService
                 ],
                 'items' => $items,
             ],
+            'meta' => $meta,
         ];
     }
 

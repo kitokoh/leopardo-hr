@@ -75,6 +75,11 @@ class PlatformCompanyController extends Controller
                 'meta' => [
                     'current_page' => $companies->currentPage(),
                     'last_page' => $companies->lastPage(),
+                    // #7339 — le défaut (20) était implicite : un client qui
+                    // demande « toutes les sociétés » recevait 20 lignes sans
+                    // que rien ne l'indique. On l'expose pour qu'un appelant
+                    // puisse le détecter et paginer (`?page=`).
+                    'per_page' => $companies->perPage(),
                     'total' => $companies->total(),
                 ],
             ]);
