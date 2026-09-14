@@ -38,6 +38,8 @@ export const PROTECTED_PREFIXES = [
   // sections, thème, publication). Le site PUBLIC rendu vit sous
   // `/vitrine/{slug}` (hors de cette liste : il est public par nature).
   '/showcase',
+  // #7400 — flotte & véhicules de service (module horizontal).
+  '/fleet',
 ] as const;
 
 /**

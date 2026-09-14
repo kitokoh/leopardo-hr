@@ -20,6 +20,7 @@ export type ClientModuleKey =
   | 'edu_manager'
   | 'travel'
   | 'fuel'
+  | 'fleet'
   | 'showcase';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
@@ -284,6 +285,27 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'fuel',
   },
+  // #7400 — Flotte & suivi des véhicules de service. Module HORIZONTAL
+  // (`scope: 'core'`) : toute PME de terrain a des véhicules, ce n'est pas
+  // rattaché à la verticale Agence de voyage. Le suivi n'existait que côté
+  // admin plateforme (`front/admin-dashboard/src/views/fleet/FleetView.vue`) ;
+  // l'agence ne pouvait ni voir ses véhicules, ni leur position, ni leurs
+  // itinéraires. L'API est déjà complète (`/vehicles`, `/vehicles/{id}/trips`,
+  // `/fleet/*`) et réservée aux managers (`api.manager`, sécurité #2217) :
+  // la capacité `can_view_fleet` rejoue ce gate, et la feature `fleet` (ajoutée
+  // au registre plateforme) permettra de vendre/activer le module par plan
+  // quand le middleware `module.fleet` sera tranché (voir #7400).
+  {
+    key: 'fleet',
+    href: '/fleet',
+    label: 'Flotte',
+    group: 'general',
+    capabilityKeys: ['can_view_fleet', 'fleet'],
+    featureKeys: ['fleet'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Flotte (véhicules, positions, itinéraires)',
+    scope: 'core',
+  },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware : manager direction (principal/rh) → administration scolaire ;
   // employé enseignant → espace enseignant (périmètre = ses classes, gardé
@@ -376,6 +398,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/travel/portal': 'travel',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
+  '/fleet': 'fleet',
   '/edu-manager': 'edu_manager',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',

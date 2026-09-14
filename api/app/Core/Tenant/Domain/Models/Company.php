@@ -133,6 +133,16 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // BC-24 TRAVEL / #7400 — module HORIZONTAL « Flotte & suivi des
+        // véhicules » (outil transverse : toute PME de terrain a des
+        // véhicules). Il doit figurer ici pour que l'admin plateforme
+        // (`PlatformCompanyFeatureController::update`) reconstruise et expose
+        // la clé, sans quoi le module ne serait ni activable ni mesurable.
+        // Fail-closed conservé (défaut false) ; le gate serveur `module.fleet`
+        // reste à trancher (voir #7400) — les routes Fleet sont aujourd'hui
+        // sous `api.manager` et la surface client est ouverte par capacité
+        // (`can_view_fleet`).
+        'fleet',
     ];
 
     /**
