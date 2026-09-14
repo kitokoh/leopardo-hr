@@ -9,10 +9,12 @@ use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
 use App\Modules\FuelStation\Domain\Exceptions\FuelSolutionInactiveException;
 use App\Modules\FuelStation\Domain\Models\FuelIncident;
+use App\Modules\FuelStation\Domain\Models\FuelIncidentAttachment;
 use App\Modules\FuelStation\Domain\Models\FuelMaintenanceTask;
 use App\Modules\FuelStation\Infrastructure\Services\FuelIncidentService;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelIncidentRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\StoreFuelMaintenanceTaskRequest;
+use App\Modules\FuelStation\Interfaces\Api\V1\Requests\TransitionFuelIncidentRequest;
 use App\Modules\FuelStation\Interfaces\Api\V1\Requests\UpdateFuelIncidentRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -147,6 +149,99 @@ class FuelIncidentController extends Controller
         $incident = $this->incidents->resolve($actor, $incident, $notes);
 
         return response()->json(['data' => $this->payload($incident)]);
+    }
+
+    /**
+     * Transition de workflow d'un incident
+     * (POST /fuel-station/incidents/{incident}/transition) — gestion.
+     *
+     * Le graphe `FuelIncident::TRANSITIONS` est l'autorité : une cible hors
+     * graphe (ex. reported → resolved) lève une
+     * `FuelWorkflowTransitionException` → 422. `resolution_notes` est exigée
+     * pour `resolved`.
+     */
+    public function transition(TransitionFuelIncidentRequest $request, FuelIncident $incident): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($incident->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('transition', $incident);
+
+        /** @var array{status: string, resolution_notes?: string|null, assigned_to?: int|null} $data */
+        $data = $request->validated();
+
+        $incident = $this->incidents->transition(
+            $actor,
+            $incident,
+            (string) $data['status'],
+            $data,
+        );
+
+        return response()->json(['data' => $this->payload($incident)]);
+    }
+
+    /**
+     * Pièce jointe contrôlée (POST /fuel-station/incidents/{incident}/attachments).
+     *
+     * MIME/size allowlist vérifiés AVANT toute écriture (aucune métadonnée
+     * persistée pour un fichier refusé) ; métadonnées seules, jamais le
+     * binaire.
+     */
+    public function attach(Request $request, FuelIncident $incident): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($incident->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('attach', $incident);
+
+        $request->validate([
+            'attachment' => [
+                'required',
+                'file',
+                'max:'.FuelIncidentAttachment::MAX_SIZE_BYTES / 1024,
+                'mimetypes:'.implode(',', FuelIncidentAttachment::ALLOWED_MIME_TYPES),
+            ],
+        ]);
+
+        $file = $request->file('attachment');
+
+        if ($file === null) {
+            abort(422, 'ATTACHMENT_REQUIRED');
+        }
+
+        $result = $this->incidents->attach(
+            $actor,
+            $incident,
+            (string) $file->getClientOriginalName(),
+            (string) $file->getMimeType(),
+            (int) $file->getSize(),
+        );
+
+        abort_unless($result['allowed'], 422, 'ATTACHMENT_NOT_ALLOWED');
+
+        $attachment = $result['attachment'];
+
+        return response()->json(['data' => [
+            'id' => $attachment->id,
+            'incident_id' => $attachment->incident_id,
+            'file_name' => $attachment->file_name,
+            'mime_type' => $attachment->mime_type,
+            'size_bytes' => $attachment->size_bytes,
+            'uploaded_by' => $attachment->uploaded_by,
+            'created_at' => $attachment->created_at?->toIso8601String(),
+        ]], 201);
     }
 
     public function close(UpdateFuelIncidentRequest $request, FuelIncident $incident): JsonResponse

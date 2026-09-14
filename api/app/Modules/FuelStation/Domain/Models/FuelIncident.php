@@ -89,6 +89,19 @@ class FuelIncident extends Model
         self::STATUS_CLOSED => [],
     ];
 
+    /**
+     * Statuts cibles légitimes d'une transition (issue #7398) : union des
+     * cibles de `TRANSITIONS`. `STATUSES` ne décrit que les états « métier »
+     * exposés en lecture — `assigned` en est volontairement absent — mais
+     * l'endpoint de transition doit l'accepter comme cible.
+     */
+    public const TRANSITION_TARGETS = [
+        self::STATUS_ASSIGNED,
+        self::STATUS_IN_PROGRESS,
+        self::STATUS_RESOLVED,
+        self::STATUS_CLOSED,
+    ];
+
     protected $fillable = [
         'company_id',
         'station_id',

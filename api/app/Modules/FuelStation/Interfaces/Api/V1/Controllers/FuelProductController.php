@@ -83,6 +83,22 @@ class FuelProductController extends Controller
         return response()->json(['data' => $this->payload($product->refresh())]);
     }
 
+    public function show(Request $request, FuelProduct $product): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($product->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $product);
+
+        return response()->json(['data' => $this->payload($product)]);
+    }
+
     /**
      * @return array<string, mixed>
      */

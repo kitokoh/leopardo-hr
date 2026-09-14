@@ -207,7 +207,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/fuel-station/reconciliations', [FuelStockController::class, 'reconciliations']);
     Route::post('/fuel-station/incidents/{incident}/transition', [FuelIncidentController::class, 'transition'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
     Route::post('/fuel-station/incidents/{incident}/attachments', [FuelIncidentController::class, 'attach'])->whereNumber('incident')->middleware('throttle:fuel-sensitive');
-    Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelIncidentController::class, 'updateTask'])->whereNumber('task')->middleware('throttle:fuel-sensitive');
+    // Issue #7398 — `FuelIncidentController@updateTask` n'existe pas : la mise
+    // à jour d'une tâche de maintenance est portée par
+    // `FuelMaintenanceTaskController@update` (déjà mappé en PUT dans le groupe
+    // manager) ; l'autorisation reste tranchée par la policy de la tâche.
+    Route::patch('/fuel-station/maintenance-tasks/{task}', [FuelMaintenanceTaskController::class, 'update'])->whereNumber('task')->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesIndex'])->whereNumber('station');
     Route::post('/fuel-station/stations/{station}/sites', [FuelStationController::class, 'sitesStore'])->whereNumber('station')->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/stations/{station}/pumps', [FuelEquipmentController::class, 'pumpsIndex'])->whereNumber('station');
@@ -230,7 +234,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/fuel-station/reports/exports', [FuelReportController::class, 'createExport'])->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/reports/exports', [FuelReportController::class, 'exports']);
     Route::get('/fuel-station/reports/exports/{export}/download', [FuelReportController::class, 'download'])->whereNumber('export');
-    Route::post('/fuel-station/imports', [FuelImportController::class, 'store'])->middleware('throttle:fuel-sensitive');
+    // Issue #7398 — `FuelImportController@store` n'existe pas : l'entrée d'un
+    // import CSV est l'action `preview` (création du journal d'import +
+    // validation ligne à ligne, sans effet sur les tables cibles).
+    Route::post('/fuel-station/imports', [FuelImportController::class, 'preview'])->middleware('throttle:fuel-sensitive');
     Route::get('/fuel-station/imports/{import}', [FuelImportController::class, 'show'])->whereNumber('import');
     Route::get('/fuel-station/health/metrics', [FuelMetricsController::class, 'metrics'])
         ->middleware('throttle:metrics');

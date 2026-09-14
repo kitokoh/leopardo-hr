@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\FuelStation\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Http\Controllers\Controller;
@@ -196,6 +197,103 @@ class FuelStockController extends Controller
         if (! FeatureFlag::enabled('fuel_station', currentCompany())) {
             throw new FuelSolutionInactiveException;
         }
+    }
+
+    /**
+     * Journal des mouvements de stock (GET /fuel-station/stocks/movements).
+     *
+     * Alias canonique de `index` (issue #7398) : aucune migration ne crée la
+     * table `fuel_stock_movements` du modèle historique — le journal des
+     * mouvements est le registre `fuel_stock_entries` (entrées, livraisons,
+     * ajustements), tenant-scoped et borné.
+     */
+    public function movements(Request $request): JsonResponse
+    {
+        return $this->index($request);
+    }
+
+    /**
+     * Ajustement de stock explicite (POST /fuel-station/stocks/adjustments).
+     *
+     * Alias canonique de `store` (issue #7398) : un ajustement est une entrée
+     * de stock `entry_type=adjustment` — motif obligatoire et idempotence par
+     * clé, garanties déjà portées par `RecordFuelStockEntryAction`.
+     */
+    public function storeAdjustment(StoreFuelStockEntryRequest $request): JsonResponse
+    {
+        return $this->store($request);
+    }
+
+    /**
+     * Livraisons de cuve (GET /fuel-station/deliveries) — manager.
+     *
+     * Deny-by-default (`FuelStockPolicy::viewStocks`), isolation tenant par
+     * `company_id`, filtres optionnels `station_id` / `tank_id`.
+     */
+    public function deliveries(Request $request): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->authorize('viewStocks', FuelTankDelivery::class);
+
+        $query = FuelTankDelivery::query()
+            ->with('tank:id,station_id,code')
+            ->where('company_id', $actor->company_id);
+
+        if ($request->filled('station_id')) {
+            $stationId = $request->integer('station_id');
+            $query->whereHas('tank', fn ($tanks) => $tanks->where('station_id', $stationId));
+        }
+
+        if ($request->filled('tank_id')) {
+            $query->where('tank_id', $request->integer('tank_id'));
+        }
+
+        $deliveries = $query
+            ->orderByDesc('delivered_at')
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
+
+        return response()->json([
+            'data' => collect($deliveries->items())->map(fn (FuelTankDelivery $delivery): array => $this->deliveryPayload($delivery)),
+            'meta' => [
+                'current_page' => $deliveries->currentPage(),
+                'last_page' => $deliveries->lastPage(),
+                'total' => $deliveries->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * Vérification d'une livraison déclarée
+     * (POST /fuel-station/deliveries/{delivery}/verify) — manager.
+     *
+     * Le schéma canonique ne porte pas de colonne de vérification : l'acte est
+     * tracé dans `audit_logs` (idempotent, rejouable) et la livraison
+     * vérifiée est renvoyée avec `verified`/`verified_by`/`verified_at`.
+     */
+    public function verifyDelivery(Request $request, FuelTankDelivery $delivery): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertTenantOwned($delivery, $actor);
+        $this->authorize('verifyDelivery', $delivery);
+
+        AuditLog::record(
+            module: 'fuel',
+            action: 'fuel.delivery.verified',
+            subject: $delivery,
+            actor: $actor,
+        );
+
+        return response()->json(['data' => $this->deliveryPayload($delivery) + [
+            'verified' => true,
+            'verified_by' => $actor->id,
+            'verified_at' => Carbon::now('UTC')->toIso8601String(),
+        ]]);
     }
 
     public function storeDelivery(StoreFuelTankDeliveryRequest $request, FuelTank $tank): JsonResponse

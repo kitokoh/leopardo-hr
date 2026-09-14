@@ -287,12 +287,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/advert-prices', [TravelAdvertPriceController::class, 'store']);
         Route::put('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'update']);
         Route::delete('/advert-prices/{travelAdvertPrice}', [TravelAdvertPriceController::class, 'destroy']);
-        Route::get('/adverts', [TravelAdvertController::class, 'indexAdverts']);
-        Route::post('/adverts', [TravelAdvertController::class, 'storeAdvert']);
-        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'showAdvert']);
-        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'payAdvert']);
+        // Annonces payantes (TRAVEL-907/908, #6110/#6111) — issue #7398 : une
+        // seule déclaration par couple (verbe, URI) ; les alias périmés
+        // (`indexAdverts`, `storeAdvert`, `showAdvert`, `payAdvert`,
+        // `renewAdvert`, `validateAd`, `indexManage`) pointaient vers des
+        // méthodes inexistantes. `/adverts/manage` est déclaré AVANT
+        // `/adverts/{travelAdvert}` pour ne pas être capturé comme identifiant
+        // d'annonce (404 sur l'écran de modération).
+        Route::get('/adverts/manage', [TravelAdvertController::class, 'manageIndex']);
+        Route::get('/adverts', [TravelAdvertController::class, 'index']);
+        Route::post('/adverts', [TravelAdvertController::class, 'store']);
+        Route::get('/adverts/{travelAdvert}', [TravelAdvertController::class, 'show']);
+        Route::post('/adverts/{travelAdvert}/pay', [TravelAdvertController::class, 'pay']);
         Route::post('/adverts/{travelAdvert}/validate', [TravelAdvertController::class, 'validateAdvert']);
-        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renewAdvert']);
+        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
+        Route::post('/adverts/{travelAdvert}/renew', [TravelAdvertController::class, 'renew']);
         Route::delete('/adverts/{travelAdvert}', [TravelAdvertController::class, 'destroyAdvert']);
         Route::get('/articles', [TravelArticleController::class, 'index']);
         Route::post('/articles', [TravelArticleController::class, 'store']);
@@ -375,15 +384,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/quiz-questions/{question}', [TravelQuizController::class, 'destroyQuestion']);
         Route::post('/quizzes/{quiz}/participate', [TravelQuizController::class, 'participate']);
         Route::get('/quizzes/{quiz}/results', [TravelQuizController::class, 'results']);
-        Route::get('/adverts/manage', [TravelAdvertController::class, 'indexManage']);
-        Route::post('/adverts/{advert}/pay', [TravelAdvertController::class, 'pay']);
-        Route::post('/adverts/{advert}/validate', [TravelAdvertController::class, 'validateAd']);
-        Route::post('/adverts/{advert}/renew', [TravelAdvertController::class, 'renew']);
         Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
         Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
         Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
-        Route::post('/adverts/{travelAdvert}/reject', [TravelAdvertController::class, 'reject']);
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);
         Route::post('/contacts/{travelCustomerContact}/notify', [TravelCustomerContactController::class, 'notify']);
     });
