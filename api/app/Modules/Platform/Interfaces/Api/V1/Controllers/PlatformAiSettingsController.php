@@ -64,7 +64,7 @@ class PlatformAiSettingsController extends Controller
         if ($unknown !== []) {
             return response()->json([
                 'error' => 'AI_SETTING_UNKNOWN',
-                'message' => 'Réglage(s) inconnu(s) : '.implode(', ', $unknown),
+                'message' => __('platform.ai_settings_unknown_keys', ['keys' => implode(', ', $unknown)]),
                 'unknown' => $unknown,
             ], 422);
         }
@@ -104,7 +104,7 @@ class PlatformAiSettingsController extends Controller
         if (PlatformAiSettingsCatalog::find($key) === null) {
             return response()->json([
                 'error' => 'AI_SETTING_UNKNOWN',
-                'message' => "Réglage inconnu : {$key}",
+                'message' => __('platform.ai_settings_unknown_key', ['key' => $key]),
             ], 422);
         }
 
@@ -128,7 +128,7 @@ class PlatformAiSettingsController extends Controller
                 'data' => [
                     'ok' => true,
                     'driver' => 'fake',
-                    'message' => "Driver « fake » : aucun appel réseau n'est effectué. Choisissez un fournisseur réel pour tester une clé.",
+                    'message' => __('platform.ai_test_driver_fake'),
                 ],
             ]);
         }
@@ -163,7 +163,7 @@ class PlatformAiSettingsController extends Controller
                 'driver' => $driver,
                 'model' => $response->model,
                 'duration_ms' => $durationMs,
-                'message' => 'Le fournisseur a répondu correctement.',
+                'message' => __('platform.ai_test_ok'),
             ],
         ]);
     }
@@ -177,10 +177,10 @@ class PlatformAiSettingsController extends Controller
         $haystack = mb_strtolower($raw);
 
         return match (true) {
-            str_contains($haystack, '401'), str_contains($haystack, 'invalid api key'), str_contains($haystack, 'unauthorized') => 'Clé refusée par le fournisseur (401). Vérifiez la clé enregistrée pour ce driver.',
-            str_contains($haystack, '429'), str_contains($haystack, 'rate limit'), str_contains($haystack, 'quota') => 'Quota atteint chez le fournisseur (429). Réessayez plus tard ou changez d\'offre.',
-            str_contains($haystack, 'timeout'), str_contains($haystack, 'timed out'), str_contains($haystack, 'curl error 28') => 'Délai dépassé en joignant le fournisseur. Vérifiez la connectivité sortante du serveur.',
-            default => 'Échec du test : '.mb_substr($raw, 0, 300),
+            str_contains($haystack, '401'), str_contains($haystack, 'invalid api key'), str_contains($haystack, 'unauthorized') => __('platform.ai_test_unauthorized'),
+            str_contains($haystack, '429'), str_contains($haystack, 'rate limit'), str_contains($haystack, 'quota') => __('platform.ai_test_quota'),
+            str_contains($haystack, 'timeout'), str_contains($haystack, 'timed out'), str_contains($haystack, 'curl error 28') => __('platform.ai_test_timeout'),
+            default => __('platform.ai_test_failed', ['error' => mb_substr($raw, 0, 300)]),
         };
     }
 

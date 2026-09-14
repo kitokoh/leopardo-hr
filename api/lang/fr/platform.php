@@ -16,4 +16,12 @@ return [
     'conversation_not_found' => 'Conversation introuvable.',
     'conversations_unavailable' => 'Conversations indisponibles.',
     'oauth_save_failed' => 'Impossible d\'enregistrer la configuration.',
+    'ai_settings_unknown_keys' => 'Réglage(s) inconnu(s) : :keys',
+    'ai_settings_unknown_key' => 'Réglage inconnu : :key',
+    'ai_test_driver_fake' => 'Driver « fake » : aucun appel réseau n\'est effectué. Choisissez un fournisseur réel pour tester une clé.',
+    'ai_test_ok' => 'Le fournisseur a répondu correctement.',
+    'ai_test_unauthorized' => 'Clé refusée par le fournisseur (401). Vérifiez la clé enregistrée pour ce driver.',
+    'ai_test_quota' => 'Quota atteint chez le fournisseur (429). Réessayez plus tard ou changez d\'offre.',
+    'ai_test_timeout' => 'Délai dépassé en joignant le fournisseur. Vérifiez la connectivité sortante du serveur.',
+    'ai_test_failed' => 'Échec du test : :error',
 ];

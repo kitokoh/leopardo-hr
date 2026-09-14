@@ -22,7 +22,7 @@
             ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
             : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
         "
-        @click="activeTab = tab.id"
+        @click="selectTab(tab.id)"
       >
         {{ t(tab.label) }}
       </button>
@@ -67,7 +67,7 @@
         </h2>
 
         <div class="space-y-5">
-          <div v-for="[key, definition] in entries" :key="key">
+          <div v-for="(key, definition) in entries" :key="key">
             <label :for="`ai-${key}`" class="block text-sm font-semibold text-slate-800 dark:text-slate-200">
               {{ definition.label }}
             </label>
@@ -76,8 +76,9 @@
             <input
               v-if="definition.type === 'bool'"
               :id="`ai-${key}`"
-              v-model="form[key]"
+              :checked="isChecked(key)"
               type="checkbox"
+              @change="setField(key, $event)"
               class="mt-2 h-5 w-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
             />
 
@@ -85,8 +86,9 @@
             <select
               v-else-if="definition.type === 'select'"
               :id="`ai-${key}`"
-              v-model="form[key]"
+              :value="fieldValue(key)"
               class="mt-2 w-full max-w-md rounded-lg border-slate-300 bg-white text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              @change="setField(key, $event)"
             >
               <option v-for="option in definition.options || []" :key="option" :value="option">
                 {{ option }}
@@ -97,15 +99,16 @@
             <input
               v-else
               :id="`ai-${key}`"
-              v-model="form[key]"
+              :value="fieldValue(key)"
               type="text"
               autocomplete="off"
               class="mt-2 w-full max-w-md rounded-lg border-slate-300 bg-white font-mono text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               :placeholder="placeholderFor(key, definition)"
+              @input="setField(key, $event)"
             />
 
             <p v-if="definition.secret" class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              <span :class="configured(key) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'">
+              <span :class="statusClass(key)">
                 {{ configured(key) ? t('aiAssistant.keyConfigured') : t('aiAssistant.keyNotConfigured') }}
               </span>
               — {{ t('aiAssistant.secretHint') }}
@@ -212,7 +215,7 @@
                   <td class="py-2 text-slate-700 dark:text-slate-200">{{ row.company_name || row.company_id }}</td>
                   <td class="py-2 text-right tabular-nums">{{ row.requests }}</td>
                   <td class="py-2 text-right tabular-nums">{{ row.tokens }}</td>
-                  <td class="py-2 text-right tabular-nums" :class="row.errors ? 'text-rose-600 dark:text-rose-400' : ''">
+                  <td class="py-2 text-right tabular-nums" :class="errorClass(row.errors)">
                     {{ row.errors }}
                   </td>
                 </tr>
@@ -241,7 +244,7 @@
                   <td class="py-2 font-mono text-xs text-slate-700 dark:text-slate-200">{{ row.tool_name }}</td>
                   <td class="py-2 text-right tabular-nums">{{ row.calls }}</td>
                   <td class="py-2 text-right tabular-nums">{{ row.awaiting_confirmation }}</td>
-                  <td class="py-2 text-right tabular-nums" :class="row.failures ? 'text-rose-600 dark:text-rose-400' : ''">
+                  <td class="py-2 text-right tabular-nums" :class="errorClass(row.failures)">
                     {{ row.failures }}
                   </td>
                 </tr>
@@ -329,6 +332,33 @@ function placeholderFor(key, definition) {
 
 function configured(key) {
   return Boolean(settings.value[key]?.has_value)
+}
+
+/** Lecture du formulaire pour un champ à clé dynamique (équivalent de v-model). */
+function fieldValue(key) {
+  return form[key] ?? ''
+}
+
+function isChecked(key) {
+  return Boolean(form[key])
+}
+
+/** Un seul gestionnaire pour les trois types de champ : booléen, liste, texte. */
+function setField(key, event) {
+  const target = event.target
+  form[key] = target.type === 'checkbox' ? target.checked : target.value
+}
+
+function selectTab(id) {
+  activeTab.value = id
+}
+
+function statusClass(key) {
+  return configured(key) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
+}
+
+function errorClass(value) {
+  return value ? 'text-rose-600 dark:text-rose-400' : ''
 }
 
 async function load() {

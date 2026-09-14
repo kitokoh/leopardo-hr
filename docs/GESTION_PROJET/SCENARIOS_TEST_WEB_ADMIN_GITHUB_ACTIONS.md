@@ -273,3 +273,32 @@ En revanche, elles doivent etre conservees automatiquement en cas d'echec Playwr
 - Une locale variante (`fr-CA`, `en-GB`, `ar-SA`) est normalisee sans casser le rendu
 - La direction `rtl` est resolue correctement pour l'arabe
 - Aucun import ou helper i18n ne doit casser le build quand la surface web change avec `shared/i18n/**`
+
+## Ecran « Assistant IA » (Parametres) — configuration et suivi
+
+Nouvel ecran `front/admin-dashboard/src/views/settings/AiAssistantView.vue`, route
+`/settings/ai` (nom `settings-ai-assistant`), entree de menu « Parametres ».
+
+### Onglet Configuration
+
+- Etat reel en tete de page : actif, driver, modele, cle fournisseur configuree
+- Un bloc par groupe du catalogue renvoye par l'API
+- Les champs secrets ne sont **jamais pre-remplis** : un champ vide signifie « conserver la
+  cle enregistree », rappel explicite affiche sous le champ
+- Bouton « Tester la connexion » : le message du fournisseur est affiche tel quel
+  (401 / 429 / timeout), jamais un simple « erreur »
+
+### Onglet Suivi
+
+- Indicateurs : requetes, tokens, cout, erreurs, taux d'erreur, p95
+- Tableaux par entreprise et par outil, erreurs recentes
+- Periode 7 / 30 / 90 jours
+
+### Scenarios de recette
+
+- Etat vide honnete : « aucune activite sur la periode » plutot qu'un zero trompeur
+- Une cle enregistree doit afficher « cle enregistree » **sans jamais la reveler**
+- Enregistrer un changement de modele **sans** toucher au champ cle ne doit PAS effacer la
+  cle (verifier ensuite l'etat « cle enregistree »)
+- Les 4 locales (fr/en/ar/tr) doivent rendre l'ecran, y compris le RTL arabe
+- `eslint --max-warnings 0` et `vite build` doivent rester verts
