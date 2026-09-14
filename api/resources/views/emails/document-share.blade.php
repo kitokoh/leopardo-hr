@@ -1,14 +1,24 @@
-<div style="font-family: Arial, sans-serif; color: #0f172a; max-width: 600px; margin: 0 auto;">
-    <h2 style="color: #0f766e;">{{ __('accounting.email_heading') }}</h2>
-    <p>{{ __('accounting.email_body', ['number' => $documentName]) }}</p>
-    <p style="text-align: center; margin: 32px 0;">
-        <a href="{{ $portalUrl }}"
-           style="display: inline-block; background: #0f766e; color: #ffffff; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: bold;">
-            {{ __('accounting.email_button') }}
-        </a>
-    </p>
-    @if($share->expires_at)
-    <p style="color: #64748b; font-size: 14px;">{{ __('accounting.email_expires', ['date' => $share->expires_at->format('d/m/Y H:i')]) }}</p>
+{{--
+    Partage d'un document comptable (issue #7346) — fragment nu migré sur le
+    layout canonique (une seule charte ; la couleur #0f766e codée en dur est
+    remplacée par le token de marque et le bouton du layout).
+--}}
+@extends('emails.layouts.base')
+
+@section('heading', __('accounting.email_heading'))
+
+@section('content')
+    <p style="margin:0 0 16px 0;">{{ __('accounting.email_body', ['number' => $documentName]) }}</p>
+
+    @include('emails.partials.button', [
+        'url' => $portalUrl,
+        'label' => __('accounting.email_button'),
+        'align' => 'center',
+    ])
+
+    @if ($share->expires_at)
+        <p style="margin:0 0 16px 0; font-size:13px; line-height:20px; color:#64748b;">
+            {{ __('accounting.email_expires', ['date' => $share->expires_at->format('d/m/Y H:i')]) }}
+        </p>
     @endif
-    <p style="color: #94a3b8; font-size: 12px; margin-top: 32px;">{{ __('accounting.email_footer') }}</p>
-</div>
+@endsection

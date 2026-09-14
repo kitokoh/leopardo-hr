@@ -47,7 +47,11 @@ class TrialDripMail extends Mailable
                 'companyName' => $this->company->name,
                 'managerName' => $this->manager->first_name,
                 'appName' => $appName,
-                'appUrl' => config('app.frontend_url', 'http://localhost:3000'),
+                // #7346 — le repli était `http://localhost:3000` : sans
+                // FRONTEND_URL configurée, TOUS les boutons du mail pointaient
+                // vers la machine du développeur. On retombe sur le site public
+                // de la marque, jamais sur une adresse locale.
+                'appUrl' => rtrim((string) (config('app.frontend_url') ?: config('mail.brand.website_url')), '/'),
                 'locale' => $this->locale,
             ]);
     }

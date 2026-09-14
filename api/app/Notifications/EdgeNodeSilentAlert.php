@@ -36,15 +36,15 @@ class EdgeNodeSilentAlert extends Notification implements ShouldQueue
 
     public function toMail(mixed $notifiable): MailMessage
     {
-        $silenceDuration = $this->lastSeenAt?->diffForHumans() ?? 'Jamais vu';
+        $silenceDuration = $this->lastSeenAt?->diffForHumans() ?? '—';
 
         return (new MailMessage())
-            ->subject("⚠️ Node Edge silencieux — {$this->nodeName} ({$this->companyName})")
-            ->greeting('Bonjour,')
-            ->line("Le node Edge **{$this->nodeName}** de l'entreprise **{$this->companyName}** n'a pas communiqué depuis **{$silenceDuration}** (seuil configuré : {$this->thresholdMins} min).")
-            ->line('Les pointages effectués pendant cette période seront synchronisés automatiquement au retour de la connexion.')
-            ->action('Voir les nodes Edge', url('/admin/edge-nodes'))
-            ->line('Si le problème persiste, vérifiez la connectivité réseau du node ou contactez le support Leopardo.');
+            ->subject(__('emails.edge_node_silent_subject', ['node' => $this->nodeName, 'company' => $this->companyName]))
+            ->greeting(__('emails.edge_node_silent_greeting'))
+            ->line(__('emails.edge_node_silent_body', ['node' => $this->nodeName, 'company' => $this->companyName, 'duration' => $silenceDuration]))
+            ->line(__('emails.edge_node_silent_note'))
+            ->line(__('emails.edge_node_silent_support').' '.config('mail.brand.support_address'))
+            ->line(config('mail.brand.name'));
     }
 
     public function toArray(mixed $notifiable): array

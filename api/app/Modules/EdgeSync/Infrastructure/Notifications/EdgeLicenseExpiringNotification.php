@@ -27,18 +27,15 @@ class EdgeLicenseExpiringNotification extends Notification implements ShouldQueu
     public function toMail(mixed $notifiable): MailMessage
     {
         $node = $this->license->edgeNode;
-        $nodeName = $node?->name ?? 'inconnu';
-        $companyName = $node?->company?->name ?? 'Entreprise inconnue';
-        $expiresIn = $this->license->expires_at?->diffForHumans() ?? 'bientôt';
+        $nodeName = $node?->name ?? '—';
+        $companyName = $node?->company?->name ?? '—';
         $expiresAt = $this->license->expires_at?->format('d/m/Y') ?? '—';
 
         return (new MailMessage())
-            ->subject("🔑 Licence Edge expirant {$expiresIn} — {$nodeName} ({$companyName})")
-            ->greeting("Bonjour,")
-            ->line("La licence du node Edge **{$nodeName}** ({$companyName}) expire **{$expiresAt}** ({$expiresIn}).")
-            ->line("Après expiration, le node passera automatiquement en mode dégradé : les nouvelles synchronisations seront bloquées.")
-            ->action('Renouveler la licence', url('/admin/edge-nodes'))
-            ->line('Le renouvellement se fait automatiquement si la connexion Cloud est disponible.');
+            ->subject(__('emails.edge_license_expiring_subject', ['node' => $nodeName, 'company' => $companyName]))
+            ->greeting(__('emails.edge_node_silent_greeting'))
+            ->line(__('emails.edge_license_expiring_body', ['node' => $nodeName, 'company' => $companyName, 'date' => $expiresAt]))
+            ->line(__('emails.edge_license_expiring_support').' '.config('mail.brand.support_address'));
     }
 
     public function toArray(mixed $notifiable): array
