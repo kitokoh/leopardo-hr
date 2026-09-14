@@ -108,12 +108,12 @@
                   {{ item.plan?.name || (isScoring ? '…' : t('companies.noPlan', 'SANS PLAN')) }}
                 </div>
                 <div class="text-xs font-black text-brand-600 dark:text-brand-400 mt-0.5">
-                  <template v-if="item.subscription?.mrr == null">—</template>
+                  <template v-if="!hasMrr(item)">—</template>
                   <template v-else>{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/m</template>
                 </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div v-if="item.health_score == null" class="flex items-center gap-2 text-slate-400">
+                <div v-if="!hasHealthScore(item)" class="flex items-center gap-2 text-slate-400">
                   <div v-if="isScoring" class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent"></div>
                   <span class="text-xs font-bold">{{ isScoring ? t('companies.scoring', 'Calcul…') : '—' }}</span>
                 </div>
@@ -499,6 +499,20 @@ function formatCurrency(value, currency = 'EUR') {
     currency: currency || 'EUR',
     maximumFractionDigits: 0,
   }).format(Number(value || 0))
+}
+
+/**
+ * Prédicats d'affichage (colonnes « MRR » et « Score santé »).
+ * Extraits du template : la comparaison `== null` y était lue comme un
+ * littéral utilisateur par la garde `check-i18n-diff.js` (faux positif).
+ * Sémantique inchangée : absent = `null` OU `undefined` (mrr `0` reste affiché).
+ */
+function hasMrr(item) {
+  return item.subscription?.mrr != null
+}
+
+function hasHealthScore(item) {
+  return item.health_score != null
 }
 
 function riskClass(risk) {
