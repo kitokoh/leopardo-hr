@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { isPasswordAcceptable } from '@/lib/password-policy';
 import { RateLimiter } from '@/modules/vitrine/lib/validation';
 
 import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
@@ -62,9 +63,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Mêmes règles que le backend (`Password::min(8)->numbers()`, #5620) : on
-  // évite un aller-retour réseau pour une saisie manifestement invalide.
-  if (password.length < 8 || !/[0-9]/.test(password)) {
+  // Mêmes règles que le backend (`Password::min(12)->numbers()`) : on évite un
+  // aller-retour réseau pour une saisie manifestement invalide. Politique
+  // partagée avec les écrans : voir @/lib/password-policy.
+  if (!isPasswordAcceptable(password)) {
     return NextResponse.json(
       { success: false, error: 'PASSWORD_TOO_WEAK' },
       { status: 422 },

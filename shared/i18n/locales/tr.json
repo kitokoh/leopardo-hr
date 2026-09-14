@@ -321,7 +321,7 @@
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
       "fix_fields": "Lütfen kırmızı alanları düzeltin",
-      "password_min": "Şifre en az 8 karakter olmalıdır",
+      "password_min": "Parola en az 12 karakter olmalıdır",
       "search_no_match": "Aramanızla eşleşen sayfa yok",
       "update_failed": "Kullanıcı güncellenemedi"
     },
@@ -1424,9 +1424,9 @@
     "linkCopied": "Bağlantı kopyalandı!",
     "linkEmailed": "Erişim bağlantınız e-postayla da gönderildi.",
     "failedTitle": "Oluşturma kesintiye uğradı",
-    "failedBody": "Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.",
-    "timeoutTitle": "Oluşturma hâlâ sürüyor",
-    "timeoutBody": "Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.",
+    "failedBody": "Çalışma alanınız oluşturulurken bir hata oluştu. Tekrar deneyin — birkaç saniye içinde baştan başlar. Sorun sürerse destek ekibiyle iletişime geçin.",
+    "timeoutTitle": "Çalışma alanınız hâlâ oluşturuluyor",
+    "timeoutBody": "Çalışma alanınızın oluşturulması normalden uzun sürüyor. Nerede kaldığını görmek için aşağıdaki durumu yenileyin veya birkaç dakika sonra tekrar deneyin.",
     "refreshStatus": "Durumu yenile",
     "preparingTitle": "Alanınız hazırlanıyor",
     "preparingBody": "Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.",
@@ -1434,6 +1434,7 @@
     "statusEvery5s": "Durum her 5 saniyede bir kontrol edilir.",
     "successTitle": "Alanınız hazır!",
     "emailVerified": "E-posta adresiniz doğrulandı.",
+    "verifiedByGoogle": "E-posta Google ile doğrulandı",
     "credsLabel": "Giriş bilgileri",
     "fieldEmail": "E-posta",
     "fieldPassword": "Parola",
@@ -1468,7 +1469,7 @@
     "setPasswordSubmit": "Parolamı belirle",
     "setPasswordSubmitting": "Kaydediliyor…",
     "setPasswordSuccess": "Parola kaydedildi. Giriş yapabilirsiniz.",
-    "setPasswordTooWeak": "En az 8 karakter ve bir rakam.",
+    "setPasswordTooWeak": "En az 12 karakter, bir rakam dahil.",
     "setPasswordMismatch": "İki parola eşleşmiyor.",
     "setPasswordUnavailable": "Parola şu anda kaydedilemiyor. Lütfen tekrar deneyin.",
     "goToLogin": "Giriş yap",
@@ -1859,7 +1860,7 @@
     "generateSecret": "2FA sırrı oluştur",
     "generateSecretHint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
     "manualSecret": "Manuel sır:",
-    "minLengthHint": "En az 8 karakter.",
+    "minLengthHint": "En az 12 karakter.",
     "newPassword": "Yeni parola",
     "password": "Parola",
     "passwordSubtitle": "Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.",
@@ -2068,7 +2069,7 @@
       "name": "Ad"
     },
     "min": {
-      "chars": "En az 8 karakter"
+      "chars": "En az 12 karakter"
     },
     "password": "Şifre",
     "required": "Zorunlu",
@@ -2326,7 +2327,7 @@
     "password": {
       "changed": "Şifre değiştirildi.",
       "min": {
-        "length": "En az 8 karakter"
+        "length": "En az 12 karakter"
       },
       "mismatch": "Şifreler eşleşmiyor"
     },
@@ -3036,7 +3037,7 @@
   "teamEmployeeIdOptional": "Sicil no (opsiyonel)",
   "teamMonthlyFixed": "Aylık / sabit",
   "settingsPasswordUpdateTitle": "Şifreyi güncelle",
-  "settingsPasswordMinCharacters": "En az 8 karakter",
+  "settingsPasswordMinCharacters": "En az 12 karakter",
   "teamSalaryMode": "Maaş modu",
   "settingsMyEmployeeQr": "Çalışan QR kodum",
   "teamAmountRequired": "Tutar zorunlu",

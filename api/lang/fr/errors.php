@@ -285,6 +285,7 @@ return [
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Trop de tentatives. Le code a été invalidé, reconnectez-vous.',
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Un run de paie existe déjà pour cette période.',
     'STT_UNAVAILABLE' => 'La transcription vocale est momentanément indisponible (service non configuré).',
+    'TTS_UNAVAILABLE' => 'La synthèse vocale est momentanément indisponible (service non configuré).',
     'AI_ACTION_REJECTED' => 'Action rejetée par l\'utilisateur',
     // #7268 — Onboarding : messages d'étape localisés (fin des littéraux en dur)
     'ONBOARDING_STEP_REQUIRED' => 'Cette étape est obligatoire et ne peut pas être ignorée.',

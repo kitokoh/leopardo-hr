@@ -20,8 +20,12 @@ import { POST } from '../route';
  * codes d'erreur backend.
  */
 
+// #7361 — la base renvoyée par `resolveBackendBaseUrl()` contient DÉJÀ `/api/v1`
+// (même mock que `auth/__tests__/logout.route.test.ts` et
+// `auth/google/callback/__tests__/route.test.ts`). Un mock sans `/api/v1`
+// laissait passer un double préfixe `/api/v1/api/v1/…` en production.
 jest.mock('@/lib/backend-url', () => ({
-  resolveBackendBaseUrl: jest.fn(() => 'https://backend.example.com'),
+  resolveBackendBaseUrl: jest.fn(() => 'https://backend.example.com/api/v1'),
 }));
 
 const mockCookieStore = {
@@ -74,6 +78,10 @@ describe('POST /api/v1/onboarding/invitation/[token]/activate (proxy)', () => {
       'https://backend.example.com/api/v1/onboarding/invitation/tok-123/activate',
     );
     expect(calledUrl).not.toContain('undefined');
+    // #7361 — garde explicite : le préfixe d'API est porté par la base, jamais
+    // répété par la route (sinon 404 RESOURCE_NOT_FOUND côté backend, et
+    // l'utilisateur voit « invitation invalide ou expirée »).
+    expect(calledUrl).not.toContain('/api/v1/api/v1');
     expect(response.status).toBe(201);
   });
 

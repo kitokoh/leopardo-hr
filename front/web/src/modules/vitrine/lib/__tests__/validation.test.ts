@@ -1,11 +1,12 @@
 import { z } from 'zod';
+
+import { PASSWORD_MIN_LENGTH, isPasswordAcceptable } from '@/lib/password-policy';
 import {
   signupFormSchema,
   demoFormSchema,
   contactFormSchema,
   newsletterFormSchema,
   validateEmail,
-  validatePassword,
   validatePhoneNumber,
   sanitizeInput,
   RateLimiter,
@@ -280,32 +281,29 @@ describe('Form Validation Schemas', () => {
       });
     });
 
-    describe('validatePassword', () => {
-      it('should validate strong passwords', () => {
-        const result = validatePassword('ValidPassword123!');
-        expect(result.isValid).toBe(true);
-        expect(result.errors.length).toBe(0);
+    describe('isPasswordAcceptable (politique partagée)', () => {
+      // QA onboarding 2026-09-14 : la politique vit dans @/lib/password-policy
+      // (source unique, alignée sur `Password::min(12)->numbers()` côté API).
+      // L'ancien helper `validatePassword` décrivait 8 + majuscule + chiffre +
+      // spécial… sans être appelé par aucun écran.
+      it('accepte un mot de passe long avec chiffre', () => {
+        expect(isPasswordAcceptable('Leopardo!Qa2026#Ui')).toBe(true);
       });
 
-      it('should reject weak passwords', () => {
-        const result = validatePassword('weak');
-        expect(result.isValid).toBe(false);
-        expect(result.errors.length).toBeGreaterThan(0);
+      it('refuse un mot de passe trop court', () => {
+        expect(isPasswordAcceptable('abc12345')).toBe(false);
       });
 
-      it('should identify missing uppercase', () => {
-        const result = validatePassword('validpassword123!');
-        expect(result.errors.some(e => e.includes('majuscule'))).toBe(true);
+      it('refuse un mot de passe long sans chiffre', () => {
+        expect(isPasswordAcceptable('motdepasseuniquement')).toBe(false);
       });
 
-      it('should identify missing number', () => {
-        const result = validatePassword('ValidPassword!');
-        expect(result.errors.some(e => e.includes('chiffre'))).toBe(true);
+      it('accepte exactement la longueur minimale', () => {
+        expect(isPasswordAcceptable('a'.repeat(PASSWORD_MIN_LENGTH - 1) + '7')).toBe(true);
       });
 
-      it('should identify missing special character', () => {
-        const result = validatePassword('ValidPassword123');
-        expect(result.errors.some(e => e.includes('spécial'))).toBe(true);
+      it('n\'exige ni majuscule ni caractère spécial (NIST SP 800-63B)', () => {
+        expect(isPasswordAcceptable('languepasse2026')).toBe(true);
       });
     });
 
