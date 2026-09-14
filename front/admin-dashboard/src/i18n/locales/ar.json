@@ -1535,7 +1535,10 @@
     "ibanPlaceholderDZ": "IBAN أو RIB جزائري (20 رقمًا)",
     "saveBanking": "حفظ البيانات البنكية",
     "sepaNotReady": "SEPA غير مهيأ",
-    "sepaReady": "SEPA جاهز"
+    "sepaReady": "SEPA جاهز",
+    "company": "الشركة",
+    "manage2fa": "إدارة التحقق بخطوتين",
+    "tenantSubtitle": "أدر معلومات حسابك وأمانه."
   },
   "settingsPersonalContacts": "جهات الاتصال الشخصية",
   "attendancePersonalTracking": "المتابعة الشخصية",

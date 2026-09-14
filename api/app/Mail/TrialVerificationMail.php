@@ -20,7 +20,15 @@ class TrialVerificationMail extends Mailable
         public readonly string $managerName,
         public readonly string $verificationToken,
         public readonly string $emailLocale = 'fr',
-    ) {}
+    ) {
+        // `Mailable::send()` évalue `withLocale($this->locale)` AVANT d'appeler
+        // `build()` : une locale posée dans `build()` (ce que faisait le code
+        // précédent) arrive donc TROP TARD pour la vue, qui se rend dans la
+        // locale ambiante de l'application. Résultat mesuré le 2026-09-14 :
+        // sujet turc et corps français dans le même e-mail. On épingle la
+        // locale ici, avant tout rendu.
+        $this->locale($this->emailLocale);
+    }
 
     public function build(): self
     {

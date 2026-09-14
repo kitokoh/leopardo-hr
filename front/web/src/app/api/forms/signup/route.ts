@@ -134,16 +134,30 @@ export async function POST(request: NextRequest) {
     // Step 2: Call the backend to initiate OTP verification
     let signupResult = null;
     let signupError = null;
+    let signupErrorMessage: string | null = null;
     let signupValidationDetails: unknown = null;
 
     // #7251 — un seul point d'appel, paramétré par le workflow, pour pouvoir
     // relancer en parcours guidé si la vérification par e-mail est impossible.
+    // Audit 2026-09-13 — une session DÉJÀ ouverte doit être transmise au
+    // backend : sans ce Bearer, l'API (garde `SESSION_ALREADY_ACTIVE`) ne
+    // pouvait pas savoir que l'appel venait d'un navigateur connecté, et un
+    // second espace était provisionné. `Accept-Language` est transmis pour que
+    // le message d'erreur de l'API soit dans la langue du visiteur.
+    // Le cookie est lu sur la REQUÊTE (`request.cookies`) et non via
+    // `next/headers` : hors contexte de requête (tests unitaires Node), le
+    // helper asynchrone `cookies()` jette et la route répondait 500.
+    const sessionToken = request.cookies.get('leopardo_token')?.value;
+    const acceptLanguage = request.headers.get('accept-language');
+
     const postTrialSignup = async (workflow: 'self_service' | 'guided_trial') => {
       const trialResponse = await fetch(`${LEOPARDO_API_URL}/api/v1/trial/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
+          ...(acceptLanguage ? { 'Accept-Language': acceptLanguage } : {}),
         },
         body: JSON.stringify({
           email,
@@ -210,6 +224,8 @@ export async function POST(request: NextRequest) {
         // réponse uniforme — la détection « email déjà enregistré » se fait à
         // l'étape verify (OTP), qui remonte EMAIL_ALREADY_REGISTERED (409).
         signupError = attempt.trialData.error || 'SIGNUP_FAILED';
+        signupErrorMessage =
+          typeof attempt.trialData.message === 'string' ? attempt.trialData.message : null;
         // Issue #6680 : conserver les détails de validation (ex. country
         // requis) pour une réponse d'erreur exploitable côté client.
         if (attempt.trialData.error === 'VALIDATION_ERROR' && attempt.trialData.errors) {
@@ -281,6 +297,23 @@ export async function POST(request: NextRequest) {
       // « contact sous 24h » ne s'applique qu'aux pannes réseau/backlog
       // (OTP/back indisponible), pas aux rejets de contrat.
       const backendError = signupError || 'SIGNUP_FAILED';
+
+      // Audit 2026-09-13 — une session active ne peut pas créer un second
+      // espace : on remonte le refus tel quel (409 + message déjà localisé par
+      // l'API via `Accept-Language`), sans le déguiser en « contact sous 24h ».
+      if (backendError === 'SESSION_ALREADY_ACTIVE') {
+        return NextResponse.json(
+          {
+            success: false,
+            error: backendError,
+            message:
+              typeof signupErrorMessage === 'string' && signupErrorMessage !== ''
+                ? signupErrorMessage
+                : undefined,
+          },
+          { status: 409 }
+        );
+      }
 
       if (backendError === 'VALIDATION_ERROR' || backendError === 'SIGNUP_FAILED') {
         return NextResponse.json(

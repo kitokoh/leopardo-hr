@@ -23,17 +23,18 @@ class TrialWelcomeMail extends Mailable
         public readonly string $tempPassword,
     ) {
         $this->trialDays = $this->resolveTrialDays();
+
+        // `Mailable::send()` évalue `withLocale($this->locale)` AVANT `build()` :
+        // la locale doit être posée ici pour que la VUE soit rendue dans la
+        // bonne langue. (Le `App::setLocale()` qui vivait dans `build()` n'était
+        // en outre jamais restauré : la locale fuyait sur le reste de la
+        // requête, donc sur les messages d'erreur suivants.)
+        $this->locale($this->company->language ?? 'fr');
     }
 
     public function build(): self
     {
         $locale = $this->company->language ?? 'fr';
-
-        // S-5 (#1665) : les vues résolvent leurs chaînes via __() — il faut
-        // épingler la locale applicative AVANT le rendu, sinon le corps du
-        // mail se rend dans la locale ambiante (Accept-Language / défaut) et
-        // le sujet/le corps peuvent être dans des langues différentes.
-        \Illuminate\Support\Facades\App::setLocale($locale);
 
         return $this
             ->subject(app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('trial_welcome', $locale, [
