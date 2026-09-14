@@ -137,9 +137,9 @@
                     <tr>
                         <td class="email-pad" dir="{{ $dir }}" align="{{ $textAlign }}" style="background-color:{{ $surfaceColor }}; border-top:1px solid {{ $borderColor }}; padding:20px 32px; font-size:12px; line-height:18px; color:{{ $mutedColor }};">
                             <p style="margin:0 0 6px 0; color:#0f172a; font-weight:600;">{{ $brandName }}</p>
-                            <p style="margin:0 0 6px 0;">{{ __('emails.layout_footer_context', ['brand' => $brandName]) }}</p>
+                            <p style="margin:0 0 6px 0;">{{ __('emails.layout_footer_context', ['brand' => $brandName], $mailLocale) }}</p>
                             <p style="margin:0 0 6px 0;">
-                                {{ __('emails.layout_footer_support') }}
+                                {{ __('emails.layout_footer_support', [], $mailLocale) }}
                                 <a href="{{ $supportHref }}" style="color:{{ $primary }};">{{ $supportAddress }}</a>
                             </p>
                             @if ($legalName || $legalAddress)
@@ -147,12 +147,12 @@
                             @endif
                             @if (!empty($unsubscribeUrl))
                                 <p style="margin:0 0 6px 0;">
-                                    <a href="{{ $unsubscribeUrl }}" style="color:{{ $mutedColor }};">{{ __('emails.communication_unsubscribe_link') }}</a>
+                                    <a href="{{ $unsubscribeUrl }}" style="color:{{ $mutedColor }};">{{ __('emails.communication_unsubscribe_link', [], $mailLocale) }}</a>
                                 </p>
                             @endif
                             <p style="margin:0;">
                                 &copy; {{ date('Y') }} {{ $brandName }}.
-                                {{ __('emails.layout_rights_reserved') }}
+                                {{ __('emails.layout_rights_reserved', [], $mailLocale) }}
                                 @if ($brandUrl)
                                     &middot; <a href="{{ $brandUrl }}" style="color:{{ $mutedColor }};">{{ $brandUrl }}</a>
                                 @endif
