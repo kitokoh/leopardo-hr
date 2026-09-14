@@ -228,6 +228,90 @@ class Company extends Model
     }
 
     /**
+     * #7397 — Normalisation de la sélection explicite des outils horizontaux
+     * faite à l'inscription : TOUTES les clés de `HORIZONTAL_TOOLS` sont
+     * présentes, `true` pour les outils choisis et `false` pour les autres.
+     *
+     * Elle vivait en `private` dans `ProvisionGuidedTrial` : le parcours
+     * `self_service` (`VerifyTrialSignup`), qui ne l'appelait pas, perdait donc
+     * `company_type` ET `modules` — un indépendant était persisté en
+     * « company » (le filtrage solo ne s'appliquait jamais) et les outils cochés
+     * restaient verrouillés (« menu RH vide »). Elle est extraite au niveau du
+     * modèle, à côté de `HORIZONTAL_TOOL_FEATURES`, pour que les DEUX parcours
+     * de trial partagent la même règle (aucun import cross-BC).
+     *
+     * @param  list<string>  $modules
+     * @return array<string, bool>|null null quand aucune sélection n'a été fournie
+     */
+    public static function resolveModuleSelection(array $modules, string $companyType): ?array
+    {
+        if ($modules === []) {
+            return null;
+        }
+
+        $requested = [];
+
+        foreach ($modules as $module) {
+            $key = strtolower(trim((string) $module));
+
+            if ($key !== '' && in_array($key, self::HORIZONTAL_TOOLS, true)) {
+                $requested[$key] = true;
+            }
+        }
+
+        $selection = [];
+
+        foreach (self::HORIZONTAL_TOOLS as $tool) {
+            $selection[$tool] = isset($requested[$tool]);
+        }
+
+        if ($companyType === self::TYPE_SOLO) {
+            foreach (self::TEAM_TOOLS as $tool) {
+                $selection[$tool] = false;
+            }
+        }
+
+        return $selection;
+    }
+
+    /**
+     * #7397 — Miroir des outils choisis vers `features`, pour les clés qui
+     * existent réellement dans le registre des feature flags
+     * (`config/feature-flags.php`). Les autres clés (employees, attendance…)
+     * ne sont PAS des flags plateforme : elles vivent dans `metadata.modules`,
+     * que le client web consomme directement.
+     *
+     * @param  array<string, bool>|null  $selection
+     * @return array<string, bool>
+     */
+    public static function mirroredFeatures(?array $selection): array
+    {
+        if ($selection === null) {
+            return [];
+        }
+
+        $features = [];
+
+        foreach (self::HORIZONTAL_TOOL_FEATURES as $selectionKey => $featureKey) {
+            if (array_key_exists($selectionKey, $selection)) {
+                $features[$featureKey] = $selection[$selectionKey];
+            }
+        }
+
+        return $features;
+    }
+
+    /**
+     * #7397 — Profil d'activité normalisé depuis une valeur déclarée à
+     * l'inscription. Fail-safe : une valeur inconnue retombe sur le profil
+     * complet, jamais sur le profil réduit.
+     */
+    public static function normalizeCompanyType(mixed $declared): string
+    {
+        return $declared === self::TYPE_SOLO ? self::TYPE_SOLO : self::TYPE_COMPANY;
+    }
+
+    /**
      * #7235 — Outils HORIZONTAUX d'ÉQUIPE. Un profil `solo` (indépendant)
      * n'en a aucun usage : ils sont explicitement désactivés à l'inscription
      * pour ne pas encombrer son interface (demande produit : « le solo n'a pas

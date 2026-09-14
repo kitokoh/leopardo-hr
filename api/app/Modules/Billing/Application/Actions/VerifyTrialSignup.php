@@ -202,6 +202,23 @@ class VerifyTrialSignup
             ? $requestedLocale
             : strtolower((string) $countryDefaults['language']);
 
+        // #7397 — Le profil d'activité et les outils horizontaux déclarés à
+        // l'inscription étaient VALIDÉS (`SelfServiceTrialController::signup`)
+        // puis stockés dans `company_requests.signup_payload`… et jamais
+        // propagés : le parcours self-service créait un tenant SANS
+        // `metadata.company_type` (un indépendant était donc persisté en
+        // « company » : le filtrage solo ne s'appliquait jamais) et SANS
+        // `metadata.modules` (les outils cochés — comptabilité, CRM… —
+        // restaient verrouillés, d'où un menu client vide).
+        // Les deux parcours de trial partagent désormais la même règle de
+        // normalisation, portée par le modèle (`Company::…`) et non dupliquée.
+        $declaredCompanyType = $payload['company_type'] ?? null;
+        $companyType = Company::normalizeCompanyType($declaredCompanyType);
+        $requestedModules = \is_array($payload['modules'] ?? null)
+            ? array_values($payload['modules'])
+            : [];
+        $moduleSelection = Company::resolveModuleSelection($requestedModules, $companyType);
+
         try {
             /** @var object{id: mixed} $trialPlan */
             $result = $this->provisionTrialCompany([
@@ -223,6 +240,8 @@ class VerifyTrialSignup
                 'temp_password' => $tempPassword,
                 'employees_range' => $payload['employees'] ?? null,
                 'referral_code' => $payload['referral_code'] ?? null,
+                'company_type' => $companyType,
+                'module_selection' => $moduleSelection,
             ]);
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Provisioning failed', [
@@ -375,10 +394,24 @@ class VerifyTrialSignup
                         'language' => $payload['language'],
                         'timezone' => $payload['timezone'],
                         'currency' => $payload['currency'],
-                        'metadata' => [
+                        // #7397 — `company_type` et `modules` sont écrits pour
+                        // que la règle serveur (filtrage solo, plancher
+                        // d'accès) et le menu client s'appliquent réellement.
+                        // `array_filter` ne retire QUE les `null` : une clé
+                        // explicitement `false` (outil non choisi) est
+                        // conservée — la sélection fait autorité.
+                        'metadata' => array_filter([
                             'provisioned_by' => 'self_service_trial',
                             'employees_range' => $payload['employees_range'],
-                        ],
+                            'company_type' => $payload['company_type'] ?? null,
+                            'modules' => $payload['module_selection'] ?? null,
+                        ], static fn ($value): bool => $value !== null),
+                        // Miroir vers les feature flags plateforme (comptabilité,
+                        // CRM, vitrine) — source unique de la correspondance :
+                        // `Company::HORIZONTAL_TOOL_FEATURES`.
+                        'features' => Company::mirroredFeatures(
+                            \is_array($payload['module_selection'] ?? null) ? $payload['module_selection'] : null
+                        ),
                     ]);
 
                     $referralCode = $payload['referral_code'] ?? null;
