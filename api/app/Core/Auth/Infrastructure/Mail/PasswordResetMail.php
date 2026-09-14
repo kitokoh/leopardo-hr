@@ -33,18 +33,30 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('emails.email_password_reset_subject'),
+            subject: app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('password_reset', app()->getLocale(), [
+                ':name' => $this->email,
+                ':brand' => config('mail.brand.name'),
+            ])->subject,
         );
     }
 
     public function content(): Content
     {
+        // #7347 — le contenu éditable est résolu ICI (PHP) et passé à la vue :
+        // la vue ne fait que rendre, elle ne construit aucune table de
+        // variables (et n'ajoute donc aucun littéral dans un template).
+        $tpl = app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('password_reset', app()->getLocale(), [
+            ':name' => $this->email,
+            ':brand' => \App\Core\Mail\MailBrand::name(),
+        ]);
+
         return new Content(
-            markdown: 'mail.password-reset',
+            view: 'mail.password-reset',
             with: [
                 'token' => $this->token,
                 'email' => $this->email,
                 'userName' => $this->email,
+                'tpl' => $tpl,
             ],
         );
     }

@@ -400,6 +400,22 @@ class LeopardoClient:
         """Forcer la synchronisation d'un nœud Edge (super-admin)"""
         return self.request("POST", "/admin/edge-nodes/{nodeId}/sync", **kwargs)
 
+    def delete_admin_email_templates(self, **kwargs):
+        """Revenir au contenu par defaut d'un e-mail (super-admin)"""
+        return self.request("DELETE", "/admin/email-templates", **kwargs)
+
+    def get_admin_email_templates(self, **kwargs):
+        """Contenus d'e-mails editables et valeurs effectives (super-admin)"""
+        return self.request("GET", "/admin/email-templates", **kwargs)
+
+    def put_admin_email_templates(self, **kwargs):
+        """Surcharger le contenu d'un e-mail (super-admin)"""
+        return self.request("PUT", "/admin/email-templates", **kwargs)
+
+    def post_admin_email_templates_preview(self, **kwargs):
+        """Apercu rendu d'un e-mail dans le layout canonique (super-admin)"""
+        return self.request("POST", "/admin/email-templates/preview", **kwargs)
+
     def get_admin_fleet_alerts(self, **kwargs):
         """Alertes flotte cross-tenant (super-admin)"""
         return self.request("GET", "/admin/fleet/alerts", **kwargs)

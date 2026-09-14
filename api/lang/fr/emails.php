@@ -104,8 +104,9 @@ return [
     'communication_unsubscribe_link' => 'Gerer mes preferences de notification',
 
     // Layout premium (emails/layouts/premium.blade.php)
-    'premium_layout_rights_reserved' => 'Tous droits réservés.',
-    'premium_layout_footer_note' => 'Vous recevez cet email car vous êtes inscrit sur notre plateforme.<br>Pour toute question, contactez le <a href="mailto::supportEmail">support</a>.',
+    'layout_rights_reserved' => 'Tous droits réservés.',
+    'layout_footer_context' => 'Vous recevez cet e-mail dans le cadre de votre compte :brand.',
+    'layout_footer_support' => 'Une question ? Écrivez-nous :',
     // S-5 (#1665) — Emails transactionnels localisés (welcome, welcome-employee,
     // welcome-onboarding, trial-welcome, subscription-confirmed, password-reset)
     'email_welcome_subject' => 'Bienvenue sur Leopardo RH',
@@ -169,6 +170,20 @@ return [
     'email_password_reset_ignore' => 'Si vous n\'avez pas fait cette demande, ignorez cet email.',
 
     // E-mail de vérification du code d'inscription (trial self-service)
+    'email_password_reset_code_label' => 'Votre code de réinitialisation (valable 60 minutes, usage unique) :',
+    'invitation_heading' => 'Invitation à rejoindre :company',
+    'invitation_intro' => ':inviter vous invite à rejoindre :company sur :brand.',
+    'invitation_role_line' => 'Vous serez invité(e) en tant que :role.',
+    'invitation_accept_button' => 'Accepter l\'invitation',
+    'invitation_expiry' => 'Ce lien expire dans 48 heures. Si vous n\'attendiez pas cet e-mail, ignorez-le.',
+    'edge_node_silent_subject' => 'Terminal de pointage injoignable — :node (:company)',
+    'edge_node_silent_greeting' => 'Bonjour,',
+    'edge_node_silent_body' => 'Le terminal de pointage :node de :company n\'a pas communiqué depuis :duration.',
+    'edge_node_silent_note' => 'Les pointages effectués pendant cette période seront synchronisés automatiquement dès le retour de la connexion.',
+    'edge_node_silent_support' => 'Si la situation persiste, vérifiez la connexion réseau du terminal ou écrivez-nous :',
+    'edge_license_expiring_subject' => 'Abonnement du terminal de pointage à renouveler — :node (:company)',
+    'edge_license_expiring_body' => 'L\'abonnement du terminal de pointage :node de :company arrive à échéance le :date. Passé ce délai, le terminal continuera d\'enregistrer les pointages mais ne les transmettra plus.',
+    'edge_license_expiring_support' => 'Pour renouveler ou poser une question, écrivez-nous :',
     'trial_verification_subject' => 'Vérifiez votre email Leopardo RH',
     'trial_verification_greeting' => 'Bonjour :name,',
     'trial_verification_intro' => 'Veuillez utiliser le code de vérification ci-dessous pour finaliser la création de votre espace de travail :',

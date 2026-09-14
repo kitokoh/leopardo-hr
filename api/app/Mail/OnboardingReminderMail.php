@@ -39,7 +39,11 @@ class OnboardingReminderMail extends Mailable
         App::setLocale($this->locale);
 
         return new Envelope(
-            subject: __('emails.onboarding_reminder_subject'),
+            subject: app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('onboarding_reminder', $this->locale, [
+                ':name' => $this->managerName,
+                ':company' => $this->company->name,
+                ':brand' => config('mail.brand.name'),
+            ])->subject,
         );
     }
 
@@ -58,6 +62,11 @@ class OnboardingReminderMail extends Mailable
                 'managerName' => $this->managerName,
                 'setupUrl' => $base.'/',
                 'locale' => $this->locale,
+                'tpl' => app(\App\Core\Mail\EmailTemplateResolver::class)->resolve('onboarding_reminder', $this->locale, [
+                    ':name' => $this->managerName,
+                    ':company' => $this->company->name,
+                    ':brand' => \App\Core\Mail\MailBrand::name(),
+                ]),
             ],
         );
     }
