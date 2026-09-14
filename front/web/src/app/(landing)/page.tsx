@@ -18,7 +18,7 @@ import {
   ProductDemoVideo,
   // Phase-3 sections — no more Legacy prefixes
   HeroSection,
-  HeroProductVisual,
+  SolutionStack,
   FAQSection,
   CTASection,
   ProblemSection,
@@ -87,12 +87,8 @@ export default function LandingPage() {
           quickTrialForm={
             <QuickTrialEmailForm locale={locale} copy={copy.heroQuickTrial} />
           }
-          visual={
-            <HeroProductVisual
-              src="/screenshots/web-dashboard.png"
-              alt={copy.hero.visualAlt ?? 'Leopardo HR admin dashboard screenshot'}
-            />
-          }
+          layout="split"
+          visual={<SolutionStack locale={locale} />}
         />
 
         {/* ─── PROBLEM / SOLUTION ─── */}
