@@ -65,6 +65,22 @@ class EduFeeTypeController extends Controller
     }
 
     /**
+     * Normalise un montant `decimal` (chaîne côté PHP) en nombre JSON.
+     * Les valeurs entières restent des entiers (`50000`, pas `50000.0`) —
+     * contrat attendu par les clients web/mobile.
+     */
+    private function numeric(mixed $raw): int|float|null
+    {
+        if (! is_numeric($raw)) {
+            return null;
+        }
+
+        $value = (float) $raw;
+
+        return $value === floor($value) ? (int) $value : $value;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function payload(EduFeeType $type): array
@@ -76,7 +92,7 @@ class EduFeeTypeController extends Controller
             'label' => (string) $type->label,
             // Montants : `decimal` PostgreSQL remonte en chaîne côté PHP —
             // normalisé en nombre pour l'API (contrat mobile/web).
-            'amount' => $type->amount + 0,
+            'amount' => $this->numeric($type->amount),
             'currency' => (string) $type->currency,
             'billing_frequency' => (string) $type->billing_frequency,
             'is_active' => (bool) $type->is_active,
