@@ -56,10 +56,10 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE {$qualified} ADD CONSTRAINT edu_admissions_status_check "
-            ."CHECK (status IN ("
+            .'CHECK (status IN ('
             ."'pending','admitted','rejected','enrolled','cancelled',"
             ."'new','document_pending','review','accepted','waitlisted','converted'"
-            .")) NOT VALID"
+            .')) NOT VALID'
         );
 
         // 2) `edu_students.metadata` : la génération appliquée l'a créé en
