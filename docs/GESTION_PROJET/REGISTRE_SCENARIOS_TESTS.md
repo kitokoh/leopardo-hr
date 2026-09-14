@@ -13,6 +13,19 @@
 > réellement ajoutée est **web** (`front/web`, page `/showcase` + rendu public `/vitrine/{slug}`).
 
 
+> **MAJ 2026-09-13 — #7302, cause racine de la lenteur du portefeuille clients.** Le lot
+> « le portefeuille ne recalcule plus la santé société par société » supprime le N+1 de
+> `GET /platform/companies/health` (674 requêtes → 12 pour 45 sociétés) et met le résultat en
+> cache 60 s. Le découplage de **l'affichage** (annuaire d'abord, scoring en tâche de fond) a
+> déjà été livré par ailleurs — ce lot n'y revient pas, il ne fait que :
+> `front/admin-dashboard/src/views/companies/CompaniesView.vue` transmet `?refresh=1` au clic sur
+> « Actualiser » (un rafraîchissement explicite ne doit pas resservir une valeur mise en cache) et
+> rafraîchit un commentaire devenu faux (« ~25 s à chaud »). Scénario détaillé :
+> `SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md`, section 12. Non-régression API :
+> `api/tests/Feature/PlatformCompanyHealthApiTest.php`
+> (`test_portfolio_query_count_does_not_grow_with_company_count`,
+> `test_portfolio_and_company_detail_agree_on_shared_metrics`).
+
 > **MAJ 2026-09-13 — déblocage de l'onboarding (#7320), surface web admin touchée
 > par propagation i18n uniquement.** Le lot « création de département et de
 > collaborateur depuis la page Équipe + lien d'action depuis l'assistant »
