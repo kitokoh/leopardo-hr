@@ -61,8 +61,8 @@ class RegisterLoginFlowTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'password123456',
+            'password_confirmation' => 'password123456',
         ])->assertStatus(422);
 
         $this->assertDatabaseMissing('employees', ['email' => 'john.doe@example.com']);
@@ -76,8 +76,8 @@ class RegisterLoginFlowTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'password123456',
+            'password_confirmation' => 'password123456',
             'invitation_token' => $token,
         ]);
 
@@ -94,7 +94,7 @@ class RegisterLoginFlowTest extends TestCase
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
+            'password' => 'password123456',
         ]);
 
         $login->assertStatus(200)
@@ -107,7 +107,7 @@ class RegisterLoginFlowTest extends TestCase
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended.ordinary@example.com',
-            'password_hash' => Hash::make('password123'),
+            'password_hash' => Hash::make('password123456'),
         ]);
         $employee->role = 'ordinary';
         $employee->status = 'suspended';
@@ -115,7 +115,7 @@ class RegisterLoginFlowTest extends TestCase
 
         $this->postJson('/api/v1/auth/login', [
             'email' => 'suspended.ordinary@example.com',
-            'password' => 'password123',
+            'password' => 'password123456',
         ])->assertStatus(403);
     }
 }

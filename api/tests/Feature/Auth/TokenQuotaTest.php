@@ -31,8 +31,8 @@ class TokenQuotaTest extends TestCase
             'first_name' => 'Quota',
             'last_name' => 'User',
             'email' => $email,
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'password' => 'password123456',
+            'password_confirmation' => 'password123456',
             'invitation_token' => $invitationToken,
         ]);
         $register->assertCreated();
@@ -79,7 +79,7 @@ class TokenQuotaTest extends TestCase
         for ($i = 0; $i < $times; $i++) {
             $this->postJson('/api/v1/auth/login', [
                 'email' => $email,
-                'password' => 'password123',
+                'password' => 'password123456',
                 'device_name' => 'quota-device-'.$i,
             ])->assertOk()->assertJsonStructure(['token']);
         }
