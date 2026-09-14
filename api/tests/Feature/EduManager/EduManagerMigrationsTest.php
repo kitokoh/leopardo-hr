@@ -76,13 +76,13 @@ class EduManagerMigrationsTest extends TestCase
         '2026_08_30_000401_5821_create_edu_attendance_records_table',
         '2026_08_30_000402_5821_create_edu_attendance_corrections_table',
         // EDU-006 (issue #5822)
-        '2026_08_30_000501_5822_create_edu_timetable_slots_table',
         // EDU-007 (issue #5823)
         '2026_08_30_000601_5823_create_edu_assessments_table',
         '2026_08_30_000602_5823_create_edu_grades_table',
         '2026_08_30_000603_5823_create_edu_grade_versions_table',
-        // EDU-008 (issue #5824)
-        '2026_08_30_000701_5824_create_edu_report_cards_table',
+        // EDU-008 (issue #5824),
+        '2026_08_30_001516_5822_create_edu_timetable_slots_table',
+        '2026_08_30_001520_5824_create_edu_report_cards_table',
     ];
 
     private function newCompany(): Company
@@ -107,9 +107,6 @@ class EduManagerMigrationsTest extends TestCase
         return $row ? (string) $row->table_schema : null;
     }
 
-    /**
-     * @return Migration
-     */
     private function migration(string $basename): Migration
     {
         $path = database_path("migrations/tenant/{$basename}.php");
@@ -381,4 +378,3 @@ class EduManagerMigrationsTest extends TestCase
         $reflection->invoke($migration);
     }
 }
-

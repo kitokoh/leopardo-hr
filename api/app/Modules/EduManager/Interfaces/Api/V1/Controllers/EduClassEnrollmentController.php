@@ -12,9 +12,9 @@ use App\Modules\EduManager\Domain\Models\EduClassEnrollment;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduClassEnrollmentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * API des inscriptions aux classes — EDU-011 (issue #5827).

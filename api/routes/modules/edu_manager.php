@@ -16,6 +16,7 @@ declare(strict_types=1);
  */
 
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAcademicYearController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAccountingEntryController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionCampaignController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAdmissionController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAssessmentController;
@@ -25,7 +26,6 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduClassEnrollmentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduDashboardController;
-use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduAccountingEntryController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeChargeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeTypeController;

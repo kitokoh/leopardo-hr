@@ -28197,6 +28197,320 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /edu-manager/fee-charges:
+    post:
+      tags:
+      - EduManager
+      summary: Facturer un frais scolaire à un élève
+      description: 'Direction/RH uniquement. Idempotent sur `external_id` (rejeu → même facture, aucune
+        double facturation). Le montant est figé à la création (copie du tarif). Écrit les deux lignes
+        comptables équilibrées (411 Clients / 706 Prestations) et publie un événement d''outbox.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - student_id
+              - fee_type_id
+              - academic_year_id
+              properties:
+                student_id:
+                  type: integer
+                fee_type_id:
+                  type: integer
+                academic_year_id:
+                  type: integer
+                amount:
+                  type: number
+                  description: Montant forcé (défaut — tarif du type de frais).
+                currency:
+                  type: string
+                due_date:
+                  type: string
+                  format: date
+                external_id:
+                  type: string
+                  description: Clé d''idempotence par tenant.
+      responses:
+        '201':
+          description: Charge créée (ou rejouée)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EduFeeCharge'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu-manager/fee-charges/{charge}/payments:
+    post:
+      tags:
+      - EduManager
+      summary: Encaisser un paiement sur une charge de frais
+      description: 'Direction/RH uniquement. Idempotent sur `external_id` (rejeu → même paiement).
+        Refuse le surdébit (`EDU_FEE_OVERPAYMENT`) et toute écriture sur une charge terminale
+        (`EDU_FEE_TERMINAL`). Le statut de la charge suit le cumul encaissé : pending → partial → paid.
+        Écrit les lignes comptables équilibrées (512 Banque ou 531 Caisse / 411 Clients).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              - method
+              properties:
+                amount:
+                  type: number
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - transfer
+                  - card
+                  - mobile_money
+                  - other
+                currency:
+                  type: string
+                reference:
+                  type: string
+                external_id:
+                  type: string
+                paid_at:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Paiement enregistré (ou rejoué)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      payment:
+                        $ref: '#/components/schemas/EduFeePayment'
+                      charge:
+                        $ref: '#/components/schemas/EduFeeCharge'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu-manager/fee-charges/{charge}/waive:
+    post:
+      tags:
+      - EduManager
+      summary: Abandonner le solde restant d''une charge
+      description: 'Direction/RH uniquement. Terminale : une charge déjà soldée, abandonnée ou annulée
+        est refusée (`EDU_FEE_TERMINAL`). Écrit l''abandon de créance (654 Pertes / 411 Clients) et
+        publie un événement d''outbox.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Charge abandonnée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EduFeeCharge'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu-manager/fee-accounting-entries:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les écritures comptables des frais scolaires
+      description: 'Direction/RH uniquement. Vue de rapprochement : lignes équilibrées publiées par
+        le module (le module EduManager ne tient pas la comptabilité — contrat PayrollAccountingEntry).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: source_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - fee_charge
+          - fee_payment
+          - fee_waiver
+      - name: source_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Écritures du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EduAccountingEntry'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/guardians/{guardian}/portal-link:
+    post:
+      tags:
+      - EduManager
+      summary: Émettre un lien d''accès au portail parents
+      description: 'Direction/RH uniquement. Le lien porte le token du portail (affiché une seule fois)
+        et une expiration. Un responsable d''un autre tenant → 404.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: guardian
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 30
+      responses:
+        '201':
+          description: Lien émis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      guardian_id:
+                        type: integer
+                      token:
+                        type: string
+                      url:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/portal/{token}:
+    get:
+      tags:
+      - EduManager
+      summary: Consulter le portail parents (lecture, sans session)
+      description: 'Route PUBLIQUE : le token du lien EST la credential (aucun jeton Sanctum requis).
+        Expiré, révoqué ou inconnu → 404. Chaque consultation est journalisée et le périmètre reste
+        borné aux enfants explicitement liés au responsable (aucune énumération).'
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Résumé du portail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      guardian:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          first_name:
+                            type: string
+                          last_name:
+                            type: string
+                      children:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            student_id:
+                              type: integer
+                            student_number:
+                              type: string
+                            display_name:
+                              type: string
+                            attendance:
+                              type: object
+                            report_cards:
+                              type: array
+                              items:
+                                type: object
+                      expires_at:
+                        type: string
+                        format: date-time
+        '404':
+          $ref: '#/components/responses/Error404'
   /edu-manager/fee-types:
     get:
       tags:
@@ -28792,6 +29106,94 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    EduFeeCharge:
+      type: object
+      description: Facturation d'un frais scolaire à un élève (EDU-016, #5832).
+      properties:
+        id:
+          type: integer
+        student_id:
+          type: integer
+        fee_type_id:
+          type: integer
+        academic_year_id:
+          type: integer
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum:
+          - pending
+          - partial
+          - paid
+          - waived
+          - cancelled
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        external_id:
+          type: string
+          nullable: true
+    EduFeePayment:
+      type: object
+      description: Encaissement sur une charge de frais (EDU-016, #5832).
+      properties:
+        id:
+          type: integer
+        fee_charge_id:
+          type: integer
+        amount:
+          type: number
+        currency:
+          type: string
+        method:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+        reference:
+          type: string
+          nullable: true
+        external_id:
+          type: string
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+    EduAccountingEntry:
+      type: object
+      description: Ligne d'écriture équilibrée publiée par le module EduManager (contrat Accounting).
+      properties:
+        id:
+          type: integer
+        source_type:
+          type: string
+          enum:
+          - fee_charge
+          - fee_payment
+          - fee_waiver
+        source_id:
+          type: integer
+        entry_date:
+          type: string
+          format: date
+        account_code:
+          type: string
+        account_label:
+          type: string
+        debit:
+          type: number
+        credit:
+          type: number
+        reference:
+          type: string
     DeliveryReportSummary:
       type: object
       properties:

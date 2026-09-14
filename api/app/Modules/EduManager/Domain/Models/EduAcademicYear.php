@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Année scolaire d'un établissement — Issue #5819 (EDU-003).
@@ -76,6 +75,4 @@ class EduAcademicYear extends Model
     {
         return $this->hasMany(EduClass::class, 'academic_year_id');
     }
-
-
 }

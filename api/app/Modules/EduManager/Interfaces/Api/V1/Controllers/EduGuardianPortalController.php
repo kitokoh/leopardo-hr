@@ -12,7 +12,6 @@ use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
-use App\Modules\EduManager\Domain\Models\EduGuardianPortalLink;
 use App\Modules\EduManager\Domain\Models\EduReportCard;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;

@@ -8,7 +8,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduTeacher;
-use App\Modules\EduManager\Domain\Models\EduTimetableSlot;
 
 /**
  * Issue #5823 (EDU-007) — Policy des évaluations.

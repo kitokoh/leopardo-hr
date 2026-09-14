@@ -32,9 +32,7 @@ final class EduAdmissionFollowupService
 
     public const EVENT_OPTED_OUT = 'edu.admission.opted_out.v1';
 
-    public function __construct(private readonly EduOutboxPublisher $outbox)
-    {
-    }
+    public function __construct(private readonly EduOutboxPublisher $outbox) {}
 
     /**
      * Enregistre (idempotemment) une relance consentie sur un dossier.

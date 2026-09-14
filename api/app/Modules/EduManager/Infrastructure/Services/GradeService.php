@@ -52,9 +52,9 @@ final class GradeService
      *   est mise à jour en place (modifiable tant que non publiée) ; une
      *   note publiée est refusée (immuable).
      *
-     * @throws InvalidArgumentException      évaluation publiée / score hors
-     *                                       barème / commentaire > 255
-     * @throws ModelNotFoundException        élève introuvable dans le tenant
+     * @throws InvalidArgumentException évaluation publiée / score hors
+     *                                  barème / commentaire > 255
+     * @throws ModelNotFoundException élève introuvable dans le tenant
      * @throws TenantContextMissingException évaluation d'un autre tenant
      */
     public function recordGrade(
@@ -164,8 +164,8 @@ final class GradeService
      * requis). Le score reste borné [0, max_score] et la justification
      * limitée à 255 caractères (PII minimisée).
      *
-     * @throws InvalidArgumentException      justification manquante ou
-     *                                       > 255 / score hors barème
+     * @throws InvalidArgumentException justification manquante ou
+     *                                  > 255 / score hors barème
      * @throws TenantContextMissingException note d'un autre tenant
      */
     public function correctGrade(EduGrade $grade, float $newScore, string $reason, int $actorId): EduGrade

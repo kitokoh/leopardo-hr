@@ -103,7 +103,7 @@ return new class extends Migration
                 DB::statement(
                     "DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'edu_report_cards_period_check') "
                     ."THEN ALTER TABLE \"{$schema}\".\"edu_report_cards\" ADD CONSTRAINT edu_report_cards_period_check "
-                    ."CHECK (period_start < period_end); END IF; END $$"
+                    .'CHECK (period_start < period_end); END IF; END $$'
                 );
             }
         }
