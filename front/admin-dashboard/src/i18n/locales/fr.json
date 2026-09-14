@@ -1115,7 +1115,8 @@
     "two_factor_required": "Le code 2FA est requis.",
     "demo": {
       "access": "Acces Demo",
-      "unavailable": "Accès démo momentanément indisponible (API injoignable)."
+      "unavailable": "Accès démo momentanément indisponible (API injoignable).",
+      "web_surface_only": "Aucun profil plateforme en démo : les profils publiés appartiennent à l’espace web (connectez-vous depuis la vitrine)."
     },
     "toggle": {
       "password": {

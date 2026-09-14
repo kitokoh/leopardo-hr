@@ -212,6 +212,16 @@
                 {{ t('auth.demo.unavailable') }}
               </p>
 
+              <!-- #7402 : personas publiés mais hors surface admin (profils
+                   `web-manager`, connectables seulement depuis l'espace web). -->
+              <p
+                v-if="demoNonAdminPersonas"
+                role="status"
+                class="text-[10px] font-bold leading-tight text-amber-300/80"
+              >
+                {{ t('auth.demo.web_surface_only', 'Aucun profil plateforme en démo : les profils publiés appartiennent à l’espace web (connectez-vous depuis la vitrine).') }}
+              </p>
+
             </div>
           </form>
         </div>
@@ -245,6 +255,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import api from '@/services/api'
+import { buildDemoPersonas, countDemoPersonas } from '@/services/demoPersonas'
 import FormField from '@/components/common/FormField.vue'
 
 const router = useRouter()
@@ -322,50 +333,24 @@ const hasDemoPersonas = computed(() => demoPersonas.value.length > 0)
 // désactivée » : c'est le cas en production → on reste silencieux).
 const demoUnavailable = ref(false)
 
-function buildDemoPersonas(responseBody) {
-  // axios: responseBody = corps JSON ; le endpoint renvoie { data: {...} } ou {...}.
-  const root = responseBody?.data ?? responseBody ?? {}
-  const personas = []
-
-  const superAdmin = root.super_admin
-  if (typeof superAdmin?.email === 'string' && typeof superAdmin?.password === 'string') {
-    personas.push({
-      label: superAdmin.label || t('auth.demo_super_admin_label'),
-      email: superAdmin.email,
-      password: superAdmin.password,
-      badge: t('auth.demo_badge_platform', 'Plateforme'),
-    })
-  }
-
-  const companies = Array.isArray(root.companies) ? root.companies : []
-  for (const company of companies) {
-    const users = Array.isArray(company?.users) ? company.users : []
-    for (const user of users) {
-      if (typeof user?.email !== 'string' || typeof user?.password !== 'string') continue
-      const companyName = company?.name || 'Tenant'
-      personas.push({
-        label: user.name || user.email,
-        email: user.email,
-        password: user.password,
-        badge: user.manager_role ? `${companyName} · ${user.manager_role}` : companyName,
-      })
-    }
-  }
-
-  return personas
-}
+// #7402 : les personas publiés par /demo-users mais hors surface
+// `admin-platform` (profils `web-manager` du client web) ne sont PAS
+// connectables depuis cette console. On le dit au lieu de les afficher.
+const demoNonAdminPersonas = ref(false)
 
 onMounted(() => {
   api
     .get('/demo-users')
     .then((res) => {
-      demoPersonas.value = buildDemoPersonas(res?.data)
+      demoPersonas.value = buildDemoPersonas(res?.data, { t })
+      demoNonAdminPersonas.value = demoPersonas.value.length === 0 && countDemoPersonas(res?.data) > 0
     })
     .catch((err) => {
       // 404 = mode démo volontairement désactivé (production) → silence.
       // Toute autre erreur = API injoignable → on l'affiche (en dev, un
       // panneau absent était indiscernable d'une panne d'API).
       demoPersonas.value = []
+      demoNonAdminPersonas.value = false
       if (err?.response?.status !== 404) {
         demoUnavailable.value = true
       }

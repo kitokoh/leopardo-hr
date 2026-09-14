@@ -1115,7 +1115,8 @@
     "two_factor_required": "2FA kodu gereklidir.",
     "demo": {
       "access": "Demo erisimi",
-      "unavailable": "Demo erisimi gecici olarak kullanilamiyor (API'ye ulasilamiyor)."
+      "unavailable": "Demo erisimi gecici olarak kullanilamiyor (API'ye ulasilamiyor).",
+      "web_surface_only": "Platform demo profili yok: yayınlanan profiller web alanına aittir (girişi web sitesinden yapın)."
     },
     "toggle": {
       "password": {

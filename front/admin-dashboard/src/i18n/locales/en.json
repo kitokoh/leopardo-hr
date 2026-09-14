@@ -1109,7 +1109,8 @@
     "two_factor_required": "The 2FA code is required.",
     "demo": {
       "access": "Demo access",
-      "unavailable": "Demo access is temporarily unavailable (API unreachable)."
+      "unavailable": "Demo access is temporarily unavailable (API unreachable).",
+      "web_surface_only": "No platform demo profile: the published profiles belong to the web workspace (sign in from the marketing site)."
     },
     "toggle": {
       "password": {
