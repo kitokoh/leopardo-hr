@@ -33,7 +33,7 @@ class UserAuthController extends Controller
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', Password::min(12)],
+            'password' => ['required', 'string', Password::min(12)->numbers()],
             'phone' => ['nullable', 'string', 'max:20'],
         ]);
 
@@ -191,7 +191,7 @@ class UserAuthController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', Password::min(12), 'confirmed'],
+            'new_password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
         ]);
 
         /** @var User $user */
