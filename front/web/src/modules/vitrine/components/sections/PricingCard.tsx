@@ -64,7 +64,7 @@ export function PricingCard({
       >
         {/* Badge */}
         {badge && (
-          <div className="inline-flex items-center justify-center w-fit px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center justify-center w-fit px-3 py-1 rounded-full bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider mb-4">
             {badge}
           </div>
         )}

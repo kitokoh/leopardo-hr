@@ -542,7 +542,7 @@ function DownloadPageInner() {
                   <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300">
                     {item.platform === 'Android' || item.platform === 'iPhone' ? <Smartphone className="h-5 w-5" /> : <Laptop className="h-5 w-5" />}
                   </div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">{item.platform}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-400">{item.platform}</p>
                   <h2 className="mt-2 text-base font-black text-slate-900 dark:text-white">{item.title}</h2>
                   <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
                 </Link>
@@ -564,7 +564,7 @@ function DownloadPageInner() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="relative rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-4">
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
@@ -671,7 +671,7 @@ function DownloadPageInner() {
                     highlightedSlug === app.slug ? HIGHLIGHT_CLASS : ''
                   }`}
                 >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-4">
                   <Smartphone className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white mb-2">{app.name}</h3>
@@ -681,7 +681,7 @@ function DownloadPageInner() {
                   {/* Google Play button */}
                   <a
                     href={androidTarget.href}
-                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-800 transition-colors text-sm font-semibold"
                     aria-label={`${app.name} - ${androidLabel}`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -693,7 +693,7 @@ function DownloadPageInner() {
                   {/* App Store button */}
                   <a
                     href={iosTarget.href}
-                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-800 transition-colors text-sm font-semibold"
                     aria-label={`${app.name} - ${iosLabel}`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -761,17 +761,17 @@ function DownloadPageInner() {
             >
               <div className="grid grid-cols-3 gap-4 text-center mb-6">
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
-                  <Fingerprint className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <Fingerprint className="w-6 h-6 mx-auto text-emerald-700 dark:text-emerald-400 mb-2" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                     {locale === 'fr' ? 'Biometrie' : locale === 'ar' ? 'البصمة' : locale === 'tr' ? 'Biyometri' : 'Biometrics'}
                   </p>
                 </div>
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
-                  <QrCode className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <QrCode className="w-6 h-6 mx-auto text-emerald-700 dark:text-emerald-400 mb-2" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">QR / ID</p>
                 </div>
                 <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-4">
-                  <WifiOff className="w-6 h-6 mx-auto text-emerald-600 dark:text-emerald-400 mb-2" />
+                  <WifiOff className="w-6 h-6 mx-auto text-emerald-700 dark:text-emerald-400 mb-2" />
                   <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                     {locale === 'fr' ? 'Hors-ligne' : locale === 'ar' ? 'دون اتصال' : locale === 'tr' ? 'Cevrimdisi' : 'Offline'}
                   </p>

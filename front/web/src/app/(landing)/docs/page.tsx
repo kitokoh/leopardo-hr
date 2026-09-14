@@ -42,7 +42,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const colorMap: Record<string, { bg: string; icon: string; border: string }> = {
-  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', icon: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
+  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', icon: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
   blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', icon: 'text-blue-600 dark:text-blue-400', border: 'border-blue-200 dark:border-blue-800' },
   violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', icon: 'text-violet-600 dark:text-violet-400', border: 'border-violet-200 dark:border-violet-800' },
   amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', icon: 'text-amber-600 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-800' },
@@ -176,7 +176,7 @@ export default function DocsPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Terminal className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.apiSection.title}</h2>
@@ -235,7 +235,7 @@ export default function DocsPage() {
           </div>
           <p id="webhooks-security" className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             {copy.webhooksSection.securityNote} <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
-            <Link href="/docs#webhooks-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.webhooksSection.docLink}</Link>
+            <Link href="/docs#webhooks-overview" className="text-emerald-700 dark:text-emerald-400 hover:underline">{copy.webhooksSection.docLink}</Link>
           </p>
         </div>
       </section>
@@ -271,7 +271,7 @@ export default function DocsPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Terminal className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.kioskSection.title}</h2>
@@ -298,7 +298,7 @@ export default function DocsPage() {
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             {copy.kioskSection.sourceNote} <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
-            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.kioskSection.downloadLink}</Link>
+            <Link href="/download#kiosk" className="text-emerald-700 dark:text-emerald-400 hover:underline">{copy.kioskSection.downloadLink}</Link>
           </p>
         </div>
       </section>
@@ -331,7 +331,7 @@ export default function DocsPage() {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-              <Smartphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Smartphone className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.mobileInstallSection.title}</h2>
@@ -344,16 +344,16 @@ export default function DocsPage() {
                 <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{app.name}</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">{app.desc}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                  {copy.mobileInstallSection.storesNote} <span className="font-semibold text-emerald-600 dark:text-emerald-400">{copy.mobileInstallSection.soonLabel}</span>.
+                  {copy.mobileInstallSection.storesNote} <span className="font-semibold text-emerald-700 dark:text-emerald-400">{copy.mobileInstallSection.soonLabel}</span>.
                 </p>
-                <Link href={app.href} className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                <Link href={app.href} className="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400 hover:underline">
                   {copy.mobileInstallSection.testerCta} <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
             ))}
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-            {copy.mobileInstallSection.detailsNote} <Link href="/mobile" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.mobileInstallSection.mobilePageLink}</Link>.
+            {copy.mobileInstallSection.detailsNote} <Link href="/mobile" className="text-emerald-700 dark:text-emerald-400 hover:underline">{copy.mobileInstallSection.mobilePageLink}</Link>.
           </p>
         </div>
       </section>
@@ -420,7 +420,7 @@ export default function DocsPage() {
                   href={link.href}
                   className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors group"
                 >
-                  <Icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-3" />
+                  <Icon className="w-6 h-6 text-emerald-700 dark:text-emerald-400 mb-3" />
                   <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{link.label}</h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{link.desc}</p>
                 </Link>

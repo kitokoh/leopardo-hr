@@ -279,7 +279,7 @@ function AvailabilityMark({
       >
         <Check
           className={`w-4 h-4 ${
-            popular ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
+            popular ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
           }`}
         />
       </span>
@@ -562,14 +562,14 @@ export default function PricingPage() {
             </label>
           </div>
           {!isEurSelected && (
-            <p className="text-center text-xs text-slate-400 dark:text-slate-500 mb-8 max-w-md mx-auto">
+            <p className="text-center text-xs text-slate-400 mb-8 max-w-md mx-auto">
               {copy.currency.approx}
             </p>
           )}
 
           {/* Billing toggle */}
           <div className="flex items-center justify-center gap-4 mb-14">
-            <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
+            <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
               {copy.plans.monthly}
             </span>
             <button
@@ -583,7 +583,7 @@ export default function PricingPage() {
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             </button>
-            <span className={`text-sm font-semibold transition-colors ${isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
+            <span className={`text-sm font-semibold transition-colors ${isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
               {copy.plans.annual}
             </span>
             <AnimatePresence>
@@ -681,25 +681,25 @@ export default function PricingPage() {
                         )}
                       </div>
                       {isFree ? (
-                        <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-400 font-semibold">
                           {copy.badges.freeNote}
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
                             {displayPeriod}
                           </p>
                           {isAnnual && (
-                            <p className="text-xs text-slate-400 dark:text-slate-600">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               <span className="line-through">
                                 {isEurSelected ? 'EUR' : currencyOption.currency} {isEurSelected ? plan.price : (convertedPrice(plan.price) ?? plan.price)}
                               </span>
                               {' '}
-                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{annualSavingsLabel}</span>
+                              <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{annualSavingsLabel}</span>
                             </p>
                           )}
                           {!isEurSelected && (
-                            <p className="text-xs text-slate-400 dark:text-slate-600">≈ EUR {displayPrice}</p>
+                            <p className="text-xs text-slate-400">≈ EUR {displayPrice}</p>
                           )}
                         </div>
                       ) : null}
@@ -708,7 +708,7 @@ export default function PricingPage() {
                           {plan.priceNote}
                         </p>
                       )}
-                      <div className="inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400">
                         <Users className="w-3 h-3" />
                         {plan.employeeLimit}
                       </div>
@@ -718,7 +718,7 @@ export default function PricingPage() {
                     <ul className="flex-1 space-y-3 mb-8">
                       {plan.features.map((feature, fi) => (
                         <li key={fi} className="flex items-start gap-3">
-                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400'}`} />
                           <span className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{feature}</span>
                         </li>
                       ))}
@@ -795,7 +795,7 @@ export default function PricingPage() {
                         key={plan.name}
                         className={`text-center py-5 px-4 font-black text-sm ${
                           plan.popular
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-emerald-700 dark:text-emerald-400'
                             : 'text-slate-700 dark:text-slate-300'
                         }`}
                       >
@@ -803,7 +803,7 @@ export default function PricingPage() {
                           <Icon className={`w-5 h-5 ${planIconColors[i % planIconColors.length]}`} />
                           {plan.name}
                           {plan.popular && (
-                            <span className="text-[9px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-black uppercase tracking-wider">
+                            <span className="text-[9px] px-2 py-0.5 bg-emerald-700 text-white rounded-full font-black uppercase tracking-wider">
                               ★ top
                             </span>
                           )}
@@ -924,7 +924,7 @@ export default function PricingPage() {
                 onClick={() => setFaqCategory(faqCategory === cat ? null : cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${
                   faqCategory === cat
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-emerald-700 text-white'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >

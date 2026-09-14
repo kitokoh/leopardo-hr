@@ -123,7 +123,7 @@ export function PricingSection() {
                   <div className="text-center mb-8">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{plan.name}</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{plan.description}</p>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400 mb-6">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 mb-6">
                       <Users className="w-3 h-3" />
                       {plan.employeeLimit}
                     </div>
@@ -134,7 +134,7 @@ export function PricingSection() {
                         </span>
                       ) : (
                         <>
-                          {hasNumericPrice && <span className="text-sm text-slate-500">{copy.pricing.currency}</span>}
+                          {hasNumericPrice && <span className="text-sm text-slate-500 dark:text-slate-400">{copy.pricing.currency}</span>}
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
                             {displayPrice}
                           </span>
@@ -142,14 +142,14 @@ export function PricingSection() {
                       )}
                     </div>
                     {displayPeriod && (
-                      <span className="text-sm text-slate-500">{displayPeriod}</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">{displayPeriod}</span>
                     )}
                     {plan.priceNote && (
                       <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{plan.priceNote}</p>
                     )}
                     {isAnnual && hasNumericPrice && (
                       <div className="mt-1">
-                        <span className="text-xs text-slate-400 line-through">{copy.pricing.currency} {plan.price}</span>
+                        <span className="text-xs text-slate-500 line-through dark:text-slate-400">{copy.pricing.currency} {plan.price}</span>
                       </div>
                     )}
                   </div>
@@ -183,7 +183,7 @@ export function PricingSection() {
         <div className="mt-12 text-center">
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors"
           >
             {t(locale, 'pricing.section.fullComparison')}
             <ArrowRight className="w-4 h-4" />

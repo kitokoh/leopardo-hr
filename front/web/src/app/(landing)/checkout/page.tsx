@@ -147,7 +147,7 @@ function StepIndicator({
           <div
             className={`flex items-center justify-center w-9 h-9 rounded-full font-black text-sm transition-all duration-300 ${
               i < step
-                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-500/30'
                 : i === step
                 ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
@@ -246,7 +246,7 @@ function PlanSummaryCard({
               onClick={() => onChangeBilling('annual')}
               className={`flex-1 py-2.5 text-sm font-bold transition-all duration-200 ${
                 billing === 'annual'
-                  ? 'bg-emerald-500 text-white'
+                  ? 'bg-emerald-700 text-white'
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
@@ -271,7 +271,7 @@ function PlanSummaryCard({
       {/* Badge */}
       <div className="px-5 pb-5">
         <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
-          <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+          <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400 flex-shrink-0" />
           <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
             {copy.trialBadge.replace('{days}', String(cfg.trialDays))}
           </p>
@@ -850,7 +850,7 @@ function StepPayment({
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href="/demo"
-                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-700"
+                className="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-800"
               >
                 {copy.checkoutUnavailableCtaTrial}
               </Link>
@@ -904,7 +904,7 @@ function StepPayment({
           )}
         </button>
 
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500">
+        <p className="text-center text-xs text-slate-400">
           {copy.payment.legal.prefix}{' '}
           <Link href="/terms" className="underline underline-offset-2 hover:text-slate-600">
             {copy.payment.legal.terms}
@@ -984,7 +984,7 @@ function CheckoutInner() {
               {copy.free.cta}
             </Link>
             <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
-              <Link href="/pricing" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+              <Link href="/pricing" className="text-emerald-700 dark:text-emerald-400 hover:underline">
                 {copy.free.seePricing}
               </Link>
             </p>

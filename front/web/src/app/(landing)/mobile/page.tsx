@@ -224,7 +224,7 @@ const apps: MobileApp[] = [
 const colorMap: Record<string, { bg: string; icon: string; border: string; badge: string }> = {
   emerald: {
     bg: 'bg-emerald-50 dark:bg-emerald-900/20',
-    icon: 'text-emerald-600 dark:text-emerald-400',
+    icon: 'text-emerald-700 dark:text-emerald-400',
     border: 'border-emerald-200 dark:border-emerald-800',
     badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
   },
@@ -286,7 +286,7 @@ export default function MobilePage() {
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
                   lang === l
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >
                 {l.toUpperCase()}
@@ -465,9 +465,9 @@ export default function MobilePage() {
             })}
           </div>
 
-          <p className="mt-8 text-sm text-slate-400 dark:text-slate-500">
+          <p className="mt-8 text-sm text-slate-400">
             {t.waitingPrefix}{' '}
-            <Link href="/docs#sdk-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+            <Link href="/docs#sdk-overview" className="text-emerald-700 dark:text-emerald-400 hover:underline">
               {t.installGuide}
             </Link>
             .

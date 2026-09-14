@@ -109,7 +109,7 @@ export default function CaseStudiesPage() {
                   {/* Testimonial */}
                   <blockquote className="border-l-4 border-emerald-500 pl-4 py-2">
                     <p className="text-slate-700 dark:text-slate-300 italic text-sm">&ldquo;{item.testimonial}&rdquo;</p>
-                    <cite className="text-slate-500 text-xs mt-2 block not-italic">&mdash; {item.author}</cite>
+                    <cite className="text-slate-600 text-xs mt-2 block not-italic dark:text-slate-400">&mdash; {item.author}</cite>
                   </blockquote>
                 </div>
               </motion.article>

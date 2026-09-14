@@ -85,7 +85,7 @@ export function FAQSection({
               onClick={() => setSelectedCategory(null)}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === null
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-emerald-700 text-white"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
@@ -97,7 +97,7 @@ export function FAQSection({
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                   selectedCategory === category
-                    ? "bg-emerald-500 text-white"
+                    ? "bg-emerald-700 text-white"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
