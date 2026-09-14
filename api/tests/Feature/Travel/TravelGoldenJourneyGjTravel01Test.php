@@ -176,10 +176,17 @@ class TravelGoldenJourneyGjTravel01Test extends TestCase
         $ticketIds = collect($ticketsResponse->json('data'))->pluck('id')->all();
         $this->assertCount(2, $ticketIds);
 
-        // La PII / le code de validation ne sont jamais exposés en clair
-        // (règle TRAVEL-210/#6023 : seul le hash vit en base, jamais le clair).
+        // #7394 — le code de contrôle EN CLAIR est délivré UNE SEULE FOIS,
+        // ici, à l'émission : c'est le seul moment où l'API l'expose (le hash
+        // seul vit en base, jamais le clair). Les routes de lecture ne le
+        // portent jamais (vérifié sur le check-in ci-dessous).
         foreach ($ticketsResponse->json('data') as $ticket) {
-            $this->assertArrayNotHasKey('validation_code', $ticket);
+            $this->assertArrayHasKey('validation_code', $ticket);
+            $this->assertIsString($ticket['validation_code']);
+            $this->assertMatchesRegularExpression(
+                '/^[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}$/',
+                $ticket['validation_code'],
+            );
             $this->assertArrayNotHasKey('validation_code_hash', $ticket);
         }
 
@@ -192,9 +199,13 @@ class TravelGoldenJourneyGjTravel01Test extends TestCase
 
         // ── 6. Check-in des voyageurs (POST /tickets/{ticket}/check-in) ────
         foreach ($ticketIds as $ticketId) {
-            $this->postJson("/api/v1/travel/tickets/{$ticketId}/check-in")
+            $checkIn = $this->postJson("/api/v1/travel/tickets/{$ticketId}/check-in")
                 ->assertOk()
                 ->assertJsonPath('data.status', TicketStatus::CHECKED_IN->value);
+
+            // #7394 — route de LECTURE : le code en clair n'y est jamais
+            // exposé (il n'existe que sur la réponse d'émission).
+            $this->assertArrayNotHasKey('validation_code', $checkIn->json('data'));
         }
 
         // ── Invariants finaux ──────────────────────────────────────────────

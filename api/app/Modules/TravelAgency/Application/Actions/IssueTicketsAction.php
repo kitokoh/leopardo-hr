@@ -12,16 +12,18 @@ use App\Modules\TravelAgency\Domain\Models\TravelTicket;
 use App\Modules\TravelAgency\Infrastructure\Services\LoyaltyPointsService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelOutboxPublisher;
 use Illuminate\Support\Facades\DB;
-use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;
 
 /**
  * TRAVEL-316 (#6046) — Emission des billets d'une reservation confirmee.
  *
  * Cree un billet nominatif par passager (numero #GV-…, code de validation
- * hache, validite = trajet du jour). Le code de validation EN CLAIR n'est
- * retourne qu'ici (QR) et n'est jamais persiste. La generation PDF est
- * traitee separement (TRAVEL-412) via le contrat documents. Idempotent :
- * les passagers deja pourvus d'un billet ne sont pas re-emis.
+ * hache, validite = trajet du jour). #7394 : le code de validation EN CLAIR
+ * est desormais DELIVRE au passager — porte par `issuedValidationCode` sur le
+ * billet retourne (expose une seule fois par la reponse d'emission), imprime
+ * sur l'e-billet PDF, et jamais relisible depuis la base (seul le hash y
+ * vit). La generation PDF est traitee separement (TRAVEL-412) via le contrat
+ * documents. Idempotent : les passagers deja pourvus d'un billet ne sont pas
+ * re-emis — un rejeu ne re-delivre donc aucun code.
  *
  * @return list<TravelTicket>
  */
@@ -61,8 +63,10 @@ final class IssueTicketsAction
                     'valid_until' => $booking->trip?->departure_date?->endOfDay(),
                 ]);
 
-                // Le code en clair (QR) n'est jamais persiste — seul le hash.
-                $ticket->issueValidationCode();
+                // #7394 : le code en clair n'est jamais persiste (seul le hash
+                // l'est, en base) — il est porte par la propriete transiente
+                // `issuedValidationCode` pour etre delivre UNE fois.
+                $ticket->issuedValidationCode = $ticket->issueValidationCode();
                 $ticket->save();
 
                 $tickets[] = $ticket;
@@ -89,6 +93,4 @@ final class IssueTicketsAction
 
         return $tickets;
     }
-
-
 }

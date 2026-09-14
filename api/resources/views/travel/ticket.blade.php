@@ -48,13 +48,17 @@
     </div>
 
     <div class="qrcode">
-        {{-- QR = numéro de billet (vérifiable côté plateforme) — jamais de PII en clair. --}}
-        <div>Code de contrôle : {{ $ticket->ticket_number }}</div>
+        {{-- #7394 — le code de contrôle imprimé est le CODE DE VALIDATION du
+             billet (secret partagé, délivré une fois à l'émission), celui que
+             l'API accepte (portail /public/travel/shop/bookings/{ref}?code=…) ;
+             le numéro de billet n'est qu'une référence lisible. --}}
+        <div>Code de contrôle : {{ $validationCode }}</div>
+        <div>Billet n° {{ $ticket->ticket_number }}</div>
     </div>
 
     <div class="footer">
-        Billet généré le {{ now()->toDateTimeString() }} — vérifiable par numéro sur la plateforme TravelAgency.
-        Présentez une pièce d'identité à l'embarquement.
+        Billet généré le {{ now()->toDateTimeString() }} — présentez ce code de contrôle avec une pièce d'identité à l'embarquement.
+        Suivi en ligne : espace voyageur (référence {{ $booking?->reference }} + code de contrôle).
     </div>
 </body>
 </html>
