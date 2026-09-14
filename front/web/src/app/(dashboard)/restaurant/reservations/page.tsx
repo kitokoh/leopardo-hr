@@ -144,7 +144,7 @@ export default function RestaurantReservationsPage() {
                         <button className="text-blue-600 hover:underline" onClick={() => void transition(r.id, 'confirm')}>{t(locale, 'restaurant.res.confirm', 'Confirmer')}</button>
                       ) : null}
                       {r.status === 'confirmed' ? (
-                        <button className="text-emerald-600 hover:underline" onClick={() => void transition(r.id, 'check-in')}>{t(locale, 'restaurant.res.checkin', 'Check-in')}</button>
+                        <button className="text-emerald-700 hover:underline" onClick={() => void transition(r.id, 'check-in')}>{t(locale, 'restaurant.res.checkin', 'Check-in')}</button>
                       ) : null}
                       {['pending', 'confirmed'].includes(r.status) ? (
                         <>

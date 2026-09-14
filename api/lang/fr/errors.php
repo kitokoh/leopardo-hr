@@ -12,6 +12,7 @@ return [
     'EMPLOYEE_NOT_ACTIVE' => 'Ce compte employé n\'est pas actif.',
     'COMPANY_NOT_FOUND' => 'Entreprise introuvable.',
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',
+    'PASSWORD_TOO_COMMON' => 'Votre mot de passe est trop courant ou trop prévisible. Choisissez un mot de passe unique d\'au moins 10 caractères, avec des lettres et des chiffres.',
     'UNAUTHENTICATED' => 'Connexion requise.',
 
     // Pointage
@@ -105,6 +106,7 @@ return [
     'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
     'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
     'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+    'SESSION_ALREADY_ACTIVE' => 'Vous êtes déjà connecté à un espace Leopardo. Déconnectez-vous avant de créer un nouvel espace.',
     'INVALID_SOLUTION' => "Solution sectorielle inconnue ou non disponible : ':solution'.",
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",

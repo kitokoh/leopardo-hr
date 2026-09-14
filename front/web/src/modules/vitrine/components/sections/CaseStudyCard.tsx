@@ -53,7 +53,7 @@ export function CaseStudyCard({
             ) : null}
             {/* Industry badge */}
             <div className="absolute top-4 right-4">
-              <div className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+              <div className="px-3 py-1 rounded-full bg-emerald-700/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                 {industry}
               </div>
             </div>
@@ -79,7 +79,7 @@ export function CaseStudyCard({
             </div>
 
             {/* CTA */}
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold group-hover:gap-3 transition-all">
+            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold group-hover:gap-3 transition-all">
               Lire le cas d&apos;usage
               <ArrowRight className="w-4 h-4" />
             </div>

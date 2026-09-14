@@ -206,7 +206,7 @@ export function RestaurantCrudTable({ config }: { config: CrudConfig }) {
                     <div className="flex justify-end gap-3">
                       <button
                         type="button"
-                        className="font-medium text-emerald-600 hover:text-emerald-800"
+                        className="font-medium text-emerald-700 hover:text-emerald-800"
                         onClick={() => openEdit(row)}
                       >
                         {t(locale, 'restaurant.crud.edit', 'Modifier')}

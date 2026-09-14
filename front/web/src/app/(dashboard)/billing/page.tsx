@@ -220,7 +220,7 @@ export default function BillingPage() {
           <div className="rounded-2xl border border-app-border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Abonnement actuel</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Abonnement actuel</p>
                 {subscription ? (
                   <>
                     <h2 className="mt-2 text-2xl font-black text-slate-950">
@@ -324,7 +324,7 @@ export default function BillingPage() {
                         {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString(toIntlLocale(locale)) : '—'}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title="Telecharger PDF">
+                        <button onClick={() => downloadInvoicePdf(invoice.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-700" title="Telecharger PDF">
                           <Download className="h-4 w-4" />
                         </button>
                       </td>

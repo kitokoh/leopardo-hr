@@ -31,6 +31,24 @@ import {
   Gift,
 } from 'lucide-react';
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * #7305 — FAQ tarifs : `AnimatePresence` sans `mode="wait"`
+ * ─────────────────────────────────────────────────────────────────────────
+ * La liste « Accordion » plus bas est produite par `filteredFaq.map(...)` :
+ * elle rend PLUSIEURS enfants dans la même passe. Or `mode="wait"` (attendre la
+ * fin de l'animation de sortie avant de monter l'enfant suivant) n'accepte
+ * qu'UN enfant, et framer-motion avertissait alors en console :
+ *   You're attempting to animate multiple children within AnimatePresence, but
+ *   its mode is set to "wait". This will lead to odd visual behaviour.
+ * C'est la page que sert la redirection `/signup` sans `?plan=` (règle portée
+ * par le proxy, #7238) : l'avertissement relevé « sur /signup » venait donc
+ * d'ici. Mesuré avant correction (`next dev`, console du navigateur, navigation
+ * client) : 4 à 6 avertissements par affichage de `/pricing`, 0 après.
+ * Le mode par défaut (`sync`) est celui d'une liste : chaque question entre et
+ * sort indépendamment quand le filtre de catégorie change. La règle est
+ * verrouillée par `src/lib/__tests__/animate-presence-mode-wait.test.ts`.
+ * ───────────────────────────────────────────────────────────────────────── */
+
 /* ─────────────────────────────────────────────
    TYPES
 ───────────────────────────────────────────── */
@@ -279,7 +297,7 @@ function AvailabilityMark({
       >
         <Check
           className={`w-4 h-4 ${
-            popular ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
+            popular ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
           }`}
         />
       </span>
@@ -471,7 +489,7 @@ export default function PricingPage() {
           >
             <Link
               href="/checkout?plan=free"
-              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
+              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 cta-glow-emerald hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
                 {copy.hero.primary}
@@ -562,14 +580,14 @@ export default function PricingPage() {
             </label>
           </div>
           {!isEurSelected && (
-            <p className="text-center text-xs text-slate-400 dark:text-slate-500 mb-8 max-w-md mx-auto">
+            <p className="text-center text-xs text-slate-400 mb-8 max-w-md mx-auto">
               {copy.currency.approx}
             </p>
           )}
 
           {/* Billing toggle */}
           <div className="flex items-center justify-center gap-4 mb-14">
-            <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
+            <span className={`text-sm font-semibold transition-colors ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
               {copy.plans.monthly}
             </span>
             <button
@@ -583,7 +601,7 @@ export default function PricingPage() {
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             </button>
-            <span className={`text-sm font-semibold transition-colors ${isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}>
+            <span className={`text-sm font-semibold transition-colors ${isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
               {copy.plans.annual}
             </span>
             <AnimatePresence>
@@ -634,7 +652,7 @@ export default function PricingPage() {
                     {/* Plan badge */}
                     {plan.popular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
                           <Star className="w-3 h-3 fill-white" />
                           {copy.badges.popular}
                         </div>
@@ -681,25 +699,25 @@ export default function PricingPage() {
                         )}
                       </div>
                       {isFree ? (
-                        <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <p className="mt-1 text-sm text-emerald-700 dark:text-emerald-400 font-semibold">
                           {copy.badges.freeNote}
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
                             {displayPeriod}
                           </p>
                           {isAnnual && (
-                            <p className="text-xs text-slate-400 dark:text-slate-600">
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
                               <span className="line-through">
                                 {isEurSelected ? 'EUR' : currencyOption.currency} {isEurSelected ? plan.price : (convertedPrice(plan.price) ?? plan.price)}
                               </span>
                               {' '}
-                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{annualSavingsLabel}</span>
+                              <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{annualSavingsLabel}</span>
                             </p>
                           )}
                           {!isEurSelected && (
-                            <p className="text-xs text-slate-400 dark:text-slate-600">≈ EUR {displayPrice}</p>
+                            <p className="text-xs text-slate-400">≈ EUR {displayPrice}</p>
                           )}
                         </div>
                       ) : null}
@@ -708,7 +726,7 @@ export default function PricingPage() {
                           {plan.priceNote}
                         </p>
                       )}
-                      <div className="inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="inline-flex items-center gap-1.5 mt-3 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400">
                         <Users className="w-3 h-3" />
                         {plan.employeeLimit}
                       </div>
@@ -718,7 +736,7 @@ export default function PricingPage() {
                     <ul className="flex-1 space-y-3 mb-8">
                       {plan.features.map((feature, fi) => (
                         <li key={fi} className="flex items-start gap-3">
-                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400'}`} />
                           <span className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{feature}</span>
                         </li>
                       ))}
@@ -729,7 +747,7 @@ export default function PricingPage() {
                       href={ctaHref}
                       className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
                         plan.popular
-                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
+                          ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-cyan-700 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
                           : isFree
                             ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-800 hover:to-black hover:scale-[1.01] active:scale-[0.98] shadow-md'
                             : hasNumericPrice
@@ -795,7 +813,7 @@ export default function PricingPage() {
                         key={plan.name}
                         className={`text-center py-5 px-4 font-black text-sm ${
                           plan.popular
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-emerald-700 dark:text-emerald-400'
                             : 'text-slate-700 dark:text-slate-300'
                         }`}
                       >
@@ -803,7 +821,7 @@ export default function PricingPage() {
                           <Icon className={`w-5 h-5 ${planIconColors[i % planIconColors.length]}`} />
                           {plan.name}
                           {plan.popular && (
-                            <span className="text-[9px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-black uppercase tracking-wider">
+                            <span className="text-[9px] px-2 py-0.5 bg-emerald-700 text-white rounded-full font-black uppercase tracking-wider">
                               ★ top
                             </span>
                           )}
@@ -869,7 +887,7 @@ export default function PricingPage() {
                           href={getPlanHref(plan)}
                           className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${
                             plan.popular
-                              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                              ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-lg shadow-emerald-500/20'
                               : isFree
                                 ? 'bg-slate-700 text-white hover:bg-slate-800'
                                 : hasNumericPrice
@@ -924,7 +942,7 @@ export default function PricingPage() {
                 onClick={() => setFaqCategory(faqCategory === cat ? null : cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 ${
                   faqCategory === cat
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-emerald-700 text-white'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >

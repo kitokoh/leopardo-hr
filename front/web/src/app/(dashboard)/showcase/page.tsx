@@ -443,7 +443,7 @@ export default function ShowcaseModulePage() {
                     </h3>
                     <div className="flex items-center gap-2">
                       {savedId === section.id && (
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
                           <Check className="h-3.5 w-3.5" />
                           {c.saved}
                         </span>

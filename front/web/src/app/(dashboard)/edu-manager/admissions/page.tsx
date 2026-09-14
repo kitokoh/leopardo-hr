@@ -129,7 +129,7 @@ export default function AdmissionsPage() {
             {t(locale, 'edu.admissions.convert')}
           </Button>
         ) : (
-          <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">{t(locale, 'edu.admissions.converted')}</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">{t(locale, 'edu.admissions.converted')}</span>
         ),
     },
   ];

@@ -56,7 +56,7 @@ function getReports(locale: AppLocale): ReportConfig[] {
     title: i18nT(locale, 'reports.payroll_title'),
     description: i18nT(locale, 'reports.payroll_desc'),
     icon: DollarSign,
-    color: 'text-emerald-600 bg-emerald-50',
+    color: 'text-emerald-700 bg-emerald-50',
     endpoint: '/reports/payroll-summary',
     params: [
       { key: 'period', label: i18nT(locale, 'reports.period_label'), type: 'month' },
@@ -96,7 +96,7 @@ function getReports(locale: AppLocale): ReportConfig[] {
     title: i18nT(locale, 'reports.training_title'),
     description: i18nT(locale, 'reports.training_desc'),
     icon: TrendingUp,
-    color: 'text-emerald-600 bg-emerald-50',
+    color: 'text-emerald-700 bg-emerald-50',
     endpoint: '/reports/training-completion',
     params: [],
   },
@@ -224,7 +224,7 @@ export default function ReportsPage() {
             </button>
 
             {results[report.id] && (
-              <p className={`mt-2 text-xs font-medium ${results[report.id].ok ? 'text-emerald-600' : 'text-red-500'}`}>
+              <p className={`mt-2 text-xs font-medium ${results[report.id].ok ? 'text-emerald-700' : 'text-red-500'}`}>
                 {results[report.id].message}
               </p>
             )}

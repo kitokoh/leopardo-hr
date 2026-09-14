@@ -29,7 +29,7 @@ export default function TestimonialsPage() {
       />
 
       {/* Stats Banner — données de démonstration, étiquetées honnêtement (#2726) */}
-      <section className="py-16 bg-emerald-600 dark:bg-emerald-800">
+      <section className="py-16 bg-emerald-700 dark:bg-emerald-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {content.stats.items.map((stat, i) => (
@@ -41,11 +41,11 @@ export default function TestimonialsPage() {
                 viewport={{ once: true }}
               >
                 <p className="text-3xl sm:text-4xl font-black text-white">{stat.value}</p>
-                <p className="text-emerald-100 mt-1 text-sm">{stat.label}</p>
+                <p className="text-emerald-50 mt-1 text-sm">{stat.label}</p>
               </motion.div>
             ))}
           </div>
-          <p className="mt-8 text-center text-emerald-100/80 text-xs">
+          <p className="mt-8 text-center text-emerald-100 text-xs">
             {content.stats.footnote}
           </p>
         </div>

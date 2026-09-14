@@ -379,7 +379,7 @@ export default function RestaurantPosPage() {
                         className="flex flex-col items-start gap-1 rounded-xl border border-slate-200 bg-white p-3 text-left shadow-sm transition hover:border-emerald-300 hover:shadow-md disabled:opacity-40"
                       >
                         <span className="text-sm font-bold text-slate-700">{product.name}</span>
-                        <span className="text-xs font-mono font-semibold text-emerald-600">
+                        <span className="text-xs font-mono font-semibold text-emerald-700">
                           {(product.price_minor / 100).toFixed(2)} {product.currency}
                         </span>
                       </button>
