@@ -103,6 +103,19 @@ return Application::configure(basePath: dirname(__DIR__))
         // BC-25 RESTAURANT (RESTO-808/#6229) — consommation de l'outbox
         // de la verticale (notifications cuisine/service, fidélité…).
         $schedule->command('restaurant:outbox-dispatch')->everyMinute()->withoutOverlapping();
+        // #7401 — synchronisation Traccar de la flotte (devices → positions →
+        // trajets). Les trois endpoints `/tracking/sync-*` existaient mais
+        // n'étaient appelés par AUCUNE tâche planifiée : sans un humain qui
+        // clique, aucun appareil n'était appairé, aucune position relevée,
+        // aucun trajet enregistré, alors que TRACCAR_SYNC_INTERVAL (minutes)
+        // était défini et jamais lu. `withoutOverlapping(30)` : une passe lente
+        // (Traccar indisponible, gros historique) ne s'empile pas sur la
+        // suivante, avec une expiration de verrou de 30 min plutôt que les
+        // 24 h par défaut.
+        $trackingIntervalMinutes = max(1, min(59, (int) config('tracking.sync_interval_minutes', 5)));
+        $schedule->command('leopardo:fleet:sync')
+            ->cron("*/{$trackingIntervalMinutes} * * * *")
+            ->withoutOverlapping(30);
     })
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
