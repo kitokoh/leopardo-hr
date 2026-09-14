@@ -7,6 +7,7 @@ namespace App\Modules\Notification\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class NotificationPreferenceProvisioner
@@ -103,33 +104,78 @@ class NotificationPreferenceProvisioner
     {
         try {
             $preference->save();
-
-            return;
         } catch (QueryException $exception) {
             if (! $this->isUniqueViolation($exception)) {
                 throw $exception;
             }
-        }
 
+            $this->resyncAfterUniqueViolation($employee, $exception);
+        }
+    }
+
+    /**
+     * Recharge la ligne réellement présente en base puis l'aligne sur les
+     * valeurs par défaut de l'employé.
+     *
+     * QA onboarding 2026-09-14 : cette branche levait auparavant un
+     * \RuntimeException « Préférence de notification introuvable … après
+     * violation d'unicité » qui ÉCRASAIT l'exception d'origine. Vu en dev au
+     * démarrage du conteneur : le message désignait le provisioner alors que la
+     * base renvoyait une erreur transitoire du pooler, et la cause réelle était
+     * perdue pour l'exploitant. L'erreur SQL d'origine est désormais conservée
+     * comme « previous » et le contexte est journalisé.
+     */
+    private function resyncAfterUniqueViolation(Employee $employee, QueryException $uniqueViolation): void
+    {
         $existing = NotificationPreference::query()
             ->withoutGlobalScopes()
             ->where('employee_id', $employee->id)
             ->first();
 
         if (! $existing instanceof NotificationPreference) {
+            Log::error('notification.preference.conflict_without_row', [
+                'employee_id' => (string) $employee->id,
+                'company_id' => (string) $employee->company_id,
+                'sqlstate' => (string) $uniqueViolation->getCode(),
+            ]);
+
             throw new \RuntimeException(sprintf(
-                'Préférence de notification introuvable pour employee_id=%s après violation d’unicité.',
-                (string) $employee->id
-            ));
+                'Préférence de notification introuvable pour employee_id=%s après violation d’unicité (%s).',
+                (string) $employee->id,
+                (string) $uniqueViolation->getMessage()
+            ), 0, $uniqueViolation);
         }
 
         $this->applyDefaults($existing, $employee);
         $existing->save();
     }
 
+    /**
+     * Vrai UNIQUEMENT pour une vraie violation d'unicité.
+     *
+     * QA onboarding 2026-09-14 : `23000` est la classe SQLSTATE GÉNÉRIQUE des
+     * violations d'intégrité — elle couvre aussi les clés étrangères, les NOT
+     * NULL et les CHECK. La traiter comme « la ligne existe déjà » faisait
+     * absorber n'importe quelle erreur d'intégrité, puis échouer sur une
+     * relecture forcément vide (d'où le message trompeur observé au démarrage
+     * du conteneur en dev). Seule une vraie violation d'unicité est absorbable ;
+     * tout le reste remonte tel quel.
+     */
     private function isUniqueViolation(QueryException $exception): bool
     {
-        return in_array((string) $exception->getCode(), ['23505', '23000'], true);
+        $sqlState = (string) $exception->getCode();
+        $message = $exception->getMessage();
+
+        if ($sqlState === '23505') {
+            return true;
+        }
+
+        if ($sqlState === '23000') {
+            // MySQL/MariaDB (suites de tests) : « Duplicate entry ... for key ... ».
+            return str_contains($message, 'Duplicate entry');
+        }
+
+        return false;
     }
 
     private function applyDefaults(NotificationPreference $preference, Employee $employee): void
