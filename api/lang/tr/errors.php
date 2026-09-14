@@ -284,6 +284,7 @@ return [
     'TWO_FACTOR_TOO_MANY_ATTEMPTS' => 'Çok fazla deneme. Kod geçersiz kılındı, lütfen tekrar giriş yapın.',
     'PAYROLL_RUN_PERIOD_ALREADY_EXISTS' => 'Bu dönem için zaten bir maaş bordrosu çalışması mevcut.',
     'STT_UNAVAILABLE' => 'Sesli yazıya dönüştürme geçici olarak kullanılamıyor (hizmet yapılandırılmamış).',
+    'TTS_UNAVAILABLE' => 'Sesli sentez geçici olarak kullanılamıyor (hizmet yapılandırılmamış).',
     'AI_ACTION_REJECTED' => 'İşlem kullanıcı tarafından reddedildi.',
     // #7268 — Onboarding: yerelleştirilmiş adım mesajları (sabit metin yok)
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',

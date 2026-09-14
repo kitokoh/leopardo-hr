@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\AI;
 
-use App\AI\DTOs\AIRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
@@ -59,7 +58,7 @@ class TtsExecSecurityTest extends TestCase
     {
         config(['ai.voice.edge_tts_binary' => '/nonexistent/edge-tts']);
 
-        $controller = new \App\AI\Interfaces\Api\V1\Controllers\VoiceController();
+        $controller = new \App\AI\Interfaces\Api\V1\Controllers\VoiceController;
         $method = new \ReflectionMethod($controller, 'textToSpeech');
 
         $result = $method->invoke($controller, 'Bonjour', 'fr', null, 'edge_tts');
@@ -79,6 +78,29 @@ class TtsExecSecurityTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors('voice');
+    }
+
+    public function test_synthesize_fails_closed_instead_of_returning_null_audio(): void
+    {
+        // #7359 — sans fournisseur TTS opérationnel, l'endpoint répondait 200
+        // avec `audio_url: null` (succès apparent). Il doit désormais échouer
+        // explicitement, comme /voice/transcribe.
+        config([
+            'ai.voice.edge_tts_binary' => '/nonexistent/edge-tts',
+            'ai.voice.tts_provider' => 'edge_tts',
+            'ai.voice.elevenlabs_key' => null,
+        ]);
+
+        [$company, $employee] = $this->aiFixture();
+        Sanctum::actingAs($employee);
+
+        $response = $this->postJson('/api/v1/ai/voice/synthesize', [
+            'text' => 'Bonjour',
+            'language' => 'fr',
+        ]);
+
+        $response->assertStatus(503);
+        $response->assertJsonPath('error', 'TTS_UNAVAILABLE');
     }
 
     /**
