@@ -6,6 +6,10 @@ namespace App\AI;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
+use App\Modules\Attendance\Application\DTOs\CheckInDTO;
+use App\Modules\Attendance\Infrastructure\Services\AttendanceService;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use App\Modules\Notification\Domain\Models\CompanyAnnouncement;
 use App\Modules\Notification\Infrastructure\Services\AnnouncementService;
 use App\Modules\Planning\Application\Actions\ApproveAbsence;
@@ -17,6 +21,7 @@ use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class WriteActionRunner
 {
@@ -35,6 +40,14 @@ class WriteActionRunner
         // d'annonces du module Notification (BC-13 COMMS), même chemin que
         // l'endpoint REST POST /api/v1/announcements.
         private readonly AnnouncementService $announcements,
+        // A7 (#7377) — `create_employee` réutilise le service canonique du
+        // BC-04 HR (même chemin que EmployeeController::store) ; l'assistant ne
+        // réimplémente AUCUNE règle métier de création.
+        private readonly EmployeeService $employees,
+        // A8 (#7378) — `check_in_employee` / `check_out_employee` réutilisent
+        // AttendanceService (même chemin que AttendanceController::checkIn/
+        // checkOut), y compris la géolocalisation et les règles de pointage.
+        private readonly AttendanceService $attendance,
     ) {}
 
     /**
@@ -50,6 +63,11 @@ class WriteActionRunner
             'absence_decision',
             'shift_assign',
             'notify_team',
+            // A7 (#7377) — création d'un employé depuis l'assistant (voix/texte).
+            'create_employee',
+            // A8 (#7378) — pointage entrée/sortie depuis l'assistant.
+            'check_in_employee',
+            'check_out_employee',
         ];
     }
 
@@ -88,6 +106,13 @@ class WriteActionRunner
             // B3c (#6858) — message à une équipe via AnnouncementService
             // (parité AnnouncementController, BC-13 COMMS).
             'notify_team' => fn (array $arguments): array => $this->notifyTeam($companyId, $userId, $arguments),
+            // A7 (#7377) — création d'un employé via EmployeeService (parité
+            // EmployeeController::store, BC-04 HR).
+            'create_employee' => fn (array $arguments): array => $this->createEmployee($companyId, $userId, $arguments),
+            // A8 (#7378) — pointage via AttendanceService (parité
+            // AttendanceController::checkIn/checkOut, BC-05 WORKFORCE).
+            'check_in_employee' => fn (array $arguments): array => $this->punchEmployee($companyId, $userId, $arguments, 'check_in'),
+            'check_out_employee' => fn (array $arguments): array => $this->punchEmployee($companyId, $userId, $arguments, 'check_out'),
         ];
     }
 
@@ -498,6 +523,240 @@ class WriteActionRunner
         }
 
         return AbsenceType::query()->where('company_id', $companyId)->first();
+    }
+
+    /**
+     * A7 (#7377) — création d'un employé demandée par l'assistant.
+     *
+     * Parité REST `EmployeeController::store` : même autorisation
+     * (`EmployeePolicy::create` → manager `principal` ou `rh`) et même service
+     * canonique (`EmployeeService` + `CreateEmployeeDTO`), donc mêmes règles,
+     * même événement `EmployeeCreated`, même invalidation de cache et même
+     * envoi d'invitation.
+     *
+     * Périmètre volontairement restreint :
+     *  - le rôle créé est TOUJOURS `employee` — une conversation n'élève jamais
+     *    un compte au rang de manager (pas de création de privilèges par l'IA) ;
+     *  - aucun mot de passe n'est posé par l'IA : l'invitation part, le
+     *    collaborateur choisit lui-même son mot de passe ;
+     *  - `department_id` / `position_id` ne sont pas exposés : le contrat REST
+     *    de création ne les accepte pas non plus (`StoreEmployeeRequest`).
+     *
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    private function createEmployee(string $companyId, int $userId, array $arguments): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::query()
+            ->where('company_id', $companyId)
+            ->where('id', $userId)
+            ->first();
+
+        if ($actor === null) {
+            return ['error' => 'Actor not found'];
+        }
+
+        // Défense en profondeur (le gate principal reste la matrice
+        // ai.tool_permissions) : parité stricte avec EmployeePolicy::create.
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            return [
+                'error' => 'AI_TOOL_PERMISSION_DENIED',
+                'message' => 'Only a principal or RH manager can create an employee',
+            ];
+        }
+
+        $firstName = trim($this->stringArgument($arguments, 'first_name', ''));
+        $lastName = trim($this->stringArgument($arguments, 'last_name', ''));
+        $email = mb_strtolower(trim($this->stringArgument($arguments, 'email', '')));
+
+        if ($firstName === '' || $lastName === '' || $email === '') {
+            return [
+                'error' => 'EMPLOYEE_FIELDS_REQUIRED',
+                'message' => 'first_name, last_name and email are required',
+            ];
+        }
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return [
+                'error' => 'EMPLOYEE_EMAIL_INVALID',
+                'message' => "L'adresse e-mail fournie est invalide",
+            ];
+        }
+
+        $alreadyExists = Employee::query()
+            ->where('company_id', $companyId)
+            ->where('email', $email)
+            ->exists();
+
+        if ($alreadyExists) {
+            return [
+                'error' => 'EMPLOYEE_EMAIL_TAKEN',
+                'message' => 'Un employé avec cette adresse e-mail existe déjà dans cette société',
+            ];
+        }
+
+        /** @var array<string, mixed> $extraData */
+        $extraData = [];
+        $jobTitle = trim($this->stringArgument($arguments, 'job_title', ''));
+        if ($jobTitle !== '') {
+            $extraData['job_title'] = $jobTitle;
+        }
+
+        $contractType = trim($this->stringArgument($arguments, 'contract_type', ''));
+        $hireDate = trim($this->stringArgument($arguments, 'hire_date', ''));
+
+        $salaryType = $this->stringArgument($arguments, 'salary_type', 'fixed');
+        if (! in_array($salaryType, ['fixed', 'hourly', 'daily'], true)) {
+            $salaryType = 'fixed';
+        }
+
+        try {
+            $employee = $this->employees->create(new CreateEmployeeDTO(
+                first_name: $firstName,
+                last_name: $lastName,
+                email: $email,
+                phone: $this->nullableStringArgument($arguments, 'phone'),
+                // Jamais d'élévation de privilège par une conversation.
+                role: 'employee',
+                company_id: $companyId,
+                contract_type: $contractType !== '' ? $contractType : null,
+                contract_start: $hireDate !== '' ? $hireDate : null,
+                salary_type: $salaryType,
+                salary_base: $this->floatArgument($arguments, 'salary_base'),
+                send_invitation: true,
+                extra_data: $extraData,
+            ), $actor);
+        } catch (\Throwable $exception) {
+            Log::error('AI create_employee failed', [
+                'company_id' => $companyId,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return [
+                'error' => 'EMPLOYEE_CREATION_FAILED',
+                'message' => $exception->getMessage(),
+            ];
+        }
+
+        return [
+            'employee_id' => $employee->id,
+            'email' => $employee->email,
+            'status' => $employee->status,
+            'invitation_sent' => true,
+        ];
+    }
+
+    /**
+     * A8 (#7378) — pointage (entrée ou sortie) demandé par l'assistant.
+     *
+     * Parité REST `AttendanceController::checkIn` / `checkOut` : même service
+     * (`AttendanceService`), donc mêmes règles métier (géofence, consentement
+     * GPS, période clôturée, photo obligatoire…) et mêmes événements.
+     *
+     * `attendance_logs.method` reste une valeur EXISTANTE du schéma : `mobile`
+     * pour un pointage self-service (comme l'app), `manager` quand un manager
+     * pointe pour un tiers — la valeur historique documentée pour ce cas
+     * exceptionnel. Aucune nouvelle valeur n'est inventée.
+     *
+     * @param  array<string, mixed>  $arguments
+     * @return array<string, mixed>
+     */
+    private function punchEmployee(string $companyId, int $userId, array $arguments, string $action): array
+    {
+        /** @var Employee|null $actor */
+        $actor = Employee::query()
+            ->where('company_id', $companyId)
+            ->where('id', $userId)
+            ->first();
+
+        if ($actor === null) {
+            return ['error' => 'Actor not found'];
+        }
+
+        $isManager = $actor->isManager();
+
+        // #6533 — un non-manager ne pointe QUE pour lui-même ; l'employee_id
+        // proposé par le LLM est ignoré pour un employé.
+        $employeeId = $isManager
+            ? $this->intArgument($arguments, 'employee_id', $userId)
+            : $userId;
+
+        /** @var Employee|null $employee */
+        $employee = Employee::query()
+            ->where('company_id', $companyId)
+            ->when($isManager && $actor->isTeamScoped(), static fn ($query) => $query->visibleToManager($actor))
+            ->where('id', $employeeId)
+            ->first();
+
+        if ($employee === null) {
+            return [
+                'error' => 'Employee not found',
+                'message' => 'Only employees of the current company (and manager scope) can be punched',
+            ];
+        }
+
+        $punchingForSomeoneElse = $isManager && $employeeId !== $userId;
+
+        $dto = new CheckInDTO(
+            gps_lat: $this->nullableFloatArgument($arguments, 'gps_lat'),
+            gps_lng: $this->nullableFloatArgument($arguments, 'gps_lng'),
+            gps_accuracy: $this->nullableFloatArgument($arguments, 'gps_accuracy'),
+            method: $punchingForSomeoneElse ? 'manager' : 'mobile',
+            action: $action,
+            punch_note: $this->nullableStringArgument($arguments, 'note'),
+        );
+
+        try {
+            $log = $action === 'check_out'
+                ? $this->attendance->checkOut($employee, $dto)
+                : $this->attendance->checkIn($employee, $dto);
+        } catch (\Throwable $exception) {
+            // Les règles de pointage (déjà pointé, hors zone, journée close,
+            // consentement GPS…) remontent en message explicite plutôt qu'en
+            // 500 — aucune écriture partielle (le service est transactionnel).
+            return [
+                'error' => 'PUNCH_REJECTED',
+                'message' => $exception->getMessage(),
+            ];
+        }
+
+        return [
+            'log_id' => $log->id,
+            'employee_id' => $employee->id,
+            'action' => $action,
+            'date' => $log->date,
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function nullableStringArgument(array $arguments, string $key): ?string
+    {
+        $value = trim($this->stringArgument($arguments, $key, ''));
+
+        return $value === '' ? null : $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function nullableFloatArgument(array $arguments, string $key): ?float
+    {
+        $raw = $arguments[$key] ?? null;
+
+        return is_numeric($raw) ? (float) $raw : null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $arguments
+     */
+    private function floatArgument(array $arguments, string $key, float $default = 0.0): float
+    {
+        $raw = $arguments[$key] ?? null;
+
+        return is_numeric($raw) ? (float) $raw : $default;
     }
 
     /**
