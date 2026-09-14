@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
+use App\Modules\TravelAgency\Domain\Exceptions\TravelActivationFailedException;
 use Illuminate\Console\Command;
 
 /**
@@ -43,7 +44,17 @@ final class TravelActivateCommand extends Command
             return self::FAILURE;
         }
 
-        $this->activateAction->execute($company);
+        // #7393 — la commande ne peut annoncer « activée » que si le flag a
+        // réellement été persisté (vérifié par l'Action, relecture en base).
+        // Sans cette garde, un échec d'écriture silencieux laissait la
+        // verticale inaccessible (403 FEATURE_NOT_ENABLED) malgré le succès.
+        try {
+            $this->activateAction->execute($company);
+        } catch (TravelActivationFailedException $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
 
         $this->info("Verticale TravelAgency activée pour « {$company->name} » ({$company->id}).");
 
