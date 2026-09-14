@@ -160,6 +160,30 @@ Deux chantiers distincts :
   pour une même donnée sont exactement ce qui avait produit les trois progressions d'onboarding
   divergentes (#7300).
 
+### 13. Console propre du back-office — plus d'attribut perdu sur `<Sidebar>` (#7305)
+
+`DashboardLayout.vue` passait `class="fixed inset-y-0 left-0 z-50"` au composant `<Sidebar>`.
+Or `Sidebar.vue` a une **racine fragmentaire** (l'overlay mobile `<transition>` et la sidebar
+sont deux nœuds frères) : Vue ne pouvait pas hériter l'attribut et le **perdait silencieusement**
+en émettant à chaque montage
+
+```
+[Vue warn]: Extraneous non-props attributes (class) were passed to component but could not be
+automatically inherited because component renders fragment or text or teleport root nodes. at <Sidebar …>
+```
+
+Correctif : le composant déclare `inheritAttrs: false` et rebranche explicitement `v-bind="$attrs"`
+sur la racine « sidebar » ; le `class` redondant du layout (déjà porté par cette racine) est retiré.
+
+À vérifier :
+
+- Le dashboard se monte **sans aucun avertissement Vue** de ce type —
+  `e2e/sidebar-attrs-console-clean.spec.js` (le test **échoue** si l'avertissement réapparaît :
+  vérifié en réintroduisant le défaut).
+- La sidebar reste **en position fixe**, calée à gauche et au-dessus du contenu
+  (`position: fixed`, `left: 0`, `z-index >= 50` mesurés sur l'élément) : retirer le `class` du
+  layout ne doit pas casser la mise en page.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright

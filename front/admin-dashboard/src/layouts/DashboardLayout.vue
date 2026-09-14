@@ -14,10 +14,14 @@
     >{{ $t('a11y.skip_to_content', 'Aller au contenu principal') }}</a>
 
     <!-- Sidebar -->
+    <!-- #7305 — pas de `class` ici : ces classes (`fixed inset-y-0 left-0 z-50`)
+         sont DÉJÀ portées par la racine de `Sidebar.vue` ; le composant ayant une
+         racine fragmentaire, l'attribut était perdu et déclenchait un
+         avertissement Vue. Les attributs éventuels sont désormais rebranchés
+         explicitement dans le composant (`inheritAttrs: false` + `$attrs`). -->
     <Sidebar
       :is-open="sidebarOpen"
       @close="sidebarOpen = false"
-      class="fixed inset-y-0 left-0 z-50"
     />
 
     <!-- Main content -->

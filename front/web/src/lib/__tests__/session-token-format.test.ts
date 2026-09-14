@@ -19,12 +19,12 @@ describe('session token format vs middleware guard (#6679)', () => {
     // on exécute le middleware avec le cookie au format réel posé par
     // login/route.ts, au lieu d'introspecter le source (fragile).
     const { NextRequest } = await import('next/server');
-    const { middleware } = await import('@/middleware');
+    const { proxy } = await import('@/proxy');
 
     for (const token of ['1001|HVs0OHabcdefghijklmnopqrstuvwxyz', '1001%7CHVs0OHabcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyz0123456789.-_']) {
       const req = new NextRequest('https://app.example.com/dashboard');
       req.cookies.set('leopardo_token', token);
-      const res = middleware(req);
+      const res = proxy(req);
       expect(res.status).toBe(200);
     }
   });

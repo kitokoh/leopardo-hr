@@ -77,6 +77,20 @@ const cspDirectives = [
 const enforceCsp = process.env.CSP_ENFORCE === "true";
 
 const nextConfig: NextConfig = {
+  // #7305 — racine du workspace explicite.
+  //
+  // Le dépôt est un monorepo à DEUX lockfiles (`/package-lock.json` et
+  // `/front/web/package-lock.json`) : Next devait « deviner » la racine et
+  // choisissait le dossier PARENT à chaque build, en émettant
+  // `⚠ Next.js inferred your workspace root, but it may not be correct.`
+  // La racine est donc déclarée : le build (Turbopack) et la trace des fichiers
+  // serveur ne dépendent plus d'une heuristique — un build reproductible, et
+  // pas de fichiers du monorepo embarqués par erreur dans le bundle.
+  turbopack: {
+    root: __dirname,
+  },
+  outputFileTracingRoot: __dirname,
+
   // Image optimization
   images: {
     formats: ["image/avif", "image/webp"],
