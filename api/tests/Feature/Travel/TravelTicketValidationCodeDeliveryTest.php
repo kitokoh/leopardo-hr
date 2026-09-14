@@ -141,7 +141,7 @@ class TravelTicketValidationCodeDeliveryTest extends TestCase
         //    code délivré (sinon le passager retomberait sur le bug #7394).
         $stored = app(TenantManager::class)->withinTenant(
             $company,
-            fn (): TravelTicket => TravelTicket::query()->findOrFail($ticket['id']),
+            fn (): TravelTicket => TravelTicket::query()->whereKey($ticket['id'])->firstOrFail(),
         );
 
         $this->assertNotSame($code, $stored->validation_code);
@@ -209,7 +209,7 @@ class TravelTicketValidationCodeDeliveryTest extends TestCase
 
         $stored = app(TenantManager::class)->withinTenant(
             $company,
-            fn (): TravelTicket => TravelTicket::query()->findOrFail($ticket['id']),
+            fn (): TravelTicket => TravelTicket::query()->whereKey($ticket['id'])->firstOrFail(),
         );
 
         // Contenu imprimé : le VRAI code, plus le numéro de billet à sa place.

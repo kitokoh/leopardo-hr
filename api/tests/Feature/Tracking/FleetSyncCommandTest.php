@@ -12,6 +12,7 @@ use App\Modules\Fleet\Domain\Models\VehicleTrip;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\PendingCommand;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -42,6 +43,19 @@ class FleetSyncCommandTest extends TestCase
         ]);
     }
 
+    /**
+     * Convention A-1 : `artisan()` retourne `PendingCommand|int` ; on
+     * normalise le type (PHPStan strict) avant les assertions d'exécution.
+     *
+     * @param  array<string, mixed>  $parameters
+     */
+    private function artisanOk(string $command, array $parameters = []): void
+    {
+        $pending = $this->artisan($command, $parameters);
+        assert($pending instanceof PendingCommand);
+        $pending->assertSuccessful();
+    }
+
     /** @test */
     public function it_links_devices_writes_positions_and_trips_then_is_idempotent(): void
     {
@@ -50,7 +64,7 @@ class FleetSyncCommandTest extends TestCase
 
         $this->fakeTraccar();
 
-        $this->artisan('leopardo:fleet:sync')->assertSuccessful();
+        $this->artisanOk('leopardo:fleet:sync');
 
         // 1. Appairage par uniqueId : le véhicule reçoit l'id d'appareil Traccar.
         self::assertSame(77, (int) $vehicle->fresh()?->traccar_device_id);
@@ -65,7 +79,7 @@ class FleetSyncCommandTest extends TestCase
         self::assertEqualsWithDelta(4.0510564, (float) $position->latitude, 0.0000001);
         self::assertEqualsWithDelta(9.7678687, (float) $position->longitude, 0.0000001);
         self::assertSame('48.15', (string) $position->speed_kmh);
-        self::assertSame('2026-09-12 06:00:00', $position->recorded_at?->utc()->format('Y-m-d H:i:s'));
+        self::assertSame('2026-09-12 06:00:00', $position->recorded_at->utc()->format('Y-m-d H:i:s'));
 
         // 3. Trajets convertis : mètres → km, millisecondes → minutes,
         //    nœuds → km/h (les valeurs de l'issue #7399).
@@ -81,7 +95,7 @@ class FleetSyncCommandTest extends TestCase
         self::assertSame('Edéa, Sanaga-Maritime, Littoral, Cameroun', $trip->end_address);
 
         // 4. Rejeu de la même fenêtre : aucun doublon (idempotence).
-        $this->artisan('leopardo:fleet:sync')->assertSuccessful();
+        $this->artisanOk('leopardo:fleet:sync');
 
         self::assertSame(2, VehiclePosition::query()->count());
         self::assertSame(1, VehicleTrip::query()->count());
@@ -99,7 +113,7 @@ class FleetSyncCommandTest extends TestCase
         // --days=999 doit être ramené au plafond de 90 jours ; --limit=1 ne
         // traite qu'un seul véhicule (le premier par id) : le fake Traccar
         // renvoie deux positions, toutes rattachées au véhicule traité.
-        $this->artisan('leopardo:fleet:sync', ['--days' => 999, '--limit' => 1])->assertSuccessful();
+        $this->artisanOk('leopardo:fleet:sync', ['--days' => 999, '--limit' => 1]);
 
         self::assertSame(2, VehiclePosition::query()->count());
         $positioned = VehiclePosition::query()->orderBy('id')->firstOrFail();
@@ -124,7 +138,7 @@ class FleetSyncCommandTest extends TestCase
 
         $this->fakeTraccar();
 
-        $this->artisan('leopardo:fleet:sync', ['--tenant' => $company->id])->assertSuccessful();
+        $this->artisanOk('leopardo:fleet:sync', ['--tenant' => $company->id]);
 
         self::assertSame(2, VehiclePosition::query()->where('vehicle_id', $mine->id)->count());
         self::assertSame(0, VehiclePosition::query()->where('vehicle_id', $theirs->id)->count());
@@ -142,7 +156,7 @@ class FleetSyncCommandTest extends TestCase
 
         Http::fake();
 
-        $this->artisan('leopardo:fleet:sync')->assertSuccessful();
+        $this->artisanOk('leopardo:fleet:sync');
 
         self::assertSame(0, VehiclePosition::query()->count());
         self::assertSame(0, VehicleTrip::query()->count());

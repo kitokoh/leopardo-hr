@@ -157,10 +157,11 @@ class TravelPdvApiTest extends TestCase
         );
 
         self::assertCount(1, $payments, 'une vente comptant = exactement une ligne travel_payments');
-        self::assertSame('cash', $payments->first()->provider_code->value);
-        self::assertSame(PaymentStatus::CONFIRMED, $payments->first()->status);
-        self::assertSame(600000, $payments->first()->amount_minor);
-        self::assertSame($company->id, $payments->first()->company_id);
+        $payment = $payments->firstOrFail();
+        self::assertSame('cash', $payment->provider_code->value);
+        self::assertSame(PaymentStatus::CONFIRMED, $payment->status);
+        self::assertSame(600000, $payment->amount_minor);
+        self::assertSame($company->id, $payment->company_id);
     }
 
     public function test_cash_confirmation_feeds_the_cash_session_expected_balance(): void

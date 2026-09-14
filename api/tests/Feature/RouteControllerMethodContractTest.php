@@ -28,7 +28,10 @@ class RouteControllerMethodContractTest extends TestCase
         $broken = [];
         $checked = 0;
 
-        foreach (app('router')->getRoutes() as $route) {
+        /** @var array<int, mixed> $routes */
+        $routes = app('router')->getRoutes()->getRoutes();
+
+        foreach ($routes as $route) {
             if (! $route instanceof RoutingRoute) {
                 continue;
             }

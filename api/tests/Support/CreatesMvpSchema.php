@@ -2294,7 +2294,7 @@ trait CreatesMvpSchema
         }
 
         // #7401 — historique GPS de la flotte (migration
-        // 2026_09_14_000001_7401_create_vehicle_positions_table).
+        // 2026_09_14_000004_7401_create_vehicle_positions_table).
         if (! Schema::hasTable($this->moduleTable('vehicle_positions'))) {
             Schema::create($this->moduleTable('vehicle_positions'), function (Blueprint $table): void {
                 $table->id();
