@@ -36,7 +36,7 @@ class GroqClient implements LLMClient
     public function __construct()
     {
         $this->apiKey = (string) (config('ai.providers.groq.key') ?? '');
-        $this->model = (string) (config('ai.providers.groq.model') ?? 'llama-3.3-70b-versatile');
+        $this->model = (string) (config('ai.providers.groq.model') ?? 'openai/gpt-oss-120b');
         $this->baseUrl = (string) (config('ai.providers.groq.base_url') ?? 'https://api.groq.com/openai/v1');
     }
 
