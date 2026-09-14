@@ -106,6 +106,20 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Audit 2026-09-13 — un navigateur DÉJÀ connecté ne peut pas créer un second
+  // espace : `/signup` le renvoie sur son tableau de bord.
+  //
+  // C'est un filtre COSMÉTIQUE : la garde de fond est côté API
+  // (`409 SESSION_ALREADY_ACTIVE`, `SelfServiceTrialController::signup()`), car
+  // les clients directs (mobile, cURL, SDK) ne traversent pas ce proxy.
+  //
+  // `/auth/login` reste volontairement NON gardé : rediriger un visiteur
+  // authentifié hors de la page de connexion crée une boucle dès que le cookie
+  // est périmé, le proxy ne pouvant pas valider la session (cf. #3522).
+  if (pathname === '/signup' && isValidToken) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
   // Vitrine : propager la locale SSR aux layouts via un en-tête (issues #4004,
   // #4393). `?lang=` prime sur Accept-Language (comportement #4173) ; le
   // header est TOUJOURS posé (défaut fr) pour un comportement déterministe.

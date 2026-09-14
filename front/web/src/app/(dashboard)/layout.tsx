@@ -57,6 +57,9 @@ export default function DashboardLayout({
   // Retour propriétaire : une seule entrée de compte (avatar) au lieu du nom +
   // e-mail affichés en clair et d'une icône de déconnexion isolée.
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  // Retour propriétaire : le badge de présence ne garde que sa pastille, le
+  // libellé « PRÉSENTS » passe en `sr-only` (il reste lu par les lecteurs
+  // d'écran et sert de `title` au survol).
   const [modulesOpen, setModulesOpen] = useState(false);
   // #7322 — auto-activation d'un module horizontal depuis « Modules & plan ».
   const [activatingModule, setActivatingModule] = useState<ClientModuleKey | null>(null);
@@ -812,9 +815,7 @@ export default function DashboardLayout({
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
               </div>
               {/* Issue #2720 — statistique « Live » codée en dur retirée :
-                  aucun endpoint ne la fournit (honnêteté des données). Le
-                  libellé reste pour les lecteurs d'écran, la barre n'affiche
-                  qu'une pastille (retour propriétaire : moins de texte). */}
+                  aucun endpoint ne la fournit (honnêteté des données). */}
               <span className="sr-only">{labels.dashboard.present}</span>
             </div>
           </div>

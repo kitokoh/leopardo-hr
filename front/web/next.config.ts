@@ -77,6 +77,17 @@ const cspDirectives = [
 const enforceCsp = process.env.CSP_ENFORCE === "true";
 
 const nextConfig: NextConfig = {
+  /**
+   * Next bloque les ressources de développement (`/_next/*`) quand l'en-tête
+   * `Origin` ne correspond pas à l'hôte du serveur : ouvrir
+   * `http://127.0.0.1:3000` (ou l'IP LAN depuis un téléphone) donne une **page
+   * affichée mais non interactive** — les chunks JS sont refusés, React ne
+   * s'hydrate jamais, et aucun clic ne répond (constaté le 2026-09-14 sur le
+   * tunnel d'inscription). `localhost` passe nativement ; on autorise donc
+   * explicitement l'hôte de boucle numérique. Développement uniquement.
+   */
+  allowedDevOrigins: ['127.0.0.1'],
+
   // #7305 — racine du workspace explicite.
   //
   // Le dépôt est un monorepo à DEUX lockfiles (`/package-lock.json` et
