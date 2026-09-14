@@ -61,7 +61,12 @@ final class IssueTicketsAction
                     'valid_until' => $booking->trip?->departure_date?->endOfDay(),
                 ]);
 
-                // Le code en clair (QR) n'est jamais persiste — seul le hash.
+                // #7394 : `issueValidationCode()` renvoie le code en clair ET
+                // en conserve une copie CHIFFRÉE (le hash SHA-256 reste le seul
+                // support de vérification). Avant ce correctif, seul le hash
+                // était enregistré : le code était perdu à la fin de la requête
+                // et le passager ne pouvait jamais le recevoir — donc jamais
+                // suivre sa réservation sur l'Espace voyageur.
                 $ticket->issueValidationCode();
                 $ticket->save();
 

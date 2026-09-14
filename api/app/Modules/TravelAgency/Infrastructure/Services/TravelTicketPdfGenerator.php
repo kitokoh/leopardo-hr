@@ -13,9 +13,14 @@ use Illuminate\Support\Facades\View;
  *
  * Template Blade versionné (`resources/views/travel/ticket.blade.php`),
  * génération 100 % locale via laravel-dompdf (suppression de la dépendance
- * historique ConvertAPI/PHPWord, spec §D6). Le QR encode le numéro de
- * billet (le code de validation en clair n'est jamais embarqué dans le
- * PDF non plus — seul le numéro nominatif, vérifiable côté plateforme).
+ * historique ConvertAPI/PHPWord, spec §D6).
+ *
+ * #7394 — le PDF imprimait le NUMÉRO DE BILLET sous l'étiquette « Code de
+ * contrôle », alors que le portail passager réclame le « Code de validation »
+ * figurant « sur votre e-billet ». Le passager ne pouvait donc PAS suivre sa
+ * réservation : le seul code imprimé n'était pas celui attendu par l'API.
+ * Le PDF reçoit désormais le vrai code (déchiffré depuis la copie chiffrée du
+ * billet) et l'affiche sous le libellé correct, à côté du numéro de billet.
  */
 final class TravelTicketPdfGenerator
 {
@@ -34,6 +39,9 @@ final class TravelTicketPdfGenerator
             'booking' => $ticket->booking,
             'trip' => $ticket->booking?->trip,
             'route' => $ticket->booking?->trip?->route,
+            // `null` pour les billets émis avant #7394 : le template le signale
+            // explicitement plutôt que d'imprimer un faux code.
+            'validationCode' => $ticket->plainValidationCode(),
         ]);
 
         return Pdf::loadHTML($view->render())

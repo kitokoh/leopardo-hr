@@ -48,12 +48,22 @@
     </div>
 
     <div class="qrcode">
-        {{-- QR = numéro de billet (vérifiable côté plateforme) — jamais de PII en clair. --}}
-        <div>Code de contrôle : {{ $ticket->ticket_number }}</div>
+        {{-- #7394 : le passager a besoin du CODE DE VALIDATION (c'est lui que
+             le portail « Espace voyageur » demande), pas du numéro de billet.
+             Les deux sont désormais imprimés, clairement distingués. --}}
+        @if ($validationCode)
+            <div class="label">Code de validation</div>
+            <div class="value" style="font-size:18px; letter-spacing:2px;">{{ $validationCode }}</div>
+        @else
+            <div class="label">Code de validation</div>
+            <div>Non disponible pour ce billet (émis avant la mise à jour) — présentez le numéro de billet au guichet.</div>
+        @endif
+        <div style="margin-top:8px;">N° de billet : {{ $ticket->ticket_number }}</div>
     </div>
 
     <div class="footer">
-        Billet généré le {{ now()->toDateTimeString() }} — vérifiable par numéro sur la plateforme TravelAgency.
+        Billet généré le {{ now()->toDateTimeString() }} — suivi de réservation sur l'Espace voyageur :
+        référence {{ $booking?->reference }} + code de validation.
         Présentez une pièce d'identité à l'embarquement.
     </div>
 </body>
