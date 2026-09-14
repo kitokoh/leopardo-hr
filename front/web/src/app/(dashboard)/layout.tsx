@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, ListChecks, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
@@ -797,9 +797,20 @@ export default function DashboardLayout({
                 <button
                   type="button"
                   onClick={() => setShowWizard(true)}
-                  className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
+                  title={labels.dashboard.resumeOnboarding}
+                  aria-label={labels.dashboard.resumeOnboarding}
+                  data-testid="dashboard-resume-onboarding"
+                  className="hidden h-10 w-10 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm transition hover:bg-emerald-100 md:inline-flex"
                 >
-                  {labels.dashboard.resumeOnboarding}
+                  {/* Retour propriétaire (règle générale) — dans la barre du haut,
+                      TOUT contrôle est en icône seule ; seules les entrées de
+                      MENU gardent icône + texte. Cette pastille était le dernier
+                      contrôle textuel : son libellé (« Reprendre la
+                      configuration ») part en infobulle / nom accessible. Le
+                      glyphe « ▶ » qui préfixait le libellé est remplacé par une
+                      vraie icône (il était lu par les lecteurs d'écran). */}
+                  <ListChecks className="h-4 w-4" aria-hidden="true" />
+                  <span className="sr-only">{labels.dashboard.resumeOnboarding}</span>
                 </button>
               ) : null}
               <TrialBanner user={user} locale={locale} variant="compact" />
