@@ -112,6 +112,15 @@ return [
         // BC-13 COMMS), parité AnnouncementController, exécution après
         // confirmation (flux A4, contrat A3 #6850).
         'notify_team',
+        // A7 (#7377) — création d'un employé depuis l'assistant (texte ou
+        // voix). Parité REST EmployeeController::store, exécution après
+        // confirmation (flux A4, contrat A3 #6850).
+        'create_employee',
+        // A8 (#7378) — pointage entrée/sortie depuis l'assistant. Parité REST
+        // AttendanceController::checkIn/checkOut, après confirmation (le
+        // pointage est le cœur anti-fraude du produit : jamais silencieux).
+        'check_in_employee',
+        'check_out_employee',
     ],
 
     // BC-23-D05 (issue #6237) — matrice de permissions par outil AI
@@ -161,6 +170,14 @@ return [
         // à une équipe via le système d'annonces (parité AnnouncementController,
         // api.manager + authorizeAudience — principal/RH pour company).
         'notify_team' => ['role' => 'manager', 'permissions' => ['announcements.create']],
+        // A7 (#7377) — création d'un employé : même portée que la policy REST
+        // (EmployeePolicy::create → manager principal/rh) ; la permission
+        // `employees.create` est l'extension de la matrice pour cet acte.
+        'create_employee' => ['role' => 'manager', 'permissions' => ['employees.create']],
+        // A8 (#7378) — pointage : un employé pointe pour lui-même, un manager
+        // peut pointer pour son équipe (le handler borne le périmètre).
+        'check_in_employee' => ['role' => 'employee', 'permissions' => ['attendance.punch']],
+        'check_out_employee' => ['role' => 'employee', 'permissions' => ['attendance.punch']],
     ],
 
     // BC-23-D05 (issue #6237) — permissions accordées par rôle (résolution du
@@ -178,6 +195,8 @@ return [
             'estimations.view',
             'notifications.view',
             'leave.view',
+            // A8 (#7378) — pointage libre-service depuis l'assistant.
+            'attendance.punch',
         ],
         'manager' => [
             'employees.view',
@@ -192,6 +211,10 @@ return [
             'absences.approve',
             'payroll.view',
             'schedules.assign',
+            // A7 (#7377) — création d'un employé (miroir EmployeePolicy::create).
+            'employees.create',
+            // A8 (#7378) — pointage (self + équipe).
+            'attendance.punch',
         ],
         'admin' => [
             'employees.view',
@@ -206,6 +229,10 @@ return [
             'absences.approve',
             'payroll.view',
             'schedules.assign',
+            // A7 (#7377) — création d'un employé (miroir EmployeePolicy::create).
+            'employees.create',
+            // A8 (#7378) — pointage (self + équipe).
+            'attendance.punch',
         ],
         'super_admin' => [
             'employees.view',
@@ -220,6 +247,10 @@ return [
             'absences.approve',
             'payroll.view',
             'schedules.assign',
+            // A7 (#7377) — création d'un employé (miroir EmployeePolicy::create).
+            'employees.create',
+            // A8 (#7378) — pointage (self + équipe).
+            'attendance.punch',
         ],
     ],
 
