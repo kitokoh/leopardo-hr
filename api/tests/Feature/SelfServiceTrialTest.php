@@ -438,7 +438,6 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-
     public function test_five_bad_otps_lock_the_email(): void
     {
         Mail::fake();
@@ -477,7 +476,6 @@ class SelfServiceTrialTest extends TestCase
         $this->assertGreaterThanOrEqual(5, (int) $request->otp_attempts);
         $this->assertNotNull($request->otp_locked_until);
     }
-
 
     public function test_valid_otp_resets_attempt_counter(): void
     {
@@ -518,7 +516,7 @@ class SelfServiceTrialTest extends TestCase
      * choisis restaient verrouillés — d'où un menu client vide alors que
      * l'écran venait de les proposer.
      */
-    public function test_self_service_signup_persists_company_type_and_module_selection()
+    public function test_self_service_signup_persists_company_type_and_module_selection(): void
     {
         Mail::fake();
 
@@ -556,7 +554,7 @@ class SelfServiceTrialTest extends TestCase
         // 2. Sélection normalisée sur TOUTES les clés de HORIZONTAL_TOOLS.
         $modules = $company->metadata['modules'] ?? null;
         $this->assertIsArray($modules);
-        $this->assertTrue($modules['accounting'], 'Outil coché à l inscripion => actif.');
+        $this->assertTrue($modules['accounting'], 'Outil coché à l\'inscription => actif.');
         $this->assertTrue($modules['crm']);
         $this->assertTrue($modules['reports']);
         $this->assertFalse($modules['marketing'], 'Outil NON coché => explicitement false (la sélection fait autorité).');
