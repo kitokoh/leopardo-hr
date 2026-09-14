@@ -40,7 +40,14 @@ export async function POST(
     );
   }
 
-  const backendUrl = `${resolveBackendBaseUrl()}/api/v1/onboarding/invitation/${encodeURIComponent(token)}/activate`;
+  // #7361 — `resolveBackendBaseUrl()` renvoie DÉJÀ l'URL de base incluant
+  // `/api/v1` (cf. `src/lib/backend-url.ts`), et c'est la convention de toutes
+  // les autres routes de ce dossier (`/auth/login`, `/auth/logout`, le proxy
+  // générique `[...path]`). Répéter `/api/v1` ici produisait
+  // `<base>/api/v1/api/v1/onboarding/…` → 404 `RESOURCE_NOT_FOUND` côté API,
+  // donc **toute activation d'invitation depuis le portail échouait** avec un
+  // message accusant à tort le lien (« invitation invalide ou expirée »).
+  const backendUrl = `${resolveBackendBaseUrl()}/onboarding/invitation/${encodeURIComponent(token)}/activate`;
 
   let backendResponse: Response;
   try {
