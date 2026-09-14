@@ -8,13 +8,13 @@ use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\IntentEngine;
 use App\AI\LLMClient;
+use App\AI\Models\AIToolRegistryEntry;
 use App\AI\PendingActionStore;
 use App\AI\ToolRegistry;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\AI\Models\AIToolRegistryEntry;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use Laravel\Sanctum\Sanctum;
 use stdClass;
 use Tests\Support\CreatesMvpSchema;
@@ -93,6 +93,34 @@ class AIWriteActionConfirmationTest extends TestCase
             'employee_id' => $employee->id,
             'status' => 'pending',
         ]);
+    }
+
+    public function test_confirm_create_absence_without_absence_type_fails_cleanly(): void
+    {
+        // #7357 — `absences.absence_type_id` est NOT NULL : une société sans
+        // catalogue `absence_types` (provisionnement frais) faisait tomber la
+        // confirmation en SQLSTATE[23502] → 500 brut. Le refus doit être
+        // explicite (422), sans écriture et sans exception.
+        [$company, $employee] = $this->aiFixture();
+        // Volontairement AUCUN seedAbsenceType() ici.
+        Sanctum::actingAs($employee);
+
+        $pendingId = app(PendingActionStore::class)->store(
+            $company->id,
+            $employee->id,
+            'create_absence',
+            [
+                'start_date' => '2026-06-10',
+                'end_date' => '2026-06-11',
+                'reason' => 'Conges',
+            ],
+        );
+
+        $this->postJson("/api/v1/ai/actions/{$pendingId}/confirm")
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'ABSENCE_TYPE_UNAVAILABLE');
+
+        $this->assertDatabaseCount('absences', 0);
     }
 
     public function test_reject_action_does_not_create_absence(): void
