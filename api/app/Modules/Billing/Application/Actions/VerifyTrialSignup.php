@@ -324,7 +324,7 @@ class VerifyTrialSignup
                 $this->tenantManager->resetToPrevious();
             }
         } catch (\Throwable $e) {
-            Log::error('SelfServiceTrial: post-provisioning failed — le compte est conservé', [
+            Log::error('SelfServiceTrial: post-provisioning failed, account kept for catch-up', [
                 'email' => $email,
                 'company_id' => $result['company']->id,
                 'error' => $e->getMessage(),
