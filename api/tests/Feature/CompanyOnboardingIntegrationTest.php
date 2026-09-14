@@ -39,6 +39,15 @@ class CompanyOnboardingIntegrationTest extends TestCase
 
         $response->assertOk();
         $this->assertContains($company->id, collect($response->json('data'))->pluck('id')->all());
+
+        // #7339 — le défaut de pagination (20) était implicite : un client qui
+        // demande « toutes les sociétés » recevait 20 lignes sans que rien ne
+        // l'indique. La réponse l'expose désormais, avec le total.
+        $response->assertJsonPath('meta.current_page', 1);
+        $response->assertJsonPath('meta.per_page', 20);
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $response->json('data');
+        $this->assertGreaterThanOrEqual(count($rows), $response->json('meta.total'));
     }
 
     public function test_manager_can_list_own_employees(): void

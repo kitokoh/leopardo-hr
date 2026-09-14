@@ -13,6 +13,24 @@
 > réellement ajoutée est **web** (`front/web`, page `/showcase` + rendu public `/vitrine/{slug}`).
 
 
+> **MAJ 2026-09-14 — #7339, pagination du portefeuille clients.** Le lot « paginer /
+> cacher / tuer le N+1 » de `GET /platform/companies/health` arrive **après** #7302
+> (PR #7340 mergée `c3cc25c`), qui avait déjà supprimé le N+1 (674 requêtes → 12 pour
+> 45 sociétés) et posé le cache 60 s. Ce lot ne refait donc **pas** le N+1 : il ajoute
+> la **pagination** (`?page=&per_page=`, plafond 100, `limit` conservé comme alias),
+> expose `meta` (`current_page`, `per_page`, `total`, `last_page`, `from`, `to`) et
+> **explicite le défaut 20** de `GET /platform/companies` (`meta.per_page`). Aucune
+> surface web n'est modifiée : la réponse est **additive**, `CompaniesView` /
+> `DashboardView` / `SubscriptionsView` continuent de lire `data.items` / `data.summary`
+> sans changement. Spécification :
+> `docs/specifications/ISSUE_7339_PLATFORM_COMPANIES_HEALTH_PAGINATION.md`. Scénarios
+> API : `SCENARIOS_TEST_API_GITHUB_ACTIONS.md`, section 13. Non-régression :
+> `api/tests/Feature/PlatformCompanyHealthApiTest.php`
+> (`test_portfolio_exposes_page_metadata_and_disjoint_pages`,
+> `test_portfolio_defaults_and_legacy_limit_param_stay_compatible`,
+> `test_portfolio_query_count_does_not_grow_with_company_count` — dont le comptage de
+> requêtes, faussé par un `DB::listen()` jamais retiré, est réparé).
+
 > **MAJ 2026-09-13 — #7302, cause racine de la lenteur du portefeuille clients.** Le lot
 > « le portefeuille ne recalcule plus la santé société par société » supprime le N+1 de
 > `GET /platform/companies/health` (674 requêtes → 12 pour 45 sociétés) et met le résultat en
