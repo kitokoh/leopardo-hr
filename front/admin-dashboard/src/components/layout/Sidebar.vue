@@ -38,7 +38,7 @@
             v-if="item.type === 'section'"
             type="button"
             class="group flex w-full items-center justify-between rounded-xl px-3 pt-5 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
-            :aria-expanded="isGroupOpen(item.group) ? 'true' : 'false'"
+            :aria-expanded="isGroupOpen(item.group)"
             :data-nav-section="item.group"
             @click="toggleGroup(item.group)"
           >
