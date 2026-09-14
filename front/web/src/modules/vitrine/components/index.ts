@@ -16,6 +16,9 @@ export * from './sections';
 // re-exported here for them.
 export { DemoSection } from './DemoSection';
 export { ParticleField } from './ParticleField';
+// Visuel « Pile Leopardo » : socle + couche horizontale + verticales métier.
+// WebGL chargé en import dynamique, repli CSS 3D si indisponible.
+export { SolutionStack } from './hero/SolutionStack';
 export { LegalPageShell } from './LegalPageShell';
 export { RestaurantSolutionWizard } from './RestaurantSolutionWizard';
 
