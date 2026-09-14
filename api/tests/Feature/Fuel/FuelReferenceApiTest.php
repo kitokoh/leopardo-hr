@@ -145,7 +145,14 @@ class FuelReferenceApiTest extends TestCase
 
         Sanctum::actingAs($operator);
 
-        $this->getJson('/api/v1/fuel-station/stations')->assertStatus(403);
+        // Lecture ouverte aux employés du tenant (voir l'en-tête de
+        // `FuelReferentialApiTest` et les policies `FuelStationPolicy` /
+        // `FuelProductPolicy` : `viewAny` = true, `view` = contrôle du
+        // `company_id`) ; seules les ÉCRITURES sont réservées au manager.
+        // Cette assertion attendait 403 et ne tenait que grâce au
+        // réenregistrement de `FuelStation` sur `FuelReferencePolicy` dans
+        // `AuthServiceProvider`, qui écrasait la policy de référence.
+        $this->getJson('/api/v1/fuel-station/stations')->assertStatus(200);
         $this->postJson('/api/v1/fuel-station/stations', [
             'code' => 'ST-X',
             'name' => 'Interdit',
