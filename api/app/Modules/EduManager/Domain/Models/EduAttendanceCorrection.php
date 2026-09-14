@@ -38,14 +38,23 @@ class EduAttendanceCorrection extends Model
     protected $fillable = [
         'company_id',
         'attendance_id',
+        // Génération v2 (#5821) : la correction référence l'enregistrement de
+        // présence par `attendance_record_id` (+ `corrected_at`). Colonnes
+        // présentes en base, absentes du modèle → les corrections étaient
+        // écrites orphelines (`attendance_record_id` NULL), donc invisibles à
+        // l'historique et à la policy.
+        'attendance_record_id',
         'previous_status',
         'new_status',
         'reason',
         'corrected_by',
+        'corrected_at',
     ];
 
     protected $casts = [
         'attendance_id' => 'integer',
+        'attendance_record_id' => 'integer',
+        'corrected_at' => 'datetime',
         'previous_status' => 'string',
         'new_status' => 'string',
     ];

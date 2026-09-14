@@ -80,7 +80,20 @@ class EduGradePolicy
      */
     public function correct(Employee $actor, EduGrade $grade): bool
     {
-        return $this->isManager($actor) && $grade->company_id === $actor->company_id;
+        if ($grade->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        if ($this->isManager($actor)) {
+            return true;
+        }
+
+        // Correction d'une note publiée : le TITULAIRE de la classe (il
+        // conduit la pédagogie et assume la correction), jamais l'enseignant
+        // qui n'y assure qu'une séance (verrouillé par
+        // `EduRbacMatrixTest::test_grade_policy_manager_draft_published_and_
+        // cross_tenant`).
+        return EduAccess::isClassReferent($actor, $this->assessmentClassId($grade));
     }
 
     private function isManager(Employee $actor): bool

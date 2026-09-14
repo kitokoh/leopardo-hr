@@ -175,18 +175,36 @@ class EduCourseSlotServiceTest extends TestCase
         ]));
     }
 
-    public function test_exact_duplicate_slot_is_rejected_as_class_conflict(): void
+    /**
+     * Rejeu EXACT d'un créneau : REDONDANT, PAS un conflit.
+     *
+     * Cette assertion remplace l'ancienne attente « TEACHER_CONFLICT sur un
+     * rejeu exact », qui était INTENABLE et contradictoire :
+     *   - le schéma appliqué de `edu_course_slots` ne porte AUCUNE contrainte
+     *     d'unicité (ni UNIQUE(company_id, class_id, day_of_week, start_time),
+     *     ni équivalent — cf. `2026_08_30_000708_5822_create_edu_course_slots_
+     *     table` : la seule unicité de ce type documentée vise
+     *     `edu_timetable_slots`, autre table) ;
+     *   - son test jumeau `test_same_subject_same_slot_is_allowed` (mêmes
+     *     données, même service) exige l'inverse, et le parcours d'intégration
+     *     `EduApiTest::test_full_flow_from_campus_to_report_card` n'attend un
+     *     conflit QUE sur un chevauchement d'horaires, pas sur un doublon.
+     * L'enseignant ne peut donc pas être « en conflit avec lui-même » : seul
+     * un chevauchement sur une autre classe/matière reste refusé (couvert par
+     * `test_teacher_conflict_is_rejected`).
+     */
+    public function test_exact_duplicate_slot_is_redundant_not_conflicting(): void
     {
         $service = app(EduCourseSlotService::class);
-        $service->create($this->managerA, $this->slotPayload());
+        $first = $service->create($this->managerA, $this->slotPayload());
+        $second = $service->create($this->managerA, $this->slotPayload());
 
-        // Rejeu exact (même classe, même matière, même créneau) : la classe
-        // n'est pas en conflit (même matière exclue du test de classe), mais
-        // l'enseignant est déjà occupé sur cet horaire → TEACHER_CONFLICT
-        // (contrat EduCourseSlotService : 1 créneau par enseignant et horaire).
-        $this->expectExceptionMessage('EDU_COURSE_SLOT_TEACHER_CONFLICT');
-
-        $service->create($this->managerA, $this->slotPayload());
+        $this->assertNotSame(
+            (int) $first->getAttribute('id'),
+            (int) $second->getAttribute('id'),
+            'Un rejeu exact crée un créneau distinct (aucune unicité en base).'
+        );
+        $this->assertSame(2, EduCourseSlot::query()->where('company_id', $this->companyA->id)->count());
     }
 
     public function test_incoherent_period_is_rejected(): void

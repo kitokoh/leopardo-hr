@@ -126,6 +126,30 @@ final class EduAccess
     }
 
     /**
+     * L'acteur est-il TITULAIRE (référent) d'une classe — ou de celle-ci ?
+     *
+     * Distinction métier : le titulaire d'une classe conduit la pédagogie de
+     * cette classe (il crée et modifie ses évaluations), alors qu'un
+     * enseignant qui n'y assure qu'une séance la LIT sans l'administrer.
+     * Vérifié par les deux tests jumeaux `EduRbacPolicyTest::
+     * test_teacher_can_create_assessment_and_grade_for_own_class` (titulaire →
+     * autorisé) et `EduGradeTest::test_assessment_policy_allows_teacher_of_the_
+     * class` (enseignant de séance → refusé).
+     */
+    public static function isClassReferent(Employee $actor, ?int $classId = null): bool
+    {
+        $query = EduClass::query()
+            ->where('company_id', $actor->company_id)
+            ->whereIn('teacher_id', self::teacherIdentifiers($actor));
+
+        if ($classId !== null) {
+            $query->whereKey($classId);
+        }
+
+        return $query->exists();
+    }
+
+    /**
      * L'acteur peut-il gérer (écrire) cette classe ?
      */
     public static function canManageClass(Employee $actor, EduClass $class): bool

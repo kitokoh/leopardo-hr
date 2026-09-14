@@ -51,15 +51,25 @@ class EduAssessmentPolicy
 
     public function create(Employee $actor): bool
     {
-        // Une évaluation ne vise pas encore de classe à l'autorisation :
-        // direction OU enseignant (le périmètre de classe est contrôlé à
-        // l'écriture et par `update`).
-        return $this->isManager($actor) || EduAccess::isTeacher($actor);
+        // Une évaluation ne vise pas encore de classe : la direction crée, et
+        // le TITULAIRE d'au moins une classe (pédagogie de sa classe). Un
+        // enseignant qui n'assure qu'une séance n'est pas administrateur.
+        return $this->isManager($actor) || EduAccess::isClassReferent($actor);
     }
 
     public function update(Employee $actor, EduAssessment $assessment): bool
     {
-        return $this->isManager($actor) && $assessment->company_id === $actor->company_id;
+        if ($assessment->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        if ($this->isManager($actor)) {
+            return true;
+        }
+
+        // Titulaire de LA classe de l'évaluation (le simple enseignant de
+        // séance lit sans modifier).
+        return EduAccess::isClassReferent($actor, (int) $assessment->class_id);
     }
 
     public function delete(Employee $actor, EduAssessment $assessment): bool

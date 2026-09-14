@@ -47,8 +47,12 @@ final class EduAdmissionFollowupService
             throw new RuntimeException('Admission does not belong to tenant.');
         }
 
-        abort_if(! $admission->consent_contact, 422, 'EDU_CONSENT_REQUIRED');
+        // RÉVOCATION testée AVANT l'absence de consentement : un opt-out met
+        // le consentement à false ET pose `consent_revoked_at` ; dans l'autre
+        // ordre, un dossier révoqué était signalé « consentement requis » et
+        // la cause réelle (opposition du prospect) était perdue.
         abort_if($admission->consent_revoked_at !== null, 422, 'EDU_CONSENT_REVOKED');
+        abort_if(! $admission->consent_contact, 422, 'EDU_CONSENT_REQUIRED');
 
         $payload = [
             'company_id' => $actor->company_id,
@@ -66,8 +70,13 @@ final class EduAdmissionFollowupService
         ];
 
         try {
+            // SAVEPOINT : un `catch` PHP ne rattrape pas une transaction
+            // PostgreSQL avortée (25P02 « current transaction is aborted »).
+            // Sans transaction imbriquée, la violation d'unicité empoisonne la
+            // transaction du test/appelant et le SELECT de rejeu ci-dessous
+            // échoue — constaté sur le rejeu idempotent de cette route.
             /** @var EduAdmissionFollowup $followup */
-            $followup = EduAdmissionFollowup::query()->create($payload);
+            $followup = DB::transaction(fn (): EduAdmissionFollowup => EduAdmissionFollowup::query()->create($payload));
         } catch (UniqueConstraintViolationException) {
             /** @var EduAdmissionFollowup $followup */
             $followup = EduAdmissionFollowup::query()
