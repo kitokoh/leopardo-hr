@@ -176,8 +176,21 @@ class EduGuardianCrudTest extends TestCase
         ])->assertStatus(422);
 
         // Eleve d'un AUTRE tenant : 404 (isolation fail-closed).
+        // Le responsable doit etre du MEME tenant que l'acteur : avec un
+        // responsable cross-tenant, la validation du `guardian_id` (422)
+        // court-circuite avant le controle de tenant de l'eleve
+        // (`assertSameTenant` -> abort(404)) et le 404 attendu n'est jamais
+        // atteint. On isole donc la propriete testee.
+        /** @var EduGuardian $guardianA */
+        $guardianA = EduGuardian::query()->create([
+            'company_id' => $this->companyA->id,
+            'first_name' => 'Yacine',
+            'last_name' => 'Mansouri',
+            'relationship_code' => EduGuardian::RELATIONSHIP_PARENT,
+        ]);
+
         $this->postJson('/api/v1/edu-manager/students/'.(int) $this->studentB->getAttribute('id').'/guardians', [
-            'guardian_id' => (int) $guardianB->getAttribute('id'),
+            'guardian_id' => (int) $guardianA->getAttribute('id'),
         ])->assertStatus(404);
 
         $this->assertSame(0, EduStudentGuardian::query()->count());
