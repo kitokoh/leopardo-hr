@@ -52,9 +52,9 @@ export default function ChangelogPage() {
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
                 <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{release.title}</h2>
-                <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
+                <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400 font-semibold tabular-nums">
                   <span>v{release.version}</span>
-                  <span className="text-slate-300 dark:text-slate-600">·</span>
+                  <span className="text-slate-300 dark:text-slate-400">·</span>
                   <time dateTime={release.isoDate}>{release.isoDate}</time>
                 </div>
               </div>

@@ -42,7 +42,7 @@ export function NewsletterForm() {
       <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{t.title}</h4>
       <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t.description}</p>
       {status === 'success' ? (
-        <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{message}</p>
+        <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">{message}</p>
       ) : (
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
@@ -57,7 +57,7 @@ export function NewsletterForm() {
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-50 transition-colors"
           >
             {status === 'loading' ? '...' : t.button}
           </button>

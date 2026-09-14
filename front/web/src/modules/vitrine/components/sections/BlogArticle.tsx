@@ -297,7 +297,7 @@ export function BlogArticle({
                           <span className="text-xs text-slate-500 dark:text-slate-400">
                             {relatedPost.readingTime} min
                           </span>
-                          <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
+                          <ArrowRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </div>

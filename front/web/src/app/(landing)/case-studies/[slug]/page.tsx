@@ -149,7 +149,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
             <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href={study.moduleHref}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20"
               >
                 {ui.discoverModule.replace('{module}', getModuleLabel(study.module, locale))}
                 <ArrowRight className="w-4 h-4" />

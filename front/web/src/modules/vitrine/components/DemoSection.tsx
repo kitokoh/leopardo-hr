@@ -49,7 +49,7 @@ export function DemoSection() {
                   className="flex items-center gap-3 group"
                 >
                   <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors duration-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                   </div>
                   <span className="text-slate-700 dark:text-slate-300 font-medium">{item}</span>
                 </motion.div>

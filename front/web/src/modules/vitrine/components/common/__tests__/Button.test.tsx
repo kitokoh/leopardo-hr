@@ -18,7 +18,12 @@ describe('Button Component', () => {
     it('should render with primary variant by default', () => {
       render(<Button>Primary</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('from-emerald-500');
+      // Le pas le plus clair du dégradé doit rester ≥ emerald-700 : lui seul
+      // tient le seuil WCAG AA (4.5:1) avec le texte blanc du variant primary
+      // (blanc sur emerald-600 = 3.65, blanc sur emerald-500 = 2.47).
+      // Mesuré à l'axe-core sur la vitrine — voir #7368.
+      expect(button).toHaveClass('from-emerald-700');
+      expect(button).toHaveClass('text-white');
     });
 
     it('should render with secondary variant', () => {
