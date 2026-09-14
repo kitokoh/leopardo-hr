@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   ArrowLeft,
@@ -31,6 +32,7 @@ import {
   Phone,
   Rocket,
   ShieldCheck,
+  Sparkles,
   Users,
   UtensilsCrossed,
   Wallet,
@@ -66,10 +68,7 @@ interface SignupFormProps {
 // (entreprise ou indépendant), puis les coordonnées, puis le code reçu par
 // e-mail. L'étape « outils + métier » a été retirée (trop longue) : les outils
 // se choisissent après la création, dans « Modules & plan ».
-// #7249 — le tunnel s'ouvre directement sur le formulaire : l'écran
-// interstitiel « profil » (entreprise / indépendant) devient deux pastilles
-// dans le formulaire.
-type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+type Step = 'profile' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
 type SignupProfile = 'company' | 'solo';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
@@ -172,10 +171,14 @@ export function SignupForm({
   const [googleIdentity, setGoogleIdentity] = useState<{ email: string } | null>(null);
 
   // Multi-step state
-  const [currentStep, setCurrentStep] = useState<Step>('form');
-  // #7249 — le profil (entreprise / indépendant) reste déclaré à l'inscription
-  // (il qualifie le tenant via `company_type`) ; il n'ouvre plus un écran à part.
-  const [profile, setProfile] = useState<SignupProfile>('company');
+  const [currentStep, setCurrentStep] = useState<Step>('profile');
+  // #7249 — seul le profil est demandé avant les coordonnées (2 choix).
+  const [profile, setProfile] = useState<SignupProfile | null>(null);
+
+  const chooseProfile = (next: SignupProfile) => {
+    setProfile(next);
+    setCurrentStep('form');
+  };
 
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpValues, setOtpValues] = useState<string[]>(['', '', '', '', '', '']);
@@ -623,25 +626,47 @@ export function SignupForm({
 
       <AnimatePresence mode="wait">
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 1: Signup Form                     */}
+        {/* STEP 0: Profil (entreprise / indép.)    */}
         {/* ═══════════════════════════════════════ */}
-        {currentStep === 'form' && (
-          <div key="step-form">
+        {currentStep === 'profile' && (
+          <motion.div
+            key="step-profile"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              {c.badge}
+            </div>
+
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              {c.title}
+              {c.profileTitle}
             </h2>
             <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {c.subtitle}
+              {c.profileSubtitle}
             </p>
 
-            {/* #7249 — le profil qualifie le tenant (`company_type`) : deux
-                pastilles suffisent, là où un écran entier masquait le
-                formulaire. Le créateur du compte reste le fondateur. */}
-            <div className="mb-5 flex flex-wrap gap-2" role="group" aria-label={c.profileTitle}>
+            <div className="grid gap-4 sm:grid-cols-2">
               {(
                 [
-                  { key: 'company' as const, icon: Building2, label: c.profileCompanyTitle },
-                  { key: 'solo' as const, icon: Briefcase, label: c.profileSoloTitle },
+                  {
+                    key: 'company' as const,
+                    icon: Building2,
+                    title: c.profileCompanyTitle,
+                    desc: c.profileCompanyDesc,
+                    bullets: [c.profileCompanyBullet1, c.profileCompanyBullet2, c.profileCompanyBullet3],
+                    badge: c.profileCompanyBadge,
+                  },
+                  {
+                    key: 'solo' as const,
+                    icon: Briefcase,
+                    title: c.profileSoloTitle,
+                    desc: c.profileSoloDesc,
+                    bullets: [c.profileSoloBullet1, c.profileSoloBullet2, c.profileSoloBullet3],
+                    badge: c.profileSoloBadge,
+                  },
                 ]
               ).map((option) => {
                 const Icon = option.icon;
@@ -650,13 +675,13 @@ export function SignupForm({
                   <button
                     key={option.key}
                     type="button"
-                    onClick={() => setProfile(option.key)}
+                    onClick={() => chooseProfile(option.key)}
                     aria-pressed={active}
                     data-testid={`signup-profile-${option.key}`}
-                    className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-semibold transition ${
+                    className={`group relative flex h-full flex-col items-start rounded-2xl border-2 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-500/10 dark:bg-slate-900 ${
                       active
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+                        ? 'border-emerald-500 ring-2 ring-emerald-500/20'
+                        : 'border-slate-200 hover:border-emerald-400 dark:border-slate-700'
                     }`}
                   >
                     <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white shadow-lg shadow-emerald-500/25">
@@ -683,6 +708,28 @@ export function SignupForm({
                 );
               })}
             </div>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 1: Signup Form                     */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'form' && (
+          <motion.div
+            key="step-form"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button
+              type="button"
+              onClick={() => setCurrentStep('profile')}
+              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              {c.back}
+            </button>
 
             {profile === 'solo' && (
               <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
@@ -719,12 +766,16 @@ export function SignupForm({
             )}
 
             {formState.isError && (
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
+              >
                 <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
                 <div>
                   <p className="font-semibold text-red-900 dark:text-red-100">{formState.message}</p>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -845,14 +896,21 @@ export function SignupForm({
                 </Link>
               </p>
             </form>
-          </div>
+          </motion.div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2: OTP Vérification                */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
-          <div key="step-otp">
+          <motion.div
+            key="step-otp"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
             <button
               type="button"
               onClick={() => {
@@ -905,9 +963,13 @@ export function SignupForm({
             </div>
 
             {otpError && (
-              <p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mb-4 text-sm font-medium text-red-600 dark:text-red-400"
+              >
                 {otpError}
-              </p>
+              </motion.p>
             )}
 
             <Button
@@ -936,14 +998,21 @@ export function SignupForm({
                 {c.trackStatus}
               </button>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2b: Pending (cold-start fallback)   */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'pending' && (
-          <div key="step-pending">
+          <motion.div
+            key="step-pending"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
               <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
@@ -979,14 +1048,21 @@ export function SignupForm({
                 {c.trackStatus}
               </button>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 2c: Tracking (guided trial status) */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'tracking' && (
-          <div key="step-tracking">
+          <motion.div
+            key="step-tracking"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
             {trialStatus === 'ready' ? (
               <>
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
@@ -1158,14 +1234,19 @@ export function SignupForm({
                 </p>
               </>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* ═══════════════════════════════════════ */}
         {/* STEP 3: Success                         */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'success' && (
-          <div key="step-success">
+          <motion.div
+            key="step-success"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <div className="mb-6 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/60 dark:border-emerald-800 dark:from-emerald-950/40 dark:via-slate-900 dark:to-emerald-950/20">
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-700 dark:text-emerald-400" />
@@ -1240,8 +1321,9 @@ export function SignupForm({
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
+      </AnimatePresence>
     </Card>
   );
 }
