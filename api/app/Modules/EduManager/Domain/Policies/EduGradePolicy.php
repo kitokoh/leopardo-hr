@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAssessment;
 use App\Modules\EduManager\Domain\Models\EduGrade;
 use App\Modules\EduManager\Domain\Models\EduTeacher;
-use App\Modules\EduManager\Domain\Models\EduTimetableSlot;
 
 /**
  * Issue #5823 (EDU-007) — Policy des notes (grades).
@@ -79,7 +79,20 @@ class EduGradePolicy
      */
     public function correct(Employee $actor, EduGrade $grade): bool
     {
-        return $this->isManager($actor) && $grade->company_id === $actor->company_id;
+        if ($grade->company_id !== $actor->company_id) {
+            return false;
+        }
+
+        if ($this->isManager($actor)) {
+            return true;
+        }
+
+        // Correction d'une note publiée : le TITULAIRE de la classe (il
+        // conduit la pédagogie et assume la correction), jamais l'enseignant
+        // qui n'y assure qu'une séance (verrouillé par
+        // `EduRbacMatrixTest::test_grade_policy_manager_draft_published_and_
+        // cross_tenant`).
+        return EduAccess::isClassReferent($actor, $this->assessmentClassId($grade));
     }
 
     private function isManager(Employee $actor): bool
@@ -92,10 +105,7 @@ class EduGradePolicy
      */
     private function isTeacher(Employee $actor): bool
     {
-        return EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::isTeacher($actor);
     }
 
     /**
@@ -105,27 +115,7 @@ class EduGradePolicy
      */
     private function teachesAssessment(Employee $actor, EduGrade $grade): bool
     {
-        $classId = $this->assessmentClassId($grade);
-
-        if ($classId <= 0) {
-            return false;
-        }
-
-        /** @var EduTeacher|null $teacher */
-        $teacher = EduTeacher::query()
-            ->where('employee_id', $actor->id)
-            ->where('company_id', $actor->company_id)
-            ->first();
-
-        if (! $teacher instanceof EduTeacher) {
-            return false;
-        }
-
-        return EduTimetableSlot::query()
-            ->where('class_id', $classId)
-            ->where('teacher_id', (int) $teacher->id)
-            ->where('company_id', $actor->company_id)
-            ->exists();
+        return EduAccess::teachesClass($actor, $this->assessmentClassId($grade));
     }
 
     /**

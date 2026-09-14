@@ -2175,6 +2175,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/edge/readiness", options);
     },
 
+    /** Lister les écritures comptables des frais scolaires */
+    getEduManagerFeeAccountingEntries(options = {}) {
+      return request("GET", "/edu-manager/fee-accounting-entries", options);
+    },
+
+    /** Facturer un frais scolaire à un élève */
+    postEduManagerFeeCharges(options = {}) {
+      return request("POST", "/edu-manager/fee-charges", options);
+    },
+
+    /** Encaisser un paiement sur une charge de frais */
+    postEduManagerFeeChargesByChargePayments(options = {}) {
+      return request("POST", "/edu-manager/fee-charges/{charge}/payments", options);
+    },
+
+    /** Abandonner le solde restant d''une charge */
+    postEduManagerFeeChargesByChargeWaive(options = {}) {
+      return request("POST", "/edu-manager/fee-charges/{charge}/waive", options);
+    },
+
     /** Lister les types de frais scolaires */
     getEduManagerFeeTypes(options = {}) {
       return request("GET", "/edu-manager/fee-types", options);
@@ -2203,6 +2223,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Émettre un lien d'accès au portail parents (forme par chemin) */
     postEduManagerGuardiansByGuardianAccessLinks(options = {}) {
       return request("POST", "/edu-manager/guardians/{guardian}/access-links", options);
+    },
+
+    /** Émettre un lien d''accès au portail parents */
+    postEduManagerGuardiansByGuardianPortalLink(options = {}) {
+      return request("POST", "/edu-manager/guardians/{guardian}/portal-link", options);
+    },
+
+    /** Consulter le portail parents (lecture, sans session) */
+    getEduManagerPortalByToken(options = {}) {
+      return request("GET", "/edu-manager/portal/{token}", options);
     },
 
     /** Rattacher un responsable légal à un élève */

@@ -2026,3 +2026,33 @@ Contrat OpenAPI : les 8 routes ajoutées sont documentées dans `api/openapi.yam
 (tag `EduManager`) et le miroir + SDK sont régénérés —
 `python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` → 0 nouvelle route
 non couverte.
+
+
+### Addendum 2026-09-14 (BC-16 EDU) — facturation détaillée, portail parents, RBAC enseignant
+
+Surface ajoutée à `/edu-manager` (2ᵉ passe du parcours « client propriétaire d'école ») :
+
+- `POST /edu-manager/fee-charges` — facturation d'un frais à un élève (idempotente sur
+  `external_id`), écriture de **2 lignes comptables équilibrées** (411 Clients / 706
+  Prestations) + événement d'outbox `edu.fee.charge.created.v1` ;
+- `POST /edu-manager/fee-charges/{charge}/payments` — encaissement (partiel → soldé),
+  rejeu idempotent, refus du **surdébit** (`EDU_FEE_OVERPAYMENT`, 422) et de toute
+  écriture sur une charge **terminale** (`EDU_FEE_TERMINAL`, 422), lignes 512/531 / 411 ;
+- `POST /edu-manager/fee-charges/{charge}/waive` — abandon du solde restant (654 / 411) ;
+- `GET /edu-manager/fee-accounting-entries` — vue de rapprochement paginée (`meta.total`),
+  bornée au tenant ;
+- `POST /edu-manager/guardians/{guardian}/portal-link` — émission d'un lien de portail
+  parents (direction uniquement, 404 cross-tenant) ;
+- `GET /edu-manager/portal/{token}` — **route publique** (le token est la credential) :
+  résumé borné aux enfants liés, journalisé dans `edu_portal_access_logs`, 404 si le lien
+  est expiré, révoqué ou inconnu.
+
+Scénarios CI correspondants (verts) : `api/tests/Feature/EduManager/EduFeeTest.php`
+(catalogue, idempotence, écritures équilibrées, transitions et refus, rapprochement,
+isolation), `EduGuardianPortalTest.php` (émission admin-only, résumé, expiration et
+révocation, isolation), `EduRbacPolicyTest.php` / `EduRbacMatrixTest.php` (périmètre
+enseignant : référent de classe, affectation, séance ; titulaire ≠ enseignant de séance
+pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bulletin),
+`EduClassEnrollmentTest.php`, `EduAdmissionCampaignTest.php`, `EduAttendanceTest.php`,
+`EduManagerMigrationsTest.php` (inventaire et cycle up/down des migrations canoniques).
+État de la suite au 2026-09-14 : `tests/Feature/EduManager/` **280 tests, 0 échec**.

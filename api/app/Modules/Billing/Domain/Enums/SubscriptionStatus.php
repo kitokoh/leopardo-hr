@@ -55,7 +55,6 @@ enum SubscriptionStatus: string
         return in_array($target, $this->allowedTransitions(), true);
     }
 
-
     public function isTerminal(): bool
     {
         return $this === self::Cancelled;
