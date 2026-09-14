@@ -458,14 +458,14 @@ export default function MobilePage() {
                   <app.icon className={`w-5 h-5 ${c.icon}`} />
                   <div className="text-start">
                     <p className="text-sm font-bold text-slate-900 dark:text-white">{app.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.beta}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">{t.beta}</p>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <p className="mt-8 text-sm text-slate-400">
+          <p className="mt-8 text-sm text-slate-500">
             {t.waitingPrefix}{' '}
             <Link href="/docs#sdk-overview" className="text-emerald-700 dark:text-emerald-400 hover:underline">
               {t.installGuide}

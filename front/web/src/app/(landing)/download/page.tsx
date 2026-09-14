@@ -514,7 +514,7 @@ function DownloadPageInner() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/contact?topic=download"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-lg font-bold rounded-2xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-lg font-bold rounded-2xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <Download className="w-5 h-5" />
                 {c.downloadCta}
@@ -590,7 +590,7 @@ function DownloadPageInner() {
                 transition={{ duration: 0.5, delay: index * 0.15 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
                   {step.step}
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{step.title}</h3>
@@ -738,7 +738,7 @@ function DownloadPageInner() {
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
                   href={kiosk.ctaSetupHref}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20"
                 >
                   <ArrowRight className="w-4 h-4" />
                   {kiosk.ctaSetup}

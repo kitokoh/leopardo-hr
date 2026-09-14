@@ -387,7 +387,7 @@ function StepRecap({
 
       <button
         onClick={onNext}
-        className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
+        className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
         <>
           {price === null
@@ -593,7 +593,7 @@ function StepAccount({
 
       <button
         onClick={handleNext}
-        className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:scale-[1.01] active:scale-[0.99] text-base"
+        className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
         {copy.account.next}
         <ArrowRight className="w-5 h-5" />
@@ -884,7 +884,7 @@ function StepPayment({
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {loading ? (
             <>
@@ -979,7 +979,7 @@ function CheckoutInner() {
             </p>
             <Link
               href={FREE_GUIDED_TRIAL_HREF}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-lg font-bold rounded-2xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-xl shadow-emerald-500/20"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-lg font-bold rounded-2xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-xl shadow-emerald-500/20"
             >
               {copy.free.cta}
             </Link>

@@ -471,7 +471,7 @@ export default function PricingPage() {
           >
             <Link
               href="/checkout?plan=free"
-              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
+              className="group relative px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
                 {copy.hero.primary}
@@ -634,7 +634,7 @@ export default function PricingPage() {
                     {/* Plan badge */}
                     {plan.popular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
                           <Star className="w-3 h-3 fill-white" />
                           {copy.badges.popular}
                         </div>
@@ -729,7 +729,7 @@ export default function PricingPage() {
                       href={ctaHref}
                       className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
                         plan.popular
-                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
+                          ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-cyan-700 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
                           : isFree
                             ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-800 hover:to-black hover:scale-[1.01] active:scale-[0.98] shadow-md'
                             : hasNumericPrice
@@ -869,7 +869,7 @@ export default function PricingPage() {
                           href={getPlanHref(plan)}
                           className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${
                             plan.popular
-                              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                              ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-lg shadow-emerald-500/20'
                               : isFree
                                 ? 'bg-slate-700 text-white hover:bg-slate-800'
                                 : hasNumericPrice

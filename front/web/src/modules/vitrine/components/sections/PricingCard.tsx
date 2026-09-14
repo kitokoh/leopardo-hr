@@ -87,7 +87,7 @@ export function PricingCard({
           href={cta.href}
           className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 mb-8 ${
             highlighted
-              ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.02]'
+              ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.02]'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >

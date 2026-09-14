@@ -114,7 +114,7 @@ export function PricingSection() {
                 <div className="relative h-full rounded-[23px] bg-white dark:bg-slate-950 p-8">
                   {plan.popular && (
                     <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-black uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/30">
+                      <span className="px-4 py-1.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-xs font-black uppercase tracking-wider rounded-full shadow-lg shadow-emerald-500/30">
                         {copy.pricing.recommended}
                       </span>
                     </div>
@@ -167,7 +167,7 @@ export function PricingSection() {
                     href={getPlanCtaHref(displayPrice, plan.name, isAnnual)}
                     className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 ${
                       plan.popular
-                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
+                        ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white hover:from-emerald-800 hover:to-emerald-900 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >

@@ -94,7 +94,7 @@ export function NewsletterForm({
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-bold transition-colors whitespace-nowrap"
+          className="px-6 py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-600 text-white font-bold transition-colors whitespace-nowrap"
         >
           {status === 'loading' ? submittingLabel : submitLabel}
         </button>

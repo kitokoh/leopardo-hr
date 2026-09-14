@@ -342,7 +342,7 @@ function SuccessInner() {
           >
             <Link
               href="/auth/login"
-              className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
+              className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
             >
               <LogIn className="w-5 h-5" />
               {copy.success.primaryCta}

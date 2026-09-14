@@ -599,7 +599,7 @@ export function SignupForm({
                         : 'border-slate-200 hover:border-emerald-400 dark:border-slate-700'
                     }`}
                   >
-                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white shadow-lg shadow-emerald-500/25">
+                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white shadow-lg shadow-emerald-500/25">
                       <Icon className="h-6 w-6" aria-hidden="true" />
                     </span>
                     <span className="text-lg font-black tracking-tight text-slate-950 dark:text-white">

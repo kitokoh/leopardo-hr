@@ -431,7 +431,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
 
             <Link
               href="/signup"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {copy.nav.trial}
               <ArrowRight className="w-4 h-4" />
@@ -556,7 +556,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 </Link>
                 <Link
                   href="/signup"
-                  className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                  className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                   onClick={() => setMobileOpen(false)}
                 >
                   {copy.nav.trial}
