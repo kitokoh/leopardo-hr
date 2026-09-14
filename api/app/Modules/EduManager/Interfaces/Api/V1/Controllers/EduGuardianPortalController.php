@@ -6,6 +6,8 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Domain\Models\EduAttendance;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
@@ -147,6 +149,130 @@ class EduGuardianPortalController extends Controller
         ]);
     }
 
+    /**
+     * Échange un lien d'accès parents contre le contenu du portail.
+     *
+     * CONTRAT ATTENDU PAR LA VITRINE (`front/web/src/app/guardian-portal/page.tsx`) :
+     * `POST /edu-manager/guardian-portal/access-links/{token}/consume` →
+     * `{ data: { guardian, children[] } }`, avec 404 (lien inconnu) et 410
+     * (expiré ou déjà utilisé) — indistinguables côté client, l'audit serveur
+     * garde la trace exacte.
+     *
+     * Cette route manquait : la vitrine livrée appelait un chemin inexistant
+     * (le backend n'exposait que `/guardians/access-links/redeem`, token en
+     * body) → le portail parents répondait 404 quoi qu'il arrive, même après
+     * émission d'un lien valide. Constat 2026-09-14 (audit parcours client
+     * « propriétaire d'école »).
+     */
+    public function consume(Request $request, string $token): JsonResponse
+    {
+        // ANONYME par construction : le parent détenteur du lien n'a pas de
+        // session (c'est le principe même du lien expirable). Le contexte
+        // tenant n'existe donc PAS ici : la solution est vérifiée sur la
+        // société PORTEUSE du lien (jamais `currentCompany()`), et toutes les
+        // lectures sont filtrées explicitement sur `company_id`. Un lien dont
+        // la solution est inactive répond 404 — indistinguable d'un lien
+        // inconnu, aucune fuite d'existence.
+        if ($token === '') {
+            abort(404, 'EDU_GUARDIAN_LINK_INVALID');
+        }
+
+        /** @var GuardianAccessToken|null $accessToken */
+        $accessToken = GuardianAccessToken::query()
+            ->withoutGlobalScopes()
+            ->where('token_hash', hash('sha256', $token))
+            ->first();
+
+        if ($accessToken === null) {
+            abort(404, 'EDU_GUARDIAN_LINK_INVALID');
+        }
+
+        $company = Company::query()->find($accessToken->company_id);
+
+        if (! $company instanceof Company || ! FeatureFlag::enabled('edumanager', $company)) {
+            abort(404, 'EDU_GUARDIAN_LINK_INVALID');
+        }
+
+        if (! $accessToken->isRedeemable()) {
+            abort(410, 'EDU_GUARDIAN_LINK_USED_OR_EXPIRED');
+        }
+
+        $accessToken->update(['used_at' => now()]);
+
+        AuditLog::create([
+            'company_id' => $accessToken->company_id,
+            'user_id' => null,
+            'action' => 'edu.guardian.link_consumed',
+            'module' => 'edu',
+            'auditable_type' => $accessToken->getMorphClass(),
+            'auditable_id' => (int) $accessToken->getAttribute('id'),
+            'new_values' => ['guardian_id' => $accessToken->guardian_id],
+        ]);
+
+        /** @var EduGuardian $guardian */
+        $guardian = EduGuardian::query()
+            ->withoutGlobalScopes()
+            ->where('company_id', $accessToken->company_id)
+            ->findOrFail($accessToken->guardian_id);
+        $companyId = (string) $accessToken->company_id;
+
+        // Aucune énumération : uniquement les enfants EXPLICITEMENT liés.
+        $students = $guardian->students()
+            ->wherePivot('company_id', $companyId)
+            ->get(['edu_students.id', 'edu_students.student_number', 'edu_students.display_name']);
+
+        $children = $students->map(function (EduStudent $student) use ($guardian, $companyId): array {
+            $pivot = $student->getRelation('pivot');
+            $studentId = (int) $student->getAttribute('id');
+            $canViewGrades = (bool) ($pivot->can_view_grades ?? false);
+
+            $attendances = EduAttendance::query()
+                ->where('company_id', $companyId)
+                ->where('student_id', $studentId)
+                ->where('attendance_date', '>=', now()->subDays(30)->toDateString())
+                ->get();
+
+            $cards = $canViewGrades
+                ? EduReportCard::query()
+                    ->where('company_id', $companyId)
+                    ->where('student_id', $studentId)
+                    ->where('status', EduReportCard::STATUS_PUBLISHED)
+                    ->orderByDesc('created_at')
+                    ->get()
+                : collect();
+
+            return [
+                'id' => $studentId,
+                'student_number' => $student->student_number,
+                'display_name' => $student->display_name,
+                'relationship_code' => (string) ($pivot->relationship_code ?? $guardian->relationship_code),
+                'can_view_grades' => $canViewGrades,
+                'presence' => [
+                    'today_status' => EduAttendance::query()
+                        ->where('company_id', $companyId)
+                        ->where('student_id', $studentId)
+                        ->whereDate('attendance_date', now()->toDateString())
+                        ->value('status'),
+                    'last_30_days' => $attendances->groupBy('status')->map->count()->all(),
+                    'recorded_days' => $attendances->count(),
+                ],
+                'report_cards' => $cards->map(fn (EduReportCard $card): array => [
+                    'id' => (int) $card->getAttribute('id'),
+                    'period' => $card->period,
+                    'average' => $card->getAttribute('average_score'),
+                    'published_at' => $card->published_at?->toIso8601String(),
+                ])->values(),
+            ];
+        })->values();
+
+        return response()->json([
+            'data' => [
+                'guardian' => $this->guardianPayload($guardian),
+                'children' => $children,
+            ],
+        ]);
+    }
+
     public function issueLink(IssueGuardianAccessLinkRequest $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -160,7 +286,35 @@ class EduGuardianPortalController extends Controller
             ->where('company_id', $actor->company_id)
             ->findOrFail((int) $request->input('guardian_id'));
 
-        $ttlDays = (int) ($request->input('expires_in_days') ?? GuardianAccessToken::DEFAULT_TTL_DAYS);
+        return $this->buildAccessLink($guardian, $actor, (int) ($request->input('expires_in_days') ?? GuardianAccessToken::DEFAULT_TTL_DAYS));
+    }
+
+    /**
+     * Émission par CHEMIN (`POST /edu-manager/guardians/{guardian}/access-links`).
+     *
+     * Forme attendue par la vitrine livrée (cf. en-tête de
+     * `front/web/src/app/guardian-portal/page.tsx`) : le backend n'exposait que
+     * la variante « guardian_id en body », d'où un 404 côté écran direction.
+     * Même RBAC et même TTL que `issueLink`.
+     */
+    public function issueLinkForGuardian(Request $request, EduGuardian $guardian): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertSameTenant($guardian, $actor->company_id);
+        $this->authorize('issueLink', EduGuardian::class);
+
+        return $this->buildAccessLink(
+            $guardian,
+            $actor,
+            (int) ($request->input('expires_in_days') ?? GuardianAccessToken::DEFAULT_TTL_DAYS),
+        );
+    }
+
+    private function buildAccessLink(EduGuardian $guardian, Employee $actor, int $ttlDays): JsonResponse
+    {
         $plainToken = Str::random(64);
         $hash = hash('sha256', $plainToken);
 
