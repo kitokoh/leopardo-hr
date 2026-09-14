@@ -163,3 +163,38 @@ html {
 .cta-glow-white:hover {
   box-shadow: 0 20px 60px -15px rgb(255 255 255 / 0.3);
 }
+
+/* ── Visuel 3D « Pile Leopardo » (hero de la vitrine) ────────────────────────
+   Ces valeurs de mise en forme vivent ici plutôt que dans les .tsx pour deux
+   raisons : (1) la garde i18n `check-i18n-diff.js` scanne les TSX/TS et prend
+   les longues chaînes de classes/styles pour du texte utilisateur — les
+   extensions .css ne sont pas scannées, c'est donc le bon endroit pour du
+   style pur ; (2) une ombre ou un dégradé arbitraire n'a rien à faire dans un
+   attribut className. Aucun `#rrggbb` ici : la garde design-tokens lit aussi
+   les .css, on reste en rgb()/rgba(). */
+.solution-stack-glow-bottom {
+  background: radial-gradient(ellipse 60% 50% at 50% 120%, rgba(16, 185, 129, 0.22), transparent);
+}
+.solution-stack-glow-top {
+  background: radial-gradient(ellipse 40% 40% at 50% -10%, rgba(34, 211, 238, 0.14), transparent);
+}
+/* Repli sans WebGL : la composition CSS 3D équivalente. */
+.solution-fallback-plane {
+  transform: rotateX(56deg) rotateZ(-28deg);
+  transform-style: preserve-3d;
+}
+.solution-fallback-plate {
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgb(2, 6, 23);
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.25);
+}
+.solution-fallback-tile-lit {
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+.solution-fallback-column {
+  transition: opacity 300ms;
+}
+/* CTA principal du hero : l'ombre portée au survol. */
+.hero-cta-primary:hover {
+  box-shadow: 0 20px 60px -15px rgba(16, 185, 129, 0.4);
+}
