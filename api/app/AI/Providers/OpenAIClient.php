@@ -21,7 +21,7 @@ class OpenAIClient implements LLMClient
 
         $this->model = (string) (config('ai.providers.openai.model') ?? 'gpt-4o');
 
-        $this->baseUrl = (string) (config('ai.providers.openai.base_url') ?? 'https://api.openai.com/v1');
+        $this->baseUrl = (string) (config('ai.providers.openai.base_url') ?: 'https://api.openai.com/v1');
     }
 
     public function chat(array $messages, array $tools = []): AIResponse

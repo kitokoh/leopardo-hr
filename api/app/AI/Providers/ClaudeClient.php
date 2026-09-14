@@ -21,7 +21,7 @@ class ClaudeClient implements LLMClient
 
         $this->model = (string) (config('ai.providers.claude.model') ?? 'claude-sonnet-4-20250514');
 
-        $this->baseUrl = (string) (config('ai.providers.claude.base_url') ?? 'https://api.anthropic.com/v1');
+        $this->baseUrl = (string) (config('ai.providers.claude.base_url') ?: 'https://api.anthropic.com/v1');
     }
 
     public function chat(array $messages, array $tools = []): AIResponse

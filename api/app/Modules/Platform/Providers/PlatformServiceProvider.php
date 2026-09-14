@@ -9,6 +9,8 @@ use App\Events\CompanyCreated;
 use App\Events\SubscriptionPaid;
 use App\Modules\Platform\Infrastructure\Services\Consumers\PlatformCompanyCreatedAuditConsumer;
 use App\Modules\Platform\Infrastructure\Services\Consumers\PlatformSubscriptionPaidAuditConsumer;
+use App\Modules\Platform\Infrastructure\Services\PlatformAiSettingsApplier;
+use App\Modules\Platform\Infrastructure\Services\PlatformAiSettingsRepository;
 use App\Modules\Platform\Infrastructure\Services\PlatformOutboxConsumerRegistry;
 use App\Modules\Platform\Infrastructure\Services\PlatformOutboxPublisher;
 use App\Modules\Platform\Infrastructure\Services\ScheduledTaskRunRecorder;
@@ -25,10 +27,23 @@ class PlatformServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PlatformOutboxPublisher::class);
         $this->app->singleton(PlatformOutboxConsumerRegistry::class);
+
+        // #7384 — réglages IA du cockpit : repository (secrets chiffrés) et
+        // applier (surcharge de config). Singletons : le repository mémoïse sa
+        // lecture le temps de la requête.
+        $this->app->singleton(PlatformAiSettingsRepository::class);
+        $this->app->singleton(PlatformAiSettingsApplier::class);
     }
 
     public function boot(): void
     {
+        // #7384 — les réglages enregistrés depuis le super-admin priment sur
+        // l'environnement. Appliqué au boot pour que TOUT le code IA existant
+        // (AIFeatureCheck, Orchestrator, AiCloudPolicy, clients fournisseurs)
+        // voie la valeur éditée sans être modifié. Fail-safe : table absente ou
+        // cache indisponible ⇒ repli silencieux sur l'environnement.
+        $this->app->make(PlatformAiSettingsApplier::class)->apply();
+
         // PA2-QA-006 — record last start/finish outcome of every scheduled
         // Artisan command so the platform admin "System" screen can surface
         // it (queue depth / failed jobs already exist; this adds "last run").
