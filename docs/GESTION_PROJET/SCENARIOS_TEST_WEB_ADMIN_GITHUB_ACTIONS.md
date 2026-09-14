@@ -184,6 +184,31 @@ sur la racine « sidebar » ; le `class` redondant du layout (déjà porté par 
   (`position: fixed`, `left: 0`, `z-index >= 50` mesurés sur l'élément) : retirer le `class` du
   layout ne doit pas casser la mise en page.
 
+### 14. Menu plateforme — modules d'entreprise cliente regroupés (#7329)
+
+Les écrans « Formations », « Flotte véhicules », « Stations-service » et
+« Agence de voyage » ne s'adressent pas à la plateforme mais au périmètre d'une
+**entreprise cliente** : ce ne sont plus des entrées de premier niveau du menu
+superadmin.
+
+- « Entreprises » reste le rail de premier niveau ; les quatre écrans sont
+  regroupés sous un titre de section **« Modules des entreprises clientes »**,
+  rendu juste après l'entrée « Entreprises ».
+- La section est repliable, mais **ouverte par défaut** : une section repliée
+  par défaut masquerait des écrans existants. Le repli est mémorisé
+  (`localStorage`) et la section contenant la route courante est toujours
+  dépliée.
+- Non-régression : les quatre écrans restent atteignables en un clic et présents
+  dans l'arbre d'accessibilité — `travel-navigation.spec.js` échoue si l'entrée
+  « Agence de voyage » disparaît du menu.
+- `e2e/sidebar-unique-entries.spec.js` vérifie le regroupement par la géométrie
+  (les 4 entrées sont **sous** le titre, lui-même **sous** « Entreprises ») puis
+  le repli/dépli réel. Ce bloc n'est **pas** conditionné à
+  `PLAYWRIGHT_AUTH_TOKEN` (absent du job `web-ci.yml`) : la session y est
+  simulée, sinon la garde ne s'exécuterait jamais en CI.
+- Convention : toute nouvelle entrée d'un module d'entreprise cliente rejoint ce
+  groupe, pas le rail principal.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright

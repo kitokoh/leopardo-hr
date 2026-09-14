@@ -4900,7 +4900,8 @@
     "surveyStats": "Çözüm anketleri",
     "solutionSurveys": "Çözüm anketleri",
     "travel": "Seyahat acentesi",
-    "showcase": "Vitrin sitesi"
+    "showcase": "Vitrin sitesi",
+    "clientModules": "Müşteri şirket modülleri"
   },
   "companydetailCoreModuleAlwaysActive": "Çekirdek modül her zaman aktif",
   "smartAttendanceSessionsTitle": "Akıllı yoklama oturumları",
