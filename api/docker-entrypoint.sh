@@ -429,10 +429,19 @@ fi
 echo "Starting background queue worker (web container, respawn loop)..."
 (
     while true; do
+        # QA onboarding 2026-09-14 : la sortie du worker était jetée
+        # (`>/dev/null 2>&1`). Conséquence constatée en dev : un
+        # ProvisionDemoTenantJob épuisait ses 5 essais (statut `failed`, ligne
+        # `failed_jobs`) sans qu'AUCUNE exception ne soit exploitable dans les
+        # logs Render — 16 failed_jobs indiagnosticables. Le worker écrit
+        # désormais sur la sortie d'erreur du conteneur, collectée par la
+        # plateforme (LOG_CHANNEL=stderr) ; ses lignes sont déjà identifiables
+        # par le canal (`production.ERROR:`), et le `$?` ci-dessous reste celui
+        # de `queue:work` (un `| sed` le remplacerait par celui du pipe).
         php artisan queue:work \
             --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
             --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600 \
-            >/dev/null 2>&1
+            >&2
         echo "[entrypoint] queue worker exited ($?), respawn in 2s..." >&2
         sleep 2
     done
