@@ -18,7 +18,7 @@
       "name": "Ad"
     },
     "min": {
-      "chars": "En az 8 karakter"
+      "chars": "En az 12 karakter"
     },
     "password": "Şifre",
     "required": "Zorunlu",
@@ -1510,7 +1510,7 @@
     "generateSecret": "2FA sırrı oluştur",
     "generateSecretHint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
     "manualSecret": "Manuel sır:",
-    "minLengthHint": "En az 8 karakter.",
+    "minLengthHint": "En az 12 karakter.",
     "newPassword": "Yeni parola",
     "password": "Parola",
     "passwordSubtitle": "Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.",
@@ -1695,7 +1695,7 @@
     "setPasswordSubmit": "Parolamı belirle",
     "setPasswordSubmitting": "Kaydediliyor…",
     "setPasswordSuccess": "Parola kaydedildi. Giriş yapabilirsiniz.",
-    "setPasswordTooWeak": "En az 8 karakter ve bir rakam.",
+    "setPasswordTooWeak": "En az 12 karakter, bir rakam dahil.",
     "setPasswordMismatch": "İki parola eşleşmiyor.",
     "setPasswordUnavailable": "Parola şu anda kaydedilemiyor. Lütfen tekrar deneyin.",
     "goToLogin": "Giriş yap",
@@ -3030,7 +3030,7 @@
     "password": {
       "changed": "Şifre değiştirildi.",
       "min": {
-        "length": "En az 8 karakter"
+        "length": "En az 12 karakter"
       },
       "mismatch": "Şifreler eşleşmiyor"
     },
@@ -4004,7 +4004,7 @@
     "statusSuspended": "Askıya alındı",
     "valid": "Geçerli"
   },
-  "settingsPasswordMinCharacters": "En az 8 karakter",
+  "settingsPasswordMinCharacters": "En az 12 karakter",
   "notifications": {
     "channel_inapp": "Uygulama içi",
     "channel_email_desc": "Önemli mesajlar ve onaylar.",
@@ -4816,7 +4816,7 @@
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
       "fix_fields": "Lütfen kırmızı alanları düzeltin",
-      "password_min": "Şifre en az 8 karakter olmalıdır",
+      "password_min": "Parola en az 12 karakter olmalıdır",
       "search_no_match": "Aramanızla eşleşen sayfa yok",
       "update_failed": "Kullanıcı güncellenemedi"
     },

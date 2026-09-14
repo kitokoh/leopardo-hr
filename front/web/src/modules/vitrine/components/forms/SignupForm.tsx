@@ -55,6 +55,7 @@ import {
   type StoredAuthUser,
 } from '@/lib/i18n';
 import { apiFetch } from '@/lib/api-client';
+import { PASSWORD_MIN_LENGTH, isPasswordAcceptable } from '@/lib/password-policy';
 
 interface SignupFormProps {
   page?: string;
@@ -348,7 +349,8 @@ export function SignupForm({
 
     setPasswordError('');
 
-    if (newPassword.length < 8 || !/[0-9]/.test(newPassword)) {
+    // Politique partagée (front + API) : voir @/lib/password-policy.
+    if (!isPasswordAcceptable(newPassword)) {
       setPasswordError(c.setPasswordTooWeak);
       return;
     }
@@ -1089,7 +1091,7 @@ export function SignupForm({
                         type="password"
                         autoComplete="new-password"
                         required
-                        minLength={8}
+                        minLength={PASSWORD_MIN_LENGTH}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"

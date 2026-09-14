@@ -511,7 +511,7 @@ class SelfServiceTrialController extends Controller
 
         // Même politique que la réinitialisation de mot de passe (#5620).
         $validated = $request->validate([
-            'password' => ['required', 'string', Password::min(8)->numbers(), 'confirmed'],
+            'password' => ['required', 'string', Password::min(12)->numbers(), 'confirmed'],
         ]);
 
         $row = DB::table('trial_provisionings')

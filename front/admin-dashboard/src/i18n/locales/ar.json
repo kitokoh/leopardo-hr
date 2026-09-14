@@ -18,7 +18,7 @@
       "name": "الاسم الأول"
     },
     "min": {
-      "chars": "8 أحرف على الأقل"
+      "chars": "12 حرفًا على الأقل"
     },
     "password": "كلمة المرور",
     "required": "مطلوب",
@@ -1504,7 +1504,7 @@
     "generateSecret": "إنشاء رمز 2FA السري",
     "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
     "manualSecret": "الرمز اليدوي:",
-    "minLengthHint": "8 أحرف على الأقل.",
+    "minLengthHint": "12 حرفًا على الأقل.",
     "newPassword": "كلمة المرور الجديدة",
     "password": "كلمة المرور",
     "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
@@ -1689,7 +1689,7 @@
     "setPasswordSubmit": "تعيين كلمة المرور",
     "setPasswordSubmitting": "جارٍ الحفظ…",
     "setPasswordSuccess": "تم حفظ كلمة المرور. يمكنك تسجيل الدخول.",
-    "setPasswordTooWeak": "8 أحرف على الأقل، بما في ذلك رقم واحد.",
+    "setPasswordTooWeak": "12 حرفًا على الأقل، مع رقم واحد.",
     "setPasswordMismatch": "كلمتا المرور غير متطابقتين.",
     "setPasswordUnavailable": "تعذّر حفظ كلمة المرور حاليًا. يُرجى إعادة المحاولة.",
     "goToLogin": "تسجيل الدخول",
@@ -3024,7 +3024,7 @@
     "password": {
       "changed": "تم تغيير كلمة المرور.",
       "min": {
-        "length": "8 أحرف كحد أدنى"
+        "length": "12 حرفًا على الأقل"
       },
       "mismatch": "كلمات المرور غير متطابقة"
     },
@@ -3998,7 +3998,7 @@
     "statusSuspended": "موقوف",
     "valid": "صالح"
   },
-  "settingsPasswordMinCharacters": "8 أحرف كحد أدنى",
+  "settingsPasswordMinCharacters": "12 حرفًا على الأقل",
   "notifications": {
     "channel_inapp": "داخل التطبيق",
     "channel_email_desc": "رسائل مهمة وتأكيدات.",
@@ -4810,7 +4810,7 @@
       "name_required": "الاسم الكامل مطلوب.",
       "password_required": "كلمة المرور مطلوبة.",
       "fix_fields": "يرجى تصحيح الحقول المميزة",
-      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+      "password_min": "يجب أن تحتوي كلمة المرور على 12 حرفًا على الأقل",
       "search_no_match": "لا توجد صفحة تطابق بحثك",
       "update_failed": "فشل تحديث المستخدم"
     },

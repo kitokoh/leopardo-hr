@@ -18,7 +18,7 @@
       "name": "Prénom"
     },
     "min": {
-      "chars": "8 caractères minimum"
+      "chars": "12 caractères minimum"
     },
     "password": "Mot de passe",
     "required": "Obligatoire",
@@ -1510,7 +1510,7 @@
     "generateSecret": "Générer un secret 2FA",
     "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
     "manualSecret": "Secret manuel :",
-    "minLengthHint": "Minimum 8 caractères.",
+    "minLengthHint": "Minimum 12 caractères.",
     "newPassword": "Nouveau mot de passe",
     "password": "Mot de passe",
     "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
@@ -1695,7 +1695,7 @@
     "setPasswordSubmit": "Définir mon mot de passe",
     "setPasswordSubmitting": "Enregistrement…",
     "setPasswordSuccess": "Mot de passe enregistré. Vous pouvez vous connecter.",
-    "setPasswordTooWeak": "8 caractères minimum, dont un chiffre.",
+    "setPasswordTooWeak": "12 caractères minimum, dont un chiffre.",
     "setPasswordMismatch": "Les deux mots de passe ne correspondent pas.",
     "setPasswordUnavailable": "Impossible d'enregistrer le mot de passe pour le moment. Réessayez.",
     "goToLogin": "Se connecter",
@@ -3030,7 +3030,7 @@
     "password": {
       "changed": "Mot de passe modifié.",
       "min": {
-        "length": "8 caractères minimum"
+        "length": "12 caractères minimum"
       },
       "mismatch": "Mots de passe différents"
     },
@@ -4004,7 +4004,7 @@
     "statusSuspended": "Suspendu",
     "valid": "Valide"
   },
-  "settingsPasswordMinCharacters": "Minimum 8 caracteres",
+  "settingsPasswordMinCharacters": "Minimum 12 caractères",
   "notifications": {
     "channel_inapp": "Dans l'app",
     "channel_email_desc": "Messages importants et confirmations.",
@@ -4816,7 +4816,7 @@
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
       "fix_fields": "Veuillez corriger les champs en rouge",
-      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+      "password_min": "Le mot de passe doit contenir au moins 12 caractères",
       "search_no_match": "Aucune page ne correspond à votre recherche",
       "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
     },
