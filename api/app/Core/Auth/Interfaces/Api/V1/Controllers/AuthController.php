@@ -232,7 +232,7 @@ class AuthController extends Controller
         return new JsonResponse(['message' => 'LOGGED_OUT']);
     }
 
-    public function redirectToGoogle(): mixed
+    public function redirectToGoogle(Request $request): mixed
     {
         // Issue #5170 : garde de configuration. En prod (Render), des
         // GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REDIRECT_URL absents
@@ -256,7 +256,23 @@ class AuthController extends Controller
         // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
         // au callback. Plus de Socialite stateless sans protection.
         $state = Str::random(40);
-        session(['google_oauth_state' => $state]);
+
+        // QA onboarding 2026-09-14 — intention du parcours. La CONNEXION reste
+        // « invitation-first » (issue #3724 : aucun auto-provisionnement depuis
+        // un callback OAuth). L'INSCRIPTION (bouton « Continuer avec Google »
+        // de /signup) demande explicitement la CRÉATION d'un compte : elle
+        // renvoie l'identité vérifiée par Google pour pré-remplir le tunnel
+        // d'essai, qui reste seul responsable de la création du tenant.
+        // L'intention est stockée en session à côté du state (même mécanique,
+        // aucune donnée non fiable n'est injectée dans l'URL de retour).
+        $intent = $request->query('intent') === 'signup' ? 'signup' : 'login';
+        $plan = $request->query('plan');
+
+        session([
+            'google_oauth_state' => $state,
+            'google_oauth_intent' => $intent,
+            'google_oauth_plan' => is_string($plan) ? mb_substr($plan, 0, 80) : null,
+        ]);
 
         try {
             /** @var GoogleProvider $google */
@@ -303,6 +319,13 @@ class AuthController extends Controller
         }
         session()->forget('google_oauth_state');
 
+        // Intention lue une seule fois : elle ne doit jamais survivre au
+        // parcours qui l'a posée (sinon une connexion ultérieure hériterait
+        // d'une intention d'inscription).
+        $googleIntent = session('google_oauth_intent');
+        $googlePlan = session('google_oauth_plan');
+        session()->forget(['google_oauth_intent', 'google_oauth_plan']);
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
@@ -334,6 +357,32 @@ class AuthController extends Controller
         $employee = $resolved['employee'] ?? null;
 
         if (! $employee) {
+            // QA onboarding 2026-09-14 — parcours « créer mon compte avec
+            // Google ». On ne provisionne RIEN ici (l'auto-création d'un tenant
+            // depuis un callback OAuth reste interdite — #3724, et un nom de
+            // société déduit d'un compte Google n'est pas une donnée fiable) :
+            // on renvoie l'identité VÉRIFIÉE par Google (email_verified est
+            // contrôlé plus haut) pour pré-remplir le tunnel d'inscription.
+            // Le tenant est ensuite créé par le tunnel d'essai, comme pour une
+            // inscription classique.
+            if ($googleIntent === 'signup') {
+                Log::channel('audit')->info('auth.google.signup_intent', [
+                    'email' => $googleUser->getEmail(),
+                    'plan' => $googlePlan,
+                ]);
+
+                return new JsonResponse([
+                    'success' => true,
+                    'data' => [
+                        'signup' => true,
+                        'email' => (string) $googleUser->getEmail(),
+                        'first_name' => (string) ($googleUser->offsetGet('given_name') ?? ''),
+                        'last_name' => (string) ($googleUser->offsetGet('family_name') ?? ''),
+                        'plan' => is_string($googlePlan) ? $googlePlan : null,
+                    ],
+                ]);
+            }
+
             // Issue #3724 : pas d'auto-provisionnement silencieux en production.
             // Le flux d'invitation (#2617) crée toujours la ligne employé en
             // amont — un email totalement inconnu n'a donc aucun chemin légitime

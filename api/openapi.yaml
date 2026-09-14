@@ -2087,6 +2087,24 @@ paths:
       tags:
       - Auth
       summary: 'Redirection vers le flux OAuth Google (state anti-CSRF en session, #2619)'
+      parameters:
+      - name: intent
+        in: query
+        required: false
+        description: 'Intention du parcours. `signup` (bouton « Continuer avec Google » de /signup) prépare la CRÉATION de compte : sur un email inconnu, le callback renvoie l''identité vérifiée par Google au lieu de 401 UNKNOWN_ACCOUNT, et le tenant reste créé par le tunnel d''essai. Absent ou `login` = parcours invitation-first inchangé (#3724).'
+        schema:
+          type: string
+          enum:
+          - login
+          - signup
+          default: login
+      - name: plan
+        in: query
+        required: false
+        description: Code d'offre choisi dans le tunnel, mémorisé avec l'intention et renvoyé au callback (informatif).
+        schema:
+          type: string
+          maxLength: 80
       responses:
         '302':
           description: Redirection vers la page de consentement Google
