@@ -210,7 +210,7 @@ class FuelEquipmentController extends Controller
 
         /** @var FuelPump $pump */
         $pump = app(CreateStationEquipmentAction::class)->execute(
-            (int) $actor->company_id,
+            (string) $actor->company_id,
             $station->id,
             'pump',
             $request->validated(),
@@ -250,7 +250,7 @@ class FuelEquipmentController extends Controller
 
         /** @var FuelTank $tank */
         $tank = app(CreateStationEquipmentAction::class)->execute(
-            (int) $actor->company_id,
+            (string) $actor->company_id,
             $station->id,
             'tank',
             $request->validated(),
@@ -290,7 +290,7 @@ class FuelEquipmentController extends Controller
 
         /** @var FuelMeterRegister $meter */
         $meter = app(CreateStationEquipmentAction::class)->execute(
-            (int) $actor->company_id,
+            (string) $actor->company_id,
             $station->id,
             'meter',
             $request->validated(),

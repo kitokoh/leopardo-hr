@@ -16,9 +16,12 @@ use App\Modules\FuelStation\Domain\Models\FuelTank;
 class CreateStationEquipmentAction
 {
     /**
+     * @param  string  $companyId  UUID de la société (`companies.id`) — jamais un entier :
+     *                             `fuel_pumps/tanks/meter_registers.company_id` est de type `uuid`.
+     *                             Un `(int)` de l'UUID produisait « invalid input syntax for type uuid: "1" ».
      * @param  array<string, mixed>  $data  champs validés par la Request
      */
-    public function execute(int $companyId, int $stationId, string $kind, array $data): FuelPump|FuelTank|FuelMeterRegister
+    public function execute(string $companyId, int $stationId, string $kind, array $data): FuelPump|FuelTank|FuelMeterRegister
     {
         return match ($kind) {
             'tank' => FuelTank::query()->create([
