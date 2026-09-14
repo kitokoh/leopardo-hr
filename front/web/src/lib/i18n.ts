@@ -203,6 +203,10 @@ export type CopyTree = {
     close: string;
     retry: string;
     errorGeneric: string;
+    /** Audit 2026-09-14 — étapes « required » à action réelle (créer un département / un employé) */
+    actionCreateDepartment: string;
+    actionAddEmployee: string;
+    actionResumeHint: string;
     allStepsDone: string;
     quickStart: string;
     later: string;
@@ -834,6 +838,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: "Fermer l'assistant de configuration",
       retry: 'Réessayer',
       errorGeneric: 'Impossible de charger les étapes de configuration.',
+      actionCreateDepartment: 'Créer un département',
+      actionAddEmployee: 'Ajouter un employé',
+      actionResumeHint: "L'assistant reprendra automatiquement dès que ce sera fait.",
       allStepsDone: 'Configuration terminée !',
       quickStart: 'Quick Start',
       later: 'Recommandé plus tard',
@@ -1501,6 +1508,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'إغلاق مساعد الإعداد',
       retry: 'إعادة المحاولة',
       errorGeneric: 'تعذر تحميل خطوات الإعداد.',
+      actionCreateDepartment: 'إنشاء قسم',
+      actionAddEmployee: 'إضافة موظف',
+      actionResumeHint: "يستأنف المساعد تلقائياً بمجرد إنجاز ذلك.",
       allStepsDone: 'اكتمل الإعداد!',
       quickStart: 'بداية سريعة',
       later: 'موصى به لاحقًا',
@@ -2164,6 +2174,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'Kurulum asistanını kapat',
       retry: 'Tekrar dene',
       errorGeneric: 'Kurulum adımları yüklenemedi.',
+      actionCreateDepartment: 'Departman olustur',
+      actionAddEmployee: 'Calisan ekle',
+      actionResumeHint: "Bu adim tamamlaninca asistan otomatik devam eder.",
       allStepsDone: 'Kurulum tamamlandı!',
       quickStart: 'Hızlı Başlangıç',
       later: 'Daha sonra önerilir',
@@ -2827,6 +2840,9 @@ const copy: Record<AppLocale, CopyTree> = {
       close: 'Close the setup assistant',
       retry: 'Retry',
       errorGeneric: 'Unable to load the setup steps.',
+      actionCreateDepartment: 'Create a department',
+      actionAddEmployee: 'Add an employee',
+      actionResumeHint: "The wizard resumes automatically once it is done.",
       allStepsDone: 'Setup complete!',
       quickStart: 'Quick Start',
       later: 'Recommended later',
