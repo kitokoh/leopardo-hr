@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelLegacyImportService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use JsonException;
 
 /**
@@ -90,12 +91,30 @@ final class TravelLegacyImportCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Résout le tenant par UUID **ou** par slug.
+     *
+     * Correctif audit 2026-09-14 : l'ancien test `str_contains($identifier, '-')`
+     * prenait tout slug pour un UUID (tous les slugs contiennent un tiret) et
+     * provoquait `SQLSTATE[22P02] invalid input syntax for type uuid` — la
+     * commande, documentée « ID (UUID) ou slug », était inutilisable avec un
+     * slug. Pattern aligné sur `SeedAccountingDemoCommand::resolveCompany()`
+     * (`Str::isUuid` + repli slug).
+     */
     private function resolveCompany(string $identifier): ?Company
     {
-        if (str_contains($identifier, '-')) {
-            return Company::query()->where('id', $identifier)->first();
+        if (Str::isUuid($identifier)) {
+            /** @var Company|null $byId */
+            $byId = Company::query()->where('id', $identifier)->first();
+
+            if ($byId instanceof Company) {
+                return $byId;
+            }
         }
 
-        return Company::query()->where('slug', $identifier)->first();
+        /** @var Company|null $bySlug */
+        $bySlug = Company::query()->where('slug', $identifier)->first();
+
+        return $bySlug;
     }
 }
