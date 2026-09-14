@@ -3,6 +3,14 @@
 **Version** : 1.0 · **Date** : 2026-08-20 · **Auteur** : Agent PM (batch #5170)
 **Symptôme traité** : « Continue with Google » → 500 `INTERNAL_ERROR` (page JSON brute) ou 401 `UNKNOWN_ACCOUNT`.
 
+> **État au 2026-09-14** : les 3 variables sont renseignées (dev **et** prod) et l'initiation renvoie bien un **302**
+> vers `accounts.google.com` (redirect_uri = callback **vitrine**). Deux défauts intermédiaires ont été corrigés :
+> **#7370** (un backfill de démarrage non gardé pouvait faire échouer un déploiement Render) et **#7372**
+> (les routes OAuth n'avaient **aucun middleware de session** → `Session store not set on request.` → 503, même clés
+> valides). **Reste un blocage non technique** : l'écran de consentement **ne peut pas être publié** faute de domaine
+> vérifiable (`*.vercel.app` n'est pas à nous, #3452) → **mode « Testing » + liste d'utilisateurs test** assumé jusqu'à
+> l'achat d'un domaine. Détail, symptôme d'arrivée sur `/auth/login` et procédure de sortie : `docs/ops/GOOGLE_OAUTH_ENV.md` §5.
+
 ---
 
 ## 1. Symptômes et cause racine
@@ -43,6 +51,16 @@ Dans le dashboard Render (service `gestionemployerbackend` → **Environment**) 
 - Projet Google Cloud → APIs & Services → Credentials → OAuth 2.0 Client IDs
 - **Authorized redirect URIs** : ajouter la même valeur que `GOOGLE_REDIRECT_URL` ci-dessus (exactement, sans slash final).
 - **Authorized JavaScript origins** : `https://gestionemployer-backend.vercel.app` + `https://gestionemployerbackend.onrender.com` + domaine vitrine.
+
+### 4bis. Publier l'écran de consentement — bloqué par l'absence de domaine (2026-09-14)
+
+La publication (statut « En production ») exige des **« domaines autorisés » vérifiés dans Search Console** : la vitrine
+étant sous `*.vercel.app` (domaine de Vercel, non vérifiable par nous) et `leopardo-rh.com` étant **NXDOMAIN** (#3452),
+**aucun domaine ne peut être déclaré** → la publication est impossible aujourd'hui.
+
+**Contournement retenu** : mode **« Testing »** + **liste d'utilisateurs test** (Google Cloud Console → *Google Auth
+Platform* → **Audience** → *Utilisateurs test*), limite Google de 100 comptes — suffisant pour le pilote. Les scopes
+`openid`/`email`/`profile` étant non sensibles, la publication ne déclenchera **aucune revue** le jour venu.
 
 ## 5. Re-tester (DoD)
 
