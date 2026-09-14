@@ -263,7 +263,11 @@ export async function POST(request: NextRequest) {
                 : undefined,
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
-
+            // #7301 — état RÉEL de la persistance durable du lead
+            // (`persisted` | `pending` | `failed`). Exposé pour que l'appelant
+            // ne suppose jamais un succès muet : `pending` = écriture en cours
+            // après la réponse, `failed` = perte signalée par alerte.
+            leadPersisted: lead.persisted,
           },
         },
         { status: 200 }
@@ -292,6 +296,7 @@ export async function POST(request: NextRequest) {
               nextStep: 'complete_signup',
               confirmationSent: lead.emailForwarded,
               crmForwarded: lead.crmForwarded,
+              leadPersisted: lead.persisted,
             },
             ...(signupValidationDetails ? { details: signupValidationDetails } : {}),
           },
@@ -313,6 +318,7 @@ export async function POST(request: NextRequest) {
             nextStep: 'contact_under_24h',
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
+            leadPersisted: lead.persisted,
             signupError,
           },
         },
