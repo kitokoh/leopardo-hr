@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Mode sombre piloté par la CLASSE `.dark` (posée sur <html> par
+   `useDarkMode`), et non par `prefers-color-scheme`. En Tailwind v4 le
+   `darkMode: "class"` de tailwind.config.ts est ignoré : sans cette ligne,
+   tous les utilitaires `dark:` suivent la préférence SYSTÈME et la bascule
+   de thème de la vitrine n'a aucun effet visible. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
