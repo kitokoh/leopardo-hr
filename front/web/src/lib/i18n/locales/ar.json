@@ -1594,7 +1594,8 @@
     "legalRates": "المعدلات القانونية",
     "account": "حسابي",
     "notFound": "الصفحة غير موجودة",
-    "travelAgency": "وكالة السفر"
+    "travelAgency": "وكالة السفر",
+    "emailTemplates": "البريد الإلكتروني"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -5084,5 +5085,25 @@
     "sectionContact": "اتصال",
     "sectionFooter": "التذييل",
     "notFoundTitle": "الصفحة غير موجودة"
+  },
+  "emailsAdmin": {
+    "title": "قوالب البريد الإلكتروني",
+    "subtitle": "خصّص محتوى الرسائل التي ترسلها المنصة. ما لم تعدّله، يُستخدم النص الافتراضي.",
+    "locale": "اللغة",
+    "subject": "الموضوع",
+    "heading": "العنوان",
+    "body": "نص الرسالة",
+    "ctaLabel": "نص الزر",
+    "variables": "المتغيرات المتاحة",
+    "bodyHint": "نص عادي: تُحفظ أسطر جديدة ولا يُفسَّر HTML.",
+    "save": "حفظ",
+    "saved": "تم حفظ القالب",
+    "saveFailed": "تعذّر الحفظ",
+    "reset": "العودة إلى الافتراضي",
+    "resetDone": "تمت إعادة تعيين القالب",
+    "overridden": "مخصّص",
+    "preview": "معاينة",
+    "previewFailed": "المعاينة غير متاحة",
+    "loadFailed": "تعذّر التحميل"
   }
 }

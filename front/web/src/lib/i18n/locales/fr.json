@@ -1594,7 +1594,8 @@
     "legalRates": "Taux legaux",
     "account": "Mon compte",
     "notFound": "Page non trouvee",
-    "travelAgency": "Agence de voyage"
+    "travelAgency": "Agence de voyage",
+    "emailTemplates": "E-mails"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -5084,5 +5085,25 @@
     "sectionContact": "Contact",
     "sectionFooter": "Pied de page",
     "notFoundTitle": "Page introuvable"
+  },
+  "emailsAdmin": {
+    "title": "Modèles d'e-mails",
+    "subtitle": "Personnalisez le contenu des e-mails envoyés par la plateforme. Sans modification, le texte par défaut est utilisé.",
+    "locale": "Langue",
+    "subject": "Objet",
+    "heading": "Titre",
+    "body": "Corps du message",
+    "ctaLabel": "Libellé du bouton",
+    "variables": "Variables disponibles",
+    "bodyHint": "Texte brut : les retours à la ligne sont conservés, le HTML n'est pas interprété.",
+    "save": "Enregistrer",
+    "saved": "Modèle enregistré",
+    "saveFailed": "Enregistrement impossible",
+    "reset": "Revenir au défaut",
+    "resetDone": "Modèle réinitialisé",
+    "overridden": "personnalisé",
+    "preview": "Aperçu",
+    "previewFailed": "Aperçu indisponible",
+    "loadFailed": "Chargement impossible"
   }
 }
