@@ -31,6 +31,24 @@ import {
   Gift,
 } from 'lucide-react';
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * #7305 — FAQ tarifs : `AnimatePresence` sans `mode="wait"`
+ * ─────────────────────────────────────────────────────────────────────────
+ * La liste « Accordion » plus bas est produite par `filteredFaq.map(...)` :
+ * elle rend PLUSIEURS enfants dans la même passe. Or `mode="wait"` (attendre la
+ * fin de l'animation de sortie avant de monter l'enfant suivant) n'accepte
+ * qu'UN enfant, et framer-motion avertissait alors en console :
+ *   You're attempting to animate multiple children within AnimatePresence, but
+ *   its mode is set to "wait". This will lead to odd visual behaviour.
+ * C'est la page que sert la redirection `/signup` sans `?plan=` (règle portée
+ * par le proxy, #7238) : l'avertissement relevé « sur /signup » venait donc
+ * d'ici. Mesuré avant correction (`next dev`, console du navigateur, navigation
+ * client) : 4 à 6 avertissements par affichage de `/pricing`, 0 après.
+ * Le mode par défaut (`sync`) est celui d'une liste : chaque question entre et
+ * sort indépendamment quand le filtre de catégorie change. La règle est
+ * verrouillée par `src/lib/__tests__/animate-presence-mode-wait.test.ts`.
+ * ───────────────────────────────────────────────────────────────────────── */
+
 /* ─────────────────────────────────────────────
    TYPES
 ───────────────────────────────────────────── */
@@ -935,7 +953,8 @@ export default function PricingPage() {
 
           {/* Accordion */}
           <div className="space-y-3">
-            <AnimatePresence mode="wait">
+            {/* #7305 — liste mappée : mode wait incompatible (note en tête de fichier) */}
+            <AnimatePresence>
               {filteredFaq.map((item) => (
                 <motion.div
                   key={item.id}
