@@ -239,13 +239,13 @@ export default function EmployeesPage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             {i18nT(locale, 'employees.total_team')}
           </p>
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : total}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             {i18nT(locale, 'employees.state')}
           </p>
           <p className="mt-3 text-lg font-bold text-slate-950">
@@ -255,7 +255,7 @@ export default function EmployeesPage() {
           </p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
             {i18nT(locale, 'dashboard.departments')}
           </p>
           <p className="mt-3 text-4xl font-black text-slate-950">{departmentsLoading ? '...' : departments.length}</p>
@@ -302,7 +302,7 @@ export default function EmployeesPage() {
             <button
               type="submit"
               disabled={isCreatingDepartment}
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-800 disabled:opacity-60"
             >
               <Plus className="h-4 w-4" />
               {i18nT(locale, 'cabinet.screen.create')}
@@ -389,7 +389,7 @@ export default function EmployeesPage() {
               <button
                 type="submit"
                 disabled={isCreatingEmployee}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-800 disabled:opacity-60"
               >
                 {i18nT(locale, 'commonSave')}
               </button>

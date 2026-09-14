@@ -319,7 +319,7 @@ export default function TwoFactorSettingsPage() {
                   <button
                     type="submit"
                     disabled={confirming || !confirmCode.trim()}
-                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                    className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
                   >
                     {confirming ? (
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
@@ -358,7 +358,7 @@ export default function TwoFactorSettingsPage() {
                   type="button"
                   onClick={handleEnroll}
                   disabled={enrolling}
-                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
                 >
                   {enrolling ? (
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

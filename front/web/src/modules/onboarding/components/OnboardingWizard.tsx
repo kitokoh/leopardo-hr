@@ -433,11 +433,11 @@ export function OnboardingWizard({
                     <div
                       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
                         isCompleted
-                          ? 'bg-emerald-100 text-emerald-600'
+                          ? 'bg-emerald-100 text-emerald-700'
                           : isSkipped
                             ? 'bg-slate-100 text-slate-400'
                             : isActive
-                              ? 'bg-teal-600 text-white shadow-lg'
+                              ? 'bg-teal-700 text-white shadow-lg'
                               : 'bg-slate-100 text-slate-400'
                       }`}
                     >
@@ -473,7 +473,7 @@ export function OnboardingWizard({
                     )}
                     {/* #R10 — estimation de temps pour les étapes non terminées */}
                     {!isCompleted && !isSkipped && STEP_ESTIMATED_MINUTES[s.step_key] && (
-                      <span className="shrink-0 text-[10px] font-semibold text-slate-400">
+                      <span className="shrink-0 text-[10px] font-semibold text-slate-500">
                         {onboarding.estimatedMinutes.replace('{n}', String(STEP_ESTIMATED_MINUTES[s.step_key]))}
                       </span>
                     )}
@@ -489,7 +489,7 @@ export function OnboardingWizard({
                       <Link
                         href="/employees"
                         onClick={handleDismiss}
-                        className="inline-flex w-fit items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-500"
+                        className="inline-flex w-fit items-center gap-2 rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-800"
                       >
                         <Users className="h-4 w-4" aria-hidden="true" />
                         {i18nT(locale, 'employees.open_team')}
