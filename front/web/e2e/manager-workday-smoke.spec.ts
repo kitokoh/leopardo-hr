@@ -205,6 +205,26 @@ async function mockManagerSession(page: Page) {
   });
 }
 
+/**
+ * #7328 — les modules RH sont repliés dans un sous-menu « RH » du bandeau
+ * (`data-testid="dashboard-hr-menu"`). Le panneau n'est monté que lorsqu'il est
+ * ouvert (`hrMenuOpen ? … : null`) : un clic direct sur
+ * `header a[href="/employees"]` ne trouve donc **rien** tant que le sous-menu
+ * est fermé (régression constatée sur `main` après #7332). On l'ouvre comme le
+ * ferait un utilisateur. Si un seul module RH est activé, `buildDashboardNav`
+ * rend un lien direct — il n'y a alors rien à ouvrir.
+ */
+async function openHrSubmenu(page: Page) {
+  const trigger = page.getByTestId('dashboard-hr-menu');
+  if (!(await trigger.isVisible().catch(() => false))) {
+    return;
+  }
+  if ((await trigger.getAttribute('aria-expanded')) !== 'true') {
+    await trigger.click();
+  }
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+}
+
 test.describe('Client web manager workday smoke', () => {
   test('HR manager can move through dashboard, team, attendance and absences then logout', async ({ authenticatedPage: page }) => {
     await mockManagerSession(page);
@@ -217,6 +237,9 @@ test.describe('Client web manager workday smoke', () => {
 
     // #7225 — IA revue : les modules transverses vivent dans le bandeau
     // horizontal « Entreprise » (header), le rail `aside` étant réservé au métier.
+    // #7328 — depuis #7332, les modules RH y sont repliés dans un sous-menu :
+    // on l'ouvre avant chaque cible (le panneau n'existe pas fermé).
+    await openHrSubmenu(page);
     await page.locator('header a[href="/employees"]').first().click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Total équipe');
@@ -224,12 +247,14 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText('EMP-501');
 
+    await openHrSubmenu(page);
     await page.locator('header a[href="/attendance"]').first().click();
     await expect(page).toHaveURL(/\/attendance$/);
     await expect(page.locator('body')).toContainText('Manager');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText(/Présents|present/i);
 
+    await openHrSubmenu(page);
     await page.locator('header a[href="/absences"]').first().click();
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Absences');
