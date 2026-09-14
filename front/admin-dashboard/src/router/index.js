@@ -403,6 +403,16 @@ const routes = [
         }
       },
       {
+        // #7347 — édition des contenus d'e-mails (Paramètres › E-mails).
+        path: '/settings/emails',
+        name: 'settings-email-templates',
+        component: () => import('@/views/settings/EmailTemplatesView.vue'),
+        meta: {
+          title: 'navigation.emailTemplates',
+          icon: 'EnvelopeIcon'
+        }
+      },
+      {
         path: '/settings/payroll/holidays',
         name: 'payroll-holidays',
         component: () => import('../views/settings/HolidaysView.vue'),

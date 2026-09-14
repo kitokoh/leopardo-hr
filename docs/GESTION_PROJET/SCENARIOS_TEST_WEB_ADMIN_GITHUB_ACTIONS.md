@@ -209,6 +209,30 @@ superadmin.
 - Convention : toute nouvelle entrée d'un module d'entreprise cliente rejoint ce
   groupe, pas le rail principal.
 
+### 15. Paramètres › E-mails — contenu des e-mails éditable (#7347)
+
+Nouvel écran `/settings/emails` : le super-admin modifie l'**objet**, le **titre**,
+le **corps** et le **libellé du bouton** des e-mails transactionnels, **par langue**
+(fr/en/ar/tr), avec **aperçu rendu dans le vrai layout** et **retour au défaut**.
+
+- **Sans surcharge, rien ne change** : les valeurs par défaut restent celles du
+  catalogue `api/lang/*/emails.php` ; l'écran affiche la valeur *effective*
+  (surcharge si elle existe, sinon défaut).
+- Le corps est du **texte** : retours à la ligne conservés, HTML **non interprété**,
+  et seules les variables déclarées par le registre sont substituées.
+- Les deux badges à vérifier : « personnalisé » dans la liste dès qu'**une** langue
+  a été modifiée, et la remise à zéro qui fait disparaître la surcharge.
+
+À vérifier (spec `e2e/email-templates-editor.spec.js`) :
+
+- l'écran charge la liste des modèles et affiche la valeur effective ;
+- « Enregistrer » envoie `(template_key, locale)` + les champs ;
+- « Revenir au défaut » supprime la surcharge ;
+- « Aperçu » affiche le HTML renvoyé par l'API dans l'iframe.
+
+Côté API, `tests/Feature/Mail/EmailTemplateEditingTest.php` verrouille la résolution
+(surcharge > défaut), l'échappement du corps, l'ignorance des variables non
+déclarées, la séparation des langues et la traçabilité (`updated_by`).
 ### 16. Portefeuille clients — l'endpoint de scoring est paginé (#7339)
 
 **MAJ 2026-09-14 (#7339) — l'endpoint est désormais paginé, sans changement pour la vue.**

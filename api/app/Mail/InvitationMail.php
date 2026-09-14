@@ -36,7 +36,7 @@ class InvitationMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.invitation',
+            view: 'emails.invitation',
             with: [
                 'inviterName' => $this->inviterName,
                 'companyName' => $this->companyName,
