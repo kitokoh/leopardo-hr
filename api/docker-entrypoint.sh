@@ -393,8 +393,20 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
         echo "Skipping demo seed (APP_ENV=production)."
     fi
 
+    # QA onboarding 2026-09-14 : un BACKFILL ne doit jamais empêcher le
+    # conteneur de démarrer. Constaté en dev : une erreur *transitoire* du
+    # pooler Postgres (« SQLSTATE[0A000]: cached plan must not change result
+    # type », survenue juste après une migration appliquée par un autre
+    # chantier) faisait sortir la commande en erreur ; sous `set -e` le
+    # démarrage s'arrêtait là et le déploiement Render partait en
+    # `update_failed` — deux déploiements perdus d'affilée, sans aucun lien
+    # avec le contenu livré. La commande est idempotente et rejouée à chaque
+    # démarrage : on journalise bruyamment (statut + sortie d'erreur
+    # conservées) et on poursuit le boot.
     echo "Backfilling notification preferences for active employees..."
-    php artisan notifications:backfill-preferences
+    php artisan notifications:backfill-preferences || {
+        echo "[entrypoint] ATTENTION : backfill des preferences de notification en echec (statut $?). Demarrage poursuivi — la commande sera rejouee au prochain demarrage." >&2
+    }
 
     mark_test_database_reset_complete
 fi
