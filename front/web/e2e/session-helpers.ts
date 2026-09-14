@@ -1,6 +1,6 @@
 import { type Page } from '@playwright/test';
 
-// Issue #2746 — le middleware serveur (`src/middleware.ts`, merge #2364)
+// Issue #2746 — le proxy serveur (`src/proxy.ts`, ex-middleware, merge #2364)
 // protège la zone dashboard via le cookie httpOnly `leopardo_token`, posé
 // par le proxy Next.js `src/app/api/v1/auth/login/route.ts` après un vrai
 // login. Les tests e2e mockés court-circuitent ce proxy : ils doivent donc
