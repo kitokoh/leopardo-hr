@@ -23,7 +23,11 @@ return [
     'providers' => [
         'groq' => [
             'key' => env('GROQ_API_KEY'),
-            'model' => env('AI_GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            // A9 (#7379) — `llama-3.3-70b-versatile` est passé « Enterprise /
+            // Contact Sales » chez Groq : le défaut historique échouait donc sur
+            // un compte gratuit (le plan que la doc recommande). Défaut aligné sur
+            // un modèle gratuit ET tool-calling. `AI_GROQ_MODEL` reste prioritaire.
+            'model' => env('AI_GROQ_MODEL', 'openai/gpt-oss-120b'),
             'base_url' => env('GROQ_BASE_URL', 'https://api.groq.com/openai/v1'),
         ],
         'openai' => [
