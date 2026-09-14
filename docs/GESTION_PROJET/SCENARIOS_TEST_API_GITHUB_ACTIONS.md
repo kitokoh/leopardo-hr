@@ -1904,3 +1904,125 @@ sans hôte (« URI must include a scheme and host »). Les trois `base_url` (Gro
 Anthropic) passent en `env(...) ?: 'défaut'`. Un `orderBy` sur une requête d'agrégation
 (`max(created_at)`) faisait échouer Postgres en `SQLSTATE 42803` — soit un **500** sur
 l'écran de santé.
+## Addendum 2026-09-14 — Espace voyageur : code de contrôle délivré et surface publique (#7394, #7395)
+
+Deux bugs de recette BC-24 TRAVEL rendaient le parcours passager inutilisable. **(1) Le code
+de contrôle n'était délivré à personne** : `IssueTicketsAction` le générait puis n'en
+persistait que le SHA-256 ; la réponse d'émission ne portait que `ticket_number`, et le PDF
+imprimait ce même numéro sous l'étiquette « Code de contrôle » — le passager saisissait donc
+un code que l'API refusait (**404**). Le code est désormais une **dérivation canonique** du
+billet (HMAC-SHA256 + `APP_KEY`, `XXXX-XXXX-XXXX`), **délivré une seule fois** par
+`POST /api/v1/travel/bookings/{booking}/issue-ticket` (clé `validation_code` sur chaque
+billet) et imprimé sur l'e-billet ; la saisie tolère minuscules et absence de tirets ; un
+rejeu d'émission ne redélivre rien. **(2) Le portail passager appelait la surface STAFF**
+(`/travel/shop/bookings/{ref}`, `/travel/tickets/{id}/pdf`, `POST /travel/shop/bookings/{ref}/cancel`)
+→ **401** pour un passager, et `code` y était ignoré en silence (faux contrôle d'accès).
+
+Surface PUBLIQUE de l'espace voyageur (aucun compte, aucun jeton boutique du tenant) :
+
+- `GET /api/v1/public/travel/shop/bookings/{reference}?code=` → suivi (statut, trajet,
+  `passenger_count`, billets `{id, ticket_number, status}`) ; **422** sans code, **404** si le
+  code ne correspond à aucun billet de la réservation.
+- `GET /api/v1/public/travel/tickets/{ticket}/pdf?code=` → URL signée du PDF ; **403** si le
+  code est faux, **410** si le billet est révoqué.
+- `POST /api/v1/public/travel/shop/bookings/{reference}/cancel` (`{code, reason}`) → annulation
+  en ligne, sièges libérés, motif conservé (audit) ; **422** `TRAVEL_BOOKING_CODE_INVALID` /
+  `TRAVEL_BOOKING_DEPARTURE_PAST` / `VALIDATION_ERROR`, **404** si la référence est inconnue.
+
+Règles d'accès : le tenant est résolu **par la ressource** (référence ou billet) quand aucune
+route n'est bornée (recherche, réservation, paiement → jeton `X-Travel-Shop-Token` toujours
+exigé, **401** sinon) ; une référence ambiguë ou inconnue est un **404** (fail-closed) ; la
+preuve de possession (code du billet) est vérifiée **avant** toute donnée. Le suivi staff
+`GET /api/v1/travel/shop/bookings/{reference}` reste réservé aux employés authentifiés et
+**refuse désormais le paramètre `code`** (422 `TRAVEL_SHOP_CODE_NOT_SUPPORTED`) au lieu de
+l'ignorer. Côté front, `front/web/src/app/(dashboard)/travel/portal/page.tsx` consomme
+exclusivement ces endpoints publics.
+
+Couverture : `api/tests/Feature/Travel/TravelTicketValidationCodeDeliveryTest.php` (délivrance
+unique, hash seul en base, routes de lecture muettes, suivi public 200/404, PDF réel) et
+`api/tests/Feature/Travel/TravelPublicShopPassengerPortalTest.php` (suivi, PDF, annulation sans
+jeton boutique ; 401/404/422 ; cross-tenant ; suivi staff qui refuse `code`), plus le golden
+journey GJ-TRAVEL-01 requalifié.
+
+## Addendum 2026-09-14 — 27 routes appelaient une méthode de contrôleur inexistante (#7398)
+
+`Route::getRoutes()` listait **27 routes** dont l'action pointait vers une méthode **non définie**
+(`500 Call to undefined method`) et rien ne le voyait. L'audit route → méthode (1728 routes) est
+désormais à **broken=0**.
+
+BC-24 TRAVEL — `api/routes/modules/travelagency.php` (8 routes)
+- Alias périmés réalignés sur les méthodes réellement définies : `indexAdverts→index`,
+  `storeAdvert→store`, `showAdvert→show`, `payAdvert→pay`, `renewAdvert→renew`,
+  `indexManage→manageIndex`, `validateAd→validateAdvert`.
+- `destroyAdvert` **implémentée** (`DELETE /travel/adverts/{travelAdvert}`) : policy `delete`,
+  annonce d'un autre tenant ⇒ **404** (comme `show`/`pay`/`renew`), succès ⇒ **204**.
+- Les **deux blocs d'annonces** qui déclaraient les mêmes URI avec des méthodes divergentes sont
+  fusionnés : une seule déclaration par couple (verbe, URI). `/adverts/manage` est déclaré **avant**
+  `/adverts/{travelAdvert}` — sinon « manage » est capturé comme identifiant d'annonce (404 de
+  l'écran de modération).
+
+BC-15 FUEL — `api/routes/modules/fuel_station.php` (19 routes)
+- `FuelReportController` : `dailyVolumes`/`sales`/`stock`/`variances`/`shifts` délèguent au rapport
+  typé `show()` ; `createExport` (pending + job), `exports`, `download` (409/410).
+- `FuelStockController` : `deliveries` et `verifyDelivery` implémentées (isolation tenant, acte
+  tracé) ; `movements`/`storeAdjustment` = alias canoniques de `index`/`store`.
+- `FuelIncidentController` : `transition` (graphe de transitions du modèle, **422** si illégal) et
+  `attach` (allowlist MIME/taille **avant** écriture).
+- Divers : `FuelImportController@show`, `FuelStationController@sitesIndex`, `FuelProductController@show`.
+
+Garde ajoutée : `api/tests/Feature/RouteControllerMethodContractTest.php` parcourt `Route::getRoutes()`,
+résout l'action (`uses`) et **échoue si la classe existe mais la méthode est absente**. Elle
+**échoue sur `main`** (27 routes listées) et passe après correctif — c'est la garde qui manquait pour
+que 27 routes cassées passent inaperçues.
+
+Scénarios verrouillés par `api/tests/Feature/Travel/TravelAdvertDestroyTest.php` : suppression d'une
+annonce de son tenant ⇒ **204** ; annonce d'un autre tenant ⇒ **404** ; `/adverts/manage` n'est pas
+capturé par `/adverts/{travelAdvert}`.
+
+Réserve documentée : les suites `TravelAdvert*` citées par l'issue portent des défauts **préexistants**
+(closures sans `use ($company)`, contrat d'une autre génération d'API, `$fillable` `label` vs colonne
+`name` sur `TravelAdvertType`/`TravelAdvertPosition`, `principal()` typé `string` appelé avec `null`) ;
+même constat côté Fuel (`fuel_stock_movements` inexistante, désyncs de schéma). Ensembles en échec
+**identiques avant/après** — aucune régression introduite par cet audit.
+
+## Addendum 2026-09-14 — verticale EDU : portail parents, responsables légaux et tarifs scolaires (#7409, #7408)
+
+Recette **tenant propriétaire d'école** (base fraîche v4.24.0). Le module EDU était
+inatteignable dès la première action de mise en route ; ce lot raccorde trois surfaces
+développées séparément et jamais reliées.
+
+### Scénarios verrouillés par `api/tests/Feature/EduManager/EduGuardianCrudTest.php`
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians` (direction) | **201**, `data.id` > 0, `contact_reference` relu en clair (cast `encrypted`) |
+| `POST /edu-manager/students/{student}/guardians` | **201**, `data.can_view_grades` = true |
+| Ré-appel du même rattachement | **201** (idempotent, UNIQUE `company_id, student_id, guardian_id`) |
+| `POST /edu-manager/guardians/access-links` sur un responsable fraîchement créé | **201** (chaînage qui était impossible) |
+| `GET|POST /edu-manager/guardians` par un employé lambda | **403** |
+| Rattachement avec un `guardian_id` d'un autre tenant | **422** (jamais inséré) |
+| Rattachement sur un élève d'un autre tenant | **404** (isolation fail-closed) |
+
+### Scénarios vérifiés manuellement (API réelle, ANONYME pour le portail)
+
+| Scénario | Attendu |
+|---|---|
+| `POST /edu-manager/guardians/{guardian}/access-links` | **201**, token affiché une seule fois, `expires_at` |
+| `POST /edu-manager/guardian-portal/access-links/{token}/consume` (sans session) | **200**, `data.guardian` + `data.children[]` (présence + bulletins publiés si `can_view_grades`) |
+| Réutilisation du même lien | **410** (expiré ou déjà utilisé — indistinguables côté client) |
+| Jeton inconnu | **404** |
+| `GET|POST /edu-manager/fee-types` (direction) | **200** / **201** ; code dupliqué dans le tenant → **422** |
+| `GET|POST /edu-manager/fee-types` par un employé lambda | **403** |
+| `GET /edu-manager/fee-types` sans authentification | **401** |
+
+### Scénarios de mise en route (base fraîche, bout en bout)
+
+campus → année scolaire → matières → classe → élèves → inscriptions → évaluation → notes →
+**bulletin généré (201) → validé → publié** → frais de scolarité. Avant ce lot, les trois
+premiers `POST` répondaient **500** (`SQLSTATE 42703`, colonnes absentes) et
+`report-cards/generate` répondait **403** (ability `create` absente de la policy).
+
+Contrat OpenAPI : les 8 routes ajoutées sont documentées dans `api/openapi.yaml`
+(tag `EduManager`) et le miroir + SDK sont régénérés —
+`python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` → 0 nouvelle route
+non couverte.

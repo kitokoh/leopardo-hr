@@ -217,6 +217,29 @@ class TravelAdvertController extends Controller
         ]]);
     }
 
+    /**
+     * TRAVEL-907/908 (#6110/#6111) — Suppression d'une annonce.
+     *
+     * Réservée aux rôles opérationnels du tenant (`TravelAdvertPolicy::delete`,
+     * alignée sur `create`/`pay`). Une annonce d'un autre tenant est
+     * indiscernable d'une annonce inexistante (404) — même contrat que
+     * `show`/`pay`/`renew`. Réponse 204 sans corps, alignée sur les autres
+     * `destroy()` de la verticale (ex. `TravelAdvertTypeController`).
+     */
+    public function destroyAdvert(Request $request, TravelAdvert $travelAdvert): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('delete', $travelAdvert)) {
+            abort(404);
+        }
+
+        $travelAdvert->delete();
+
+        return response()->json(null, 204);
+    }
+
     public function renew(Request $request, TravelAdvert $travelAdvert): JsonResponse
     {
         /** @var Employee $actor */

@@ -161,6 +161,30 @@ class FuelStationController extends Controller
         }
     }
 
+    public function sitesIndex(Request $request, FuelStation $station): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($station->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+
+        $this->authorize('view', $station);
+
+        $sites = FuelSite::query()
+            ->where('company_id', $actor->company_id)
+            ->where('station_id', $station->id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'data' => $sites->map(fn (FuelSite $site): array => $this->sitePayload($site)),
+        ]);
+    }
+
     public function sitesStore(SaveFuelSiteRequest $request, FuelStation $station): JsonResponse
     {
         $this->assertSolutionActive();

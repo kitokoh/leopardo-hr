@@ -101,6 +101,8 @@ tags:
   description: 'Administration super-admin : gestion tenants, plans, metriques globales.'
 - name: Catalog
   description: 'BC-28 CATALOG — gestion du catalogue produits B2B des tenants (categories, produits, publication).'
+- name: Travel
+  description: 'BC-24 TRAVEL — boutique, tunnel public et espace voyageur (suivi par reference + code de controle du billet).'
 paths:
   /attendance/config:
     get:
@@ -28139,6 +28141,469 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /public/travel/shop/bookings/{reference}/cancel:
+    post:
+      tags:
+      - Travel
+      summary: Annulation en ligne d'une réservation par le passager (espace voyageur)
+      description: >-
+        BC-24 TRAVEL (#7395) — surface PUBLIQUE du portail passager : ni compte
+        employe, ni jeton boutique tenant. La reference de la reservation et le
+        CODE DE CONTROLE du billet (secret partage, imprime sur l'e-billet)
+        sont exiges. La reponse est minimisee (statut, trajet, billets) :
+        aucune donnee personnelle. 422 TRAVEL_BOOKING_CODE_INVALID si le code
+        ne correspond a aucun billet de la reservation, 422
+        TRAVEL_BOOKING_DEPARTURE_PAST si le depart est passe, 422
+        VALIDATION_ERROR si le motif (obligatoire, conserve pour l'audit)
+        manque ou est trop court.
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, reason]
+              properties:
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 32
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+      responses:
+        '200':
+          description: Réservation annulée (statut annule, sieges liberes)
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /edu-manager/fee-types:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les types de frais scolaires
+      description: 'Direction/RH uniquement. Catalogue des tarifs (scolarité, cantine, transport…) du tenant.'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des types de frais
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        code:
+                          type: string
+                        label:
+                          type: string
+                        amount:
+                          type: number
+                        currency:
+                          type: string
+                        billing_frequency:
+                          type: string
+                          enum:
+                          - once
+                          - term
+                          - monthly
+                        is_active:
+                          type: boolean
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Créer un type de frais scolaire
+      description: 'Direction/RH uniquement. Unicité (company_id, code) : un doublon répond 422.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - label
+              - amount
+              - currency
+              - billing_frequency
+              properties:
+                code:
+                  type: string
+                  maxLength: 50
+                label:
+                  type: string
+                  maxLength: 191
+                amount:
+                  type: number
+                  minimum: 0
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                billing_frequency:
+                  type: string
+                  enum:
+                  - once
+                  - term
+                  - monthly
+                campus_id:
+                  type: integer
+                  nullable: true
+                is_active:
+                  type: boolean
+                  nullable: true
+      responses:
+        '201':
+          description: Type de frais créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+
+  /edu-manager/guardian-portal/access-links/{token}/consume:
+    post:
+      tags:
+      - EduManager
+      summary: Consommer un lien d'accès parents (portail public)
+      description: 'Route PUBLIQUE (le parent détenteur du lien n''a pas de session) : la société est résolue depuis le lien, jamais depuis la requête. Lien inconnu → 404 ; expiré ou déjà utilisé → 410 (indistinguables côté client, l''audit serveur garde la trace). Throttle dédié.'
+      security: []
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Contenu du portail (responsable + enfants autorisés)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      guardian:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          first_name:
+                            type: string
+                            nullable: true
+                          last_name:
+                            type: string
+                            nullable: true
+                      children:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            display_name:
+                              type: string
+                            relationship_code:
+                              type: string
+                            can_view_grades:
+                              type: boolean
+                            presence:
+                              type: object
+                              properties:
+                                today_status:
+                                  type: string
+                                  nullable: true
+                                recorded_days:
+                                  type: integer
+                            report_cards:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: integer
+                                  period:
+                                    type: string
+                                  published_at:
+                                    type: string
+                                    format: date-time
+                                    nullable: true
+        '404':
+          $ref: '#/components/responses/Error404'
+        '410':
+          description: Lien expiré ou déjà utilisé
+        '429':
+          $ref: '#/components/responses/Error429'
+  /edu-manager/guardians:
+    get:
+      tags:
+      - EduManager
+      summary: Lister les responsables légaux du tenant
+      description: 'Direction/RH uniquement (EduGuardianPolicy). Liste bornée au tenant courant, paginée (data, meta).'
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Liste des responsables légaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        first_name:
+                          type: string
+                          nullable: true
+                        last_name:
+                          type: string
+                          nullable: true
+                        contact_reference:
+                          type: string
+                          nullable: true
+                          description: PII — chiffrée au repos (cast `encrypted`)
+                        relationship_code:
+                          type: string
+                          enum:
+                          - parent
+                          - guardian
+                          - other
+                        student_count:
+                          type: integer
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - EduManager
+      summary: Créer un responsable légal (parent / tuteur)
+      description: 'Direction/RH uniquement. Le tenant est TOUJOURS celui de l''acteur : aucun `company_id` accepté depuis la requête (isolation fail-closed). `contact_reference` est une PII chiffrée au repos.'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - first_name
+              - last_name
+              - relationship_code
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                contact_reference:
+                  type: string
+                  maxLength: 191
+                  nullable: true
+                relationship_code:
+                  type: string
+                  enum:
+                  - parent
+                  - guardian
+                  - other
+                employee_id:
+                  type: integer
+                  nullable: true
+                  description: Rattachement facultatif à un employé du tenant
+      responses:
+        '201':
+          description: Responsable légal créé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      relationship_code:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu-manager/guardians/{guardian}/access-links:
+    post:
+      tags:
+      - EduManager
+      summary: Émettre un lien d'accès au portail parents (forme par chemin)
+      description: 'Direction uniquement. Le token brut n''est renvoyé qu''UNE fois (hash sha256 seul persisté), TTL par défaut 7 jours, usage unique.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: guardian
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: Lien émis (token affiché une seule fois)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      guardian_id:
+                        type: integer
+                      token:
+                        type: string
+                      expires_at:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/students/{student}/guardians:
+    post:
+      tags:
+      - EduManager
+      summary: Rattacher un responsable légal à un élève
+      description: 'Idempotent (UNIQUE company_id, student_id, guardian_id) : les drapeaux sont mis à jour. Le `guardian_id` doit appartenir au même tenant (422 sinon), l''élève aussi (404 sinon).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - guardian_id
+              properties:
+                guardian_id:
+                  type: integer
+                relationship_code:
+                  type: string
+                  nullable: true
+                  enum:
+                  - parent
+                  - guardian
+                  - other
+                can_view_grades:
+                  type: boolean
+                  nullable: true
+                  description: Par défaut un responsable ne voit PAS les notes
+                can_receive_notifications:
+                  type: boolean
+                  nullable: true
+      responses:
+        '201':
+          description: Rattachement effectué (ou mis à jour)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /edu-manager/students/{student}/guardians/{guardian}:
+    delete:
+      tags:
+      - EduManager
+      summary: Retirer le rattachement d'un responsable légal à un élève
+      description: 'Le responsable légal lui-même est conservé — seul le lien est supprimé.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: guardian
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Rattachement supprimé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
 components:
   securitySchemes:
     BearerAuth:

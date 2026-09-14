@@ -177,6 +177,66 @@ final class FuelIncidentService
         return $task->refresh();
     }
 
+    /**
+     * Transition de workflow d'un incident (issue #7398).
+     *
+     * `FuelIncident::TRANSITIONS` est l'autorité : toute cible absente du
+     * graphe courant lève `FuelWorkflowTransitionException` (422 côté API).
+     * `resolution_notes` est exigée pour `resolved` ; `closed` horodate la
+     * clôture. L'acte est audité comme les autres transitions du domaine.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function transition(Employee $actor, FuelIncident $incident, string $targetStatus, array $data = []): FuelIncident
+    {
+        $this->assertTenant($actor, $incident);
+
+        $allowed = FuelIncident::TRANSITIONS[$incident->status] ?? [];
+
+        if (! in_array($targetStatus, $allowed, true)) {
+            throw new FuelWorkflowTransitionException(
+                "Transition {$incident->status} → {$targetStatus} interdite"
+            );
+        }
+
+        $notes = is_string($data['resolution_notes'] ?? null) ? trim($data['resolution_notes']) : '';
+
+        $fill = ['status' => $targetStatus];
+
+        if (isset($data['assigned_to']) && is_numeric($data['assigned_to'])) {
+            $fill['assigned_to'] = (int) $data['assigned_to'];
+        }
+
+        if ($targetStatus === FuelIncident::STATUS_IN_PROGRESS && $incident->assigned_to === null) {
+            $fill['assigned_to'] = $actor->id;
+        }
+
+        if ($targetStatus === FuelIncident::STATUS_RESOLVED) {
+            if ($notes === '') {
+                throw new FuelWorkflowTransitionException('RESOLUTION_NOTES_REQUIRED');
+            }
+
+            $fill['resolution_notes'] = $notes;
+            $fill['resolved_at'] = Carbon::now('UTC');
+            $fill['resolved_by'] = $actor->id;
+        }
+
+        if ($targetStatus === FuelIncident::STATUS_CLOSED) {
+            $fill['closed_at'] = Carbon::now('UTC');
+            $fill['closed_by'] = $actor->id;
+
+            if ($notes !== '') {
+                $fill['closure_notes'] = $notes;
+            }
+        }
+
+        $incident->forceFill($fill)->save();
+
+        $this->audit($actor, 'fuel.incident.'.$targetStatus, $incident);
+
+        return $incident->refresh();
+    }
+
     private function assertTenant(Employee $actor, FuelIncident|FuelMaintenanceTask $model): void
     {
         if ($model->company_id !== (string) $actor->company_id) {

@@ -40,6 +40,21 @@ class EduReportCardPolicy
         return $this->isManager($actor);
     }
 
+    /**
+     * `POST /edu-manager/report-cards/generate` autorise l'ability `create`
+     * (EduReportCardController::generate). Sans cette méthode, le Gate Laravel
+     * refuse TOUTE génération de bulletin (403 FORBIDDEN) — y compris pour la
+     * direction : la fonction « bulletins » était inatteignable en production
+     * (constaté le 2026-09-14, parcours pilote EduManager).
+     *
+     * Même périmètre que `viewAny`/`validate` : un manager du tenant
+     * (direction / RH / propriétaire) génère les bulletins de ses élèves.
+     */
+    public function create(Employee $actor): bool
+    {
+        return $this->isManager($actor);
+    }
+
     public function view(Employee $actor, EduReportCard $card): bool
     {
         if ($card->company_id !== $actor->company_id) {

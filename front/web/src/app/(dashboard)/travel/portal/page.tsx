@@ -12,14 +12,25 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 const POPUP_FEATURES = ['noopener', 'noreferrer'].join(',');
 
 /**
- * Portail client voyageur — TRAVEL-702 (#6089).
+ * Espace voyageur — TRAVEL-702 (#6089), recâblé #7395.
  *
- * Suivi d'une réservation par référence + code de validation (e-billet),
- * téléchargement des e-billets PDF et annulation en ligne (motif,
- * preuve par code, départ futur). Consomme les endpoints shop
- * (`/travel/shop/bookings/{reference}`, `/travel/tickets/{id}/pdf`,
- * `/travel/shop/bookings/{reference}/cancel`).
+ * Suivi d'une réservation par référence + code de contrôle (e-billet),
+ * téléchargement des e-billets PDF et annulation en ligne (motif, preuve par
+ * code, départ futur).
+ *
+ * `#7395` — la page consomme la surface PUBLIQUE (`/public/travel/...`), seule
+ * accessible à un passager : la surface staff (`/travel/shop/bookings/{ref}`,
+ * `/travel/tickets/{id}/pdf`, `POST /travel/shop/bookings/{ref}/cancel`) exige
+ * un compte employé (401 pour un passager) et `TravelShopController::track`
+ * n'y contrôle pas le code. Le code de contrôle est le secret partagé du
+ * billet : il est requis à chaque appel et vérifié côté API.
  */
+
+type BookingTicket = {
+  id: number;
+  ticket_number?: string;
+  status?: string;
+};
 
 type BookingData = {
   reference?: string;
@@ -29,9 +40,7 @@ type BookingData = {
   currency?: string;
   passenger_count?: number;
   trip?: { id?: number; code?: string; departure_date?: string; departure_time?: string } | null;
-  ticket_numbers?: string[];
-  ticket_ids?: number[];
-  passengers?: Array<{ id?: number; full_name?: string; seat_number?: number | null }>;
+  tickets?: BookingTicket[];
   cancel_reason?: string | null;
 };
 
@@ -52,6 +61,7 @@ export default function TravelPortalPage() {
 
   const [reference, setReference] = useState('');
   const [code, setCode] = useState('');
+  const [verifiedCode, setVerifiedCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -69,13 +79,19 @@ export default function TravelPortalPage() {
     setLoading(true);
     setError(null);
     setBooking(null);
+    setVerifiedCode('');
     try {
       const response = await apiFetch(
-        `/travel/shop/bookings/${encodeURIComponent(reference.trim())}?code=${encodeURIComponent(code.trim())}`,
+        `/public/travel/shop/bookings/${encodeURIComponent(reference.trim())}?code=${encodeURIComponent(code.trim())}`,
       );
       const payload = (await response.json()) as { data?: BookingData };
       setBooking(payload.data ?? null);
-      if (!payload.data) {
+      if (payload.data) {
+        // Le code qui vient d'ouvrir la réservation est celui qui sera
+        // présenté au téléchargement du PDF et à l'annulation (secret du
+        // billet) — indépendant des retouches ultérieures du champ.
+        setVerifiedCode(code.trim());
+      } else {
         setError(fallbackCopy.notFound);
       }
     } catch (err) {
@@ -90,8 +106,13 @@ export default function TravelPortalPage() {
   };
 
   const downloadTicket = async (ticketId: number) => {
+    if (!verifiedCode) {
+      return;
+    }
     try {
-      const response = await apiFetch(`/travel/tickets/${ticketId}/pdf`);
+      const response = await apiFetch(
+        `/public/travel/tickets/${ticketId}/pdf?code=${encodeURIComponent(verifiedCode)}`,
+      );
       const payload = (await response.json()) as { data?: { pdf_url?: string } };
       const url = payload.data?.pdf_url;
       if (url) {
@@ -103,16 +124,19 @@ export default function TravelPortalPage() {
   };
 
   const cancelBooking = async () => {
-    if (!booking?.reference || !reason.trim() || cancelling) {
+    if (!booking?.reference || !verifiedCode || !reason.trim() || cancelling) {
       return;
     }
     setCancelling(true);
     setError(null);
     try {
-      const response = await apiFetch(`/travel/shop/bookings/${encodeURIComponent(booking.reference)}/cancel`, {
-        method: 'POST',
-        body: JSON.stringify({ code: code.trim(), reason: reason.trim() }),
-      });
+      const response = await apiFetch(
+        `/public/travel/shop/bookings/${encodeURIComponent(booking.reference)}/cancel`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ code: verifiedCode, reason: reason.trim() }),
+        },
+      );
       const payload = (await response.json()) as { data?: BookingData };
       setBooking(payload.data ?? null);
       setReason('');
@@ -137,6 +161,8 @@ export default function TravelPortalPage() {
   const statusLabel = statusKey ? fallbackCopy[statusKey] : booking?.status ?? '';
   const canCancel = booking?.status === 'pending' || booking?.status === 'confirmed';
   const isCancelled = booking?.status === 'cancelled';
+  const tickets = booking?.tickets ?? [];
+  const hasAmount = typeof booking?.total_amount_minor === 'number';
 
   return (
     <ModulePageShell
@@ -208,25 +234,30 @@ export default function TravelPortalPage() {
                 <p className="text-white/70">
                   {copy.passengers} : <span className="text-white/90">{booking.passenger_count ?? 0}</span>
                 </p>
-                <p className="text-white/70">
-                  {copy.total} :{' '}
-                  <span className="text-white/90">
-                    {booking.currency ?? ''} {((booking.total_amount_minor ?? 0) / 100).toFixed(2)}
-                  </span>
-                </p>
+                {hasAmount && (
+                  <p className="text-white/70">
+                    {copy.total} :{' '}
+                    <span className="text-white/90">
+                      {booking.currency ?? ''} {((booking.total_amount_minor ?? 0) / 100).toFixed(2)}
+                    </span>
+                  </p>
+                )}
               </div>
             )}
 
-            {(booking.ticket_ids?.length ?? 0) > 0 && (
+            {tickets.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-white/80">{copy.tickets}</p>
-                {booking.ticket_ids?.map((ticketId, index) => (
-                  <div key={ticketId} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                {tickets.map((ticket) => (
+                  <div
+                    key={ticket.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                  >
                     <span className="flex items-center gap-2 text-sm text-white/80">
                       <Ticket className="h-4 w-4" />
-                      {booking.ticket_numbers?.[index] ?? `#${ticketId}`}
+                      {ticket.ticket_number ?? `#${ticket.id}`}
                     </span>
-                    <Button variant="ghost" size="sm" onClick={() => downloadTicket(ticketId)}>
+                    <Button variant="ghost" size="sm" onClick={() => downloadTicket(ticket.id)}>
                       <Download className="h-4 w-4" />
                       {copy.downloadTicket}
                     </Button>
