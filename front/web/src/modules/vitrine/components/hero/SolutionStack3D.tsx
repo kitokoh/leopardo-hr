@@ -70,15 +70,24 @@ export interface SolutionStack3DProps {
 }
 
 // ── Géométrie de la composition ──────────────────────────────────────────
+// Les trois niveaux doivent être lisibles SÉPARÉMENT : d'où un socle épais,
+// une couche horizontale qui FLOTTE au-dessus (avec entretoises) et des
+// colonnes qui se dressent derrière. Sans cet écart, l'ensemble se lit comme
+// un unique damier et l'idée « un socle + des briques + des verticales »
+// disparaît.
 const SOCLE_SIZE = 4.0;
-const SOCLE_HEIGHT = 0.22;
-const SOCLE_TOP = -0.06;
+const SOCLE_HEIGHT = 0.3;
+const SOCLE_TOP = -0.14;
+/** Écart visible entre le dessus du socle et la couche horizontale. */
+const LAYER_GAP = 0.3;
 
 const TILE_SIZE = 0.62;
 const TILE_HEIGHT = 0.1;
 const TILE_GAP = 0.78;
 /** Le damier de tuiles est décalé vers l'avant pour laisser respirer les colonnes. */
 const TILE_GRID_Z = 0.35;
+/** Ordonnée du CENTRE des tuiles (couche horizontale flottante). */
+const TILE_Y = SOCLE_TOP + LAYER_GAP + TILE_HEIGHT / 2;
 
 const COLUMN_SIZE = 0.4;
 const COLUMN_Z = -1.45;
@@ -86,11 +95,10 @@ const COLUMN_SPREAD = 0.95;
 
 const EMERALD = '#10b981';
 const EMERALD_GLOW = '#34d399';
-const SLATE_DARK = '#0b1220';
 
 /** Hauteur d'une colonne : plus une verticale consomme de briques, plus elle monte. */
 function columnHeight(consumesCount: number): number {
-  return 1.0 + Math.max(0, consumesCount - 6) * 0.14;
+  return 1.18 + Math.max(0, consumesCount - 6) * 0.17;
 }
 
 export function SolutionStack3D({
@@ -168,30 +176,73 @@ export function SolutionStack3D({
 
     // Rendu « blueprint » : chaque volume est doublé d'une arête fine.
     const edgeMaterial = track(new LineBasicMaterial({ color: EMERALD, transparent: true, opacity: 0.38 }));
+    // Le socle a ses propres arêtes, plus franches : c'est le niveau qui doit
+    // se distinguer du damier horizontal.
+    const socleEdgeMaterial = track(
+      new LineBasicMaterial({ color: EMERALD_GLOW, transparent: true, opacity: 0.9 }),
+    );
+    const postMaterial = track(
+      new MeshStandardMaterial({
+        color: '#1b2739',
+        metalness: 0.1,
+        roughness: 0.45,
+        emissive: new Color(EMERALD),
+        emissiveIntensity: 0.3,
+      }),
+    );
 
-    const addEdges = (mesh: Mesh, scale = 1.002): void => {
-      const edges = new LineSegments(track(new EdgesGeometry(mesh.geometry)), edgeMaterial);
+    const addEdges = (mesh: Mesh, scale = 1.002, material: LineBasicMaterial = edgeMaterial): void => {
+      const edges = new LineSegments(track(new EdgesGeometry(mesh.geometry)), material);
       edges.scale.setScalar(scale);
       mesh.add(edges);
     };
 
     // ── 1. Socle ─────────────────────────────────────────────────────────
-    const socleMat = track(
+    // Deux matériaux : des FLANCS sombres et une TABLE plus claire. C'est ce
+    // contraste qui fait lire un « plateau » — avec une couleur unique proche
+    // du fond (slate-950 de la carte), le socle disparaissait purement et
+    // simplement et la scène se réduisait à un damier.
+    const socleSide = track(
       new MeshStandardMaterial({
-        color: SLATE_DARK,
-        metalness: 0.55,
-        roughness: 0.42,
-        emissive: new Color(EMERALD),
-        emissiveIntensity: 0.16,
+        color: '#0d1526',
+        metalness: 0.12,
+        roughness: 0.5,
+        emissive: new Color('#3b82f6'),
+        emissiveIntensity: 0.1,
       }),
     );
-    const socle = new Mesh(
-      track(new BoxGeometry(SOCLE_SIZE, SOCLE_HEIGHT, SOCLE_SIZE)),
-      socleMat,
+    const socleTop = track(
+      new MeshStandardMaterial({
+        color: '#1e293b',
+        metalness: 0.06,
+        roughness: 0.34,
+        emissive: new Color('#3b82f6'),
+        emissiveIntensity: 0.26,
+      }),
     );
+    // BoxGeometry : l'index 2 est la face +Y (le dessus).
+    const socle = new Mesh(track(new BoxGeometry(SOCLE_SIZE, SOCLE_HEIGHT, SOCLE_SIZE)), [
+      socleSide,
+      socleSide,
+      socleTop,
+      socleSide,
+      socleSide,
+      socleSide,
+    ]);
     socle.position.y = SOCLE_TOP - SOCLE_HEIGHT / 2;
     root.add(socle);
-    addEdges(socle);
+    addEdges(socle, 1.002, socleEdgeMaterial);
+
+    // Entretoises d'angle : elles matérialisent la couche horizontale comme un
+    // NIVEAU posé sur le socle, et pas comme un simple motif au sol.
+    const postGeometry = track(new BoxGeometry(0.07, LAYER_GAP, 0.07));
+    for (const postX of [-1.3, 1.3]) {
+      for (const postZ of [TILE_GRID_Z - 1.05, TILE_GRID_Z + 1.05]) {
+        const post = new Mesh(postGeometry, postMaterial);
+        post.position.set(postX, SOCLE_TOP + LAYER_GAP / 2, postZ);
+        root.add(post);
+      }
+    }
 
     // Grille de sol très discrète sous le socle.
     const grid = new GridHelper(11, 22, EMERALD, '#1e293b');
@@ -209,10 +260,10 @@ export function SolutionStack3D({
       const material = track(
         new MeshStandardMaterial({
           color: EMERALD,
-          metalness: 0.25,
-          roughness: 0.34,
+          metalness: 0.08,
+          roughness: 0.36,
           emissive: new Color(EMERALD),
-          emissiveIntensity: 0.34,
+          emissiveIntensity: 0.42,
           transparent: true,
           opacity: 1,
         }),
@@ -222,7 +273,7 @@ export function SolutionStack3D({
       const tile = new Mesh(tileGeometry, material);
       tile.position.set(
         (block.col - 1.5) * TILE_GAP,
-        SOCLE_TOP + TILE_HEIGHT / 2,
+        TILE_Y,
         TILE_GRID_Z + (block.row - 1.5) * TILE_GAP,
       );
       addEdges(tile);
@@ -254,8 +305,8 @@ export function SolutionStack3D({
       const body = track(
         new MeshStandardMaterial({
           color: vertical.color,
-          metalness: 0.35,
-          roughness: 0.3,
+          metalness: 0.1,
+          roughness: 0.32,
           emissive: new Color(vertical.color),
           emissiveIntensity: 0.3,
           transparent: true,
@@ -271,8 +322,8 @@ export function SolutionStack3D({
       const cap = track(
         new MeshStandardMaterial({
           color: vertical.glow,
-          metalness: 0.2,
-          roughness: 0.2,
+          metalness: 0.05,
+          roughness: 0.25,
           emissive: new Color(vertical.glow),
           emissiveIntensity: 1.5,
         }),
@@ -286,8 +337,8 @@ export function SolutionStack3D({
       const foot = track(
         new MeshStandardMaterial({
           color: vertical.glow,
-          metalness: 0.3,
-          roughness: 0.4,
+          metalness: 0.05,
+          roughness: 0.45,
           emissive: new Color(vertical.glow),
           emissiveIntensity: 0.8,
         }),
@@ -304,7 +355,7 @@ export function SolutionStack3D({
     // Reconstruits uniquement au changement de verticale active : coût nul
     // dans la boucle de rendu.
     const beamMaterial = track(
-      new LineBasicMaterial({ color: EMERALD_GLOW, transparent: true, opacity: 0.62 }),
+      new LineBasicMaterial({ color: EMERALD_GLOW, transparent: true, opacity: 0.85 }),
     );
     let beams: LineSegments | null = null;
 
@@ -324,9 +375,13 @@ export function SolutionStack3D({
       const column = columns.find((c) => c.key === verticalKey);
       if (!column) return;
 
+      // Les faisceaux prennent la couleur de la verticale : l'association
+      // « cette colonne consomme ces briques » se lit sans légende.
+      beamMaterial.color.set(vertical.glow);
+
       const origin = new Vector3(
         column.group.position.x,
-        SOCLE_TOP + 0.06,
+        SOCLE_TOP + 0.04,
         column.group.position.z,
       );
 
@@ -335,7 +390,7 @@ export function SolutionStack3D({
         const tile = tiles.get(blockKey);
         if (!tile) continue;
         positions.push(origin.x, origin.y, origin.z);
-        positions.push(tile.position.x, tile.position.y + TILE_HEIGHT, tile.position.z);
+        positions.push(tile.position.x, TILE_Y + TILE_HEIGHT / 2, tile.position.z);
       }
 
       if (positions.length === 0) return;

@@ -169,12 +169,14 @@ export function SolutionStack({ locale }: SolutionStackProps) {
           />
         )}
 
-        {/* Rappel du niveau affiché */}
-        <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-1.5">
+        {/* Rappel des 3 niveaux. Placé en BAS à gauche : en haut à gauche, il
+            recouvrait le libellé projeté de la colonne la plus à gauche
+            (« Restaurant »), qui passe par cette zone au fil du balancier. */}
+        <div className="pointer-events-none absolute bottom-4 left-4 flex flex-col gap-1.5">
           {layers.map((layer) => (
             <div
               key={layer.name}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-300 backdrop-blur-sm sm:text-[11px]"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-slate-950/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-300 backdrop-blur-sm sm:text-[11px]"
             >
               <span className={`h-1.5 w-1.5 rounded-full ${layer.dot}`} />
               {layer.name}
