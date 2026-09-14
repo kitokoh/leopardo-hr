@@ -208,7 +208,7 @@ export function RestaurantSolutionWizard() {
             className="text-center py-10"
           >
             <div className="mx-auto mb-6 w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
-              <Store className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+              <Store className="w-8 h-8 text-emerald-700 dark:text-emerald-400" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">{c.title}</h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-8">{c.subtitle}</p>
@@ -406,7 +406,7 @@ export function RestaurantSolutionWizard() {
             className="py-6"
           >
             <div className="flex items-center gap-3 mb-2">
-              <Download className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <Download className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{c.downloadTitle}</h2>
             </div>
             <p className="text-slate-600 dark:text-slate-300 mb-8">{c.downloadSubtitle}</p>
@@ -421,7 +421,7 @@ export function RestaurantSolutionWizard() {
                       className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
                     >
                       <div className="flex items-center gap-3 mb-3">
-                        <Smartphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <Smartphone className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                         <p className="font-semibold text-slate-900 dark:text-white">
                           {solutionLabel(pkg.label_key, vLocale, pkg.key)}
                         </p>
@@ -440,7 +440,7 @@ export function RestaurantSolutionWizard() {
                             href={target.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                            className="flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-700 dark:text-emerald-400"
                           >
                             <Download className="w-4 h-4" />
                             Android APK
@@ -459,7 +459,7 @@ export function RestaurantSolutionWizard() {
                       className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
                     >
                       <div className="flex items-center gap-3 mb-3">
-                        <WifiOff className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <WifiOff className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                         <p className="font-semibold text-slate-900 dark:text-white">{c.edgeTitle}</p>
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">{c.edgeCmdHint}</p>
@@ -477,14 +477,14 @@ export function RestaurantSolutionWizard() {
                       className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
                     >
                       <div className="flex items-center gap-3 mb-2">
-                        <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                        <Fingerprint className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                         <p className="font-semibold text-slate-900 dark:text-white">
                           {solutionLabel(pkg.label_key, vLocale, pkg.key)}
                         </p>
                       </div>
                       <a
                         href={`/api/v1/solutions/restaurant/pack?packages=${selectedPackages.map((p) => p.key).join(',')}`}
-                        className="inline-flex items-center gap-2 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                        className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-700 dark:text-emerald-400"
                       >
                         <HardDrive className="w-4 h-4" />
                         {c.guideLabel}
@@ -499,7 +499,7 @@ export function RestaurantSolutionWizard() {
                     className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5"
                   >
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
                       <div>
                         <p className="font-semibold text-slate-900 dark:text-white">
                           {solutionLabel(pkg.label_key, vLocale, pkg.key)}
@@ -516,7 +516,7 @@ export function RestaurantSolutionWizard() {
             <div className="mt-10 rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/30 p-6">
               {leadStatus === 'sent' ? (
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="w-6 h-6 text-emerald-700 dark:text-emerald-400" />
                   <p className="font-medium text-emerald-800 dark:text-emerald-300">{lc.sent}</p>
                 </div>
               ) : (

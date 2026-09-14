@@ -86,7 +86,7 @@ export function PasswordStrengthBar({ password, locale = 'fr' }: Props) {
         ))}
       </div>
       {/* Label textuel */}
-      <p className={['mt-1 text-xs font-medium transition-colors duration-300', filled >= 3 ? 'text-emerald-600 dark:text-emerald-400' : filled >= 2 ? 'text-orange-500 dark:text-orange-400' : 'text-red-500 dark:text-red-400'].join(' ')}>
+      <p className={['mt-1 text-xs font-medium transition-colors duration-300', filled >= 3 ? 'text-emerald-700 dark:text-emerald-400' : filled >= 2 ? 'text-orange-500 dark:text-orange-400' : 'text-red-500 dark:text-red-400'].join(' ')}>
         {labelText}
       </p>
     </div>

@@ -80,7 +80,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${labels.shareOn} ${link.name}`}
-          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
         >
           {link.icon}
         </a>
@@ -88,7 +88,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
       <button
         onClick={handleCopyLink}
         aria-label={labels.copyLink}
-        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
       >
         {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
       </button>

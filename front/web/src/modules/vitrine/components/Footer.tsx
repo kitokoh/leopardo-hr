@@ -79,7 +79,7 @@ export function Footer() {
               </div>
               <div className="flex flex-col">
                 <span className="font-black text-lg text-slate-900 dark:text-white leading-none">Leopardo</span>
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-400">
                   {copy.nav.brandTagline}
                 </span>
               </div>
@@ -93,7 +93,7 @@ export function Footer() {
                   title={social.title}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 hover:bg-emerald-100 hover:text-emerald-600 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
+                  className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 transition-colors"
                 >
                   {social.label}
                 </Link>
@@ -111,7 +111,7 @@ export function Footer() {
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
-                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link href={withLocaleHref(href, search)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors">
                         {link}
                       </Link>
                     </li>

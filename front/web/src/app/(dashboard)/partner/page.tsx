@@ -113,7 +113,7 @@ export default function PartnerDashboard() {
       <div className="mx-auto max-w-2xl">
         <div className="rounded-3xl border border-emerald-100 bg-white p-8 text-center shadow-premium">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
-            <Users className="h-10 w-10 text-emerald-600" aria-hidden="true" />
+            <Users className="h-10 w-10 text-emerald-700" aria-hidden="true" />
           </div>
           <h1 className="mb-4 text-3xl font-black text-slate-950">{labels.notApplied.title}</h1>
           <p className="mb-8 leading-relaxed text-slate-600">
@@ -128,7 +128,7 @@ export default function PartnerDashboard() {
             </button>
             <button
               onClick={() => handleApply('agency')}
-              className="rounded-2xl border border-emerald-600 px-8 py-4 font-bold text-emerald-600 transition-all hover:bg-emerald-50"
+              className="rounded-2xl border border-emerald-600 px-8 py-4 font-bold text-emerald-700 transition-all hover:bg-emerald-50"
             >
               {labels.notApplied.agency}
             </button>
@@ -159,8 +159,8 @@ export default function PartnerDashboard() {
       accentClassName="bg-gradient-to-br from-brand-500/10 via-white to-white"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <MetricCard label={labels.metrics.conversions} value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-emerald-600 bg-emerald-50" />
-        <MetricCard label={labels.metrics.totalEarned} value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-600 bg-emerald-50" />
+        <MetricCard label={labels.metrics.conversions} value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-emerald-700 bg-emerald-50" />
+        <MetricCard label={labels.metrics.totalEarned} value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-700 bg-emerald-50" />
         <MetricCard label={labels.metrics.pending} value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' \u20ac'} icon={Clock3} accent="text-amber-600 bg-amber-50" />
         <MetricCard label={labels.metrics.withdrawable} value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-security-dark bg-security-light" />
       </div>
@@ -254,7 +254,7 @@ function MetricCard({ label, value, icon: Icon, accent }: { label: string; value
         <Icon className="h-5 w-5" aria-hidden="true" />
       </div>
       <p className="text-2xl font-black text-slate-950">{value ?? '0'}</p>
-      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{label}</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{label}</p>
     </div>
   );
 }

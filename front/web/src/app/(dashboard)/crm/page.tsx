@@ -94,7 +94,7 @@ export default function CrmHomePage() {
         transition={{ delay: 0.3 }}
         className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-5 py-4 text-sm text-emerald-800"
       >
-        <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600" />
+        <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-700" />
         <p>{t(locale, 'crm.isolationNote')}</p>
       </motion.div>
     </ModulePageShell>

@@ -153,7 +153,7 @@ export function HeroSection({
                   </div>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Play className="w-4 h-4 text-emerald-600 dark:text-emerald-400 ml-0.5" />
+                    <Play className="w-4 h-4 text-emerald-700 dark:text-emerald-400 ml-0.5" />
                   </div>
                 )}
                 {ctaSecondary.text}

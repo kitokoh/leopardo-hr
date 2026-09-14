@@ -92,7 +92,7 @@ export function BlogCard({
             </div>
 
             {/* Title */}
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
               {title}
             </h3>
 
@@ -114,7 +114,7 @@ export function BlogCard({
                 </div>
                 <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{author.name}</span>
               </div>
-              <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-emerald-700 dark:text-emerald-400 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>

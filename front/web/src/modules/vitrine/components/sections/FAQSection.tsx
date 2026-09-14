@@ -136,7 +136,7 @@ export function FAQSection({
                 >
                   <div className="group relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 transition-all duration-300 hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:shadow-lg cursor-pointer">
                     <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white text-left group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white text-left group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                         {item.question}
                       </h3>
                       <motion.div

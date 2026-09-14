@@ -61,7 +61,7 @@ export function CaseStudyCard({
 
           {/* Content */}
           <div className="p-8 flex flex-col flex-1">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
               {title}
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6 flex-1">
@@ -79,7 +79,7 @@ export function CaseStudyCard({
             </div>
 
             {/* CTA */}
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold group-hover:gap-3 transition-all">
+            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold group-hover:gap-3 transition-all">
               Lire le cas d&apos;usage
               <ArrowRight className="w-4 h-4" />
             </div>

@@ -35,7 +35,7 @@ export function ModulePageShell({
         <div className="relative space-y-3 p-8">
           <div className="flex items-center gap-2">
             <div className="h-1 w-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
               Système Leopardo
             </p>
           </div>
