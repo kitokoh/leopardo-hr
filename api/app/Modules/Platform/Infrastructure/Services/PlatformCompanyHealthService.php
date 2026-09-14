@@ -11,6 +11,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalyService;
 use App\Modules\Onboarding\Application\Services\OnboardingProgressReader;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyHealthService
@@ -23,28 +25,222 @@ class PlatformCompanyHealthService
     /**
      * @return array<string, mixed>
      */
+    /**
+     * Portefeuille de sociétés avec leur santé (#7302).
+     *
+     * AVANT : `build()` était appelé en boucle — ~15 requêtes par société
+     * (dont 3 `SET search_path` et un `Company::find` redondant dans les
+     * anomalies), soit **674 requêtes** mesurées pour 45 sociétés. À ~40 ms
+     * l'aller-retour sur la base distante, cela explique à lui seul les ~27 s
+     * constatées en production (#7302).
+     *
+     * MAINTENANT : les agrégats de tout le portefeuille sont calculés par
+     * requêtes **groupées** (`group by company_id`). Les valeurs sont
+     * identiques à celles de `build()` : mêmes prédicats, même fenêtre par
+     * société. Le nombre de requêtes ne dépend plus du nombre de tenants.
+     *
+     * Note sur le `search_path` : tous les tenants partagent le schéma
+     * `shared_tenants` (le mode « un schéma par tenant » est verrouillé — voir
+     * `Company::booted()`), il n'y a donc qu'un seul `search_path` à poser pour
+     * tout le portefeuille.
+     *
+     * @return array<string, mixed>
+     */
+    /**
+     * Durée de mise en cache du portefeuille (#7302).
+     *
+     * La santé est une donnée **dérivée** (agrégats de pointage, anomalies,
+     * progression) : elle n'a pas besoin d'être exacte à la seconde, et un
+     * back-office commercial interrogé en rafale (ouverture de plusieurs
+     * onglets, rafraîchissement automatique) ne doit pas recalculer N sociétés
+     * à chaque requête.
+     *
+     * Invalidation : **temporelle** (TTL court). Il n'y a pas d'invalidation à
+     * l'écriture — une fiche société modifiée peut rester jusqu'à 60 s dans le
+     * portefeuille. C'est un choix assumé : le portefeuille est un tableau de
+     * bord de supervision, pas une source transactionnelle, et une invalidation
+     * à l'écriture exigerait de câbler chaque écriture de chaque module.
+     * `Cache::forget()` force un recalcul immédiat au besoin (bouton
+     * « Actualiser »).
+     */
+    private const PORTFOLIO_CACHE_TTL_SECONDS = 60;
+
+    /**
+     * @return array<string, mixed>
+     */
     public function portfolio(int $limit = 50): array
+    {
+        $limit = max(1, min(100, $limit));
+
+        /** @var array<string, mixed> $result */
+        $result = Cache::remember(
+            self::portfolioCacheKey($limit),
+            self::PORTFOLIO_CACHE_TTL_SECONDS,
+            fn (): array => $this->buildPortfolio($limit),
+        );
+
+        return $result;
+    }
+
+    /**
+     * Purge le cache du portefeuille (#7302).
+     *
+     * Exposé pour que l'action « Actualiser » du back-office demande un
+     * recalcul réel au lieu de resservir une valeur mise en cache jusqu'à
+     * `PORTFOLIO_CACHE_TTL_SECONDS`.
+     */
+    public function forgetPortfolioCache(int $limit = 50): void
+    {
+        Cache::forget(self::portfolioCacheKey($limit));
+    }
+
+    /**
+     * Clé de cache du portefeuille — normalisée au même bornage que
+     * `portfolio()`, pour que purge et lecture ne puissent pas diverger.
+     */
+    private static function portfolioCacheKey(int $limit): string
+    {
+        return 'platform.companies.health.limit.'.max(1, min(100, $limit));
+    }
+
+    /**
+     * Calcul effectif du portefeuille (hors cache) — voir `portfolio()`.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildPortfolio(int $limit): array
     {
         $companies = Company::query()
             ->latest()
             ->limit(max(1, min(100, $limit)))
             ->get();
 
+        if ($companies->isEmpty()) {
+            return [
+                'data' => [
+                    'summary' => [
+                        'companies' => 0,
+                        'active_companies' => 0,
+                        'mrr' => 0.0,
+                        'risk' => ['high' => 0, 'medium' => 0, 'low' => 0],
+                    ],
+                    'items' => [],
+                ],
+            ];
+        }
+
+        /** @var list<string> $companyIds */
+        /** @var list<string> $companyIds */
+        $companyIds = array_values($companies->pluck('id')->map(static fn ($id): string => (string) $id)->all());
+
+        $employees = [];
+        $onboarding = [];
+        $plans = [];
+        $attendance = [];
+        $anomalies = [];
+        $attendanceExists = [];
+
+        $this->withinPortfolioSearchPath(function () use (
+            $companies,
+            $companyIds,
+            &$employees,
+            &$onboarding,
+            &$plans,
+            &$attendance,
+            &$anomalies,
+            &$attendanceExists
+        ): void {
+            // Indépendants de la fenêtre : une requête chacun pour TOUT le
+            // portefeuille.
+            $employees = $this->employeesMany($companyIds);
+            $onboarding = $this->onboardingProgress->readMany($companyIds);
+            $plans = $this->plansMany($companies);
+            $attendanceExists = $this->attendanceExistsMany($companyIds);
+
+            // Dépendants de la fenêtre de 30 jours — et cette fenêtre est
+            // calculée dans le fuseau de CHAQUE société (`now($company->timezone)`),
+            // comme `build()`. On groupe donc par fenêtre distincte : en
+            // pratique une seule, mais un fuseau différent ne doit pas fausser
+            // les compteurs.
+            foreach ($this->groupByWindow($companies) as $group) {
+                $dateFrom = $group['date_from'];
+                $dateTo = $group['date_to'];
+                /** @var list<string> $groupIds */
+                $groupIds = array_values($group['companies']->pluck('id')->map(static fn ($id): string => (string) $id)->all());
+
+                foreach ($this->attendanceMany($groupIds, $dateFrom, $dateTo) as $id => $row) {
+                    $attendance[$id] = $row;
+                }
+
+                foreach ($this->anomalyService->summarizeMany($group['companies'], [
+                    'date_from' => $dateFrom,
+                    'date_to' => $dateTo,
+                    'per_page' => 1,
+                ]) as $id => $summary) {
+                    $anomalies[$id] = [
+                        'total_30d' => $summary['total'],
+                        'critical_30d' => $summary['critical'],
+                        'warning_30d' => $summary['warning'],
+                        'business_impact' => $summary['business_impact'] ?? (object) [],
+                    ];
+                }
+            }
+        });
+
         $items = $companies
-            ->map(function (Company $company): array {
-                $health = $this->build($company)['data'];
+            ->map(function (Company $company) use ($employees, $onboarding, $plans, $attendance, $anomalies, $attendanceExists): array {
+                $id = (string) $company->id;
+
+                $companyEmployees = $employees[$id] ?? ['total' => 0, 'active' => 0, 'payroll_ready' => 0];
+                $companyAttendance = $attendance[$id] ?? [
+                    'logs_30d' => 0,
+                    'active_employees_30d' => 0,
+                    'active_days_30d' => 0,
+                    'last_punch_at' => null,
+                ];
+                $companyAnomalies = $anomalies[$id] ?? [
+                    'total_30d' => 0,
+                    'critical_30d' => 0,
+                    'warning_30d' => 0,
+                    'business_impact' => (object) [],
+                ];
+                // Un tenant sans étape seedée renvoie la progression vide — on
+                // ne seede JAMAIS depuis le portefeuille (#7300). La mise en
+                // forme passe par `onboardingPayload()` : le portefeuille
+                // fournit donc les mêmes clés que `build()` (dont
+                // `geofence_configured`, sans quoi `nextActions()` proposait de
+                // configurer une zone déjà configurée).
+                $companyOnboarding = $this->onboardingPayload(
+                    $company,
+                    $onboarding[$id] ?? $this->onboardingProgress->summarize(new Collection),
+                    $companyEmployees,
+                    $attendanceExists[$id] ?? false,
+                );
+
+                $plan = $this->planPayload($company, $plans[(string) $company->plan_id] ?? null);
+                $now = now($company->timezone);
+                $score = $this->score($company, $companyEmployees, $companyAttendance, $companyOnboarding, $companyAnomalies);
 
                 return [
-                    'company' => $health['company'],
-                    'plan' => $health['plan'],
-                    'subscription' => $health['subscription'],
-                    'health_score' => $health['adoption']['health_score'],
-                    'risk_level' => $health['adoption']['risk_level'],
-                    'employees_active' => $health['adoption']['employees']['active'],
-                    'attendance_logs_30d' => $health['adoption']['attendance']['logs_30d'],
-                    'last_punch_at' => $health['adoption']['attendance']['last_punch_at'],
-                    'critical_anomalies_30d' => $health['adoption']['anomalies']['critical_30d'],
-                    'next_action' => $health['next_actions'][0] ?? null,
+                    'company' => [
+                        'id' => $company->id,
+                        'name' => $company->name,
+                        'slug' => $company->slug,
+                        'status' => $company->status,
+                        'country' => $company->country,
+                        'currency' => $company->currency,
+                        'timezone' => $company->timezone,
+                        'created_at' => $company->created_at?->toIso8601String(),
+                    ],
+                    'plan' => $plan,
+                    'subscription' => $this->subscriptionPayload($company, $now, $plan),
+                    'health_score' => $score,
+                    'risk_level' => $this->riskLevel($score, $company),
+                    'employees_active' => $companyEmployees['active'],
+                    'attendance_logs_30d' => $companyAttendance['logs_30d'],
+                    'last_punch_at' => $companyAttendance['last_punch_at'],
+                    'critical_anomalies_30d' => $companyAnomalies['critical_30d'],
+                    'next_action' => $this->nextActions($score, $company, $companyEmployees, $companyAttendance, $companyOnboarding, $companyAnomalies)[0] ?? null,
                 ];
             })
             ->values();
@@ -64,6 +260,212 @@ class PlatformCompanyHealthService
                 'items' => $items,
             ],
         ];
+    }
+
+    /**
+     * Applique un `search_path` unique pour tout le portefeuille (#7302).
+     *
+     * Tous les tenants partagent le schéma `shared_tenants` (le mode
+     * « un schéma par tenant » est refusé à la création — `Company::booted()`),
+     * il n'est donc pas nécessaire de changer de schéma par société.
+     *
+     * @param  callable(): void  $callback
+     */
+    private function withinPortfolioSearchPath(callable $callback): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            $callback();
+
+            return;
+        }
+
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $previous = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+        DB::statement('SET search_path TO "shared_tenants",public');
+
+        try {
+            $callback();
+        } finally {
+            DB::statement("SET search_path TO {$previous}");
+        }
+    }
+
+    /**
+     * Groupe les sociétés par fenêtre d'observation de 30 jours, calculée dans
+     * le fuseau de chacune (comme `build()`).
+     *
+     * @param  Collection<int, Company>  $companies
+     * @return list<array{date_from: string, date_to: string, companies: Collection<int, Company>}>
+     */
+    private function groupByWindow(Collection $companies): array
+    {
+        $groups = [];
+
+        foreach ($companies as $company) {
+            $now = now($company->timezone);
+            $dateTo = $now->toDateString();
+            $dateFrom = $now->copy()->subDays(29)->toDateString();
+            $groups[$dateFrom.'|'.$dateTo]['date_from'] = $dateFrom;
+            $groups[$dateFrom.'|'.$dateTo]['date_to'] = $dateTo;
+            $groups[$dateFrom.'|'.$dateTo]['companies'][] = $company;
+        }
+
+        return array_values(array_map(static fn (array $group): array => [
+            'date_from' => $group['date_from'],
+            'date_to' => $group['date_to'],
+            'companies' => new Collection($group['companies']),
+        ], $groups));
+    }
+
+    /**
+     * Compteurs d'employés pour N sociétés — une requête (#7302).
+     *
+     * Mêmes prédicats que `employees()` : `count(*)`, `status = 'active'`, et
+     * « prêt pour la paie » (`salary_base` ou `hourly_rate` > 0).
+     *
+     * @param  list<string>  $companyIds
+     * @return array<string, array{total: int, active: int, payroll_ready: int}>
+     */
+    private function employeesMany(array $companyIds): array
+    {
+        $rows = DB::table('employees')
+            ->whereIn('company_id', $companyIds)
+            ->groupBy('company_id')
+            ->select([
+                'company_id',
+                DB::raw('count(*) as total'),
+                DB::raw("count(*) filter (where status = 'active') as active"),
+                DB::raw('count(*) filter (where coalesce(salary_base, 0) > 0 or coalesce(hourly_rate, 0) > 0) as payroll_ready'),
+            ])
+            ->get();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(string) $row->company_id] = [
+                'total' => (int) $row->total,
+                'active' => (int) $row->active,
+                'payroll_ready' => (int) $row->payroll_ready,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Agrégats de pointage sur 30 jours pour N sociétés — deux requêtes (#7302).
+     *
+     * Mêmes prédicats que `attendance()` : `whereBetween('date', [$from, $to])`
+     * (bornes « jour », volontairement identiques à `build()` pour que le
+     * portefeuille et la fiche société annoncent le même chiffre), et le
+     * dernier pointage sur l'historique complet.
+     *
+     * `active_days_30d` compte des JOURS distincts : la colonne `date` est
+     * stockée en timestamp, on la caste donc en date avant `distinct` — sinon
+     * deux pointages du même jour à des heures différentes compteraient double.
+     *
+     * @param  list<string>  $companyIds
+     * @return array<string, array{logs_30d: int, active_employees_30d: int, active_days_30d: int, last_punch_at: string|null}>
+     */
+    private function attendanceMany(array $companyIds, string $dateFrom, string $dateTo): array
+    {
+        $aggregates = DB::table('attendance_logs')
+            ->whereIn('company_id', $companyIds)
+            ->whereBetween('date', [$dateFrom, $dateTo])
+            ->groupBy('company_id')
+            ->select([
+                'company_id',
+                DB::raw('count(*) as logs_30d'),
+                DB::raw('count(distinct employee_id) as active_employees_30d'),
+                DB::raw('count(distinct (date)::date) as active_days_30d'),
+            ])
+            ->get();
+
+        $lastPunches = DB::table('attendance_logs')
+            ->whereIn('company_id', $companyIds)
+            ->whereNotNull('check_in')
+            ->groupBy('company_id')
+            ->select([
+                'company_id',
+                DB::raw('max(check_in) as last_punch_at'),
+            ])
+            ->get();
+
+        $result = [];
+        foreach ($aggregates as $row) {
+            $result[(string) $row->company_id] = [
+                'logs_30d' => (int) $row->logs_30d,
+                'active_employees_30d' => (int) $row->active_employees_30d,
+                'active_days_30d' => (int) $row->active_days_30d,
+                'last_punch_at' => null,
+            ];
+        }
+
+        foreach ($lastPunches as $row) {
+            $id = (string) $row->company_id;
+            $result[$id] ??= [
+                'logs_30d' => 0,
+                'active_employees_30d' => 0,
+                'active_days_30d' => 0,
+                'last_punch_at' => null,
+            ];
+            $result[$id]['last_punch_at'] = $row->last_punch_at === null
+                ? null
+                : Carbon::parse((string) $row->last_punch_at)->setTimezone(config('app.timezone'))->toIso8601String();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Sociétés ayant AU MOINS un pointage, toutes périodes confondues — une
+     * requête (#7302).
+     *
+     * Alimente l'observation serveur (`observed`) du volet onboarding : dans
+     * `build()` cette information coûtait un `exists()` par société.
+     *
+     * @param  list<string>  $companyIds
+     * @return array<string, bool>
+     */
+    private function attendanceExistsMany(array $companyIds): array
+    {
+        $ids = DB::table('attendance_logs')
+            ->whereIn('company_id', $companyIds)
+            ->distinct()
+            ->pluck('company_id');
+
+        $result = [];
+        foreach ($ids as $id) {
+            $result[(string) $id] = true;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Plans référencés par le portefeuille — une requête (#7302).
+     *
+     * `subscription()` rappelait `plan()` (donc `select * from plans where id = ?`)
+     * deux fois par société dans l'ancien `portfolio()`.
+     *
+     * @param  Collection<int, Company>  $companies
+     * @return array<string, object>
+     */
+    private function plansMany(Collection $companies): array
+    {
+        $planIds = $companies->pluck('plan_id')->filter()->unique()->values()->all();
+
+        if ($planIds === []) {
+            return [];
+        }
+
+        $result = [];
+        foreach (DB::table('plans')->whereIn('id', $planIds)->get() as $plan) {
+            $result[(string) $plan->id] = $plan;
+        }
+
+        return $result;
     }
 
     /**
@@ -191,13 +593,34 @@ class PlatformCompanyHealthService
      */
     private function onboarding(Company $company, array $employees): array
     {
+        // Source de vérité (identique à /onboarding-setup/checklist).
+        $canonical = $this->onboardingProgress->read($company->id);
+
+        $hasAnyAttendance = AttendanceLog::withoutGlobalScopes()
+            ->where('company_id', $company->id)
+            ->exists();
+
+        return $this->onboardingPayload($company, $canonical, $employees, $hasAnyAttendance);
+    }
+
+    /**
+     * Mise en forme du volet onboarding/adoption (#7302).
+     *
+     * Extrait pour que `build()` (une société) et `portfolio()` (N sociétés)
+     * produisent EXACTEMENT la même structure — c'est précisément l'absence de
+     * source commune qui avait laissé `nextActions()` lire une clé que le
+     * portefeuille ne fournissait pas.
+     *
+     * @param  array<string, mixed>  $canonical  progression canonique (`OnboardingProgressReader`)
+     * @param  array<string, mixed>  $employees
+     * @return array<string, mixed>
+     */
+    private function onboardingPayload(Company $company, array $canonical, array $employees, bool $hasAnyAttendance): array
+    {
         $geofence = $company->metadata['attendance_geofence'] ?? null;
         $geofenceConfigured = is_array($geofence)
             && isset($geofence['lat'], $geofence['lng'], $geofence['radius_meters'])
             && (float) $geofence['radius_meters'] > 0;
-
-        // Source de vérité (identique à /onboarding-setup/checklist).
-        $canonical = $this->onboardingProgress->read($company->id);
 
         // Observation serveur — sert au score d'adoption, jamais d'échelle
         // d'onboarding.
@@ -206,7 +629,7 @@ class PlatformCompanyHealthService
             (int) $employees['active'] > 0,
             (int) $employees['payroll_ready'] >= max(1, (int) $employees['total']),
             $geofenceConfigured,
-            AttendanceLog::withoutGlobalScopes()->where('company_id', $company->id)->exists(),
+            $hasAnyAttendance,
         ])->filter()->count();
         $observedTotal = 5;
 
@@ -256,6 +679,20 @@ class PlatformCompanyHealthService
         /** @var object{name?: string, price_monthly?: numeric-string|float, price_yearly?: numeric-string|float}|null $plan */
         $plan = DB::table('plans')->where('id', $company->plan_id)->first();
 
+        return $this->planPayload($company, $plan);
+    }
+
+    /**
+     * Mise en forme d'un plan déjà chargé (#7302).
+     *
+     * Le portefeuille charge tous les plans en une requête puis passe ici
+     * l'objet correspondant, au lieu d'un `select * from plans` par société.
+     *
+     * @param  object{name?: string, price_monthly?: numeric-string|float, price_yearly?: numeric-string|float}|null  $plan
+     * @return array<string, mixed>
+     */
+    private function planPayload(Company $company, ?object $plan): array
+    {
         return [
             'id' => $company->plan_id,
             'name' => is_object($plan) && isset($plan->name) ? (string) $plan->name : null,
@@ -269,7 +706,17 @@ class PlatformCompanyHealthService
      */
     private function subscription(Company $company, Carbon $now): array
     {
-        $plan = $this->plan($company);
+        return $this->subscriptionPayload($company, $now, $this->plan($company));
+    }
+
+    /**
+     * Mise en forme d'un abonnement à partir d'un plan déjà chargé (#7302).
+     *
+     * @param  array<string, mixed>  $plan
+     * @return array<string, mixed>
+     */
+    private function subscriptionPayload(Company $company, Carbon $now, array $plan): array
+    {
         $end = $company->subscription_end ? Carbon::parse($company->subscription_end, $company->timezone) : null;
 
         return [

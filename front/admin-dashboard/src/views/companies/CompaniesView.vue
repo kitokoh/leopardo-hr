@@ -12,7 +12,7 @@
           <PlusIcon class="mr-2 h-5 w-5" />
           {{ t('companies.newClient', 'Nouveau Client') }}
         </button>
-        <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="fetchPortfolio">
+        <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="fetchPortfolio(true)">
           <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
           {{ t('companies.refresh', 'Actualiser') }}
         </button>
@@ -73,7 +73,7 @@
 
       <div v-else-if="errorMessage" class="m-6 rounded-2xl bg-red-50 p-8 text-center border border-red-100 dark:bg-red-950/20 dark:border-red-900/30">
         <p class="text-sm font-bold text-red-600">{{ errorMessage }}</p>
-        <button class="btn-secondary mt-4" @click="fetchPortfolio">{{ t('companies.retry') }}</button>
+        <button class="btn-secondary mt-4" @click="fetchPortfolio()">{{ t('companies.retry') }}</button>
       </div>
 
       <div v-else class="overflow-x-auto">
@@ -350,7 +350,15 @@ const selectedCountryDefault = computed(() => {
     || countryDefaults.value[0]
 })
 
-async function fetchPortfolio() {
+/**
+ * #7302 — `refresh` force un RECALCUL des scores cote API.
+ *
+ * Le portefeuille est mis en cache quelques dizaines de secondes
+ * (`PORTFOLIO_CACHE_TTL_SECONDS`, donnee derivee) : un rafraichissement
+ * explicite de l'utilisateur ne doit pas resservir une valeur perimee, alors
+ * que le chargement normal de la page, lui, peut la reutiliser.
+ */
+async function fetchPortfolio(refresh = false) {
   isLoading.value = true
   errorMessage.value = ''
   isScoring.value = false
@@ -376,11 +384,16 @@ async function fetchPortfolio() {
 
   isScoring.value = true
   try {
-    // Endpoint connu pour être lent (~25 s à chaud pour 44 sociétés, au-delà du
-    // timeout axios global de 30 s sur instance froide) : c'est un appel de
-    // fond, on lui accorde un délai dédié — sinon le back-office n'obtient
-    // JAMAIS les scores et n'affiche que des « — ».
-    const response = await api.get('/platform/companies/health', { timeout: 90000 })
+    // Le scoring reste un appel de fond (il couvre tout le portefeuille) : il
+    // garde un délai dédié, plus large que le timeout axios global, pour que le
+    // back-office n'affiche jamais des « — » à la place des scores. Depuis
+    // #7302 le calcul est groupe (une poignée de requêtes, indépendantes du
+    // nombre de sociétés) et mis en cache, donc ce délai n'est plus qu'une
+    // ceinture de sécurité.
+    const response = await api.get('/platform/companies/health', {
+      timeout: 90000,
+      params: refresh ? { refresh: 1 } : {},
+    })
     const data = response.data?.data || {}
     if (data.summary) {
       summary.value = data.summary
