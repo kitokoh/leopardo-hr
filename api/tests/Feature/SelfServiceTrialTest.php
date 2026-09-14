@@ -509,4 +509,71 @@ class SelfServiceTrialTest extends TestCase
             'otp_attempts' => 0,
         ]);
     }
+
+    /**
+     * #7397 — Le profil d'activité et les outils cochés à l'inscription
+     * self-service étaient validés et stockés (`company_requests.signup_payload`)
+     * puis **jetés** par le provisioning : un indépendant était persisté en
+     * « company » (le filtrage solo ne s'appliquait donc jamais) et les outils
+     * choisis restaient verrouillés — d'où un menu client vide alors que
+     * l'écran venait de les proposer.
+     */
+    public function test_self_service_signup_persists_company_type_and_module_selection()
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'solo@independant.dz',
+            'company' => 'Studio Solo',
+            'country' => 'DZ',
+            'company_type' => 'solo',
+            'modules' => ['accounting', 'crm', 'reports'],
+        ])->assertStatus(200);
+
+        $companyRequest = CompanyRequest::where('email', 'solo@independant.dz')
+            ->where('status', 'pending')
+            ->first();
+        $this->assertNotNull($companyRequest);
+
+        // Le payload d'inscription doit réellement porter les deux champs :
+        // sans cette assertion, un futur durcissement de la validation rendrait
+        // le test vert sans rien prouver.
+        $this->assertSame('solo', $companyRequest->signup_payload['company_type'] ?? null);
+        $this->assertSame(['accounting', 'crm', 'reports'], $companyRequest->signup_payload['modules'] ?? null);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'solo@independant.dz',
+            'code' => $companyRequest->verification_token,
+        ])->assertStatus(201);
+
+        $company = Company::where('name', 'Studio Solo')->first();
+        $this->assertNotNull($company);
+
+        // 1. Profil persité : sans lui, `isSolo()` est faux et la règle serveur
+        //    de filtrage solo ne s'applique jamais.
+        $this->assertTrue($company->isSolo(), 'Le profil solo déclaré doit être persisté.');
+
+        // 2. Sélection normalisée sur TOUTES les clés de HORIZONTAL_TOOLS.
+        $modules = $company->metadata['modules'] ?? null;
+        $this->assertIsArray($modules);
+        $this->assertTrue($modules['accounting'], 'Outil coché à l inscripion => actif.');
+        $this->assertTrue($modules['crm']);
+        $this->assertTrue($modules['reports']);
+        $this->assertFalse($modules['marketing'], 'Outil NON coché => explicitement false (la sélection fait autorité).');
+
+        // 3. Outils d'ÉQUIPE forcés à false pour un indépendant (règle serveur #7235).
+        foreach (Company::TEAM_TOOLS as $teamTool) {
+            $this->assertFalse(
+                $modules[$teamTool],
+                "L'outil d'équipe {$teamTool} doit être désactivé pour un profil solo."
+            );
+        }
+
+        // 4. Miroir vers les feature flags plateforme, pour les seules clés qui
+        //    en ont un (la correspondance vit dans Company::HORIZONTAL_TOOL_FEATURES).
+        $features = $company->features ?? [];
+        $this->assertTrue((bool) ($features['accounting'] ?? false));
+        $this->assertTrue((bool) ($features['crm'] ?? false));
+        $this->assertArrayNotHasKey('reports', $features, 'Un outil sans flag plateforme ne doit pas inventer de clé.');
+    }
 }
