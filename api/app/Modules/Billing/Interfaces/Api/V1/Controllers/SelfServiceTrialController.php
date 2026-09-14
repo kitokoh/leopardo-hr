@@ -295,12 +295,71 @@ class SelfServiceTrialController extends Controller
             ], 503);
         }
 
+        // Issue #2437 (parité guidé) : le parcours self-service doit lui aussi
+        // émettre un `provisioning_token`. Sans lui, `GET /trial/status` et
+        // `POST /trial/set-password` répondaient 404 PROVISIONING_TOKEN_INVALID
+        // pour TOUT prospect self-service : impossible de suivre son espace ou
+        // de définir son mot de passe, alors que la vitrine implémente déjà ce
+        // chemin (sessionStorage + /api/forms/trial-status + /api/forms/trial-password).
+        // La ligne est créée ici (status pending) puis passée à `ready` par
+        // VerifyTrialSignup au moment du provisioning.
+        $provisioningToken = Str::random(64);
+
+        try {
+            // `lock_timeout` BORNÉ : cette ligne est un CONFORT (suivi de statut
+            // + définition du mot de passe), jamais une condition de l'essai.
+            // Sans borne, un verrou résiduel sur l'index partiel unique
+            // `trial_provisionings_pending_email_unique` (transaction avortée
+            // laissée ouverte, migration en cours…) ferait ATTENDRE le signup
+            // — voire bloquer la requête indéfiniment. On préfère l'échec
+            // rapide (55P03) absorbé par le catch ci-dessous : le prospect
+            // reçoit son code OTP et poursuit.
+            DB::transaction(function () use ($email, $validated, $provisioningToken): void {
+                DB::statement("SET LOCAL lock_timeout = '3s'");
+
+                DB::table('trial_provisionings')->insert([
+                    'email' => $email,
+                    'company_name' => $validated['company'],
+                    'country' => strtoupper($validated['country']),
+                    'provisioning_token' => $provisioningToken,
+                    'status' => 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+        } catch (QueryException $e) {
+            // Un POST concurrent a déjà créé la ligne pending pour cet email
+            // (index partiel unique #3951) : on réutilise la ligne gagnante au
+            // lieu de renvoyer un 500.
+            if ($e->getCode() === '23505') {
+                $winner = DB::table('trial_provisionings')
+                    ->where('email', $email)
+                    ->where('status', 'pending')
+                    ->first();
+
+                if ($winner !== null) {
+                    $provisioningToken = (string) $winner->provisioning_token;
+                } else {
+                    Log::warning('trial.self_service.provisioning_row_race_unresolved', ['email' => $email]);
+                }
+            } else {
+                // Jamais bloquant pour l'essai : l'OTP reste le chemin nominal.
+                Log::error('trial.self_service.provisioning_row_failed', [
+                    'email' => $email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
         return new JsonResponse([
             'success' => true,
             'message' => __('errors.VERIFICATION_CODE_SENT'),
             'data' => [
                 'email' => $email,
                 'status' => 'pending_verification',
+                // La vitrine stocke ce token et poll /trial/status ; il sert
+                // aussi à définir le mot de passe (POST /trial/set-password).
+                'provisioning_token' => $provisioningToken,
             ],
         ], 200);
     }
