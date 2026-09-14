@@ -4894,7 +4894,8 @@
     "surveyStats": "Solution surveys",
     "solutionSurveys": "Solution surveys",
     "travel": "Travel Agency",
-    "showcase": "Showcase site"
+    "showcase": "Showcase site",
+    "clientModules": "Client company modules"
   },
   "companydetailCoreModuleAlwaysActive": "Core module always active",
   "smartAttendanceSessionsTitle": "Smart Attendance sessions",

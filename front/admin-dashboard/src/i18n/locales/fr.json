@@ -4900,7 +4900,8 @@
     "surveyStats": "Surveys de solutions",
     "solutionSurveys": "Surveys de solutions",
     "travel": "Agence de voyage",
-    "showcase": "Site vitrine"
+    "showcase": "Site vitrine",
+    "clientModules": "Modules des entreprises clientes"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
