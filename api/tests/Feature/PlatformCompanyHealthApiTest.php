@@ -9,6 +9,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use App\Modules\Platform\Infrastructure\Services\PlatformCompanyHealthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -525,6 +526,7 @@ class PlatformCompanyHealthApiTest extends TestCase
     /**
      * Identifiants des sociétés d'une page de portefeuille (#7339).
      *
+     * @param  TestResponse<JsonResponse>  $response
      * @return list<string>
      */
     private function portfolioCompanyIds(TestResponse $response): array
@@ -532,10 +534,13 @@ class PlatformCompanyHealthApiTest extends TestCase
         /** @var list<array{company: array{id: string}}> $items */
         $items = $response->json('data.items');
 
-        return array_values(array_map(
+        // `$items` est déjà une `list` (annotation PHPDoc) : `array_map` sur une
+        // list renvoie une list, `array_values` est donc redondant (PHPStan
+        // strict, `arrayValues.list`).
+        return array_map(
             static fn (array $item): string => (string) $item['company']['id'],
             $items,
-        ));
+        );
     }
 
     private function superAdmin(): SuperAdmin
