@@ -401,7 +401,7 @@ export default function DashboardLayout({
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-black tracking-tight text-slate-950">{user?.company?.name ?? 'Leopardo'}</p>
-              <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-600">{labels.dashboard.businessSection}</p>
+              <p className="truncate text-[10px] font-black uppercase tracking-widest text-emerald-700">{labels.dashboard.businessSection}</p>
             </div>
           </div>
           <button
@@ -532,7 +532,7 @@ export default function DashboardLayout({
                         </Link>
                       ) : (
                         <div key={`menu-mobile-${entry.id}`} className="mt-1 border-t border-slate-100 pt-1">
-                          <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          <p className="px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                             {labels.dashboard.hrMenu}
                           </p>
                           {entry.modules.map((module) => (
@@ -566,7 +566,7 @@ export default function DashboardLayout({
               </button>
               {modulesOpen ? (
                 <div className="absolute right-0 top-12 z-30 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{labels.dashboard.sectionEnterprise}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{labels.dashboard.sectionEnterprise}</p>
                   <div className="mt-2 space-y-1">
                     {platformModules.length > 0 ? platformModules.map((module) => (
                       <div key={module.key} className="flex items-center justify-between gap-2 text-[12px] font-bold text-slate-600">
@@ -581,7 +581,7 @@ export default function DashboardLayout({
                   </div>
                   {discoverable.length > 0 ? (
                     <>
-                      <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
                         {business.length > 0 ? labels.dashboard.sectionLocked : labels.dashboard.sectionDiscoverBusiness}
                       </p>
                       <div className="mt-2 space-y-1">
@@ -662,7 +662,7 @@ export default function DashboardLayout({
                       {unreadCount > 0 ? (
                         <button
                           type="button"
-                          className="text-xs font-semibold text-emerald-600 transition hover:text-emerald-800"
+                          className="text-xs font-semibold text-emerald-700 transition hover:text-emerald-800"
                           onClick={() => void markAllNotificationsRead()}
                         >
                           Tout marquer lu
@@ -683,7 +683,7 @@ export default function DashboardLayout({
                           {!notification.is_read ? <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500" aria-label="Non lue" /> : null}
                         </div>
                         <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">{notification.body}</p>
-                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{notification.type}</p>
+                        <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{notification.type}</p>
                       </button>
                     )) : (
                       <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">{labels.dashboard.noNotifications}</p>
@@ -743,7 +743,9 @@ export default function DashboardLayout({
                 <option value="en">English</option>
               </select>
             </label>
-            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600 lg:flex">
+            <div className="hidden items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-700 lg:flex"
+              title={labels.dashboard.present}
+            >
               <div className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
@@ -818,8 +820,8 @@ function BusinessCard({ module, active, labels }: { module: ClientModuleAccess; 
         className={[
           'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-[11px] font-black uppercase',
           active
-            ? 'border-emerald-200 bg-white text-emerald-600'
-            : 'border-slate-200 bg-slate-50 text-slate-400 group-hover:text-emerald-600',
+            ? 'border-emerald-200 bg-white text-emerald-700'
+            : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:text-emerald-700',
         ].join(' ')}
       >
         {initials}

@@ -232,7 +232,7 @@ export default function SmartAttendanceSessionDetailPage() {
               <div className="flex items-start gap-0">
                 {/* Check in */}
                 <div className="flex flex-col items-center">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                     <LogIn className="h-5 w-5" aria-hidden="true" />
                   </div>
                   <div className="mt-2 h-12 w-0.5 bg-slate-200" />
@@ -264,7 +264,7 @@ export default function SmartAttendanceSessionDetailPage() {
               <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-slate-500">{labels.gpsCoordinatesTitle}</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-600">{labels.checkInLabel}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">{labels.checkInLabel}</p>
                   <p className="mt-1 font-mono text-sm text-slate-800">
                     {formatCoords(session.check_in_latitude, session.check_in_longitude)}
                   </p>

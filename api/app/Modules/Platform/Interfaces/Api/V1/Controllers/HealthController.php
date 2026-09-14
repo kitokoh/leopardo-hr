@@ -39,6 +39,13 @@ use UnitEnum;
  */
 class HealthController extends Controller
 {
+    /**
+     * #7385 — delai maximal du `tcp connect` de la sonde mail. Court :
+     * `/health/ready` est interroge par la supervision, il ne doit pas
+     * transformer une panne SMTP en lenteur d'endpoint.
+     */
+    private const MAIL_CONNECT_TIMEOUT_SECONDS = 2;
+
     public function __invoke(): JsonResponse
     {
         $version = $this->stringConfigValue(config('app.version'));
@@ -50,6 +57,7 @@ class HealthController extends Controller
         $memory = $this->checkMemory();
         $web = $this->checkWeb();
         $delivery = $this->checkDeliveryConfiguration();
+        $mail = $this->checkMail();
 
         $globalOk = $database['ok'];
 
@@ -65,6 +73,7 @@ class HealthController extends Controller
                 'memory' => $memory,
                 'web' => $web,
                 'delivery' => $delivery,
+                'mail' => $mail,
             ],
             'uptime_seconds' => defined('LARAVEL_START')
                 ? (int) round(microtime(true) - LARAVEL_START)
@@ -220,11 +229,13 @@ class HealthController extends Controller
         $database = $this->checkDatabase();
         $redis = $this->checkRedis();
         $queue = $this->checkQueue();
+        $mail = $this->checkMail();
 
         $checks = [
             'database' => $database,
             'redis' => $redis,
             'queue' => $queue,
+            'mail' => $mail,
         ];
 
         $critical = [
@@ -234,12 +245,20 @@ class HealthController extends Controller
         ];
 
         $failed = array_keys(array_filter($critical, static fn (bool $ok): bool => ! $ok));
+
+        // #7385 — le mail est un check NON critique : sans SMTP l'API reste
+        // servable (connexion, donnees, pointage), donc pas de 503. Mais il
+        // doit sortir du silence : « mailer muet » rendait la reinitialisation
+        // de mot de passe morte pendant que la sonde repondait `ok`.
+        $degraded = $mail['ok'] ? [] : ['mail'];
+
         $ok = $failed === [];
 
         return response()->json([
-            'status' => $ok ? 'ok' : 'fail',
+            'status' => ! $ok ? 'fail' : ($degraded === [] ? 'ok' : 'degraded'),
             'checks' => $checks,
             'failed_checks' => $failed,
+            'degraded_checks' => $degraded,
             'timestamp' => now()->toIso8601String(),
         ], $ok ? 200 : 503);
     }
@@ -366,6 +385,71 @@ class HealthController extends Controller
         } catch (Throwable) {
             return ['ok' => false, 'driver' => $driver];
         }
+    }
+
+    /**
+     * #7385 — « mailer muet » : le trou que #7255 avait identifie sans le
+     * combler. `/health/ready` couvrait la base, Redis et la queue, mais pas
+     * le transport mail. Une instance dont le SMTP ne repond plus renvoyait
+     * donc `status: ok` alors que la reinitialisation de mot de passe etait
+     * DEJA MORTE — le controleur avale l'echec d'envoi par anti-enumeration
+     * (cf. #6751), donc aucun utilisateur ni aucune sonde ne le voyait.
+     *
+     * On ne teste que les transports RESEAU : `log` et `array` n'ont aucune
+     * dependance externe, les sonder n'aurait pas de sens (meme logique que
+     * `checkRedis()` qui renvoie `skipped` quand Redis n'est pas voulu).
+     *
+     * Le test est un `tcp connect` court, PAS un envoi : il attrape l'hote
+     * injoignable et le port ferme — la panne de transport, celle qui a
+     * effectivement bloque la production. Il n'attrape PAS un mot de passe
+     * SMTP invalide, d'ou `status: reachable` et non `sent`.
+     *
+     * L'hote n'est volontairement pas expose : `/health` est public, et un
+     * nom d'hote SMTP interne est une information d'infrastructure.
+     *
+     * @return array{ok: bool, status: string, mailer?: string, port?: int, latency_ms?: int, error?: string}
+     */
+    private function checkMail(): array
+    {
+        $mailer = $this->stringConfigValue(config('mail.default'));
+
+        if ($mailer !== 'smtp') {
+            return ['ok' => true, 'status' => 'skipped', 'mailer' => $mailer];
+        }
+
+        $host = $this->stringConfigValue(config('mail.mailers.smtp.host'));
+
+        if ($host === '') {
+            return ['ok' => false, 'status' => 'misconfigured', 'mailer' => $mailer, 'error' => 'MAIL_HOST_MISSING'];
+        }
+
+        $port = (int) config('mail.mailers.smtp.port', 587);
+        $start = microtime(true);
+
+        $errno = 0;
+        $errstr = '';
+        $socket = @fsockopen($host, $port, $errno, $errstr, self::MAIL_CONNECT_TIMEOUT_SECONDS);
+
+        if ($socket === false) {
+            return [
+                'ok' => false,
+                'status' => 'unreachable',
+                'mailer' => $mailer,
+                'port' => $port,
+                'error' => $errno !== 0 ? (string) $errno : 'CONNECT_FAILED',
+                'latency_ms' => (int) round((microtime(true) - $start) * 1000),
+            ];
+        }
+
+        fclose($socket);
+
+        return [
+            'ok' => true,
+            'status' => 'reachable',
+            'mailer' => $mailer,
+            'port' => $port,
+            'latency_ms' => (int) round((microtime(true) - $start) * 1000),
+        ];
     }
 
     /**

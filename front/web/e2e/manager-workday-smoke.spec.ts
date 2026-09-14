@@ -261,7 +261,12 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('Conges payes');
     await expect(page.locator('body')).toContainText('En attente');
 
-    await page.getByRole('button', { name: /Déconnexion|Deconnexion|Logout/i }).click();
+    // #7350 — la déconnexion n'est plus une icône isolée de la barre : elle vit
+    // dans le menu du compte (retour propriétaire : un seul bouton). On ouvre le
+    // menu comme le ferait l'utilisateur avant de cliquer.
+    await page.locator('[data-testid="user-menu-toggle"]').click();
+    await expect(page.locator('[data-testid="user-menu"]')).toBeVisible();
+    await page.locator('[data-testid="user-menu-logout"]').click();
     await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 10000 });
   });
 });

@@ -187,7 +187,7 @@ export default function RestaurantKitchenPage() {
                     type="button"
                     onClick={() => void transition(order.id, action)}
                     disabled={actingOrderId === order.id}
-                    className="ml-auto inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
+                    className="ml-auto inline-flex items-center gap-1 rounded-lg bg-brand-700 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-brand-700 disabled:opacity-50"
                   >
                     {actingOrderId === order.id ? (
                       <Loader2 className="h-3 w-3 animate-spin" />

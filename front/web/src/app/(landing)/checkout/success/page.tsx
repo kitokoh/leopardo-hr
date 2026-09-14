@@ -209,7 +209,7 @@ function SuccessInner() {
           >
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <Rocket className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
               </div>
               <div>
                 <h2 className="font-black text-slate-900 dark:text-white">{copy.success.cardTitle}</h2>
@@ -291,7 +291,7 @@ function SuccessInner() {
               {nextSteps.map((step, i) => {
                 const Icon = step.icon;
                 const colorMap: Record<string, string> = {
-                  emerald: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+                  emerald: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
                   blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
                   violet: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
                 };
@@ -313,7 +313,7 @@ function SuccessInner() {
                         href={step.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 transition-colors"
                       >
                         {step.cta}
                         <ExternalLink className="w-3 h-3" />
@@ -321,7 +321,7 @@ function SuccessInner() {
                     ) : (
                       <Link
                         href={step.href}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 transition-colors"
                       >
                         {step.cta}
                         <ArrowRight className="w-3 h-3" />
@@ -342,7 +342,7 @@ function SuccessInner() {
           >
             <Link
               href="/auth/login"
-              className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
+              className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-black rounded-2xl hover:from-emerald-800 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
             >
               <LogIn className="w-5 h-5" />
               {copy.success.primaryCta}
@@ -361,7 +361,7 @@ function SuccessInner() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 1.4 }}
-            className="mt-10 text-sm text-slate-400 dark:text-slate-500"
+            className="mt-10 text-sm text-slate-400"
           >
             {copy.success.helpPrefix}{' '}
             <Link href="/contact" className="font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-2">

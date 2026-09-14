@@ -47,7 +47,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
 
       <div className="relative">
         {icon && iconPosition === 'left' && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 flex-shrink-0">
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 flex-shrink-0">
             {icon}
           </div>
         )}
@@ -76,7 +76,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
         />
 
         {icon && iconPosition === 'right' && (
-          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 flex-shrink-0">
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 flex-shrink-0">
             {icon}
           </div>
         )}

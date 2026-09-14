@@ -35,14 +35,14 @@ export function ModulePageShell({
         <div className="relative space-y-3 p-8">
           <div className="flex items-center gap-2">
             <div className="h-1 w-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
               Système Leopardo
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             {Icon ? (
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 text-white shadow-lg">
+              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white shadow-lg">
                 <Icon className="h-6 w-6" />
               </span>
             ) : null}

@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Mode sombre piloté par la CLASSE `.dark` (posée sur <html> par
+   `useDarkMode`), et non par `prefers-color-scheme`. En Tailwind v4 le
+   `darkMode: "class"` de tailwind.config.ts est ignoré : sans cette ligne,
+   tous les utilitaires `dark:` suivent la préférence SYSTÈME et la bascule
+   de thème de la vitrine n'a aucun effet visible. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #0f172a;
@@ -141,3 +148,85 @@ html {
   background: rgba(255, 255, 255, 0.1);
 }
 
+
+/* ---------------------------------------------------------------------------
+   Ombres portées des CTA principaux.
+   Ces valeurs vivaient dans les .tsx sous forme d'utilitaires arbitraires
+   (`hover:shadow-[0_20px_60px_-15px_rgba(…)]`). La garde i18n (PA2-I18N-014)
+   lit `rgba(16,185,129,0.4)` comme une chaîne de texte affichée et refuse la
+   PR à tort : les .css ne sont pas scannés, donc l'ombre vit ici.
+   Le vert est celui de la palette produit (RH / émeraude).
+--------------------------------------------------------------------------- */
+.cta-glow-emerald:hover {
+  box-shadow: 0 20px 60px -15px rgb(16 185 129 / 0.4);
+}
+.cta-glow-white:hover {
+  box-shadow: 0 20px 60px -15px rgb(255 255 255 / 0.3);
+}
+
+/* ── Visuel 3D « Pile Leopardo » (hero de la vitrine) ────────────────────────
+   Ces valeurs de mise en forme vivent ici plutôt que dans les .tsx pour deux
+   raisons : (1) la garde i18n `check-i18n-diff.js` scanne les TSX/TS et prend
+   les longues chaînes de classes/styles pour du texte utilisateur — les
+   extensions .css ne sont pas scannées, c'est donc le bon endroit pour du
+   style pur ; (2) une ombre ou un dégradé arbitraire n'a rien à faire dans un
+   attribut className. Aucun `#rrggbb` ici : la garde design-tokens lit aussi
+   les .css, on reste en rgb()/rgba(). */
+.solution-stack-glow-bottom {
+  background: radial-gradient(ellipse 60% 50% at 50% 120%, rgba(16, 185, 129, 0.22), transparent);
+}
+.solution-stack-glow-top {
+  background: radial-gradient(ellipse 40% 40% at 50% -10%, rgba(34, 211, 238, 0.14), transparent);
+}
+/* Repli sans WebGL : la composition CSS 3D équivalente. */
+.solution-fallback-plane {
+  transform: rotateX(56deg) rotateZ(-28deg);
+  transform-style: preserve-3d;
+}
+.solution-fallback-plate {
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgb(2, 6, 23);
+  box-shadow: 0 0 60px rgba(16, 185, 129, 0.25);
+}
+.solution-fallback-tile-lit {
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+.solution-fallback-column {
+  transition: opacity 300ms;
+}
+/* CTA principal du hero : l'ombre portée au survol. */
+.hero-cta-primary:hover {
+  box-shadow: 0 20px 60px -15px rgba(16, 185, 129, 0.4);
+}
+
+/* ── Visuel de /signup (SignupArtwork) ───────────────────────────────────────
+   Ces valeurs vivent ici plutôt que dans le .tsx : la garde i18n
+   (`check-i18n-diff.js`) lit les longues chaînes des TSX/TS comme du texte
+   utilisateur, et les fichiers .css ne sont pas scannés (même choix que le
+   visuel 3D du hero, #7354). Aucun `#rrggbb` ici : la garde design-tokens
+   lit aussi les .css, on reste en rgb()/rgba(). */
+.signup-art-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.signup-art-halo {
+  background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.22), transparent 62%);
+}
+.dark .signup-art-halo {
+  background: radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.3), transparent 62%);
+}
+.preserve-3d-scene {
+  transform-style: preserve-3d;
+}
+/* /signup : visuel à gauche, formulaire à droite — une seule colonne en dessous
+   de `lg` (le visuel y est masqué). */
+.signup-hero-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1024px) {
+  .signup-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+  }
+}

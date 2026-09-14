@@ -72,7 +72,7 @@ export default function CaseStudiesPage() {
                       {cs.demoBadge}
                     </span>
                     <h2 className="text-2xl font-black text-slate-900 dark:text-white">{item.company}</h2>
-                    <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 ml-auto">
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 ml-auto">
                       <span className="flex items-center gap-1"><Users className="w-4 h-4" />{item.employees} {cs.employees}</span>
                       <span className="flex items-center gap-1"><Building2 className="w-4 h-4" />{item.country}</span>
                     </div>
@@ -101,7 +101,7 @@ export default function CaseStudiesPage() {
                     {item.results.map((r, j) => (
                       <div key={j} className={`${colors.bg} rounded-xl p-4 text-center`}>
                         <p className={`text-2xl font-black ${colors.text}`}>{r.metric}</p>
-                        <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">{r.label}</p>
+                        <p className="text-slate-600 dark:text-slate-400 text-xs mt-1">{r.label}</p>
                       </div>
                     ))}
                   </div>
@@ -109,7 +109,7 @@ export default function CaseStudiesPage() {
                   {/* Testimonial */}
                   <blockquote className="border-l-4 border-emerald-500 pl-4 py-2">
                     <p className="text-slate-700 dark:text-slate-300 italic text-sm">&ldquo;{item.testimonial}&rdquo;</p>
-                    <cite className="text-slate-500 text-xs mt-2 block not-italic">&mdash; {item.author}</cite>
+                    <cite className="text-slate-600 text-xs mt-2 block not-italic dark:text-slate-400">&mdash; {item.author}</cite>
                   </blockquote>
                 </div>
               </motion.article>

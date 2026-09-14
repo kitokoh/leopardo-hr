@@ -416,7 +416,7 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">{i18nT(locale, 'dashboard.company', 'Entreprise')}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{i18nT(locale, 'dashboard.company', 'Entreprise')}</p>
               <h2 className="mt-2 text-2xl font-black text-slate-950">{companyName}</h2>
               <p className="mt-1 text-sm text-slate-500">
                 {formatMessage(i18nT(locale, 'dashboard.modulesActiveSentence'), { active: activeModules, locked: lockedModules })}
@@ -679,7 +679,7 @@ export default function DashboardPage() {
               <div className="mb-4 flex items-center justify-between">
                 <h4 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.presence_today_title')}</h4>
                 {summary && summary.employees_active > 0 ? (
-                  <span className="text-xs font-bold text-emerald-600">
+                  <span className="text-xs font-bold text-emerald-700">
                     {Math.round((summary.today_attendance / summary.employees_active) * 100)}%
                   </span>
                 ) : null}
@@ -758,7 +758,7 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
           <Link key={card.title} href={card.href} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-            <card.icon className="h-7 w-7 text-emerald-600" aria-hidden="true" />
+            <card.icon className="h-7 w-7 text-emerald-700" aria-hidden="true" />
             <h2 className="mt-4 text-lg font-bold text-slate-950">{card.title}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">{card.text}</p>
           </Link>

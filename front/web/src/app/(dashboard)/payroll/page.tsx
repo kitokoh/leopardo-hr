@@ -228,7 +228,7 @@ export default function PayrollPage() {
   }, []);
 
   const statCards = [
-    { label: labels.statTotalGross, value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: labels.statTotalGross, value: formatCurrency(runs.reduce((s, r) => s + (r.total_gross || 0), 0)), icon: DollarSign, accent: 'text-emerald-700 bg-emerald-50' },
     { label: labels.statTotalNet, value: formatCurrency(runs.reduce((s, r) => s + (r.total_net || 0), 0)), icon: FileText, accent: 'text-finance-dark bg-finance-light' },
     { label: labels.statPayslips, value: String(payslips.length), icon: Calendar, accent: 'text-ia-dark bg-ia-light' },
   ];
@@ -250,7 +250,7 @@ export default function PayrollPage() {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{stat.label}</p>
                 <p className="mt-2 text-2xl font-black text-slate-950">{stat.value}</p>
               </div>
               <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${stat.accent}`}>
@@ -313,7 +313,7 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 font-bold text-slate-950">{slip.employee_name ?? '—'}</td>
                       <td className="px-4 py-4 text-slate-600">{slip.period ?? '—'}</td>
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(slip.gross_salary)}</td>
-                      <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(slip.net_salary)}</td>
+                      <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-700">{formatCurrency(slip.net_salary)}</td>
                       <td className="px-4 py-4 text-center">
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${slip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                           {slip.status === 'validated' ? labels.statusValidated : labels.statusDraft}
@@ -327,8 +327,8 @@ export default function PayrollPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => downloadPdf(slip.id)} title={labels.downloadPdf} aria-label={labels.downloadPdf} icon={<Download className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600" />
-                          <Button variant="ghost" size="sm" onClick={() => openDetail(slip)} title={labels.viewDetail} aria-label={labels.viewDetail} icon={<Eye className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600" />
+                          <Button variant="ghost" size="sm" onClick={() => downloadPdf(slip.id)} title={labels.downloadPdf} aria-label={labels.downloadPdf} icon={<Download className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-700" />
+                          <Button variant="ghost" size="sm" onClick={() => openDetail(slip)} title={labels.viewDetail} aria-label={labels.viewDetail} icon={<Eye className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-700" />
                         </div>
                       </td>
                     </tr>
@@ -385,7 +385,7 @@ export default function PayrollPage() {
                       <td className="px-6 py-4 font-bold text-slate-950">{run.period}</td>
                       <td className="px-4 py-4 text-right text-slate-600">{run.employee_count}</td>
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(run.total_gross)}</td>
-                      <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(run.total_net)}</td>
+                      <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-700">{formatCurrency(run.total_net)}</td>
                       <td className="px-6 py-4 text-center">
                         {isPlaceholderRun(run) && (
                           <span

@@ -83,7 +83,7 @@ export function TestimonialCard({
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              className={`w-5 h-5 ${i < rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
+              className={`w-5 h-5 ${i < rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-400'}`}
             />
           ))}
         </div>

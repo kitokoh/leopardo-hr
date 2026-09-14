@@ -135,17 +135,16 @@ async function pollTrialUntilReady(
 async function guidedSignupViaVitrine(page: Page, email: string, company: string): Promise<string> {
   await page.goto('/signup?plan=pilot', { waitUntil: 'domcontentloaded' });
 
-  // Le sélecteur de pays est alimenté par le registre public avec un fallback
-  // statique (#4476) — on attend l'option DZ pour un selectOption fiable.
-  await expect(page.locator('select[name="country"] option[value="DZ"]')).toHaveCount(1, {
-    timeout: 15_000,
-  });
-
+  // #7249 — le tunnel s'ouvre directement sur le formulaire (l'écran
+  // interstitiel « profil » a été remplacé par deux pastilles) et ne demande
+  // plus que l'e-mail, l'entreprise et les CGU : le rôle (le créateur EST le
+  // fondateur), la taille d'équipe et le pays (résolu côté serveur par
+  // géolocalisation — le champ n'apparaît qu'en repli, si elle échoue) ont été
+  // retirés du parcours. Ce spec s'alignait encore sur l'ancien tunnel à
+  // 5 champs et échouait donc sur des sélecteurs inexistants.
+  await expect(page.locator('input[name="email"]')).toBeVisible({ timeout: 15_000 });
   await page.locator('input[name="email"]').fill(email);
   await page.locator('input[name="company"]').fill(company);
-  await page.locator('select[name="role"]').selectOption('manager');
-  await page.locator('select[name="employees"]').selectOption('11-50');
-  await page.locator('select[name="country"]').selectOption('DZ');
   await page.locator('#agreeToTerms').check();
 
   // Capture de la réponse AVANT le clic (waitForResponse concurrent) :
