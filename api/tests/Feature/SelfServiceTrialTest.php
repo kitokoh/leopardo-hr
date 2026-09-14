@@ -441,7 +441,6 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-
     public function test_five_bad_otps_lock_the_email(): void
     {
         Mail::fake();
@@ -480,7 +479,6 @@ class SelfServiceTrialTest extends TestCase
         $this->assertGreaterThanOrEqual(5, (int) $request->otp_attempts);
         $this->assertNotNull($request->otp_locked_until);
     }
-
 
     public function test_valid_otp_resets_attempt_counter(): void
     {
@@ -531,7 +529,7 @@ class SelfServiceTrialTest extends TestCase
         ])->assertStatus(200);
 
         $otp = CompanyRequest::where('email', 'founder@postprov.dz')
-            ->where('status', 'pending')->first()->verification_token;
+            ->where('status', 'pending')->firstOrFail()->verification_token;
 
         // Échec simulé APRES le provisioning (le tenant existe déjà).
         Event::listen(CompanyCreated::class, function (): void {
