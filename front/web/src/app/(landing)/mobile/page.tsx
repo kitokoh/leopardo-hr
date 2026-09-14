@@ -465,7 +465,7 @@ export default function MobilePage() {
             })}
           </div>
 
-          <p className="mt-8 text-sm text-slate-500">
+          <p className="mt-8 text-sm text-slate-500 dark:text-slate-400">
             {t.waitingPrefix}{' '}
             <Link href="/docs#sdk-overview" className="text-emerald-700 dark:text-emerald-400 hover:underline">
               {t.installGuide}
