@@ -227,6 +227,20 @@ class IntentEngine
                     ? 'toute l\'entreprise'
                     : 'l\'équipe du département #'.$this->stringArgument($arguments, 'department_id', '?'),
             ),
+            // A7 (#7377) — création d'un employé : le résumé annonce
+            // explicitement l'e-mail d'invitation (effet externe visible).
+            'create_employee' => sprintf(
+                'Créer l\'employé « %s %s » (%s) — un e-mail d\'invitation lui sera envoyé',
+                $this->stringArgument($arguments, 'first_name', '?'),
+                $this->stringArgument($arguments, 'last_name', '?'),
+                $this->stringArgument($arguments, 'email', '?'),
+            ),
+            // A8 (#7378) — pointage.
+            'check_in_employee', 'check_out_employee' => sprintf(
+                'Pointer %s pour l\'employé #%s',
+                $toolName === 'check_out_employee' ? 'la SORTIE' : 'l\'ENTRÉE',
+                $this->stringArgument($arguments, 'employee_id', 'moi-même'),
+            ),
 
             default => "Confirmer l'action {$toolName}",
         };
