@@ -12,14 +12,13 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
 use App\Events\CompanyCreated;
 use App\Jobs\SendTrialDripEmailJob;
-use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Services\HorizontalToolSelection;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
+use App\Modules\Billing\Infrastructure\Services\TrialWelcomeNotifier;
 use App\Support\CountryDefaults;
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\QueryException;
-use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
 
@@ -39,7 +38,7 @@ class VerifyTrialSignup
         private readonly DatabaseManager $db,
         private readonly Hasher $hasher,
         private readonly LoggerInterface $logger,
-        private readonly Mailer $mailer,
+        private readonly TrialWelcomeNotifier $welcomeNotifier,
     ) {}
 
     /**
@@ -355,9 +354,7 @@ class VerifyTrialSignup
         ]);
 
         try {
-            $this->mailer->to($email)->send(
-                new TrialWelcomeMail($result['company'], $result['manager'], $tempPassword)
-            );
+            $this->welcomeNotifier->sendWelcome($result['company'], $result['manager'], $tempPassword);
         } catch (\Throwable $e) {
             $this->logger->error('SelfServiceTrial: Failed to send welcome email', [
                 'email' => $email,
