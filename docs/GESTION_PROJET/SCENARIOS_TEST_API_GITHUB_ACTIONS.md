@@ -1834,3 +1834,22 @@ Garde de rendu : `api/tests/Feature/Mail/EmailTemplateIntegrityTest.php` compile
 les templates d'e-mail et vérifie que le PHP produit est valide (la CI ne compile aucune
 vue Blade), plus le RTL, le pré-en-tête, l'adresse de contact ≠ adresse d'envoi et
 l'absence de terme interne (ex. « node Edge », `localhost`, `/admin/edge-nodes`).
+
+## Addendum 2026-09-14 — le flux Google exige une session sur ses routes (#7372)
+
+- `GET /api/v1/auth/google` et `GET /api/v1/auth/google/callback` déclarent désormais
+  `EncryptCookies` + `AddQueuedCookiesToResponse` + `StartSession` (groupe de routes
+  **dédié** : la session n'est **pas** étendue au reste du groupe `api`, sinon la protection
+  CSRF Sanctum s'appliquerait aux routes de la SPA admin et des clients mobiles).
+- Raison : le state anti-CSRF (#2619) et l'intention de parcours (`intent=signup`, `plan`)
+  sont stockés en **session** à l'initiation puis relus au callback. Sans middleware de
+  session, l'initiation répondait `503 GOOGLE_OAUTH_UNAVAILABLE`
+  (`auth.google.redirect_failed {"message":"Session store not set on request."}`) — **même
+  avec des clés Google valides**, en dev comme en prod. Le groupe `api` ne comporte ni
+  `StartSession` ni `EncryptCookies`, et `statefulApi()` (Sanctum) n'a jamais été activé.
+- Scénarios à rejouer en ligne : initiation → **302** vers `accounts.google.com` portant le
+  `redirect_uri` de la **vitrine** ; retour sur la vitrine → cookie de session relayé par
+  `front/web/src/app/api/v1/auth/google/callback/route.ts` → état validé ; `intent=signup`
+  avec e-mail inconnu → identité Google **vérifiée** renvoyée pour pré-remplir le tunnel
+  (aucun tenant créé depuis le callback — #3724) ; `intent=login` avec e-mail inconnu →
+  `401 UNKNOWN_ACCOUNT` ; state absent ou invalide → `400 INVALID_OAUTH_STATE`.
