@@ -192,6 +192,6 @@ class TravelBookingExpirationTest extends TestCase
 
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $this->company->id);
         Bus::assertDispatched(ExpirePendingBookingsJob::class, fn (ExpirePendingBookingsJob $job): bool => $job->companyId === $otherCompany->id);
-        Bus::assertDispatchedCount(ExpirePendingBookingsJob::class, 2);
+        Bus::assertDispatchedTimes(ExpirePendingBookingsJob::class, 2);
     }
 }
