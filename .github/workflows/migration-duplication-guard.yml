@@ -1,0 +1,83 @@
+name: Migration Duplication Guard
+
+# Issue #7452 (+ tranche #7455) — 65 à 68 tables sont déclarées par 2 à 4 migrations
+# dans `api/database/migrations/`, dont 36 avec des colonnes divergentes. Le premier
+# `Schema::create` gagne (`schemaTableExists()`), les suivants sont des no-op : le code
+# écrit contre la dernière génération casse en `column "x" does not exist`, souvent
+# masqué par une cascade `25P02` (223 échecs de tests/Feature/Travel sur main).
+#
+# Cette garde ne résorbe pas la dette (c'est le rôle de #7452/#7417/#7410) : elle
+# empêche qu'une PR en ajoute. La dette existante est affichée, non bloquante.
+#
+# `workflow_dispatch` expose `--strict` (échec sur toute divergence) pour suivre la
+# résorption module par module, et `--audit` pour régénérer l'inventaire publié dans
+# `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "api/database/migrations/**"
+      - "dev-hub/tools/check-duplicate-schema-create.py"
+      - ".github/workflows/migration-duplication-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "api/database/migrations/**"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode d'exécution"
+        type: choice
+        options:
+          - regression
+          - strict
+          - audit
+        default: regression
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: migration-duplication-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  guard:
+    name: Une table, une migration (#7452)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Historique complet requis : la garde compare la tête à `origin/main`.
+          fetch-depth: 0
+          lfs: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Run duplicate-schema guard
+        shell: bash
+        env:
+          MODE: ${{ inputs.mode || 'regression' }}
+        run: |
+          set -Eeuo pipefail
+          git fetch --no-tags origin main
+          case "${MODE}" in
+            audit)  python3 dev-hub/tools/check-duplicate-schema-create.py --audit ;;
+            strict) python3 dev-hub/tools/check-duplicate-schema-create.py --strict ;;
+            *)      python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main ;;
+          esac
+
+      - name: Rappel du traitement de la dette
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Dette de migrations dupliquées — inventaire : docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md (issues #7452, #7417, #7410)."
