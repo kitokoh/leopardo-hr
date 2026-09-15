@@ -338,6 +338,28 @@ pour les résoudre au checkout.
 - **Garde « Check unique issue claim per PR » cassée** (`dev-hub/tools/check-issue-claim-unique.sh`) : `gh: Resource not accessible by integration (HTTP 403)` puis `AttributeError: 'str' object has no attribute 'get'` — échoue sur TOUTES les PRs. Non bloquante pour le merge (les 4 checks requis sont PHPStan Strict, Module Structure Validator, Frontend ESLint+TS, actionlint) mais rend « PR Issue Guard » rouge : à corriger dans l'outillage (permissions GITHUB_TOKEN + parsing).
 - **Protection main en `strict`** : 4 checks requis + branche à jour exigée → après chaque merge dans main, les PRs `behind` doivent être mises à jour (update-branch API parfois 404 → fusion locale + push) puis repassent un cycle CI complet. Un « merge sweep » périodique (merge auto des PRs clean + 4 checks verts + inactives ≥ 5 min) évite les heures d'attente.
 
+### 2026-09-15 - Dérive dev Render : un déploiement « vert » ne déploie pas (#7304)
+
+- `deploy-main.yml` peut sortir **`success` sans déployer** : le job
+  `Deploy API + Web to Render` est *skipped* quand le run `Tests - Leopardo RH`
+  du SHA est absent (`Tests=missing` — runs `synchronize` non créés sous charge,
+  leçon #3545). Mesuré le 2026-09-14 : **12 runs successifs, 0 déploiement**, dev
+  figé sur `fe2ab9f` à ~60 merges derrière `main` → recettes menées sur du code
+  périmé (faux bugs) et worker de queue de l'image ancienne donc absent.
+- **Pré-vol obligatoire avant toute recette** :
+  `dev-hub/tools/check-deploy-drift.sh --url "$DEV_API_BASE_URL" --expect origin/main`
+  (garde CI `deploy-drift-guard.yml`, toutes les 30 min). Un environnement dont
+  `/health.version` ≠ SHA de `main` n'est pas un environnement de recette —
+  runbook `docs/ops/RENDER_DEV_ALIGNMENT.md`.
+- `autoDeploy: yes` est désormais posé sur le service dev Render
+  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : le dev suit `main`
+  sans dépendre du gate GitHub. Contrainte API : un `POST /deploys` Render
+  déploie le **HEAD de la branche**, jamais un SHA arbitraire.
+- Le dev est en **mono-conteneur** : le worker de queue vit dans le conteneur web
+  (`api/docker-entrypoint.sh`, respawn loop #7041). Une queue qui s'accumule est
+  un symptôme d'**image périmée**, pas d'un « worker manquant » — le compte dev
+  Render refuse toute création de service payant (`new paid services not allowed`).
+
 ### 2026-05-14 - Integration branche Devin Plan 14
 
 - La branche distante `devin/1778717175-plan14-phase1-tests` apportait les suites Plan 14 Phase 1 : E2E admin-dashboard, integration API et tests de modeles Flutter. Elle doit etre integree depuis un `origin/main` recent, pas mergee telle quelle si les checks GitHub Actions sont rouges.

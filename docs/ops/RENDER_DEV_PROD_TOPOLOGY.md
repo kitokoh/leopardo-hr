@@ -326,3 +326,31 @@ d'architecture résiduels listés ci-dessous.
    de passe aléatoire non récupérable).
 8. **Domaine** `leopardo-rh.com` : achat + DNS + plans payants Render/Vercel/
    Cloudflare avant tout lancement client.
+
+---
+
+## Dérive dev ↔ `main` — mesure et runbook (2026-09-15, issue #7304)
+
+**Constat vérifié** : le 2026-09-15 à 03:05 UTC, le service dev
+(`gestionemployerbackend`) servait encore le commit `fe2ab9f` (PR #7383,
+déployé le 2026-09-14T14:12Z) alors que `main` était à `b491ed3` — soit ~60
+merges d'écart, et **12 runs « Deploy - Leopardo RH » `success` consécutifs
+sans aucun déploiement réel** (`Deploy API + Web to Render => skipped`,
+`Tests=missing` pour le SHA : le gate ne trouve pas le run `Tests - Leopardo RH`
+lorsque GitHub n'en a pas créé — leçon #3545). La dérive était donc silencieuse
+et « verte ».
+
+**Correctifs appliqués** :
+
+1. `autoDeploy: yes` sur le service dev (le dev suit `main` sans dépendre du
+   gate) — vérifié via `GET /v1/services/{id}` ;
+2. déploiement manuel déclenché via l'API Render : `/api/v1/health` (dev)
+   renvoie désormais `b491ed3` = HEAD de `main` ;
+3. garde de non-régression **`deploy-drift-guard.yml`** (script
+   `dev-hub/tools/check-deploy-drift.sh`, toutes les 30 min + manuel) qui échoue
+   visiblement quand `/health.version` ≠ SHA attendu.
+
+**Règle de recette** : ne jamais qualifier un environnement dont
+`/health.version` ne correspond pas au SHA de `main` testé — voir le runbook
+complet **`docs/ops/RENDER_DEV_ALIGNMENT.md`** (§2 pré-vol, §5 alignement, §6
+worker mono-conteneur, §7 `redis` dégradé en dev).
