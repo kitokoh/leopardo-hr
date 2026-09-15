@@ -20,7 +20,9 @@ export type ClientModuleKey =
   | 'edu_manager'
   | 'travel'
   | 'fuel'
-  | 'showcase';
+  | 'fleet'
+  | 'showcase'
+  | 'cameras';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -42,16 +44,33 @@ export type ClientModuleScope = 'core' | 'business';
  * #7235 — Outils d'ÉQUIPE : sans objet pour un profil `solo` (indépendant).
  * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
  * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
- * partiel ne fasse jamais réapparaître pointage/employés chez un indépendant.
+ * partiel ne fasse jamais réapparaître la gestion d'employés ou de contrats
+ * chez un indépendant.
+ *
+ * #7423 — seuls les outils de **pilotage d'équipe** restent fermés : le socle
+ * RH (`SOLO_FLOOR_MODULE_KEYS`) est garanti, cf. ci-dessous.
  */
 const SOLO_HIDDEN_MODULE_KEYS: ClientModuleKey[] = [
   'employees',
-  'attendance',
-  'attendance_geo',
-  'absences',
   'contracts',
-  'payroll',
   'training',
+  'attendance_geo',
+];
+
+/**
+ * #7423 — PLANCHER D'ACCÈS du profil `solo` : le socle RH qu'un indépendant
+ * garde **quel que soit son profil et sa sélection** (il travaille aussi : il
+ * se pointe, pose ses congés, reçoit ses bulletins).
+ *
+ * Miroir exact de `Company::SOLO_FLOOR_TOOLS` (source de vérité serveur) et
+ * appliqué AVANT la branche « la sélection fait autorité » : le plancher est un
+ * MINIMUM, pas un défaut — une sélection qui ne le couvre pas ne peut pas le
+ * retirer.
+ */
+const SOLO_FLOOR_MODULE_KEYS: ClientModuleKey[] = [
+  'attendance',
+  'absences',
+  'payroll',
 ];
 
 export type ClientModule = {
@@ -160,7 +179,10 @@ export const CLIENT_MODULES: ClientModule[] = [
     key: 'training',
     href: '/training',
     label: 'Formations',
-    group: 'finance',
+    // #7432 — le champ `group` doit refléter l'emplacement RÉEL du module dans
+    // la navigation : « Formations » est rendue dans le sous-menu RH
+    // (`dashboard-nav.ts` → `HR_SUBMENU_KEYS`), pas dans l'espace finance.
+    group: 'hr',
     capabilityKeys: ['training', 'can_view_training'],
     featureKeys: ['training'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -284,6 +306,27 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'fuel',
   },
+  // #7400 — Flotte & suivi des véhicules de service. Module HORIZONTAL
+  // (`scope: 'core'`) : toute PME de terrain a des véhicules, ce n'est pas
+  // rattaché à la verticale Agence de voyage. Le suivi n'existait que côté
+  // admin plateforme (`front/admin-dashboard/src/views/fleet/FleetView.vue`) ;
+  // l'agence ne pouvait ni voir ses véhicules, ni leur position, ni leurs
+  // itinéraires. L'API est déjà complète (`/vehicles`, `/vehicles/{id}/trips`,
+  // `/fleet/*`) et réservée aux managers (`api.manager`, sécurité #2217) :
+  // la capacité `can_view_fleet` rejoue ce gate, et la feature `fleet` (ajoutée
+  // au registre plateforme) permettra de vendre/activer le module par plan
+  // quand le middleware `module.fleet` sera tranché (voir #7400).
+  {
+    key: 'fleet',
+    href: '/fleet',
+    label: 'Flotte',
+    group: 'general',
+    capabilityKeys: ['can_view_fleet', 'fleet'],
+    featureKeys: ['fleet'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Flotte (véhicules, positions, itinéraires)',
+    scope: 'core',
+  },
   // BC-16 EDU — EduManager (EDU-011/012/013, #5827/#5828/#5829). Navigation
   // rôle-aware : manager direction (principal/rh) → administration scolaire ;
   // employé enseignant → espace enseignant (périmètre = ses classes, gardé
@@ -320,6 +363,24 @@ export const CLIENT_MODULES: ClientModule[] = [
     featureKeys: ['showcase', 'company_showcase'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Site vitrine public de l\'entreprise',
+  },
+
+  // BC-19 DEVICE (#7425) — module « Caméras » : le backend est complet et
+  // testé (routes `/cameras`, viewer public `/view/cam`), mais AUCUNE entrée
+  // de navigation ne l'exposait — le flag tenant `cameras` existait, la
+  // surface non. Le module est porté par ce seul flag (`module.cameras`
+  // renvoie 403 FEATURE_NOT_ENABLED sinon) et réservé au responsable du
+  // tenant (`api.manager:principal,rh` sur `api/routes/modules/cameras.php`).
+  // Un sous-rôle « sécurité » n'existe pas encore : on ne l'invente pas.
+  {
+    key: 'cameras',
+    href: '/cameras',
+    label: 'Caméras',
+    group: 'general',
+    capabilityKeys: ['cameras', 'can_view_cameras'],
+    featureKeys: ['cameras'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Surveillance caméras (mur, permissions, partage tiers)',
   },
 ];
 
@@ -376,6 +437,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/travel/portal': 'travel',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
+  '/fleet': 'fleet',
   '/edu-manager': 'edu_manager',
   '/edu-manager/campuses': 'edu_manager',
   '/edu-manager/academic-years': 'edu_manager',
@@ -387,6 +449,9 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/edu-manager/report-cards': 'edu_manager',
   '/edu-manager/teacher': 'edu_manager',
   '/showcase': 'showcase',
+  // BC-19 (#7425) — mur de caméras et sous-routes de détail (`/cameras/{id}`),
+  // ces dernières résolues par le match de préfixe de `getModuleAccessForPath`.
+  '/cameras': 'cameras',
 };
 function normalizedRole(user?: StoredAuthUser | null): string {
   if (!user?.role) {
@@ -416,6 +481,11 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
     if (module.key === 'edu_manager') {
       // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
       return managerRole === '' || managerRole === 'principal' || managerRole === 'rh';
+    }
+    if (module.key === 'cameras') {
+      // BC-19 (#7425) : l'API réserve tout `/cameras` au responsable du tenant
+      // (`api.manager:principal,rh`) — même miroir que `showcase`.
+      return ['principal', 'rh'].includes(managerRole);
     }
     return true;
   }
@@ -468,8 +538,14 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   if (module.key === 'dashboard') {
     return 'available';
   }
-  // #7235 — un profil Indépendant ne voit ni pointage ni gestion d'employés,
-  // quelle que soit la donnée de gate par ailleurs.
+  // #7423 — PLANCHER D'ACCÈS garanti : tout tenant `solo` garde son socle RH
+  // (pointage, absences, paie) même si sa sélection ne le coche pas. La branche
+  // est AVANT « la sélection fait autorité » : le plancher est un minimum.
+  if (user.company?.type === 'solo' && SOLO_FLOOR_MODULE_KEYS.includes(module.key)) {
+    return 'available';
+  }
+  // #7235 — un profil Indépendant ne voit pas les outils de PILOTAGE D'ÉQUIPE
+  // (employés, contrats, formation), quelle que soit la donnée de gate.
   if (user.company?.type === 'solo' && SOLO_HIDDEN_MODULE_KEYS.includes(module.key)) {
     return 'locked';
   }

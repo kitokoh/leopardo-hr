@@ -12,6 +12,9 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Cameras\Domain\Models\Camera;
 use App\Modules\Cameras\Domain\Models\CameraAccessToken;
+use App\Modules\Cameras\Domain\Models\CameraAlert;
+use App\Modules\Cameras\Domain\Models\CameraEvent;
+use App\Modules\Cameras\Domain\Policies\CameraAlertPolicy;
 use App\Modules\Catalog\Domain\Models\CatalogCategory;
 use App\Modules\Catalog\Domain\Models\CatalogProduct;
 use App\Modules\Catalog\Domain\Policies\CatalogCategoryPolicy;
@@ -257,6 +260,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(Evaluation::class, EvaluationPolicy::class);
         Gate::policy(Camera::class, CameraPolicy::class);
         Gate::policy(CameraAccessToken::class, CameraPolicy::class);
+        // #7427 — événements & alertes caméra (manager uniquement).
+        Gate::policy(CameraAlert::class, CameraAlertPolicy::class);
+        Gate::policy(CameraEvent::class, CameraAlertPolicy::class);
 
         // Org structure
         Gate::policy(FuelMeterReading::class, FuelMeterReadingPolicy::class);

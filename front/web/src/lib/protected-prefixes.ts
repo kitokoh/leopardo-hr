@@ -38,6 +38,12 @@ export const PROTECTED_PREFIXES = [
   // sections, thème, publication). Le site PUBLIC rendu vit sous
   // `/vitrine/{slug}` (hors de cette liste : il est public par nature).
   '/showcase',
+  // BC-19 DEVICE (#7425) — mur de caméras (`/cameras`) et détail caméra
+  // (`/cameras/{id}`) : données de vidéosurveillance, jamais servies sans
+  // session. Le viewer tiers public vit hors de ce préfixe (`/view/cam`).
+  '/cameras',
+  // #7400 — flotte & véhicules de service (module horizontal).
+  '/fleet',
 ] as const;
 
 /**

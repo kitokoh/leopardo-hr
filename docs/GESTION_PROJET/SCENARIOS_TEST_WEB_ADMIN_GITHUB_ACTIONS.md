@@ -296,6 +296,37 @@ Véracité des états (jamais un état faux affiché comme réel) :
 - `eslint .` et `vite build` restent verts ; `grep -rn "window.confirm\|window.alert" src` est vide.
 - Les nouveaux libellés passent par le catalogue (`check-i18n-diff.js` vert).
 
+### 18. Fiche Entreprise — les libellés de modules sont localisés et la Formation est un vrai switch (#7432)
+
+`CompanyDetailView.vue` affichait les features connues via
+`t('companyDetail.features.<clé>', '<libellé français en dur>')` — or **aucune**
+des 4 locales ne portait l'objet `companyDetail.features.*` : tous les libellés
+venaient donc du repli codé en dur dans le composant (`Centre de Formation`,
+`Ressources Humaines`…), non traduisibles. Les 8 clés réellement référencées
+(`rh`, `finance`, `ai`, `cameras`, `tracking`, `planning`, `training`, `cabinet`)
+sont désormais dans la source de vérité `shared/i18n/locales/{fr,en,ar,tr}.json`
+puis propagées à `front/admin-dashboard/src/i18n/locales/` par
+`node shared/i18n/sync/sync-web.js`.
+
+Côté back-office, l'interrupteur « Formation » de la fiche entreprise était un
+**switch fantôme** : `training` était absent de `Company::KNOWN_MODULES`, donc
+`PATCH /platform/companies/{id}/features` reconstruisait `features` sans la clé
+et jetait silencieusement toute bascule. Le module est maintenant connu et
+enregistré (`config/feature-flags.php`).
+
+À vérifier (recette) :
+
+- Fiche Entreprise › « Modules » : « Centre de Formation » s'affiche depuis le
+  catalogue dans les 4 locales (fr/en/ar/tr, RTL compris) — plus de repli en dur.
+- Basculer la Formation ON/OFF puis **recharger** : l'état revient conforme (la
+  bascule persiste réellement, `GET /platform/companies/{id}/features`).
+- Un module laissé « non mentionné » par un client d'API n'est plus éteint par
+  surprise (les deux boucles de mise à jour préservent la valeur effective) ;
+  depuis le formulaire Blade, un module décoché est bien désactivé (champ caché
+  `features[x]=0`).
+- `npx eslint src --max-warnings 0` et `npx vite build` restent verts ;
+  `check-i18n-diff.js` vert (aucun libellé français en dur sur les lignes ajoutées).
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
@@ -378,3 +409,81 @@ Le panneau « ACCES DEMO — CHOISIR UN PROFIL » de `/login` change de **conten
 
 > Les personas des autres surfaces restent visibles depuis **leur** application (web client / kiosque / mobile) ;
 > leur suppression ici est un correctif, pas une perte de fonctionnalite.
+
+## Scenario — Liste des entreprises : recherche, filtre, pagination et actions rapides (#7431)
+
+Ecran `front/admin-dashboard/src/views/companies/CompaniesView.vue` (route `/companies`).
+Le contrat d'API est **inchange** : `GET /platform/companies` accepte deja `search`, `status`,
+`per_page` et pagine via `page` (`PlatformCompanyController::index`). Ce qui change, c'est que la
+vue **lit enfin `meta`** et n'est plus limitee a une page demandee en dur (`per_page=100`), donc
+plus de troncature silencieuse au-dela de 100 societes.
+
+### Recherche (nom / e-mail / pays / ville)
+
+- La saisie part au **serveur** avec un **debounce de 300 ms** (parametre `search`) : ce sont les
+  champs filtres par l'API, pas un filtrage en memoire de la page courante.
+- Une recherche **repart page 1** et conserve le filtre de statut en cours.
+- Aucun resultat => **etat vide explicite** « Aucune societe ne correspond a cette recherche » +
+  bouton de reinitialisation (jamais un tableau blanc).
+
+### Filtre de statut
+
+- `Tous` / `Actif` / `Essai` / `Suspendu` / `Expire` => parametre `status`, filtre **cote serveur**.
+- Changer de filtre repart page 1 ; la recherche en cours est conservee.
+
+### Pagination serveur (plus de troncature muette)
+
+- La vue demande une page explicite (`page` + `per_page=25`) et lit `meta` (`current_page`,
+  `last_page`, `per_page`, `total`).
+- Des que `meta.last_page > 1` : navigation **Precedent / Suivant** + « **Page X sur Y** » + total
+  visibles ; `Precedent` desactive en page 1, `Suivant` desactive en derniere page.
+- Un portefeuille de plus de 100 societes n'est plus tronque : la derniere page est atteignable.
+- Page hors bornes (filtre restrictif) => retour sur la **derniere page existante**, pas de tableau vide.
+- Les scores du portefeuille (#7302) ne sont **pas rejoues** a chaque frappe / changement de page :
+  ils restent un chargement de fond, reaffiches sur la page courante.
+- Arbitrage assume : le tri par score de sante (`sortedItems`) s'applique desormais a la **page
+  courante** (l'API ne trie pas par score — elle ordonne par `created_at`) ; le tri global du
+  portefeuille n'est plus possible des lors que la pagination est serveur.
+
+### Actions rapides de ligne (sans ouvrir la fiche)
+
+- « **Suspendre** » (statuts `active` / `trial`) : **confirmation obligatoire** (dialogue in-app
+  `ConfirmDialog`) ; **annuler n'ecrit rien** (aucun appel API).
+- « **Activer** » (statuts `suspended` / `expired`) : action directe, sans confirmation.
+- Les deux passent par `RowActionButton` (icone seule + infobulle + nom accessible, convention #7434).
+- **Preservation de l'abonnement** : l'action relit `GET /platform/companies/{id}/subscription`
+  puis renvoie **tout l'etat** (`plan_id`, `status`, `subscription_start`, `subscription_end`,
+  `notes`). A verifier apres une suspension : la **date de fin d'essai** et les **notes** sont
+  intactes (le `PATCH` ecrit `null` pour tout champ non envoye).
+- Un echec affiche un **toast d'erreur** (jamais d'echec silencieux) et la liste reste utilisable.
+
+### Hors perimetre (assume et documente)
+
+- La **suppression de tenant** n'est pas livree : aucune route `DELETE /platform/companies/{id}`
+  n'existe, et la purge des donnees d'un tenant (schema, invitations, journal d'audit) est un
+  parcours en deux temps a part entiere. Elle reste a traiter separement.
+
+### Verification
+
+- `e2e/companies-list-quick-actions.spec.js` : recherche / filtre / pagination cote serveur,
+  confirmation de suspension, annulation sans ecriture, preservation de
+  `subscription_end` + `notes`, activation directe.
+- `e2e/companies-progressive-portfolio.spec.js` : la liste reste utilisable avant la fin du
+  scoring du portefeuille (contrat de pagination mis a jour).
+- `eslint` et `vite build` (avec `VITE_API_URL`) restent verts ; les **4 locales** (fr/en/ar/tr)
+  doivent rendre l'ecran, RTL arabe compris.
+
+---
+
+## Note de conservation — propagation i18n du module Caméras (#7425, 2026-09-15)
+
+**Aucun scénario de l'admin plateforme n'est modifié.** Le diff touche
+`front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que
+ces fichiers sont **générés** par `shared/i18n/sync/sync-web.js` : le nouveau
+bloc `cameras.*` (mur de caméras, détail, permissions, jetons tiers, viewer
+public) est propagé mécaniquement du catalogue partagé vers tous ses targets.
+Aucun écran de l'admin plateforme ne consomme ces clés — le seul affichage
+existant reste le toggle de flag « Surveillance Vidéo » de
+`CompanyDetailView.vue`, inchangé. Les scénarios listés ci-dessus restent
+valides et inchangés. Même situation que la note de conservation de la
+propagation i18n du 2026-09-14 (PR #7350).

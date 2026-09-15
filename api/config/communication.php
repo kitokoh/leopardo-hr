@@ -161,6 +161,16 @@ return [
             'title_key' => 'notifications.security_alert_title',
             'body_key' => 'notifications.security_alert_body',
         ],
+        // #7427 — alerte caméra : même catégorie `security` que la
+        // `security_alert` générique (jamais supprimée par les heures calmes,
+        // cf. communication.quiet_hours.bypass_categories), mais un message
+        // dédié qui nomme la caméra concernée.
+        'camera_security_alert' => [
+            'category' => 'security',
+            'title_key' => 'cameras.alert_title',
+            'body_key' => 'cameras.alert_body',
+            'vars' => ['camera'],
+        ],
         'task_comment_added' => [
             'category' => 'task',
             'title_key' => 'notifications.task_comment_added_title',

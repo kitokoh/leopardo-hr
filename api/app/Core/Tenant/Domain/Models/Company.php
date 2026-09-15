@@ -133,6 +133,25 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // #7432 — Formation : outil HORIZONTAL (toute entreprise forme, quel que
+        // soit son secteur). Il était déjà dans `HORIZONTAL_TOOLS` et dans le
+        // sous-menu RH de la barre client, mais ABSENT de ce registre : comme
+        // pour `travelagency` (#7220) et `accounting` (#7235), l'interrupteur
+        // « Centre de Formation » de la fiche entreprise était donc reconstruit
+        // à partir de ce même registre… sans la clé — le switch admin
+        // s'affichait et **jetait silencieusement** la valeur envoyée.
+        // L'entrée manquante rend l'interrupteur réellement agissant.
+        'training',
+        // BC-24 TRAVEL / #7400 — module HORIZONTAL « Flotte & suivi des
+        // véhicules » (outil transverse : toute PME de terrain a des
+        // véhicules). Il doit figurer ici pour que l'admin plateforme
+        // (`PlatformCompanyFeatureController::update`) reconstruise et expose
+        // la clé, sans quoi le module ne serait ni activable ni mesurable.
+        // Fail-closed conservé (défaut false) ; le gate serveur `module.fleet`
+        // reste à trancher (voir #7400) — les routes Fleet sont aujourd'hui
+        // sous `api.manager` et la surface client est ouverte par capacité
+        // (`can_view_fleet`).
+        'fleet',
     ];
 
     /**
@@ -191,6 +210,12 @@ class Company extends Model
         'accounting' => 'accounting',
         'crm' => 'crm',
         'showcase' => 'company_showcase',
+        // #7432 — la Formation est horizontale ET possède un flag plateforme
+        // du même nom (`config/feature-flags.php`) : l'auto-activation par le
+        // client (`POST /company/modules/training/activate`) doit donc écrire
+        // les deux sources de vérité (`metadata.modules.training` ET
+        // `companies.features.training`), comme `showcase`.
+        'training' => 'training',
     ];
 
     /**
@@ -243,6 +268,47 @@ class Company extends Model
     ];
 
     /**
+     * #7423 — PLANCHER D'ACCÈS garanti : le socle RH qu'un indépendant
+     * (`solo`) garde **quel que soit son profil et sa sélection**.
+     *
+     * Demande du propriétaire (2026-09-14) : « j'aimerais qu'il ait quand même
+     * accès au minimum […] au moins accès au module RH ». Un solo n'a pas
+     * d'équipe à piloter, mais il travaille : il se pointe, pose ses congés et
+     * reçoit ses bulletins. `TEAM_TOOLS` (pilotage d'ÉQUIPE) reste donc
+     * désactivé pour lui — mais le sous-ensemble ci-dessous est forcé à `true`,
+     * y compris si la sélection d'inscription ne le coche pas (le plancher est
+     * un MINIMUM, pas un défaut).
+     *
+     * Source de vérité : cette constante est appliquée côté serveur
+     * (`HorizontalToolSelection::resolve`, `CompanyModuleController::activate`,
+     * `Company::moduleSelection()` pour rattraper les tenants déjà provisionnés)
+     * — un client ne se garde pas lui-même ; `front/web/src/lib/client-features.ts`
+     * ne fait que la refléter pour l'affichage.
+     */
+    public const SOLO_FLOOR_TOOLS = [
+        'attendance',
+        'absences',
+        'payroll',
+    ];
+
+    /**
+     * Alias de `SOLO_FLOOR_TOOLS` introduit par le lot BC-02 (#7423) — les deux
+     * implémentations concurrentes du plancher ont fusionné ; les deux noms
+     * restent valides et désignent la même liste canonique.
+     *
+     * @var array<int, string>
+     */
+    public const SOLO_FLOOR_MODULES = self::SOLO_FLOOR_TOOLS;
+
+    /**
+     * #7423 — un outil d'équipe est-il au plancher garanti du profil `solo` ?
+     */
+    public static function isSoloFloorTool(string $key): bool
+    {
+        return in_array(strtolower(trim($key)), self::SOLO_FLOOR_TOOLS, true);
+    }
+
+    /**
      * #7235 — Profil d'activité du tenant (`company` par défaut, fail-safe :
      * une valeur inconnue retombe sur le profil complet, jamais sur le profil
      * réduit).
@@ -265,6 +331,13 @@ class Company extends Model
      * historiques / inscription rapide) → l'interface garde son comportement
      * antérieur, aucun client existant n'est verrouillé par surprise.
      *
+     * #7423 — pour un tenant `solo` dont la sélection EXISTE déjà, le plancher
+     * d'accès (`SOLO_FLOOR_MODULES`) est forcé à `true` : les tenants `solo`
+     * provisionnés avant ce correctif portent une sélection où pointage,
+     * congés et paie sont à `false` (règle #7235) et resteraient sans aucun
+     * outil RH. Contrat #7235 préservé : une sélection ABSENTE reste `null`
+     * (aucun verrouillage rétroactif des tenants historiques).
+     *
      * @return array<string, bool>|null
      */
     public function moduleSelection(): ?array
@@ -283,7 +356,17 @@ class Company extends Model
             }
         }
 
-        return $selection === [] ? null : $selection;
+        if ($selection === []) {
+            return null;
+        }
+
+        if ($this->isSolo()) {
+            foreach (self::SOLO_FLOOR_MODULES as $tool) {
+                $selection[$tool] = true;
+            }
+        }
+
+        return $selection;
     }
 
     /**

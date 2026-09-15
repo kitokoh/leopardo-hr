@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -17,30 +16,69 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Issue #7452 — la table est créée par
+        // `2026_08_30_000018_6112_create_travel_tourist_sites_table.php` ; cette
+        // génération ne rattrape que `image_asset_id` (les autres colonnes existent).
         if (schemaTableExists('travel_tourist_sites')) {
-            return;
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_tourist_sites', 'image_asset_id')) {
+                    $table->unsignedBigInteger('image_asset_id')->nullable();
+                }
+            });
         }
-
-        Schema::create('travel_tourist_sites', function (Blueprint $table): void {
-            $table->id();
-            $table->uuid('company_id')->index();
-            $table->string('name', 160);
-            $table->string('description_redacted', 2000)->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->decimal('latitude', 10, 7)->nullable();
-            $table->decimal('longitude', 10, 7)->nullable();
-            $table->unsignedBigInteger('image_asset_id')->nullable();
-            $table->string('status', 20)->default('active');
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
-            $table->index(['company_id', 'city_id'], 'travel_tourist_sites_company_city_idx');
-        });
-
-        DB::statement("COMMENT ON TABLE travel_tourist_sites IS 'Annuaire des sites touristiques — recherche par ville (TRAVEL-909/#6112).'");
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_tourist_sites');
+        if (schemaHasColumn('travel_tourist_sites', 'company_id')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'name')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'description_redacted')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('description_redacted');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'city_id')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('city_id');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'latitude')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('latitude');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'longitude')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('longitude');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'image_asset_id')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('image_asset_id');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'status')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'created_at')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_tourist_sites', 'updated_at')) {
+            Schema::table('travel_tourist_sites', function (Blueprint $table): void {
+                $table->dropColumn('updated_at');
+            });
+        }
     }
 };

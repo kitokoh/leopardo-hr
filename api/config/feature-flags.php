@@ -70,6 +70,18 @@ return [
             'killable' => true,
             'description' => 'Assistant IA Leopardo (BC-23 AI).',
         ],
+        // #7432 — Formation (outil HORIZONTAL, BC-04 HR) : le flag tenant est
+        // piloté par l'admin plateforme (`PATCH /platform/companies/{id}/features`)
+        // et par la dotation du tenant. Il est déclaré ici pour être exposé par
+        // `FeatureFlag::for()` (donc par `/auth/me`) — sans quoi la clé
+        // `training` restait invisible du client, même activée.
+        'training' => [
+            'scope' => 'module',
+            'default' => false,
+            'since' => '4.25.0',
+            'killable' => true,
+            'description' => 'Module Formation — outil horizontal (BC-04 HR) : catalogue, sessions, inscriptions.',
+        ],
         'fuel_station' => [
             'scope' => 'solution',
             'default' => false,

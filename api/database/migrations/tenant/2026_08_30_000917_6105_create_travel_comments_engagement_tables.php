@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -16,78 +15,248 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_comments')) {
-            Schema::create('travel_comments', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('author_type', 20)->nullable(); // employee|contact
-                $table->unsignedBigInteger('author_id')->nullable();
-                $table->string('content_redacted', 2000);
-                $table->string('status', 20)->default('pending'); // pending|approved|rejected|flagged
-                $table->unsignedBigInteger('moderated_by_user_id')->nullable();
-                $table->timestamp('moderated_at')->nullable();
-                $table->timestamps();
-                $table->index(['company_id', 'article_id'], 'travel_comments_company_article_idx');
+        if (schemaTableExists('travel_comments')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000014_6105_create_travel_comments_table.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_comments', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'article_id')) {
+                    $table->unsignedBigInteger('article_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'author_type')) {
+                    $table->string('author_type', 20)->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'author_id')) {
+                    // employee|contact
+                    $table->unsignedBigInteger('author_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'content_redacted')) {
+                    $table->string('content_redacted', 2000)->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'status')) {
+                    $table->string('status', 20)->default('pending');
+                }
+                if (! schemaHasColumn('travel_comments', 'moderated_by_user_id')) {
+                    // pending|approved|rejected|flagged
+                    $table->unsignedBigInteger('moderated_by_user_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'moderated_at')) {
+                    $table->timestamp('moderated_at')->nullable();
+                }
+                if (! schemaHasColumn('travel_comments', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_comments IS 'Commentaires d''articles - modération (TRAVEL-902/#6105).'");
-            DB::statement("COMMENT ON TABLE travel_comments IS 'Commentaires d''articles - modération (TRAVEL-902/#6105).'");
         }
 
-        if (! schemaTableExists('travel_likes')) {
-            Schema::create('travel_likes', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('actor_type', 20); // employee|contact
-                $table->unsignedBigInteger('actor_id');
-                $table->timestamps();
-                $table->unique(['company_id', 'article_id', 'actor_type', 'actor_id'], 'travel_likes_company_article_actor_unique');
+        if (schemaTableExists('travel_likes')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000015_6106_create_travel_engagement_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_likes', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_likes', 'article_id')) {
+                    $table->unsignedBigInteger('article_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_likes', 'actor_type')) {
+                    $table->string('actor_type', 20)->nullable();
+                }
+                if (! schemaHasColumn('travel_likes', 'actor_id')) {
+                    // employee|contact
+                    $table->unsignedBigInteger('actor_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_likes', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_likes IS 'Likes d''articles - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
-            DB::statement("COMMENT ON TABLE travel_likes IS 'Likes d''articles - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
         }
 
-        if (! schemaTableExists('travel_shares')) {
-            Schema::create('travel_shares', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('channel', 30);
-                $table->string('actor_type', 20)->nullable();
-                $table->unsignedBigInteger('actor_id')->nullable();
-                $table->timestamps();
-                $table->index(['company_id', 'article_id'], 'travel_shares_company_article_idx');
+        if (schemaTableExists('travel_shares')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000015_6106_create_travel_engagement_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_shares', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_shares', 'article_id')) {
+                    $table->unsignedBigInteger('article_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_shares', 'channel')) {
+                    $table->string('channel', 30)->nullable();
+                }
+                if (! schemaHasColumn('travel_shares', 'actor_type')) {
+                    $table->string('actor_type', 20)->nullable();
+                }
+                if (! schemaHasColumn('travel_shares', 'actor_id')) {
+                    $table->unsignedBigInteger('actor_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_shares', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_shares IS 'Partages d''articles (canal) (TRAVEL-903/#6106).'");
-            DB::statement("COMMENT ON TABLE travel_shares IS 'Partages d''articles (canal) (TRAVEL-903/#6106).'");
         }
 
-        if (! schemaTableExists('travel_ratings')) {
-            Schema::create('travel_ratings', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('article_id');
-                $table->string('actor_type', 20); // employee|contact
-                $table->unsignedBigInteger('actor_id');
-                $table->unsignedTinyInteger('rating'); // 1..5
-                $table->timestamps();
-                $table->unique(['company_id', 'article_id', 'actor_type', 'actor_id'], 'travel_ratings_company_article_actor_unique');
+        if (schemaTableExists('travel_ratings')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000015_6106_create_travel_engagement_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_ratings', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_ratings', 'article_id')) {
+                    $table->unsignedBigInteger('article_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_ratings', 'actor_type')) {
+                    $table->string('actor_type', 20)->nullable();
+                }
+                if (! schemaHasColumn('travel_ratings', 'actor_id')) {
+                    // employee|contact
+                    $table->unsignedBigInteger('actor_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_ratings', 'rating')) {
+                    $table->unsignedTinyInteger('rating')->nullable();
+                }
+                if (! schemaHasColumn('travel_ratings', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_ratings IS 'Notes d''articles 1..5 - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
-            DB::statement("COMMENT ON TABLE travel_ratings IS 'Notes d''articles 1..5 - unicite (tenant, article, acteur) (TRAVEL-903/#6106).'");
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_ratings');
-        Schema::dropIfExists('travel_shares');
-        Schema::dropIfExists('travel_likes');
-        Schema::dropIfExists('travel_comments');
+        if (schemaHasColumn('travel_ratings', 'company_id')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_ratings', 'article_id')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('article_id');
+            });
+        }
+        if (schemaHasColumn('travel_ratings', 'actor_type')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('actor_type');
+            });
+        }
+        if (schemaHasColumn('travel_ratings', 'actor_id')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('actor_id');
+            });
+        }
+        if (schemaHasColumn('travel_ratings', 'rating')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('rating');
+            });
+        }
+        if (schemaHasColumn('travel_ratings', 'created_at')) {
+            Schema::table('travel_ratings', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'company_id')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'article_id')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('article_id');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'channel')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('channel');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'actor_type')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('actor_type');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'actor_id')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('actor_id');
+            });
+        }
+        if (schemaHasColumn('travel_shares', 'created_at')) {
+            Schema::table('travel_shares', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_likes', 'company_id')) {
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_likes', 'article_id')) {
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                $table->dropColumn('article_id');
+            });
+        }
+        if (schemaHasColumn('travel_likes', 'actor_type')) {
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                $table->dropColumn('actor_type');
+            });
+        }
+        if (schemaHasColumn('travel_likes', 'actor_id')) {
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                $table->dropColumn('actor_id');
+            });
+        }
+        if (schemaHasColumn('travel_likes', 'created_at')) {
+            Schema::table('travel_likes', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'company_id')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'article_id')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('article_id');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'author_type')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('author_type');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'author_id')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('author_id');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'content_redacted')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('content_redacted');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'status')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'moderated_by_user_id')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('moderated_by_user_id');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'moderated_at')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('moderated_at');
+            });
+        }
+        if (schemaHasColumn('travel_comments', 'created_at')) {
+            Schema::table('travel_comments', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };

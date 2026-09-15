@@ -262,6 +262,25 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const entries = filterNavEntries(navByLocale[locale] ?? navByLocale.fr)
   const search = searchParams.toString()
 
+  // #7492 — session active : les CTA « Connexion / Créer un compte » laissent
+  // place à « Mon espace ». La vérification se fait auprès de l'API (le
+  // cookie est httpOnly — illisible en JS) ; la nav démarre en mode anonyme
+  // et bascule sans bloquer le rendu. `fetch` nu : le handler 401
+  // d'apiClient forcerait une redirection vers /auth/login, hors sujet ici.
+  const [hasSession, setHasSession] = useState(false)
+  useEffect(() => {
+    let active = true
+    fetch('/api/v1/auth/me', { headers: { Accept: 'application/json' } })
+      .then((res) => {
+        if (active && res.ok) setHasSession(true)
+        return null
+      })
+      .catch(() => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
+
   const handleLocaleChange = (nextLocale: typeof locale) => {
     setLocale(nextLocale)
     router.replace(buildLocaleUrl(pathname, searchParams.toString(), nextLocale), { scroll: false })
@@ -422,29 +441,42 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
-            <Link
-              href="/auth/login"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              {copy.nav.login}
-            </Link>
+            {hasSession ? (
+              /* #7492 — session active : un seul CTA, vers l'espace. */
+              <Link
+                href="/dashboard"
+                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {copy.nav.mySpace}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                >
+                  {copy.nav.login}
+                </Link>
 
-            {/*
-             * QA onboarding 2026-09-14 — `prefetch={false}` : historiquement le
-             * proxy redirigeait /signup sans `plan=` vers /pricing#plans et le
-             * prefetch bouclait (~560 requêtes `GET /signup?_rsc=…` en 6 s,
-             * échec E2E `marketing-funnel`). Depuis #7488 la page est servie
-             * directement ; le prefetch reste désactivé par prudence (page très
-             * liée, coût faible, bénéfice nul mesuré).
-             */}
-            <Link
-              href="/signup"
-              prefetch={false}
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              {copy.nav.trial}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+                {/*
+                 * QA onboarding 2026-09-14 — `prefetch={false}` : historiquement le
+                 * proxy redirigeait /signup sans `plan=` vers /pricing#plans et le
+                 * prefetch bouclait (~560 requêtes `GET /signup?_rsc=…` en 6 s,
+                 * échec E2E `marketing-funnel`). Depuis #7488 la page est servie
+                 * directement ; le prefetch reste désactivé par prudence (page très
+                 * liée, coût faible, bénéfice nul mesuré).
+                 */}
+                <Link
+                  href="/signup"
+                  prefetch={false}
+                  className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white text-sm font-bold rounded-xl hover:from-emerald-800 hover:to-emerald-900 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {copy.nav.trial}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
 
             <button
               ref={menuButtonRef}
@@ -556,21 +588,34 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               )}
 
               <div className="pt-4 space-y-2">
-                <Link
-                  href="/auth/login"
-                  className="block w-full text-center py-3 text-slate-700 dark:text-slate-300 font-semibold rounded-xl border border-slate-200 dark:border-slate-800"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {copy.nav.login}
-                </Link>
-                <Link
-                  href="/signup"
-                  prefetch={false}
-                  className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {copy.nav.trial}
-                </Link>
+                {hasSession ? (
+                  /* #7492 — session active : un seul CTA, vers l'espace. */
+                  <Link
+                    href="/dashboard"
+                    className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {copy.nav.mySpace}
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="block w-full text-center py-3 text-slate-700 dark:text-slate-300 font-semibold rounded-xl border border-slate-200 dark:border-slate-800"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {copy.nav.login}
+                    </Link>
+                    <Link
+                      href="/signup"
+                      prefetch={false}
+                      className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {copy.nav.trial}
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

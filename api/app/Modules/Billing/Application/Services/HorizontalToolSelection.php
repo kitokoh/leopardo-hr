@@ -28,6 +28,12 @@ final class HorizontalToolSelection
      * Un profil `solo` voit en plus les outils d'ÉQUIPE forcés à `false` — la
      * règle est posée côté serveur, jamais déduite du client.
      *
+     * #7423 — un `solo` conserve malgré tout le PLANCHER d'accès
+     * (`Company::SOLO_FLOOR_MODULES` : pointage, congés, paie), réactivé juste
+     * après le verrou d'équipe : un indépendant se pointe, pose ses congés et
+     * lit ses bulletins. Les autres outils d'équipe (employés, contrats,
+     * formations) restent à `false`.
+     *
      * @param  list<string>  $modules
      * @return array<string, bool>|null null quand aucune sélection n'a été fournie
      */
@@ -54,8 +60,19 @@ final class HorizontalToolSelection
         }
 
         if ($companyType === Company::TYPE_SOLO) {
+            // #7423 — un indépendant n'a pas d'équipe à piloter, mais il a un
+            // PLANCHER d'accès garanti (`Company::SOLO_FLOOR_TOOLS`) : pointage,
+            // absences, paie. Le plancher est un MINIMUM : il est forcé à `true`
+            // même quand l'inscription ne l'a pas coché, et le reste des outils
+            // d'équipe reste fermé.
             foreach (Company::TEAM_TOOLS as $tool) {
-                $selection[$tool] = false;
+                $selection[$tool] = Company::isSoloFloorTool($tool);
+            }
+
+            // #7423 — le plancher d'accès est GARANTI : il repasse à `true`
+            // après le verrou d'équipe, quelle que soit la sélection demandée.
+            foreach (Company::SOLO_FLOOR_MODULES as $tool) {
+                $selection[$tool] = true;
             }
         }
 

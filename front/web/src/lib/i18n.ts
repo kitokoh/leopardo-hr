@@ -133,7 +133,9 @@ export type CopyTree = {
       absences: string; contracts: string; payroll: string; training: string;
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
-      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; showcase: string;
+      restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; fleet: string; showcase: string;
+      /** BC-19 (#7425) — mur de caméras (libellé localisé du menu) */
+      cameras: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -777,7 +779,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Scolarité',
         travel: 'Agence de voyage',
         fuel: 'Station-service',
+        fleet: 'Flotte',
         showcase: 'Site vitrine',
+        cameras: 'Caméras',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1450,7 +1454,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'الإدارة المدرسية',
         travel: 'وكالة سفر',
         fuel: 'محطة وقود',
+        fleet: 'الأسطول',
         showcase: 'موقع التعريف',
+        cameras: 'الكاميرات',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2119,7 +2125,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'Okul yönetimi',
         travel: 'Seyahat acentesi',
         fuel: 'Akaryakıt istasyonu',
+        fleet: 'Filo',
         showcase: 'Tanıtım sitesi',
+        cameras: 'Kameralar',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2788,7 +2796,9 @@ const copy: Record<AppLocale, CopyTree> = {
         edu_manager: 'School management',
         travel: 'Travel agency',
         fuel: 'Fuel station',
+        fleet: 'Fleet',
         showcase: 'Showcase site',
+        cameras: 'Cameras',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

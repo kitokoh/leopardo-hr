@@ -11,5 +11,8 @@ return [
     'access_revoked' => 'Accès révoqué.',
     'access_expired' => 'L\'accès a expiré.',
     'third_party_access' => 'Accès tiers',
+    'alert_title' => 'Alerte caméra',
+    'alert_body' => 'Un événement a été détecté sur la caméra « :camera ». Ouvrez l\'application pour la traiter.',
+    'unknown_camera' => 'Caméra inconnue',
     'live_view' => 'Vue en direct',
 ];

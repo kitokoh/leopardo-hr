@@ -210,6 +210,11 @@ class EmployeeResource extends JsonResource
             'can_manage_invitations' => $this->hasManagerRole('principal', 'rh'),
             'can_manage_biometrics' => $this->hasManagerRole('principal', 'superviseur'),
             'can_view_payroll' => $this->hasManagerRole('principal', 'comptable'),
+            // #7400 — flotte & suivi des véhicules : les routes Fleet sont
+            // toutes sous `api.manager` (sécurité #2217). La capacité rejoue
+            // exactement ce gate pour que la navigation cliente n'expose
+            // jamais un module qui répondrait 403.
+            'can_view_fleet' => $this->isManager(),
             'is_principal' => $this->hasManagerRole('principal'),
         ];
     }
