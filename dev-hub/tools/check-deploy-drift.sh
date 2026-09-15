@@ -15,8 +15,9 @@
 #
 #   --url URL           URL de base de l'API ou URL complète .../health
 #                       (défaut : $DEV_API_BASE_URL, sinon $DEPLOY_DRIFT_URL)
-#   --expect REF        SHA (court/long) ou ref git attendue
-#                       (défaut : auto → origin/main, sinon HEAD)
+#   --expect REF        SHA (court/long), ref git, ou version de release
+#                       (ex. « v4.32.0 » ou « 4.32.0 » — le préfixe « v » est
+#                       toléré) ; défaut : auto → origin/main, sinon HEAD
 #   --label NOM         étiquette affichée dans le rapport (défaut : « api »)
 #   --allow-release     ne pas échouer si /health expose une version de
 #                       release (ex. 4.31.0) et non un SHA de commit : la
@@ -88,6 +89,12 @@ if [[ "${EXPECT}" == "auto" ]]; then
     echo "::error::impossible de résoudre origin/main ou HEAD — passer --expect <sha> (issue #7304)." >&2
     exit 2
   fi
+elif [[ "${EXPECT}" =~ ^v?[0-9]+\.[0-9]+ ]]; then
+  # Version de release (« v4.32.0 » / « 4.32.0 ») : à comparer **comme une
+  # version**, jamais comme une ref git — sinon `git rev-parse` la résout en
+  # commit de tag et la comparaison porte sur le mauvais objet (constaté :
+  # `--expect v4.32.0` devenait `2db0baa`).
+  :
 elif git rev-parse --verify --quiet "${EXPECT}" >/dev/null 2>&1; then
   EXPECT="$(git rev-parse "${EXPECT}")"
 fi
@@ -109,7 +116,7 @@ QUEUE_SIZE="$(_number size)"
 
 echo "=== Garde anti-dérive déploiement (issue #7304) — ${LABEL} ==="
 echo "  URL            : ${URL}"
-echo "  Attendu (main) : ${EXPECT_SHORT} (${EXPECT})"
+echo "  Attendu        : ${EXPECT}" 
 echo "  Déployé        : ${DEPLOYED:-<absent>}"
 [[ -n "${QUEUE_SIZE}" ]] && echo "  Queue          : ${QUEUE_SIZE} job(s) en attente, ${FAILED:-0} échec(s)"
 
@@ -119,22 +126,33 @@ if [[ -z "${DEPLOYED}" ]]; then
 fi
 
 STATUS=0
-# Aligné si la version déployée est le SHA attendu, son abréviation, ou une
-# abréviation du SHA attendu (Render publie un SHA court via RENDER_GIT_COMMIT).
-if [[ "${DEPLOYED_LC}" == "${EXPECT}" || "${DEPLOYED_LC}" == "${EXPECT_SHORT}" || "${EXPECT}" == "${DEPLOYED_LC}"* ]]; then
-  echo "  ✅ Aligné sur ${EXPECT_SHORT}."
-elif [[ "${DEPLOYED_LC}" =~ ^[0-9]+\.[0-9]+ ]]; then
-  # Version de release (ex. 4.31.0) : la corrélation commit ↔ version n'est pas
-  # possible par construction (APP_VERSION d'une release, pas un SHA).
+# Normalisation commune : insensible à la casse, préfixe « v » de tag toléré
+# (« v4.32.0 » et « 4.32.0 » sont la même release).
+_norm() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/^v//'; }
+EXPECT_NORM="$(_norm "${EXPECT}")"
+DEPLOYED_NORM="$(_norm "${DEPLOYED}")"
+is_version() { [[ "$1" =~ ^[0-9]+\.[0-9]+ ]]; }
+
+if [[ "${DEPLOYED_NORM}" == "${EXPECT_NORM}" || "${DEPLOYED_LC}" == "${EXPECT_SHORT}" || "${EXPECT}" == "${DEPLOYED_LC}"* ]]; then
+  # Aligné : SHA exact/abrégé (Render publie un SHA court via RENDER_GIT_COMMIT)
+  # ou version de release identique (tag « v4.32.0 » ↔ APP_VERSION « 4.32.0 »).
+  echo "  ✅ Aligné sur ${EXPECT_NORM}."
+elif is_version "${EXPECT_NORM}" && is_version "${DEPLOYED_NORM}"; then
+  # Deux versions de release différentes : une Release n'a pas été déployée.
+  echo "::error::[${LABEL}] DÉRIVE : ${URL} sert la release « ${DEPLOYED} » alors que « ${EXPECT} » est attendue — la Release n'a pas été déployée (issue #7304)." >&2
+  STATUS=1
+elif is_version "${DEPLOYED_NORM}" && ! is_version "${EXPECT_NORM}"; then
+  # L'environnement publie une version de release sans que l'appelant en ait
+  # fourni une : la corrélation par SHA est impossible par construction.
   if [[ "${ALLOW_RELEASE}" == "1" ]]; then
-    echo "  ℹ️  Version de release « ${DEPLOYED} » : comparaison par SHA impossible (--allow-release) — alignement non vérifiable ici, à confirmer par le runbook de release."
+    echo "  ℹ️  Version de release « ${DEPLOYED} » : comparaison par SHA impossible (--allow-release) — pour un contrôle réel, passer --expect vX.Y.Z (dernier tag)."
   else
-    echo "::error::[${LABEL}] version de release « ${DEPLOYED} » au lieu d'un SHA : passer --allow-release si l'environnement est versionné par release (issue #7304)." >&2
+    echo "::error::[${LABEL}] version de release « ${DEPLOYED} » au lieu d'un SHA : passer --expect vX.Y.Z (contrôle réel) ou --allow-release (incomparable assumé) — issue #7304." >&2
     STATUS=1
   fi
 else
-  echo "::error::[${LABEL}] DÉRIVE : ${URL} sert « ${DEPLOYED} » alors que main est à ${EXPECT_SHORT} — l'environnement valide du code périmé (issue #7304)."
-  echo "::error::[${LABEL}] corrigez : Render → service → Manual Deploy (branche main), puis revérifiez ce script."
+  echo "::error::[${LABEL}] DÉRIVE : ${URL} sert « ${DEPLOYED} » alors que ${EXPECT_SHORT} est attendu — l'environnement ne sert pas le code attendu (issue #7304)."
+  echo "::error::[${LABEL}] corrigez : Render → service → Manual Deploy, puis revérifiez ce script."
   STATUS=1
 fi
 
