@@ -2093,3 +2093,44 @@ pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bul
 ### Couverture
 
 `api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
+
+## Addendum 2026-09-15 — caméras intelligentes : un événement détecté produit une alerte dédoublonnée (#7427)
+
+La chaîne vidéo (#7424) savait ouvrir un flux mais **rien ne remontait au
+manager** : aucun modèle d'événement, aucune alerte, donc aucun push possible.
+Surface livrée (toutes les routes sont documentées dans `api/openapi.yaml`) :
+
+- `POST /api/v1/internal/camera-events` — **route interne machine-à-machine**
+  (secret partagé MediaMTX, `Authorization: Bearer <CAMERAS_MEDIAMTX_SECRET>`,
+  même secret que `/internal/camera-token/verify`) : persiste l'événement
+  détecté puis crée l'alerte **dédupliquée** (`alert_key` =
+  `camera-alert:{camera_id}:{type}:{bucket}` sur une fenêtre de regroupement de
+  5 min) et notifie les managers. Réponses : **201** (`event_id`, `alert_id`,
+  `alert_created`, `notified`), **401** (secret absent/invalide), **404**
+  (`CAMERA_NOT_FOUND`, caméra inconnue ou inactive), **422** (payload invalide).
+- `GET /api/v1/cameras/events` — journal des événements du tenant (manager),
+  filtres `camera_id`, `type`, `severity`, `from`, `to`, `per_page` ; expose
+  `has_snapshot` (booléen) et **jamais** le chemin de stockage.
+- `GET /api/v1/cameras/alerts` — alertes du tenant (manager), filtres `status`,
+  `severity`, `camera_id`.
+- `POST /api/v1/cameras/alerts/{alert}/acknowledge` et
+  `POST /api/v1/cameras/alerts/{alert}/resolve` — cycle de vie
+  (`open → acknowledged → resolved`), idempotents ; cross-tenant = **404**.
+
+Scénarios CI correspondants (verts) : `api/tests/Feature/Cameras/CameraAlertTest.php`
+(11 cas) — rafale de 10 ingestions ⇒ **1** alerte et **1** notification
+(dédoublonnage), deux fenêtres distinctes ⇒ 2 alertes, **alerte de sécurité non
+supprimée par les heures calmes** (chaîne complète `DispatchCommunicationJob` →
+`CommunicationService`, catégorie `security`, aucun `Quiet hours active.`),
+acquittement puis résolution avec état relu en base et via l'API, alerte d'un
+autre tenant invisible (404), employé non manager refusé (403), **aucune alerte
+sans événement**, sévérité propagée + défaut documenté par type, ingestion
+refusée sans secret MediaMTX (401) ou pour caméra inconnue/inactive (404),
+`has_snapshot` sans fuite du chemin.
+
+Exécution locale (base dédiée de l'issue, sinon `RefreshTenantDatabase` saute la
+migration quand `leopardo_test` est déjà migré) :
+`cd api && DB_DATABASE=leopardo_test_7427 php8.4 vendor/bin/pest tests/Feature/Cameras`.
+
+Rétention et accès (RGPD, critère 5) :
+`docs/GESTION_PROJET/CAMERAS_ALERTES_RETENTION_RGPD.md`.

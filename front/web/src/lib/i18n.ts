@@ -134,6 +134,8 @@ export type CopyTree = {
       reports: string; partner: string; billing: string; integrations: string;
       marketing: string; accounting: string; crm: string; restaurant: string;
       restaurant_kitchen: string; edu_manager: string; travel: string; fuel: string; showcase: string;
+      /** BC-19 (#7425) — mur de caméras (libellé localisé du menu) */
+      cameras: string;
     };
     /** #7225 — « Entreprise » (bandeau horizontal transverse) */
     sectionEnterprise: string;
@@ -778,6 +780,7 @@ const copy: Record<AppLocale, CopyTree> = {
         travel: 'Agence de voyage',
         fuel: 'Station-service',
         showcase: 'Site vitrine',
+        cameras: 'Caméras',
       },
       sectionEnterprise: 'Entreprise',
       sectionModules: 'Modules & plan',
@@ -1451,6 +1454,7 @@ const copy: Record<AppLocale, CopyTree> = {
         travel: 'وكالة سفر',
         fuel: 'محطة وقود',
         showcase: 'موقع التعريف',
+        cameras: 'الكاميرات',
       },
       sectionEnterprise: 'الشركة',
       sectionModules: 'الوحدات والخطة',
@@ -2120,6 +2124,7 @@ const copy: Record<AppLocale, CopyTree> = {
         travel: 'Seyahat acentesi',
         fuel: 'Akaryakıt istasyonu',
         showcase: 'Tanıtım sitesi',
+        cameras: 'Kameralar',
       },
       sectionEnterprise: 'Şirket',
       sectionModules: 'Modüller ve plan',
@@ -2789,6 +2794,7 @@ const copy: Record<AppLocale, CopyTree> = {
         travel: 'Travel agency',
         fuel: 'Fuel station',
         showcase: 'Showcase site',
+        cameras: 'Cameras',
       },
       sectionEnterprise: 'Company',
       sectionModules: 'Modules & plan',

@@ -20,7 +20,8 @@ export type ClientModuleKey =
   | 'edu_manager'
   | 'travel'
   | 'fuel'
-  | 'showcase';
+  | 'showcase'
+  | 'cameras';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -341,6 +342,24 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Site vitrine public de l\'entreprise',
   },
+
+  // BC-19 DEVICE (#7425) — module « Caméras » : le backend est complet et
+  // testé (routes `/cameras`, viewer public `/view/cam`), mais AUCUNE entrée
+  // de navigation ne l'exposait — le flag tenant `cameras` existait, la
+  // surface non. Le module est porté par ce seul flag (`module.cameras`
+  // renvoie 403 FEATURE_NOT_ENABLED sinon) et réservé au responsable du
+  // tenant (`api.manager:principal,rh` sur `api/routes/modules/cameras.php`).
+  // Un sous-rôle « sécurité » n'existe pas encore : on ne l'invente pas.
+  {
+    key: 'cameras',
+    href: '/cameras',
+    label: 'Caméras',
+    group: 'general',
+    capabilityKeys: ['cameras', 'can_view_cameras'],
+    featureKeys: ['cameras'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Surveillance caméras (mur, permissions, partage tiers)',
+  },
 ];
 
 /**
@@ -407,6 +426,9 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/edu-manager/report-cards': 'edu_manager',
   '/edu-manager/teacher': 'edu_manager',
   '/showcase': 'showcase',
+  // BC-19 (#7425) — mur de caméras et sous-routes de détail (`/cameras/{id}`),
+  // ces dernières résolues par le match de préfixe de `getModuleAccessForPath`.
+  '/cameras': 'cameras',
 };
 function normalizedRole(user?: StoredAuthUser | null): string {
   if (!user?.role) {
@@ -436,6 +458,11 @@ function hasRoleAccess(module: ClientModule, user?: StoredAuthUser | null): bool
     if (module.key === 'edu_manager') {
       // Direction scolaire : principal/rh ou manager sans sous-rôle (propriétaire).
       return managerRole === '' || managerRole === 'principal' || managerRole === 'rh';
+    }
+    if (module.key === 'cameras') {
+      // BC-19 (#7425) : l'API réserve tout `/cameras` au responsable du tenant
+      // (`api.manager:principal,rh`) — même miroir que `showcase`.
+      return ['principal', 'rh'].includes(managerRole);
     }
     return true;
   }

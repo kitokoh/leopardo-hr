@@ -11,5 +11,8 @@ return [
     'access_revoked' => 'Erişim iptal edildi.',
     'access_expired' => 'Erişim süresi doldu.',
     'third_party_access' => 'Üçüncü taraf erişimi',
+    'alert_title' => 'Kamera uyarısı',
+    'alert_body' => '":camera" kamerasında bir olay algılandı. İşlemek için uygulamayı açın.',
+    'unknown_camera' => 'Bilinmeyen kamera',
     'live_view' => 'Canlı görüntü',
 ];
