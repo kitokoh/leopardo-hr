@@ -67,11 +67,16 @@ if [[ -z "${URL}" ]]; then
   exit 2
 fi
 
-# URL de base -> endpoint /health (accepter les deux formes).
+# URL de base -> endpoint /health. Les variables de dépôt réelles portent des
+# formes différentes (`.../api/v1` pour DEV_API_BASE_URL, `...` tout court
+# ailleurs) : normaliser explicitement plutôt que d'empiler les segments
+# (l'empilement produisait `.../api/v1/api/v1/health` → 404, mesuré sur dev).
 URL="${URL%/}"
-if [[ "${URL}" != */api/v1/health && "${URL}" != */health ]]; then
-  URL="${URL}/api/v1/health"
-fi
+case "${URL}" in
+  */api/v1/health | */health) ;;                 # déjà l'endpoint
+  */api/v1) URL="${URL}/health" ;;               # base versionnée
+  *) URL="${URL}/api/v1/health" ;;               # hôte nu
+esac
 
 # Version attendue : un SHA de commit, résolu localement si on demande « auto ».
 if [[ "${EXPECT}" == "auto" ]]; then

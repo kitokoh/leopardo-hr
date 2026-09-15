@@ -133,6 +133,27 @@ Un prefixe deja pris = renumero ter (ex. `000006` -> `000007`) en gardant
 l'ordre chronologique (la migration la plus ancienne conserve son prefixe).
 Le commit precedent `fix/1962-*` est l'exemple canonique.
 
+## Garde « une table, une migration » (#7452 / tranche #7455)
+
+Deux migrations qui font `Schema::create('<table>')` sont **une seule et même
+déclaration** : la première exécutée gagne (`if (! schemaTableExists())`) et les
+suivantes sont ignorées **silencieusement**. Quand leurs colonnes divergent, tout
+le code écrit contre la dernière génération casse en `column "x" does not exist`
+— souvent masqué par une cascade `25P02` (223 échecs de `tests/Feature/Travel`).
+
+- **Ne jamais** créer une table par un second `Schema::create` : pour rattraper
+  une colonne, une migration `Schema::table` **idempotente** (`schemaHasColumn`).
+- Vérifier localement avant push :
+  ```bash
+  python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main
+  ```
+  (garde CI `.github/workflows/migration-duplication-guard.yml`). L'inventaire de
+  la dette (68 tables dupliquées, 36 divergentes) et les colonnes réellement
+  absentes du schéma : `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`
+  (`--audit` régénère le document).
+- La résorption se fait **module par module** (#7452, #7417, #7410) : un
+  `--strict` peut être activé sur un module déjà assaini.
+
 ## Garde post-merge `Closes #` (issue #2512)
 
 Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
@@ -351,10 +372,14 @@ pour les résoudre au checkout.
   (garde CI `deploy-drift-guard.yml`, toutes les 30 min). Un environnement dont
   `/health.version` ≠ SHA de `main` n'est pas un environnement de recette —
   runbook `docs/ops/RENDER_DEV_ALIGNMENT.md`.
-- `autoDeploy: yes` est désormais posé sur le service dev Render
-  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : le dev suit `main`
-  sans dépendre du gate GitHub. Contrainte API : un `POST /deploys` Render
-  déploie le **HEAD de la branche**, jamais un SHA arbitraire.
+- **Ne pas activer `autoDeploy`** sur le service dev Render
+  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : décision #6700 —
+  un auto-deploy rebâtit à chaque push `main` (docs/web-only compris) et
+  consomme les build hours. Le déploiement passe par `deploy-main.yml`, dont le
+  gate peut **sauter** (`Tests=missing`, suivi par #7457) : d'où le pré-vol de
+  recette ci-dessus + un redéploiement manuel à la demande. Contrainte API : un
+  `POST /deploys` Render déploie le **HEAD de la branche**, jamais un SHA
+  arbitraire.
 - Le dev est en **mono-conteneur** : le worker de queue vit dans le conteneur web
   (`api/docker-entrypoint.sh`, respawn loop #7041). Une queue qui s'accumule est
   un symptôme d'**image périmée**, pas d'un « worker manquant » — le compte dev
