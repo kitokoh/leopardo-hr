@@ -38,13 +38,20 @@ Sorties : `0` = aligné, `1` = **dérive** (le script nomme les deux SHAs),
 La même garde tourne en CI (`.github/workflows/deploy-drift-guard.yml`, toutes
 les 30 min + `workflow_dispatch`).
 
+> **Référence « déployable »** : l'API n'est redéployée que sur changement `api/**`
+> (`deploy-main.yml`). En CI, la garde compare donc à la version servie au
+> **dernier commit touchant `api/`** (résolu par API) — sinon chaque merge
+> docs/web-only produirait une alerte de dérive qui n'en est pas une. En local,
+> `--expect <sha>` reste prioritaire : pour un pré-vol de recette, passez le SHA
+> du commit `api/` que vous voulez voir servi (`git log -1 --format=%H origin/main -- api`).
+
 ## 3. État vérifié le 2026-09-15 (avant/après correctif)
 
 | Contrôle | Avant | Après |
 |---|---|---|
 | `GET /api/v1/health` (dev) → `version` | `fe2ab9f` (= PR #7383, 2026-09-14T14:12Z) | `b491ed3` = **HEAD de `main`** |
 | Dernier deploy Render live | 2026-09-14T14:39Z | 2026-09-15T03:07Z (déclenché via API) |
-| `autoDeploy` du service dev | `no` | `yes` (voir §5) |
+| `autoDeploy` du service dev | `no` | **`no` — inchangé** (décision #6700, voir §5.2) |
 | `queue.notifications` (dev) | 19 en attente | voir §6 |
 | `queue.failed_jobs` (dev) | 16 | voir §6 |
 | check `redis` (dev) | `degraded` (`ConnectionException`) | voir §7 |
@@ -87,14 +94,13 @@ n'avait donc **aucun worker de queue actif** → `notifications: 19`,
    `$SERVICE_ID` du dev : `srv-d7dro8u7r5hc73a395pg`.
    (Dashboard : service → *Manual Deploy* → branche `main`.)
 
-2. **Activer l'auto-deploy** pour que la dérive ne revienne pas par le même
-   chemin (le gate GitHub peut encore sauter) :
-
-   ```bash
-   curl -s -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" \
-     -H "Content-Type: application/json" -d '{"autoDeploy":"yes"}' \
-     "https://api.render.com/v1/services/$SERVICE_ID"
-   ```
+2. **Ne PAS activer l'auto-deploy** du service dev : c'est une décision déjà
+   prise dans le dépôt (#6700) — `render.yaml` porte `autoDeploy: false` parce
+   qu'un deploy automatique redéclenche un build à **chaque** push `main`, y
+   compris docs/web-only, et consomme les ~500 h de build gratuites. Le levier
+   reste `deploy-main.yml` (via `RENDER_DEPLOY_HOOK_URL`) — dont le gate peut
+   sauter (voir §5.2). Le filet est donc la **garde** (§2) + un redéploiement
+   **à la demande** (§5.1), pas un auto-deploy permanent.
 
 3. **Vérifier** : `dev-hub/tools/check-deploy-drift.sh --expect origin/main`
    doit sortir `0` et afficher le SHA de `main`.
@@ -102,6 +108,20 @@ n'avait donc **aucun worker de queue actif** → `notifications: 19`,
 > ⚠️ Un deploy Render prend le **HEAD de la branche**, jamais un commit arbitraire
 > (limite API documentée dans `RENDER_DEV_PROD_TOPOLOGY.md`) : ne pas croire
 > qu'un `POST /deploys` épingle un SHA.
+
+## 5.2 Pourquoi le dev peut redériver malgré tout (et ce qui reste à corriger)
+
+Le déploiement continu est porté par `deploy-main.yml`, qui **saute** son job de
+déploiement quand le run `Tests - Leopardo RH` du SHA est introuvable
+(`Tests=missing` — runs non créés sous charge, leçon #3545). Constaté le
+2026-09-14 : **12 runs `success` consécutifs, aucun déploiement**.
+
+Ce défaut de gate est **suivi par #7457** (issue dédiée) : la garde §2 **détecte**
+la dérive, elle ne la répare pas. En attendant, la règle §2 (pré-vol de recette)
+et le redéploiement manuel §5.1 restent les deux gestes opérationnels.
+
+> ⚠️ Ne pas « corriger » la dérive en réactivant `autoDeploy` : cela échange un
+> silence contre une facture de build (#6700).
 
 ## 6. Worker de queue en dev
 

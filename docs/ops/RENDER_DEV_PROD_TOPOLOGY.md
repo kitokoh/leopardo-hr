@@ -342,13 +342,15 @@ et « verte ».
 
 **Correctifs appliqués** :
 
-1. `autoDeploy: yes` sur le service dev (le dev suit `main` sans dépendre du
-   gate) — vérifié via `GET /v1/services/{id}` ;
-2. déploiement manuel déclenché via l'API Render : `/api/v1/health` (dev)
-   renvoie désormais `b491ed3` = HEAD de `main` ;
-3. garde de non-régression **`deploy-drift-guard.yml`** (script
+1. déploiement manuel déclenché via l'API Render : `/api/v1/health` (dev)
+   renvoie `b491ed3` = HEAD de `main` (vérifié) ;
+2. garde de non-régression **`deploy-drift-guard.yml`** (script
    `dev-hub/tools/check-deploy-drift.sh`, toutes les 30 min + manuel) qui échoue
-   visiblement quand `/health.version` ≠ SHA attendu.
+   visiblement quand `/health.version` ≠ SHA attendu ;
+3. `autoDeploy` **laissé à `false`** sur le service dev (décision #6700 : un
+   auto-deploy rebâtit à chaque push `main`, docs/web-only compris, et consomme
+   les build hours gratuites). Le gate de déploiement qui saute
+   (`Tests=missing`) est suivi par **#7457**.
 
 **Règle de recette** : ne jamais qualifier un environnement dont
 `/health.version` ne correspond pas au SHA de `main` testé — voir le runbook
