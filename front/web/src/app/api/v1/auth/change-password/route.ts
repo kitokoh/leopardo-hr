@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 
 const COOKIE_NAME = 'leopardo_token';
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 jours (aligné sur Sanctum)
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 jours — session glissante (#7491), alignée sur SANCTUM_TOKEN_EXPIRATION
 
 // `resolveBackendBaseUrl()` est importé de @/lib/backend-url (audit #1701).
 

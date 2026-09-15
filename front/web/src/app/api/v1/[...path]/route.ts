@@ -3,9 +3,15 @@ import { cookies } from 'next/headers';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { rescopeSessionCookie } from '@/lib/cookie-scope';
+import { isValidSessionTokenShape } from '@/lib/session-token';
 import { getSiteUrl } from '@/lib/site';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
+
+// #7491 — session glissante 30 jours : quand l'API pivote le token Sanctum
+// (TokenAutoRefreshMiddleware), le nouveau token est re-posé en cookie
+// httpOnly avec la même durée que le login.
+const ROTATED_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
 const HOP_BY_HOP_HEADERS = new Set([
   'connection',
@@ -141,11 +147,80 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
     return NextResponse.redirect(new URL('/auth/login?error=google_auth_failed', request.url));
   }
 
+  // #7491 — session glissante : quand l'API a pivoté le token Sanctum
+  // (TokenAutoRefreshMiddleware → en-tête `X-Token-Refreshed` + corps
+  // `_auth.token`), le proxy re-pose le cookie httpOnly avec le NOUVEAU
+  // token. Sans cela, le cookie conservait l'ancien token RÉVOQUÉ : la
+  // session web mourrait à l'échéance malgré la rotation, et le token en
+  // clair transitait jusqu'au JS de la page (le cookie httpOnly perd son
+  // intérêt). Le token est retiré du corps relayé au navigateur.
+  if (response.headers.get('X-Token-Refreshed') === 'true') {
+    const rotated = await readRotatedToken(response);
+    if (rotated) {
+      const isSecure =
+        request.nextUrl.protocol === 'https:' || process.env.NODE_ENV === 'production';
+
+      const next = NextResponse.json(rotated.safeBody, {
+        status: response.status,
+        headers,
+      });
+      next.cookies.set(SESSION_COOKIE_NAME, rotated.token, {
+        httpOnly: true,
+        secure: isSecure,
+        sameSite: 'strict',
+        maxAge: ROTATED_COOKIE_MAX_AGE,
+        path: '/',
+      });
+      return next;
+    }
+    // Corps non conforme malgré l'en-tête : on relaie la réponse telle
+    // quelle — la session s'arrêtera à l'échéance, comme avant #7491.
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers,
   });
+}
+
+/**
+ * Lit le pivot de token Sanctum (#7491). Retourne le nouveau token et le corps
+ * assaini (token retiré), ou `null` si le corps n'est pas conforme — la
+ * réponse d'origine n'est alors PAS consommée (clone) et peut être relayée.
+ */
+async function readRotatedToken(
+  response: Response,
+): Promise<{ token: string; safeBody: Record<string, unknown> } | null> {
+  try {
+    const payload = (await response.clone().json()) as Record<string, unknown> & {
+      _auth?: { token_refreshed?: unknown; token?: unknown; expires_at?: unknown };
+    };
+
+    const auth = payload?._auth;
+    if (
+      auth?.token_refreshed !== true ||
+      typeof auth.token !== 'string' ||
+      !isValidSessionTokenShape(auth.token)
+    ) {
+      return null;
+    }
+
+    const { _auth: _stripped, ...rest } = payload;
+
+    return {
+      token: auth.token,
+      safeBody: {
+        ...rest,
+        _auth: {
+          token_refreshed: true,
+          expires_at: typeof auth.expires_at === 'string' ? auth.expires_at : undefined,
+        },
+      },
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
