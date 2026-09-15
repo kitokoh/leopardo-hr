@@ -11,5 +11,8 @@ return [
     'access_revoked' => 'Access revoked.',
     'access_expired' => 'Access has expired.',
     'third_party_access' => 'Third-party access',
+    'alert_title' => 'Camera alert',
+    'alert_body' => 'An event was detected on camera ":camera". Open the app to handle it.',
+    'unknown_camera' => 'Unknown camera',
     'live_view' => 'Live view',
 ];

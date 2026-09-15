@@ -13,10 +13,14 @@
  * Référence : docs/vision/Leopardo_RH_Camera_Complet+1.pdf, section 6.
  */
 
+use App\Http\Middleware\Cameras\EnsureMediamtxSecretMiddleware;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraAccessLogController;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraAccessTokenController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraAlertController;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraEventController;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\CameraPermissionController;
+use App\Modules\Cameras\Interfaces\Api\V1\Controllers\InternalCameraEventController;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\InternalCameraTokenController;
 use App\Modules\Cameras\Interfaces\Api\V1\Controllers\PublicCameraViewerController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +31,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/', [CameraController::class, 'index']);
         Route::post('/', [CameraController::class, 'store']);
         Route::post('/test-rtsp', [CameraController::class, 'testRtsp']);
+
+        // Événements & alertes (#7427) — déclarés AVANT le joker /{camera}
+        // (défense en profondeur : {camera} est déjà borné aux entiers).
+        Route::get('/events', [CameraEventController::class, 'index']);
+        Route::get('/alerts', [CameraAlertController::class, 'index']);
+        Route::post('/alerts/{alert}/acknowledge', [CameraAlertController::class, 'acknowledge'])
+            ->whereNumber('alert');
+        Route::post('/alerts/{alert}/resolve', [CameraAlertController::class, 'resolve'])
+            ->whereNumber('alert');
 
         Route::get('/{camera}', [CameraController::class, 'show'])->whereNumber('camera');
         Route::put('/{camera}', [CameraController::class, 'update'])->whereNumber('camera');
@@ -54,6 +67,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 // Hors du groupe ci-dessus car pas besoin de Sanctum ni du tenant middleware.
 Route::middleware(['throttle:600,1'])
     ->get('/internal/camera-token/verify', [InternalCameraTokenController::class, 'verify']);
+
+// Ingestion des événements de la chaîne vidéo (#7427) — même secret partagé
+// MediaMTX (middleware dédié), toujours hors Sanctum/tenant : machine-à-machine.
+Route::middleware([EnsureMediamtxSecretMiddleware::class, 'throttle:600,1'])
+    ->post('/internal/camera-events', [InternalCameraEventController::class, 'store']);
 
 // Viewer public avec token tiers (?t=<opaque>). Pas d'auth utilisateur.
 Route::middleware(['throttle:api'])

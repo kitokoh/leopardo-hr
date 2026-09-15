@@ -8773,6 +8773,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /cameras/events:
+    get:
+      tags:
+      - Cameras
+      summary: Journal des evenements camera (module Surveillance, #7427)
+      description: 'Evenements detectes par la chaine video (mouvement, personne, vehicule).
+        Lecture manager uniquement, bornee au tenant. Aucun chemin de snapshot n''est
+        expose : seul le booleen has_snapshot l''est (RGPD).'
+      parameters:
+      - name: camera_id
+        in: query
+        schema:
+          type: integer
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - motion
+          - person
+          - vehicle
+          - line_crossing
+          - tamper
+      - name: severity
+        in: query
+        schema:
+          type: string
+          enum:
+          - info
+          - warning
+          - high
+          - critical
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Page d''evenements camera
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CameraEventIndexResponse'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /cameras/alerts:
+    get:
+      tags:
+      - Cameras
+      summary: Alertes camera (module Surveillance, #7427)
+      description: 'Alertes manager dedupliquees par alert_key : une rafale de mouvement
+        produit une seule alerte. Cycle open -> acknowledged -> resolved.'
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - open
+          - acknowledged
+          - resolved
+      - name: severity
+        in: query
+        schema:
+          type: string
+          enum:
+          - info
+          - warning
+          - high
+          - critical
+      - name: camera_id
+        in: query
+        schema:
+          type: integer
+      - $ref: '#/components/parameters/PerPage'
+      responses:
+        '200':
+          description: Page d''alertes camera
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CameraAlertIndexResponse'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /cameras/alerts/{alert}/acknowledge:
+    post:
+      tags:
+      - Cameras
+      summary: Acquitter une alerte camera (#7427)
+      description: 'Passe l''alerte de open a acknowledged. Idempotent : une alerte
+        deja acquittee conserve son premier acquittement.'
+      parameters:
+      - $ref: '#/components/parameters/CameraAlertId'
+      responses:
+        '200':
+          description: Alerte acquittee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CameraAlert'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /cameras/alerts/{alert}/resolve:
+    post:
+      tags:
+      - Cameras
+      summary: Cloturer une alerte camera (#7427)
+      description: 'Passe l''alerte a resolved (depuis open ou acknowledged). Idempotent :
+        une alerte deja cloturee conserve sa date de cloture.'
+      parameters:
+      - $ref: '#/components/parameters/CameraAlertId'
+      responses:
+        '200':
+          description: Alerte cloturee
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CameraAlert'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /cameras/{camera}:
     get:
       tags:
@@ -9022,6 +9159,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CameraAccessLogIndexResponse'
+  /internal/camera-events:
+    post:
+      tags:
+      - Cameras
+      summary: Ingestion d''un evenement detecte (MediaMTX, #7427)
+      description: 'Appelee par la chaine video (MediaMTX / detecteur de mouvement),
+        jamais par un utilisateur : acces protege par le secret partage MediaMTX (Authorization:
+        Bearer <CAMERAS_MEDIAMTX_SECRET>), comme /internal/camera-token/verify. Persiste
+        l''evenement recu puis cree l''alerte dedupliquee (fenetre de regroupement
+        par defaut : 5 minutes) et notifie les managers (categorie security : non
+        supprimee par les heures calmes).'
+      security: []
+      parameters:
+      - name: Authorization
+        in: header
+        required: false
+        schema:
+          type: string
+          example: Bearer mediamtx-secret
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreCameraEventRequest'
+      responses:
+        '201':
+          description: Evenement ingere (alerte creee ou deja existante)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreCameraEventResponse'
+        '401':
+          description: Appelant interne non autorise (secret MediaMTX absent ou invalide)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Camera inconnue ou inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /internal/camera-token/verify:
     get:
       tags:
@@ -28971,6 +29154,12 @@ components:
       required: true
       schema:
         type: integer
+    CameraAlertId:
+      name: alert
+      in: path
+      required: true
+      schema:
+        type: integer
     TokenId:
       name: token
       in: path
@@ -33889,6 +34078,164 @@ components:
           type: string
           format: date-time
           nullable: true
+    CameraEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        camera_id:
+          type: integer
+        camera_name:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum:
+          - motion
+          - person
+          - vehicle
+          - line_crossing
+          - tamper
+        severity:
+          type: string
+          enum:
+          - info
+          - warning
+          - high
+          - critical
+        detected_at:
+          type: string
+          format: date-time
+          nullable: true
+        has_snapshot:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    CameraEventIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CameraEvent'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+    CameraAlert:
+      type: object
+      properties:
+        id:
+          type: integer
+        camera_id:
+          type: integer
+        camera_name:
+          type: string
+          nullable: true
+        camera_event_id:
+          type: integer
+          nullable: true
+        type:
+          type: string
+          enum:
+          - motion
+          - person
+          - vehicle
+          - line_crossing
+          - tamper
+        severity:
+          type: string
+          enum:
+          - info
+          - warning
+          - high
+          - critical
+        status:
+          type: string
+          enum:
+          - open
+          - acknowledged
+          - resolved
+        payload:
+          type: object
+          additionalProperties: true
+        acknowledged_by:
+          type: integer
+          nullable: true
+        acknowledged_at:
+          type: string
+          format: date-time
+          nullable: true
+        resolved_by:
+          type: integer
+          nullable: true
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+    CameraAlertIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/CameraAlert'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+    StoreCameraEventRequest:
+      type: object
+      required:
+      - camera_id
+      - type
+      properties:
+        camera_id:
+          type: integer
+        type:
+          type: string
+          enum:
+          - motion
+          - person
+          - vehicle
+          - line_crossing
+          - tamper
+        severity:
+          type: string
+          nullable: true
+          enum:
+          - info
+          - warning
+          - high
+          - critical
+        detected_at:
+          type: string
+          format: date-time
+          nullable: true
+        snapshot_path:
+          type: string
+          maxLength: 255
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties: true
+          nullable: true
+    StoreCameraEventResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            event_id:
+              type: integer
+            alert_id:
+              type: integer
+            alert_created:
+              type: boolean
+            notified:
+              type: integer
     CameraIndexResponse:
       type: object
       properties:
