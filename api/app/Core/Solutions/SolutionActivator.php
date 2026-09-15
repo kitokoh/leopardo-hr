@@ -7,6 +7,7 @@ namespace App\Core\Solutions;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\SolutionActivated;
 
 /**
  * Activation d'une solution sectorielle par tenant — FUEL-001.
@@ -114,6 +115,14 @@ final class SolutionActivator
                 'required_modules' => $manifest->requiredModules(),
             ],
         ]);
+
+        // Audit 2026-09-14 : poser le flag ne suffit pas à rendre une verticale
+        // UTILISABLE. Une solution peut avoir besoin d'un référentiel ou d'une
+        // configuration initiale — ex. TravelAgency sans pays/villes ne peut
+        // créer aucun trajet, alors que le flag est actif et l'UI accessible.
+        // Le module concerné écoute cet événement pour installer ses données
+        // d'amorçage (idempotent), sans couplage core → module.
+        SolutionActivated::dispatch($company, $code);
 
         return ['code' => $code, 'status' => 'activated', 'missing' => []];
     }
