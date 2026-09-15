@@ -28,7 +28,7 @@ class TransitionFuelIncidentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(FuelIncident::STATUSES)],
+            'status' => ['required', Rule::in(FuelIncident::TRANSITION_TARGETS)],
             'resolution_notes' => ['nullable', 'string', 'max:5000'],
             'assigned_to' => ['nullable', 'integer'],
         ];

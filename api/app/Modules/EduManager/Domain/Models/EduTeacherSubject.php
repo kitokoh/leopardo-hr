@@ -7,8 +7,8 @@ namespace App\Modules\EduManager\Domain\Models;
 use App\Shared\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Affectation enseignant → matière pour une classe — Issue #5819 (EDU-003).
@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $created_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $academic_year_id
  *
  * @mixin Builder<static>
  */
@@ -48,6 +49,11 @@ class EduTeacherSubject extends Model
         'class_id',
         'subject_id',
         'teacher_id',
+        // v2 (#5819) : l'affectation est bornée à une année scolaire. La
+        // colonne existait et était NULLABLE, mais absente du `fillable` :
+        // le champ était silencieusement PERDU à la création et la relation
+        // `academicYear` ressortait nulle.
+        'academic_year_id',
         'status',
         'created_by',
     ];
@@ -56,6 +62,7 @@ class EduTeacherSubject extends Model
         'class_id' => 'integer',
         'subject_id' => 'integer',
         'teacher_id' => 'integer',
+        'academic_year_id' => 'integer',
         'status' => 'string',
     ];
 

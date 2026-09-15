@@ -4786,7 +4786,9 @@
       "deactivate": "تعطيل",
       "suspend": "تعليق",
       "export": "تصدير",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "deactivateConfirmTitle": "تعطيل المستخدمين المحددين؟",
+      "deactivateConfirmBody": "ستؤدي هذه العملية إلى تعطيل :count مستخدمًا محددًا. لن يتمكنوا من تسجيل الدخول حتى يُعاد تنشيط حساباتهم."
     },
     "toast": {
       "loadError": "خطأ في تحميل المستخدمين",
@@ -5560,7 +5562,8 @@
       "tabRentalBookings": "حجوزات الإيجار",
       "tabRentals": "مركبات للإيجار",
       "title": "العنوان",
-      "hotelRoomsTitle": "غرف الفندق"
+      "hotelRoomsTitle": "غرف الفندق",
+      "confirmDeleteImage": "حذف هذه الصورة؟ ستُزال من معرض المركبة."
     },
     "cities": {
       "country": "الدول",
@@ -5604,7 +5607,8 @@
       "selectPlaceholder": "— اختر —",
       "status": "الحالة",
       "tenantRequiredTitle": "سياق العميل مطلوب",
-      "yes": "نعم"
+      "yes": "نعم",
+      "actionError": "فشلت العملية. حاول مرة أخرى."
     },
     "countries": {
       "name": "الاسم",
@@ -6370,7 +6374,9 @@
     "sectionProducts": "المنتجات",
     "sectionContact": "اتصال",
     "sectionFooter": "التذييل",
-    "notFoundTitle": "الصفحة غير موجودة"
+    "notFoundTitle": "الصفحة غير موجودة",
+    "delete_section_title": "حذف هذا القسم؟",
+    "delete_section_body": "سيُحذف القسم ومحتواه نهائيًا."
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -6417,7 +6423,8 @@
     "overridden": "مخصّص",
     "preview": "معاينة",
     "previewFailed": "المعاينة غير متاحة",
-    "loadFailed": "تعذّر التحميل"
+    "loadFailed": "تعذّر التحميل",
+    "emptyList": "لا يوجد قالب بريد إلكتروني متاح."
   },
   "aiAssistant": {
     "title": "مساعد الذكاء الاصطناعي",
@@ -6464,6 +6471,8 @@
     "awaitingConfirmation": "بانتظار التأكيد",
     "failures": "الإخفاقات",
     "recentErrors": "الأخطاء الأخيرة",
-    "loadError": "تعذّر تحميل الإعدادات."
+    "loadError": "تعذّر تحميل الإعدادات.",
+    "healthUnavailable": "حالة المساعد غير متاحة — فشل التحميل. أعد تحميل الصفحة للمحاولة مرة أخرى.",
+    "monitoringUnavailable": "المتابعة غير متاحة — فشل تحميل الإحصاءات. لا تُعرض أي أرقام بدلًا من صفر مضلّل."
   }
 }

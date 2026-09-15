@@ -87,10 +87,17 @@ class EduReportCardTest extends TestCase
         $this->assertSame($classId, $card->class_id);
         $this->assertSame($yearId, $card->academic_year_id);
         $this->assertSame('S1', $card->period_label);
+        // Colonnes v2 ajoutées NULLABLE par la réparation de dérive de schéma
+        // (#5819) : le modèle les type donc `?Carbon` / `?array`. Un bulletin
+        // fraîchement généré les renseigne TOUJOURS — vérifié explicitement
+        // (le narrowing sert aussi à l'analyse stricte level 8, tests inclus).
+        $this->assertNotNull($card->period_start);
+        $this->assertNotNull($card->period_end);
         $this->assertSame('2026-09-01', $card->period_start->toDateString());
         $this->assertSame('2027-01-31', $card->period_end->toDateString());
         // Snapshot toujours structuré — vide tant que les notes ne sont pas
         // livrées (EDU-007 parallèle), ou sans notes pour cet élève.
+        $this->assertNotNull($card->data);
         $this->assertArrayHasKey('subjects', $card->data);
         $this->assertArrayHasKey('grade_count', $card->data);
         $this->assertNull($card->average_score);
@@ -165,6 +172,7 @@ class EduReportCardTest extends TestCase
 
         // Mathématiques : 14.0 + 16.0 → 15.0 ; Physique : 12.5 → 12.5 ;
         // moyenne globale : (15.0 + 12.5) / 2 = 13.75 (2 décimales).
+        $this->assertNotNull($card->data);
         $bySubject = [];
         foreach ($card->data['subjects'] as $subject) {
             $bySubject[(string) $subject['subject_name']] = $subject;
@@ -268,6 +276,13 @@ class EduReportCardTest extends TestCase
 
         // Régénérer un bulletin publié : REFUS (immuable après publication).
         $this->expectException(InvalidArgumentException::class);
+
+        // Colonnes v2 NULLABLE en base (#5819) → narrowing explicite pour
+        // l'analyse stricte : un brouillon publié les porte toujours.
+        $this->assertNotNull($card->class_id);
+        $this->assertNotNull($card->period_label);
+        $this->assertNotNull($card->period_start);
+        $this->assertNotNull($card->period_end);
 
         $this->service()->generate(
             $student,

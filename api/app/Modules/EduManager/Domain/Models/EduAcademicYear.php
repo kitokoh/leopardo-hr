@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Année scolaire d'un établissement — Issue #5819 (EDU-003).
@@ -38,9 +37,17 @@ class EduAcademicYear extends Model
 
     public const STATUS_CLOSED = 'closed';
 
+    /**
+     * Année archivée (historique conservé, plus d'écritures) — vocabulaire v2
+     * (#5819). Déjà autorisé par la contrainte CHECK
+     * `edu_academic_years_status_check` (active|inactive|archived).
+     */
+    public const STATUS_ARCHIVED = 'archived';
+
     public const STATUSES = [
         self::STATUS_ACTIVE,
         self::STATUS_CLOSED,
+        self::STATUS_ARCHIVED,
     ];
 
     protected $table = 'edu_academic_years';
@@ -68,6 +75,4 @@ class EduAcademicYear extends Model
     {
         return $this->hasMany(EduClass::class, 'academic_year_id');
     }
-
-
 }

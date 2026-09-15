@@ -126,6 +126,24 @@ class FuelImportController extends Controller
         return response()->json(['data' => $this->importPayload($import)]);
     }
 
+    /**
+     * Journal d'import (GET /fuel-station/imports/{import}) — manager.
+     *
+     * Isolation tenant fail-closed (404 cross-tenant), lecture du détail
+     * d'un import (statut, compteurs, résultat, traçabilité).
+     */
+    public function show(Request $request, FuelImport $import): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertTenantOwned($import, $actor);
+        $this->authorize('view', $import);
+
+        return response()->json(['data' => $this->importPayload($import)]);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->assertSolutionActive();

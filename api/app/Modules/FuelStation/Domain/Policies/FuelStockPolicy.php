@@ -47,4 +47,14 @@ class FuelStockPolicy
     {
         return $actor->isManager();
     }
+
+    /**
+     * Issue #7398 — vérification d'une livraison déclarée
+     * (`POST /fuel-station/deliveries/{delivery}/verify`) : acte de contrôle
+     * réservé au manager, comme l'enregistrement de la livraison.
+     */
+    public function verifyDelivery(Employee $actor, FuelTankDelivery $delivery): bool
+    {
+        return $actor->isManager();
+    }
 }

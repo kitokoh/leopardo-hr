@@ -327,8 +327,12 @@ function buildDemoPersonas(responseBody) {
   const root = responseBody?.data ?? responseBody ?? {}
   const personas = []
 
+  // #7402 — l'admin dashboard ne rend QUE sa propre surface. Les personas
+  // `web-manager` / `kiosk-supervisor` / `mobile-employee` s'authentifient sur
+  // une autre surface : les afficher ici créait des boutons structurellement
+  // inconnexibles (POST /platform/auth/login ne connaît que `super_admins`).
   const superAdmin = root.super_admin
-  if (typeof superAdmin?.email === 'string' && typeof superAdmin?.password === 'string') {
+  if (superAdmin?.surface === 'admin-platform' && typeof superAdmin?.email === 'string' && typeof superAdmin?.password === 'string') {
     personas.push({
       label: superAdmin.label || t('auth.demo_super_admin_label'),
       email: superAdmin.email,
@@ -341,6 +345,7 @@ function buildDemoPersonas(responseBody) {
   for (const company of companies) {
     const users = Array.isArray(company?.users) ? company.users : []
     for (const user of users) {
+      if (user?.surface !== 'admin-platform') continue
       if (typeof user?.email !== 'string' || typeof user?.password !== 'string') continue
       const companyName = company?.name || 'Tenant'
       personas.push({

@@ -11,8 +11,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * TRAVEL-316..317 — Représentation API d'un billet.
  *
- * Interne au module (PA2-ARCH-010). Le `validation_code` (hash) n'est
- * jamais exposé — seul le numéro de billet et le statut.
+ * Interne au module (PA2-ARCH-010). Le `validation_code` (hash) n'est jamais
+ * exposé. #7394 : le code de contrôle EN CLAIR n'est présent que sur la
+ * réponse d'ÉMISSION (`issuedValidationCode` renseignée par
+ * `IssueTicketsAction`) — une route de lecture ne le porte jamais.
  *
  * @mixin TravelTicket
  */
@@ -34,6 +36,12 @@ class TravelTicketResource extends JsonResource
             'valid_until' => $this->valid_until,
             'checked_in_at' => $this->checked_in_at,
             'created_at' => $this->created_at,
+            // Délivré UNE SEULE FOIS, à l'émission : la clé disparaît dès que
+            // le billet est relu depuis la base (propriété transiente nulle).
+            'validation_code' => $this->when(
+                $this->issuedValidationCode !== null,
+                $this->issuedValidationCode,
+            ),
         ];
     }
 }

@@ -146,7 +146,7 @@
               <button type="button" class="btn-secondary" :disabled="busy || index === 0" @click="move(index, -1)">↑</button>
               <button type="button" class="btn-secondary" :disabled="busy || index === sections.length - 1" @click="move(index, 1)">↓</button>
               <button type="button" class="btn-primary" :disabled="busy" @click="saveSection(section)">{{ $t('showcase.save') }}</button>
-              <button type="button" class="btn-secondary text-rose-600" :disabled="busy" @click="removeSection(section)">{{ $t('showcase.delete') }}</button>
+              <button type="button" class="btn-secondary text-rose-600" :disabled="busy" @click="askRemoveSection(section)">{{ $t('showcase.delete') }}</button>
             </div>
             <textarea v-model="section.editor"
               rows="4"
@@ -173,6 +173,17 @@
         </ul>
       </div>
     </template>
+
+    <!-- Confirmation de suppression de section (#7433) -->
+    <ConfirmDialog
+      :open="sectionDeleteOpen"
+      :title="t('showcase.delete_section_title', 'Supprimer cette section ?')"
+      :message="t('showcase.delete_section_body', 'La section et son contenu seront supprimés définitivement.')"
+      :confirm-label="t('showcase.delete', 'Supprimer')"
+      :busy="busy"
+      @confirm="removeSection"
+      @cancel="closeSectionDelete"
+    />
   </div>
 </template>
 
@@ -181,6 +192,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import ShowcaseMediaUploader from '@/components/showcase/ShowcaseMediaUploader.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { listShowcaseMedia, showcaseMediaErrorMessage } from '@/services/showcase'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
@@ -192,6 +204,9 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const loading = ref(false)
 const busy = ref(false)
 const error = ref('')
+// #7433 — la suppression d'une section est confirmée avant l'appel API.
+const sectionDeleteOpen = ref(false)
+const sectionDeleteTarget = ref(null)
 
 const showcase = ref(null)
 const sections = ref([])
@@ -387,7 +402,22 @@ async function saveSection(section) {
   }
 }
 
-async function removeSection(section) {
+function closeSectionDelete() {
+  sectionDeleteOpen.value = false
+  sectionDeleteTarget.value = null
+}
+
+function askRemoveSection(section) {
+  if (!section) return
+  sectionDeleteTarget.value = section
+  sectionDeleteOpen.value = true
+}
+
+async function removeSection() {
+  const section = sectionDeleteTarget.value
+  sectionDeleteOpen.value = false
+  sectionDeleteTarget.value = null
+  if (!section) return
   busy.value = true
   try {
     await api.delete(`/showcase/sections/${section.id}`)

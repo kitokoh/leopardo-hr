@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\Marketing;
 
 use App\Modules\Marketing\Domain\Models\MarketingLead;
+use Illuminate\Http\Client\Request as ClientRequest;
+use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -17,8 +21,14 @@ use Tests\TestCase;
  * is durably persisted regardless of whether those webhooks are configured
  * or reachable.
  *
- * The endpoint is fail-closed (#3888) : without a configured shared secret
- * it returns 503 and never ingests a payload.
+ * Authentification par secret partagé quand `services.marketing_lead_webhook.secret`
+ * est configuré (secret invalide → 400, aucune écriture, #3888).
+ *
+ * #7301 — secret NON configuré : l'ingestion reste acceptée et le lead est
+ * PERSISTÉ (ne jamais perdre un lead d'acquisition) mais une alerte est émise
+ * (log `critical` + relais optionnel `MARKETING_ALERT_WEBHOOK_URL`) : c'est le
+ * test de non-régression de la perte de leads constatée en production (503
+ * MARKETING_WEBHOOK_NOT_CONFIGURED + aucune écriture).
  */
 class MarketingLeadControllerTest extends TestCase
 {
@@ -44,18 +54,104 @@ class MarketingLeadControllerTest extends TestCase
         return ['Authorization' => 'Bearer '.self::SECRET];
     }
 
-    public function test_it_is_fail_closed_when_secret_is_not_configured(): void
+    /**
+     * #7301 — non-régression (data-loss BC-11 CRM) : quand le secret partagé
+     * n'est PAS configuré, le lead doit être persisté malgré tout. Avant ce
+     * correctif l'endpoint répondait 503 MARKETING_WEBHOOK_NOT_CONFIGURED et
+     * `marketing_leads` restait vide — le lead d'inscription était perdu.
+     */
+    public function test_it_persists_the_lead_when_the_shared_secret_is_not_configured(): void
     {
         config()->set('services.marketing_lead_webhook.secret', '');
 
         $response = $this->postJson('/api/v1/marketing/leads', [
-            'external_id' => 'signup_poisoned_1',
+            'external_id' => 'signup_no_secret_001',
             'type' => 'signup',
-            'email' => 'attacker@example.test',
+            'email' => 'prospect@example.test',
+            'locale' => 'fr',
+            'country' => 'DZ',
+            'source' => 'signup_form',
         ]);
 
-        $response->assertStatus(503);
-        $this->assertDatabaseMissing('marketing_leads', ['external_id' => 'signup_poisoned_1']);
+        $response->assertCreated()
+            ->assertJsonPath('data.external_id', 'signup_no_secret_001')
+            ->assertJsonPath('data.status', 'new');
+
+        $this->assertDatabaseHas('marketing_leads', [
+            'external_id' => 'signup_no_secret_001',
+            'type' => 'signup',
+            'email' => 'prospect@example.test',
+            'source' => 'signup_form',
+            'status' => 'new',
+        ]);
+    }
+
+    /**
+     * #7301 — l'absence de configuration ne doit jamais être silencieuse :
+     * elle émet une alerte de niveau critique.
+     */
+    public function test_it_alerts_when_the_shared_secret_is_not_configured(): void
+    {
+        config()->set('services.marketing_lead_webhook.secret', '');
+
+        /** @var array<int, MessageLogged> $logged */
+        $logged = [];
+        Log::listen(function (MessageLogged $event) use (&$logged): void {
+            $logged[] = $event;
+        });
+
+        $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'signup_no_secret_002',
+            'type' => 'signup',
+            'email' => 'prospect@example.test',
+        ])->assertCreated();
+
+        $alerts = array_values(array_filter(
+            $logged,
+            fn (MessageLogged $event): bool => $event->level === 'critical'
+                && str_contains((string) $event->message, 'marketing.lead.ingest_unauthenticated'),
+        ));
+
+        $this->assertCount(1, $alerts, 'L\'ingestion sans secret doit émettre UNE alerte critique.');
+    }
+
+    /**
+     * #7301 — l'alerte est relayée vers `MARKETING_ALERT_WEBHOOK_URL` quand il
+     * est configuré (Slack/CRM/mail), jamais un simple log muet.
+     */
+    public function test_it_relays_the_alert_to_the_configured_webhook(): void
+    {
+        config()->set('services.marketing_lead_webhook.secret', '');
+        config()->set('services.marketing_lead_webhook.alert_url', 'https://alerts.example.test/marketing');
+        Http::fake();
+
+        $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'signup_no_secret_003',
+            'type' => 'signup',
+            'email' => 'prospect@example.test',
+        ])->assertCreated();
+
+        Http::assertSent(fn (ClientRequest $request): bool => $request->url() === 'https://alerts.example.test/marketing'
+            && $request['event'] === 'marketing.lead.ingest_unauthenticated'
+            && $request['severity'] === 'critical');
+    }
+
+    /**
+     * #7301 — quand le secret EST configuré, aucune alerte parasite n'est
+     * émise : l'ingestion nominale reste silencieuse.
+     */
+    public function test_it_does_not_alert_when_the_secret_is_configured(): void
+    {
+        config()->set('services.marketing_lead_webhook.alert_url', 'https://alerts.example.test/marketing');
+        Http::fake();
+
+        $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'signup_with_secret_004',
+            'type' => 'signup',
+            'email' => 'prospect@example.test',
+        ], $this->authorizedHeaders())->assertCreated();
+
+        Http::assertNothingSent();
     }
 
     public function test_it_persists_a_signup_lead(): void
