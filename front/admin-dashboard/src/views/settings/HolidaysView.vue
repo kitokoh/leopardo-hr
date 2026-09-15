@@ -61,12 +61,21 @@
                 <!-- BUG #1896 : SPA super-admin → les lignes visibles sont les fériés
                      NATIONAUX (company_id null), précisément ceux que ce dashboard doit
                      gérer. Le RBAC API (authorizeWrite) garde les écritures scopeées. -->
-                <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="saving" @click="openEdit(h)">
-                  {{ $t('holidays.edit') }}
-                </button>
-                <button class="btn-danger py-1 px-2.5" :disabled="saving" @click="askRemoveHoliday(h)">
-                  {{ $t('holidays.delete') }}
-                </button>
+                <div class="flex justify-end gap-2">
+                  <RowActionButton
+                    :icon="PencilSquareIcon"
+                    :label="$t('holidays.edit')"
+                    :disabled="saving"
+                    @click="openEdit(h)"
+                  />
+                  <RowActionButton
+                    :icon="TrashIcon"
+                    tone="danger"
+                    :label="$t('holidays.delete')"
+                    :disabled="saving"
+                    @click="askRemoveHoliday(h)"
+                  />
+                </div>
               </td>
             </tr>
             <tr v-if="!loading && holidays.length === 0">
@@ -241,6 +250,8 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'

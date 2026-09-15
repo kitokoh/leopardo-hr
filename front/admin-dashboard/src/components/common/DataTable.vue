@@ -57,7 +57,7 @@
               </div>
             </th>
             <th v-if="$slots['row-actions']" class="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Actions
+              {{ $t('common.actions', 'Actions') }}
             </th>
           </tr>
         </thead>

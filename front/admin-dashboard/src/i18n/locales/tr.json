@@ -2647,7 +2647,9 @@
     "cancel": "İptal",
     "noResults": "Sonuç bulunamadı.",
     "reload": "Yenile",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "actions": "İşlemler",
+    "edit": "Düzenle"
   },
   "settingsProfileUpdated": "Profil güncellendi.",
   "attendanceHoursWorkedLabel": "Çalışılan saat",
@@ -2848,7 +2850,9 @@
       "medium": "Orta",
       "high": "Yüksek",
       "critical": "Kritik"
-    }
+    },
+    "viewEquipment": "Ekipman",
+    "advanceIncident": "İlerlet"
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",
@@ -3842,7 +3846,9 @@
     "severityCritical": "Kritik",
     "unassigned": "Atanmamış",
     "searchVehicle": "Araç ara...",
-    "searchAlert": "Uyarı ara..."
+    "searchAlert": "Uyarı ara...",
+    "locate": "Konumlandır",
+    "detail": "Ayrıntı"
   },
   "salaryAdvanceRequest": "Talep Et",
   "smartAttendanceTodayTitle": "Bugün — {date}",

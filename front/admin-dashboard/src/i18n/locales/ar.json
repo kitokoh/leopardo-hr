@@ -2641,7 +2641,9 @@
     "cancel": "إلغاء",
     "noResults": "لا توجد نتائج.",
     "reload": "إعادة التحميل",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل"
   },
   "settingsProfileUpdated": "تم تحديث الملف الشخصي.",
   "attendanceHoursWorkedLabel": "ساعات العمل",
@@ -2842,7 +2844,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
@@ -3836,7 +3840,9 @@
     "severityCritical": "حرج",
     "unassigned": "غير مُسند",
     "searchVehicle": "ابحث عن مركبة...",
-    "searchAlert": "ابحث عن تنبيه..."
+    "searchAlert": "ابحث عن تنبيه...",
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
   },
   "salaryAdvanceRequest": "طلب",
   "smartAttendanceTodayTitle": "اليوم — {date}",

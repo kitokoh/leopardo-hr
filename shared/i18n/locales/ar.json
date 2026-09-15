@@ -141,7 +141,9 @@
       "US": "الولايات المتحدة"
     },
     "required": "مطلوب",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل"
   },
   "modules": {
     "attendance": "الحضور",
@@ -5013,7 +5015,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -5108,5 +5112,9 @@
     "preview": "معاينة",
     "previewFailed": "المعاينة غير متاحة",
     "loadFailed": "تعذّر التحميل"
+  },
+  "fleet": {
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
   }
 }

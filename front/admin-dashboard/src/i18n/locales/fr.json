@@ -2647,7 +2647,9 @@
     "cancel": "Annuler",
     "noResults": "Aucun résultat trouvé.",
     "reload": "Recharger",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "actions": "Actions",
+    "edit": "Modifier"
   },
   "settingsProfileUpdated": "Profil mis a jour.",
   "attendanceHoursWorkedLabel": "Heures travaillées",
@@ -2848,7 +2850,9 @@
       "medium": "Moyenne",
       "high": "Élevée",
       "critical": "Critique"
-    }
+    },
+    "viewEquipment": "Équipements",
+    "advanceIncident": "Faire avancer"
   },
   "adminPalette": {
     "appLoading": "Chargement de l'administration…",
@@ -3842,7 +3846,9 @@
     "severityCritical": "Critique",
     "unassigned": "Non assigné",
     "searchVehicle": "Rechercher un véhicule...",
-    "searchAlert": "Rechercher une alerte..."
+    "searchAlert": "Rechercher une alerte...",
+    "locate": "Localiser",
+    "detail": "Détail"
   },
   "salaryAdvanceRequest": "Demander",
   "smartAttendanceTodayTitle": "Aujourd'hui — {date}",
