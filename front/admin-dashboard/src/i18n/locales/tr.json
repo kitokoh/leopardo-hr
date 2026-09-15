@@ -2647,7 +2647,10 @@
     "cancel": "İptal",
     "noResults": "Sonuç bulunamadı.",
     "reload": "Yenile",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "actions": "İşlemler",
+    "edit": "Düzenle",
+    "search": "Ara…"
   },
   "settingsProfileUpdated": "Profil güncellendi.",
   "attendanceHoursWorkedLabel": "Çalışılan saat",
@@ -4852,7 +4855,17 @@
       "loading": "Kullanıcılar yükleniyor...",
       "empty": "Kullanıcı yok",
       "emptyHint": "Arama kriterlerine uyan kullanıcı yok.",
-      "viewDetails": "Detayları gör"
+      "viewDetails": "Detayları gör",
+      "company": "Şirket",
+      "createdAt": "Kayıt",
+      "name": "Kullanıcı",
+      "status": "Durum"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "pending": "Beklemede",
+      "suspended": "Askıya alındı"
     }
   },
   "settingsBiometryEnrollment": "Biyometrik kayıt",
