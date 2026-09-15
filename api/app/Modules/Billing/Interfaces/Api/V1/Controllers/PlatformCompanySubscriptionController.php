@@ -28,19 +28,24 @@ class PlatformCompanySubscriptionController extends Controller
         $company = PlatformCompanyLookup::findOrFail($companyId);
 
         $validated = $request->validate([
-            'plan_id' => ['required', 'integer', Rule::exists('plans', 'id')],
-            'status' => ['required', Rule::in(['active', 'trial', 'suspended', 'expired'])],
+            'plan_id' => ['sometimes', 'integer', Rule::exists('plans', 'id')],
+            'status' => ['sometimes', Rule::in(['active', 'trial', 'suspended', 'expired'])],
             'subscription_start' => ['nullable', 'date'],
             'subscription_end' => ['nullable', 'date', 'after_or_equal:subscription_start'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        // #7474 — PATCH partiel : une clé absente du payload conserve la valeur
+        // existante (repli sur $company->…), seul un `null` envoyé explicitement
+        // efface le champ. `$request->has()` renvoie true même pour une clé
+        // présente à null, ce qui distingue « absent » de « effacement »
+        // (même convention que PlatformCompanyFeatureController, cf. #7432).
         $company->fill([
-            'plan_id' => $validated['plan_id'],
-            'status' => $validated['status'],
-            'subscription_start' => $validated['subscription_start'] ?? null,
-            'subscription_end' => $validated['subscription_end'] ?? null,
-            'notes' => $validated['notes'] ?? null,
+            'plan_id' => $validated['plan_id'] ?? $company->plan_id,
+            'status' => $validated['status'] ?? $company->status,
+            'subscription_start' => $request->has('subscription_start') ? $validated['subscription_start'] : $company->subscription_start,
+            'subscription_end' => $request->has('subscription_end') ? $validated['subscription_end'] : $company->subscription_end,
+            'notes' => $request->has('notes') ? $validated['notes'] : $company->notes,
         ]);
         $company->save();
         $company->refresh();
