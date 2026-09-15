@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -16,38 +15,102 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_advert_types')) {
-            Schema::create('travel_advert_types', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('name', 120);
-                $table->text('description')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_advert_types_company_code_unique');
+        if (schemaTableExists('travel_advert_types')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000017_6110_create_travel_advert_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_advert_types', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_types', 'code')) {
+                    $table->string('code', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_types', 'name')) {
+                    $table->string('name', 120)->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_types', 'description')) {
+                    $table->text('description')->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_types', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_advert_types IS 'Types d''annonces payantes (TRAVEL-905/#6108).'");
         }
 
-        if (! schemaTableExists('travel_advert_positions')) {
-            Schema::create('travel_advert_positions', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->string('code', 40);
-                $table->string('name', 120);
-                $table->text('description')->nullable();
-                $table->timestamps();
-                $table->unique(['company_id', 'code'], 'travel_advert_positions_company_code_unique');
+        if (schemaTableExists('travel_advert_positions')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000017_6110_create_travel_advert_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_advert_positions', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_positions', 'code')) {
+                    $table->string('code', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_positions', 'name')) {
+                    $table->string('name', 120)->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_positions', 'description')) {
+                    $table->text('description')->nullable();
+                }
+                if (! schemaHasColumn('travel_advert_positions', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_advert_positions IS 'Positions de publication des annonces payantes (TRAVEL-905/#6108).'");
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_advert_positions');
-        Schema::dropIfExists('travel_advert_types');
+        if (schemaHasColumn('travel_advert_positions', 'company_id')) {
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_advert_positions', 'code')) {
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                $table->dropColumn('code');
+            });
+        }
+        if (schemaHasColumn('travel_advert_positions', 'name')) {
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_advert_positions', 'description')) {
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                $table->dropColumn('description');
+            });
+        }
+        if (schemaHasColumn('travel_advert_positions', 'created_at')) {
+            Schema::table('travel_advert_positions', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_advert_types', 'company_id')) {
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_advert_types', 'code')) {
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                $table->dropColumn('code');
+            });
+        }
+        if (schemaHasColumn('travel_advert_types', 'name')) {
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_advert_types', 'description')) {
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                $table->dropColumn('description');
+            });
+        }
+        if (schemaHasColumn('travel_advert_types', 'created_at')) {
+            Schema::table('travel_advert_types', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };
