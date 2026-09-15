@@ -274,8 +274,6 @@ class VerifyTrialSignup
             ];
         }
 
-        event(new CompanyCreated($result['company']));
-
         // BC-25 (#6693) : activation des solutions sectorielles demandées au
         // signup (fail-closed — un code inconnu ou une dépendance manquante
         // annule la demande, status reverté pour retry propre).
@@ -287,28 +285,50 @@ class VerifyTrialSignup
         }
         $solutions = array_values(array_unique($solutions));
 
-        // L'activation écrit dans audit_logs (table tenant) → contexte tenant.
-        $this->tenantManager->setTenant($result['company']);
+        // #7441 — À partir d'ici la société ET son manager EXISTENT.
+        //
+        // Quel que soit l'échec ultérieur (activation d'une solution
+        // sectorielle, événement `CompanyCreated`, contexte tenant…), on ne
+        // cherche plus à rendre la demande « retryable » : une fois le tenant
+        // créé, un retour en `pending` est un leurre (le retry suivant tombe
+        // sur le manager déjà existant → `EMAIL_ALREADY_REGISTERED`) et un
+        // abandon en `processing` bloque le prospect POUR TOUJOURS
+        // (`409 ALREADY_PROCESSED`, y compris après une remise manuelle en
+        // `pending` par un opérateur). La règle est donc : ne jamais perdre le
+        // prospect — la demande est marquée `approved` plus bas dans tous les
+        // cas, et l'échec est journalisé pour rattrapage côté plateforme.
         try {
-            foreach ($solutions as $solutionCode) {
-                if (! $this->solutionCatalogue->has($solutionCode)) {
-                    Log::warning('SelfServiceTrial: unknown solution requested at verify', [
-                        'email' => $email,
-                        'solution' => $solutionCode,
-                    ]);
-                    $companyRequest->update(['status' => 'pending']);
+            event(new CompanyCreated($result['company']));
 
-                    return [
-                        'success' => false,
-                        'error' => 'INVALID_SOLUTION',
-                        'message' => __('errors.INVALID_SOLUTION', ['solution' => $solutionCode]),
-                        'status' => 422,
-                    ];
+            // L'activation écrit dans audit_logs (table tenant) → contexte tenant.
+            $this->tenantManager->setTenant($result['company']);
+            try {
+                foreach ($solutions as $solutionCode) {
+                    if (! $this->solutionCatalogue->has($solutionCode)) {
+                        Log::warning('SelfServiceTrial: unknown solution requested at verify', [
+                            'email' => $email,
+                            'solution' => $solutionCode,
+                        ]);
+                        $companyRequest->update(['status' => 'pending']);
+
+                        return [
+                            'success' => false,
+                            'error' => 'INVALID_SOLUTION',
+                            'message' => __('errors.INVALID_SOLUTION', ['solution' => $solutionCode]),
+                            'status' => 422,
+                        ];
+                    }
+                    $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
                 }
-                $this->solutionActivator->activateWithDependencies($result['company'], $solutionCode);
+            } finally {
+                $this->tenantManager->resetToPrevious();
             }
-        } finally {
-            $this->tenantManager->resetToPrevious();
+        } catch (\Throwable $e) {
+            Log::error('SelfServiceTrial: post-provisioning failed, account kept for catch-up', [
+                'email' => $email,
+                'company_id' => $result['company']->id,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         $companyRequest->update([

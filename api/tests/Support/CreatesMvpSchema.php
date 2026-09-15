@@ -3851,16 +3851,6 @@ trait CreatesMvpSchema
             });
         }
 
-        if (! Schema::hasTable($this->moduleTable('travel_loyalty_transactions'))) {
-            Schema::create($this->moduleTable('travel_loyalty_transactions'), function (Blueprint $table): void {
-                $table->bigIncrements('id');
-                $table->uuid('company_id')->index();
-                $table->timestamps();
-
-                $table->index(['company_id', 'id']);
-            });
-        }
-
         if (! Schema::hasTable($this->moduleTable('travel_notification_consents'))) {
             Schema::create($this->moduleTable('travel_notification_consents'), function (Blueprint $table): void {
                 $table->bigIncrements('id');

@@ -7,10 +7,12 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Feature\Infrastructure\Services\FeatureFlagAuditRecorder;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\SolutionActivated;
 use App\Http\Controllers\Controller;
 use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PlatformCompanyFeatureController extends Controller
 {
@@ -71,6 +73,38 @@ class PlatformCompanyFeatureController extends Controller
                     source: 'platform_controller',
                     actorUserId: $actorUserId,
                 );
+            }
+        }
+
+        // Audit 2026-09-14 — activer une VERTICALE depuis la console plateforme
+        // ne faisait qu'écrire le flag : le module n'installait jamais ses
+        // données d'amorçage. C'est pourtant LE chemin officiel d'activation
+        // des verticales (elles sont volontairement hors périmètre de
+        // l'auto-activation client, cf. `CompanyModuleController`). Concrètement,
+        // une agence de voyage activée par un opérateur recevait la verticale
+        // avec un référentiel géographique VIDE, donc aucun trajet créable.
+        //
+        // Les modules concernés écoutent `SolutionActivated` pour installer
+        // leurs prérequis (idempotent). Fail-soft volontaire : l'activation du
+        // flag reste acquise même si l'amorçage échoue — il est rejouable via
+        // les commandes OPS (`leopardo:travel:activate`, `…:restaurant:activate`).
+        foreach ($features as $module => $value) {
+            if ($value !== true || ($before[$module] ?? false) === true) {
+                continue;
+            }
+
+            try {
+                // `$company` (non-null, issu de PlatformCompanyLookup::findOrFail)
+                // et non `$company->fresh()` : ce dernier retourne `Company|null`
+                // et fait échouer PHPStan Strict niveau 8 (`argument.type`) —
+                // le gate exact qui bloque les PR de ce train.
+                SolutionActivated::dispatch($company, $module);
+            } catch (\Throwable $e) {
+                Log::error('platform.features.solution_install_failed', [
+                    'company_id' => $company->id,
+                    'solution' => $module,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
 
