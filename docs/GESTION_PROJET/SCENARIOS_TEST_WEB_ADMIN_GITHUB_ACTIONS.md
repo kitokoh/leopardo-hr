@@ -378,3 +378,16 @@ Le panneau « ACCES DEMO — CHOISIR UN PROFIL » de `/login` change de **conten
 
 > Les personas des autres surfaces restent visibles depuis **leur** application (web client / kiosque / mobile) ;
 > leur suppression ici est un correctif, pas une perte de fonctionnalite.
+
+## Note de conservation — propagation i18n du module Caméras (#7425, 2026-09-15)
+
+**Aucun scénario de l'admin plateforme n'est modifié.** Le diff touche
+`front/admin-dashboard/src/i18n/locales/{fr,en,tr,ar}.json` uniquement parce que
+ces fichiers sont **générés** par `shared/i18n/sync/sync-web.js` : le nouveau
+bloc `cameras.*` (mur de caméras, détail, permissions, jetons tiers, viewer
+public) est propagé mécaniquement du catalogue partagé vers tous ses targets.
+Aucun écran de l'admin plateforme ne consomme ces clés — le seul affichage
+existant reste le toggle de flag « Surveillance Vidéo » de
+`CompanyDetailView.vue`, inchangé. Les scénarios listés ci-dessus restent
+valides et inchangés. Même situation que la note de conservation de la
+propagation i18n du 2026-09-14 (PR #7350).

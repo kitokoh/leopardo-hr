@@ -26,6 +26,8 @@ const PROTECTED_PREFIXES = [
   '/social-marketing',
   '/restaurant',
   '/showcase',
+  // BC-19 (#7425) — mur de caméras et détail caméra (zone dashboard).
+  '/cameras',
 ];
 
 function isProtectedPath(url) {
