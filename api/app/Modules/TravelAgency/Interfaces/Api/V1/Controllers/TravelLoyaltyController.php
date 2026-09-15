@@ -7,9 +7,10 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyAccount;
+use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyEntry;
 use App\Modules\TravelAgency\Domain\Models\TravelLoyaltyReward;
-use App\Modules\TravelAgency\Infrastructure\Services\LoyaltyPointsService;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelLoyaltyService;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemLoyaltyRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\RedeemTravelLoyaltyRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreLoyaltyRewardRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelLoyaltyOptInRequest;
@@ -19,12 +20,25 @@ use Illuminate\Http\Request;
 /**
  * TRAVEL-811 (#6101) — Fidélité voyageur.
  *
- * Opt-in RGPD explicite ; points crédités une seule fois par billet ;
- * solde consultable ; récompenses (conversion points → avoir).
+ * Opt-in RGPD explicite ; points crédités une seule fois par billet ; solde
+ * consultable ; récompenses (conversion points → avoir).
+ *
+ * #7445 — **une seule fidélité**. La surface appelait deux implémentations
+ * concurrentes : `TravelLoyaltyService` (clé `contact_identifier`, journal
+ * `travel_loyalty_entries` — la seule qui existe en base) et
+ * `LoyaltyPointsService` (clé `contact_id`, journal `travel_loyalty_transactions`
+ * — table qu'aucune migration ne crée). Les points, l'opt-in, l'opt-out, le
+ * solde et l'échange passent désormais **tous** par `TravelLoyaltyService`.
+ *
+ * Conséquence de bord corrigée : `/loyalty/account`, `/loyalty/redeem` et
+ * `/loyalty/{contact}` étaient capturés par la route joker `{contact}` (typée
+ * `int`) ou appelaient une méthode exigeant un paramètre de route absent →
+ * 500. Les segments réservés sont maintenant exclus de la route joker.
  */
 class TravelLoyaltyController extends Controller
 {
-    public function balance(Request $request, LoyaltyPointsService $service, int $contact): JsonResponse
+    /** GET /loyalty/{contact} — solde d'un contact. */
+    public function balance(Request $request, TravelLoyaltyService $service, string $contact): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -33,10 +47,17 @@ class TravelLoyaltyController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => $service->balance($contact)]);
+        $account = $service->findAccount((string) $actor->company_id, $contact);
+
+        return response()->json(['data' => [
+            'contact_identifier' => $account?->contact_identifier ?? $contact,
+            'points_balance' => $account?->points_balance ?? 0,
+            'opted_in' => $account?->isOptedIn() ?? false,
+        ]]);
     }
 
-    public function optIn(StoreTravelLoyaltyOptInRequest $request, LoyaltyPointsService $service): JsonResponse
+    /** POST /loyalty/opt-in — consentement explicite (RGPD). */
+    public function optIn(StoreTravelLoyaltyOptInRequest $request, TravelLoyaltyService $service): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -45,18 +66,16 @@ class TravelLoyaltyController extends Controller
             abort(403);
         }
 
-        $account = $service->optIn((int) $request->validated('contact_id'));
+        $account = $service->optIn(
+            (string) $actor->company_id,
+            (string) $request->validated('contact_identifier'),
+        );
 
-        return response()->json([
-            'data' => [
-                'contact_id' => $account->contact_id,
-                'opted_in' => $account->isOptedIn(),
-                'points_balance' => $account->points_balance,
-            ],
-        ], 201);
+        return response()->json(['data' => $this->accountPayload($account)]);
     }
 
-    public function optOut(StoreTravelLoyaltyOptInRequest $request, LoyaltyPointsService $service): JsonResponse
+    /** POST /loyalty/opt-out — retrait du consentement (le solde reste lisible). */
+    public function optOut(StoreTravelLoyaltyOptInRequest $request, TravelLoyaltyService $service): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -65,19 +84,23 @@ class TravelLoyaltyController extends Controller
             abort(403);
         }
 
-        $account = $service->optOut((int) $request->validated('contact_id'));
+        $account = $service->optOut(
+            (string) $actor->company_id,
+            (string) $request->validated('contact_identifier'),
+        );
 
-        return response()->json([
-            'data' => [
-                'contact_id' => $account->contact_id,
-                'opted_in' => $account->isOptedIn(),
-                'points_balance' => $account->points_balance,
-            ],
-        ]);
+        return response()->json(['data' => $this->accountPayload($account)]);
     }
 
-    public function redeem(RedeemTravelLoyaltyRequest $request, LoyaltyPointsService $service, int $contact): JsonResponse
-    {
+    /**
+     * POST /loyalty/{contact}/redeem — conversion directe de points en avoir
+     * (`points`), sans catalogue de récompenses.
+     */
+    public function redeemPoints(
+        RedeemTravelLoyaltyRequest $request,
+        TravelLoyaltyService $service,
+        string $contact,
+    ): JsonResponse {
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -85,47 +108,79 @@ class TravelLoyaltyController extends Controller
             abort(403);
         }
 
-        $result = $service->redeem(
-            contactId: $contact,
-            points: (int) $request->validated('points'),
-            bookingId: $request->validated('booking_id') !== null ? (int) $request->validated('booking_id') : null,
-            reason: $request->validated('reason') !== null ? (string) $request->validated('reason') : 'Récompense fidélité',
+        $result = $service->redeemPoints(
+            (string) $actor->company_id,
+            $contact,
+            (int) $request->validated('points'),
+            $request->validated('booking_id') !== null ? (int) $request->validated('booking_id') : null,
+            (string) ($request->validated('reason') ?? 'Récompense fidélité'),
         );
 
         return response()->json(['data' => $result]);
     }
 
+    /**
+     * POST /loyalty/redeem — échange contre une **récompense** du catalogue
+     * (débit idempotent par réservation).
+     */
+    public function redeemReward(RedeemLoyaltyRequest $request, TravelLoyaltyService $service): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($actor->cannot('create', TravelLoyaltyAccount::class)) {
+            abort(403);
+        }
+
+        $entry = $service->redeem(
+            (string) $actor->company_id,
+            (string) $request->validated('contact_identifier'),
+            (int) $request->validated('reward_id'),
+            (int) $request->validated('booking_id'),
+        );
+
+        $account = $service->findAccount(
+            (string) $actor->company_id,
+            (string) $request->validated('contact_identifier'),
+        );
+
+        return response()->json(['data' => [
+            'id' => $entry->id,
+            'type' => $entry->type,
+            'points' => $entry->points,
+            'booking_id' => $entry->booking_id,
+            'points_balance' => $account?->points_balance ?? 0,
+        ]]);
+    }
+
+    /** GET /loyalty/account?contact_identifier=… — solde du contact connecté au guichet. */
     public function account(Request $request, TravelLoyaltyService $service): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $contact = (string) $request->query('contact_identifier', '');
+        $contact = trim((string) $request->query('contact_identifier', ''));
 
         if ($contact === '') {
             abort(422, 'contact_identifier requis.');
         }
 
-        $account = TravelLoyaltyAccount::query()
-            ->where('company_id', $actor->company_id)
-            ->where('contact_identifier', $contact)
-            ->first();
+        $account = $service->findAccount((string) $actor->company_id, $contact);
 
-        return response()->json([
-            'data' => [
-                'contact_identifier' => $contact,
-                'opt_in' => $account->opt_in ?? false,
-                'points_balance' => $service->balance((string) $actor->company_id, $contact),
-            ],
-        ]);
+        return response()->json(['data' => [
+            'contact_identifier' => $contact,
+            'opt_in' => $account?->isOptedIn() ?? false,
+            'points_balance' => $account?->points_balance ?? 0,
+        ]]);
     }
 
+    /** GET /loyalty/entries?contact_identifier=… — journal des points. */
     public function entries(Request $request, TravelLoyaltyService $service): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $contact = (string) $request->query('contact_identifier', '');
+        $contact = trim((string) $request->query('contact_identifier', ''));
 
         if ($contact === '') {
             abort(422, 'contact_identifier requis.');
@@ -134,16 +189,17 @@ class TravelLoyaltyController extends Controller
         $entries = $service->entries((string) $actor->company_id, $contact);
 
         return response()->json([
-            'data' => array_map(fn ($entry): array => [
+            'data' => array_map(fn (TravelLoyaltyEntry $entry): array => [
                 'id' => $entry->id,
                 'points' => $entry->points,
                 'type' => $entry->type,
                 'reason' => $entry->reason,
-                'created_at' => $entry->created_at->toIso8601String(),
+                'created_at' => $entry->created_at?->toIso8601String(),
             ], $entries),
         ]);
     }
 
+    /** GET /loyalty/rewards — catalogue actif du tenant. */
     public function rewards(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -165,6 +221,7 @@ class TravelLoyaltyController extends Controller
         ]);
     }
 
+    /** POST /loyalty/rewards — catalogue (manager). */
     public function storeReward(StoreLoyaltyRewardRequest $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -183,5 +240,17 @@ class TravelLoyaltyController extends Controller
             'name' => $reward->name,
             'points_cost' => $reward->points_cost,
         ]])->setStatusCode(201);
+    }
+
+    /**
+     * @return array{contact_identifier: string, opted_in: bool, points_balance: int}
+     */
+    private function accountPayload(TravelLoyaltyAccount $account): array
+    {
+        return [
+            'contact_identifier' => (string) $account->contact_identifier,
+            'opted_in' => $account->isOptedIn(),
+            'points_balance' => $account->points_balance,
+        ];
     }
 }
