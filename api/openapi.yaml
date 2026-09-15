@@ -31402,9 +31402,7 @@ components:
           $ref: '#/components/schemas/PlatformCompanySubscription'
     PlatformCompanySubscriptionUpdateRequest:
       type: object
-      required:
-      - plan_id
-      - status
+      description: Mise a jour partielle (#7474) — toute cle absente du payload conserve sa valeur existante ; seul un null envoye explicitement efface subscription_start/subscription_end/notes (plan_id et status ne sont pas effacables).
       properties:
         plan_id:
           type: integer
