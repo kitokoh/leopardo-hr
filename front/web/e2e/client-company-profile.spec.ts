@@ -76,7 +76,7 @@ async function bootDashboard(page: Page, user: unknown) {
 }
 
 test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
-  test('un indépendant ne voit ni pointage ni employés, et son essai est compté', async ({ page }) => {
+  test('un indépendant garde son socle RH mais pas les outils d’équipe, et son essai est compté', async ({ page }) => {
     await bootDashboard(page, {
       ...baseUser,
       company: {
@@ -90,7 +90,10 @@ test.describe('Profil d’entreprise — navigation et essai (#7235)', () => {
       },
     });
 
-    await expect(page.locator('header a[href="/attendance"]')).toHaveCount(0);
+    // #7423 — plancher d’accès : le pointage (et les absences, la paie) restent
+    // accessibles à un indépendant, même décochés dans la sélection.
+    await expect(page.locator('header a[href="/attendance"]')).toHaveCount(1);
+    // …alors que le pilotage d’équipe reste fermé.
     await expect(page.locator('header a[href="/employees"]')).toHaveCount(0);
 
     const banner = page.locator('[data-testid="trial-banner"]');

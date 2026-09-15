@@ -42,16 +42,33 @@ export type ClientModuleScope = 'core' | 'business';
  * #7235 — Outils d'ÉQUIPE : sans objet pour un profil `solo` (indépendant).
  * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
  * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
- * partiel ne fasse jamais réapparaître pointage/employés chez un indépendant.
+ * partiel ne fasse jamais réapparaître la gestion d'employés ou de contrats
+ * chez un indépendant.
+ *
+ * #7423 — seuls les outils de **pilotage d'équipe** restent fermés : le socle
+ * RH (`SOLO_FLOOR_MODULE_KEYS`) est garanti, cf. ci-dessous.
  */
 const SOLO_HIDDEN_MODULE_KEYS: ClientModuleKey[] = [
   'employees',
-  'attendance',
-  'attendance_geo',
-  'absences',
   'contracts',
-  'payroll',
   'training',
+  'attendance_geo',
+];
+
+/**
+ * #7423 — PLANCHER D'ACCÈS du profil `solo` : le socle RH qu'un indépendant
+ * garde **quel que soit son profil et sa sélection** (il travaille aussi : il
+ * se pointe, pose ses congés, reçoit ses bulletins).
+ *
+ * Miroir exact de `Company::SOLO_FLOOR_TOOLS` (source de vérité serveur) et
+ * appliqué AVANT la branche « la sélection fait autorité » : le plancher est un
+ * MINIMUM, pas un défaut — une sélection qui ne le couvre pas ne peut pas le
+ * retirer.
+ */
+const SOLO_FLOOR_MODULE_KEYS: ClientModuleKey[] = [
+  'attendance',
+  'absences',
+  'payroll',
 ];
 
 export type ClientModule = {
@@ -160,7 +177,10 @@ export const CLIENT_MODULES: ClientModule[] = [
     key: 'training',
     href: '/training',
     label: 'Formations',
-    group: 'finance',
+    // #7432 — le champ `group` doit refléter l'emplacement RÉEL du module dans
+    // la navigation : « Formations » est rendue dans le sous-menu RH
+    // (`dashboard-nav.ts` → `HR_SUBMENU_KEYS`), pas dans l'espace finance.
+    group: 'hr',
     capabilityKeys: ['training', 'can_view_training'],
     featureKeys: ['training'],
     allowedRoles: ['super_admin', 'admin', 'manager'],
@@ -468,8 +488,14 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
   if (module.key === 'dashboard') {
     return 'available';
   }
-  // #7235 — un profil Indépendant ne voit ni pointage ni gestion d'employés,
-  // quelle que soit la donnée de gate par ailleurs.
+  // #7423 — PLANCHER D'ACCÈS garanti : tout tenant `solo` garde son socle RH
+  // (pointage, absences, paie) même si sa sélection ne le coche pas. La branche
+  // est AVANT « la sélection fait autorité » : le plancher est un minimum.
+  if (user.company?.type === 'solo' && SOLO_FLOOR_MODULE_KEYS.includes(module.key)) {
+    return 'available';
+  }
+  // #7235 — un profil Indépendant ne voit pas les outils de PILOTAGE D'ÉQUIPE
+  // (employés, contrats, formation), quelle que soit la donnée de gate.
   if (user.company?.type === 'solo' && SOLO_HIDDEN_MODULE_KEYS.includes(module.key)) {
     return 'locked';
   }
