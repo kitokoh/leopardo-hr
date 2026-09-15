@@ -161,6 +161,30 @@ function LoginInner() {
     setMounted(true);
   }, []);
 
+  // #7492 — une session ACTIVE n'a rien à faire sur l'écran de connexion :
+  // on valide la session auprès de l'API (le proxy ne peut pas — filtre de
+  // forme uniquement, cf. #3522) et on renvoie vers l'espace. Un cookie
+  // périmé répond 401 : on reste ici, sans boucle. `fetch` nu (pas
+  // `apiFetch`) : le handler 401 d'apiClient forcerait un replace vers cette
+  // même page, inutile ici.
+  useEffect(() => {
+    let active = true;
+
+    fetch('/api/v1/auth/me', { headers: { Accept: 'application/json' } })
+      .then((res) => {
+        if (active && res.ok) {
+          router.replace('/dashboard');
+        }
+        return null;
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     applyDocumentLocale(locale);
   }, [locale]);
