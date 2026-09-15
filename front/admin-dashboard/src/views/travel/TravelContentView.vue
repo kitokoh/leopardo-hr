@@ -839,8 +839,9 @@ async function saveReject(payload) {
     await travelAction('adverts', rejectTarget.value.id, 'reject', payload)
     rejectOpen.value = false
     await loadAdverts()
-  } catch {
-    rejectOpen.value = false
+  } catch (error) {
+    // #7484 — la modale reste ouverte et la saisie est conservée ; l'erreur est dite.
+    toast.error(apiErrorMessage(error))
   }
 }
 
@@ -889,8 +890,9 @@ async function saveNotify(payload) {
   try {
     await travelAction('contacts', notifyTarget.value.id, 'notify', payload)
     notifyOpen.value = false
-  } catch {
-    notifyOpen.value = false
+  } catch (error) {
+    // #7484 — la modale reste ouverte et la saisie est conservée ; l'erreur est dite.
+    toast.error(apiErrorMessage(error))
   }
 }
 
