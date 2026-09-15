@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, ListChecks, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
+import { Bell, ChevronDown, Globe, KeyRound, LayoutGrid, LockKeyhole, LogOut, Menu, Plus, ShieldCheck, Sparkles, UserCircle, X } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { trackClientEvent } from '@/lib/client-analytics';
@@ -447,18 +447,13 @@ export default function DashboardLayout({
                   <Menu className="h-5 w-5" aria-hidden="true" />
                 </button>
               ) : null}
-              {/* Retour propriétaire — le badge LRH est déjà porté par l'en-tête
-                  du rail métier : le rejouer ici faisait doublon à l'écran et
-                  consommait la largeur dont le menu a besoin (mesuré : la zone
-                  de navigation tombait à 0 px de large à 1440 px, « RH »
-                  recouvert par le groupe de droite). Il est conservé pour les
-                  tenants SANS rail métier (aucune verticale activée), qui
-                  n'auraient sinon aucun repère de marque. */}
-              {business.length === 0 ? (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20">
-                  <span className="text-xs font-black text-white">LRH</span>
-                </div>
-              ) : null}
+              {/* #7422 — repère de marque DÉDUPLIQUÉ : le rail métier porte déjà le
+                  badge LRH (`business-rail`), donc la barre du haut ne le rend plus
+                  au-dessus de `md` que lorsque le tenant n'a aucun rail métier.
+                  Sous `md` le rail est un tiroir hors-écran : le badge reste. */}
+              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 shadow-lg shadow-emerald-500/20 ${business.length > 0 ? 'md:hidden' : ''}`}>
+                <span className="text-xs font-black text-white">LRH</span>
+              </div>
               <div className="min-w-0">
                 <h2 className="truncate text-base font-black uppercase tracking-tight text-slate-950">{labels.dashboard.heading}</h2>
                 <p className="truncate text-[11px] font-semibold text-slate-500">{user?.company?.name ?? ''}</p>
@@ -574,15 +569,11 @@ export default function DashboardLayout({
                 type="button"
                 onClick={() => setModulesOpen((value) => !value)}
                 aria-expanded={modulesOpen}
-                aria-label={labels.dashboard.sectionModules}
-                title={labels.dashboard.sectionModules}
-                data-testid="dashboard-modules-plan-toggle"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
+                className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm transition hover:border-emerald-300 hover:text-emerald-700"
               >
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                {/* Retour propriétaire — le libellé « Modules & plan » reste lu
-                    par les lecteurs d'écran et servi en infobulle, mais ne
-                    consomme plus la largeur du menu sur une seule ligne. */}
+                {/* #7422 — icône seule : le libellé visible coûtait ~90 px à la
+                    barre ; il reste en `sr-only` pour nommer le bouton. */}
                 <span className="sr-only">{labels.dashboard.sectionModules}</span>
               </button>
               {modulesOpen ? (
@@ -797,20 +788,9 @@ export default function DashboardLayout({
                 <button
                   type="button"
                   onClick={() => setShowWizard(true)}
-                  title={labels.dashboard.resumeOnboarding}
-                  aria-label={labels.dashboard.resumeOnboarding}
-                  data-testid="dashboard-resume-onboarding"
-                  className="hidden h-10 w-10 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm transition hover:bg-emerald-100 md:inline-flex"
+                  className="hidden items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 transition hover:bg-emerald-100 md:inline-flex"
                 >
-                  {/* Retour propriétaire (règle générale) — dans la barre du haut,
-                      TOUT contrôle est en icône seule ; seules les entrées de
-                      MENU gardent icône + texte. Cette pastille était le dernier
-                      contrôle textuel : son libellé (« Reprendre la
-                      configuration ») part en infobulle / nom accessible. Le
-                      glyphe « ▶ » qui préfixait le libellé est remplacé par une
-                      vraie icône (il était lu par les lecteurs d'écran). */}
-                  <ListChecks className="h-4 w-4" aria-hidden="true" />
-                  <span className="sr-only">{labels.dashboard.resumeOnboarding}</span>
+                  {labels.dashboard.resumeOnboarding}
                 </button>
               ) : null}
               <TrialBanner user={user} locale={locale} variant="compact" />

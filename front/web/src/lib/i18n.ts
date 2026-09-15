@@ -753,7 +753,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Activité récente',
       noNotifications: 'Aucune notification récente.',
       managePreferences: 'Gérer mes préférences',
-      resumeOnboarding: 'Reprendre la configuration',
+      resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
       hrMenu: 'RH',
       modules: {
@@ -1426,7 +1426,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'النشاط الأخير',
       noNotifications: 'لا توجد إشعارات حديثة.',
       managePreferences: 'إدارة تفضيلاتي',
-      resumeOnboarding: 'استئناف الإعداد',
+      resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
       hrMenu: 'الموارد البشرية',
       modules: {
@@ -2095,7 +2095,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Son etkinlik',
       noNotifications: 'Yeni bildirim yok.',
       managePreferences: 'Tercihlerimi yönet',
-      resumeOnboarding: 'Yapılandırmaya devam et',
+      resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
       hrMenu: 'İK',
       modules: {
@@ -2764,7 +2764,7 @@ const copy: Record<AppLocale, CopyTree> = {
       recent_activity: 'Recent activity',
       noNotifications: 'No recent notifications.',
       managePreferences: 'Manage my preferences',
-      resumeOnboarding: 'Resume setup',
+      resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
       hrMenu: 'HR',
       modules: {

@@ -24,7 +24,6 @@ import {
   applyDocumentLocale,
   getCopy,
   getPreferredLocale,
-  getStoredUser,
   normalizeLocale,
   storeAuthSession,
   storePreferredLocale,
@@ -161,54 +160,6 @@ function LoginInner() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  /**
-   * Retour propriétaire — l'écran de connexion restait servi à un utilisateur
-   * POURVU d'une session valide : depuis le même navigateur, on pouvait donc se
-   * reconnecter (et empiler une seconde session) alors que le cookie
-   * `leopardo_token` était toujours actif.
-   *
-   * La redirection est conditionnée à une confirmation serveur
-   * (`GET /auth/me`) et non à la seule présence d'une session locale : un
-   * `localStorage` périmé ne doit pas renvoyer l'utilisateur vers un dashboard
-   * qui le rejetterait aussitôt. En cas de 401 c'est `apiFetch` qui purge la
-   * session et recharge cet écran — la garde ne se rejoue alors plus (plus
-   * d'utilisateur stocké), donc pas de boucle de redirection.
-   */
-  useEffect(() => {
-    if (!mounted || getStoredUser() === null) {
-      return;
-    }
-
-    let cancelled = false;
-
-    void (async () => {
-      try {
-        const response = await apiFetch('/auth/me');
-        if (cancelled || !response.ok) {
-          return;
-        }
-
-        const payload = await response.json() as { data?: StoredAuthUser };
-        const current = payload.data;
-        if (!current) {
-          return;
-        }
-
-        // Session confirmée : on réaligne la session locale sur la réponse
-        // serveur (identité incluse) avant de sortir de l'écran de connexion.
-        storeAuthSession(null, current);
-        applyDocumentLocale(normalizeLocale(current.language), current.is_rtl);
-        goToPostLoginTarget(resolvePostLoginTarget(current), router);
-      } catch {
-        // Session non confirmée (API injoignable) : on laisse le formulaire.
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mounted, router]);
 
   useEffect(() => {
     applyDocumentLocale(locale);
