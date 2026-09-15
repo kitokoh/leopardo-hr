@@ -153,6 +153,17 @@ le code écrit contre la dernière génération casse en `column "x" does not ex
   (`--audit` régénère le document).
 - La résorption se fait **module par module** (#7452, #7417, #7410) : un
   `--strict` peut être activé sur un module déjà assaini.
+- **Tranche Travel (2026-09-15)** : la consolidation forward-only (ajout des
+  colonnes attendues par le code + `DROP NOT NULL` sur les colonnes « zombies »
+  que le code ne renseigne jamais, jamais de second `Schema::create`) est dans
+  `2026_09_15_001600_7452_consolidate_travel_duplicate_schema.php`. Mesure :
+  `tests/Feature/Travel` **223 → 188 échecs**, 0 régression. **Ne pas chercher
+  la cause des échecs restants dans les migrations** : ils sont fonctionnels
+  (contrats d'API d'une autre génération, `QuizStatus::ACTIVE` et
+  `TravelQuiz::STATUS_*` absents du code, closures de fixtures sans
+  `use ($company)`, helpers de test inexistants). Le compteur
+  `223 failed` de #7452 est donc **majoritairement non-schéma** : la
+  consolidation ne peut pas, à elle seule, fermer l'issue.
 
 ## Garde post-merge `Closes #` (issue #2512)
 
