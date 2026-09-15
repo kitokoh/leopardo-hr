@@ -300,6 +300,7 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',
     'COMPANY_CONTEXT_REQUIRED' => 'A company context is required.',
     // #7322 — Client self-activation of a horizontal module.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Team tool outside an independent (solo) profile scope: :module.',
     'INVALID_HORIZONTAL_TOOL' => 'Unknown module or not self-activatable: :module.',
     'MODULE_ACTIVATED' => 'Module activated.',
     'MODULE_ALREADY_ACTIVE' => 'This module is already active.',

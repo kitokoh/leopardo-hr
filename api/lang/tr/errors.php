@@ -293,6 +293,7 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Bağımsız (solo) profil kapsamı dışındaki ekip aracı: :module.',
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',

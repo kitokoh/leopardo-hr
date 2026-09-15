@@ -32,6 +32,13 @@
             'description' => 'Assistant conversationnel (OpenAI / Anthropic, Phase 2).',
             'locked' => false,
         ],
+        // #7432 — la Formation est un module HORIZONTAL de `KNOWN_MODULES` :
+        // sans entrée ici, l'écran afficherait le slug brut « training ».
+        'training' => [
+            'label' => 'Formation',
+            'description' => 'Catalogue de formations, sessions et inscriptions (outil horizontal).',
+            'locked' => false,
+        ],
     ];
     $currentFeatures = $company->features ?? [];
 @endphp
@@ -77,6 +84,15 @@
                         $isChecked = $meta['locked'] || (bool) ($currentFeatures[$module] ?? false);
                     @endphp
                     <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800 bg-slate-950 p-4 hover:border-slate-700">
+                        @unless ($meta['locked'])
+                            {{-- #7432 — un <input type="checkbox"> non coche n'est PAS
+                                 transmis : sans ce champ cache, le controleur ne peut pas
+                                 distinguer « decoche » de « non mentionne », et la
+                                 preservation des features absentes (#7432) interdirait
+                                 toute desactivation depuis cet ecran. Le checkbox coche
+                                 (valeur 1) l'emporte sur le 0 cache. --}}
+                            <input type="hidden" name="features[{{ $module }}]" value="0">
+                        @endunless
                         <input
                             type="checkbox"
                             name="features[{{ $module }}]"

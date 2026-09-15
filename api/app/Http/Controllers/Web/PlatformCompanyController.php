@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Feature\Infrastructure\Services\FeatureFlag;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
@@ -263,9 +264,13 @@ class PlatformCompanyController extends Controller
         $company->notes = $validated['notes'] ?? null;
 
         // On reconstruit la map features uniquement a partir des modules connus
-        // (Company::KNOWN_MODULES). Un toggle absent = false, sauf rh qui reste
-        // active par defaut (base de l app, APV L.08).
+        // (Company::KNOWN_MODULES). Un toggle ABSENT conserve la valeur
+        // effective du tenant (#7432 — sans quoi l'ajout d'un module au
+        // registre eteindrait les features des clients dont le formulaire
+        // n'envoie pas la cle) ; `rh` reste active par defaut (base de l app,
+        // APV L.08).
         $submitted = $validated['features'] ?? [];
+        $current = FeatureFlag::for($company);
         $features = [];
         foreach (Company::KNOWN_MODULES as $module) {
             if ($module === 'rh') {
@@ -273,7 +278,7 @@ class PlatformCompanyController extends Controller
 
                 continue;
             }
-            $features[$module] = (bool) ($submitted[$module] ?? false);
+            $features[$module] = (bool) ($submitted[$module] ?? $current[$module] ?? false);
         }
         $company->features = $features;
         $company->save();

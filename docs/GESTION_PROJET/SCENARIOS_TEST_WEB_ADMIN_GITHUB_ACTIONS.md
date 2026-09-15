@@ -296,6 +296,37 @@ Véracité des états (jamais un état faux affiché comme réel) :
 - `eslint .` et `vite build` restent verts ; `grep -rn "window.confirm\|window.alert" src` est vide.
 - Les nouveaux libellés passent par le catalogue (`check-i18n-diff.js` vert).
 
+### 18. Fiche Entreprise — les libellés de modules sont localisés et la Formation est un vrai switch (#7432)
+
+`CompanyDetailView.vue` affichait les features connues via
+`t('companyDetail.features.<clé>', '<libellé français en dur>')` — or **aucune**
+des 4 locales ne portait l'objet `companyDetail.features.*` : tous les libellés
+venaient donc du repli codé en dur dans le composant (`Centre de Formation`,
+`Ressources Humaines`…), non traduisibles. Les 8 clés réellement référencées
+(`rh`, `finance`, `ai`, `cameras`, `tracking`, `planning`, `training`, `cabinet`)
+sont désormais dans la source de vérité `shared/i18n/locales/{fr,en,ar,tr}.json`
+puis propagées à `front/admin-dashboard/src/i18n/locales/` par
+`node shared/i18n/sync/sync-web.js`.
+
+Côté back-office, l'interrupteur « Formation » de la fiche entreprise était un
+**switch fantôme** : `training` était absent de `Company::KNOWN_MODULES`, donc
+`PATCH /platform/companies/{id}/features` reconstruisait `features` sans la clé
+et jetait silencieusement toute bascule. Le module est maintenant connu et
+enregistré (`config/feature-flags.php`).
+
+À vérifier (recette) :
+
+- Fiche Entreprise › « Modules » : « Centre de Formation » s'affiche depuis le
+  catalogue dans les 4 locales (fr/en/ar/tr, RTL compris) — plus de repli en dur.
+- Basculer la Formation ON/OFF puis **recharger** : l'état revient conforme (la
+  bascule persiste réellement, `GET /platform/companies/{id}/features`).
+- Un module laissé « non mentionné » par un client d'API n'est plus éteint par
+  surprise (les deux boucles de mise à jour préservent la valeur effective) ;
+  depuis le formulaire Blade, un module décoché est bien désactivé (champ caché
+  `features[x]=0`).
+- `npx eslint src --max-warnings 0` et `npx vite build` restent verts ;
+  `check-i18n-diff.js` vert (aucun libellé français en dur sur les lignes ajoutées).
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
