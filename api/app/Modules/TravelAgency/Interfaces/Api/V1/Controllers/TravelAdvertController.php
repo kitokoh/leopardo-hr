@@ -48,7 +48,15 @@ class TravelAdvertController extends Controller
 
         $query = TravelAdvert::query()->where('company_id', $actor->company_id);
 
-        $manage = $actor->can('moderate', TravelAdvert::class);
+        // #7418 — `$actor->can('moderate', TravelAdvert::class)` passait la
+        // CLASSE au résolveur de policy : Laravel retire le nom de classe des
+        // arguments (`Gate::callPolicyMethod`) et appelle donc
+        // `TravelAdvertPolicy::moderate(Employee)` avec un seul argument, alors
+        // que la policy en attend deux → ArgumentCountError → 500 sur
+        // `GET /travel/adverts`, pour tout le monde. Le mode gestion est une
+        // capacité de COLLECTION (aucune instance à contrôler) : on applique la
+        // même condition que la policy/moderation, comme `manageIndex()` plus bas.
+        $manage = $actor->hasManagerRole('principal', 'rh', 'manager');
 
         if (! $manage) {
             $adverts = $query->get()->filter(fn (TravelAdvert $a) => $a->isVisible())->values();
