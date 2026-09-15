@@ -86,8 +86,13 @@ jobs:
             exit 1
           fi
           url="${url%/}"
-          health_url="${url}"
-          [[ "${health_url}" == */api/v1/health || "${health_url}" == */health ]] || health_url="${health_url}/api/v1/health"
+          # `DEV_API_BASE_URL` porte `.../api/v1`, d'autres variables l'hôte nu :
+          # normaliser explicitement (l'empilement donnait `.../api/v1/api/v1/health` → 404).
+          case "${url}" in
+            */api/v1/health | */health) health_url="${url}" ;;
+            */api/v1) health_url="${url}/health" ;;
+            *) health_url="${url}/api/v1/health" ;;
+          esac
 
           # Dernier commit qui a réellement modifié le contenu déployable.
           api_sha="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
