@@ -31,7 +31,19 @@
     <!-- ══════════ CONFIGURATION ══════════ -->
     <template v-if="activeTab === 'config'">
       <!-- État réel : ce que le superviseur doit voir en premier -->
+      <!-- #7433 — un chargement en échec est un état d'erreur distinct, jamais
+           « assistant désactivé » ni un zéro présenté comme un fait. -->
       <div
+        v-if="healthError"
+        class="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-rose-200 bg-rose-50 p-4 dark:border-rose-800 dark:bg-rose-900/20"
+        role="alert"
+      >
+        <span class="text-sm font-semibold text-rose-700 dark:text-rose-300">
+          {{ t('aiAssistant.healthUnavailable') }}
+        </span>
+      </div>
+      <div
+        v-else
         class="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border p-4"
         :class="
           health.enabled
@@ -173,8 +185,16 @@
       </div>
 
       <!-- Aucune donnée : état vide honnête, pas un zéro trompeur -->
+      <!-- #7433 — un suivi en échec affiche son propre état d'erreur. -->
       <div
-        v-if="!monitoringLoading && totals.requests === 0"
+        v-if="monitoringError"
+        class="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-center text-rose-700 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-300"
+        role="alert"
+      >
+        {{ t('aiAssistant.monitoringUnavailable') }}
+      </div>
+      <div
+        v-else-if="!monitoringLoading && totals.requests === 0"
         class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400"
       >
         {{ t('aiAssistant.noData') }}
@@ -303,6 +323,8 @@ const settings = ref({})
 const health = ref({})
 const form = reactive({})
 const loadError = ref('')
+// #7433 — distinguer « échec de chargement » d'un état métier (désactivé, 0 requête).
+const healthError = ref(false)
 
 const saving = ref(false)
 const testing = ref(false)
@@ -310,6 +332,7 @@ const testResult = ref(null)
 
 const monitoring = ref(null)
 const monitoringLoading = ref(false)
+const monitoringError = ref(false)
 const periodDays = ref(30)
 
 const groupedSettings = computed(() => {
@@ -383,13 +406,18 @@ async function loadHealth() {
   try {
     const { data } = await api.get(`${BASE}/health`)
     health.value = data?.data || {}
+    healthError.value = false
   } catch (e) {
+    // #7433 — échec de chargement : « état indisponible », jamais « désactivé ».
+    health.value = {}
+    healthError.value = true
     console.warn('[admin] ai health load failed', e)
   }
 }
 
 async function loadMonitoring() {
   monitoringLoading.value = true
+  monitoringError.value = false
   try {
     const to = new Date()
     const from = new Date(to.getTime() - periodDays.value * 24 * 3600 * 1000)
@@ -399,6 +427,9 @@ async function loadMonitoring() {
     })
     monitoring.value = data?.data || null
   } catch (e) {
+    // #7433 — jamais « 0 requête » quand la requête a échoué.
+    monitoring.value = null
+    monitoringError.value = true
     console.warn('[admin] ai monitoring load failed', e)
   } finally {
     monitoringLoading.value = false

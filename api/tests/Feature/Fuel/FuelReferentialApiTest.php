@@ -232,9 +232,18 @@ class FuelReferentialApiTest extends TestCase
     {
         Sanctum::actingAs($this->operator($this->companyA));
 
-        $this->getJson('/api/v1/fuel-station/stations')->assertStatus(403);
+        // Contrat du fichier (en-tête) et des policies de référence
+        // (`FuelStationPolicy`, `FuelProductPolicy`) : **lecture ouverte aux
+        // employés du tenant**, CRUD réservé au manager. Les deux assertions de
+        // lecture ci-dessous attendaient 403, ce qui ne tenait QUE parce que
+        // `AuthServiceProvider` réenregistrait `FuelStation`/`FuelProduct` sur
+        // `FuelReferencePolicy` (manager-only) et écrasait la policy de
+        // référence — un pompiste ne pouvait alors ni lire sa station ni ses
+        // pompes, alors que l'écran mobile pompiste appelle
+        // `GET /fuel-station/stations/{station}`. L'écriture reste refusée.
+        $this->getJson('/api/v1/fuel-station/stations')->assertStatus(200);
         $this->postJson('/api/v1/fuel-station/stations', [])->assertStatus(403);
-        $this->getJson('/api/v1/fuel-station/products')->assertStatus(403);
+        $this->getJson('/api/v1/fuel-station/products')->assertStatus(200);
     }
 
 

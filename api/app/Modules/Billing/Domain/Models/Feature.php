@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $api_version
  * @property string $status
  * @property string|null $company_id
+ *
  * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Feature extends Model

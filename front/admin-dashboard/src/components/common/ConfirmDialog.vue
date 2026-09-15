@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-// QA #3937 — remplace window.confirm() (non i18n, bloque le rendu) par un
+// QA #3937 — remplace le confirm() natif du navigateur (non i18n, bloquant) par un
 // dialogue in-app cohérent avec WebhooksView/GrowthDashboardView (#3494/#3493).
 import { computed, ref, watch } from 'vue'
 import { useFocusTrap } from '@/composables/useFocusTrap'

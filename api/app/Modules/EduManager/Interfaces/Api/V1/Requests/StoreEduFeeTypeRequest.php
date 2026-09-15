@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduFeeType;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
@@ -18,7 +19,13 @@ class StoreEduFeeTypeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        // RBAC évalué AVANT la validation : un employé non-direction doit
+        // recevoir 403 même avec un corps invalide, sinon l'API révèle la
+        // forme du contrat (422) à un utilisateur non autorisé.
+        /** @var Employee|null $actor */
+        $actor = $this->user();
+
+        return $actor instanceof Employee && EduAccess::isAdmin($actor);
     }
 
     /**

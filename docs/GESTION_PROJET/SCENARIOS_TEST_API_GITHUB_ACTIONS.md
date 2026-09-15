@@ -1,5 +1,12 @@
 # SCENARIOS DE TEST API POUR GITHUB ACTIONS    
 
+Note 2026-09-14 (issue #7301, BC-11 CRM) : `POST /api/v1/marketing/leads` (vitrine, server-to-server, public, `throttle:webhooks-inbound`) ne perd plus de lead quand le webhook marketing n'est pas configuré —
+- Secret configuré (`services.marketing_lead_webhook.secret` ← `MARKETING_LEAD_WEBHOOK_TOKEN`) : contrat **inchangé et fail-closed** (#3888) — `Authorization: Bearer <secret>` ou `X-Marketing-Lead-Token` requis ; secret invalide ou absent → **400** `Invalid signature`, **aucune** ligne `marketing_leads`.
+- Secret ABSENT (prérequis de déploiement non satisfait — constat production #7301) : le payload est **PERSISTÉ** (`201` avec `data.id`/`data.external_id`/`data.status` — le lead est retrouvable par son id, critère d'acceptation #7301) au lieu du **503** `MARKETING_WEBHOOK_NOT_CONFIGURED` qui faisait perdre tous les leads d'acquisition ; une **alerte** critique est émise (`marketing.lead.ingest_unauthenticated` : log `critical` + POST best-effort vers `MARKETING_ALERT_WEBHOOK_URL` quand la variable est configurée, jamais bloquant pour la réponse).
+- Échec de persistance (exception) → alerte `marketing.lead.persist_failed` (et non plus une simple ligne `Log::error`) + réponse **500** `processing_error` : la perte d'un lead est toujours visible.
+- Bornes d'entrée inchangées et toujours vérifiées : payload > 1 MiB → **413**, JSON invalide → **400**, horodatage `X-Webhook-Timestamp` hors fenêtre → **400**, type de lead inconnu → **422**, redelivrance identique → rejeu idempotent (aucun doublon d'`external_id`).
+- Couverture : `api/tests/Feature/Marketing/MarketingLeadControllerTest.php` — `test_it_persists_the_lead_when_the_shared_secret_is_not_configured` (non-régression #7301 : 201 + ligne en base), `test_it_alerts_when_the_shared_secret_is_not_configured` (log `critical`), `test_it_relays_the_alert_to_the_configured_webhook` (relais `MARKETING_ALERT_WEBHOOK_URL`), `test_it_does_not_alert_when_the_secret_is_configured` (aucune alerte parasite), `test_it_rejects_an_invalid_shared_secret` (400 sans écriture).
+
 Note 2026-09-10 (BC-27 SHOWCASE V-MEDIA, issue #6872, PR #7178) : nouvelle surface API medias de vitrine —
 - Privee (gestion tenant : auth sanctum + `module.showcase` fail-closed + RBAC `api.manager:principal,rh`) : `GET /api/v1/showcase/media` (liste des medias du perimetre, filtre `kind` logo|section + `section_id`), `POST /api/v1/showcase/media` (upload multipart, 201) et `DELETE /api/v1/showcase/media/{id}` (204). Le DTO prive `ShowcaseMediaResource` est une allowlist : ni `disk`, ni `path`, ni `company_id` (test de non-fuite dedie).
 - Contraintes de validation : png/jpg/jpeg/webp seulement, svg reserve au logo (`kind=logo`) et refuse si le contenu embarque du script/entite active ; 2 Mo (logo) / 5 Mo (section) ; nom d'origine sanitise, nom stocke aleatoire ; stockage sur le disk prive `local` (hors webroot). Types/poids/extension hors contrat → 422.
@@ -2026,3 +2033,33 @@ Contrat OpenAPI : les 8 routes ajoutées sont documentées dans `api/openapi.yam
 (tag `EduManager`) et le miroir + SDK sont régénérés —
 `python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness` → 0 nouvelle route
 non couverte.
+
+
+### Addendum 2026-09-14 (BC-16 EDU) — facturation détaillée, portail parents, RBAC enseignant
+
+Surface ajoutée à `/edu-manager` (2ᵉ passe du parcours « client propriétaire d'école ») :
+
+- `POST /edu-manager/fee-charges` — facturation d'un frais à un élève (idempotente sur
+  `external_id`), écriture de **2 lignes comptables équilibrées** (411 Clients / 706
+  Prestations) + événement d'outbox `edu.fee.charge.created.v1` ;
+- `POST /edu-manager/fee-charges/{charge}/payments` — encaissement (partiel → soldé),
+  rejeu idempotent, refus du **surdébit** (`EDU_FEE_OVERPAYMENT`, 422) et de toute
+  écriture sur une charge **terminale** (`EDU_FEE_TERMINAL`, 422), lignes 512/531 / 411 ;
+- `POST /edu-manager/fee-charges/{charge}/waive` — abandon du solde restant (654 / 411) ;
+- `GET /edu-manager/fee-accounting-entries` — vue de rapprochement paginée (`meta.total`),
+  bornée au tenant ;
+- `POST /edu-manager/guardians/{guardian}/portal-link` — émission d'un lien de portail
+  parents (direction uniquement, 404 cross-tenant) ;
+- `GET /edu-manager/portal/{token}` — **route publique** (le token est la credential) :
+  résumé borné aux enfants liés, journalisé dans `edu_portal_access_logs`, 404 si le lien
+  est expiré, révoqué ou inconnu.
+
+Scénarios CI correspondants (verts) : `api/tests/Feature/EduManager/EduFeeTest.php`
+(catalogue, idempotence, écritures équilibrées, transitions et refus, rapprochement,
+isolation), `EduGuardianPortalTest.php` (émission admin-only, résumé, expiration et
+révocation, isolation), `EduRbacPolicyTest.php` / `EduRbacMatrixTest.php` (périmètre
+enseignant : référent de classe, affectation, séance ; titulaire ≠ enseignant de séance
+pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bulletin),
+`EduClassEnrollmentTest.php`, `EduAdmissionCampaignTest.php`, `EduAttendanceTest.php`,
+`EduManagerMigrationsTest.php` (inventaire et cycle up/down des migrations canoniques).
+État de la suite au 2026-09-14 : `tests/Feature/EduManager/` **280 tests, 0 échec**.

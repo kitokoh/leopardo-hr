@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EduManager\Domain\Policies;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduClass;
 
 /**
@@ -26,7 +27,12 @@ class EduClassPolicy
 
     public function view(Employee $actor, EduClass $class): bool
     {
-        return $this->viewAny($actor) && $class->company_id === $actor->company_id;
+        // La direction voit toutes les classes de son tenant ; un ENSEIGNANT
+        // voit celles qu'il enseigne (référent, affectation ou séance) sans
+        // pour autant les administrer — cf. EduAccess.
+        return $this->viewAny($actor)
+            ? $class->company_id === $actor->company_id
+            : EduAccess::canViewClass($actor, $class);
     }
 
     public function create(Employee $actor): bool
@@ -36,11 +42,13 @@ class EduClassPolicy
 
     public function update(Employee $actor, EduClass $class): bool
     {
-        return $this->view($actor, $class);
+        // Administration de la classe (renommage, capacité, référent) :
+        // réservée à la direction — un enseignant ne se l'octroie pas.
+        return $this->viewAny($actor) && $class->company_id === $actor->company_id;
     }
 
     public function delete(Employee $actor, EduClass $class): bool
     {
-        return $this->view($actor, $class);
+        return $this->update($actor, $class);
     }
 }

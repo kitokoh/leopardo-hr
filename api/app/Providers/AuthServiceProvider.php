@@ -301,12 +301,26 @@ class AuthServiceProvider extends ServiceProvider
         // — FuelStation incidents & maintenance (FUEL-010 #5804)
         Gate::policy(FuelMaintenanceTask::class, FuelIncidentPolicy::class);
         // — FuelStation référentiel (FUEL-011 #5805)
-        Gate::policy(FuelStation::class, FuelReferencePolicy::class);
+        //
+        // NE PAS réenregistrer ici `FuelStation` / `FuelPump` / `FuelProduct` :
+        // `Gate::policy()` écrase silencieusement l'enregistrement précédent,
+        // donc la DERNIÈRE ligne gagne et la policy effective devient un effet
+        // de bord de l'ordre des lignes. C'est ce qui rendait le référentiel
+        // inaccessible à un employé du tenant (403) alors que les policies
+        // concernées documentent « consultation ouverte aux employés du tenant »
+        // (`FuelStationPolicy`, `FuelEquipmentPolicy`, `FuelProductPolicy` :
+        // `viewAny` retourne true, `view` vérifie le `company_id`, et seul le
+        // CRUD exige `isManager()`). Un pompiste ne pouvait donc ni lire sa
+        // station ni ses pompes — or l'écran mobile pompiste appelle
+        // `GET /fuel-station/stations/{station}`.
+        //
+        // Ces trois modèles gardent leur policy de référence, déclarée une
+        // seule fois plus haut. `FuelReferencePolicy` (CRUD manager) reste
+        // utilisée pour les surfaces qui n'ont pas de policy dédiée :
+        // sites, cuves, compteurs, snapshots de reporting, imports.
         Gate::policy(FuelSite::class, FuelReferencePolicy::class);
-        Gate::policy(FuelPump::class, FuelReferencePolicy::class);
         Gate::policy(FuelTank::class, FuelReferencePolicy::class);
         Gate::policy(FuelMeterRegister::class, FuelReferencePolicy::class);
-        Gate::policy(FuelProduct::class, FuelReferencePolicy::class);
         // — FuelStation intégration CRM (FUEL-016 #5810)
         Gate::policy(FuelProfessionalAccount::class, FuelCrmPolicy::class);
         Gate::policy(FuelAccountVisit::class, FuelCrmPolicy::class);
