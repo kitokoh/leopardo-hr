@@ -87,7 +87,10 @@ class TravelSolutionManifestTest extends TestCase
         $permissions = $manifest->permissions();
         $this->assertNotEmpty($permissions);
         $this->assertArrayHasKey('travel.manage', $permissions);
-        $this->assertIsString($permissions['travel.manage']);
+        // Le libellé doit être RENSEIGNÉ (`assertIsString` serait signalé par
+        // PHPStan : le type de retour `array<string, string>` rend le test
+        // toujours vrai).
+        $this->assertNotSame('', $permissions['travel.manage']);
     }
 
     public function test_travelagency_is_absent_from_catalogue_allowlist_when_unknown_code(): void
