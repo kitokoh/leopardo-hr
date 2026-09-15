@@ -116,12 +116,52 @@ déploiement quand le run `Tests - Leopardo RH` du SHA est introuvable
 (`Tests=missing` — runs non créés sous charge, leçon #3545). Constaté le
 2026-09-14 : **12 runs `success` consécutifs, aucun déploiement**.
 
-Ce défaut de gate est **suivi par #7457** (issue dédiée) : la garde §2 **détecte**
-la dérive, elle ne la répare pas. En attendant, la règle §2 (pré-vol de recette)
-et le redéploiement manuel §5.1 restent les deux gestes opérationnels.
+Ce défaut de gate est **corrigé par #7457** (voir §5.3) : la garde §2 **détecte**
+la dérive, le verdict §5.3 **refuse désormais de la laisser passer en silence**.
+La règle §2 (pré-vol de recette) et le redéploiement manuel §5.1 restent les deux
+gestes opérationnels de rattrapage.
 
 > ⚠️ Ne pas « corriger » la dérive en réactivant `autoDeploy` : cela échange un
 > silence contre une facture de build (#6700).
+
+## 5.3 Verdict du gate de déploiement (#7457) — un skip n'est plus un succès muet
+
+`deploy-main.yml` se terminait sur un `success` **même quand aucun déploiement
+n'avait été décidé** : le job `Deploy API + Web to Render` était `skipped`, et un
+job sauté ne dégrade pas la conclusion du run. Douze « non-déploiements verts »
+d'affilée ont ainsi laissé le dev ~60 merges en arrière (§4).
+
+Le gate publie maintenant un **motif** (`gate_outcome`, produit par l'action
+composite `verify-deploy-workflows`), et le job terminal **`Deploy gate verdict`**
+le traduit en un verdict explicite :
+
+| `gate_outcome` | Situation | Verdict du run |
+|---|---|---|
+| `deploy` | le gate a conclu : déploiement déclenché | ✅ vert + notice |
+| `manual-dispatch` | `workflow_dispatch` : gate contourné par construction | ✅ vert + notice |
+| `not-required` | contexte court-circuité (dispatch hors `main`, run parent non concluant) | ✅ vert + notice |
+| `stale` | SHA dépassé par un push plus récent sur `main` | ✅ vert + notice **nominative** |
+| `tests-<conclusion>` / `web-<conclusion>` | le gate a conclu : pas de déploiement (run Tests rouge, déjà signalé) | ✅ vert + notice |
+| `no-runs` · `timeout` · `tests-missing` · `web-missing` · `missing` | **indécision** : conclusion des workflows requis non établissable | ❌ **rouge** (`::error::` + résumé de run) |
+
+Autrement dit : **une décision peut rester verte, une indécision ne peut plus**.
+Le tableau est écrit dans le résumé du run (`$GITHUB_STEP_SUMMARY`) à chaque
+exécution, donc un lecteur distingue « rien à faire » de « on n'a pas su ».
+
+Deux arbitrages assumés :
+
+- **`stale` reste vert** (mais nommé). Un SHA dépassé n'est pas une indécision :
+  le run du SHA plus récent porte le déploiement ; en faire un échec produirait
+  quasiment un run rouge par merge pendant une rafale, et banaliserait le rouge.
+  Pour appliquer le critère #7457 au sens strict, déplacer `stale` de la branche
+  « décision » vers la branche « indécision » dans `deploy-gate-verdict`.
+- **`tests-failure` reste vert ici** : le rouge est déjà porté par le run
+  `Tests - Leopardo RH` du même SHA — le dupliquer sur le déploiement n'ajoute
+  pas d'information.
+
+Rattrapage quand le verdict est rouge (indécision) : vérifier l'API Actions pour
+le SHA, puis relancer `Deploy - Leopardo RH` en `workflow_dispatch` avec
+`force_deploy` (§5.1) — le contenu a déjà passé les checks requis de sa PR.
 
 ## 6. Worker de queue en dev
 
@@ -170,7 +210,10 @@ puis revérifier le check `redis`.
 
 ## 9. Liens
 
-- Issue : #7304 · Garde : `.github/workflows/deploy-drift-guard.yml`
+- Issue : #7304 · Verdict du gate : #7457
+- Garde de dérive : `.github/workflows/deploy-drift-guard.yml`
+- Déploiement + verdict : `.github/workflows/deploy-main.yml`,
+  `.github/actions/verify-deploy-workflows/action.yml`
 - Script : `dev-hub/tools/check-deploy-drift.sh`
 - Topologie dev/prod : `docs/ops/RENDER_DEV_PROD_TOPOLOGY.md`
 - Workers & queue : `docs/ops/RENDER_QUEUE_WORKERS.md`, `docs/ops/HEALTH_ENDPOINTS.md`
