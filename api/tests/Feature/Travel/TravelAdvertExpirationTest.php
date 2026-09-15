@@ -6,12 +6,12 @@ namespace Tests\Feature\Travel;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvert;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPosition;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertPrice;
 use App\Modules\TravelAgency\Domain\Models\TravelAdvertType;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
-use App\Core\Tenant\TenantManager;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
@@ -48,7 +48,7 @@ class TravelAdvertExpirationTest extends TestCase
 
     private function makePublishedAdvert(Company $company, ?\Illuminate\Support\Carbon $expiresAt = null): TravelAdvert
     {
-        return app(TenantManager::class)->withinTenant($company, function () use ($expiresAt): TravelAdvert {
+        return app(TenantManager::class)->withinTenant($company, function () use ($company, $expiresAt): TravelAdvert {
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
                 'code' => 'image_banner',
