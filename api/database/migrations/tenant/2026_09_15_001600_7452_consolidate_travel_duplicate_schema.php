@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -201,9 +203,28 @@ return new class extends Migration
             return;
         }
 
-        Schema::table($table, static function (Blueprint $blueprint) use ($columns, $name): void {
-            $blueprint->unique($columns, $name);
-        });
+        try {
+            Schema::table($table, static function (Blueprint $blueprint) use ($columns, $name): void {
+                $blueprint->unique($columns, $name);
+            });
+        } catch (QueryException $exception) {
+            // Une base déjà peuplée peut porter des doublons sur ces colonnes
+            // (les index d'unicité historiques portaient sur les colonnes
+            // « zombies », donc NULL et non contraignants). Une migration qui
+            // échoue rendrait le déploiement rouge : on retombe sur un index
+            // simple, en le journalisant — l'unicité applicable reste à
+            // vérifier côté données.
+            Log::warning(sprintf(
+                '#7452 — index unique %s non créé sur %s : index simple posé à la place (%s).',
+                $name,
+                $table,
+                $exception->getMessage(),
+            ));
+
+            Schema::table($table, static function (Blueprint $blueprint) use ($columns, $name): void {
+                $blueprint->index($columns, $name.'_non_unique');
+            });
+        }
     }
 
     /**
