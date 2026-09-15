@@ -169,11 +169,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/rental-bookings/{travelRentalBooking}', [TravelRentalBookingController::class, 'show']);
         Route::post('/rental-bookings/{travelRentalBooking}/cancel', [TravelRentalBookingController::class, 'cancel']);
 
-        // Fidélité voyageur (TRAVEL-811/#6101).
-        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance']);
+        // Fidélité voyageur (TRAVEL-811/#6101) — #7445 : une SEULE déclaration.
+        // Les routes nommées passent avant le joker `/loyalty/{contact}`, et le
+        // joker exclut les segments réservés : sans cela « account », « entries »,
+        // « rewards » ou « redeem » étaient capturés comme identifiant de contact
+        // (et le paramètre était typé `int`, d'où un 500).
         Route::post('/loyalty/opt-in', [TravelLoyaltyController::class, 'optIn']);
         Route::post('/loyalty/opt-out', [TravelLoyaltyController::class, 'optOut']);
-        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeem']);
+        Route::get('/loyalty/account', [TravelLoyaltyController::class, 'account']);
+        Route::get('/loyalty/entries', [TravelLoyaltyController::class, 'entries']);
+        Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
+        Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+        Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeemReward']);
+        Route::post('/loyalty/{contact}/redeem', [TravelLoyaltyController::class, 'redeemPoints']);
+        Route::get('/loyalty/{contact}', [TravelLoyaltyController::class, 'balance'])
+            ->where('contact', '^(?!opt-in$|opt-out$|account$|entries$|rewards$|redeem$).+$');
 
         // Politiques d'annulation configurables (TRAVEL-813/#6103).
         Route::get('/cancellation-policies', [TravelCancellationPolicyController::class, 'index']);
@@ -328,11 +338,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/webhook-subscriptions', [TravelWebhookSubscriptionController::class, 'store']);
         Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
-        Route::get('/loyalty/account', [TravelLoyaltyController::class, 'account']);
-        Route::get('/loyalty/entries', [TravelLoyaltyController::class, 'entries']);
-        Route::post('/loyalty/redeem', [TravelLoyaltyController::class, 'redeem']);
-        Route::get('/loyalty/rewards', [TravelLoyaltyController::class, 'rewards']);
-        Route::post('/loyalty/rewards', [TravelLoyaltyController::class, 'storeReward']);
+        // #7445 — ce second bloc redéclarait les routes de fidélité, dont
+        // `/loyalty/redeem` vers une méthode exigeant un paramètre de route
+        // absent : la dernière déclaration gagnant chez Laravel, l'échange de
+        // points répondait 500. Déclaration canonique unique dans le bloc
+        // « réseau & contenu ».
         Route::post('/mobile/sync', [TravelMobileSyncController::class, 'sync']);
         Route::get('/public-shop-token', [TravelPublicShopController::class, 'token']);
         Route::post('/public-shop-token/rotate', [TravelPublicShopController::class, 'rotateToken']);
