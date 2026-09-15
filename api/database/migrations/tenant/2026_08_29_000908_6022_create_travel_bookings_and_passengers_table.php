@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -20,71 +19,238 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_bookings')) {
-            Schema::create('travel_bookings', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->string('reference', 40);
-                $table->unsignedBigInteger('trip_id');
-                $table->string('status', 20)->default('pending');
-                $table->unsignedInteger('passenger_count');
-                $table->unsignedInteger('total_amount_minor');
-                $table->char('currency', 3);
-                $table->string('booking_source', 20)->default('office');
-                $table->unsignedBigInteger('customer_contact_id')->nullable();
-                $table->unsignedBigInteger('booked_by_user_id')->nullable();
-                $table->string('payment_status', 20)->default('pending');
-                $table->timestamp('expires_at')->nullable();
-                $table->string('idempotency_key', 255);
-                $table->unsignedInteger('version')->default(1);
-
-                $table->timestamps();
-
-                $table->unique(['company_id', 'reference'], 'travel_bookings_company_reference_unique');
-                $table->unique(['company_id', 'idempotency_key'], 'travel_bookings_company_idempotency_unique');
-                $table->index(['company_id', 'trip_id'], 'travel_bookings_company_trip_idx');
-                $table->index(['company_id', 'status'], 'travel_bookings_company_status_idx');
+        if (schemaTableExists('travel_bookings')) {
+            // Issue #7452 — la table est créée par 2026_08_29_000608_6022_create_travel_bookings_and_passengers_table.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_bookings', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'reference')) {
+                    $table->string('reference', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'trip_id')) {
+                    $table->unsignedBigInteger('trip_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'status')) {
+                    $table->string('status', 20)->default('pending');
+                }
+                if (! schemaHasColumn('travel_bookings', 'passenger_count')) {
+                    $table->unsignedInteger('passenger_count')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'total_amount_minor')) {
+                    $table->unsignedInteger('total_amount_minor')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'currency')) {
+                    $table->char('currency', 3)->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'booking_source')) {
+                    $table->string('booking_source', 20)->default('office');
+                }
+                if (! schemaHasColumn('travel_bookings', 'customer_contact_id')) {
+                    $table->unsignedBigInteger('customer_contact_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'booked_by_user_id')) {
+                    $table->unsignedBigInteger('booked_by_user_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'payment_status')) {
+                    $table->string('payment_status', 20)->default('pending');
+                }
+                if (! schemaHasColumn('travel_bookings', 'expires_at')) {
+                    $table->timestamp('expires_at')->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'idempotency_key')) {
+                    $table->string('idempotency_key', 255)->nullable();
+                }
+                if (! schemaHasColumn('travel_bookings', 'version')) {
+                    $table->unsignedInteger('version')->default(1);
+                }
+                if (! schemaHasColumn('travel_bookings', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("ALTER TABLE travel_bookings ADD CONSTRAINT travel_bookings_status_check CHECK (status IN ('pending', 'confirmed', 'cancelled', 'refunded', 'completed'))");
-            DB::statement("ALTER TABLE travel_bookings ADD CONSTRAINT travel_bookings_source_check CHECK (booking_source IN ('online', 'office', 'phone', 'partner'))");
-            DB::statement("ALTER TABLE travel_bookings ADD CONSTRAINT travel_bookings_payment_status_check CHECK (payment_status IN ('pending', 'confirmed', 'failed', 'refunded'))");
-            DB::statement('ALTER TABLE travel_bookings ADD CONSTRAINT travel_bookings_passenger_count_check CHECK (passenger_count > 0)');
-            DB::statement("COMMENT ON TABLE travel_bookings IS 'Reservations multi-passagers — idempotency_key unique par tenant (TRAVEL-209/#6022).'");
         }
 
-        if (! schemaTableExists('travel_passengers')) {
-            Schema::create('travel_passengers', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->unsignedBigInteger('booking_id');
-                $table->string('full_name', 160);
-                $table->date('birth_date')->nullable();
-                $table->string('document_type', 20)->nullable();
-                $table->text('document_number_encrypted')->nullable();
-                $table->string('document_number_hash', 64)->nullable();
-                $table->string('age_category', 20)->default('adult');
-                $table->unsignedBigInteger('class_id');
-                $table->unsignedInteger('seat_number')->nullable();
-                $table->unsignedInteger('unit_price_minor');
-
-                $table->timestamps();
-
-                $table->index(['company_id', 'booking_id'], 'travel_passengers_company_booking_idx');
-                $table->index(['company_id', 'document_number_hash'], 'travel_passengers_company_doc_hash_idx');
+        if (schemaTableExists('travel_passengers')) {
+            // Issue #7452 — la table est créée par 2026_08_29_000608_6022_create_travel_bookings_and_passengers_table.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_passengers', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'booking_id')) {
+                    $table->unsignedBigInteger('booking_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'full_name')) {
+                    $table->string('full_name', 160)->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'birth_date')) {
+                    $table->date('birth_date')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'document_type')) {
+                    $table->string('document_type', 20)->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'document_number_encrypted')) {
+                    $table->text('document_number_encrypted')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'document_number_hash')) {
+                    $table->string('document_number_hash', 64)->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'age_category')) {
+                    $table->string('age_category', 20)->default('adult');
+                }
+                if (! schemaHasColumn('travel_passengers', 'class_id')) {
+                    $table->unsignedBigInteger('class_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'seat_number')) {
+                    $table->unsignedInteger('seat_number')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'unit_price_minor')) {
+                    $table->unsignedInteger('unit_price_minor')->nullable();
+                }
+                if (! schemaHasColumn('travel_passengers', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("ALTER TABLE travel_passengers ADD CONSTRAINT travel_passengers_document_type_check CHECK (document_type IS NULL OR document_type IN ('national_id', 'passport', 'birth_certificate', 'other'))");
-            DB::statement("ALTER TABLE travel_passengers ADD CONSTRAINT travel_passengers_age_category_check CHECK (age_category IN ('infant', 'child', 'adult'))");
-            DB::statement("COMMENT ON TABLE travel_passengers IS 'Passagers dune reservation — n de piece chiffre + hash, jamais en clair (TRAVEL-209/#6022).'");
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_passengers');
-        Schema::dropIfExists('travel_bookings');
+        if (schemaHasColumn('travel_passengers', 'company_id')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'booking_id')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('booking_id');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'full_name')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('full_name');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'birth_date')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('birth_date');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'document_type')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('document_type');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'document_number_encrypted')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('document_number_encrypted');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'document_number_hash')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('document_number_hash');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'age_category')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('age_category');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'class_id')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('class_id');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'seat_number')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('seat_number');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'unit_price_minor')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('unit_price_minor');
+            });
+        }
+        if (schemaHasColumn('travel_passengers', 'created_at')) {
+            Schema::table('travel_passengers', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'company_id')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'reference')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('reference');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'trip_id')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('trip_id');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'status')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'passenger_count')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('passenger_count');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'total_amount_minor')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('total_amount_minor');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'currency')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('currency');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'booking_source')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('booking_source');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'customer_contact_id')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('customer_contact_id');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'booked_by_user_id')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('booked_by_user_id');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'payment_status')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('payment_status');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'expires_at')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('expires_at');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'idempotency_key')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('idempotency_key');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'version')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('version');
+            });
+        }
+        if (schemaHasColumn('travel_bookings', 'created_at')) {
+            Schema::table('travel_bookings', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };
