@@ -49,11 +49,19 @@ class TravelLoyaltyController extends Controller
 
         $account = $service->findAccount((string) $actor->company_id, $contact);
 
-        return response()->json(['data' => [
-            'contact_identifier' => $account?->contact_identifier ?? $contact,
-            'points_balance' => $account?->points_balance ?? 0,
-            'opted_in' => $account?->isOptedIn() ?? false,
-        ]]);
+        // `findAccount()` rend `null` tant que le contact n'a pas consenti :
+        // l'absence de compte est un solde à zéro, jamais une erreur.
+        return response()->json(['data' => $account instanceof TravelLoyaltyAccount
+            ? [
+                'contact_identifier' => $account->contact_identifier,
+                'points_balance' => $account->points_balance,
+                'opted_in' => $account->isOptedIn(),
+            ]
+            : [
+                'contact_identifier' => $contact,
+                'points_balance' => 0,
+                'opted_in' => false,
+            ]]);
     }
 
     /** POST /loyalty/opt-in — consentement explicite (RGPD). */
@@ -141,7 +149,9 @@ class TravelLoyaltyController extends Controller
             (int) $request->validated('booking_id'),
         );
 
-        $account = $service->findAccount(
+        // Solde recalculé côté service (null-safe) : un compte peut ne pas
+        // encore exister après l'échange, le débit reste la source de vérité.
+        $pointsBalance = $service->balance(
             (string) $actor->company_id,
             (string) $request->validated('contact_identifier'),
         );
@@ -151,7 +161,7 @@ class TravelLoyaltyController extends Controller
             'type' => $entry->type,
             'points' => $entry->points,
             'booking_id' => $entry->booking_id,
-            'points_balance' => $account?->points_balance ?? 0,
+            'points_balance' => $pointsBalance,
         ]]);
     }
 
@@ -169,11 +179,18 @@ class TravelLoyaltyController extends Controller
 
         $account = $service->findAccount((string) $actor->company_id, $contact);
 
-        return response()->json(['data' => [
-            'contact_identifier' => $contact,
-            'opt_in' => $account?->isOptedIn() ?? false,
-            'points_balance' => $account?->points_balance ?? 0,
-        ]]);
+        // Un contact sans compte n'est pas une erreur : opt-in à faux, solde 0.
+        return response()->json(['data' => $account instanceof TravelLoyaltyAccount
+            ? [
+                'contact_identifier' => $contact,
+                'opt_in' => $account->isOptedIn(),
+                'points_balance' => $account->points_balance,
+            ]
+            : [
+                'contact_identifier' => $contact,
+                'opt_in' => false,
+                'points_balance' => 0,
+            ]]);
     }
 
     /** GET /loyalty/entries?contact_identifier=… — journal des points. */
