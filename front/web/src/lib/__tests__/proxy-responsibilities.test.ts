@@ -19,7 +19,8 @@ import { proxy } from '@/proxy';
  * que la migration ne puisse pas « faire taire un avertissement » en cassant un
  * comportement :
  *   1. gate d'auth de la zone dashboard (`/dashboard`, `/payroll`, …) ;
- *   2. `/signup` sans offre souscriptible → `/pricing#plans` ;
+ *   2. `/signup` accessible sans offre (#7488) ; visiteur déjà connecté →
+ *      `/dashboard` ;
  *   3. normalisation de la locale vitrine → en-tête `x-vitrine-lang`.
  */
 describe('proxy — convention Next 16 + responsabilités préservées (#7305)', () => {
@@ -87,9 +88,18 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
     });
   });
 
-  describe('③ /signup sans offre souscriptible → /pricing#plans', () => {
+  describe('③ /signup accessible sans offre (#7488)', () => {
+    it.each(['/signup', '/signup?plan=pro', '/signup?plan=', '/signup?source=navbar'])(
+      'sert %s directement (fin du choix de plan à l’inscription, décision #7487)',
+      (path) => {
+        const res = proxy(request(path));
+        expect(res.status).toBe(200);
+        expect(res.headers.get('location')).toBeNull();
+      },
+    );
+
     it.each(['free', 'pilot', 'operations', 'enterprise'])(
-      'conserve /signup?plan=%s (offre souscriptible)',
+      'conserve /signup?plan=%s (le rappel d’offre reste géré par le formulaire)',
       (plan) => {
         const res = proxy(request(`/signup?plan=${plan}`));
         expect(res.status).toBe(200);
@@ -97,16 +107,11 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
       },
     );
 
-    it.each(['/signup', '/signup?plan=pro', '/signup?plan=', '/signup?source=navbar'])(
-      'renvoie %s vers /pricing#plans',
-      (path) => {
-        const res = proxy(request(path));
-        expect(res.status).toBe(307);
-        // ⚠️ FRAGMENT et non query : un `?from=signup` faisait échouer le
-        // prefetch Next (e2e marketing-funnel, timeout 90 s) — cf. #7238.
-        expect(res.headers.get('location')).toBe(`${base}/pricing#plans`);
-      },
-    );
+    it('renvoie un visiteur DÉJÀ connecté vers /dashboard (jamais de second espace)', () => {
+      const res = proxy(request('/signup', { token: sessionCookie }));
+      expect(res.status).toBe(307);
+      expect(res.headers.get('location')).toBe(`${base}/dashboard`);
+    });
   });
 
   describe('④ normalisation de la locale vitrine (`?lang=`)', () => {
@@ -128,13 +133,13 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
       expect(res.headers.get('x-vitrine-lang')).toBe('en');
     });
 
-    it("n'écrase pas la redirection /signup par l'en-tête de locale", () => {
-      // L'ordre des responsabilités compte : la redirection « pas d'offre »
-      // passe AVANT la pose de `x-vitrine-lang` (une redirection n'est pas une
-      // réponse `next()`, elle ne porte pas l'en-tête).
+    it("propage la locale même sur /signup (plus de redirection « pas d'offre » depuis #7488)", () => {
+      // Avant #7488, `/signup` sans `?plan=` était renvoyé sur `/pricing#plans`
+      // AVANT la pose de l'en-tête. Désormais la page est servie : l'en-tête de
+      // locale doit donc être présent, comme sur toute la vitrine.
       const res = proxy(request('/signup?lang=en'));
-      expect(res.status).toBe(307);
-      expect(res.headers.get('x-vitrine-lang')).toBeNull();
+      expect(res.status).toBe(200);
+      expect(res.headers.get('x-vitrine-lang')).toBe('en');
     });
   });
 

@@ -8,14 +8,13 @@ import { FREE_GUIDED_TRIAL_HREF } from '../checkout';
  * prospect.
  *
  * `/checkout?plan=free` affiche une page dédiée (#3883/#4195) dont le CTA
- * principal menait à `/signup?source=checkout_plan_free` — SANS `plan=`. Or
- * le middleware redirige tout `/signup` sans plan valide vers `/pricing#plans`
- * (vérifié en production : 307 → `/pricing`). Le prospect choisissait le plan
- * Free puis atterrissait sur la page tarifs.
+ * principal menait à `/signup?source=checkout_plan_free` — SANS `plan=`, ce
+ * qui déclenchait alors la redirection middleware vers `/pricing#plans`.
  *
- * La cible vit désormais dans un constant unique ; ce test verrouille le fait
- * que `plan=free` reste dans l'URL ET que la page ne réintroduit pas l'ancien
- * lien littéral.
+ * Depuis #7488 (décision #7487), `/signup` est accessible sans plan et la
+ * redirection n'existe plus. Le `plan=free` est conservé dans l'URL pour le
+ * rappel d'offre et le tracking campagne ; ce test verrouille le constant
+ * unique et l'absence de l'ancien lien littéral.
  */
 describe('checkout — CTA essai guidé du plan Free (#7312)', () => {
   it('conserve le plan dans l’URL (sinon le middleware renvoie vers /pricing)', () => {
