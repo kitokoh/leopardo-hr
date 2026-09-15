@@ -17,12 +17,18 @@ use Tests\TestCase;
  * TRAVEL-905 (#6108) — Référentiels des annonces payantes : types et
  * positions (CRUD tenant-scoped, unicité (company_id, code), isolation
  * cross-tenant, RBAC rôles opérationnels).
+ *
+ * #7420 : le contrat d'API est celui des modèles (`label`, pas `name`) — les
+ * corps de requête/les assertions en `name` venaient d'une version antérieure
+ * du schéma (migration 000017) et faisaient échouer le fichier avant la
+ * moindre assertion. L'écriture des référentiels exige désormais un rôle
+ * gestion (403), ce que la classe vérifiait sans que le contrôleur l'applique.
  */
 class TravelAdvertCatalogTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private function principal(Company $company, string $role = 'manager', string $managerRole = 'principal'): Employee
+    private function principal(Company $company, string $role = 'manager', ?string $managerRole = 'principal'): Employee
     {
         /** @var Employee $employee */
         $employee = Employee::factory()->create([
@@ -49,27 +55,30 @@ class TravelAdvertCatalogTest extends TestCase
         $this->activateTravel($company);
         $this->principal($company);
 
-        $created = $this->postJson('/api/v1/travel/advert-types', [
+        $this->postJson('/api/v1/travel/advert-types', [
             'code' => 'image_banner',
-            'name' => 'Bannière image',
-        ])->assertStatus(201)
-            ->assertJsonPath('data.code', 'image_banner');
+            'label' => 'Bannière image',
+        ])->assertStatus(201);
 
-        $typeId = (int) $created->json('data.id');
+        $type = TravelAdvertType::query()->where('code', 'image_banner')->firstOrFail();
 
         // Unicité (company_id, code).
         $this->postJson('/api/v1/travel/advert-types', [
             'code' => 'image_banner',
-            'name' => 'Doublon',
+            'label' => 'Doublon',
         ])->assertStatus(422);
 
         // Mise à jour + suppression.
-        $this->putJson("/api/v1/travel/advert-types/{$typeId}", ['name' => 'Bannière premium'])
-            ->assertOk()
-            ->assertJsonPath('data.name', 'Bannière premium');
+        $this->putJson("/api/v1/travel/advert-types/{$type->id}", [
+            'code' => 'image_banner',
+            'label' => 'Bannière premium',
+        ])->assertOk();
 
-        $this->deleteJson("/api/v1/travel/advert-types/{$typeId}")->assertStatus(204);
-        $this->assertDatabaseMissing('travel_advert_types', ['id' => $typeId]);
+        $type->refresh();
+        self::assertSame('Bannière premium', $type->label);
+
+        $this->deleteJson("/api/v1/travel/advert-types/{$type->id}")->assertStatus(204);
+        $this->assertDatabaseMissing('travel_advert_types', ['id' => $type->id]);
     }
 
     public function test_advert_position_crud_and_unicity(): void
@@ -81,13 +90,16 @@ class TravelAdvertCatalogTest extends TestCase
 
         $this->postJson('/api/v1/travel/advert-positions', [
             'code' => 'home_top',
-            'name' => 'Accueil — haut',
+            'label' => 'Accueil — haut',
         ])->assertStatus(201);
 
         $this->postJson('/api/v1/travel/advert-positions', [
             'code' => 'home_top',
-            'name' => 'Doublon',
+            'label' => 'Doublon',
         ])->assertStatus(422);
+
+        $position = TravelAdvertPosition::query()->where('code', 'home_top')->firstOrFail();
+        self::assertSame('Accueil — haut', $position->label);
     }
 
     public function test_catalog_is_isolated_per_tenant(): void
@@ -102,7 +114,7 @@ class TravelAdvertCatalogTest extends TestCase
         app(TenantManager::class)->withinTenant($companyA, fn () => TravelAdvertType::query()->create([
             'company_id' => $companyA->id,
             'code' => 'only_a',
-            'name' => 'Réservé A',
+            'label' => 'Réservé A',
         ]));
 
         // L'utilisateur B ne voit pas les types de A et ne peut pas les modifier.
@@ -112,8 +124,10 @@ class TravelAdvertCatalogTest extends TestCase
             ->assertJsonCount(0, 'data');
 
         $typeA = app(TenantManager::class)->withinTenant($companyA, fn () => TravelAdvertType::query()->where('company_id', $companyA->id)->firstOrFail());
-        $this->putJson("/api/v1/travel/advert-types/{$typeA->id}", ['name' => 'piratage'])
-            ->assertStatus(404);
+        $this->putJson("/api/v1/travel/advert-types/{$typeA->id}", [
+            'code' => 'piratage',
+            'label' => 'Piratage',
+        ])->assertStatus(404);
     }
 
     public function test_catalog_write_requires_operational_role(): void
@@ -122,11 +136,15 @@ class TravelAdvertCatalogTest extends TestCase
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
         $this->activateTravel($company);
 
-        // Employé sans rôle manager : lecture OK, écriture refusée.
+        // Employé sans rôle manager : lecture OK, écriture refusée (#7420).
         $this->principal($company, role: 'employee', managerRole: null);
 
         $this->getJson('/api/v1/travel/advert-types')->assertOk();
-        $this->postJson('/api/v1/travel/advert-types', ['code' => 'x', 'name' => 'X'])
+
+        $this->postJson('/api/v1/travel/advert-types', ['code' => 'image_banner', 'label' => 'Bannière'])
+            ->assertStatus(403);
+
+        $this->postJson('/api/v1/travel/advert-positions', ['code' => 'home_top', 'label' => 'Accueil'])
             ->assertStatus(403);
     }
 

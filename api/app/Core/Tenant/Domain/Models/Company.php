@@ -142,6 +142,16 @@ class Company extends Model
         // s'affichait et **jetait silencieusement** la valeur envoyée.
         // L'entrée manquante rend l'interrupteur réellement agissant.
         'training',
+        // BC-24 TRAVEL / #7400 — module HORIZONTAL « Flotte & suivi des
+        // véhicules » (outil transverse : toute PME de terrain a des
+        // véhicules). Il doit figurer ici pour que l'admin plateforme
+        // (`PlatformCompanyFeatureController::update`) reconstruise et expose
+        // la clé, sans quoi le module ne serait ni activable ni mesurable.
+        // Fail-closed conservé (défaut false) ; le gate serveur `module.fleet`
+        // reste à trancher (voir #7400) — les routes Fleet sont aujourd'hui
+        // sous `api.manager` et la surface client est ouverte par capacité
+        // (`can_view_fleet`).
+        'fleet',
     ];
 
     /**

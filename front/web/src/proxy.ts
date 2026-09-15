@@ -56,6 +56,7 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
   // BC-19 (#7425) — mur de caméras + détail : même gate cosmétique de session
   // que le reste de la zone dashboard (la garde réelle reste l'API).
   '/cameras',
+  '/fleet',
 ];
 
 export function proxy(request: NextRequest) {
@@ -165,6 +166,7 @@ export const config = {
     '/restaurant/:path*', // BC-25 portail client (split /restaurant → /restaurateur)
     '/showcase/:path*', // BC-27 site vitrine tenant (management) — gate session
     '/cameras/:path*', // BC-19 mur de caméras + détail (#7425) — gate session
+    '/fleet/:path*', // #7400 flotte & véhicules de service (module horizontal)
     // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
     // Routes statiques (exactes) + préfixes dynamiques (source
     // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).

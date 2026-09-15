@@ -42,6 +42,8 @@ export const PROTECTED_PREFIXES = [
   // (`/cameras/{id}`) : données de vidéosurveillance, jamais servies sans
   // session. Le viewer tiers public vit hors de ce préfixe (`/view/cam`).
   '/cameras',
+  // #7400 — flotte & véhicules de service (module horizontal).
+  '/fleet',
 ] as const;
 
 /**
