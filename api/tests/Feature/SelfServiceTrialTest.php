@@ -6,11 +6,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
+use App\Events\CompanyCreated;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -573,5 +576,55 @@ class SelfServiceTrialTest extends TestCase
         $this->assertTrue((bool) ($features['accounting'] ?? false));
         $this->assertTrue((bool) ($features['crm'] ?? false));
         $this->assertArrayNotHasKey('reports', $features, 'Un outil sans flag plateforme ne doit pas inventer de clé.');
+    }
+
+    public function test_verify_keeps_the_account_when_post_provisioning_fails(): void
+    {
+        // #7441 — une exception survenant APRÈS le provisioning (activation
+        // d'une solution sectorielle, événement `CompanyCreated`, contexte
+        // tenant…) laissait la demande en `processing` : le prospect était
+        // alors bloqué DÉFINITIVEMENT (409 ALREADY_PROCESSED, puis
+        // EMAIL_ALREADY_REGISTERED même après une remise manuelle en
+        // `pending`, le manager orphelin déclenchant l'anti-énumération),
+        // alors que sa société et son manager existaient déjà.
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@postprov.dz',
+            'company' => 'Post Provisioning Co',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $otp = CompanyRequest::where('email', 'founder@postprov.dz')
+            ->where('status', 'pending')->firstOrFail()->verification_token;
+
+        // Échec simulé APRES le provisioning (le tenant existe déjà).
+        Event::listen(CompanyCreated::class, function (): void {
+            throw new RuntimeException('échec simulé après provisioning');
+        });
+
+        // Le prospect obtient quand même son compte : on ne le perd pas.
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@postprov.dz',
+            'code' => $otp,
+        ])->assertStatus(201);
+
+        $this->assertSame(
+            1,
+            DB::table('companies')->where('name', 'Post Provisioning Co')->count(),
+            'Le tenant doit exister.'
+        );
+
+        $this->assertSame(
+            0,
+            CompanyRequest::where('email', 'founder@postprov.dz')
+                ->where('status', 'processing')->count(),
+            'La demande ne doit jamais rester bloquée en `processing` (état sans issue).'
+        );
+
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder@postprov.dz',
+            'status' => 'approved',
+        ]);
     }
 }
