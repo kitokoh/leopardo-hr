@@ -199,6 +199,31 @@ dépend pas**, mais cache/session Redis restent indisponibles. Correctif : poser
 `REDIS_URL` (+ `REDIS_CLIENT=predis`) sur le service dev depuis le dashboard,
 puis revérifier le check `redis`.
 
+## 7bis. Contrôle de la production (Release déployée)
+
+La prod ne publie pas un SHA mais une **version de release** (`APP_VERSION`,
+ex. `4.32.0`) : la comparaison par commit y est impossible par construction. Le
+contrôle utile est « **la dernière Release publiée est-elle déployée ?** » :
+
+```bash
+# dernier tag publié (API GitHub, pas de clone nécessaire)
+curl -s -H "Authorization: Bearer $GH_TOKEN" \
+  "https://api.github.com/repos/kitokoh/leopardo-hr/releases/latest" | jq -r .tag_name
+
+dev-hub/tools/check-deploy-drift.sh \
+  --url https://leopardo-prod.onrender.com --expect v4.32.0 --label prod
+```
+
+Le script tolère le préfixe `v` (`v4.32.0` ↔ `4.32.0`) et compare des
+**versions** dès que la référence en est une — sans la résoudre comme une ref git
+(`git rev-parse v4.32.0` pointerait sur le commit du tag, ce qui faussait le
+contrôle). Résultat observé le 2026-09-15 : prod sert bien `4.32.0` (= dernier
+tag), `queue: 0`, `failed_jobs: 0`.
+
+La garde CI fait ce contrôle automatiquement (matrice `dev` + `prod`) : en prod,
+la référence est le **dernier tag publié**, donc « une Release n'a pas été
+déployée » est détecté au lieu d'être déclaré incomparable.
+
 ## 8. Ce que cette garde ne fait pas
 
 - Elle ne **corrige** pas la dérive : elle la rend visible (script + CI).
