@@ -1658,14 +1658,23 @@
   },
   "companyDetail": {
     "features": {
-      "rh": "Human Resources",
-      "finance": "Finance & Management",
-      "ai": "Artificial Intelligence",
-      "cameras": "Video Surveillance",
-      "tracking": "Fleet Tracking",
-      "planning": "Planning & Team",
-      "training": "Training Center",
-      "cabinet": "Document vault"
+      "rh": "Human resources",
+      "finance": "Finance & management",
+      "ai": "Artificial intelligence",
+      "cameras": "Video surveillance",
+      "tracking": "Fleet tracking",
+      "planning": "Planning & team",
+      "training": "Training centre",
+      "cabinet": "Digital cabinet",
+      "muhasebe": "Accounting (Turkey)",
+      "leo_ai": "Leopardo AI assistant",
+      "crm": "Customer relationship (CRM)",
+      "fuel_station": "Fuel stations",
+      "edumanager": "School management",
+      "restaurant": "Restaurant",
+      "travelagency": "Travel agency",
+      "accounting": "Accounting",
+      "company_showcase": "Showcase website"
     },
     "analyzing": "Analyzing client data...",
     "retry": "Retry",
@@ -5288,5 +5297,20 @@
     "purpose": "Purpose",
     "notFound": "Vehicle not found",
     "loading": "Loading…"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "Biometrics",
+      "tasks": "Tasks",
+      "advanced_reports": "Advanced reports",
+      "excel_export": "Excel export",
+      "bank_export": "Bank export",
+      "billing_auto": "Automatic billing",
+      "multi_managers": "Multiple managers",
+      "photo_attendance": "Photo attendance",
+      "api_public": "Public API",
+      "evaluations": "Evaluations",
+      "schema_isolation": "Data isolation"
+    }
   }
 }

@@ -1018,14 +1018,23 @@
     "updating": "Güncelleniyor...",
     "viewAllTickets": "Tüm talepleri gör",
     "features": {
-      "rh": "İnsan Kaynakları",
-      "finance": "Finans ve Yönetim",
-      "ai": "Yapay Zeka",
-      "cameras": "Video Gözetim",
-      "tracking": "Filo Takibi",
-      "planning": "Planlama ve Ekip",
-      "training": "Eğitim Merkezi",
-      "cabinet": "Belge kasası"
+      "rh": "İnsan kaynakları",
+      "finance": "Finans ve yönetim",
+      "ai": "Yapay zekâ",
+      "cameras": "Video gözetim",
+      "tracking": "Filo takibi",
+      "planning": "Planlama ve ekip",
+      "training": "Eğitim merkezi",
+      "cabinet": "Dijital dolap",
+      "muhasebe": "Muhasebe (Türkiye)",
+      "leo_ai": "Leopardo yapay zekâ asistanı",
+      "crm": "Müşteri ilişkileri (CRM)",
+      "fuel_station": "Akaryakıt istasyonları",
+      "edumanager": "Eğitim kurumu yönetimi",
+      "restaurant": "Restoran",
+      "travelagency": "Seyahat acentesi",
+      "accounting": "Muhasebe",
+      "company_showcase": "Tanıtım sitesi"
     }
   },
   "attendanceCorrectionRequestHint": "Talep, onay için İK'ya iletilecek.",
@@ -1382,6 +1391,19 @@
       "high": "Yüksek risk",
       "medium": "Orta risk",
       "low": "Düşük risk"
+    },
+    "features": {
+      "biometric": "Biyometri",
+      "tasks": "Görevler",
+      "advanced_reports": "Gelişmiş raporlar",
+      "excel_export": "Excel dışa aktarma",
+      "bank_export": "Banka dışa aktarma",
+      "billing_auto": "Otomatik faturalama",
+      "multi_managers": "Çoklu yönetici",
+      "photo_attendance": "Fotoğraflı devam",
+      "api_public": "Herkese açık API",
+      "evaluations": "Değerlendirmeler",
+      "schema_isolation": "Veri izolasyonu"
     }
   },
   "settingsCabinetPublic": "Genel",

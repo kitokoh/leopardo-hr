@@ -1665,7 +1665,16 @@
       "tracking": "تتبع الأسطول",
       "planning": "التخطيط والفريق",
       "training": "مركز التدريب",
-      "cabinet": "خزانة المستندات"
+      "cabinet": "الخزانة الرقمية",
+      "muhasebe": "المحاسبة (تركيا)",
+      "leo_ai": "مساعد ليوباردو الذكي",
+      "crm": "إدارة العملاء (CRM)",
+      "fuel_station": "محطات الوقود",
+      "edumanager": "إدارة المؤسسة التعليمية",
+      "restaurant": "المطاعم",
+      "travelagency": "وكالة سفر",
+      "accounting": "المحاسبة",
+      "company_showcase": "موقع تعريفي"
     },
     "analyzing": "جاري تحليل بيانات العميل...",
     "retry": "إعادة المحاولة",
@@ -5288,5 +5297,20 @@
     "purpose": "الغرض",
     "notFound": "المركبة غير موجودة",
     "loading": "جار التحميل…"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "القياسات الحيوية",
+      "tasks": "المهام",
+      "advanced_reports": "تقارير متقدمة",
+      "excel_export": "تصدير Excel",
+      "bank_export": "تصدير بنكي",
+      "billing_auto": "فوترة تلقائية",
+      "multi_managers": "مديرون متعددون",
+      "photo_attendance": "الحضور بالصورة",
+      "api_public": "واجهة برمجية عامة",
+      "evaluations": "التقييمات",
+      "schema_isolation": "عزل البيانات"
+    }
   }
 }
