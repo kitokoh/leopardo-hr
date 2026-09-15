@@ -362,3 +362,19 @@ mécaniquement à tous les targets du catalogue. Aucun écran de l'admin
 plateforme ne consomme ces clés ; les scénarios listés ci-dessus restent valides
 et inchangés. Même situation que la note mobile du 2026-09-13 (PR #7333).
 >
+
+## Note de conservation — acces demo (#7402, 2026-09-14)
+
+Le panneau « ACCES DEMO — CHOISIR UN PROFIL » de `/login` change de **contenu**, pas de parcours.
+
+- Le panneau ne rend plus que les personas de **sa** surface (`surface === 'admin-platform'`). Les personas
+  `web-manager` / `kiosk-supervisor` / `mobile-employee` appartiennent aux surfaces web client, kiosque et mobile :
+  elles n'apparaissaient ici que pour echouer, puisque `POST /platform/auth/login` ne connait que `super_admins`.
+- Le scenario « un clic sur une persona connecte reellement » devient donc **verifiable** : c'est une garde de fumee
+  ajoutee cote API (`DemoUserControllerTest::test_demo_users_personas_can_actually_log_into_the_platform`), qui.
+  verifie que le mot de passe annonce par `/demo-users` authentifie le super admin seede.
+- Aucun autre scenario de cette matrice n'est modifie : navigation, guards, vues critiques et garde-fous a11y
+  restent inchanges.
+
+> Les personas des autres surfaces restent visibles depuis **leur** application (web client / kiosque / mobile) ;
+> leur suppression ici est un correctif, pas une perte de fonctionnalite.
