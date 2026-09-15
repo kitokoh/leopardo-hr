@@ -14,7 +14,12 @@ return [
 
     'guard' => ['web'],
 
-    'expiration' => (int) env('SANCTUM_TOKEN_EXPIRATION', 10080),
+    // #7491 — session client 30 jours glissants (43 200 min). La rotation
+    // glissante est assurée par TokenAutoRefreshMiddleware (fenêtre
+    // `sanctum.auto_refresh_window`, 24 h par défaut) : un utilisateur actif
+    // ne voit jamais l'écran de connexion, un utilisateur inactif garde sa
+    // session 30 jours.
+    'expiration' => (int) env('SANCTUM_TOKEN_EXPIRATION', 43200),
 
     'token_prefix' => env('SANCTUM_TOKEN_PREFIX', ''),
 

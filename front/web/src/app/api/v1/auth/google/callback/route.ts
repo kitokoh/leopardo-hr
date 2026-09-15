@@ -21,7 +21,7 @@ import { resolveBackendBaseUrl } from "@/lib/backend-url";
 const COOKIE_NAME = "leopardo_token";
 /** Identité Google vérifiée, en transit vers le formulaire d'inscription. */
 const GOOGLE_SIGNUP_COOKIE = "leopardo_google_signup";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 jours — aligné sur Sanctum
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 jours — session glissante (#7491), alignée sur SANCTUM_TOKEN_EXPIRATION
 const GOOGLE_TIMEOUT_MS = 60_000;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
