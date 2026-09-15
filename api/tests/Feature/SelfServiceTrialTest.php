@@ -6,11 +6,14 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
+use App\Events\CompanyCreated;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use RuntimeException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -438,7 +441,6 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-
     public function test_five_bad_otps_lock_the_email(): void
     {
         Mail::fake();
@@ -478,7 +480,6 @@ class SelfServiceTrialTest extends TestCase
         $this->assertNotNull($request->otp_locked_until);
     }
 
-
     public function test_valid_otp_resets_attempt_counter(): void
     {
         Mail::fake();
@@ -507,6 +508,123 @@ class SelfServiceTrialTest extends TestCase
             'email' => 'founder@retry.dz',
             'status' => 'approved',
             'otp_attempts' => 0,
+        ]);
+    }
+
+    /**
+     * #7397 — Le profil d'activité et les outils cochés à l'inscription
+     * self-service étaient validés et stockés (`company_requests.signup_payload`)
+     * puis **jetés** par le provisioning : un indépendant était persisté en
+     * « company » (le filtrage solo ne s'appliquait donc jamais) et les outils
+     * choisis restaient verrouillés — d'où un menu client vide alors que
+     * l'écran venait de les proposer.
+     */
+    public function test_self_service_signup_persists_company_type_and_module_selection(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'solo@independant.dz',
+            'company' => 'Studio Solo',
+            'country' => 'DZ',
+            'company_type' => 'solo',
+            'modules' => ['accounting', 'crm', 'reports'],
+        ])->assertStatus(200);
+
+        $companyRequest = CompanyRequest::where('email', 'solo@independant.dz')
+            ->where('status', 'pending')
+            ->first();
+        $this->assertNotNull($companyRequest);
+
+        // Le payload d'inscription doit réellement porter les deux champs :
+        // sans cette assertion, un futur durcissement de la validation rendrait
+        // le test vert sans rien prouver.
+        $this->assertSame('solo', $companyRequest->signup_payload['company_type'] ?? null);
+        $this->assertSame(['accounting', 'crm', 'reports'], $companyRequest->signup_payload['modules'] ?? null);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'solo@independant.dz',
+            'code' => $companyRequest->verification_token,
+        ])->assertStatus(201);
+
+        $company = Company::where('name', 'Studio Solo')->first();
+        $this->assertNotNull($company);
+
+        // 1. Profil persité : sans lui, `isSolo()` est faux et la règle serveur
+        //    de filtrage solo ne s'applique jamais.
+        $this->assertTrue($company->isSolo(), 'Le profil solo déclaré doit être persisté.');
+
+        // 2. Sélection normalisée sur TOUTES les clés de HORIZONTAL_TOOLS.
+        $modules = $company->metadata['modules'] ?? null;
+        $this->assertIsArray($modules);
+        $this->assertTrue($modules['accounting'], 'Outil coché à l\'inscription => actif.');
+        $this->assertTrue($modules['crm']);
+        $this->assertTrue($modules['reports']);
+        $this->assertFalse($modules['marketing'], 'Outil NON coché => explicitement false (la sélection fait autorité).');
+
+        // 3. Outils d'ÉQUIPE forcés à false pour un indépendant (règle serveur #7235).
+        foreach (Company::TEAM_TOOLS as $teamTool) {
+            $this->assertFalse(
+                $modules[$teamTool],
+                "L'outil d'équipe {$teamTool} doit être désactivé pour un profil solo."
+            );
+        }
+
+        // 4. Miroir vers les feature flags plateforme, pour les seules clés qui
+        //    en ont un (la correspondance vit dans Company::HORIZONTAL_TOOL_FEATURES).
+        $features = $company->features ?? [];
+        $this->assertTrue((bool) ($features['accounting'] ?? false));
+        $this->assertTrue((bool) ($features['crm'] ?? false));
+        $this->assertArrayNotHasKey('reports', $features, 'Un outil sans flag plateforme ne doit pas inventer de clé.');
+    }
+
+    public function test_verify_keeps_the_account_when_post_provisioning_fails(): void
+    {
+        // #7441 — une exception survenant APRÈS le provisioning (activation
+        // d'une solution sectorielle, événement `CompanyCreated`, contexte
+        // tenant…) laissait la demande en `processing` : le prospect était
+        // alors bloqué DÉFINITIVEMENT (409 ALREADY_PROCESSED, puis
+        // EMAIL_ALREADY_REGISTERED même après une remise manuelle en
+        // `pending`, le manager orphelin déclenchant l'anti-énumération),
+        // alors que sa société et son manager existaient déjà.
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@postprov.dz',
+            'company' => 'Post Provisioning Co',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $otp = CompanyRequest::where('email', 'founder@postprov.dz')
+            ->where('status', 'pending')->firstOrFail()->verification_token;
+
+        // Échec simulé APRES le provisioning (le tenant existe déjà).
+        Event::listen(CompanyCreated::class, function (): void {
+            throw new RuntimeException('échec simulé après provisioning');
+        });
+
+        // Le prospect obtient quand même son compte : on ne le perd pas.
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@postprov.dz',
+            'code' => $otp,
+        ])->assertStatus(201);
+
+        $this->assertSame(
+            1,
+            DB::table('companies')->where('name', 'Post Provisioning Co')->count(),
+            'Le tenant doit exister.'
+        );
+
+        $this->assertSame(
+            0,
+            CompanyRequest::where('email', 'founder@postprov.dz')
+                ->where('status', 'processing')->count(),
+            'La demande ne doit jamais rester bloquée en `processing` (état sans issue).'
+        );
+
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder@postprov.dz',
+            'status' => 'approved',
         ]);
     }
 }
