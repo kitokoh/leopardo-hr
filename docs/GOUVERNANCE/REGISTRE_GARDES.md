@@ -92,6 +92,12 @@
 | `check-runbooks.sh`, `check-architecture-docs-parity.sh` | runbooks présents, docs ↔ architecture | bloque/rapporte |
 | `check-governance.ps1`, `repository-hygiene-report.ps1` | gouvernance & hygiène globale | rapporte |
 
+## 9bis. Front admin (console super-admin)
+
+| Garde | Vérifie | Bloque / rapporte |
+|---|---|---|
+| `check-admin-action-labels.py` (+ auto-test `-test.sh`, workflow `web-ci.yml`) | libellés d'action en dur dans les templates (en-tête « Actions », « Modifier »/« Supprimer »/« Edit »/« Delete ») et actions de ligne sans nom accessible — convention unique `RowActionButton` (issue #7434) | bloque |
+
 ## 10. Sécurité
 
 Secret scanning (TruffleHog), CodeQL, `owasp-zap.yml`, `secret-history-scan.yml`,
