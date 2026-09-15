@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 
 class PlatformCompanyFeatureApiTest extends TestCase
 {
@@ -79,5 +78,78 @@ class PlatformCompanyFeatureApiTest extends TestCase
         $this->assertArrayNotHasKey('unknown', $company->features ?? []);
     }
 
+    /**
+     * #7432 — la Formation est un module CONNU : le switch admin agit
+     * réellement (avant, `training` absent de `KNOWN_MODULES` faisait jeter
+     * silencieusement la clé => l'écran mentait).
+     */
+    public function test_training_feature_is_persisted_and_exposed(): void
+    {
+        $company = Company::factory()->create(['features' => ['rh' => true]]);
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        // Fail-closed au départ + clé désormais connue du registre.
+        $this->getJson("/api/v1/platform/companies/{$company->id}/features")
+            ->assertOk()
+            ->assertJsonPath('data.features.training', false);
+
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['training' => true],
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.features.training', true);
+
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('training'));
+
+        // Le switch peut aussi l'éteindre.
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['training' => false],
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.features.training', false);
+
+        $company->refresh();
+        $this->assertFalse($company->hasFeature('training'));
+    }
+
+    /**
+     * #7432 — non-régression : une clé ABSENTE du payload conserve la valeur
+     * effective du tenant. Sans cette garantie, l'ajout d'un module à
+     * `KNOWN_MODULES` éteindrait les features de tout client dont le
+     * formulaire n'envoie pas la clé.
+     */
+    public function test_omitted_modules_keep_their_current_value(): void
+    {
+        $company = Company::factory()->create([
+            'features' => ['rh' => true, 'cameras' => true, 'training' => true],
+        ]);
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin2@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        // Payload partiel : `cameras` et `training` ne sont pas envoyés.
+        $this->patchJson("/api/v1/platform/companies/{$company->id}/features", [
+            'features' => ['finance' => true],
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.features.finance', true)
+            ->assertJsonPath('data.features.cameras', true)
+            ->assertJsonPath('data.features.training', true);
+
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('cameras'));
+        $this->assertTrue($company->hasFeature('training'));
+        $this->assertTrue($company->hasFeature('finance'));
+    }
 }

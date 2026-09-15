@@ -1657,6 +1657,16 @@
     "downloading": "Indiriliyor..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "İnsan Kaynakları",
+      "finance": "Finans ve Yönetim",
+      "ai": "Yapay Zeka",
+      "cameras": "Video Gözetim",
+      "tracking": "Filo Takibi",
+      "planning": "Planlama ve Ekip",
+      "training": "Eğitim Merkezi",
+      "cabinet": "Belge kasası"
+    },
     "analyzing": "Musteri verileri analiz ediliyor...",
     "retry": "Tekrar dene",
     "fieldAdoption": "Saha Benimsemesi",

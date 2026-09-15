@@ -1010,7 +1010,17 @@
     "teamActive": "Active Team",
     "updateSubscription": "Update subscription",
     "updating": "Updating...",
-    "viewAllTickets": "View all tickets"
+    "viewAllTickets": "View all tickets",
+    "features": {
+      "rh": "Human Resources",
+      "finance": "Finance & Management",
+      "ai": "Artificial Intelligence",
+      "cameras": "Video Surveillance",
+      "tracking": "Fleet Tracking",
+      "planning": "Planning & Team",
+      "training": "Training Center",
+      "cabinet": "Document vault"
+    }
   },
   "attendanceCorrectionRequestHint": "The request will be sent to HR for validation.",
   "salaryAdvanceError": "Failed: {error}",

@@ -200,6 +200,12 @@ class Company extends Model
         'accounting' => 'accounting',
         'crm' => 'crm',
         'showcase' => 'company_showcase',
+        // #7432 — la Formation est horizontale ET possède un flag plateforme
+        // du même nom (`config/feature-flags.php`) : l'auto-activation par le
+        // client (`POST /company/modules/training/activate`) doit donc écrire
+        // les deux sources de vérité (`metadata.modules.training` ET
+        // `companies.features.training`), comme `showcase`.
+        'training' => 'training',
     ];
 
     /**

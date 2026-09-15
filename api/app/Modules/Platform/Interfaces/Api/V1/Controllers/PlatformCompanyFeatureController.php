@@ -45,11 +45,17 @@ class PlatformCompanyFeatureController extends Controller
 
         $before = $company->features ?? [];
 
+        // #7432 — les features EFFECTIVES du tenant (registre résolu) servent
+        // de valeur de repli quand une clé est absente du payload : un client
+        // qui n'envoie pas `features.training` ne doit pas éteindre le module
+        // par surprise (même garantie que pour les autres modules).
+        $current = FeatureFlag::for($company);
+
         $features = [];
         foreach (Company::KNOWN_MODULES as $module) {
             $features[$module] = $module === 'rh'
                 ? true
-                : (bool) ($validated['features'][$module] ?? false);
+                : (bool) ($validated['features'][$module] ?? $current[$module] ?? false);
         }
 
         $company->features = $features;
