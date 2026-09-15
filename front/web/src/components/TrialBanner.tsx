@@ -73,7 +73,9 @@ export function TrialBanner({
         }`}
       >
         {expired ? <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" /> : <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />}
-        <span>{message}</span>
+        {/* #7422 — icône seule : le décompte reste accessible (titre + `sr-only`),
+            il ne consomme plus la largeur de la barre du haut. */}
+        <span className="sr-only">{message}</span>
       </Link>
     );
   }
