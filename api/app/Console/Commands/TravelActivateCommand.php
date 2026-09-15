@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
 use App\Modules\TravelAgency\Domain\Exceptions\TravelActivationFailedException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 /**
  * leopardo:travel:activate — Active la verticale TravelAgency pour un tenant.
@@ -61,12 +62,30 @@ final class TravelActivateCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Résout le tenant par UUID **ou** par slug.
+     *
+     * Correctif audit 2026-09-14 : l'ancien test `str_contains($identifier, '-')`
+     * prenait tout slug pour un UUID (tous les slugs contiennent un tiret) et
+     * provoquait `SQLSTATE[22P02] invalid input syntax for type uuid` — la
+     * commande, documentée « ID (UUID) ou slug », était inutilisable avec un
+     * slug. Pattern aligné sur `SeedAccountingDemoCommand::resolveCompany()`
+     * (`Str::isUuid` + repli slug).
+     */
     private function resolveCompany(string $identifier): ?Company
     {
-        if (str_contains($identifier, '-')) {
-            return Company::query()->where('id', $identifier)->first();
+        if (Str::isUuid($identifier)) {
+            /** @var Company|null $byId */
+            $byId = Company::query()->where('id', $identifier)->first();
+
+            if ($byId instanceof Company) {
+                return $byId;
+            }
         }
 
-        return Company::query()->where('slug', $identifier)->first();
+        /** @var Company|null $bySlug */
+        $bySlug = Company::query()->where('slug', $identifier)->first();
+
+        return $bySlug;
     }
 }
