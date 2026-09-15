@@ -33,6 +33,13 @@ final class TravelLoyaltyService
     public const REDEEM_RATE = 10;
 
     /**
+     * Motif par defaut d un echange direct de points. Le libelle vit ici, hors
+     * des surfaces couvertes par la garde i18n PA2-I18N-007 (qui interdit un
+     * litteral accentue dans un controleur) — #7445.
+     */
+    public const DEFAULT_REDEEM_REASON = 'Récompense fidélité';
+
+    /**
      * Crédite les points d'un billet émis (no-op si pas d'opt-in ou billet
      * déjà crédité). Retourne le nombre de points crédités (0 sinon).
      */
@@ -183,7 +190,7 @@ final class TravelLoyaltyService
         string $contactIdentifier,
         int $points,
         ?int $bookingId = null,
-        string $reason = 'Récompense fidélité',
+        string $reason = self::DEFAULT_REDEEM_REASON,
     ): array {
         if ($points <= 0) {
             abort(422, 'Points invalides.');

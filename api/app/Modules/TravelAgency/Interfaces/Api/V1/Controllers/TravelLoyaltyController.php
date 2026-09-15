@@ -108,12 +108,14 @@ class TravelLoyaltyController extends Controller
             abort(403);
         }
 
+        $reason = $request->validated('reason');
+
         $result = $service->redeemPoints(
             (string) $actor->company_id,
             $contact,
             (int) $request->validated('points'),
             $request->validated('booking_id') !== null ? (int) $request->validated('booking_id') : null,
-            (string) ($request->validated('reason') ?? 'Récompense fidélité'),
+            is_string($reason) && $reason !== '' ? $reason : TravelLoyaltyService::DEFAULT_REDEEM_REASON,
         );
 
         return response()->json(['data' => $result]);
