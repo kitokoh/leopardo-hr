@@ -32,13 +32,17 @@ class SessionDurationTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create();
+        $company = Company::factory()->create();
+        assert($company instanceof Company);
+        $this->company = $company;
 
-        $this->manager = Employee::factory()->create([
+        $manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        assert($manager instanceof Employee);
+        $this->manager = $manager;
     }
 
     protected function tearDown(): void
