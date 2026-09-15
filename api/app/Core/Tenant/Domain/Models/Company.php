@@ -270,7 +270,8 @@ class Company extends Model
      * un MINIMUM, pas un défaut).
      *
      * Source de vérité : cette constante est appliquée côté serveur
-     * (`HorizontalToolSelection::resolve`, `CompanyModuleController::activate`)
+     * (`HorizontalToolSelection::resolve`, `CompanyModuleController::activate`,
+     * `Company::moduleSelection()` pour rattraper les tenants déjà provisionnés)
      * — un client ne se garde pas lui-même ; `front/web/src/lib/client-features.ts`
      * ne fait que la refléter pour l'affichage.
      */
@@ -279,6 +280,15 @@ class Company extends Model
         'absences',
         'payroll',
     ];
+
+    /**
+     * Alias de `SOLO_FLOOR_TOOLS` introduit par le lot BC-02 (#7423) — les deux
+     * implémentations concurrentes du plancher ont fusionné ; les deux noms
+     * restent valides et désignent la même liste canonique.
+     *
+     * @var array<int, string>
+     */
+    public const SOLO_FLOOR_MODULES = self::SOLO_FLOOR_TOOLS;
 
     /**
      * #7423 — un outil d'équipe est-il au plancher garanti du profil `solo` ?
@@ -311,6 +321,13 @@ class Company extends Model
      * historiques / inscription rapide) → l'interface garde son comportement
      * antérieur, aucun client existant n'est verrouillé par surprise.
      *
+     * #7423 — pour un tenant `solo` dont la sélection EXISTE déjà, le plancher
+     * d'accès (`SOLO_FLOOR_MODULES`) est forcé à `true` : les tenants `solo`
+     * provisionnés avant ce correctif portent une sélection où pointage,
+     * congés et paie sont à `false` (règle #7235) et resteraient sans aucun
+     * outil RH. Contrat #7235 préservé : une sélection ABSENTE reste `null`
+     * (aucun verrouillage rétroactif des tenants historiques).
+     *
      * @return array<string, bool>|null
      */
     public function moduleSelection(): ?array
@@ -329,7 +346,17 @@ class Company extends Model
             }
         }
 
-        return $selection === [] ? null : $selection;
+        if ($selection === []) {
+            return null;
+        }
+
+        if ($this->isSolo()) {
+            foreach (self::SOLO_FLOOR_MODULES as $tool) {
+                $selection[$tool] = true;
+            }
+        }
+
+        return $selection;
     }
 
     /**
