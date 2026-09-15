@@ -1,0 +1,106 @@
+name: Deploy Drift Guard
+
+# Issue #7304 — l'environnement dev Render servait un commit ~50 PR en retard
+# sur `main` : toute campagne QA validait du code périmé (faux bugs, vrais
+# correctifs invérifiables). Aucun comparateur « version déployée ↔ SHA de
+# main » n'existait dans le dépôt. Cette garde le fournit et échoue
+# VISIBLEMENT quand l'environnement cible ne sert pas le commit attendu.
+#
+# Portée : signal fort, planifié (hors PR) — elle n'est donc pas un check
+# requis au merge et n'allonge aucun cycle de PR. Elle tourne aussi à la
+# demande (`workflow_dispatch`) pour servir de pré-vol avant une recette.
+#
+# Le script est `dev-hub/tools/check-deploy-drift.sh` (utilisable en local :
+# c'est lui qui porte la sémantique et les codes de sortie).
+
+on:
+  schedule:
+    # Toutes les 30 minutes, décalé des autres gardes (05:37, */5 queue…).
+    - cron: "13,43 * * * *"
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL de l'API à vérifier (base ou .../health)"
+        type: string
+        default: ""
+      label:
+        description: "Étiquette du rapport"
+        type: string
+        default: "dev"
+      expect:
+        description: "SHA ou ref attendue (vide = SHA de main au moment du run)"
+        type: string
+        default: ""
+      allow_release:
+        description: "Ne pas échouer si l'environnement publie une version de release (ex. 4.31.0)"
+        type: boolean
+        default: false
+      strict_failed:
+        description: "Échouer si failed_jobs dépasse le seuil (aucun worker de queue)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: deploy-drift-guard
+  cancel-in-progress: false
+
+jobs:
+  drift:
+    name: Déploiement aligné sur main (#7304)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.repository == 'kitokoh/leopardo-hr'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Résoudre la cible
+        id: target
+        shell: bash
+        env:
+          INPUT_URL: ${{ inputs.url }}
+          VAR_URL: ${{ vars.DEV_API_BASE_URL }}
+        run: |
+          set -Eeuo pipefail
+          url="${INPUT_URL:-${VAR_URL:-}}"
+          if [[ -z "${url}" ]]; then
+            echo "::error::aucune URL : renseigner l'input « url » ou la variable de dépôt DEV_API_BASE_URL (#7304)."
+            exit 1
+          fi
+          echo "url=${url}" >> "$GITHUB_OUTPUT"
+          echo "Cible : ${url}"
+
+      - name: Vérifier la dérive (version déployée ↔ main)
+        shell: bash
+        env:
+          TARGET_URL: ${{ steps.target.outputs.url }}
+          LABEL: ${{ inputs.label || 'dev' }}
+          EXPECT: ${{ inputs.expect }}
+          SHA: ${{ github.sha }}
+          ALLOW_RELEASE: ${{ inputs.allow_release }}
+          STRICT_FAILED: ${{ inputs.strict_failed }}
+        run: |
+          set -Eeuo pipefail
+          args=(--url "${TARGET_URL}" --label "${LABEL}" --expect "${EXPECT:-${SHA}}")
+          if [[ "${ALLOW_RELEASE:-false}" == "true" ]]; then
+            args+=(--allow-release)
+          fi
+          if [[ "${STRICT_FAILED:-false}" == "true" ]]; then
+            args+=(--strict-failed)
+          fi
+          bash dev-hub/tools/check-deploy-drift.sh "${args[@]}"
+
+      - name: Rappel du runbook
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Dérive détectée — runbook : docs/ops/RENDER_DEV_ALIGNMENT.md (aligner l'environnement sur main AVANT toute recette)."
