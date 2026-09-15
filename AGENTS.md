@@ -133,6 +133,27 @@ Un prefixe deja pris = renumero ter (ex. `000006` -> `000007`) en gardant
 l'ordre chronologique (la migration la plus ancienne conserve son prefixe).
 Le commit precedent `fix/1962-*` est l'exemple canonique.
 
+## Garde « une table, une migration » (#7452 / tranche #7455)
+
+Deux migrations qui font `Schema::create('<table>')` sont **une seule et même
+déclaration** : la première exécutée gagne (`if (! schemaTableExists())`) et les
+suivantes sont ignorées **silencieusement**. Quand leurs colonnes divergent, tout
+le code écrit contre la dernière génération casse en `column "x" does not exist`
+— souvent masqué par une cascade `25P02` (223 échecs de `tests/Feature/Travel`).
+
+- **Ne jamais** créer une table par un second `Schema::create` : pour rattraper
+  une colonne, une migration `Schema::table` **idempotente** (`schemaHasColumn`).
+- Vérifier localement avant push :
+  ```bash
+  python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main
+  ```
+  (garde CI `.github/workflows/migration-duplication-guard.yml`). L'inventaire de
+  la dette (68 tables dupliquées, 36 divergentes) et les colonnes réellement
+  absentes du schéma : `docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md`
+  (`--audit` régénère le document).
+- La résorption se fait **module par module** (#7452, #7417, #7410) : un
+  `--strict` peut être activé sur un module déjà assaini.
+
 ## Garde post-merge `Closes #` (issue #2512)
 
 Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
