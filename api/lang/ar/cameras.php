@@ -11,5 +11,8 @@ return [
     'access_revoked' => 'تم إلغاء الوصول.',
     'access_expired' => 'انتهت صلاحية الوصول.',
     'third_party_access' => 'وصول طرف ثالث',
+    'alert_title' => 'تنبيه الكاميرا',
+    'alert_body' => 'تم اكتشاف حدث على الكاميرا «:camera». افتح التطبيق للتعامل معه.',
+    'unknown_camera' => 'كاميرا غير معروفة',
     'live_view' => 'بث مباشر',
 ];
