@@ -50,10 +50,21 @@ class TravelLoyaltyController extends Controller
         $account = $service->findAccount((string) $actor->company_id, $contact);
 
         return response()->json(['data' => [
-            'contact_identifier' => $account?->contact_identifier ?? $contact,
-            'points_balance' => $account?->points_balance ?? 0,
-            'opted_in' => $account?->isOptedIn() ?? false,
+            'contact_identifier' => $account instanceof TravelLoyaltyAccount
+                ? (string) $account->contact_identifier
+                : $contact,
+            'points_balance' => $this->balanceOf($account),
+            'opted_in' => $account instanceof TravelLoyaltyAccount && $account->isOptedIn(),
         ]]);
+    }
+
+    /**
+     * PHPStan strict (`nullsafe.neverNull`) refuse `$account?->points_balance ?? 0` :
+     * l'accès sûr à la propriété est remplacé par un test explicite.
+     */
+    private function balanceOf(?TravelLoyaltyAccount $account): int
+    {
+        return $account instanceof TravelLoyaltyAccount ? $account->points_balance : 0;
     }
 
     /** POST /loyalty/opt-in — consentement explicite (RGPD). */
@@ -151,7 +162,7 @@ class TravelLoyaltyController extends Controller
             'type' => $entry->type,
             'points' => $entry->points,
             'booking_id' => $entry->booking_id,
-            'points_balance' => $account?->points_balance ?? 0,
+            'points_balance' => $this->balanceOf($account),
         ]]);
     }
 
@@ -171,8 +182,8 @@ class TravelLoyaltyController extends Controller
 
         return response()->json(['data' => [
             'contact_identifier' => $contact,
-            'opt_in' => $account?->isOptedIn() ?? false,
-            'points_balance' => $account?->points_balance ?? 0,
+            'opt_in' => $account instanceof TravelLoyaltyAccount && $account->isOptedIn(),
+            'points_balance' => $this->balanceOf($account),
         ]]);
     }
 

@@ -87,7 +87,10 @@ class TravelSolutionManifestTest extends TestCase
         $permissions = $manifest->permissions();
         $this->assertNotEmpty($permissions);
         $this->assertArrayHasKey('travel.manage', $permissions);
-        $this->assertIsString($permissions['travel.manage']);
+        // `assertIsString()` sur une valeur déjà typée `string` est tautologique
+        // (PHPStan strict : « will always evaluate to true ») — on vérifie le
+        // CONTENU, qui est ce qui porte le contrat de la permission.
+        $this->assertNotEmpty($permissions['travel.manage']);
     }
 
     public function test_travelagency_is_absent_from_catalogue_allowlist_when_unknown_code(): void
