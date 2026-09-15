@@ -31,6 +31,17 @@ docker compose exec api php artisan leopardo:migrate --seed
 # Vitrine Next.js:  http://localhost:3000 (after npm run dev)
 ```
 
+> **Recette sur un environnement déployé (issue #7304)** : un environnement peut
+> répondre `200` en servant un commit vieux de 50 PR. Avant toute campagne QA,
+> vérifiez que la version **réellement servie** est celle de `main` :
+>
+> ```bash
+> dev-hub/tools/check-deploy-drift.sh --url "$DEV_API_BASE_URL" --expect origin/main --label dev
+> ```
+>
+> `0` = aligné, `1` = dérive (le script nomme les deux SHAs), `2` = environnement
+> injoignable. Runbook : `docs/ops/RENDER_DEV_ALIGNMENT.md`.
+
 ## Project Structure
 
 ```
