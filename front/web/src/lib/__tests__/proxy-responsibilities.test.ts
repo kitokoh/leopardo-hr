@@ -114,6 +114,26 @@ describe('proxy — convention Next 16 + responsabilités préservées (#7305)',
     });
   });
 
+  describe('③bis / (accueil vitrine) avec session active → /dashboard (#7492)', () => {
+    it('redirige un utilisateur connecté vers son espace', () => {
+      const res = proxy(request('/', { token: sessionCookie }));
+      expect(res.status).toBe(307);
+      expect(res.headers.get('location')).toBe(`${base}/dashboard`);
+    });
+
+    it('sert l’accueil normalement à un visiteur anonyme', () => {
+      const res = proxy(request('/'));
+      expect(res.status).toBe(200);
+      expect(res.headers.get('location')).toBeNull();
+    });
+
+    it('sert l’accueil à un cookie de forme invalide (la garde dashboard tranchera)', () => {
+      const res = proxy(request('/', { token: 'trop-court' }));
+      expect(res.status).toBe(200);
+      expect(res.headers.get('location')).toBeNull();
+    });
+  });
+
   describe('④ normalisation de la locale vitrine (`?lang=`)', () => {
     it('propage `?lang=` dans `x-vitrine-lang`', () => {
       for (const [lang, expected] of [['en', 'en'], ['tr', 'tr'], ['ar', 'ar'], ['fr', 'fr']]) {
