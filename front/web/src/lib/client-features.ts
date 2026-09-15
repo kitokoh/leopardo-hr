@@ -43,16 +43,30 @@ export type ClientModuleScope = 'core' | 'business';
  * La règle est aussi posée côté serveur (`Company::TEAM_TOOLS`, appliquée au
  * provisioning) ; on la rejoue ici pour qu'une session ancienne ou un payload
  * partiel ne fasse jamais réapparaître pointage/employés chez un indépendant.
+ *
+ * #7423 — les clés du PLANCHER (`SOLO_FLOOR_MODULE_KEYS`) sont sorties de
+ * cette liste : elles ne sont plus jamais verrouillées par le seul profil.
  */
 const SOLO_HIDDEN_MODULE_KEYS: ClientModuleKey[] = [
   'employees',
-  'attendance',
   'attendance_geo',
-  'absences',
   'contracts',
-  'payroll',
   'training',
 ];
+
+/**
+ * #7423 — PLANCHER d'accès garanti : le socle RH qu'un indépendant (`solo`)
+ * garde quel que soit son profil et sa sélection. Un solo travaille aussi : il
+ * se pointe, pose ses congés et lit ses bulletins. Miroir client de
+ * `Company::SOLO_FLOOR_MODULES` (source de vérité serveur, transmise par
+ * `/auth/me` → `company.modules`).
+ *
+ * Garanti ici AVANT la branche « la sélection fait autorité » : ni une
+ * sélection hostile (`company.modules.attendance = false`), ni le plan ne
+ * peuvent retirer le plancher. Le rôle, lui, reste tranché par
+ * `getClientModuleAccess` / `hasRoleAccess`.
+ */
+export const SOLO_FLOOR_MODULE_KEYS: ClientModuleKey[] = ['attendance', 'absences', 'payroll'];
 
 export type ClientModule = {
   key: ClientModuleKey;
@@ -466,6 +480,13 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
     return 'locked';
   }
   if (module.key === 'dashboard') {
+    return 'available';
+  }
+  // #7423 — PLANCHER garanti : un indépendant garde le socle RH (pointage,
+  // congés, paie) quel que soit ce qu'il a coché et quel que soit son plan.
+  // Évalué AVANT les branches de gate (capabilities, sélection, features,
+  // plan) : c'est la définition d'un plancher — cf. `SOLO_FLOOR_MODULE_KEYS`.
+  if (user.company?.type === 'solo' && SOLO_FLOOR_MODULE_KEYS.includes(module.key)) {
     return 'available';
   }
   // #7235 — un profil Indépendant ne voit ni pointage ni gestion d'employés,

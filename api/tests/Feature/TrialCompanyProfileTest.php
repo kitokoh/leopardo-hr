@@ -17,6 +17,8 @@ use Tests\TestCase;
  *    sont validés fail-closed contre `Company::HORIZONTAL_TOOLS` ;
  *  - un profil `solo` désactive EXPLICITEMENT les outils d'équipe
  *    (`Company::TEAM_TOOLS`) : la règle est serveur, pas cliente ;
+ *  - #7423 — …sauf le PLANCHER d'accès garanti (`Company::SOLO_FLOOR_MODULES` :
+ *    pointage, congés, paie), qui reste actif pour un indépendant ;
  *  - la sélection est persistée dans `metadata.modules` et re-exposable par
  *    `/auth/me` (EmployeeResource), et les clés qui sont aussi des feature
  *    flags plateforme (`accounting`, `crm`) sont miroirées dans `features` ;
@@ -74,8 +76,17 @@ class TrialCompanyProfileTest extends TestCase
         $this->assertTrue($selection['reports']);
         $this->assertFalse($selection['marketing']);
 
-        // Aucun outil d'équipe pour un indépendant.
-        foreach (Company::TEAM_TOOLS as $tool) {
+        // #7423 — le plancher d'accès est garanti : un indépendant garde le
+        // socle RH (pointage, congés, paie) quel que soit ce qu'il a coché.
+        foreach (Company::SOLO_FLOOR_MODULES as $tool) {
+            $this->assertTrue(
+                $selection[$tool],
+                "L'outil {$tool} fait partie du plancher garanti d'un profil solo (#7423).",
+            );
+        }
+
+        // Les autres outils d'équipe restent désactivés pour un indépendant.
+        foreach (array_diff(Company::TEAM_TOOLS, Company::SOLO_FLOOR_MODULES) as $tool) {
             $this->assertFalse($selection[$tool], "L'outil {$tool} doit être désactivé pour un profil solo.");
         }
 

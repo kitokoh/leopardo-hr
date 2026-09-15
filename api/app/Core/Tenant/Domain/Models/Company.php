@@ -243,6 +243,33 @@ class Company extends Model
     ];
 
     /**
+     * #7423 — PLANCHER d'accès garanti : le socle RH qu'un tenant conserve
+     * quel que soit son profil d'activité et quel que soit ce qu'il a coché à
+     * l'inscription. Un indépendant (`solo`) travaille aussi : il doit pouvoir
+     * se pointer, poser ses congés et lire SES bulletins, même si son profil
+     * « n'a pas besoin des outils d'équipe » (#7235) et même si la sélection
+     * faite à l'inscription ne coche aucune de ces clés.
+     *
+     * Les clés restent des sous-ensembles de `TEAM_TOOLS` : le plancher est une
+     * exception EXPLICITE et nommée, pas un assouplissement du verrou d'équipe.
+     * `employees`, `contracts`, `training` et `attendance_geo` restent hors
+     * plancher (pilotage d'équipe). `dashboard` n'est pas listé : il est
+     * toujours disponible (`resolveModuleState` côté web, socle du catalogue).
+     *
+     * Appliqué aux DEUX extrémités : le provisioning (`HorizontalToolSelection`
+     * → `metadata.modules`) et la lecture (`moduleSelection()` → `/auth/me`)
+     * pour rattraper les tenants `solo` déjà provisionnés.
+     *
+     * `cameras` (les siennes, quand le module est actif) relève du lot BC-19
+     * (#7424/#7427) et n'est pas traité ici.
+     */
+    public const SOLO_FLOOR_MODULES = [
+        'attendance',
+        'absences',
+        'payroll',
+    ];
+
+    /**
      * #7235 — Profil d'activité du tenant (`company` par défaut, fail-safe :
      * une valeur inconnue retombe sur le profil complet, jamais sur le profil
      * réduit).
@@ -265,6 +292,13 @@ class Company extends Model
      * historiques / inscription rapide) → l'interface garde son comportement
      * antérieur, aucun client existant n'est verrouillé par surprise.
      *
+     * #7423 — pour un tenant `solo` dont la sélection EXISTE déjà, le plancher
+     * d'accès (`SOLO_FLOOR_MODULES`) est forcé à `true` : les tenants `solo`
+     * provisionnés avant ce correctif portent une sélection où pointage,
+     * congés et paie sont à `false` (règle #7235) et resteraient sans aucun
+     * outil RH. Contrat #7235 préservé : une sélection ABSENTE reste `null`
+     * (aucun verrouillage rétroactif des tenants historiques).
+     *
      * @return array<string, bool>|null
      */
     public function moduleSelection(): ?array
@@ -283,7 +317,17 @@ class Company extends Model
             }
         }
 
-        return $selection === [] ? null : $selection;
+        if ($selection === []) {
+            return null;
+        }
+
+        if ($this->isSolo()) {
+            foreach (self::SOLO_FLOOR_MODULES as $tool) {
+                $selection[$tool] = true;
+            }
+        }
+
+        return $selection;
     }
 
     /**
