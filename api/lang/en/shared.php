@@ -113,6 +113,8 @@ return [
         ],
         'required' => 'Required',
         'dismiss' => 'Dismiss',
+        'actions' => 'Actions',
+        'edit' => 'Edit',
     ],
     'modules' => [
         'attendance' => 'Attendance',

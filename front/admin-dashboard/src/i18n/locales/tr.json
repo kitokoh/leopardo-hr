@@ -1016,7 +1016,26 @@
     "teamActive": "Aktif Ekip",
     "updateSubscription": "Aboneliği güncelle",
     "updating": "Güncelleniyor...",
-    "viewAllTickets": "Tüm talepleri gör"
+    "viewAllTickets": "Tüm talepleri gör",
+    "features": {
+      "rh": "İnsan kaynakları",
+      "finance": "Finans ve yönetim",
+      "ai": "Yapay zekâ",
+      "cameras": "Video gözetim",
+      "tracking": "Filo takibi",
+      "planning": "Planlama ve ekip",
+      "training": "Eğitim merkezi",
+      "cabinet": "Dijital dolap",
+      "muhasebe": "Muhasebe (Türkiye)",
+      "leo_ai": "Leopardo yapay zekâ asistanı",
+      "crm": "Müşteri ilişkileri (CRM)",
+      "fuel_station": "Akaryakıt istasyonları",
+      "edumanager": "Eğitim kurumu yönetimi",
+      "restaurant": "Restoran",
+      "travelagency": "Seyahat acentesi",
+      "accounting": "Muhasebe",
+      "company_showcase": "Tanıtım sitesi"
+    }
   },
   "attendanceCorrectionRequestHint": "Talep, onay için İK'ya iletilecek.",
   "salaryAdvanceError": "Başarısız: {error}",
@@ -1372,6 +1391,19 @@
       "high": "Yüksek risk",
       "medium": "Orta risk",
       "low": "Düşük risk"
+    },
+    "features": {
+      "biometric": "Biyometri",
+      "tasks": "Görevler",
+      "advanced_reports": "Gelişmiş raporlar",
+      "excel_export": "Excel dışa aktarma",
+      "bank_export": "Banka dışa aktarma",
+      "billing_auto": "Otomatik faturalama",
+      "multi_managers": "Çoklu yönetici",
+      "photo_attendance": "Fotoğraflı devam",
+      "api_public": "Herkese açık API",
+      "evaluations": "Değerlendirmeler",
+      "schema_isolation": "Veri izolasyonu"
     }
   },
   "settingsCabinetPublic": "Genel",
@@ -2647,7 +2679,9 @@
     "cancel": "İptal",
     "noResults": "Sonuç bulunamadı.",
     "reload": "Yenile",
-    "dismiss": "Kapat"
+    "dismiss": "Kapat",
+    "actions": "İşlemler",
+    "edit": "Düzenle"
   },
   "settingsProfileUpdated": "Profil güncellendi.",
   "attendanceHoursWorkedLabel": "Çalışılan saat",
@@ -2848,7 +2882,9 @@
       "medium": "Orta",
       "high": "Yüksek",
       "critical": "Kritik"
-    }
+    },
+    "viewEquipment": "Ekipman",
+    "advanceIncident": "İlerlet"
   },
   "adminPalette": {
     "appLoading": "Yönetim yükleniyor…",
@@ -3842,7 +3878,9 @@
     "severityCritical": "Kritik",
     "unassigned": "Atanmamış",
     "searchVehicle": "Araç ara...",
-    "searchAlert": "Uyarı ara..."
+    "searchAlert": "Uyarı ara...",
+    "locate": "Konumlandır",
+    "detail": "Ayrıntı"
   },
   "salaryAdvanceRequest": "Talep Et",
   "smartAttendanceTodayTitle": "Bugün — {date}",

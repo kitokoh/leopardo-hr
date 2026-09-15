@@ -50,15 +50,22 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openRentalImages(row)">
-                {{ t('travel.catalog.images', 'Images') }}
-              </button>
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openRentalEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDelete('rentals', row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="PhotoIcon"
+                :label="t('travel.catalog.images', 'Images')"
+                @click="openRentalImages(row)"
+              />
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openRentalEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askDelete('rentals', row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -107,13 +114,13 @@
             <StatusBadge :status="value" :map="rentalBookingStatusMap" />
           </template>
           <template #row-actions="{ row }">
-            <button
+                        <RowActionButton
               v-if="isActiveBookingStatus(row.status)"
-              class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
+              :icon="XMarkIcon"
+              tone="warning"
+              :label="t('travel.bookings.cancel', 'Annuler')"
               @click="openRentalCancel(row)"
-            >
-              {{ t('travel.bookings.cancel', 'Annuler') }}
-            </button>
+            />
           </template>
         </DataTable>
       </template>
@@ -142,15 +149,22 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400" @click="openHotelRooms(row)">
-                {{ t('travel.catalog.rooms', 'Chambres') }}
-              </button>
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openHotelEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDelete('hotels', row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="Squares2X2Icon"
+                :label="t('travel.catalog.rooms', 'Chambres')"
+                @click="openHotelRooms(row)"
+              />
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openHotelEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askDelete('hotels', row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -183,9 +197,12 @@
             </template>
             <template #row-actions="{ row }">
               <div class="flex justify-end gap-2">
-                <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askDeleteRoom(row)">
-                  {{ t('travel.common.delete', 'Supprimer') }}
-                </button>
+                <RowActionButton
+                  :icon="TrashIcon"
+                  tone="danger"
+                  :label="t('travel.common.delete', 'Supprimer')"
+                  @click="askDeleteRoom(row)"
+                />
               </div>
             </template>
           </DataTable>
@@ -259,7 +276,15 @@ import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import RowActionButton from '@/components/common/RowActionButton.vue'
+import {
+  PlusIcon,
+  XMarkIcon,
+  PhotoIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  Squares2X2Icon,
+} from '@heroicons/vue/24/outline'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelAction, createTravelSub, deleteTravelSub, travelList, formatMinor } from '@/services/travel'
 
 const localeStore = useLocaleStore()

@@ -59,6 +59,14 @@ jobs:
         working-directory: front/admin-dashboard
         run: npm run lint
 
+      # #7434 — convention d'action de ligne : une action de ligne est une
+      # icône seule portant `aria-label` + `title` (composant RowActionButton),
+      # et l'en-tête de colonne est traduit. RAPPORT par défaut (exit 0) :
+      # la conversion de la console est terminée, `--strict` peut être activé
+      # pour rendre la garde bloquante.
+      - name: Check row-action convention (#7434)
+        run: python3 dev-hub/tools/check-admin-row-actions.py .
+
   web-build:
     timeout-minutes: 30
     name: Web Build

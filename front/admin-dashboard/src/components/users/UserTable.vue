@@ -41,7 +41,7 @@
             </div>
           </th>
           <th scope="col" class="relative py-3 pl-3 pr-4 sm:pr-6">
-            <span class="sr-only">Actions</span>
+            <span class="sr-only">{{ t('common.actions', 'Actions') }}</span>
           </th>
         </tr>
       </thead>

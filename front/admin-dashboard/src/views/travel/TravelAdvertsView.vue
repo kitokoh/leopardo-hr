@@ -53,12 +53,17 @@
         >
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400" @click="openCatalogEdit(row)">
-                {{ t('travel.common.edit', 'Modifier') }}
-              </button>
-              <button class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400" @click="askCatalogDelete(row)">
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              <RowActionButton
+                :icon="PencilSquareIcon"
+                :label="t('travel.common.edit', 'Modifier')"
+                @click="openCatalogEdit(row)"
+              />
+              <RowActionButton
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
+                @click="askCatalogDelete(row)"
+              />
             </div>
           </template>
         </DataTable>
@@ -103,34 +108,34 @@
           </template>
           <template #row-actions="{ row }">
             <div class="flex justify-end gap-2">
-              <button
+              <RowActionButton
                 v-if="row.status === 'draft' || row.status === 'pending_payment'"
-                class="text-sm font-medium text-emerald-600 hover:text-emerald-800 dark:text-emerald-400"
+                :icon="BanknotesIcon"
+                tone="success"
+                :label="t('travel.adverts.pay', 'Payer')"
                 @click="payAdvertRow(row)"
-              >
-                {{ t('travel.adverts.pay', 'Payer') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'paid'"
-                class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                :icon="CheckIcon"
+                tone="primary"
+                :label="t('travel.adverts.validate', 'Valider')"
                 @click="openAdvertValidate(row)"
-              >
-                {{ t('travel.adverts.validate', 'Valider') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'expired'"
-                class="text-sm font-medium text-amber-600 hover:text-amber-800 dark:text-amber-400"
+                :icon="ArrowPathIcon"
+                tone="warning"
+                :label="t('travel.adverts.renew', 'Renouveler')"
                 @click="renewAdvertRow(row)"
-              >
-                {{ t('travel.adverts.renew', 'Renouveler') }}
-              </button>
-              <button
+              />
+              <RowActionButton
                 v-if="row.status === 'draft' || row.status === 'rejected'"
-                class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400"
+                :icon="TrashIcon"
+                tone="danger"
+                :label="t('travel.common.delete', 'Supprimer')"
                 @click="askAdvertDelete(row)"
-              >
-                {{ t('travel.common.delete', 'Supprimer') }}
-              </button>
+              />
             </div>
           </template>
         </DataTable>
@@ -189,8 +194,10 @@ import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
+import { PencilSquareIcon, TrashIcon, BanknotesIcon, CheckIcon, ArrowPathIcon } from '@heroicons/vue/24/outline'
 import { createTravel, deleteTravel, listTravel, payAdvert, renewAdvert, validateAdvert, listAdvertCatalog, createAdvertCatalog, updateAdvertCatalog, deleteAdvertCatalog, travelList } from '@/services/travel'
 
 const localeStore = useLocaleStore()
