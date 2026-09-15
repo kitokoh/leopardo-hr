@@ -351,10 +351,14 @@ pour les résoudre au checkout.
   (garde CI `deploy-drift-guard.yml`, toutes les 30 min). Un environnement dont
   `/health.version` ≠ SHA de `main` n'est pas un environnement de recette —
   runbook `docs/ops/RENDER_DEV_ALIGNMENT.md`.
-- `autoDeploy: yes` est désormais posé sur le service dev Render
-  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : le dev suit `main`
-  sans dépendre du gate GitHub. Contrainte API : un `POST /deploys` Render
-  déploie le **HEAD de la branche**, jamais un SHA arbitraire.
+- **Ne pas activer `autoDeploy`** sur le service dev Render
+  (`gestionemployerbackend`, `srv-d7dro8u7r5hc73a395pg`) : décision #6700 —
+  un auto-deploy rebâtit à chaque push `main` (docs/web-only compris) et
+  consomme les build hours. Le déploiement passe par `deploy-main.yml`, dont le
+  gate peut **sauter** (`Tests=missing`, suivi par #7457) : d'où le pré-vol de
+  recette ci-dessus + un redéploiement manuel à la demande. Contrainte API : un
+  `POST /deploys` Render déploie le **HEAD de la branche**, jamais un SHA
+  arbitraire.
 - Le dev est en **mono-conteneur** : le worker de queue vit dans le conteneur web
   (`api/docker-entrypoint.sh`, respawn loop #7041). Une queue qui s'accumule est
   un symptôme d'**image périmée**, pas d'un « worker manquant » — le compte dev
