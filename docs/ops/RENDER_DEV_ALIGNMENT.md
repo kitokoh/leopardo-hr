@@ -38,6 +38,13 @@ Sorties : `0` = aligné, `1` = **dérive** (le script nomme les deux SHAs),
 La même garde tourne en CI (`.github/workflows/deploy-drift-guard.yml`, toutes
 les 30 min + `workflow_dispatch`).
 
+> **Référence « déployable »** : l'API n'est redéployée que sur changement `api/**`
+> (`deploy-main.yml`). En CI, la garde compare donc à la version servie au
+> **dernier commit touchant `api/`** (résolu par API) — sinon chaque merge
+> docs/web-only produirait une alerte de dérive qui n'en est pas une. En local,
+> `--expect <sha>` reste prioritaire : pour un pré-vol de recette, passez le SHA
+> du commit `api/` que vous voulez voir servi (`git log -1 --format=%H origin/main -- api`).
+
 ## 3. État vérifié le 2026-09-15 (avant/après correctif)
 
 | Contrôle | Avant | Après |

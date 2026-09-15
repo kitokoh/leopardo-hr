@@ -79,6 +79,27 @@ jobs:
           echo "url=${url}" >> "$GITHUB_OUTPUT"
           echo "Cible : ${url}"
 
+      - name: Résoudre le SHA déployable (dernier commit touchant api/)
+        id: deployable
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          # `deploy-main.yml` ne redéploie l'API que sur changement `api/**`.
+          # Comparer la version servie au HEAD de `main` ferait crier la garde
+          # à chaque merge docs/web-only (faux positif) : la référence est donc
+          # le dernier commit qui a réellement modifié le contenu déployable.
+          api_sha="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits?path=api&per_page=1" \
+            | jq -r '.[0].sha // empty')"
+          if [[ -z "${api_sha}" ]]; then
+            echo "::warning::impossible de résoudre le dernier commit api/ — repli sur le SHA du run (#7304)."
+            api_sha="${GITHUB_SHA}"
+          fi
+          echo "api_sha=${api_sha}" >> "$GITHUB_OUTPUT"
+          echo "Dernier commit api/ : ${api_sha:0:7}"
+
       - name: Vérifier la dérive (version déployée ↔ main)
         shell: bash
         env:
@@ -86,11 +107,13 @@ jobs:
           LABEL: ${{ inputs.label || 'dev' }}
           EXPECT: ${{ inputs.expect }}
           SHA: ${{ github.sha }}
+          API_SHA: ${{ steps.deployable.outputs.api_sha }}
           ALLOW_RELEASE: ${{ inputs.allow_release }}
           STRICT_FAILED: ${{ inputs.strict_failed }}
         run: |
           set -Eeuo pipefail
-          args=(--url "${TARGET_URL}" --label "${LABEL}" --expect "${EXPECT:-${SHA}}")
+          # Priorité : input explicite > dernier commit api/ > SHA du run.
+          args=(--url "${TARGET_URL}" --label "${LABEL}" --expect "${EXPECT:-${API_SHA:-${SHA}}}")
           if [[ "${ALLOW_RELEASE:-false}" == "true" ]]; then
             args+=(--allow-release)
           fi
