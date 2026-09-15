@@ -119,9 +119,43 @@ services:
     networks:
       - leopardo-local
 
+  # ── Chaîne vidéo (MediaMTX) — profil `cameras` ───────────
+  # Issue #7424 : versionnée ici, elle ne démarre PAS dans une installation
+  # Edge standard (profil explicite) :
+  #   docker compose --profile cameras up -d
+  # La lecture est protégée par un jeton signé par Leopardo : MediaMTX
+  # interroge /internal/camera-token/verify à chaque accès (voir
+  # mediamtx/README.md). L'API de contrôle n'écoute qu'en local.
+  mediamtx:
+    # #3972 : même règle que le reste de la stack — image taggée, jamais
+    # `latest` flottant.
+    image: bluenviron/mediamtx:${MEDIAMTX_VERSION:-1.9.3}
+    container_name: leopardo-edge-mediamtx
+    restart: unless-stopped
+    profiles:
+      - cameras
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+      - mediamtx_recordings:/var/leopardo/cameras
+    ports:
+      # WebRTC (lecture navigateur) et HLS (repli) — exposés sur l'hôte local.
+      - "8889:8889"
+      - "8888:8888"
+      # 9997 (API de contrôle) est délibérément NON publié : elle n'écoute que
+      # dans le conteneur, pour l'agent Edge.
+    networks:
+      - leopardo-local
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9997/v3/config/global/get"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
 volumes:
   edge_data:
   caddy_data:
+  mediamtx_recordings:
 
 networks:
   leopardo-local:
