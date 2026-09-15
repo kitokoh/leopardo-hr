@@ -180,6 +180,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'restaurant.public.shop' => EnsureRestaurantPublicShopAccess::class,
             // TRAVEL-1001 (#6114) — boutique publique (jeton tenant signé).
             'travel.public.shop' => \App\Http\Middleware\EnsurePublicShopAccess::class,
+            // #7395 — accès PASSAGER (référence + code de validation), sans
+            // compte ni jeton boutique : le portail « Espace voyageur » s'adresse
+            // au client final, qui ne possède aucun secret d'infrastructure.
+            'travel.passenger' => \App\Http\Middleware\Travel\EnsureTravelPassengerAccess::class,
             'module.delivery' => EnsureDeliveryModuleMiddleware::class,
             // BC-28 CATALOG — gate feature flag b2b_catalog (#6881).
             'module.catalog' => \App\Http\Middleware\Catalog\EnsureCatalogModuleMiddleware::class,

@@ -71,6 +71,7 @@ use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantKioskC
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPaymentCallbackController;
 use App\Modules\RestaurantManager\Interfaces\Api\V1\Controllers\RestaurantPublicShopController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelCarrierSyncController;
+use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPassengerController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPaymentController;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Controllers\TravelPublicShopController;
 use Illuminate\Support\Facades\Route;
@@ -188,6 +189,22 @@ Route::prefix('v1')->group(function (): void {
         // TRAVEL-1002 (#6115) — tunnel complet : paiement en ligne + e-billet.
         Route::post('/public/travel/payments/initiate', [TravelPublicShopController::class, 'initiatePayment']);
         Route::get('/public/travel/tickets/{ticket}/pdf', [TravelPublicShopController::class, 'ticketPdf']);
+    });
+
+    // #7395 — « Espace voyageur » : surface PUBLIQUE du PASSAGER.
+    //
+    // Le portail client final ne peut pas porter le jeton boutique
+    // `X-Travel-Shop-Token` (secret B2B du tenant, cf. groupe ci-dessus) : le
+    // passager s'authentifie avec la référence de réservation + le code de
+    // validation imprimés sur son e-billet. Le tenant est résolu par la
+    // ressource (`travel.passenger`), puis le code est vérifié par hash.
+    // Aucune route ici ne renvoie de PII passager.
+    Route::middleware(['throttle:shop-public', 'travel.passenger'])->group(function (): void {
+        Route::get('/public/travel/passenger/bookings/{reference}', [TravelPassengerController::class, 'track']);
+        // Le numéro de billet (#GV-…) passe en ?number= : un `#` dans un
+        // segment de chemin est interprété comme un fragment par les proxies
+        // (constaté via le proxy same-origin du web client) et tronque l'URL.
+        Route::get('/public/travel/passenger/bookings/{reference}/ticket', [TravelPassengerController::class, 'ticketPdf']);
     });
 
     Route::middleware(['throttle:webhooks-inbound'])->group(function (): void {

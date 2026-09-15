@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Loader2, Search, Ticket, XCircle } from 'lucide-react';
+import { Download, Loader2, Search, Ticket } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getCopy, normalizeLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
@@ -12,13 +12,21 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 const POPUP_FEATURES = ['noopener', 'noreferrer'].join(',');
 
 /**
- * Portail client voyageur — TRAVEL-702 (#6089).
+ * Portail client voyageur — TRAVEL-702 (#6089), recâblé en #7395.
  *
- * Suivi d'une réservation par référence + code de validation (e-billet),
- * téléchargement des e-billets PDF et annulation en ligne (motif,
- * preuve par code, départ futur). Consomme les endpoints shop
- * (`/travel/shop/bookings/{reference}`, `/travel/tickets/{id}/pdf`,
- * `/travel/shop/bookings/{reference}/cancel`).
+ * Page PUBLIQUE (« Espace voyageur ») : le passager n'a ni compte Leopardo ni
+ * jeton boutique. Elle est donc sortie du groupe `(dashboard)` et consomme la
+ * surface passagère `/public/travel/passenger/*`, authentifiée par le couple
+ * référence de réservation + code de validation imprimé sur l'e-billet (#7394).
+ *
+ * Avant #7395, la page appelait les endpoints STAFF
+ * (`/travel/shop/bookings/{reference}`, `/travel/tickets/{id}/pdf`) : un vrai
+ * passager recevait 401 UNAUTHENTICATED, et le champ « code de validation »
+ * n'était même pas vérifié côté serveur.
+ *
+ * L'annulation en ligne n'est PAS exposée ici : elle exige un acteur employé
+ * (`CancelBookingAction` renseigne `cancelled_by`), ce qui suppose de décider
+ * qui porte une annulation faite par le passager. Hors périmètre, voir #7395.
  */
 
 type BookingData = {
@@ -28,11 +36,17 @@ type BookingData = {
   total_amount_minor?: number;
   currency?: string;
   passenger_count?: number;
-  trip?: { id?: number; code?: string; departure_date?: string; departure_time?: string } | null;
+  trip?: {
+    code?: string;
+    departure_date?: string;
+    departure_time?: string;
+    arrival_date?: string;
+    arrival_time?: string;
+    origin?: string | null;
+    destination?: string | null;
+  } | null;
+  /** Numéros de billet (imprimés sur l'e-billet) — sert au téléchargement PDF. */
   ticket_numbers?: string[];
-  ticket_ids?: number[];
-  passengers?: Array<{ id?: number; full_name?: string; seat_number?: number | null }>;
-  cancel_reason?: string | null;
 };
 
 type PortalCopy = ReturnType<typeof getCopy>['travelPortal'];
@@ -55,8 +69,6 @@ export default function TravelPortalPage() {
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [reason, setReason] = useState('');
-  const [cancelling, setCancelling] = useState(false);
 
   // i18n minimal pour les statuts (clés existantes si possible).
   const fallbackCopy = copy as Record<string, string>;
@@ -71,7 +83,7 @@ export default function TravelPortalPage() {
     setBooking(null);
     try {
       const response = await apiFetch(
-        `/travel/shop/bookings/${encodeURIComponent(reference.trim())}?code=${encodeURIComponent(code.trim())}`,
+        `/public/travel/passenger/bookings/${encodeURIComponent(reference.trim())}?code=${encodeURIComponent(code.trim())}`,
       );
       const payload = (await response.json()) as { data?: BookingData };
       setBooking(payload.data ?? null);
@@ -89,9 +101,18 @@ export default function TravelPortalPage() {
     }
   };
 
-  const downloadTicket = async (ticketId: number) => {
+  const downloadTicket = async (ticketNumber: string) => {
+    if (!booking?.reference) {
+      return;
+    }
     try {
-      const response = await apiFetch(`/travel/tickets/${ticketId}/pdf`);
+      // Le numéro de billet contient un `#` : il passe en paramètre de requête
+      // (un `#` dans un segment de chemin est lu comme un fragment par le proxy
+      // same-origin et tronque l'URL — constaté en #7395).
+      const response = await apiFetch(
+        `/public/travel/passenger/bookings/${encodeURIComponent(booking.reference)}/ticket`
+          + `?number=${encodeURIComponent(ticketNumber)}&code=${encodeURIComponent(code.trim())}`,
+      );
       const payload = (await response.json()) as { data?: { pdf_url?: string } };
       const url = payload.data?.pdf_url;
       if (url) {
@@ -102,40 +123,8 @@ export default function TravelPortalPage() {
     }
   };
 
-  const cancelBooking = async () => {
-    if (!booking?.reference || !reason.trim() || cancelling) {
-      return;
-    }
-    setCancelling(true);
-    setError(null);
-    try {
-      const response = await apiFetch(`/travel/shop/bookings/${encodeURIComponent(booking.reference)}/cancel`, {
-        method: 'POST',
-        body: JSON.stringify({ code: code.trim(), reason: reason.trim() }),
-      });
-      const payload = (await response.json()) as { data?: BookingData };
-      setBooking(payload.data ?? null);
-      setReason('');
-    } catch (err) {
-      if (err instanceof ApiError) {
-        if (err.code === 'TRAVEL_BOOKING_CODE_INVALID') {
-          setError(fallbackCopy.invalidCode);
-        } else if (err.code === 'TRAVEL_BOOKING_DEPARTURE_PAST') {
-          setError(fallbackCopy.departurePast);
-        } else {
-          setError(fallbackCopy.error);
-        }
-      } else {
-        setError(fallbackCopy.error);
-      }
-    } finally {
-      setCancelling(false);
-    }
-  };
-
   const statusKey = booking?.status ? STATUS_KEY[booking.status] : undefined;
   const statusLabel = statusKey ? fallbackCopy[statusKey] : booking?.status ?? '';
-  const canCancel = booking?.status === 'pending' || booking?.status === 'confirmed';
   const isCancelled = booking?.status === 'cancelled';
 
   return (
@@ -217,16 +206,16 @@ export default function TravelPortalPage() {
               </div>
             )}
 
-            {(booking.ticket_ids?.length ?? 0) > 0 && (
+            {(booking.ticket_numbers?.length ?? 0) > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-medium text-white/80">{copy.tickets}</p>
-                {booking.ticket_ids?.map((ticketId, index) => (
-                  <div key={ticketId} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                {booking.ticket_numbers?.map((ticketNumber) => (
+                  <div key={ticketNumber} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                     <span className="flex items-center gap-2 text-sm text-white/80">
                       <Ticket className="h-4 w-4" />
-                      {booking.ticket_numbers?.[index] ?? `#${ticketId}`}
+                      {ticketNumber}
                     </span>
-                    <Button variant="ghost" size="sm" onClick={() => downloadTicket(ticketId)}>
+                    <Button variant="ghost" size="sm" onClick={() => downloadTicket(ticketNumber)}>
                       <Download className="h-4 w-4" />
                       {copy.downloadTicket}
                     </Button>
@@ -235,22 +224,6 @@ export default function TravelPortalPage() {
               </div>
             )}
 
-            {canCancel && (
-              <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                <p className="text-sm font-medium text-white/80">{copy.cancel}</p>
-                <textarea
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder={copy.cancelReasonPlaceholder}
-                  rows={2}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-primary"
-                />
-                <Button variant="danger" disabled={cancelling || reason.trim().length < 5} onClick={cancelBooking}>
-                  {cancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-                  {cancelling ? copy.cancelling : copy.cancelConfirm}
-                </Button>
-              </div>
-            )}
           </div>
         )}
       </div>

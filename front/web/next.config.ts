@@ -91,6 +91,33 @@ const nextConfig: NextConfig = {
   },
   outputFileTracingRoot: __dirname,
 
+  /**
+   * #7395 — proxifier `/storage/*` vers l'API.
+   *
+   * Les URL signées des fichiers servis par l'API (e-billets voyage, documents,
+   * exports) sont construites par Laravel à partir de **l'hôte de la requête**.
+   * Or le navigateur appelle l'API via le proxy same-origin `/api/v1/...` : la
+   * requête arrive donc avec l'hôte du front, et l'URL signée renvoyée pointe
+   * sur `<front>/storage/...` — une route que Next ne servait pas (404).
+   *
+   * Constaté en recette sur le téléchargement de l'e-billet : appel direct à
+   * l'API → 200, même URL via le proxy → 404. Corriger ici plutôt que dans
+   * l'API garde une seule source de vérité pour les fichiers servis, et couvre
+   * TOUS les liens signés, pas seulement les billets.
+   */
+  async rewrites() {
+    const apiBase =
+      process.env.API_PROXY_TARGET ||
+      process.env.BACKEND_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'https://gestionemployerbackend.onrender.com/api/v1';
+
+    // L'origine seule : les fichiers sont servis hors du préfixe `/api/v1`.
+    const apiOrigin = apiBase.replace(/\/$/, '').replace(/\/api\/v1$/, '');
+
+    return [{ source: '/storage/:path*', destination: `${apiOrigin}/storage/:path*` }];
+  },
+
   // Image optimization
   images: {
     formats: ["image/avif", "image/webp"],
