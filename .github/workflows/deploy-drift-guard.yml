@@ -2,15 +2,17 @@ name: Deploy Drift Guard
 
 # Issue #7304 — l'environnement dev Render servait un commit ~50 PR en retard
 # sur `main` : toute campagne QA validait du code périmé (faux bugs, vrais
-# correctifs invérifiables). Aucun comparateur « version déployée ↔ SHA de
-# référence » n'existait dans le dépôt. Cette garde le fournit et échoue
-# VISIBLEMENT quand l'environnement cible ne sert pas le contenu déployable.
+# correctifs invérifiables). Aucun comparateur « version déployée ↔ référentiel »
+# n'existait dans le dépôt. Cette garde le fournit et échoue VISIBLEMENT quand
+# l'environnement cible ne sert pas le contenu attendu.
 #
-# Référence : l'API n'est redéployée que sur changement `api/**`
-# (`deploy-main.yml`). La garde compare donc la version servie au **dernier
-# commit touchant `api/`** — et non au HEAD de `main`, sinon chaque merge
-# docs/web-only produirait une fausse dérive. Si la version servie est
-# **postérieure** à ce commit (elle le contient), l'environnement est à jour.
+# Référentiels par environnement :
+#   - dev  : l'API n'est redéployée que sur changement `api/**` → référence =
+#            dernier commit touchant `api/` ; une version servie **postérieure**
+#            (compare API `ahead`/`identical`) est déclarée à jour.
+#   - prod : l'environnement publie une **version de release** (`APP_VERSION`) →
+#            référence = **dernier tag publié** (`/releases/latest`), donc
+#            « une Release n'a pas été déployée » est détecté.
 #
 # Portée : signal fort, planifié (hors PR) — elle n'est donc pas un check
 # requis au merge et n'allonge aucun cycle de PR. Elle tourne aussi à la
@@ -26,19 +28,19 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: "URL de l'API à vérifier (base ou .../health)"
+        description: "URL de l'API à vérifier (base ou .../health) — remplace la cible dev"
         type: string
         default: ""
       label:
-        description: "Étiquette du rapport"
+        description: "Étiquette du rapport (sans effet si l'input url est vide)"
         type: string
-        default: "dev"
+        default: ""
       expect:
-        description: "SHA ou ref attendue (vide = dernier commit api/, sinon SHA du run)"
+        description: "SHA, ref ou version attendue (vide = référentiel automatique par environnement)"
         type: string
         default: ""
       allow_release:
-        description: "Ne pas échouer si l'environnement publie une version de release (ex. 4.31.0)"
+        description: "Ne pas échouer si l'environnement publie une version de release sans référence fournie"
         type: boolean
         default: false
       strict_failed:
@@ -58,10 +60,20 @@ concurrency:
 
 jobs:
   drift:
-    name: Déploiement aligné sur main (#7304)
+    name: Déploiement aligné (${{ matrix.label }})
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: github.repository == 'kitokoh/leopardo-hr'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: dev
+            mode: sha
+            url: ${{ vars.DEV_API_BASE_URL }}
+          - label: prod
+            mode: tag
+            url: ${{ vars.PROD_RENDER_SERVICE_URL }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -69,20 +81,30 @@ jobs:
           fetch-depth: 1
           lfs: false
 
-      - name: Résoudre la cible et le SHA déployable
+      - name: Résoudre la cible et le référentiel
         id: target
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          MODE: ${{ matrix.mode }}
+          MATRIX_URL: ${{ matrix.url }}
           INPUT_URL: ${{ inputs.url }}
-          VAR_URL: ${{ vars.DEV_API_BASE_URL }}
           INPUT_EXPECT: ${{ inputs.expect }}
         run: |
           set -Eeuo pipefail
 
-          url="${INPUT_URL:-${VAR_URL:-}}"
+          # Une saisie manuelle (workflow_dispatch) cible un environnement unique :
+          # elle neutralise la matrice pour ne pas interroger deux fois.
+          if [[ -n "${INPUT_URL}" && "${MODE}" != "sha" ]]; then
+            echo "::notice::cible manuelle — entrée ignorée pour cet environnement."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+          url="${INPUT_URL:-${MATRIX_URL:-}}"
           if [[ -z "${url}" ]]; then
-            echo "::error::aucune URL : renseigner l'input « url » ou la variable de dépôt DEV_API_BASE_URL (#7304)."
+            echo "::error::aucune URL : renseigner l'input « url » ou la variable de dépôt correspondante (#7304)."
             exit 1
           fi
           url="${url%/}"
@@ -94,42 +116,56 @@ jobs:
             *) health_url="${url}/api/v1/health" ;;
           esac
 
-          # Dernier commit qui a réellement modifié le contenu déployable.
-          api_sha="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits?path=api&per_page=1" \
-            | jq -r '.[0].sha // empty')"
-          if [[ -z "${api_sha}" ]]; then
-            echo "::warning::dernier commit api/ introuvable — repli sur le SHA du run (#7304)."
-            api_sha="${GITHUB_SHA}"
-          fi
-
-          expect_ref="${INPUT_EXPECT:-${api_sha}}"
-          # Si la version servie est POSTÉRIEURE au dernier commit api/, elle le
-          # contient : l'environnement est à jour (compare API : base...head).
-          deployed="$(curl -fsS --max-time 30 "${health_url}" | jq -r '.version // empty' || true)"
+          expect_ref=""
           if [[ -n "${INPUT_EXPECT}" ]]; then
-            echo "Attendu (input explicite) : ${expect_ref}"
-          elif [[ -n "${deployed}" && "${deployed}" != "${api_sha}" && "${deployed}" != "${api_sha:0:7}" ]]; then
-            status="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${api_sha}...${deployed}" \
-              | jq -r '.status // empty' || true)"
-            if [[ "${status}" == "ahead" || "${status}" == "identical" ]]; then
-              echo "::notice::version servie (${deployed:0:7}) postérieure au dernier commit api/ (${api_sha:0:7}) — à jour."
-              expect_ref="${deployed}"
+            expect_ref="${INPUT_EXPECT}"
+            echo "Référence (input explicite) : ${expect_ref}"
+          elif [[ "${MODE}" == "tag" ]]; then
+            # Environnement versionné par release : référence = dernier tag publié.
+            expect_ref="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/latest" \
+              | jq -r '.tag_name // empty' || true)"
+            if [[ -z "${expect_ref}" ]]; then
+              echo "::error::aucun tag de release publié : impossible de qualifier un environnement versionné par release (#7304)."
+              exit 1
             fi
+            echo "Référence (dernier tag publié) : ${expect_ref}"
+          else
+            # Environnement SHA : référence = dernier commit qui a modifié le
+            # contenu déployable (`deploy-main.yml` ne redéploie que `api/**`).
+            api_sha="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits?path=api&per_page=1" \
+              | jq -r '.[0].sha // empty')"
+            if [[ -z "${api_sha}" ]]; then
+              echo "::warning::dernier commit api/ introuvable — repli sur le SHA du run (#7304)."
+              api_sha="${GITHUB_SHA}"
+            fi
+            expect_ref="${api_sha}"
+            # Une version servie POSTÉRIEURE contient ce commit : à jour.
+            deployed="$(curl -fsS --max-time 30 "${health_url}" | jq -r '.version // empty' || true)"
+            if [[ -n "${deployed}" && "${deployed}" != "${api_sha}" && "${deployed}" != "${api_sha:0:7}" ]]; then
+              status="$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN}" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/compare/${api_sha}...${deployed}" \
+                | jq -r '.status // empty' || true)"
+              if [[ "${status}" == "ahead" || "${status}" == "identical" ]]; then
+                echo "::notice::version servie (${deployed:0:7}) postérieure au dernier commit api/ (${api_sha:0:7}) — à jour."
+                expect_ref="${deployed}"
+              fi
+            fi
+            echo "Référence (dernier commit api/) : ${expect_ref}"
           fi
 
           echo "url=${url}" >> "$GITHUB_OUTPUT"
           echo "expect_ref=${expect_ref}" >> "$GITHUB_OUTPUT"
           echo "Cible : ${url}"
-          echo "Référence : ${expect_ref}"
 
-      - name: Vérifier la dérive (version servie ↔ contenu déployable)
+      - name: Vérifier la dérive (version servie ↔ référentiel)
+        if: steps.target.outputs.skip != 'true'
         shell: bash
         env:
           TARGET_URL: ${{ steps.target.outputs.url }}
           EXPECT_REF: ${{ steps.target.outputs.expect_ref }}
-          LABEL: ${{ inputs.label || 'dev' }}
+          LABEL: ${{ inputs.label || matrix.label }}
           ALLOW_RELEASE: ${{ inputs.allow_release }}
           STRICT_FAILED: ${{ inputs.strict_failed }}
         run: |
@@ -147,4 +183,4 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          echo "::notice::Dérive détectée — runbook : docs/ops/RENDER_DEV_ALIGNMENT.md (aligner l'environnement sur main AVANT toute recette)."
+          echo "::notice::Dérive détectée — runbook : docs/ops/RENDER_DEV_ALIGNMENT.md (aligner l'environnement sur la référence AVANT toute recette)."
