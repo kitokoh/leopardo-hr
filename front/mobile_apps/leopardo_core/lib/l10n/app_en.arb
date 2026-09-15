@@ -97,6 +97,8 @@
   "commonCountriesUs": "United States",
   "commonRequired": "Required",
   "commonDismiss": "Dismiss",
+  "commonActions": "Actions",
+  "commonEdit": "Edit",
   "modulesAttendance": "Attendance",
   "modulesPayroll": "Payroll",
   "modulesCabinet": "Document vault",
@@ -3808,6 +3810,8 @@
   "fuelPumpMedium": "Medium",
   "fuelPumpHigh": "High",
   "fuelPumpCritical": "Critical",
+  "fuelViewequipment": "Equipment",
+  "fuelAdvanceincident": "Advance",
   "trialTrialbadge": "Trial",
   "trialDaysleft": "{n} days left in your trial",
   "trialLastday": "Last day of your trial",
@@ -3893,5 +3897,7 @@
   "emailsadminOverridden": "customised",
   "emailsadminPreview": "Preview",
   "emailsadminPreviewfailed": "Preview unavailable",
-  "emailsadminLoadfailed": "Could not load"
+  "emailsadminLoadfailed": "Could not load",
+  "fleetLocate": "Locate",
+  "fleetDetail": "Details"
 }

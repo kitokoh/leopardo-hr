@@ -97,6 +97,8 @@
   "commonCountriesUs": "الولايات المتحدة",
   "commonRequired": "مطلوب",
   "commonDismiss": "إغلاق",
+  "commonActions": "إجراءات",
+  "commonEdit": "تعديل",
   "modulesAttendance": "الحضور",
   "modulesPayroll": "الرواتب",
   "modulesCabinet": "خزانة المستندات",
@@ -3808,6 +3810,8 @@
   "fuelPumpMedium": "متوسطة",
   "fuelPumpHigh": "عالية",
   "fuelPumpCritical": "حرجة",
+  "fuelViewequipment": "المعدات",
+  "fuelAdvanceincident": "تقديم",
   "trialTrialbadge": "تجريبي",
   "trialDaysleft": "تبقّى {n} يومًا في الفترة التجريبية",
   "trialLastday": "آخر يوم في الفترة التجريبية",
@@ -3893,5 +3897,7 @@
   "emailsadminOverridden": "مخصّص",
   "emailsadminPreview": "معاينة",
   "emailsadminPreviewfailed": "المعاينة غير متاحة",
-  "emailsadminLoadfailed": "تعذّر التحميل"
+  "emailsadminLoadfailed": "تعذّر التحميل",
+  "fleetLocate": "تحديد الموقع",
+  "fleetDetail": "التفاصيل"
 }

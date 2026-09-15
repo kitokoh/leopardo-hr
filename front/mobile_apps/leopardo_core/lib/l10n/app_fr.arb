@@ -97,6 +97,8 @@
   "commonCountriesUs": "États-Unis",
   "commonRequired": "Requis",
   "commonDismiss": "Fermer",
+  "commonActions": "Actions",
+  "commonEdit": "Modifier",
   "modulesAttendance": "Pointage",
   "modulesPayroll": "Paie",
   "modulesCabinet": "Coffre documentaire",
@@ -3808,6 +3810,8 @@
   "fuelPumpMedium": "Moyenne",
   "fuelPumpHigh": "Élevée",
   "fuelPumpCritical": "Critique",
+  "fuelViewequipment": "Équipements",
+  "fuelAdvanceincident": "Faire avancer",
   "trialTrialbadge": "Essai",
   "trialDaysleft": "Il vous reste {n} jours d’essai",
   "trialLastday": "Dernier jour d’essai",
@@ -3893,5 +3897,7 @@
   "emailsadminOverridden": "personnalisé",
   "emailsadminPreview": "Aperçu",
   "emailsadminPreviewfailed": "Aperçu indisponible",
-  "emailsadminLoadfailed": "Chargement impossible"
+  "emailsadminLoadfailed": "Chargement impossible",
+  "fleetLocate": "Localiser",
+  "fleetDetail": "Détail"
 }
