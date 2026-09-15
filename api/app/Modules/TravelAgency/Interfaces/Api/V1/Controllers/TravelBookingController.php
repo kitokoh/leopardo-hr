@@ -108,6 +108,16 @@ class TravelBookingController extends Controller
             actor: $actor,
             idempotencyKey: $request->validated('idempotency_key'),
             customerContactId: $request->validated('customer_contact_id'),
+            // #7445 — ces quatre champs sont VALIDÉS par StoreTravelBookingRequest
+            // mais n'étaient jamais transmis à l'action : une réservation prise au
+            // guichet avec l'e-mail du passager était enregistrée avec
+            // `contact_email = null` (donc aucune notification possible et, pour la
+            // fidélité, aucune clé de contact : `TravelLoyaltyService::contactFor()`
+            // lit `contact_email`/`contact_phone` de la réservation).
+            billingDeferred: (bool) $request->validated('billing_deferred', false),
+            contactEmail: $request->validated('contact_email'),
+            contactPhone: $request->validated('contact_phone'),
+            notifyConsent: (bool) $request->validated('notify_consent', false),
         );
 
         return (new TravelBookingResource($booking))->response()->setStatusCode(201);

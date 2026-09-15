@@ -2063,3 +2063,25 @@ pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bul
 `EduClassEnrollmentTest.php`, `EduAdmissionCampaignTest.php`, `EduAttendanceTest.php`,
 `EduManagerMigrationsTest.php` (inventaire et cycle up/down des migrations canoniques).
 État de la suite au 2026-09-14 : `tests/Feature/EduManager/` **280 tests, 0 échec**.
+
+## Addendum 2026-09-15 — fidélité voyageur : une seule implémentation, sur le schéma réel (#7445)
+
+`POST /api/v1/travel/loyalty/opt-in` répondait **500** en production. Deux causes cumulées : deux migrations créaient `travel_loyalty_accounts` avec des colonnes divergentes (la plus ancienne gagne → le schéma réel ne porte que `contact_identifier`, `contact_id` n'a jamais existé), et deux implémentations concurrentes coexistaient (`TravelLoyaltyService` sur `travel_loyalty_entries`, `LoyaltyPointsService` sur `travel_loyalty_transactions` — table qu'aucune migration ne crée). Arbitrage retenu : **la clé de contact est `contact_identifier`** (option B de l'issue) ; `LoyaltyPointsService`, le modèle `TravelLoyaltyTransaction`, sa factory et la migration perdante sont supprimés.
+
+### Contrat unifié
+
+- `POST /api/v1/travel/loyalty/opt-in` et `/opt-out` : corps `{contact_identifier}` (string ≤ 255) — plus `{contact_id}`. Réponse `data: {contact_identifier, opted_in, points_balance}`. Sans opt-in, **aucun compte n'est créé** (RGPD).
+- `GET /api/v1/travel/loyalty/{contact}` : solde d'un contact (`contact` = email/téléphone normalisé, string). `data: {contact_identifier, points_balance, opted_in}`.
+- `GET /api/v1/travel/loyalty/account?contact_identifier=…` : `data: {contact_identifier, opt_in, points_balance}`.
+- `GET /api/v1/travel/loyalty/entries?contact_identifier=…` : journal des points (`travel_loyalty_entries`).
+- `POST /api/v1/travel/loyalty/{contact}/redeem` : `{points, booking_id?, reason?}` → `data: {discount_minor, points_burned, points_balance}` (1 point = 10 unités mineures ; `REDEEM_RATE`). Solde insuffisant ou compte inactif → **422**.
+- `POST /api/v1/travel/loyalty/redeem` : `{contact_identifier, reward_id, booking_id}` (catalogue de récompenses) → `data: {id, type, points, booking_id, points_balance}` ; rejeu sur la même réservation → **422**.
+
+### 500 de bord supprimés
+
+- Les routes de fidélité étaient déclarées **deux fois** dans le fichier de routes (Laravel ne garde que la dernière) et `/loyalty/{contact}`, déclarée avant les routes nommées, capturait `account`, `entries`, `rewards` et `redeem` comme identifiants de contact (paramètre typé `int`) : `GET /travel/loyalty/account` et `POST /travel/loyalty/redeem` répondaient 500. Les routes nommées passent désormais avant le joker, qui exclut les segments réservés.
+- `TravelBookingController::store()` validait `contact_email`, `contact_phone`, `notify_consent` et `billing_deferred` sans en transmettre **aucun** à `CreateBookingAction` : la réservation était enregistrée avec `contact_email = null` (aucune notification, et pour la fidélité aucune clé de contact). `billing_deferred` n'était pas validé.
+
+### Couverture
+
+`api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
