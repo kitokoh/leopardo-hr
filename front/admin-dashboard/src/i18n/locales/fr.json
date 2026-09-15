@@ -1016,7 +1016,17 @@
     "teamActive": "Équipe Active",
     "updateSubscription": "Mettre à jour l'abonnement",
     "updating": "Mise à jour...",
-    "viewAllTickets": "Voir tous les tickets"
+    "viewAllTickets": "Voir tous les tickets",
+    "features": {
+      "rh": "Ressources Humaines",
+      "finance": "Finance & Gestion",
+      "ai": "Intelligence Artificielle",
+      "cameras": "Surveillance Vidéo",
+      "tracking": "Suivi de Flotte",
+      "planning": "Planning & Équipe",
+      "training": "Centre de Formation",
+      "cabinet": "Coffre documentaire"
+    }
   },
   "attendanceCorrectionRequestHint": "La demande sera transmise au RH pour validation.",
   "salaryAdvanceError": "Échec : {error}",

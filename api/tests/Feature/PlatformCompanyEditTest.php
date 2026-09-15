@@ -68,6 +68,7 @@ class PlatformCompanyEditTest extends TestCase
             'email' => 'admin@leopardo-rh.com',
         ]);
         $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+
         return $superAdmin;
     }
 
@@ -156,8 +157,44 @@ class PlatformCompanyEditTest extends TestCase
 
         $company->refresh();
         $this->assertTrue($company->hasFeature('rh'), 'RH must stay active (APV L.08 — RH base).');
-        $this->assertFalse($company->hasFeature('finance'), 'Finance should be disabled when unchecked.');
+        // #7432 — contrat modifié : un module ABSENT du payload est PRÉSERVÉ
+        // (avant : « un toggle absent = false »). Le formulaire Blade ne
+        // s'appuie plus sur l'absence pour désactiver — il transmet un `0`
+        // explicite via un champ caché (`edit.blade.php`), couvert par
+        // `test_update_disables_a_module_explicitly_sent_as_zero`.
+        $this->assertTrue($company->hasFeature('finance'), 'Un module non mentionné est préservé (#7432).');
         $this->assertArrayNotHasKey('hacker_backdoor', $company->features ?? []);
+    }
+
+    /**
+     * #7432 — la désactivation reste possible : le formulaire Blade envoie un
+     * `0` explicite (champ caché) pour chaque module non coché.
+     */
+    public function test_update_disables_a_module_explicitly_sent_as_zero(): void
+    {
+        $company = $this->seedCompanyAndPlans();
+        $company->features = ['rh' => true, 'finance' => true, 'training' => true];
+        $company->save();
+
+        $superAdmin = $this->superAdmin();
+
+        $this
+            ->actingAs($superAdmin, 'super_admin_web')
+            ->put(route('platform.companies.update', ['company' => $company->id]), [
+                'status' => 'active',
+                'plan_id' => 1,
+                'notes' => null,
+                'features' => [
+                    'finance' => '0',
+                    'training' => '0',
+                ],
+            ])
+            ->assertRedirect();
+
+        $company->refresh();
+        $this->assertTrue($company->hasFeature('rh'), 'RH must stay active (APV L.08 — RH base).');
+        $this->assertFalse($company->hasFeature('finance'), 'Un module explicitement à 0 est désactivé.');
+        $this->assertFalse($company->hasFeature('training'), 'La Formation se désactive aussi depuis cet écran.');
     }
 
     public function test_update_rejects_invalid_status(): void
@@ -194,4 +231,3 @@ class PlatformCompanyEditTest extends TestCase
         $response->assertSee(route('platform.companies.edit', ['company' => $company->id]), false);
     }
 }
-

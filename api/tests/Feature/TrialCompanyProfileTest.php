@@ -74,8 +74,22 @@ class TrialCompanyProfileTest extends TestCase
         $this->assertTrue($selection['reports']);
         $this->assertFalse($selection['marketing']);
 
-        // Aucun outil d'équipe pour un indépendant.
+        // #7423 — PLANCHER D'ACCÈS : un indépendant garde son socle RH (il
+        // travaille aussi : pointage, absences, paie), même quand la sélection
+        // ne le coche pas.
+        foreach (Company::SOLO_FLOOR_TOOLS as $tool) {
+            $this->assertTrue(
+                $selection[$tool],
+                "L'outil {$tool} fait partie du plancher garanti d'un profil solo (#7423).",
+            );
+        }
+
+        // …mais aucun outil de PILOTAGE D'ÉQUIPE.
         foreach (Company::TEAM_TOOLS as $tool) {
+            if (Company::isSoloFloorTool($tool)) {
+                continue;
+            }
+
             $this->assertFalse($selection[$tool], "L'outil {$tool} doit être désactivé pour un profil solo.");
         }
 

@@ -1657,6 +1657,16 @@
     "downloading": "Downloading..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "Human Resources",
+      "finance": "Finance & Management",
+      "ai": "Artificial Intelligence",
+      "cameras": "Video Surveillance",
+      "tracking": "Fleet Tracking",
+      "planning": "Planning & Team",
+      "training": "Training Center",
+      "cabinet": "Document vault"
+    },
     "analyzing": "Analyzing client data...",
     "retry": "Retry",
     "fieldAdoption": "Field Adoption",

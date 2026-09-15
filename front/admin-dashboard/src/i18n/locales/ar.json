@@ -1010,7 +1010,17 @@
     "teamActive": "فريق نشط",
     "updateSubscription": "تحديث الاشتراك",
     "updating": "جارٍ التحديث...",
-    "viewAllTickets": "عرض كل التذاكر"
+    "viewAllTickets": "عرض كل التذاكر",
+    "features": {
+      "rh": "الموارد البشرية",
+      "finance": "المالية والإدارة",
+      "ai": "الذكاء الاصطناعي",
+      "cameras": "المراقبة بالفيديو",
+      "tracking": "تتبع الأسطول",
+      "planning": "التخطيط والفريق",
+      "training": "مركز التدريب",
+      "cabinet": "خزانة المستندات"
+    }
   },
   "attendanceCorrectionRequestHint": "سيُرسل الطلب إلى الموارد البشرية للمراجعة.",
   "salaryAdvanceError": "فشل: {error}",

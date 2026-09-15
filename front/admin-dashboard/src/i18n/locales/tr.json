@@ -1016,7 +1016,17 @@
     "teamActive": "Aktif Ekip",
     "updateSubscription": "Aboneliği güncelle",
     "updating": "Güncelleniyor...",
-    "viewAllTickets": "Tüm talepleri gör"
+    "viewAllTickets": "Tüm talepleri gör",
+    "features": {
+      "rh": "İnsan Kaynakları",
+      "finance": "Finans ve Yönetim",
+      "ai": "Yapay Zeka",
+      "cameras": "Video Gözetim",
+      "tracking": "Filo Takibi",
+      "planning": "Planlama ve Ekip",
+      "training": "Eğitim Merkezi",
+      "cabinet": "Belge kasası"
+    }
   },
   "attendanceCorrectionRequestHint": "Talep, onay için İK'ya iletilecek.",
   "salaryAdvanceError": "Başarısız: {error}",
