@@ -21,38 +21,66 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (schemaTableExists('travel_outbox_events')) {
-            return;
-        }
-
-        Schema::create('travel_outbox_events', function (Blueprint $table): void {
-            $table->id();
-            $table->uuid('company_id')->index();
-
-            $table->string('event_type', 80);
-            $table->jsonb('payload_redacted');
-
-            // pending → published | failed (dead-letter après max attempts).
-            $table->string('status', 20)->default('pending');
-            $table->unsignedSmallInteger('attempts')->default(0);
-            $table->timestampTz('available_at')->useCurrent();
-            $table->text('last_error')->nullable();
-
-            $table->string('idempotency_key', 255);
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
-
-            $table->unique(['company_id', 'idempotency_key'], 'travel_outbox_company_key_unique');
-            $table->index(['company_id', 'status', 'available_at'], 'travel_outbox_company_status_due_idx');
-        });
-
-        DB::statement("ALTER TABLE travel_outbox_events ADD CONSTRAINT travel_outbox_events_status_check CHECK (status IN ('pending', 'published', 'failed'))");
-        DB::statement("COMMENT ON TABLE travel_outbox_events IS 'Outbox des evenements TravelAgency — pattern identique crm_outbox_events #5741 (TRAVEL-211/#6024).'");
-        DB::statement("COMMENT ON COLUMN travel_outbox_events.status IS 'pending|published|failed (dead-letter apres max attempts).'");
+        // Issue #7452 — `travel_outbox_events` n'est déclarée qu'UNE fois, par
+        // `2026_08_29_000610_6024_create_travel_outbox_events_table.php` (colonnes
+        // strictement identiques). Cette génération ne crée plus la table : elle
+        // n'était déjà jamais exécutée (garde `schemaTableExists()` + `return` avant
+        // le `Schema::create`). Ses `DB::statement` (contrainte CHECK, commentaires)
+        // restent volontairement hors service : les réactiver changerait un contrat
+        // jamais appliqué en environnement réel.
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_outbox_events');
+        if (schemaHasColumn('travel_outbox_events', 'company_id')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'event_type')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('event_type');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'payload_redacted')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('payload_redacted');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'status')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'attempts')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('attempts');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'available_at')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('available_at');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'last_error')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('last_error');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'idempotency_key')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('idempotency_key');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'created_at')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_outbox_events', 'updated_at')) {
+            Schema::table('travel_outbox_events', function (Blueprint $table): void {
+                $table->dropColumn('updated_at');
+            });
+        }
     }
 };

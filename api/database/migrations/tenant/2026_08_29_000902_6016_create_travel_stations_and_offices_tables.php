@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -18,52 +17,158 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_stations')) {
-            Schema::create('travel_stations', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->string('code', 40);
-                $table->string('name', 120);
-                $table->unsignedBigInteger('city_id');
-                $table->string('address', 255)->nullable();
-                $table->string('contact_phone', 40)->nullable();
-                $table->string('timezone', 50)->default('UTC');
-                $table->boolean('is_terminal')->default(false);
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                $table->unique(['company_id', 'code'], 'travel_stations_company_code_unique');
-                $table->index(['company_id', 'city_id'], 'travel_stations_company_city_idx');
+        if (schemaTableExists('travel_stations')) {
+            // Issue #7452 — la table est créée par 2026_08_29_000003_6016_create_travel_stations_and_offices_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_stations', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'code')) {
+                    $table->string('code', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'name')) {
+                    $table->string('name', 120)->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'city_id')) {
+                    $table->unsignedBigInteger('city_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'address')) {
+                    $table->string('address', 255)->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'contact_phone')) {
+                    $table->string('contact_phone', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_stations', 'timezone')) {
+                    $table->string('timezone', 50)->default('UTC');
+                }
+                if (! schemaHasColumn('travel_stations', 'is_terminal')) {
+                    $table->boolean('is_terminal')->default(false);
+                }
+                if (! schemaHasColumn('travel_stations', 'status')) {
+                    $table->string('status', 20)->default('active');
+                }
+                if (! schemaHasColumn('travel_stations', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_stations IS 'Gares/terminaux de la verticale TravelAgency — code unique par tenant (TRAVEL-203/#6016).'");
         }
 
-        if (! schemaTableExists('travel_offices')) {
-            Schema::create('travel_offices', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->string('name', 120);
-                $table->unsignedBigInteger('city_id');
-                $table->string('address', 255)->nullable();
-                $table->string('contact_phone', 40)->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                $table->index(['company_id', 'city_id'], 'travel_offices_company_city_idx');
+        if (schemaTableExists('travel_offices')) {
+            // Issue #7452 — la table est créée par 2026_08_29_000003_6016_create_travel_stations_and_offices_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_offices', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_offices', 'name')) {
+                    $table->string('name', 120)->nullable();
+                }
+                if (! schemaHasColumn('travel_offices', 'city_id')) {
+                    $table->unsignedBigInteger('city_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_offices', 'address')) {
+                    $table->string('address', 255)->nullable();
+                }
+                if (! schemaHasColumn('travel_offices', 'contact_phone')) {
+                    $table->string('contact_phone', 40)->nullable();
+                }
+                if (! schemaHasColumn('travel_offices', 'status')) {
+                    $table->string('status', 20)->default('active');
+                }
+                if (! schemaHasColumn('travel_offices', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_offices IS 'Bureaux de vente de l agence — tenant-scoped (TRAVEL-203/#6016).'");
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_offices');
-        Schema::dropIfExists('travel_stations');
+        if (schemaHasColumn('travel_offices', 'company_id')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'name')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'city_id')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('city_id');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'address')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('address');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'contact_phone')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('contact_phone');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'status')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_offices', 'created_at')) {
+            Schema::table('travel_offices', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'company_id')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'code')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('code');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'name')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'city_id')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('city_id');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'address')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('address');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'contact_phone')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('contact_phone');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'timezone')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('timezone');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'is_terminal')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('is_terminal');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'status')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_stations', 'created_at')) {
+            Schema::table('travel_stations', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };

@@ -165,6 +165,37 @@ le code écrit contre la dernière génération casse en `column "x" does not ex
   `223 failed` de #7452 est donc **majoritairement non-schéma** : la
   consolidation ne peut pas, à elle seule, fermer l'issue.
 
+### Recette de consolidation d'un module (appliquée à Travel le 2026-09-15, #7452)
+
+1. **Deux formes de garde coexistent** — ne pas n'en voir qu'une :
+   `if (! schemaTableExists('t')) { Schema::create(...); }` **et**
+   `if (schemaTableExists('t')) { return; }` suivi du `Schema::create`. Travel en
+   portait 3 de la seconde forme (`travel_outbox_events`, `travel_advert_prices`,
+   `travel_tourist_sites`) : un outil qui ne cherche que la forme négative les
+   laisse intactes, et la colonne manquante le reste aussi (`image_asset_id`).
+   Vérifier après coup : `grep -l "Schema::create('travel_" <fichiers touchés>`.
+2. **Le gagnant garde la déclaration, les perdants deviennent des `ALTER`** :
+   remplacer le bloc du perdant par
+   `if (schemaTableExists('t')) { Schema::table('t', function (Blueprint $table) { if (! schemaHasColumn('t','col')) { $table->…; } }); }`
+   — le schéma réel devient l'**union** des générations, résultat identique sur
+   base neuve et base déjà migrée. Ne pas « inverser le gagnant » (retirer la 1ʳᵉ
+   déclaration) : les bases existantes garderaient des colonnes que les neuves
+   n'auraient pas → divergence d'environnements.
+3. **Colonnes NOT NULL « legacy »** que seule la 1ʳᵉ génération déclare et que le
+   code ne renseigne jamais (`contact_identifier`, `base_currency`,
+   `passenger_count`, `name` des référentiels d'annonces…) : les rattraper par une
+   migration dédiée `ALTER COLUMN … DROP NOT NULL` (idempotent, sans perte de
+   données, les lecteurs legacy continuent de marcher). Un `->nullable()` dans un
+   `Schema::table` ne suffit pas : la colonne existe déjà, la contrainte reste.
+4. **Mesurer avant/après, sur base neuve** — le test runner met en cache le schéma
+   canonique (`canonicalSchemaReady()`, #6754) : sans `DROP DATABASE` (ou
+   `migrate:fresh`), une exécution peut valider l'ANCIEN schéma et faire croire à
+   un correctif sans effet.
+5. **État après Travel** : dette **68 tables dupliquées / 36 divergentes → 40 / 17**
+   (plus aucune `travel_*`). `tests/Feature/Travel` : 223 échecs → 181 (les
+   restants sont d'autres natures — policies, fixtures, constantes — et masqués
+   jusque-là par la cascade `25P02` ; voir #7420, #7417, #7445).
+
 ## Garde post-merge `Closes #` (issue #2512)
 
 Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou

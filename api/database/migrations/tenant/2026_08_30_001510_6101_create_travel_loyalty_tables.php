@@ -19,22 +19,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_loyalty_accounts')) {
-            Schema::create('travel_loyalty_accounts', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->unsignedBigInteger('contact_id');
-                $table->unsignedInteger('points_balance')->default(0);
-                $table->timestamp('opt_in_at')->nullable();
-                $table->timestamp('opt_out_at')->nullable();
-
-                $table->timestamps();
-
-                $table->unique(['company_id', 'contact_id'], 'travel_loyalty_accounts_company_contact_unique');
+        if (schemaTableExists('travel_loyalty_accounts')) {
+            // Issue #7452 — la table est créée par 2026_08_30_000012_6101_create_travel_loyalty_tables.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_loyalty_accounts', 'company_id')) {
+                    $table->uuid('company_id')->index()->nullable();
+                }
+                if (! schemaHasColumn('travel_loyalty_accounts', 'contact_id')) {
+                    $table->unsignedBigInteger('contact_id')->nullable();
+                }
+                if (! schemaHasColumn('travel_loyalty_accounts', 'points_balance')) {
+                    $table->unsignedInteger('points_balance')->default(0);
+                }
+                if (! schemaHasColumn('travel_loyalty_accounts', 'opt_in_at')) {
+                    $table->timestamp('opt_in_at')->nullable();
+                }
+                if (! schemaHasColumn('travel_loyalty_accounts', 'opt_out_at')) {
+                    $table->timestamp('opt_out_at')->nullable();
+                }
+                if (! schemaHasColumn('travel_loyalty_accounts', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_loyalty_accounts IS 'Comptes fidélité voyageurs — opt-in RGPD (TRAVEL-811/#6101).'");
         }
 
         if (! schemaTableExists('travel_loyalty_transactions')) {
@@ -63,6 +70,35 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('travel_loyalty_transactions');
-        Schema::dropIfExists('travel_loyalty_accounts');
+        if (schemaHasColumn('travel_loyalty_accounts', 'company_id')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_loyalty_accounts', 'contact_id')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('contact_id');
+            });
+        }
+        if (schemaHasColumn('travel_loyalty_accounts', 'points_balance')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('points_balance');
+            });
+        }
+        if (schemaHasColumn('travel_loyalty_accounts', 'opt_in_at')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('opt_in_at');
+            });
+        }
+        if (schemaHasColumn('travel_loyalty_accounts', 'opt_out_at')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('opt_out_at');
+            });
+        }
+        if (schemaHasColumn('travel_loyalty_accounts', 'created_at')) {
+            Schema::table('travel_loyalty_accounts', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };
