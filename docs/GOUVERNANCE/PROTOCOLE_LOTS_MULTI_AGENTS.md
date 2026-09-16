@@ -53,11 +53,35 @@ fondateur. Séquence stricte, fenêtre la plus courte possible (< 30 s) :
 la garde `branch-protection-guard.yml` (horaire) détecte toute dérive résiduelle — la
 restauration doit donc être vérifiée, pas supposée.
 
+## 4bis. Clôture d'une PR « couvert par le lot » (issue #7581)
+
+Une clôture « couvert par le lot #N » est une **affirmation de contenu**. Quand elle
+est fausse, le correctif disparaît **et** le backlog devient vert à tort — le
+« ghost close » que `AGENTS.md` interdit pour les issues, appliqué aux PR (constat
+#7531 : `optimizeCss` / `critters` perdu, corrigé seulement par #7565).
+
+Avant de fermer une PR pour ce motif, **mesurer** au lieu d'affirmer :
+
+```bash
+bash dev-hub/tools/check-pr-subset-of-lot.sh --lot <branche-du-lot> --pr <branche-de-la-pr>
+# sortie 0 : sous-ensemble PROUVÉ (chaque fichier existe dans le lot et chaque
+#            ligne ajoutée par la PR y est présente) -> la clôture est sûre
+# sortie 1 : NON prouvé, avec la liste des fichiers/lignes manquants
+#            -> c'est exactement le texte à citer dans le commentaire de
+#               fermeture, ou la raison de ne PAS fermer
+```
+
+Coller la sortie de l'outil dans le commentaire de fermeture : la clôture devient
+vérifiable par le prochain lecteur, y compris si le lot est ensuite lu par un autre
+agent.
+
 ## 5. Checklist post-lot
 
 - [ ] Issues toutes fermées ; PR mergée ; branche supprimée
 - [ ] Protection `main` restaurée et vérifiée (contexts + enforce_admins)
 - [ ] Pas de doublon livré (comparer les fichiers aux PR concurrentes mergées)
+- [ ] Aucune PR fermée « couvert par le lot » sans la sortie de
+  `check-pr-subset-of-lot.sh` collée dans son commentaire de fermeture (#7581)
 - [ ] Leçons du lot consolidées (AGENTS.md / BIBLIOTHEQUE_ERREURS.md / ce protocole)
 
 ## 6. Drain de crise — N branches concurrentes, aucun propriétaire
@@ -128,7 +152,7 @@ restauration doit donc être vérifiée, pas supposée.
 | Aucun run CI créé pour un push (0 run, 2 pushs de suite) | sous charge, GitHub ne crée pas de run pour certains événements `synchronize` | `git commit --allow-empty -m "ci: nudge"` + push ; si rien, merger `origin/main` et pousser ; en dernier recours, documenter et vérifier localement |
 | `Deploy gate verdict` rouge ~30 min après un merge `api/**` | budget de polling (30 min) **plus court** que le timeout du job backend (300 min) : le gate lisait un `timeout` comme une indécision | distinguer **différé** (des runs requis tournent encore → `pending`, non fatal) d'une **indécision** (#7559) |
 | `gate_outcome=tests-null` (motif inconnu du verdict) | le prédicat « en vol » ne couvrait que `queued`/`in_progress` : un run `requested`/`waiting` était ignoré, et le gate concluait sur une `conclusion` nulle | « en vol » = **tout ce qui n'est pas `completed`** ; et aucun motif `*-null` ne doit être constructible (#7579) |
-| Un correctif annoncé n'est pas sur `main` | PR fermée « couvert par le lot #N » alors que le lot ne le couvrait pas (constat #7531 : `optimizeCss`) | avant toute clôture « couvert », **prouver** que le diff de la PR est un sous-ensemble de celui du lot ; sinon corriger |
+| Un correctif annoncé n'est pas sur `main` | PR fermée « couvert par le lot #N » alors que le lot ne le couvrait pas (constat #7531 : `optimizeCss`) | avant toute clôture « couvert », **prouver** le sous-ensemble avec `bash dev-hub/tools/check-pr-subset-of-lot.sh --lot <lot> --pr <pr>` (sortie 0 = prouvé, 1 = perte nommée) ; coller la sortie dans le commentaire de fermeture ; sinon ne pas fermer |
 
 ### 6.4 Reconstituer l'outillage local (session sans image de dev)
 

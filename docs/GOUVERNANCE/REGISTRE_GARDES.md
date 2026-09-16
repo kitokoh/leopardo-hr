@@ -14,6 +14,7 @@
 | `issue-governance-guard.yml` (`check-issues-*`) | issues fermées sans merge / laissées ouvertes par des PR mergées | rapporte |
 | `check-no-claim-marker.sh` | pas de claim marker orphelin | rapporte |
 | `check-pr-runs-missing.sh` | PR sans runs CI | rapporte |
+| `check-pr-subset-of-lot.sh` (+ `--self-test`) | avant de fermer une PR « couvert par le lot #N » : tout fichier et toute ligne ajoutée de la PR existent dans le lot (#7581) | manuel (outil de preuve), appelé à la clôture |
 
 ## 2. Branches & merge
 
