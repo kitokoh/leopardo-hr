@@ -2085,3 +2085,44 @@ pour les actes pédagogiques), `EduApiTest.php` (parcours complet campus → bul
 ### Couverture
 
 `api/tests/Feature/Travel/TravelLoyaltyTest.php` (7 cas : crédit unique par billet, aucun crédit ni compte sans opt-in, gel à l'opt-out avec solde conservé, conversion points → avoir journalisée dans le même journal que les crédits, solde insuffisant → 422, échange d'une récompense, non-capture des routes nommées par le joker) et `TravelLoyaltyApiTest` (4 cas, dont `test_opt_in_required_for_redeem`, rouge sur `main`).
+
+## Addendum 2026-09-16 — notifications : une seule source de vérité, le flux SSE mort retiré (#7481)
+
+La boîte de réception in-app avait **deux magasins** et un flux temps réel que
+personne ne consommait. La règle est désormais tranchée et opposable : **un seul
+magasin canonique** (`AppNotification`), servi par **`GET /api/v1/notifications`**.
+
+### Surface retirée
+
+- **`GET /api/v1/notifications/stream`** (SSE) et **`POST /api/v1/notifications/sse-token`**
+  sont **supprimés** : contrôleurs `NotificationStreamController` et
+  `SseTokenController` retirés, routes retirées de `api/routes/modules/rh.php`
+  (le commentaire de la route porte la justification et la marche à suivre si le
+  temps réel revient : il faudra un **client**, pas seulement un contrôleur).
+- Preuve de non-usage : **0 `EventSource`** dans `front/web` et
+  `front/mobile_apps` ; le mobile polle l'API toutes les 30 s. Une surface morte
+  coûte de la maintenance et trompe les audits de sécurité.
+- Contrat de remplacement : `GET /notifications` rend **les mêmes données**,
+  depuis le magasin canonique — aucun client n'a besoin de changer de donnée,
+  seulement de transport.
+
+### Contrat unifié
+
+- `NotificationDispatcher` écrit dans le **store canonique** ; `MarkNotificationsRead`
+  et l'assistant IA **lisent le même store** (plus de dérive entre les deux).
+- `POST /notifications/read-all`, `PATCH /notifications/{notification}/read`
+  (`whereNumber`) et `DELETE /notifications/{notification}` sont inchangés.
+- `api/openapi.yaml` et son miroir `dev-hub/openapi/v1.yaml` sont régénérés
+  (**2 chemins retirés**, 24 lignes par spec) ainsi que le SDK
+  (`dev-hub/sdk/MANIFEST.json`, client JavaScript, client Python) — la garde
+  « Route → OpenAPI coverage » ne rapporte **aucun drift**.
+
+### Couverture
+
+`api/tests/Feature/Notification/NotificationSingleStoreTest.php` (3 cas : le
+dispatcher crée la notification dans le store canonique ; la notification
+dispatchée est **visible dans l'inbox API** puis marquable lue ; l'assistant lit
+le **même** store que l'inbox), `api/tests/Unit/Services/NotificationDispatcherTest.php`
+(mis à jour sur le contrat du store unique),
+`api/tests/Feature/Notification/AppNotificationMigrationTest.php` (index et
+déduplication de la table canonique).
