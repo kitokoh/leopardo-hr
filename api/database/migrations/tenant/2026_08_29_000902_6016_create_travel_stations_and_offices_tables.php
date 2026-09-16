@@ -22,16 +22,16 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_stations', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_stations', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_stations', 'code')) {
-                    $table->string('code', 40)->nullable();
+                    $table->string('code', 40);
                 }
                 if (! schemaHasColumn('travel_stations', 'name')) {
-                    $table->string('name', 120)->nullable();
+                    $table->string('name', 120);
                 }
                 if (! schemaHasColumn('travel_stations', 'city_id')) {
-                    $table->unsignedBigInteger('city_id')->nullable();
+                    $table->unsignedBigInteger('city_id');
                 }
                 if (! schemaHasColumn('travel_stations', 'address')) {
                     $table->string('address', 255)->nullable();
@@ -59,13 +59,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_offices', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_offices', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_offices', 'name')) {
-                    $table->string('name', 120)->nullable();
+                    $table->string('name', 120);
                 }
                 if (! schemaHasColumn('travel_offices', 'city_id')) {
-                    $table->unsignedBigInteger('city_id')->nullable();
+                    $table->unsignedBigInteger('city_id');
                 }
                 if (! schemaHasColumn('travel_offices', 'address')) {
                     $table->string('address', 255)->nullable();

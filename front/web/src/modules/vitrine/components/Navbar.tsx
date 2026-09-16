@@ -270,12 +270,22 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const [hasSession, setHasSession] = useState(false)
   useEffect(() => {
     let active = true
-    fetch('/api/v1/auth/me', { headers: { Accept: 'application/json' } })
-      .then((res) => {
+    // #7492 (durcissement) : la sonde de session est purement additive — elle
+    // ne doit JAMAIS faire échouer le rendu de la vitrine. `fetch` peut être
+    // indisponible (jsdom des tests unitaires, runtime dégradé) et l'appel
+    // peut jeter de façon synchrone ; dans les deux cas la nav doit rester en
+    // mode anonyme au lieu de casser l'arbre React (constat : 6 tests
+    // `rtl-direction` rouges, `ReferenceError: fetch is not defined`).
+    const probeSession = async () => {
+      if (typeof fetch !== 'function') return
+      try {
+        const res = await fetch('/api/v1/auth/me', { headers: { Accept: 'application/json' } })
         if (active && res.ok) setHasSession(true)
-        return null
-      })
-      .catch(() => undefined)
+      } catch {
+        // API injoignable : on reste en mode anonyme, sans bruit.
+      }
+    }
+    void probeSession()
     return () => {
       active = false
     }

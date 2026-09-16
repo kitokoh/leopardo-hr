@@ -24,19 +24,19 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_tickets', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_tickets', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_tickets', 'ticket_number')) {
-                    $table->string('ticket_number', 40)->nullable();
+                    $table->string('ticket_number', 40);
                 }
                 if (! schemaHasColumn('travel_tickets', 'booking_id')) {
-                    $table->unsignedBigInteger('booking_id')->nullable();
+                    $table->unsignedBigInteger('booking_id');
                 }
                 if (! schemaHasColumn('travel_tickets', 'passenger_id')) {
-                    $table->unsignedBigInteger('passenger_id')->nullable();
+                    $table->unsignedBigInteger('passenger_id');
                 }
                 if (! schemaHasColumn('travel_tickets', 'validation_code')) {
-                    $table->string('validation_code', 64)->nullable();
+                    $table->string('validation_code', 64);
                 }
                 if (! schemaHasColumn('travel_tickets', 'pdf_asset_id')) {
                     $table->unsignedBigInteger('pdf_asset_id')->nullable();
@@ -70,22 +70,22 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_payments', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_payments', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_payments', 'reference')) {
-                    $table->string('reference', 40)->nullable();
+                    $table->string('reference', 40);
                 }
                 if (! schemaHasColumn('travel_payments', 'booking_id')) {
-                    $table->unsignedBigInteger('booking_id')->nullable();
+                    $table->unsignedBigInteger('booking_id');
                 }
                 if (! schemaHasColumn('travel_payments', 'provider_code')) {
-                    $table->string('provider_code', 20)->nullable();
+                    $table->string('provider_code', 20);
                 }
                 if (! schemaHasColumn('travel_payments', 'amount_minor')) {
-                    $table->unsignedInteger('amount_minor')->nullable();
+                    $table->unsignedInteger('amount_minor');
                 }
                 if (! schemaHasColumn('travel_payments', 'currency')) {
-                    $table->char('currency', 3)->nullable();
+                    $table->char('currency', 3);
                 }
                 if (! schemaHasColumn('travel_payments', 'status')) {
                     $table->string('status', 20)->default('pending');
@@ -97,7 +97,7 @@ return new class extends Migration
                     $table->jsonb('callback_payload_redacted')->nullable();
                 }
                 if (! schemaHasColumn('travel_payments', 'idempotency_key')) {
-                    $table->string('idempotency_key', 255)->nullable();
+                    $table->string('idempotency_key', 255);
                 }
                 if (! schemaHasColumn('travel_payments', 'created_at')) {
                     $table->timestamps();

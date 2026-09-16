@@ -22,10 +22,10 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_quizzes', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_quizzes', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_quizzes', 'title')) {
-                    $table->string('title', 200)->nullable();
+                    $table->string('title', 200);
                 }
                 if (! schemaHasColumn('travel_quizzes', 'description_redacted')) {
                     $table->text('description_redacted')->nullable();
@@ -50,10 +50,10 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_quiz_questions', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_quiz_questions', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_quiz_questions', 'quiz_id')) {
-                    $table->unsignedBigInteger('quiz_id')->nullable();
+                    $table->unsignedBigInteger('quiz_id');
                 }
                 if (! schemaHasColumn('travel_quiz_questions', 'question')) {
                     $table->string('question', 500)->nullable();
@@ -81,10 +81,10 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_quiz_participations', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_quiz_participations', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_quiz_participations', 'quiz_id')) {
-                    $table->unsignedBigInteger('quiz_id')->nullable();
+                    $table->unsignedBigInteger('quiz_id');
                 }
                 if (! schemaHasColumn('travel_quiz_participations', 'participant_type')) {
                     $table->string('participant_type', 20)->nullable();
@@ -102,7 +102,7 @@ return new class extends Migration
                     $table->string('status', 20)->default('completed');
                 }
                 if (! schemaHasColumn('travel_quiz_participations', 'completed_at')) {
-                    $table->timestamp('completed_at')->nullable();
+                    $table->timestamp('completed_at');
                 }
                 if (! schemaHasColumn('travel_quiz_participations', 'created_at')) {
                     $table->timestamps();

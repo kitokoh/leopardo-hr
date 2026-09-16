@@ -20,13 +20,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_comments', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_comments', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_comments', 'article_id')) {
-                    $table->unsignedBigInteger('article_id')->nullable();
+                    $table->unsignedBigInteger('article_id');
                 }
                 if (! schemaHasColumn('travel_comments', 'author_type')) {
-                    $table->string('author_type', 20)->nullable();
+                    $table->string('author_type', 20);
                 }
                 if (! schemaHasColumn('travel_comments', 'author_id')) {
                     // employee|contact
@@ -56,13 +56,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_likes', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_likes', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_likes', 'article_id')) {
-                    $table->unsignedBigInteger('article_id')->nullable();
+                    $table->unsignedBigInteger('article_id');
                 }
                 if (! schemaHasColumn('travel_likes', 'actor_type')) {
-                    $table->string('actor_type', 20)->nullable();
+                    $table->string('actor_type', 20);
                 }
                 if (! schemaHasColumn('travel_likes', 'actor_id')) {
                     // employee|contact
@@ -79,16 +79,16 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_shares', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_shares', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_shares', 'article_id')) {
-                    $table->unsignedBigInteger('article_id')->nullable();
+                    $table->unsignedBigInteger('article_id');
                 }
                 if (! schemaHasColumn('travel_shares', 'channel')) {
                     $table->string('channel', 30)->nullable();
                 }
                 if (! schemaHasColumn('travel_shares', 'actor_type')) {
-                    $table->string('actor_type', 20)->nullable();
+                    $table->string('actor_type', 20);
                 }
                 if (! schemaHasColumn('travel_shares', 'actor_id')) {
                     $table->unsignedBigInteger('actor_id')->nullable();
@@ -104,13 +104,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_ratings', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_ratings', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_ratings', 'article_id')) {
-                    $table->unsignedBigInteger('article_id')->nullable();
+                    $table->unsignedBigInteger('article_id');
                 }
                 if (! schemaHasColumn('travel_ratings', 'actor_type')) {
-                    $table->string('actor_type', 20)->nullable();
+                    $table->string('actor_type', 20);
                 }
                 if (! schemaHasColumn('travel_ratings', 'actor_id')) {
                     // employee|contact

@@ -13,6 +13,7 @@ use App\Modules\Cameras\Domain\Models\CameraEvent;
 use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
@@ -110,6 +111,7 @@ class CameraAlertTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $overrides
+     * @return \Illuminate\Testing\TestResponse<JsonResponse>
      */
     private function ingest(array $overrides = [], string $secret = self::SECRET): \Illuminate\Testing\TestResponse
     {
