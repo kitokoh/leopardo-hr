@@ -114,9 +114,25 @@ class TravelAdvertApiTest extends TestCase
         ])->assertStatus(422);
     }
 
+    /**
+     * #7420 — La propriété « une annonce n'est visible qu'une fois PAYÉE **et**
+     * VALIDÉE » est une propriété de **visibilité publique**. Elle ne peut pas
+     * s'observer avec un manager : `TravelAdvertController::index()` bascule en
+     * **mode gestion** pour un acteur `principal`/`rh`/`manager`
+     * (TRAVEL-911/#6416, docblock de `index()`), et un manager y voit donc
+     * légitimement toutes les annonces, quel que soit leur statut.
+     *
+     * Le test utilisait `actingManager()` pour les DEUX rôles à la fois —
+     * acteur qui pilote le cycle de vie ET lecteur de la liste — d'où la
+     * contradiction avec `test_index_manage_mode_lists_all_statuses_for_manager`
+     * (#7420) : les deux ne pouvaient pas passer ensemble. Les mutations
+     * (créer/payer/valider) restent le fait du manager (ce sont des actes
+     * opérationnels) ; la LECTURE est faite par un acteur non-manager, seul
+     * point de vue où `index()` applique réellement `isVisible()`.
+     */
     public function test_advert_visible_only_after_payment_and_validation(): void
     {
-        $this->actingManager();
+        $manager = $this->actingManager();
         ['type' => $type, 'position' => $position] = $this->seedPricing();
 
         $created = $this->postJson('/api/v1/travel/adverts', [
@@ -127,17 +143,55 @@ class TravelAdvertApiTest extends TestCase
         ])->assertStatus(201)->json('data');
 
         $id = $created['id'];
+        $viewer = $this->nonManagerViewer();
 
         // Soumise → invisible.
-        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
+        $this->assertPublicListingHides($viewer, $id);
 
         // Payée mais pas validée → invisible.
+        Sanctum::actingAs($manager);
         $this->postJson("/api/v1/travel/adverts/{$id}/pay")->assertOk();
-        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $id]);
+        $this->assertPublicListingHides($viewer, $id);
 
         // Validée → visible.
+        Sanctum::actingAs($manager);
         $this->postJson("/api/v1/travel/adverts/{$id}/validate")->assertOk();
-        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonFragment(['id' => $id]);
+        $this->assertPublicListingShows($viewer, $id);
+    }
+
+    /**
+     * Acteur NON-manager du tenant courant (#7420).
+     *
+     * `role` doit appartenir à `employees_role_check` — la contrainte ne connaît
+     * que `manager`/`employee`/`ordinary` : le `'agent'` utilisé ici auparavant
+     * violait la contrainte et faisait échouer le test en amont de toute
+     * assertion (`SQLSTATE[23514]`, masqué en cascade `25P02`). Un `employee`
+     * suffit à sortir du mode gestion d'`index()`.
+     */
+    private function nonManagerViewer(): Employee
+    {
+        /** @var Employee $viewer */
+        $viewer = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'manager_role' => null,
+        ]);
+
+        return $viewer;
+    }
+
+    /** La liste publique (`index()` hors mode gestion) ne contient pas l'annonce. */
+    private function assertPublicListingHides(Employee $viewer, int $advertId): void
+    {
+        Sanctum::actingAs($viewer);
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonMissing(['id' => $advertId]);
+    }
+
+    /** La liste publique (`index()` hors mode gestion) contient l'annonce. */
+    private function assertPublicListingShows(Employee $viewer, int $advertId): void
+    {
+        Sanctum::actingAs($viewer);
+        $this->getJson('/api/v1/travel/adverts')->assertOk()->assertJsonFragment(['id' => $advertId]);
     }
 
     public function test_validate_requires_paid_state(): void
@@ -322,7 +376,7 @@ class TravelAdvertApiTest extends TestCase
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);
@@ -348,7 +402,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonMissing(['title' => 'Annonce tenant B']);
     }
 
-
     private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
@@ -363,7 +416,6 @@ class TravelAdvertApiTest extends TestCase
         return $employee;
     }
 
-
     private function activateTravel(Company $company): void
     {
         $company->setFeature('travelagency', true);
@@ -376,17 +428,17 @@ class TravelAdvertApiTest extends TestCase
             $type = TravelAdvertType::query()->create([
                 'company_id' => $company->id,
                 'code' => 'BANNER',
-                'name' => 'Bannière',
+                'label' => 'Bannière',
             ]);
             $position = TravelAdvertPosition::query()->create([
                 'company_id' => $company->id,
                 'code' => 'HOME_TOP',
-                'name' => 'Accueil haut',
+                'label' => 'Accueil haut',
             ]);
             TravelAdvertPrice::query()->create([
                 'company_id' => $company->id,
-                'type_id' => $type->id,
-                'position_id' => $position->id,
+                'advert_type_id' => $type->id,
+                'advert_position_id' => $position->id,
                 'price_per_image_minor' => 5000,
                 'price_per_character_minor' => 10,
                 'currency' => 'XAF',
@@ -395,7 +447,6 @@ class TravelAdvertApiTest extends TestCase
             return ['type' => $type->id, 'position' => $position->id];
         });
     }
-
 
     public function test_advert_is_visible_only_when_paid_and_validated(): void
     {
@@ -438,7 +489,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonPath('data.0.title', 'Promotion week-end');
     }
 
-
     public function test_prices_are_in_minor_units_and_tenant_currency(): void
     {
         /** @var Company $company */
@@ -463,7 +513,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonPath('data.currency', 'XAF')
             ->assertJsonPath('data.price_per_image_minor', 2500);
     }
-
 
     public function test_advert_expires_and_can_be_renewed(): void
     {
@@ -502,7 +551,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonPath('data.status', 'published');
     }
 
-
     public function test_index_manage_mode_lists_all_statuses_for_manager(): void
     {
         $this->actingManager();
@@ -526,7 +574,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonPath('data.1.status', 'draft');
     }
 
-
     public function test_index_manage_mode_filters_by_status(): void
     {
         $this->actingManager();
@@ -547,13 +594,12 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonPath('data.0.title', 'Annonce draft');
     }
 
-
     public function test_index_public_mode_hides_non_visible_for_agent(): void
     {
         /** @var Employee $agent */
         $agent = Employee::factory()->create([
             'company_id' => $this->company->id,
-            'role' => 'agent',
+            'role' => 'employee',
             'manager_role' => null,
         ]);
         Sanctum::actingAs($agent);
@@ -576,7 +622,6 @@ class TravelAdvertApiTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.title', 'Annonce visible');
     }
-
 
     public function test_index_manage_mode_is_isolated_per_tenant(): void
     {
