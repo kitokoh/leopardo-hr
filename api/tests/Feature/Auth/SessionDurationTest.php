@@ -32,13 +32,21 @@ class SessionDurationTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create();
+        // `factory()->create()` est typé `Model` par Larastan : l'annotation
+        // locale (convention du dépôt, cf. AuthLoginDefensiveTest) rétrécit le
+        // type avant l'affectation aux propriétés typées (PHPStan level 8,
+        // `assign.propertyType`).
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
 
-        $this->manager = Employee::factory()->create([
+        /** @var Employee $manager */
+        $manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        $this->manager = $manager;
     }
 
     protected function tearDown(): void
