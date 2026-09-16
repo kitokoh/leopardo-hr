@@ -31,15 +31,25 @@ final class TravelCurrencyConverter
 
         $rate = $this->resolveRate($fromCurrency, $toCurrency, $date);
 
+        // Le schéma de référence (2026_08_30_000020_6096) porte `rate` (décimal)
+        // et la migration de réparation #7452 ajoute `rate_minor` en NULLABLE :
+        // une ligne dont le taux entier n'est pas renseigné ne peut pas être
+        // convertie. Échec 422 explicite (fail-closed), comme pour l'absence de
+        // période — jamais de conversion silencieuse à 0.
+        $rateMinor = $rate->rate_minor;
+        if ($rateMinor === null) {
+            abort(422, 'Taux de change non renseigné pour cette période (rate_minor manquant).');
+        }
+
         $converted = intdiv(
-            (int) round($amountMinor * $rate->rate_minor / TravelCurrencyRate::RATE_SCALE),
+            (int) round($amountMinor * $rateMinor / TravelCurrencyRate::RATE_SCALE),
             1
         );
 
         return [
             'amount_minor' => $converted,
             'currency' => $toCurrency,
-            'rate_minor' => $rate->rate_minor,
+            'rate_minor' => $rateMinor,
         ];
     }
 

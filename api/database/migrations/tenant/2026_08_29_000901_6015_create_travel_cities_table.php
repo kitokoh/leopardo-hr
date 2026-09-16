@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -19,32 +18,79 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! schemaTableExists('travel_cities')) {
-            Schema::create('travel_cities', function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-
-                $table->char('country_iso2', 2);
-                $table->string('name', 120);
-                $table->string('region', 120)->nullable();
-                $table->double('latitude')->nullable();
-                $table->double('longitude')->nullable();
-                $table->string('status', 20)->default('active');
-
-                $table->timestamps();
-
-                $table->unique(['company_id', 'country_iso2', 'name'], 'travel_cities_company_country_name_unique');
-                $table->index(['company_id', 'country_iso2'], 'travel_cities_company_country_idx');
-                $table->index(['company_id', 'name'], 'travel_cities_company_name_idx');
+        if (schemaTableExists('travel_cities')) {
+            // Issue #7452 — la table est créée par 2026_08_29_000002_6015_create_travel_cities_table.php ; cette
+            // génération ne rattrape que les colonnes qui lui manquent.
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                if (! schemaHasColumn('travel_cities', 'company_id')) {
+                    $table->uuid('company_id')->index();
+                }
+                if (! schemaHasColumn('travel_cities', 'country_iso2')) {
+                    $table->char('country_iso2', 2);
+                }
+                if (! schemaHasColumn('travel_cities', 'name')) {
+                    $table->string('name', 120);
+                }
+                if (! schemaHasColumn('travel_cities', 'region')) {
+                    $table->string('region', 120)->nullable();
+                }
+                if (! schemaHasColumn('travel_cities', 'latitude')) {
+                    $table->double('latitude')->nullable();
+                }
+                if (! schemaHasColumn('travel_cities', 'longitude')) {
+                    $table->double('longitude')->nullable();
+                }
+                if (! schemaHasColumn('travel_cities', 'status')) {
+                    $table->string('status', 20)->default('active');
+                }
+                if (! schemaHasColumn('travel_cities', 'created_at')) {
+                    $table->timestamps();
+                }
             });
-
-            DB::statement("COMMENT ON TABLE travel_cities IS 'Villes du référentiel TravelAgency — tenant-scoped, seed idempotent (TRAVEL-202/#6015).'");
-            DB::statement("COMMENT ON COLUMN travel_cities.status IS 'active|disabled (enum TravelRecordStatus).'");
         }
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('travel_cities');
+        if (schemaHasColumn('travel_cities', 'company_id')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('company_id');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'country_iso2')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('country_iso2');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'name')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('name');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'region')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('region');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'latitude')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('latitude');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'longitude')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('longitude');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'status')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('status');
+            });
+        }
+        if (schemaHasColumn('travel_cities', 'created_at')) {
+            Schema::table('travel_cities', function (Blueprint $table): void {
+                $table->dropColumn('created_at');
+            });
+        }
     }
 };
