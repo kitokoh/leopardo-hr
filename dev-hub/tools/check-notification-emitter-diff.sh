@@ -85,6 +85,11 @@ while IFS= read -r line; do
   [[ "$line" == +* ]] || continue
   [[ "$line" == "+++"* ]] && continue
   content="${line#+}"
+  # Le filtre `*.php` de `git diff` ne s'applique qu'au chemin git. En mode
+  # auto-test (diff fourni), il faut le refaire ici — sinon le test local ne
+  # parcourt pas le même chemin que la CI (constaté : le script d'auto-test se
+  # flaggait lui-même, parce qu'il contient la chaîne recherchée).
+  [[ "$current" == *.php ]] || continue
   if [[ "$content" =~ $LEGACY_IMPORT ]]; then
     if [[ -n "$current" ]] && ! is_allowlisted "$current"; then
       violations+="${current}"$'\n'
