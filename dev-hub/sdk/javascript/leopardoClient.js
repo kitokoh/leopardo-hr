@@ -3710,6 +3710,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/platform/companies/{company}/health", options);
     },
 
+    /** Purger ou anonymiser un tenant desactive (issue #7475) */
+    postPlatformCompaniesByCompanyPurge(options = {}) {
+      return request("POST", "/platform/companies/{company}/purge", options);
+    },
+
+    /** Inventaire chiffre d'un tenant avant purge (issue #7475) */
+    getPlatformCompaniesByCompanyPurgePreview(options = {}) {
+      return request("GET", "/platform/companies/{company}/purge-preview", options);
+    },
+
     /** Lire l'abonnement plateforme d'une societe */
     getPlatformCompaniesByCompanySubscription(options = {}) {
       return request("GET", "/platform/companies/{company}/subscription", options);
@@ -3723,6 +3733,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Vue portefeuille health des societes */
     getPlatformCompaniesHealth(options = {}) {
       return request("GET", "/platform/companies/health", options);
+    },
+
+    /** Journal des purges et anonymisations de tenants (issue #7475) */
+    getPlatformCompanyPurges(options = {}) {
+      return request("GET", "/platform/company-purges", options);
     },
 
     /** Lister les demandes de creation de societe */

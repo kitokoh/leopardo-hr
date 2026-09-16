@@ -48,6 +48,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsControl
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyPurgeController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyRequestController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
@@ -403,6 +404,15 @@ Route::prefix('v1')->group(function (): void {
         Route::patch('/companies/{company}/subscription', [PlatformCompanySubscriptionController::class, 'update']);
         Route::get('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'show']);
         Route::patch('/companies/{company}/features', [PlatformCompanyFeatureController::class, 'update']);
+
+        // #7475 — suppression sûre d'un tenant (super-admin), en deux temps :
+        // 1) la société doit être désactivée (`status=suspended` via subscription) ;
+        // 2) purge ou anonymisation explicite, après inventaire chiffré et
+        //    ressaisie du nom exact. Le journal survit à la purge
+        //    (`public.platform_company_purges`) et reste consultable.
+        Route::get('/companies/{company}/purge-preview', [PlatformCompanyPurgeController::class, 'preview']);
+        Route::post('/companies/{company}/purge', [PlatformCompanyPurgeController::class, 'store']);
+        Route::get('/company-purges', [PlatformCompanyPurgeController::class, 'index']);
 
         // MAT-010 (#5868) — Feature kill switches : stopper un module pour
         // toute la plateforme (fail-closed, sans suppression de données).

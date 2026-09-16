@@ -4134,6 +4134,93 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/companies/{company}/purge-preview:
+    get:
+      tags:
+      - Platform
+      summary: Inventaire chiffre d'un tenant avant purge (issue #7475)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/CompanyUuid'
+      responses:
+        '200':
+          description: Inventaire des donnees du tenant et eligibilite a la purge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformCompanyPurgePreviewResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/companies/{company}/purge:
+    post:
+      tags:
+      - Platform
+      summary: Purger ou anonymiser un tenant desactive (issue #7475)
+      description: |
+        Parcours en deux temps : la societe doit d'abord etre desactivee
+        (`status=suspended`), puis la purge exige la ressaisie du nom exact et un
+        mode explicite (`purge` ou `anonymise`) des qu'une obligation de
+        conservation s'applique (paie, contrats).
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/CompanyUuid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformCompanyPurgeRequest'
+      responses:
+        '201':
+          description: Operation effectuee et journalisee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformCompanyPurgeResultResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: COMPANY_NOT_SUSPENDED - la societe n'est pas desactivee
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/company-purges:
+    get:
+      tags:
+      - Platform
+      summary: Journal des purges et anonymisations de tenants (issue #7475)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
+      responses:
+        '200':
+          description: Operations passees, les plus recentes d'abord
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformCompanyPurgeJournalResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+
   /platform/users:
     get:
       tags:
@@ -31254,6 +31341,143 @@ components:
             known_modules:
               type: array
               items:
+                type: string
+    PlatformCompanyPurgeInventory:
+      type: object
+      properties:
+        schema:
+          type: string
+        resources:
+          type: object
+          additionalProperties:
+            type: integer
+        total_rows:
+          type: integer
+        payroll_rows:
+          type: integer
+        payroll_tables:
+          type: array
+          items:
+            type: string
+        requires_explicit_mode:
+          type: boolean
+    PlatformCompanyPurgePreviewResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            company:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                slug:
+                  type: string
+                  nullable: true
+                status:
+                  type: string
+                tenancy_type:
+                  type: string
+                schema:
+                  type: string
+                subscription_end:
+                  type: string
+                  nullable: true
+            eligible:
+              type: boolean
+            blocked_reason:
+              type: string
+              nullable: true
+            required_confirmation:
+              type: string
+            inventory:
+              $ref: '#/components/schemas/PlatformCompanyPurgeInventory'
+            modes:
+              type: object
+              additionalProperties:
+                type: string
+            mode_required:
+              type: boolean
+    PlatformCompanyPurgeRequest:
+      type: object
+      required:
+      - confirm_name
+      properties:
+        confirm_name:
+          type: string
+          description: Nom exact de la societe, ressaisi par l'operateur
+        mode:
+          type: string
+          enum:
+          - purge
+          - anonymise
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+    PlatformCompanyPurgeResultResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            journal_id:
+              type: integer
+            mode:
+              type: string
+            status:
+              type: string
+            company:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+            inventory:
+              $ref: '#/components/schemas/PlatformCompanyPurgeInventory'
+            volumes:
+              type: object
+              additionalProperties:
+                type: integer
+    PlatformCompanyPurgeJournalResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              company_id:
+                type: string
+                format: uuid
+              company_name:
+                type: string
+              mode:
+                type: string
+              status:
+                type: string
+              requested_by:
+                type: string
+                nullable: true
+              reason:
+                type: string
+                nullable: true
+              volumes:
+                type: object
+                additionalProperties:
+                  type: integer
+              error:
+                type: string
+                nullable: true
+              created_at:
                 type: string
     PlatformCompanyFeaturesUpdateRequest:
       type: object

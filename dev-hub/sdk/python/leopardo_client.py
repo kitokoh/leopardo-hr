@@ -2988,6 +2988,14 @@ class LeopardoClient:
         """Health detaille d'une societe"""
         return self.request("GET", "/platform/companies/{company}/health", **kwargs)
 
+    def post_platform_companies_by_company_purge(self, **kwargs):
+        """Purger ou anonymiser un tenant desactive (issue #7475)"""
+        return self.request("POST", "/platform/companies/{company}/purge", **kwargs)
+
+    def get_platform_companies_by_company_purge_preview(self, **kwargs):
+        """Inventaire chiffre d'un tenant avant purge (issue #7475)"""
+        return self.request("GET", "/platform/companies/{company}/purge-preview", **kwargs)
+
     def get_platform_companies_by_company_subscription(self, **kwargs):
         """Lire l'abonnement plateforme d'une societe"""
         return self.request("GET", "/platform/companies/{company}/subscription", **kwargs)
@@ -2999,6 +3007,10 @@ class LeopardoClient:
     def get_platform_companies_health(self, **kwargs):
         """Vue portefeuille health des societes"""
         return self.request("GET", "/platform/companies/health", **kwargs)
+
+    def get_platform_company_purges(self, **kwargs):
+        """Journal des purges et anonymisations de tenants (issue #7475)"""
+        return self.request("GET", "/platform/company-purges", **kwargs)
 
     def get_platform_company_requests(self, **kwargs):
         """Lister les demandes de creation de societe"""
