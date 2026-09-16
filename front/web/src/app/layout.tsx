@@ -41,27 +41,18 @@ function ogLocale(locale: AppLocale): string {
 }
 
 // #4300 : metadata racine localisées selon la locale SSR (?lang= / Accept-Language).
+// Issue #7428 : les phrases canoniques vivent désormais dans le catalogue
+// partagé (`seoRoot.*`, propagé aux 4 locales par `shared/i18n/sync`) — une
+// seule source de vérité pour la vitrine, le manifeste PWA et les aperçus
+// sociaux, au lieu de copies littérales par surface.
+const rootCopy = (locale: AppLocale, key: 'rootTitle' | 'rootDescription'): string =>
+  String(t(locale, `seoRoot.${key}`) ?? '');
+
 const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> = {
-  fr: {
-    title: 'Leopardo — suite metier pour equipes terrain : paie, pointage, absences',
-    description:
-      'Leopardo reunit RH & paie, pointage, absences, CRM, comptabilite et operations terrain dans une seule suite, sur web, mobile et kiosque.',
-  },
-  en: {
-    title: 'Leopardo — business suite for field teams: payroll, attendance, operations',
-    description:
-      'Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.',
-  },
-  tr: {
-    title: 'Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama',
-    description:
-      'Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.',
-  },
-  ar: {
-    title: 'ليوباردو — حزمة الأعمال للفرق الميدانية: الرواتب، الحضور، العمليات',
-    description:
-      'يجمع ليوباردو الموارد البشرية والرواتب والحضور والإجازات وإدارة العملاء والمحاسبة والعمليات الميدانية في حزمة واحدة، عبر الويب والجوال وأجهزة الحضور.',
-  },
+  fr: { title: rootCopy('fr', 'rootTitle'), description: rootCopy('fr', 'rootDescription') },
+  en: { title: rootCopy('en', 'rootTitle'), description: rootCopy('en', 'rootDescription') },
+  tr: { title: rootCopy('tr', 'rootTitle'), description: rootCopy('tr', 'rootDescription') },
+  ar: { title: rootCopy('ar', 'rootTitle'), description: rootCopy('ar', 'rootDescription') },
 };
 
 
@@ -72,9 +63,8 @@ export async function generateMetadata(): Promise<Metadata> {
   // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
   // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
   const landingMeta = pageMetadataI18n[ssrLocale as 'en' | 'tr' | 'ar']?.landing;
-  const title = landingMeta?.title ?? "Leopardo — suite metier pour equipes terrain : paie, pointage, absences";
-  const description = landingMeta?.description
-    ?? "Leopardo reunit RH & paie, pointage, absences, CRM, comptabilite et operations terrain dans une seule suite, sur web, mobile et kiosque.";
+  const title = landingMeta?.title ?? rootCopy(ssrLocale, 'rootTitle');
+  const description = landingMeta?.description ?? rootCopy(ssrLocale, 'rootDescription');
   // #4707 : keywords + alt de l'image sociale localisés (avant : FR pour
   // toutes les locales — la meta keywords et l'alt OG étaient les derniers
   // résidus FR de la metadata racine). Données dans seo.ts (hors surface de

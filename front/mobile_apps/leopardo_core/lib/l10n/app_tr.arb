@@ -3927,5 +3927,10 @@
   "subscriptionsFeaturesPhotoAttendance": "Fotoğraflı devam",
   "subscriptionsFeaturesApiPublic": "Herkese açık API",
   "subscriptionsFeaturesEvaluations": "Değerlendirmeler",
-  "subscriptionsFeaturesSchemaIsolation": "Veri izolasyonu"
+  "subscriptionsFeaturesSchemaIsolation": "Veri izolasyonu",
+  "seorootManifestdescription": "Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk",
+  "seorootManifestname": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
+  "seorootOgimagealt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
+  "seorootRootdescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
+  "seorootRoottitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
 }

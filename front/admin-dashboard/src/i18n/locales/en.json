@@ -6413,5 +6413,12 @@
     "loadError": "Could not load the settings.",
     "healthUnavailable": "Assistant state unavailable — loading failed. Reload the page to try again.",
     "monitoringUnavailable": "Monitoring unavailable — statistics failed to load. No figures are shown instead of a misleading zero."
+  },
+  "seoRoot": {
+    "manifestDescription": "The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk",
+    "manifestName": "Leopardo — business suite (HR & payroll, attendance, CRM)",
+    "ogImageAlt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
+    "rootDescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
+    "rootTitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
   }
 }

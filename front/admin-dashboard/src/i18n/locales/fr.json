@@ -6419,5 +6419,12 @@
     "loadError": "Impossible de charger les réglages.",
     "healthUnavailable": "État de l'assistant indisponible — le chargement a échoué. Rechargez la page pour réessayer.",
     "monitoringUnavailable": "Suivi indisponible — le chargement des statistiques a échoué. Aucun chiffre n'est affiché plutôt qu'un zéro trompeur."
+  },
+  "seoRoot": {
+    "manifestDescription": "La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque",
+    "manifestName": "Leopardo — suite métier (RH & paie, pointage, CRM)",
+    "ogImageAlt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
+    "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
+    "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   }
 }

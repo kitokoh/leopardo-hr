@@ -5150,5 +5150,12 @@
       "evaluations": "Évaluations",
       "schema_isolation": "Isolation des données"
     }
+  },
+  "seoRoot": {
+    "manifestDescription": "La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque",
+    "manifestName": "Leopardo — suite métier (RH & paie, pointage, CRM)",
+    "ogImageAlt": "Leopardo — suite métier : tableau de bord RH & paie multilingue",
+    "rootDescription": "Leopardo réunit RH & paie, pointage, absences, CRM, comptabilité et opérations terrain dans une seule suite, sur web, mobile et kiosque.",
+    "rootTitle": "Leopardo — suite métier pour équipes terrain : paie, pointage, absences"
   }
 }

@@ -3927,5 +3927,10 @@
   "subscriptionsFeaturesPhotoAttendance": "Photo attendance",
   "subscriptionsFeaturesApiPublic": "Public API",
   "subscriptionsFeaturesEvaluations": "Evaluations",
-  "subscriptionsFeaturesSchemaIsolation": "Data isolation"
+  "subscriptionsFeaturesSchemaIsolation": "Data isolation",
+  "seorootManifestdescription": "The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk",
+  "seorootManifestname": "Leopardo — business suite (HR & payroll, attendance, CRM)",
+  "seorootOgimagealt": "Leopardo — business suite: HR & payroll dashboard for web, mobile and kiosk",
+  "seorootRootdescription": "Leopardo brings HR & payroll, attendance, leave, CRM, accounting and field operations together in one suite, on web, mobile and kiosk.",
+  "seorootRoottitle": "Leopardo — business suite for field teams: payroll, attendance, operations"
 }

@@ -1,4 +1,5 @@
 import { getLocaleDirection, normalizeLocale, type AppLocale } from '@/lib/i18n'
+import { t } from '@/lib/i18n/locale-catalog'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,8 +12,8 @@ const COPY: Record<
   }
 > = {
   fr: {
-    name: 'Leopardo — suite métier (RH & paie, pointage, CRM)',
-    description: 'La suite métier des entreprises de terrain : RH & paie, pointage, absences, CRM, comptabilité, sur web, mobile et kiosque',
+    name: String(t('fr', 'seoRoot.manifestName') ?? ''),
+    description: String(t('fr', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Essai gratuit', short_name: 'Essai', description: 'Commencer un essai gratuit de 14 jours', url: '/signup?source=pwa_shortcut' },
       { name: 'Demander une démo', short_name: 'Démo', description: 'Demander une démonstration personnalisée', url: '/demo?source=pwa_shortcut' },
@@ -21,8 +22,8 @@ const COPY: Record<
     ],
   },
   en: {
-    name: 'Leopardo — business suite (HR & payroll, attendance, CRM)',
-    description: 'The business suite for field-based companies: HR & payroll, attendance, leave, CRM, accounting, on web, mobile and kiosk',
+    name: String(t('en', 'seoRoot.manifestName') ?? ''),
+    description: String(t('en', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Free trial', short_name: 'Trial', description: 'Start a free 14-day trial', url: '/signup?source=pwa_shortcut' },
       { name: 'Request a demo', short_name: 'Demo', description: 'Request a personalized demonstration', url: '/demo?source=pwa_shortcut' },
@@ -31,8 +32,8 @@ const COPY: Record<
     ],
   },
   tr: {
-    name: 'Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)',
-    description: 'Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk',
+    name: String(t('tr', 'seoRoot.manifestName') ?? ''),
+    description: String(t('tr', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'Ücretsiz deneme', short_name: 'Deneme', description: '14 günlük ücretsiz denemeyi başlatın', url: '/signup?source=pwa_shortcut' },
       { name: 'Demo isteyin', short_name: 'Demo', description: 'Kişiselleştirilmiş bir demo isteyin', url: '/demo?source=pwa_shortcut' },
@@ -41,8 +42,8 @@ const COPY: Record<
     ],
   },
   ar: {
-    name: 'ليوباردو — حزمة الأعمال (الموارد البشرية والرواتب، الحضور، إدارة العملاء)',
-    description: 'حزمة الأعمال للشركات الميدانية: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء والمحاسبة؛ عبر الويب والجوال وأجهزة الحضور',
+    name: String(t('ar', 'seoRoot.manifestName') ?? ''),
+    description: String(t('ar', 'seoRoot.manifestDescription') ?? ''),
     shortcuts: [
       { name: 'تجربة مجانية', short_name: 'تجربة', description: 'ابدأ تجربة مجانية لمدة 14 يومًا', url: '/signup?source=pwa_shortcut' },
       { name: 'طلب عرض توضيحي', short_name: 'عرض', description: 'اطلب عرضًا توضيحيًا مخصصًا', url: '/demo?source=pwa_shortcut' },

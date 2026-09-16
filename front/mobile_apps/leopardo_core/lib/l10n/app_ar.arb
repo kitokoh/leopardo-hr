@@ -3927,5 +3927,10 @@
   "subscriptionsFeaturesPhotoAttendance": "الحضور بالصورة",
   "subscriptionsFeaturesApiPublic": "واجهة برمجية عامة",
   "subscriptionsFeaturesEvaluations": "التقييمات",
-  "subscriptionsFeaturesSchemaIsolation": "عزل البيانات"
+  "subscriptionsFeaturesSchemaIsolation": "عزل البيانات",
+  "seorootManifestdescription": "حزمة الأعمال للشركات الميدانية: الموارد البشرية والرواتب، الحضور، الإجازات، إدارة العملاء والمحاسبة؛ عبر الويب والجوال وأجهزة الحضور",
+  "seorootManifestname": "ليوباردو — حزمة الأعمال (الموارد البشرية والرواتب، الحضور، إدارة العملاء)",
+  "seorootOgimagealt": "ليوباردو — حزمة الأعمال: لوحة الموارد البشرية والرواتب للويب والجوال وأجهزة الحضور",
+  "seorootRootdescription": "يجمع ليوباردو الموارد البشرية والرواتب والحضور والإجازات وإدارة العملاء والمحاسبة والعمليات الميدانية في حزمة واحدة، عبر الويب والجوال وأجهزة الحضور.",
+  "seorootRoottitle": "ليوباردو — حزمة الأعمال للفرق الميدانية: الرواتب، الحضور، العمليات"
 }

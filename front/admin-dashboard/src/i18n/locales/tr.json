@@ -6552,5 +6552,12 @@
     "loadError": "Ayarlar yüklenemedi.",
     "healthUnavailable": "Asistan durumu kullanılamıyor — yükleme başarısız oldu. Yeniden denemek için sayfayı yenileyin.",
     "monitoringUnavailable": "İzleme kullanılamıyor — istatistikler yüklenemedi. Yanıltıcı bir sıfır yerine hiçbir sayı gösterilmiyor."
+  },
+  "seoRoot": {
+    "manifestDescription": "Saha ekipleri için işletme yönetimi paketi: İK ve bordro, yoklama, izin, CRM, muhasebe; web, mobil ve kiosk",
+    "manifestName": "Leopardo — işletme yönetimi paketi (İK & bordro, yoklama, CRM)",
+    "ogImageAlt": "Leopardo — işletme yönetimi paketi: web, mobil ve kiosk için İK ve bordro paneli",
+    "rootDescription": "Leopardo; İK ve bordro, yoklama, izin, CRM, muhasebe ve saha operasyonlarını tek pakette toplar; web, mobil ve kiosk üzerinde.",
+    "rootTitle": "Leopardo — saha ekipleri için işletme yönetimi paketi: bordro, yoklama"
   }
 }
