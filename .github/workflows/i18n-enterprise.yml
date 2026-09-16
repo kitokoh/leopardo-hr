@@ -112,5 +112,10 @@ jobs:
         with:
           node-version: '20'
 
+      # Issue #7482 : l'auto-test de la garde tourne AVANT le scan — sinon les
+      # heuristiques dérivent à nouveau et imposent de réécrire du code correct.
+      - name: Self-test i18n diff guard (#7482)
+        run: node dev-hub/tools/check-i18n-diff.js --self-test
+
       - name: Check diff for new hardcoded user-visible strings
         run: node dev-hub/tools/check-i18n-diff.js "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"

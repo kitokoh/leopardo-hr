@@ -15,8 +15,18 @@
  * A line is skipped (not flagged) when it already routes through a known
  * translation call, so legitimate catalog usage is never a false positive.
  *
+ * Issue #7482 — faux positifs qui forçaient à réécrire du CODE correct :
+ *   - attributs LIÉS d'un template Vue (`:class`, `:key`, `v-model`, `v-if`,
+ *     `v-for`, `@click`, …) : la valeur est une EXPRESSION, ses littéraux sont
+ *     du code (classe CSS, comparaison `item.x == null`, chemin) ;
+ *   - clés d'objet de classes (`:class="{ 'text-red-500': hasError }"`) ;
+ *   - chemins de clés de catalogue (`'travel.advert.status'`, `'options.0.label'`).
+ * Ces motifs sont désormais ignorés (avec les cas de test correspondants dans
+ * `--self-test`, exécuté par `.github/workflows/i18n-enterprise.yml`).
+ *
  * Usage:
  *   node dev-hub/tools/check-i18n-diff.js <base_sha> <head_sha>
+ *   node dev-hub/tools/check-i18n-diff.js --self-test
  */
 
 'use strict';
@@ -27,9 +37,11 @@ const path = require('path');
 const repoRoot = path.resolve(__dirname, '..', '..');
 
 const [baseSha, headSha] = process.argv.slice(2);
+const selfTestRequested = process.argv.includes('--self-test');
 
-if (!baseSha || !headSha) {
+if (!selfTestRequested && (!baseSha || !headSha)) {
   console.error('Usage: node dev-hub/tools/check-i18n-diff.js <base_sha> <head_sha>');
+  console.error('       node dev-hub/tools/check-i18n-diff.js --self-test');
   process.exit(1);
 }
 
@@ -122,6 +134,10 @@ function isTechnicalToken(value) {
   // Imports Next.js alias (« @/modules/... ») — chemin technique, pas une
   // chaîne utilisateur (faux positif signalé sur #6663).
   if (trimmed.startsWith('@/')) return true;
+  // Chemin de clé de catalogue (« travel.advert.status », « options.0.label ») :
+  // segments séparés par des points, sans espace ni accent — identifiant
+  // technique, jamais une chaîne utilisateur (faux positif signalé sur #7482).
+  if (/^[A-Za-z][\w-]*(?:\.[\w-]+)+$/.test(trimmed)) return true;
   return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 
@@ -135,6 +151,54 @@ function isCodeExpression(value) {
   if (/^![a-zA-Z_]/.test(trimmed)) return true;
   if (/^#[0-9A-Fa-f]{3,8}$/.test(trimmed)) return true;
   return false;
+}
+
+// Attributs LIÉS d'un template Vue : `:prop="expr"`, `v-model="expr"`,
+// `v-if="expr"`, `v-for="…"`, `@click="handler"`, `v-bind:foo="expr"`…
+// Leur valeur est du JavaScript, pas du texte : un littéral qui s'y trouve est
+// du code (classe CSS, comparaison, chemin, clé d'objet). Issue #7482.
+const vueBoundAttrPattern = /(?:^|\s)([:@][\w.:-]*|v-[\w:.-]+)(\s*=\s*)(["'])/g;
+
+function boundAttributeValue(line, index) {
+  vueBoundAttrPattern.lastIndex = 0;
+  let match;
+  while ((match = vueBoundAttrPattern.exec(line)) !== null) {
+    const quote = match[3];
+    const valueStart = match.index + match[0].length;
+    const valueEnd = line.indexOf(quote, valueStart);
+    if (valueEnd === -1) {
+      // Attribut non refermé sur cette ligne (valeur multi-lignes) : tout ce qui
+      // suit l'ouverture est dans l'expression.
+      if (index >= valueStart) return line.slice(valueStart);
+      continue;
+    }
+    if (index >= valueStart && index < valueEnd) return line.slice(valueStart, valueEnd);
+  }
+  return null;
+}
+
+// La valeur d'un attribut lié est-elle une CHAÎNE entre guillemets (et non une
+// expression) ? `:title="'Détails'"` reste une chaîne utilisateur en dur et doit
+// être signalée ; `:key="'row-' + row.id"` ou `v-model="form[key]"` sont du code.
+function isQuotedStringValue(value) {
+  const trimmed = value.trim();
+  if (trimmed.length < 2) return false;
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  return (first === last) && (first === "'" || first === '"' || first === '`');
+}
+
+// Déclaration technique dans une expression JSX/Vue (`{item.x == null && …}`) :
+// l'expression contient un opérateur de comparaison ou un ternaire, donc ses
+// littéraux courts sont du code, pas du texte utilisateur.
+function isInsideTechnicalExpression(line, index) {
+  const before = line.slice(0, index);
+  const open = Math.max(before.lastIndexOf('{'), before.lastIndexOf('('));
+  if (open === -1) return false;
+  const after = line.slice(index);
+  const closeIdx = Math.min(...['}', ')'].map((c) => (after.indexOf(c) === -1 ? Infinity : after.indexOf(c))));
+  const expression = line.slice(open + 1, closeIdx === Infinity ? line.length : index + closeIdx);
+  return /(==|!=|===|!==|\?\?|\&\&|\|\||\?\s)/.test(expression);
 }
 
 function classifyLiteral(rawValue) {
@@ -266,6 +330,15 @@ function main() {
     while ((match = stringLiteralPattern.exec(content)) !== null) {
       const flagged = classifyLiteral(match[2]);
       if (!flagged) continue;
+      // Contexte d'expression : attribut lié (Vue) ou expression JSX technique.
+      // Issue #7482 — sans ces deux règles, la garde demandait de réécrire du
+      // code correct (`v-model="form[key]"`, `:class="item.x == null && …"`).
+      const literalIndex = match.index + 1;
+      const boundValue = boundAttributeValue(content, literalIndex);
+      // Dans un attribut lié, un littéral est du CODE — sauf si la valeur EST une
+      // chaîne entre guillemets (`:title="'Détails'"` → vraie chaîne en dur).
+      if (boundValue !== null && !isQuotedStringValue(boundValue)) continue;
+      if (isInsideTechnicalExpression(content, literalIndex)) continue;
       // Faux positif de reformatage : le littéral (ou son squelette ASCII)
       // existait déjà dans une ligne retirée du même hunk.
       const flaggedAscii = asciiSkeleton(flagged);
@@ -304,10 +377,79 @@ function main() {
     console.error('  - API Blade PDF/emails: __(\'catalog.key\') (api/lang/*.php)');
     console.error('If this is a false positive (technical constant, enum, log message), adjust the');
     console.error('literal or open an issue against dev-hub/tools/check-i18n-diff.js heuristics.');
+    console.error('');
+    console.error('Motifs déjà couverts par la garde (ne pas contourner en réécrivant le code) :');
+    console.error('  - attribut lié Vue : :class/:key/:style/v-model/v-if/v-for/@click portent une');
+    console.error('    EXPRESSION — ses littéraux sont du code, pas du texte utilisateur ;');
+    console.error('  - classe CSS conditionnelle : :class="{ \'text-red-500\': hasError }" ;');
+    console.error('  - chemin de clé de catalogue : \'travel.advert.status\', \'options.0.label\' ;');
+    console.error('  - comparaison/ternaire technique dans une expression : {item.x == null && …}.');
+    console.error('  - constante technique hors template : déplacez-la dans <script setup> ou un module');
+    console.error('    (une constante de script n\'est pas une chaîne utilisateur).');
+    console.error('Si un motif légitime est encore signalé, ajoutez son cas à --self-test dans la même PR.');
     process.exit(1);
   }
 
   console.log('✅ No new hardcoded user-visible strings introduced on PA2-I18N-014 risk surfaces.');
 }
 
-main();
+// ---------------------------------------------------------------------------
+// --self-test (issue #7482, critère 3) : cas de non-régression du classifieur.
+// Chaque cas = une ligne réelle (template Vue, TSX, Dart, Blade) + l'attente.
+// Lancé par `.github/workflows/i18n-enterprise.yml` — sinon la garde dérive.
+// ---------------------------------------------------------------------------
+const SELF_TEST_CASES = [
+  // --- vrais positifs : chaînes utilisateur en dur, doivent être signalées ---
+  { line: "{ title: 'Bienvenue dans votre espace' },", expect: 'flag', why: 'copie en dur (objet)' },
+  { line: "const label = 'Supprimer la ligne selectionnee';", expect: 'flag', why: 'copie en dur dans un script' },
+  { line: '<input placeholder="Rechercher un employe" />', expect: 'flag', why: 'attribut NON lie (texte)' },
+  { line: "throw new Error('Utilisateur introuvable dans ce tenant');", expect: 'flag', why: 'message d erreur utilisateur' },
+  { line: ':title="\'Details de la ligne\'"', expect: 'flag', why: 'litteral = toute la valeur d un attribut lie' },
+  { line: "const empty = 'Aucun employe dans cet espace';", expect: 'flag', why: 'etat vide en dur' },
+  // --- faux positifs signales dans #7482 : ne doivent PLUS être signales ---
+  { line: '<input v-model="form[key]" />', expect: 'ok', why: 'v-model = expression' },
+  { line: '<tr :key="\'row-\' + row.id">', expect: 'ok', why: ':key = expression' },
+  { line: '<div :class="item.x == null ? \'text-slate-400\' : \'text-emerald-600\'">', expect: 'ok', why: 'comparaison + classes dans un attribut lie' },
+  { line: '<div :class="{ \'text-red-500\': hasError }">', expect: 'ok', why: 'cle d objet de classes' },
+  { line: '<li v-for="item in items" :key="item.id">{{ t(\'common.item\') }}</li>', expect: 'ok', why: 'v-for + appel de traduction' },
+  { line: "const catalogKey = 'options.0.label';", expect: 'ok', why: 'chemin de cle de catalogue' },
+  { line: "const statusKey = 'travel.advert.status';", expect: 'ok', why: 'chemin de cle de catalogue' },
+  { line: '<DataTable :rows="rows" :columns="advertTabColumns()" />', expect: 'ok', why: 'attributs lies, aucun texte' },
+  { line: '<span :style="{ color: \'red\' }">x</span>', expect: 'ok', why: ':style = expression' },
+  { line: '<div :class="`text-${tone}-600`">x</div>', expect: 'ok', why: 'classe calculee' },
+];
+function runSelfTest() {
+  let failures = 0;
+  for (const testCase of SELF_TEST_CASES) {
+    const found = [];
+    stringLiteralPattern.lastIndex = 0;
+    let match;
+    while ((match = stringLiteralPattern.exec(testCase.line)) !== null) {
+      const flagged = classifyLiteral(match[2]);
+      if (!flagged) continue;
+      const literalIndex = match.index + 1;
+      const boundValue = boundAttributeValue(testCase.line, literalIndex);
+      if (boundValue !== null && !isQuotedStringValue(boundValue)) continue;
+      if (isInsideTechnicalExpression(testCase.line, literalIndex)) continue;
+      found.push(flagged);
+    }
+    const flaggedNow = found.length > 0;
+    const expected = testCase.expect === 'flag';
+    if (flaggedNow !== expected) {
+      failures += 1;
+      console.error(`❌ ${testCase.expect === 'flag' ? 'devrait être signalé' : 'faux positif'} : ${testCase.line}`);
+      console.error(`   (${testCase.why}) — littéraux vus : ${found.length ? found.join(' | ') : 'aucun'}`);
+    }
+  }
+  if (failures > 0) {
+    console.error(`\n${failures}/${SELF_TEST_CASES.length} cas en échec — garde check-i18n-diff.js non conforme (issue #7482).`);
+    process.exit(1);
+  }
+  console.log(`✅ check-i18n-diff.js auto-test : ${SELF_TEST_CASES.length} cas conformes (vrais positifs détectés, faux positifs #7482 ignorés).`);
+}
+
+if (selfTestRequested) {
+  runSelfTest();
+} else {
+  main();
+}
