@@ -1196,6 +1196,22 @@ class LeopardoClient:
         """Regenerer un stream token client"""
         return self.request("GET", "/cameras/{camera}/stream-token", **kwargs)
 
+    def get_cameras_alerts(self, **kwargs):
+        """Alertes camera (module Surveillance, #7427)"""
+        return self.request("GET", "/cameras/alerts", **kwargs)
+
+    def post_cameras_alerts_by_alert_acknowledge(self, **kwargs):
+        """Acquitter une alerte camera (#7427)"""
+        return self.request("POST", "/cameras/alerts/{alert}/acknowledge", **kwargs)
+
+    def post_cameras_alerts_by_alert_resolve(self, **kwargs):
+        """Cloturer une alerte camera (#7427)"""
+        return self.request("POST", "/cameras/alerts/{alert}/resolve", **kwargs)
+
+    def get_cameras_events(self, **kwargs):
+        """Journal des evenements camera (module Surveillance, #7427)"""
+        return self.request("GET", "/cameras/events", **kwargs)
+
     def post_cameras_test_rtsp(self, **kwargs):
         """Tester une URL RTSP"""
         return self.request("POST", "/cameras/test-rtsp", **kwargs)
@@ -2275,6 +2291,10 @@ class LeopardoClient:
     def get_i18n_catalog_by_locale(self, **kwargs):
         """Traductions pour une locale"""
         return self.request("GET", "/i18n/catalog/{locale}", **kwargs)
+
+    def post_internal_camera_events(self, **kwargs):
+        """Ingestion d''un evenement detecte (MediaMTX, #7427)"""
+        return self.request("POST", "/internal/camera-events", **kwargs)
 
     def get_internal_camera_token_verify(self, **kwargs):
         """Verification interne MediaMTX"""

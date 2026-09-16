@@ -1470,6 +1470,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/cameras/{camera}/stream-token", options);
     },
 
+    /** Alertes camera (module Surveillance, #7427) */
+    getCamerasAlerts(options = {}) {
+      return request("GET", "/cameras/alerts", options);
+    },
+
+    /** Acquitter une alerte camera (#7427) */
+    postCamerasAlertsByAlertAcknowledge(options = {}) {
+      return request("POST", "/cameras/alerts/{alert}/acknowledge", options);
+    },
+
+    /** Cloturer une alerte camera (#7427) */
+    postCamerasAlertsByAlertResolve(options = {}) {
+      return request("POST", "/cameras/alerts/{alert}/resolve", options);
+    },
+
+    /** Journal des evenements camera (module Surveillance, #7427) */
+    getCamerasEvents(options = {}) {
+      return request("GET", "/cameras/events", options);
+    },
+
     /** Tester une URL RTSP */
     postCamerasTestRtsp(options = {}) {
       return request("POST", "/cameras/test-rtsp", options);
@@ -2818,6 +2838,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Traductions pour une locale */
     getI18nCatalogByLocale(options = {}) {
       return request("GET", "/i18n/catalog/{locale}", options);
+    },
+
+    /** Ingestion d''un evenement detecte (MediaMTX, #7427) */
+    postInternalCameraEvents(options = {}) {
+      return request("POST", "/internal/camera-events", options);
     },
 
     /** Verification interne MediaMTX */
