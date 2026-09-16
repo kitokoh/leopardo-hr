@@ -24,6 +24,7 @@ import {
   applyDocumentLocale,
   getCopy,
   getPreferredLocale,
+  getStoredUser,
   normalizeLocale,
   storeAuthSession,
   storePreferredLocale,
@@ -160,6 +161,58 @@ function LoginInner() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  /**
+   * #7473 — Un utilisateur DÉJÀ connecté ne doit pas pouvoir se reconnecter
+   * depuis le même navigateur (empiler une seconde session). L'écran de
+   * connexion était servi sans condition, y compris avec un cookie de session
+   * valide.
+   *
+   * La redirection est conditionnée à une confirmation SERVEUR (`GET /auth/me`)
+   * et non à la seule présence d'une session locale : un `localStorage` périmé
+   * ne doit pas renvoyer l'utilisateur vers un tableau de bord qui le
+   * rejetterait aussitôt. En cas de 401, `apiFetch` purge la session et
+   * recharge cet écran — la garde ne se rejoue alors plus (plus d'utilisateur
+   * stocké), donc **aucune boucle de redirection**.
+   *
+   * ⚠️ Volontairement PAS dans `src/proxy.ts` : #7350 documente que
+   * `/auth/login` doit rester non gardé au niveau proxy (« boucle dès que le
+   * cookie est périmé », cf. #3522).
+   */
+  useEffect(() => {
+    if (!mounted || getStoredUser() === null) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await apiFetch('/auth/me');
+        if (cancelled || !response.ok) {
+          return;
+        }
+
+        const payload = await response.json() as { data?: StoredAuthUser };
+        const current = payload.data;
+        if (!current) {
+          return;
+        }
+
+        // Session confirmée : on réaligne la session locale sur la réponse
+        // serveur (identité incluse) avant de quitter l'écran de connexion.
+        storeAuthSession(null, current);
+        applyDocumentLocale(normalizeLocale(current.language), current.is_rtl);
+        goToPostLoginTarget(resolvePostLoginTarget(current), router);
+      } catch {
+        // Session non confirmée (API injoignable) : on laisse le formulaire.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mounted, router]);
 
   useEffect(() => {
     applyDocumentLocale(locale);
