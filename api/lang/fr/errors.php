@@ -297,4 +297,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
     'MODULE_ACTIVATED' => 'Module activé.',
     'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Un compte plateforme est requis pour cette action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Votre rôle plateforme ne permet pas cette action (permissions requises : :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Impossible de modifier votre propre rôle plateforme.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action refusée : il doit rester au moins un super administrateur actif.',
 ];

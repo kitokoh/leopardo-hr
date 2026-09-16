@@ -137,6 +137,11 @@ class PlatformAuthController extends Controller
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
                 'role' => 'super_admin',
+                // #7553 — délégation interne : le SPA admin filtre ses écrans
+                // sur `permissions`. `role` reste exposé tel quel pour ne pas
+                // casser la garde existante du dashboard (`role !== 'super_admin'`).
+                'platform_role' => $superAdmin->platformRole()->value,
+                'permissions' => $superAdmin->platformRole()->permissionValues(),
                 'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
             ],
             'token' => $token,
@@ -155,6 +160,11 @@ class PlatformAuthController extends Controller
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
                 'role' => 'super_admin',
+                // #7553 — délégation interne : le SPA admin filtre ses écrans
+                // sur `permissions`. `role` reste exposé tel quel pour ne pas
+                // casser la garde existante du dashboard (`role !== 'super_admin'`).
+                'platform_role' => $superAdmin->platformRole()->value,
+                'permissions' => $superAdmin->platformRole()->permissionValues(),
                 'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
             ],
         ]);
@@ -220,6 +230,11 @@ class PlatformAuthController extends Controller
                 'name' => $superAdmin->name,
                 'email' => $superAdmin->email,
                 'role' => 'super_admin',
+                // #7553 — délégation interne : le SPA admin filtre ses écrans
+                // sur `permissions`. `role` reste exposé tel quel pour ne pas
+                // casser la garde existante du dashboard (`role !== 'super_admin'`).
+                'platform_role' => $superAdmin->platformRole()->value,
+                'permissions' => $superAdmin->platformRole()->permissionValues(),
                 'two_fa_enabled' => (bool) $superAdmin->two_fa_secret,
             ],
         ]);

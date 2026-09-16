@@ -296,4 +296,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'Bu işlem için bir platform hesabı gerekir.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Platform rolünüz bu işleme izin vermiyor (gerekli izinler: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'Kendi platform rolünüzü değiştiremezsiniz.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'İşlem reddedildi: en az bir etkin üst yönetici kalmalıdır.',
 ];

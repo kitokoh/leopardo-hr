@@ -917,6 +917,8 @@ trait CreatesMvpSchema
             $table->string('password_hash', 255);
             // Issue #2630 : statut de compte (migration 2026_08_15_000002).
             $table->string('status', 20)->default('active');
+            // Issue #7553 : rôle interne plateforme (migration 2026_09_16_000001).
+            $table->string('platform_role', 32)->default('super_admin');
             $table->string('two_fa_secret', 32)->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('created_at')->nullable();

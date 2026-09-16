@@ -34,7 +34,7 @@ final class SensitiveFillableGuardTest extends TestCase
         return [
             'Employee' => [Employee::class, ['company_id', 'salary_base', 'role', 'manager_role', 'status', 'failed_login_attempts', 'locked_until', 'password_hash', 'biometric_face_reference_path', 'biometric_fingerprint_reference_path', 'email_bounced_at']],
             'User' => [User::class, ['status', 'email_verified_at', 'failed_login_attempts', 'locked_until']],
-            'SuperAdmin' => [SuperAdmin::class, ['status', 'two_fa_secret']],
+            'SuperAdmin' => [SuperAdmin::class, ['status', 'two_fa_secret', 'platform_role']],
             'Department' => [Department::class, ['company_id']],
             'UserInvitation' => [UserInvitation::class, ['company_id', 'role', 'manager_role']],
             'SalaryAdvance' => [SalaryAdvance::class, ['status']],
