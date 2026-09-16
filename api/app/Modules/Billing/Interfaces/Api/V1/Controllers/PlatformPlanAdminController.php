@@ -203,7 +203,12 @@ class PlatformPlanAdminController extends Controller
     }
 
     /**
-     * @param  array<string, mixed>  $validated
+     * #7430 — un nom d'offre est unique côté plateforme : la contrainte est
+     * vérifiée AVANT l'écriture pour répondre 422 plutôt qu'une 500 SQL. Le
+     * docblock précédent décrivait un `$validated` qui n'existe pas dans cette
+     * signature (relevé par PHPStan, `@param` sur paramètre inconnu).
+     *
+     * @param  int|null  $exceptId  Offre à exclure du contrôle (l'offre qu'on renomme).
      */
     private function assertNameIsFree(string $name, ?int $exceptId = null): void
     {
