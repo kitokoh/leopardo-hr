@@ -68,8 +68,7 @@ interface SignupFormProps {
 // (entreprise ou indépendant), puis les coordonnées, puis le code reçu par
 // e-mail. L'étape « outils + métier » a été retirée (trop longue) : les outils
 // se choisissent après la création, dans « Modules & plan ».
-type Step = 'profile' | 'form' | 'otp' | 'pending' | 'tracking' | 'success';
-type SignupProfile = 'company' | 'solo';
+type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
 const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
@@ -172,14 +171,9 @@ export function SignupForm({
   const [googleIdentity, setGoogleIdentity] = useState<{ email: string } | null>(null);
 
   // Multi-step state
-  const [currentStep, setCurrentStep] = useState<Step>('profile');
+  const [currentStep, setCurrentStep] = useState<Step>('form');
   // #7249 — seul le profil est demandé avant les coordonnées (2 choix).
-  const [profile, setProfile] = useState<SignupProfile | null>(null);
 
-  const chooseProfile = (next: SignupProfile) => {
-    setProfile(next);
-    setCurrentStep('form');
-  };
 
   const [pendingEmail, setPendingEmail] = useState('');
   const [otpValues, setOtpValues] = useState<string[]>(['', '', '', '', '', '']);
@@ -276,7 +270,8 @@ export function SignupForm({
         if (cancelled || payload?.success !== true || typeof payload.data?.email !== 'string') return;
         const email = payload.data.email;
         setGoogleIdentity({ email });
-        setProfile('company');
+        // #7489 — le profil n'est plus choisi dans le tunnel : on va
+        // directement à l'écran d'identité, e-mail pré-rempli (critère 2).
         setCurrentStep('form');
         setValue('email', email, { shouldValidate: false });
       })
@@ -296,7 +291,7 @@ export function SignupForm({
     setPasswordSet(false);
     setAccessSent(false);
     setPasswordError('');
-    setCurrentStep('profile');
+    setCurrentStep('form');
   };
 
   // #2469 — polling du statut (pending → ready/failed) tant que l'écran de
@@ -404,7 +399,12 @@ export function SignupForm({
       const payload: SignupFormData = {
         ...data,
         role: data.role ?? 'founder',
-        company_type: profile ?? 'company',
+        // #7489 — le profil (entreprise / indépendant) n'est plus demandé
+        // avant l'entrée dans l'espace : la question devient la PREMIÈRE de
+        // l'entretien de préparation (#7493), à chaud, quand elle a un sens
+        // pour l'utilisateur. En attendant, on envoie le profil complet
+        // (défaut de l'API), comme le faisait le repli précédent.
+        company_type: 'company',
       };
       const response = await submitSignupForm(payload, page);
 
@@ -587,134 +587,7 @@ export function SignupForm({
   // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
-      {/* #7235 — parcours en 3 temps : profil → outils & métier → coordonnées. */}
-      {(currentStep === 'profile' || currentStep === 'form') && (
-        <ol className="mb-6 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide">
-          {(
-            [
-              ['profile', c.stepProfileLabel],
-              ['form', c.stepIdentityLabel],
-            ] as const
-          ).map(([key, label], index) => {
-            const order = { profile: 0, form: 1 } as const;
-            const current = order[currentStep as 'profile' | 'form'];
-            const done = index < current;
-            const active = index === current;
-            return (
-              <li key={key} className="flex flex-1 items-center gap-2">
-                <span
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                    done
-                      ? 'bg-emerald-700 text-white'
-                      : active
-                        ? 'bg-emerald-100 text-emerald-700 ring-2 ring-emerald-500/30 dark:bg-emerald-950/60 dark:text-emerald-300'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                  }`}
-                >
-                  {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
-                </span>
-                <span className={active ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}>
-                  {label}
-                </span>
-                {index < 2 && (
-                  <span className={`h-0.5 flex-1 rounded ${done ? 'bg-emerald-400' : 'bg-slate-200 dark:bg-slate-800'}`} />
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      )}
-
       <AnimatePresence mode="wait">
-        {/* ═══════════════════════════════════════ */}
-        {/* STEP 0: Profil (entreprise / indép.)    */}
-        {/* ═══════════════════════════════════════ */}
-        {currentStep === 'profile' && (
-          <motion.div
-            key="step-profile"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              {c.badge}
-            </div>
-
-            <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
-              {c.profileTitle}
-            </h2>
-            <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
-              {c.profileSubtitle}
-            </p>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              {(
-                [
-                  {
-                    key: 'company' as const,
-                    icon: Building2,
-                    title: c.profileCompanyTitle,
-                    desc: c.profileCompanyDesc,
-                    bullets: [c.profileCompanyBullet1, c.profileCompanyBullet2, c.profileCompanyBullet3],
-                    badge: c.profileCompanyBadge,
-                  },
-                  {
-                    key: 'solo' as const,
-                    icon: Briefcase,
-                    title: c.profileSoloTitle,
-                    desc: c.profileSoloDesc,
-                    bullets: [c.profileSoloBullet1, c.profileSoloBullet2, c.profileSoloBullet3],
-                    badge: c.profileSoloBadge,
-                  },
-                ]
-              ).map((option) => {
-                const Icon = option.icon;
-                const active = profile === option.key;
-                return (
-                  <button
-                    key={option.key}
-                    type="button"
-                    onClick={() => chooseProfile(option.key)}
-                    aria-pressed={active}
-                    data-testid={`signup-profile-${option.key}`}
-                    className={`group relative flex h-full flex-col items-start rounded-2xl border-2 bg-white p-5 text-left transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-emerald-500/10 dark:bg-slate-900 ${
-                      active
-                        ? 'border-emerald-500 ring-2 ring-emerald-500/20'
-                        : 'border-slate-200 hover:border-emerald-400 dark:border-slate-700'
-                    }`}
-                  >
-                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-700 to-cyan-700 text-white shadow-lg shadow-emerald-500/25">
-                      <Icon className="h-6 w-6" aria-hidden="true" />
-                    </span>
-                    <span className="text-lg font-black tracking-tight text-slate-950 dark:text-white">
-                      {option.title}
-                    </span>
-                    <span className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                      {option.desc}
-                    </span>
-                    <ul className="mt-4 space-y-1.5">
-                      {option.bullets.map((bullet) => (
-                        <li key={bullet} className="flex items-start gap-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
-                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
-                          <span>{bullet}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <span className="mt-4 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                      {option.badge}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-
-        {/* ═══════════════════════════════════════ */}
-        {/* STEP 1: Signup Form                     */}
-        {/* ═══════════════════════════════════════ */}
         {currentStep === 'form' && (
           <motion.div
             key="step-form"
@@ -723,21 +596,6 @@ export function SignupForm({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <button
-              type="button"
-              onClick={() => setCurrentStep('profile')}
-              className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              {c.back}
-            </button>
-
-            {profile === 'solo' && (
-              <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-5 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-200">
-                {c.soloNote}
-              </p>
-            )}
-
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">
               {c.title}
             </h2>

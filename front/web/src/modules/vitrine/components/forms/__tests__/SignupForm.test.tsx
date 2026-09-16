@@ -116,15 +116,13 @@ async function fillField(label: RegExp, value: string): Promise<void> {
 
 
 /**
- * #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise / indépendant)
- * depuis #7235, mais ces tests unitaires portent sur le FORMULAIRE : on
- * traverse donc l'écran de profil comme le ferait un utilisateur. L'écran de
- * profil lui-même est couvert par les e2e.
+ * #7489 — le tunnel s'ouvre DIRECTEMENT sur l'écran d'identité (e-mail + nom de
+ * l'espace) : le choix du profil entreprise/indépendant n'est plus demandé avant
+ * l'entrée dans l'espace (il devient la première question de l'entretien #7493).
+ * Le helper ne « traverse » donc plus aucun écran.
  */
-function renderAtFormStep() {
-  const result = render(<SignupForm />);
-  fireEvent.click(screen.getByTestId('signup-profile-company'));
-  return result;
+function renderAtFirstStep() {
+  return render(<SignupForm />);
 }
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
@@ -148,29 +146,29 @@ describe('SignupForm Component', () => {
 
   describe('Rendering', () => {
     it('should render signup form', () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should render email input', () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should render company input', () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
     });
 
     it('should render submit button', () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.getByRole('button', { name: /créer mon espace/i })).toBeInTheDocument();
     });
   });
 
   describe('Form Validation', () => {
     it('should show error for invalid email', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillField(/email/i, 'invalid-email');
       submitForm();
       
@@ -180,7 +178,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for empty email', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       submitForm();
       
       await waitFor(() => {
@@ -189,7 +187,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show error for empty company', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillField(/email/i, 'test@example.com');
       submitForm();
       
@@ -202,20 +200,20 @@ describe('SignupForm Component', () => {
     // géolocalisation (`request.geo`) dans /api/forms/signup, et reste
     // modifiable ensuite dans les paramètres de l'entreprise.
     it('ne demande plus le pays à l’utilisateur', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.queryByRole('combobox', { name: /pays/i })).not.toBeInTheDocument();
     });
 
     // L'e-mail est vérifié par code : le téléphone n'est plus demandé.
     it('ne demande plus le téléphone', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.queryByRole('textbox', { name: /téléphone/i })).not.toBeInTheDocument();
     });
   });
 
   describe('Form Submission', () => {
     it('should accept valid trial request fields', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
@@ -227,12 +225,12 @@ describe('SignupForm Component', () => {
 
   describe('Accessibility', () => {
     it('should have accessible form labels', () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
     });
 
     it('should be keyboard navigable', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       emailInput.focus();
       expect(emailInput).toHaveFocus();
@@ -243,7 +241,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should have proper form structure', () => {
-      const { container } = renderAtFormStep();
+      const { container } = renderAtFirstStep();
       const form = container.querySelector('form');
       expect(form).toBeInTheDocument();
     });
@@ -270,7 +268,7 @@ describe('SignupForm Component', () => {
         data: { nextStep: 'contact_under_24h' },
       });
 
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillValidForm();
       submitForm();
 
@@ -289,7 +287,7 @@ describe('SignupForm Component', () => {
         data: {},
       });
 
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillValidForm();
       submitForm();
 
@@ -322,7 +320,7 @@ describe('SignupForm Component', () => {
         data: { provisioning_token: 'a'.repeat(64) },
       });
 
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillValidForm();
       submitForm();
 
@@ -344,7 +342,10 @@ describe('SignupForm Component', () => {
       await waitFor(() => {
         expect(screen.getByText(/votre espace est prêt/i)).toBeInTheDocument();
       });
+      // #7489 — la sélection de profil n'existe plus dans le tunnel : elle ne
+      // doit apparaître à AUCUN moment (elle est demandée dans l'espace).
       expect(screen.queryByTestId('signup-profile-company')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('signup-profile-solo')).not.toBeInTheDocument();
     });
 
     it('affiche un écran d\'échec actionnable et permet de repartir du formulaire', async () => {
@@ -363,7 +364,10 @@ describe('SignupForm Component', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /retour/i }));
 
-      expect(screen.getByTestId('signup-profile-company')).toBeInTheDocument();
+      // #7489 — le retour ramène au FORMULAIRE (l'étape profil n'existe plus).
+      expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: /entreprise/i })).toBeInTheDocument();
+      expect(screen.queryByTestId('signup-profile-company')).not.toBeInTheDocument();
       expect(sessionStorage.getItem('lp_trial_provisioning_token')).toBeNull();
     });
 
@@ -375,7 +379,7 @@ describe('SignupForm Component', () => {
         data: {},
       });
 
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillValidForm();
       submitForm();
 
@@ -396,7 +400,7 @@ describe('SignupForm Component', () => {
         });
         (fetchTrialStatus as jest.Mock).mockResolvedValue({ success: true, data: { status: 'pending' } });
 
-        renderAtFormStep();
+        renderAtFirstStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
         // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
@@ -435,7 +439,7 @@ describe('SignupForm Component', () => {
             },
           });
 
-        renderAtFormStep();
+        renderAtFirstStep();
         await fillField(/email/i, 'test@example.com');
         await fillField(/entreprise/i, 'Acme Corp');
         // Formulaire simplifié : plus de sélecteurs rôle / taille / pays.
@@ -483,7 +487,7 @@ describe('SignupForm Component', () => {
             data: { status: 'ready', login_url: '/auth/login', password_set: false },
           });
 
-        renderAtFormStep();
+        renderAtFirstStep();
         await fillValidForm();
         submitForm();
         await screen.findByText(/vérifiez votre email/i);
@@ -522,7 +526,7 @@ describe('SignupForm Component', () => {
         message: 'Code de vérification envoyé.',
         data: {},
       });
-      renderAtFormStep();
+      renderAtFirstStep();
       await fillField(/email/i, 'test@example.com');
       await fillField(/entreprise/i, 'Acme Corp');
       // Formulaire simplifié : e-mail + entreprise + CGU uniquement.
@@ -543,7 +547,7 @@ describe('SignupForm Component', () => {
     });
 
     it('should show loading state during submission', async () => {
-      renderAtFormStep();
+      renderAtFirstStep();
       const submitButton = screen.getByRole('button', { name: /créer mon espace/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');

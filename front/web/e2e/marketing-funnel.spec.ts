@@ -83,6 +83,39 @@ test.describe('Marketing funnel preview', () => {
     await expect(page.locator('body')).toContainText(/request received|demande recue|24 business hours|24h/i);
   });
 
+  test('le premier écran du tunnel tient sans scroll sur mobile 360 px (#7489)', async ({ page }) => {
+    // Critère d'acceptation 1 : « e-mail, nom de l'espace, CTA, bouton Google,
+    // liens légaux » doivent être VISIBLES SANS SCROLL sur un écran de 360 px.
+    //
+    // Mesure retenue : la position réelle de chaque élément exigé dans le
+    // premier écran (et non la hauteur totale du document — la page garde
+    // légitimement d'autres contenus plus bas). Géométrie mesurée le
+    // 2026-09-16 à 360×640 : e-mail 345→387, espace 431→473, liens légaux
+    // 490→507, CTA 545→597 — tout tient dans les 640 px.
+    const viewportHeight = 640;
+    await page.setViewportSize({ width: 360, height: viewportHeight });
+    await page.goto('/signup?lang=en', { waitUntil: 'networkidle' });
+
+    const form = page.locator('main form').first();
+    const required = [
+      { name: 'e-mail', locator: form.getByLabel(/email professionnel|email/i) },
+      { name: "nom de l'espace", locator: form.getByLabel(/entreprise|company/i) },
+      { name: 'bouton Google', locator: page.getByTestId('google-auth-button') },
+      { name: 'CTA', locator: form.locator('button[type="submit"]') },
+      { name: 'liens légaux', locator: form.getByRole('link').first() },
+    ];
+
+    for (const { name, locator } of required) {
+      await expect(locator, `${name} doit être visible sans scroll`).toBeVisible();
+      const box = await locator.boundingBox();
+      expect(box, `${name} doit avoir une boîte mesurable`).not.toBeNull();
+      expect(
+        Math.round((box?.y ?? 0) + (box?.height ?? 0)),
+        `${name} dépasse le premier écran (${viewportHeight} px)`,
+      ).toBeLessThanOrEqual(viewportHeight);
+    }
+  });
+
   test('captures a trial signup request from the public /signup page', async ({ page }) => {
     const timestamp = Date.now();
     const email = `trial.lead.${timestamp}@example.com`;
@@ -91,17 +124,15 @@ test.describe('Marketing funnel preview', () => {
       waitUntil: 'networkidle',
     });
 
-    // QA onboarding 2026-09-14 : la page /signup n'affiche plus de hero
-    // marketing (le formulaire EST l'écran, plus de récit à gauche/droite).
-    // L'assertion porte donc sur le tunnel réellement présenté.
-    await expect(page.locator('[data-testid="signup-profile-company"]')).toBeVisible();
-
-    // #7249 — le tunnel s'ouvre sur le choix du PROFIL (entreprise /
-    // indépendant) puis va directement aux coordonnées : l'écran « outils +
-    // métier » a été retiré (parcours raccourci).
-    await page.locator('[data-testid="signup-profile-company"]').click();
+    // #7489 — le tunnel s'ouvre DIRECTEMENT sur l'écran d'identité : plus de
+    // choix de profil avant l'entrée dans l'espace (il devient la première
+    // question de l'entretien #7493), donc plus d'écran intermédiaire à
+    // traverser — c'est aussi ce qui rend le premier écran tenable sur mobile.
+    await expect(page.locator('[data-testid="signup-profile-company"]')).toHaveCount(0);
 
     const signupForm = page.locator('main form').first();
+    await expect(signupForm.getByLabel(/email professionnel|email/i)).toBeVisible();
+    await expect(signupForm.getByLabel(/entreprise|company/i)).toBeVisible();
     await signupForm.getByLabel(/email professionnel|email/i).fill(email);
     await signupForm.getByLabel(/entreprise|company/i).fill('Leopardo Trial Co');
     // Le tunnel ne demande plus le rôle (le créateur EST le fondateur), ni la
