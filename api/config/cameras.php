@@ -11,6 +11,13 @@ return [
     // Business = 4, Enterprise = null (illimité). Tous les autres plans = 0.
     'default_max_cameras' => env('CAMERAS_DEFAULT_MAX', 0),
 
+    // #7476 — capacité posée AUTOMATIQUEMENT quand le client active le module
+    // depuis son espace (aucune valeur explicite dans `features.max_cameras`).
+    // Un module activé qui refuse toute création serait une impasse ; la valeur
+    // reprend la capacité « Business » documentée ci-dessus, et la console
+    // plateforme peut toujours la relever (ou la passer à `null` = illimité).
+    'activation_default_max' => env('CAMERAS_ACTIVATION_DEFAULT_MAX', 4),
+
     // Signature du stream_token JWT remis à l'app Flutter.
     // Le secret retombe sur APP_KEY si CAMERAS_STREAM_TOKEN_SECRET n'est pas
     // défini : acceptable en dev, OBLIGATOIRE en prod via secret dédié.

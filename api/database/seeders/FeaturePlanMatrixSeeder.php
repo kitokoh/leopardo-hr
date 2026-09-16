@@ -32,6 +32,13 @@ class FeaturePlanMatrixSeeder extends Seeder
             ['feature_key' => 'api_public', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [false, null], 'enterprise' => [true, null]],
             ['feature_key' => 'multi_site', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [true, null], 'enterprise' => [true, null]],
             ['feature_key' => 'custom_branding', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [false, null], 'enterprise' => [true, null]],
+            // #7476 — module Caméras : outil horizontal, mais capacité payante
+            // (un flux vidéo suppose un nœud Edge installé chez le client, donc
+            // une relation d'exploitation). La CAPACITÉ du module est portée par
+            // `companies.features.max_cameras` (« Business = 4 », illimité en
+            // Enterprise — cf. `config/cameras.php`) ; cette ligne gate
+            // l'ouverture du module par plan.
+            ['feature_key' => 'cameras', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [true, null], 'enterprise' => [true, null]],
         ];
 
         $rows = [];

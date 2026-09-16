@@ -143,6 +143,64 @@ class CompanyModuleActivationTest extends TestCase
         $this->assertSame([], $this->persisted($company)['modules']);
     }
 
+    /**
+     * #7476 — « Caméras » est un outil HORIZONTAL (besoin transverse), mais il
+     * n'est pas utilisable sans capacité : `CameraService::maxCameras()` retombe
+     * sur `config('cameras.default_max_cameras')`, 0 par défaut, et toute
+     * création répond alors « limite du plan atteinte ». L'activation doit donc
+     * poser la capacité par défaut, sinon le client active un module vide.
+     */
+    public function test_cameras_activation_makes_the_module_usable(): void
+    {
+        $company = $this->company();
+        $this->actingAsRole($company, 'manager', 'principal');
+
+        $this->postJson('/api/v1/company/modules/cameras/activate')
+            ->assertOk()
+            ->assertJsonPath('data.module', 'cameras')
+            ->assertJsonPath('data.activated', true);
+
+        $persisted = $this->persisted($company);
+        $this->assertTrue($persisted['modules']['cameras'] ?? null);
+        // Miroir `cameras` → `cameras` (kill switch plateforme).
+        $this->assertTrue($persisted['features']['cameras'] ?? null);
+        // Capacité posée : sans elle le module serait inutilisable.
+        $this->assertSame(
+            (int) config('cameras.activation_default_max', 4),
+            $persisted['features']['max_cameras'] ?? null,
+        );
+    }
+
+    /**
+     * #7476 — la capacité est OPPOSABLE : une valeur déjà fixée par la console
+     * plateforme (12 caméras) n'est jamais écrasée par l'activation, et `null`
+     * (= illimité) reste `null`.
+     */
+    public function test_cameras_activation_never_overwrites_an_existing_capacity(): void
+    {
+        $explicit = $this->company();
+        $explicit->features = ['max_cameras' => 12];
+        $explicit->save();
+        $this->actingAsRole($explicit, 'manager', 'principal');
+
+        $this->postJson('/api/v1/company/modules/cameras/activate')->assertOk();
+
+        $this->assertSame(12, $this->persisted($explicit)['features']['max_cameras'] ?? null);
+
+        $unlimited = $this->company();
+        $unlimited->features = ['max_cameras' => null];
+        $unlimited->save();
+        $this->actingAsRole($unlimited, 'manager', 'rh');
+
+        $this->postJson('/api/v1/company/modules/cameras/activate')->assertOk();
+
+        $persisted = $this->persisted($unlimited);
+        // `null` = illimité (Enterprise) : la clé existe, elle ne doit pas être
+        // remplacée par la valeur d'activation.
+        $this->assertArrayHasKey('max_cameras', $persisted['features']);
+        $this->assertNull($persisted['features']['max_cameras']);
+    }
+
     public function test_activation_is_idempotent(): void
     {
         $company = $this->company();

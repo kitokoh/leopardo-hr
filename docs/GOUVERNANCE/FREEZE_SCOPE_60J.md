@@ -43,6 +43,14 @@
 2. Justifier : impact pilote/prospect, coût si reporté, effort
 3. La décision appartient au fondateur (pas à l'agent) — les agents ne s'auto-autorisent pas une exception
 
+## ✅ Exceptions accordées (traçabilité)
+
+| Date | Périmètre | Base de la décision | Inclus / exclu | Réversible |
+|---|---|---|---|---|
+| 2026-09-16 | **Caméras — activation en outil horizontal + surface d'inventaire** (#7476 ; tranche 1 de #7425) | **Autorisation explicite du fondateur** sur la session de travail du 2026-09-16 (« tu es le PM, s'il faut forcer ou contourner, fais-le ») — la règle « les agents ne s'auto-autorisent pas » reste la règle par défaut | **Inclus** : allowlist `Company::HORIZONTAL_TOOLS` + flag miroir, capacité par défaut à l'activation, entrée catalogue avec cible de navigation, page `/cameras` (inventaire, ajout RTSP, test de source, suppression, consultation des accès), i18n 4 locales, garde de parité. **Exclu (reste gelé)** : mur de caméras temps réel, viewer tiers HTML, app mobile (#7426), détection et alertes (#7427) — le direct exige un **nœud Edge déployé** (ADR-0021) | oui, en une PR : retirer la clé des deux listes et la page ; le flag plateforme `cameras` reste le **kill switch** |
+
+Rappel de procédure : une exception s'obtient **avant** de livrer, se justifie par l'impact pilote/prospect, le coût du report et l'effort, et se **retire** quand elle n'est plus nécessaire. Elle ne transforme pas la ligne gelée en autorisation permanente.
+
 ## Liens
 - Plan 60 jours : `PLAN_60_JOURS.md` (racine du repo, plan J1-J60 actif) — voir aussi `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` (gate de scope)
 - Issues : #5144 → #5160 (batches 1-3) ; épics FOCUS (fermés) pour la paie DZ

@@ -172,6 +172,12 @@ class Company extends Model
         // est `showcase` (front `client-features.ts`) ; le feature flag tenant
         // correspondant est `company_showcase` (cf. `mirroredFeatures`).
         'showcase',
+        // BC-19 DEVICE (#7476) — la vidéosurveillance est un besoin TRANSVERSE
+        // (une boutique, un cabinet ou un atelier ont des caméras autant qu'une
+        // usine) : c'est un outil horizontal, pas une verticale métier. Sans
+        // cette clé, `POST /company/modules/cameras/activate` répondait 422
+        // (allowlist fail-closed) et le client ne pouvait rien activer.
+        'cameras',
     ];
 
     /**
@@ -191,6 +197,10 @@ class Company extends Model
         'accounting' => 'accounting',
         'crm' => 'crm',
         'showcase' => 'company_showcase',
+        // #7476 — le module lit `features.cameras` (gate `module.cameras`) :
+        // l'activation écrit donc le flag plateforme homonyme. Ce flag reste le
+        // KILL SWITCH : la console plateforme peut toujours le refuser.
+        'cameras' => 'cameras',
     ];
 
     /**
@@ -222,6 +232,19 @@ class Company extends Model
 
         if (isset(self::HORIZONTAL_TOOL_FEATURES[$key])) {
             $this->setFeature(self::HORIZONTAL_TOOL_FEATURES[$key], true);
+        }
+
+        // #7476 — un module activé doit être UTILISABLE. `cameras` refuse toute
+        // création tant que `features.max_cameras` est absent ou nul
+        // (`CameraService::maxCameras()` retombe sur
+        // `config('cameras.default_max_cameras')`, 0 par défaut) : le client
+        // activerait un module où il ne peut rien enregistrer. L'activation pose
+        // donc la capacité par défaut documentée dans `config/cameras.php`
+        // (« Business = 4 »), SAUF si une valeur existe déjà — la console
+        // plateforme peut la relever, y compris à `null` (= illimité).
+        $features = is_array($this->features ?? null) ? $this->features : [];
+        if ($key === 'cameras' && ! array_key_exists('max_cameras', $features)) {
+            $this->setFeature('max_cameras', (int) config('cameras.activation_default_max', 4));
         }
 
         return ! $alreadyActive;

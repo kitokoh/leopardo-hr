@@ -21,6 +21,7 @@ describe('client-features — modules auto-activables (#7322)', () => {
         'absences',
         'accounting',
         'attendance',
+        'cameras',
         'contracts',
         'crm',
         'employees',

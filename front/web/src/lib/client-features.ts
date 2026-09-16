@@ -20,7 +20,8 @@ export type ClientModuleKey =
   | 'edu_manager'
   | 'travel'
   | 'fuel'
-  | 'showcase';
+  | 'showcase'
+  | 'cameras';
 export type FeatureState = 'available' | 'trial' | 'locked';
 
 /**
@@ -321,6 +322,25 @@ export const CLIENT_MODULES: ClientModule[] = [
     allowedRoles: ['super_admin', 'admin', 'manager'],
     upgradeLabel: 'Site vitrine public de l\'entreprise',
   },
+  // BC-19 DEVICE — module HORIZONTAL « Caméras » (#7476 + #7425 tranche 1).
+  // La vidéosurveillance est un besoin transverse (une boutique, un cabinet,
+  // un atelier en ont autant qu'une usine) : le module se déclare donc
+  // `scope: 'core'` et s'auto-active comme `accounting`/`crm`/`showcase`.
+  // Feature flag de résolution : `cameras` (plateforme) — il reste le KILL
+  // SWITCH (la console plateforme peut toujours refuser, cf. #7476 critère 3).
+  // La page `/cameras` livre l'inventaire (liste, ajout RTSP, test de source,
+  // suppression) et la consultation des accès ; le DIRECT dépend d'un nœud
+  // Edge installé chez le client (ADR-0021) et n'est pas simulé côté web.
+  {
+    key: 'cameras',
+    href: '/cameras',
+    label: 'Caméras',
+    group: 'general',
+    capabilityKeys: ['cameras', 'can_view_cameras', 'can_manage_cameras'],
+    featureKeys: ['cameras'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Vidéosurveillance (inventaire, sources RTSP, accès)',
+  },
 ];
 
 /**
@@ -343,6 +363,7 @@ export const SELF_ACTIVATABLE_MODULE_KEYS: ClientModuleKey[] = [
   'crm',
   'marketing',
   'showcase',
+  'cameras',
 ];
 
 export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
@@ -351,6 +372,7 @@ export function isSelfActivable(module: Pick<ClientModule, 'key'>): boolean {
 
 const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/dashboard': 'dashboard',
+  '/cameras': 'cameras',
   '/employees': 'employees',
   '/attendance': 'attendance',
   '/attendance/geo': 'attendance_geo',
