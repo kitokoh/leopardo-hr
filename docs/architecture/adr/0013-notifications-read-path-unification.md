@@ -20,7 +20,44 @@ que rien n'empêchait un nouveau lot de partir dans l'autre sens.
 |---|---|
 | Étape 1 — read-path unifié | **non faite** : `NotificationController::index/unread/markRead/markAllRead/destroy` lisent **uniquement** `notifications`. Les notifications écrites par `NotificationDispatcher` (IA, validation des taux) restent **invisibles de l'utilisateur** — c'est le défaut d'origine, toujours ouvert. |
 | Étape 2 — réécriture des émetteurs | **non faite**, et **contredite par un lot récent** : #7427 (alertes caméras) diffuse via `CommunicationService::notifyEmployee()`, c'est-à-dire **le canal historique** que cette étape demande de migrer. |
-| Étape 3 — migration + dépréciation | non faite (pas de garde CI). |
+| Étape 3 — migration + dépréciation | non faite (pas de garde CI ; elle existe désormais — `notification-emitter-guard.yml`, #7481). |
+
+**Et le read-path n'est pas seulement « pas unifié » : il est fragmenté en trois endroits.** Mesures
+indépendantes, concordantes, faites sur `main` (PostgreSQL + Redis réels) :
+
+| Lecteur | Ce qu'il lit réellement | Conséquence |
+|---|---|---|
+| `GET /notifications` — `NotificationController` | la table historique `notifications` | ne voit **jamais** ce qu'écrit `NotificationDispatcher` |
+| `app/AI/IntentEngine.php:650` — outil « mes notifications » de l'assistant | `AppNotification::where('user_id', …)` **en direct** | voit **l'inverse** : le canal moderne, sans passer par le contrat `InAppNotifier` |
+| `NotificationRepositoryInterface` | **personne** — aucune implémentation dans le dépôt | une troisième vérité, purement théorique, qui n'arbitre rien |
+
+Les deux premiers points ne sont pas un détail de style : **aujourd'hui, l'assistant et la boîte de
+réception peuvent montrer deux contenus différents au même utilisateur, pour la même question.** La
+fragmentation est donc visible en production, pas seulement dans l'architecture.
+
+Le troisième point est une dette qui peut se refermer dans deux directions : implémenter le contrat, ou
+le retirer. Le laisser tel quel garantit qu'il sera un jour branché « pour de bon » et créera une
+quatrième divergence.
+
+**Ce n'est pas un oubli, c'est une dette systémique assumée** : `NotificationRepositoryInterface` est
+l'une des **20 interfaces orphelines tolérées** par `dev-hub/tools/check-orphan-interfaces.sh`
+(allowlist, issue #1492). La règle du dépôt y est explicite — *« soit l'implémenter, soit assumer via
+ADR et ajouter à l'allowlist »*. Cet ADR est l'assomption, et l'étape 1 est l'échéance. Le retirer
+maintenant, dans une PR dont le sujet est de rendre la règle opposable, ne traiterait qu'1 cas sur 20
+**et** détruirait un contrat typé sur `AppNotification` — c'est-à-dire aligné sur la direction ici
+décidée, donc précisément ce dont l'étape 1 pourrait se servir.
+
+### Critères d'acceptation de l'étape 1
+
+Ce que « read-path unifié » doit vouloir dire, pour que ce ne soit pas une intention :
+
+1. `GET /notifications` et l'outil « mes notifications » de l'assistant renvoient **le même contenu
+   pour le même utilisateur** — verrouillé par un test, pas par une relecture (« l'assistant voit
+   exactement ce que voit `GET /notifications` »).
+2. Le mapping des ids est **explicite** : les deux tables ont des `bigint` indépendants, donc les ids
+   **collisionnent** — fusionner sans mapping afficherait la notification d'une autre personne.
+3. `NotificationRepositoryInterface` est **implémenté ou retiré** (pas laissé mort).
+4. La pagination et le compteur « non lus » restent justes — ce sont eux que le mobile consomme.
 
 **Conséquence** : la direction reste celle décidée ici (`app_notifications` est la cible), elle devient
 **opposable**, et l'écart de #7427 est **enregistré comme écart** — pas comme un changement de
