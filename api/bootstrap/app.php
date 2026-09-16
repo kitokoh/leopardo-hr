@@ -18,6 +18,7 @@ use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
 use App\Http\Middleware\ResilientThrottleRequests;
+use App\Http\Middleware\RetryTransientDatabaseErrors;
 use App\Http\Middleware\Restaurant\EnsureRestaurantManagerModuleMiddleware;
 use App\Http\Middleware\Restaurant\EnsureRestaurantPublicShopAccess;
 use App\Http\Middleware\SecurityHeaders;
@@ -153,7 +154,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PROTO
         );
 
-        $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
+        // Issue #7479 — erreurs Postgres TRANSITOIRES (pooler : « cached plan must
+        // not change result type », transaction avortée, connexion coupée) : rejeu
+        // unique des requêtes idempotentes + 503 documenté. En tête du groupe pour
+        // envelopper `auth:sanctum` (c'est LUI qui interroge la base pour
+        // `GET /auth/me`), le middleware tenant et le contrôleur.
+        $middleware->api(prepend: [RetryTransientDatabaseErrors::class, RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
         // RTMX (#5277) — socle plateforme temps réel / réseau faible :
         // GET conditionnels (ETag/304) + rejeu idempotent des écritures.

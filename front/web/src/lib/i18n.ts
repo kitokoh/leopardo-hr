@@ -85,6 +85,10 @@ export type CopyTree = {
       googleNoAccount: string;
       googleNoAccountCta: string;
       googleUnavailable: string;
+      // Issue #7479 — session créée mais profil indisponible (500/503 intermittent).
+      sessionUnavailable: string;
+      sessionUnavailableHint: string;
+      retrySession: string;
     };
   };
   dashboard: {
@@ -718,6 +722,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
         googleNoAccountCta: 'Démarrer un essai sans invitation',
         googleUnavailable: 'La connexion Google n’est pas encore disponible. Utilisez votre email et votre mot de passe.',
+        // Issue #7479 : ne jamais parler d'identifiants quand la session a été créée.
+        sessionUnavailable: 'Votre session a bien été créée, mais votre espace n’a pas pu être chargé.',
+        sessionUnavailableHint: 'Le service est momentanément indisponible — vos identifiants ne sont pas en cause. Réessayez dans quelques secondes.',
+        retrySession: 'Charger mon espace',
       },
     },
     dashboard: {
@@ -1391,6 +1399,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
         googleNoAccountCta: 'ابدأ تجربة دون دعوة',
         googleUnavailable: 'تسجيل الدخول عبر Google غير متاح بعد. استخدم بريدك وكلمة المرور.',
+        // Issue #7479.
+        sessionUnavailable: 'تم إنشاء جلستك، لكن تعذّر تحميل مساحتك.',
+        sessionUnavailableHint: 'الخدمة غير متاحة مؤقتًا — بيانات الدخول ليست هي السبب. أعد المحاولة بعد ثوانٍ.',
+        retrySession: 'تحميل مساحتي',
       },
     },
     dashboard: {
@@ -2060,6 +2072,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
         googleNoAccountCta: 'Davet olmadan deneme başlat',
         googleUnavailable: 'Google ile giris henuz kullanilamiyor. E-posta ve sifrenizle giris yapin.',
+        // Issue #7479.
+        sessionUnavailable: 'Oturumunuz olusturuldu, ancak calisma alaniniz yuklenemedi.',
+        sessionUnavailableHint: 'Hizmet gecici olarak kullanilamiyor — giris bilgilerinizde sorun yok. Birkac saniye sonra tekrar deneyin.',
+        retrySession: 'Calisma alanimi yukle',
       },
     },
     dashboard: {
@@ -2729,6 +2745,10 @@ const copy: Record<AppLocale, CopyTree> = {
         googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
         googleNoAccountCta: 'Start a trial without an invitation',
         googleUnavailable: 'Google sign-in is not available yet. Use your email and password instead.',
+        // Issue #7479.
+        sessionUnavailable: 'Your session was created, but your workspace could not be loaded.',
+        sessionUnavailableHint: 'The service is temporarily unavailable — your credentials are not the issue. Try again in a few seconds.',
+        retrySession: 'Load my workspace',
       },
     },
     dashboard: {

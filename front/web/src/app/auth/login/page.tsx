@@ -204,12 +204,18 @@ function LoginInner() {
 
   const [coldStartHint, setColdStartHint] = useState(false);
   const [retryAttempt, setRetryAttempt] = useState(0);
+  // Issue #7479 — la session EST créée (cookie httpOnly posé par /auth/login) mais
+  // /auth/me a échoué : on ne parle JAMAIS d'identifiants dans ce cas, on propose
+  // de recharger le profil. Un 500 intermittent de l'API est un incident de
+  // service, pas un échec d'authentification.
+  const [sessionUnavailable, setSessionUnavailable] = useState(false);
 
   const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App') => {
     setSubmitting(true);
     setError(null);
     setUrlError(null);
     setShowGoogleSignupCta(false);
+    setSessionUnavailable(false);
     setRetryAttempt(0);
     const startedAt = performance.now();
 
@@ -263,7 +269,22 @@ function LoginInner() {
       // renvoyé au navigateur et ne doit pas être stocké en localStorage.
       void loginPayload;
 
-      const meResponse = await apiFetch('/auth/me');
+      // Issue #7479 — à partir d'ici la connexion a RÉUSSI (le cookie httpOnly est
+      // posé). Un échec sur /auth/me (500/503 intermittent du pooler Postgres) ne
+      // doit donc pas être présenté comme un échec d'identifiants : on bascule sur
+      // un état « session créée, profil indisponible » + bouton Réessayer.
+      let meResponse;
+      try {
+        meResponse = await apiFetch('/auth/me');
+      } catch (meError) {
+        trackClientEvent('login_session_unavailable', {
+          duration_ms: Math.round(performance.now() - startedAt),
+          status: meError instanceof ApiError ? meError.status : null,
+          code: meError instanceof ApiError ? (meError.code ?? null) : 'unknown',
+        });
+        setSessionUnavailable(true);
+        return;
+      }
       const mePayload = await meResponse.json() as { data?: StoredAuthUser };
       const user = mePayload.data;
 
@@ -313,6 +334,30 @@ function LoginInner() {
       setSubmitting(false);
     }
   }, [labels.login.errors.generic, labels.login.errors.missingUser, locale, router]);
+
+  /**
+   * Issue #7479 — reprise après un /auth/me indisponible : on recharge le PROFIL
+   * (jamais les identifiants, la session existe déjà).
+   */
+  const retrySessionLoad = useCallback(async () => {
+    setSessionUnavailable(false);
+    setSubmitting(true);
+    try {
+      const meResponse = await apiFetch('/auth/me');
+      const mePayload = await meResponse.json() as { data?: StoredAuthUser };
+      const user = mePayload.data;
+      if (!user) {
+        throw new Error(labels.login.errors.missingUser);
+      }
+      storeAuthSession(null, user);
+      applyDocumentLocale(normalizeLocale(user.language), user.is_rtl);
+      goToPostLoginTarget(resolvePostLoginTarget(user), router);
+    } catch {
+      setSessionUnavailable(true);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [labels.login.errors.missingUser, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -434,6 +479,24 @@ function LoginInner() {
                     : labels.login.accountCreatedPaid}
                 </div>
               )}
+              {sessionUnavailable ? (
+                <div
+                  role="alert"
+                  data-testid="session-unavailable"
+                  className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                >
+                  <p className="font-semibold">{labels.login.errors.sessionUnavailable}</p>
+                  <p className="mt-1">{labels.login.errors.sessionUnavailableHint}</p>
+                  <button
+                    type="button"
+                    data-testid="session-retry"
+                    onClick={retrySessionLoad}
+                    className="mt-3 rounded-xl border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-900 transition hover:bg-amber-100"
+                  >
+                    {labels.login.errors.retrySession}
+                  </button>
+                </div>
+              ) : null}
               {(error ?? urlError) ? (
                 <div
                   role="alert"
