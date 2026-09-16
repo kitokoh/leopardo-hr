@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Tenant\Domain\Models;
 
-use App\Modules\Platform\Domain\Enums\PlatformPermission;
-use App\Modules\Platform\Domain\Enums\PlatformRole;
+use App\Core\Tenant\Domain\Enums\PlatformPermission;
+use App\Core\Tenant\Domain\Enums\PlatformRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;

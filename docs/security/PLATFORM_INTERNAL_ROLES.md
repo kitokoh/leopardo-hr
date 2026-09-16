@@ -93,7 +93,7 @@ de `role: "super_admin"` conservé tel quel : les clients existants
 ## Traçabilité
 
 - Migration : `api/database/migrations/public/2026_09_16_000001_7553_add_platform_role_to_super_admins.php`
-- Enum + matrice : `api/app/Modules/Platform/Domain/Enums/PlatformRole.php`, `PlatformPermission.php`
+- Enum + matrice : `api/app/Core/Tenant/Domain/Enums/PlatformRole.php`, `PlatformPermission.php` (déplacés de Modules/Platform le 2026-09-16 : la garde d.isolation #5584 interdit un import Core → Modules ; les modules dépendent de Core, pas l.inverse)
 - Middleware : `api/app/Http/Middleware/EnsurePlatformPermissionMiddleware.php` (alias `platform.permission`)
 - Contrôleur : `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformTeamController.php`
 - Tests : `api/tests/Feature/Platform/PlatformTeamApiTest.php`

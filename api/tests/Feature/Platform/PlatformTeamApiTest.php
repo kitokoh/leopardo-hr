@@ -6,8 +6,8 @@ namespace Tests\Feature\Platform;
 
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Modules\Platform\Domain\Enums\PlatformPermission;
-use App\Modules\Platform\Domain\Enums\PlatformRole;
+use App\Core\Tenant\Domain\Enums\PlatformPermission;
+use App\Core\Tenant\Domain\Enums\PlatformRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;

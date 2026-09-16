@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Platform\Domain\Enums;
+namespace App\Core\Tenant\Domain\Enums;
 
 /**
  * Issue #7553 — rôles internes de la plateforme.
