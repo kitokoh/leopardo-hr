@@ -70,13 +70,34 @@ class FeatureFlagTest extends TestCase
         $this->assertFalse($map['finance']);
     }
 
-    public function test_null_company_returns_all_disabled(): void
+    /**
+     * Sans company, la résolution retourne le DÉFAUT VERSIONNÉ du registre.
+     *
+     * Le contrat est écrit dans le docblock de `FeatureFlagRegistry`
+     * (« Résolution d'un flag, dans l'ordre, fail-closed ») :
+     *   1. flag inconnu      -> false ;
+     *   2. kill switch       -> false ;
+     *   3. company présente  -> `company.features` ;
+     *   4. sinon             -> défaut versionné du registre.
+     *
+     * Ce test affirmait « null company => tout désactivé », ce que le registre
+     * ne fait délibérément pas : `rh` est le socle de l'application
+     * (`default => true`). L'assertion contredisait donc le contrat qu'elle
+     * prétendait vérifier, et échouait sur `main`.
+     *
+     * Le vrai garde-fou fail-closed est ailleurs, et il est désormais asserté
+     * explicitement ici : un flag HORS registre reste désactivé.
+     */
+    public function test_null_company_resolves_from_versioned_registry_defaults(): void
     {
-        $this->assertFalse(FeatureFlag::enabled('rh', null));
-        $this->assertFalse(FeatureFlag::enabled('finance', null));
+        $this->assertTrue(FeatureFlag::enabled('rh', null), 'rh est le socle (default true).');
+        $this->assertFalse(FeatureFlag::enabled('finance', null), 'Les modules opt-in restent éteints.');
+
+        // Fail-closed : un flag hors registre n'est jamais activé (règle 1).
+        $this->assertFalse(FeatureFlag::enabled('flag_hors_registre', null));
 
         $map = FeatureFlag::for(null);
-        $this->assertFalse($map['rh']);
+        $this->assertTrue($map['rh']);
         $this->assertFalse($map['finance']);
     }
 
