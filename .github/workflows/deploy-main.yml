@@ -155,26 +155,43 @@ jobs:
         # checkout privilégié ne doit JAMAIS utiliser un SHA non vérifié.
         # On calcule ici web_changed via l'API (compare des fichiers entre le
         # parent et le SHA) pour permettre au gate de tourner AVANT le
-        # checkout — même logique que le filtre `web` de .github/paths-filters.yml.
+        # checkout — la surface mesurée est celle des `paths:` RÉELS de
+        # .github/workflows/web-ci.yml (et de tests.yml pour api_changed).
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const { owner, repo } = context.repo;
             const sha = `${{ steps.context.outputs.sha }}`;
+            // Issue #7528 — la surface du gate doit être EXACTEMENT celle des
+            // `paths:` de .github/workflows/web-ci.yml, le workflow dont on
+            // exige la conclusion. Elle n'est PAS la liste `web` de
+            // .github/paths-filters.yml : celle-ci est volontairement plus
+            // large (elle alimente le `detect-changes` de tests.yml, où
+            // « déclencher plus » est la direction sûre). Un gate qui EXIGE la
+            // conclusion d'un workflow ne peut le faire que sur des chemins qui
+            // peuvent réellement le déclencher — sinon il rougit par
+            // construction (merge d7e11294, CI-only : web_changed=true, aucun
+            // run possible, verdict no-runs).
             const isWebPath = (p) =>
               p.startsWith('front/admin-dashboard/') ||
-              p === '.github/workflows/web-ci.yml' ||
-              p === '.github/workflows/deploy-main.yml' ||
-              p === 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md' ||
-              p === 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md';
-            // Issue #7511 — parité STRICTE avec le filtre `api` de
-            // .github/paths-filters.yml (celui qui décide si `tests.yml` est
-            // déclenché). Sans cette mesure, le gate ne pouvait pas distinguer
-            // « aucun run parce que rien d'API n'a changé » (décision : rien à
-            // déployer) de « aucun run alors que l'API a changé » (indécision
-            // réelle) et échouait dans les deux cas.
+              p === '.github/workflows/web-ci.yml';
+            // Issue #7511 — parité STRICTE avec les `paths:` de
+            // .github/workflows/tests.yml (le workflow dont on exige la
+            // conclusion, et dont le filtre `api` de paths-filters.yml est la
+            // copie exacte). Sans cette mesure, le gate ne pouvait pas
+            // distinguer « aucun run parce que rien d'API n'a changé »
+            // (décision : rien à déployer) de « aucun run alors que l'API a
+            // changé » (indécision réelle) et échouait dans les deux cas.
+            // Issue #7528 — parité EXACTE avec les `paths:` réels de
+            // tests.yml, `front/admin-dashboard/**` inclus : ce workflow porte
+            // aussi les tests de contrat front/API (FrontendJsonContractTest),
+            // donc une modification du super-admin le déclenche. L'oublier
+            // laissait une modification front-only échapper à la conclusion
+            // exigée. La garde check-deploy-gate-outcome.sh fait échouer toute
+            // divergence, dans les deux sens.
             const isApiPath = (p) =>
               p.startsWith('api/') ||
+              p.startsWith('front/admin-dashboard/') ||
               p === '.github/workflows/tests.yml' ||
               p === '.github/workflows/phpstan-baseline.yml';
             try {

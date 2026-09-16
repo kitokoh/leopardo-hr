@@ -15,6 +15,18 @@
 # strictly wider trigger surface than tests.yml used before, which is the
 # safe direction (more CI runs, never fewer) — call this out explicitly to
 # reviewers since it is a deliberate, if minor, behavior change.
+#
+# VAUT POUR LA DÉTECTION, PAS POUR LE GATE (issue #7528). Cette liste dit
+# « il y a du web là-dedans, lançons les tests web » ; elle ne dit PAS « un run
+# `Web CI - Leopardo Admin` doit exister ». Les deux questions n'ont pas la même
+# réponse : seuls les `paths:` de .github/workflows/web-ci.yml peuvent
+# DÉCLENCHER ce workflow. Un gate qui exige sa conclusion à partir d'une liste
+# plus large exige un run impossible — c'est exactement #7528 (merge d7e11294,
+# CI-only : `web_changed=true`, aucun run produit, verdict rouge `no-runs`).
+# La surface du gate (`isWebPath` dans deploy-main.yml) est donc la copie
+# EXACTE des `paths:` des workflows requis, et la garde
+# `dev-hub/tools/check-deploy-gate-outcome.sh` fait échouer toute divergence
+# dans ce sens. Élargir cette liste reste sans danger (plus de tests lancés).
 api:
   - 'api/**'
   - '.github/workflows/tests.yml'

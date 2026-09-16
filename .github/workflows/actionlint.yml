@@ -67,21 +67,28 @@ jobs:
         # réel — sinon le workflow ne se déclenche plus jamais (silencieux).
         run: bash dev-hub/tools/check-workflow-paths.sh
 
-      - name: Deploy gate verdict guard (issue #7511)
+      - name: Deploy gate verdict guard (issues #7511, #7528)
         # Échoue si le gate de déploiement redevient incapable de distinguer
         # « rien à déployer » (SHA hors api/** et front/admin-dashboard/**,
-        # aucun run requis) d'une vraie indécision — et si les filtres
-        # api/web de deploy-main.yml divergent de .github/paths-filters.yml.
-        # Constat #7511 : main était rouge après chaque merge hors API.
+        # aucun run requis) d'une vraie indécision — et si la surface mesurée
+        # par deploy-main.yml (isApiPath/isWebPath) diverge des `paths:` RÉELS
+        # des workflows dont le gate exige la conclusion (tests.yml,
+        # web-ci.yml). Trop large, le gate exige un run que le workflow ne peut
+        # pas produire (constat #7528 : merge CI-only d7e11294 → no-runs, main
+        # rouge) ; trop étroite, il perd une conclusion. `.github/paths-filters.yml`
+        # n'est plus la référence : c'est une surface de DÉTECTION (superset assumé).
         run: |
           bash dev-hub/tools/check-deploy-gate-outcome.sh
           bash dev-hub/tools/check-deploy-gate-outcome.sh --self-test
 
-      - name: Deploy gate verdict — behavioural test (issue #7511)
+      - name: Deploy gate verdict — behavioural test (issues #7511, #7528)
         # La garde ci-dessus vérifie la STRUCTURE ; ce test exécute le script du
         # gate avec un `core`/`github` simulés et assert les SORTIES réelles
         # (`not-required` quand rien d'api/web n'a changé, `no-runs` dès que
-        # l'API a changé, `deploy`, `stale`, `manual-dispatch`).
+        # l'API a changé, `deploy`, `stale`, `manual-dispatch`). Depuis #7528 il
+        # exécute AUSSI l'étape `changes_api` de deploy-main.yml (la DÉTECTION) :
+        # un merge CI-only doit donner web_changed=false/api_changed=false, un
+        # merge front/admin-dashboard/** doit exiger les deux workflows.
         run: node dev-hub/tools/check-deploy-gate-outcome-test.mjs
       - name: Android SDK packages guard (issue #7519)
         # Échoue si l'action de setup mobile redemande un paquet qui n'existe

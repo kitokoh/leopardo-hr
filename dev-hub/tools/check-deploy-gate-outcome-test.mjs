@@ -17,8 +17,23 @@
  *   - `api_changed` non fourni (`''`) → comportement strict conservé
  *     (`no-runs`), c'est ce qui laisse `deploy-staging.yml` intact.
  *
- * Usage : node dev-hub/tools/check-deploy-gate-outcome-test.mjs [chemin/action.yml]
- *         (le chemin est utile pour un A/B : exécuter le test contre la version
+ * Depuis #7528, il teste AUSSI la DÉTECTION elle-même (le script de l'étape
+ * `changes_api` de `deploy-main.yml`, extrait et exécuté de la même façon) :
+ * c'est là qu'était le défaut — un merge qui ne touche que des fichiers CI
+ * était classé `web_changed=true` (la liste `web` de paths-filters.yml est plus
+ * large que les `paths:` de web-ci.yml), donc le gate exigeait un run
+ * impossible → `no-runs` → `main` rouge, en boucle :
+ *
+ *   - merge CI-only (fichiers mesurés sur `d7e11294`) → `web_changed=false`,
+ *     `api_changed=false`, puis `not-required` de bout en bout ;
+ *   - `front/admin-dashboard/**` → `web_changed=true` (et `api_changed=true` :
+ *     tests.yml porte les tests de contrat front/API) ;
+ *   - `api/**` → `api_changed=true`, `web_changed=false` ;
+ *   - un workflow requis modifié déclenche sa propre zone ;
+ *   - panne d'API ou parent inconnu → les deux à `true` (conservateur).
+ *
+ * Usage : node dev-hub/tools/check-deploy-gate-outcome-test.mjs [chemin/action.yml] [chemin/deploy-main.yml]
+ *         (les chemins servent à l'A/B : exécuter le test contre la version
  *         d'avant le correctif et vérifier qu'il ÉCHOUE — sans quoi le test ne
  *         prouve rien.)
  */
@@ -32,13 +47,16 @@ const repoRoot = path.resolve(here, '..', '..');
 const actionPath = process.argv[2]
   ? path.resolve(process.argv[2])
   : path.join(repoRoot, '.github/actions/verify-deploy-workflows/action.yml');
+// #7528 : la DÉTECTION des zones modifiées (`web_changed`/`api_changed`) vit
+// dans l'étape `changes_api` de deploy-main.yml — c'est elle qui a produit le
+// faux `web_changed=true` du merge CI-only. On l'extrait et on l'exécute comme
+// le gate, pour tester la décision et pas seulement sa description.
+const deployWorkflowPath = process.argv[3]
+  ? path.resolve(process.argv[3])
+  : path.join(repoRoot, '.github/workflows/deploy-main.yml');
 
-/** Extrait la valeur du `script: |` du github-script de l'action composite. */
-function extractGateScript(yaml) {
-  const lines = yaml.split('\n');
-  const start = lines.findIndex((line) => line.trim() === 'script: |');
-  if (start === -1) throw new Error('bloc `script: |` introuvable dans action.yml');
-
+/** Extrait un bloc `script: |` à partir de l'index de sa ligne d'en-tête. */
+function extractScriptBlock(lines, start) {
   const indentOfScript = lines[start].match(/^\s*/)[0].length;
   const body = [];
   for (let i = start + 1; i < lines.length; i += 1) {
@@ -52,7 +70,44 @@ function extractGateScript(yaml) {
   return body.map((line) => line.slice(common)).join('\n');
 }
 
+/** Extrait la valeur du `script: |` du github-script de l'action composite. */
+function extractGateScript(yaml) {
+  const lines = yaml.split('\n');
+  const start = lines.findIndex((line) => line.trim() === 'script: |');
+  if (start === -1) throw new Error('bloc `script: |` introuvable dans action.yml');
+
+  return extractScriptBlock(lines, start);
+}
+
+/**
+ * Extrait le `script: |` de l'étape `id: <stepId>` d'un workflow.
+ *
+ * Les expressions `${{ … }}` qu'Actions substitue avant exécution n'existent
+ * pas ici : on les remplace par des valeurs de test pour que le script soit du
+ * JavaScript valide.
+ */
+function extractStepScript(yaml, stepId, substitutions = {}) {
+  const lines = yaml.split('\n');
+  const idIndex = lines.findIndex((line) => line.trim() === `id: ${stepId}`);
+  if (idIndex === -1) throw new Error(`étape « id: ${stepId} » introuvable dans le workflow`);
+
+  const start = lines.findIndex((line, i) => i > idIndex && line.trim() === 'script: |');
+  if (start === -1) throw new Error(`bloc script: | introuvable pour l'étape ${stepId}`);
+
+  let script = extractScriptBlock(lines, start);
+  for (const [expression, value] of Object.entries(substitutions)) {
+    script = script.split(expression).join(value);
+  }
+  return script;
+}
+
 const gateScript = extractGateScript(readFileSync(actionPath, 'utf8'));
+
+// Le script de détection, avec le SHA de test substitué (comme Actions le fait).
+const TEST_SHA = 'a'.repeat(40);
+const changesApiScript = extractStepScript(readFileSync(deployWorkflowPath, 'utf8'), 'changes_api', {
+  '${{ steps.context.outputs.sha }}': TEST_SHA,
+});
 
 /** Exécute le gate avec des dépendances simulées. */
 async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainHead = 'a'.repeat(40) }) {
@@ -89,6 +144,36 @@ async function runGate({ apiChanged, webChanged, runs, eventName = 'push', mainH
     if (previousEvent === undefined) delete process.env.GITHUB_EVENT_NAME;
     else process.env.GITHUB_EVENT_NAME = previousEvent;
   }
+
+  return { outputs, logs };
+}
+
+/** Exécute l'étape `changes_api` de deploy-main.yml avec des dépendances simulées. */
+async function runChangesApi({ files, parent = 'p'.repeat(40), apiError = false }) {
+  const outputs = {};
+  const logs = [];
+  const core = {
+    setOutput: (k, v) => { outputs[k] = String(v); },
+    setFailed: (msg) => { throw new Error(`setFailed: ${msg}`); },
+    info: (m) => logs.push(`info: ${m}`),
+    warning: (m) => logs.push(`warning: ${m}`),
+    notice: (m) => logs.push(`notice: ${m}`),
+  };
+  const github = {
+    rest: {
+      repos: {
+        getCommit: async () => ({ data: { parents: parent ? [{ sha: parent }] : [] } }),
+        compareCommitsWithBasehead: async () => {
+          if (apiError) throw new Error('compare failed');
+          return { data: { files: files.map((filename) => ({ filename })) } };
+        },
+      },
+    },
+  };
+  const context = { repo: { owner: 'kitokoh', repo: 'leopardo-hr' } };
+
+  const factory = new Function('core', 'github', 'context', `return (async () => {\n${changesApiScript}\n})();`);
+  await factory(core, github, context);
 
   return { outputs, logs };
 }
@@ -164,10 +249,83 @@ await check('workflow_dispatch → manual-dispatch, déploiement autorisé', asy
   assertEqual(outputs.should_deploy, 'true', 'should_deploy');
 });
 
+// ── #7528 : la DÉTECTION elle-même (étape `changes_api`) ───────────────────
+// Liste RÉELLE des fichiers du merge d7e11294, celui du défaut mesuré.
+const ciOnlyMergeFiles = [
+  '.github/actions/verify-deploy-workflows/action.yml',
+  '.github/workflows/actionlint.yml',
+  '.github/workflows/deploy-main.yml',
+  'CHANGELOG.md',
+  'dev-hub/tools/check-deploy-gate-outcome.sh',
+  'dev-hub/tools/check-deploy-gate-outcome-test.mjs',
+  'docs/GOUVERNANCE/REGISTRE_GARDES.md',
+];
+
+await check('merge CI-only → aucun run exigé (web_changed=false, api_changed=false)', async () => {
+  const { outputs } = await runChangesApi({ files: ciOnlyMergeFiles });
+  assertEqual(outputs.web_changed, 'false', 'web_changed');
+  assertEqual(outputs.api_changed, 'false', 'api_changed');
+});
+
+await check('merge CI-only → le gate conclut not-required de bout en bout (#7528)', async () => {
+  const { outputs: changes } = await runChangesApi({ files: ciOnlyMergeFiles });
+  const { outputs } = await runGate({
+    apiChanged: changes.api_changed,
+    webChanged: changes.web_changed,
+    runs: [],
+  });
+  assertEqual(outputs.gate_outcome, 'not-required', 'gate_outcome');
+  assertEqual(outputs.should_deploy, 'false', 'should_deploy');
+});
+
+// ── Aucun relâchement : les deux workflows restent exigés sur leur surface ──
+await check('front/admin-dashboard/** → web_changed=true et api_changed=true (tests de contrat)', async () => {
+  const { outputs } = await runChangesApi({ files: ['front/admin-dashboard/src/pages/Dashboard.vue'] });
+  assertEqual(outputs.web_changed, 'true', 'web_changed');
+  assertEqual(outputs.api_changed, 'true', 'api_changed');
+});
+
+await check('api/** → api_changed=true, web_changed=false', async () => {
+  const { outputs } = await runChangesApi({ files: ['api/app/Modules/Billing/Foo.php'] });
+  assertEqual(outputs.api_changed, 'true', 'api_changed');
+  assertEqual(outputs.web_changed, 'false', 'web_changed');
+});
+
+await check('.github/workflows/web-ci.yml → web_changed=true (il se déclenche lui-même)', async () => {
+  const { outputs } = await runChangesApi({ files: ['.github/workflows/web-ci.yml'] });
+  assertEqual(outputs.web_changed, 'true', 'web_changed');
+  assertEqual(outputs.api_changed, 'false', 'api_changed');
+});
+
+await check('.github/workflows/tests.yml → api_changed=true (il se déclenche lui-même)', async () => {
+  const { outputs } = await runChangesApi({ files: ['.github/workflows/tests.yml'] });
+  assertEqual(outputs.api_changed, 'true', 'api_changed');
+  assertEqual(outputs.web_changed, 'false', 'web_changed');
+});
+
+await check('.github/workflows/deploy-main.yml seul → aucune zone (il ne déclenche ni tests ni web-ci)', async () => {
+  const { outputs } = await runChangesApi({ files: ['.github/workflows/deploy-main.yml'] });
+  assertEqual(outputs.web_changed, 'false', 'web_changed');
+  assertEqual(outputs.api_changed, 'false', 'api_changed');
+});
+
+// ── Mesure impossible → conservateur (les deux zones exigées) ──────────────
+await check('comparaison API en échec → true/true (conservateur)', async () => {
+  const { outputs } = await runChangesApi({ files: [], apiError: true });
+  assertEqual(outputs.web_changed, 'true', 'web_changed');
+  assertEqual(outputs.api_changed, 'true', 'api_changed');
+});
+
+await check('parent inconnu (commit racine) → true/true (conservateur)', async () => {
+  const { outputs } = await runChangesApi({ files: [], parent: null });
+  assertEqual(outputs.web_changed, 'true', 'web_changed');
+  assertEqual(outputs.api_changed, 'true', 'api_changed');
+});
+
 if (failures.length > 0) {
   console.error(`❌ check-deploy-gate-outcome-test : ${failures.length} échec(s) sur ${passed + failures.length}`);
   for (const failure of failures) console.error(`   - ${failure}`);
   process.exit(1);
 }
 
-console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts du gate vérifiés (not-required ≠ no-runs, deploy, stale, manual-dispatch).`);
+console.log(`✅ check-deploy-gate-outcome-test : ${passed} verdicts vérifiés (détection web/api, not-required ≠ no-runs, deploy, stale, manual-dispatch).`);
