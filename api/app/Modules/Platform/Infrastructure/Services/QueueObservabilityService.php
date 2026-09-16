@@ -153,8 +153,8 @@ class QueueObservabilityService
      *
      * @param  list<string>  $queues
      * @return array<string, array{pending: int, scheduled: int, reserved: int}>|null
-     *         `null` quand la ventilation n'est pas mesurable (driver non
-     *         `database`, ou table `jobs` illisible) — on ne devine pas.
+     *                                                                                `null` quand la ventilation n'est pas mesurable (driver non
+     *                                                                                `database`, ou table `jobs` illisible) — on ne devine pas.
      */
     public static function queueBreakdown(array $queues): ?array
     {

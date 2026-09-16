@@ -4451,7 +4451,7 @@ paths:
       tags:
       - Platform
       summary: Lister l'equipe interne de la plateforme (issue #7553)
-      description: Comptes internes (super_admins) avec leur role plateforme et leurs permissions effectives. Permission requise : team.manage (role super_admin uniquement).
+      description: 'Comptes internes (super_admins) avec leur role plateforme et leurs permissions effectives. Permission requise : team.manage (role super_admin uniquement).'
       security:
       - SuperAdminBearerAuth: []
       responses:
@@ -4476,7 +4476,7 @@ paths:
       tags:
       - Platform
       summary: Creer un collaborateur interne de la plateforme
-      description: Permission requise : team.manage. Le role plateforme doit appartenir a PlatformRole ; le mot de passe initial fait au moins 12 caracteres.
+      description: 'Permission requise : team.manage. Le role plateforme doit appartenir a PlatformRole ; le mot de passe initial fait au moins 12 caracteres.'
       security:
       - SuperAdminBearerAuth: []
       requestBody:
@@ -4506,7 +4506,7 @@ paths:
       tags:
       - Platform
       summary: Changer le role plateforme d'un collaborateur interne
-      description: Permission requise : team.manage. Refus (422) si l'appelant modifie son propre role (CANNOT_CHANGE_OWN_PLATFORM_ROLE) ou retrograde le dernier super admin actif (LAST_SUPER_ADMIN_REQUIRED).
+      description: 'Permission requise : team.manage. Refus (422) si l''appelant modifie son propre role (CANNOT_CHANGE_OWN_PLATFORM_ROLE) ou retrograde le dernier super admin actif (LAST_SUPER_ADMIN_REQUIRED).'
       security:
       - SuperAdminBearerAuth: []
       parameters:
@@ -4547,7 +4547,7 @@ paths:
       tags:
       - Platform
       summary: Reactiver un collaborateur interne de la plateforme
-      description: Permission requise : team.manage.
+      description: 'Permission requise : team.manage.'
       security:
       - SuperAdminBearerAuth: []
       parameters:
@@ -4575,7 +4575,7 @@ paths:
       tags:
       - Platform
       summary: Desactiver un collaborateur interne de la plateforme
-      description: Permission requise : team.manage. Refus (422) sur son propre compte ou sur le dernier super admin actif ; les tokens Sanctum du compte sont revoques.
+      description: 'Permission requise : team.manage. Refus (422) sur son propre compte ou sur le dernier super admin actif ; les tokens Sanctum du compte sont revoques.'
       security:
       - SuperAdminBearerAuth: []
       parameters:
