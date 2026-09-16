@@ -19,6 +19,7 @@ export type ClientModuleKey =
   | 'restaurant_kitchen'
   | 'edu_manager'
   | 'travel'
+  | 'fleet'
   | 'fuel'
   | 'showcase';
 export type FeatureState = 'available' | 'trial' | 'locked';
@@ -270,6 +271,21 @@ export const CLIENT_MODULES: ClientModule[] = [
     scope: 'business',
     vertical: 'travel',
   },
+  // #7400 — module FLOTTE (BC-19 DEVICE). L'API existait (véhicules, position
+  // live, itinéraires, alertes, maintenance, rapports) mais AUCUNE surface ne
+  // l'exposait côté client : le propriétaire ne pouvait pas voir ses véhicules
+  // dans son espace — alors que l'admin plateforme a une vue dédiée.
+  {
+    key: 'fleet',
+    href: '/fleet',
+    label: 'Flotte',
+    group: 'general',
+    capabilityKeys: ['fleet'],
+    featureKeys: ['fleet'],
+    allowedRoles: ['super_admin', 'admin', 'manager'],
+    upgradeLabel: 'Flotte (véhicules, suivi GPS, itinéraires)',
+    scope: 'core',
+  },
   // #7225 — verticale Station-service (BC-15 FUEL) : la page `/fuel/pump`
   // existait sans entrée de navigation (même défaut que Travel).
   {
@@ -374,6 +390,7 @@ const ROUTE_TO_MODULE: Record<string, ClientModuleKey> = {
   '/restaurant/kitchen': 'restaurant_kitchen',
   '/travel': 'travel',
   '/travel/portal': 'travel',
+  '/fleet': 'fleet',
   '/fuel': 'fuel',
   '/fuel/pump': 'fuel',
   '/edu-manager': 'edu_manager',

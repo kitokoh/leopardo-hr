@@ -124,6 +124,24 @@ return [
             'killable' => true,
             'description' => 'Solution Agence de voyage (ventes, réservations, check-in).',
         ],
+        // #7400 — Module FLOTTE (BC-19 DEVICE) : véhicules, position live,
+        // itinéraires, alertes, maintenance, rapports.
+        //
+        // `default => true` : le module n'avait jusqu'ici AUCUN flag — ses
+        // routes ne dépendent que du rôle manager, et toute PME terrain a des
+        // véhicules. Déclarer le flag le rend GOUVERNABLE (exposé par
+        // `FeatureFlag::for()`, togglable par l'admin plateforme, coupable par
+        // kill switch) SANS changer le comportement des tenants existants :
+        // aucun middleware `module.fleet` n'est posé sur les routes, une
+        // bascule à false n'a donc pas d'effet rétroactif tant que ce câblage
+        // n'est pas décidé côté produit.
+        'fleet' => [
+            'scope' => 'module',
+            'default' => true,
+            'since' => '4.26.0',
+            'killable' => true,
+            'description' => 'Flotte : véhicules, suivi GPS (Traccar), itinéraires, alertes, maintenance.',
+        ],
         // BC-27 SHOWCASE — module HORIZONTAL « Site vitrine » (site public de
         // l'entreprise créé en 1 clic par le responsable du tenant). Le module
         // serveur existait (`app/Modules/Showcase`, routes `/api/v1/showcase/*`,

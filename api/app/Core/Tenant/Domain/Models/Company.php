@@ -133,6 +133,13 @@ class Company extends Model
         // l'admin plateforme (`PlatformCompanyFeatureController::update`)
         // reconstruise et expose la clé, au même titre que `accounting`/#7235.
         'company_showcase',
+        // #7400 (recette 2026-09-14) — module FLOTTE. Il existait côté serveur
+        // (VEHICULES, `FleetTrackingSyncService`, `/fleet/*`, BC-19 DEVICE) mais
+        // n'était déclaré ni dans le registre des modules ni dans celui des
+        // flags : impossible de l'exposer ou de le piloter, et le client n'avait
+        // AUCUNE surface pour voir ses véhicules dans son espace. Le flag est
+        // déclaré activé par défaut (cf. `config/feature-flags.php`).
+        'fleet',
     ];
 
     /**
@@ -304,11 +311,15 @@ class Company extends Model
 
         $features = $this->features ?? [];
 
-        if ($key === 'rh') {
-            return (bool) ($features['rh'] ?? true);
-        }
+        // #7400 — le défaut d'un module est déclaré UNE SEULE FOIS, dans le
+        // registre (`config/feature-flags.php`). L'ancien `if ($key === 'rh')`
+        // recodait ce défaut en dur : tout module déclaré `default => true` dans
+        // le registre (désormais `rh` et `fleet`) était donc silencieusement
+        // remis à `false` pour une company ayant déjà une carte `features`, ce
+        // qui rendait le registre menteur.
+        $default = (bool) config("feature-flags.flags.{$key}.default", false);
 
-        return (bool) ($features[$key] ?? false);
+        return (bool) ($features[$key] ?? $default);
     }
 
     /**
