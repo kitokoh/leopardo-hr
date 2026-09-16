@@ -113,6 +113,8 @@ return [
         ],
         'required' => 'Gerekli',
         'dismiss' => 'Kapat',
+        'actions' => 'İşlemler',
+        'edit' => 'Düzenle',
     ],
     'modules' => [
         'attendance' => 'Puantaj',

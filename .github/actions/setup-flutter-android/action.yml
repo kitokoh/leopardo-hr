@@ -41,10 +41,26 @@ runs:
     # on installe donc le SDK stable android-36 + build-tools 36.
     # android-actions/setup-android (pinné, #1706) pose ANDROID_HOME/
     # ANDROID_SDK_ROOT dans GITHUB_ENV et accepte les licences de façon fiable.
+    #
+    # Issue #7519 — NE PLUS DEMANDER LE PAQUET `tools` : les runners embarquent
+    # cmdline-tools 12.0, que l'action juge « wrong version » et remplace par
+    # cmdline-tools 20.0. Dans cette version, `sdkmanager tools` répond
+    # `Warning: Failed to find package 'tools'` et sort en **1**, ce que
+    # l'action traite comme un échec fatal : TOUTE la chaîne mobile s'arrêtait
+    # avant compilation (Distribute * to Firebase rouge sur `main`, CodeQL et
+    # mobile-apps-ci rouges sur toutes les PRs mobiles, y compris les bumps
+    # Dependabot `pub`). Le paquet `tools` était l'ancien « SDK Tools » de
+    # l'ère cmdline-tools 12 ; c'est `setup-android` lui-même qui installe
+    # désormais cmdline-tools — le demander est au mieux inutile, au pire fatal.
+    # Seuls des paquets qui EXISTENT dans 20.0 sont demandés ici.
     - name: Setup Android SDK (platform 36)
       uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
       with:
-        packages: 'tools platform-tools platforms;android-36 build-tools;36.0.0'
+        packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+
+    - name: Guard — no legacy Android SDK package requested (issue #7519)
+      shell: bash
+      run: bash dev-hub/tools/check-android-sdk-packages.sh
 
     - name: Verify Android SDK platform 36
       shell: bash

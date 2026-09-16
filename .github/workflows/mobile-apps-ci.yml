@@ -32,6 +32,12 @@ on:
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
       - '.github/workflows/mobile-apps-ci.yml'
+      # Issue #7519 — l'action composite partagée par TOUS les jobs mobiles
+      # doit re-déclencher la CI mobile quand elle change : c'est elle qui a
+      # cassé la chaîne (paquet `tools` inexistant dans cmdline-tools 20.0)
+      # sans qu'aucune PR ne le voie.
+      - '.github/actions/setup-flutter-android/action.yml'
+      - 'dev-hub/tools/check-android-sdk-packages.sh'
 
 permissions:
   contents: read
@@ -67,6 +73,11 @@ jobs:
               - 'front/mobile_apps/**'
               - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
               - '.github/workflows/mobile-apps-ci.yml'
+              # Issue #7519 — un changement de l'action de setup Android/Flutter
+              # partagée doit lancer les jobs mobiles lourds (sinon le défaut
+              # reste invisible jusqu'à la distribution Firebase sur main).
+              - '.github/actions/setup-flutter-android/action.yml'
+              - 'dev-hub/tools/check-android-sdk-packages.sh'
 
   mobile-apps-guard:
     timeout-minutes: 90

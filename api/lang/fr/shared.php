@@ -113,6 +113,8 @@ return [
         ],
         'required' => 'Requis',
         'dismiss' => 'Fermer',
+        'actions' => 'Actions',
+        'edit' => 'Modifier',
     ],
     'modules' => [
         'attendance' => 'Pointage',
