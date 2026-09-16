@@ -90,3 +90,18 @@ jobs:
         run: |
           bash dev-hub/tools/check-android-sdk-packages.sh
           bash dev-hub/tools/check-android-sdk-packages.sh --self-test
+
+      - name: JSON/ARB parse guard (issue #7583)
+        # Échoue si un fichier JSON ou ARB suivi ne se parse plus. Cause
+        # mesurée : un conflit résolu avec `git merge-file --union`, qui
+        # concatène les deux côtés ligne à ligne et duplique virgules et clés
+        # (13 à 17 catalogues cassés lors du drain #7562, synchronisateurs
+        # plantés au démarrage). Les catalogues i18n « connus » sont déjà
+        # couverts par validators/validate.js et la garde de parité — mais
+        # ceux-là sont filtrés par `paths:` et ne couvrent PAS les ~190 autres
+        # JSON suivis (configs, contrats dev-hub, budgets). Cette garde les
+        # couvre tous, en quelques dizaines de millisecondes, dans un check
+        # déjà requis et exécuté à chaque PR (donc sans run supplémentaire).
+        run: |
+          bash dev-hub/tools/check-json-catalogs-parse.sh
+          bash dev-hub/tools/check-json-catalogs-parse.sh --self-test
