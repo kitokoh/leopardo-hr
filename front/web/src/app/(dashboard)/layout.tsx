@@ -685,7 +685,14 @@ export default function DashboardLayout({
                       aria-expanded={hrMenuOpen}
                       aria-haspopup="true"
                       aria-controls="dashboard-hr-menu-panel"
-                      onClick={() => { closeHeaderPanels(); setHrMenuOpen((value) => !value); }}
+                      onClick={() => {
+                        // Même correction que le menu de compte : fermer les
+                        // autres panneaux puis basculer CELUI-CI sur une cible
+                        // calculée avant (sinon il restait ouvert).
+                        const next = !hrMenuOpen;
+                        closeHeaderPanels();
+                        setHrMenuOpen(next);
+                      }}
                       className={[
                         'group inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-black uppercase tracking-tight transition-all',
                         isHrEntryActive(entry, pathname)
@@ -924,7 +931,17 @@ export default function DashboardLayout({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => { closeHeaderPanels(); setUserMenuOpen((value) => !value); }}
+                onClick={() => {
+                  // #7556 : `closeHeaderPanels()` remet CE panneau à false puis
+                  // l'updater `!value` le rouvrait aussitôt (les deux mises à jour
+                  // sont traitées dans le même lot) — le menu ne se refermait
+                  // jamais au clic sur l'avatar. On calcule la cible AVANT de
+                  // fermer les autres panneaux (régression vue par
+                  // layout-header-menu.test.tsx « le menu du compte est refermable »).
+                  const next = !userMenuOpen;
+                  closeHeaderPanels();
+                  setUserMenuOpen(next);
+                }}
                 aria-expanded={userMenuOpen}
                 aria-haspopup="menu"
                 aria-controls="dashboard-user-menu"
