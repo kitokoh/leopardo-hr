@@ -294,6 +294,10 @@ return [
     'COMPANY_CONTEXT_REQUIRED' => 'Bir şirket bağlamı gerekli.',
     // #7322 — Kullanıcının yatay modülü kendi kendine etkinleştirmesi.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Bağımsız (solo) profil kapsamı dışındaki ekip aracı: :module.',
+    'PLAN_NOT_FOUND' => 'Teklif bulunamadı.',
+    'PLAN_NAME_TAKEN' => 'Bu ada sahip bir teklif zaten var: :name.',
+    'PLAN_NOTHING_TO_UPDATE' => 'Güncellenecek teklif alanı yok.',
+    'PLAN_IN_USE' => 'Teklif :count müşteri tarafından kullanılıyor — silmek yerine arşivleyin.',
     'INVALID_HORIZONTAL_TOOL' => 'Bilinmeyen veya kendi kendine etkinleştirilemeyen modül: :module.',
     'MODULE_ACTIVATED' => 'Modül etkinleştirildi.',
     'MODULE_ALREADY_ACTIVE' => 'Bu modül zaten etkin.',

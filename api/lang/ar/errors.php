@@ -294,6 +294,10 @@ return [
     'COMPANY_CONTEXT_REQUIRED' => 'سياق الشركة مطلوب.',
     // #7322 — التفعيل الذاتي لوحدة أفقية من قبل العميل.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'أداة فريق خارج نطاق حساب المستقل: :module.',
+    'PLAN_NOT_FOUND' => 'العرض غير موجود.',
+    'PLAN_NAME_TAKEN' => 'يوجد عرض بهذا الاسم بالفعل: :name.',
+    'PLAN_NOTHING_TO_UPDATE' => 'لا يوجد أي حقل تحديث في العرض.',
+    'PLAN_IN_USE' => 'العرض مستخدم من طرف :count عميل — قم بأرشفته بدل حذفه.',
     'INVALID_HORIZONTAL_TOOL' => 'وحدة غير معروفة أو غير قابلة للتفعيل الذاتي: :module.',
     'MODULE_ACTIVATED' => 'تم تفعيل الوحدة.',
     'MODULE_ALREADY_ACTIVE' => 'هذه الوحدة نشطة بالفعل.',

@@ -1035,7 +1035,18 @@
       "travelagency": "Agence de voyage",
       "accounting": "Comptabilité",
       "company_showcase": "Site vitrine"
-    }
+    },
+    "tabOverview": "Vue d'ensemble",
+    "tabModules": "Modules & verticales",
+    "tabBilling": "Abonnement & support",
+    "tabSystem": "Système",
+    "tenantFeatures": "Dotation de l'entreprise",
+    "platformCapabilities": "Capacités plateforme (kill switches)",
+    "platformCapabilitiesHint": "Ces interrupteurs ne concernent pas la dotation du client : ils ouvrent ou coupent une capacité pour toute la plateforme.",
+    "verticals": "Verticales & outils de cette entreprise",
+    "openVertical": "Ouvrir",
+    "noVerticalSurface": "Aucune surface admin dédiée",
+    "noVertical": "Aucune verticale activée pour cette entreprise."
   },
   "attendanceCorrectionRequestHint": "La demande sera transmise au RH pour validation.",
   "salaryAdvanceError": "Échec : {error}",
@@ -5043,7 +5054,8 @@
     "showcase": "Site vitrine",
     "clientModules": "Modules des entreprises clientes",
     "emailTemplates": "E-mails",
-    "aiAssistant": "Assistant IA"
+    "aiAssistant": "Assistant IA",
+    "settings": "Paramètres"
   },
   "companydetailCoreModuleAlwaysActive": "Module cœur toujours actif",
   "smartAttendanceSessionsTitle": "Sessions Smart Attendance",
@@ -6611,5 +6623,48 @@
       "revocationHint": "Le responsable de l'espace peut révoquer ce lien à tout moment."
     },
     "loading": "Chargement des caméras…"
+  "plans": {
+    "nav": "Offres & tarifs",
+    "title": "Offres & tarifs",
+    "subtitle": "Créer, ajuster et archiver les offres — un changement de prix ne doit plus exiger un déploiement.",
+    "new": "Nouvelle offre",
+    "edit": "Modifier l'offre",
+    "duplicate": "Dupliquer",
+    "archive": "Archiver",
+    "delete": "Supprimer",
+    "active": "Active",
+    "archived": "Archivée",
+    "unlimited": "Illimité",
+    "empty": "Aucune offre",
+    "save": "Enregistrer",
+    "create": "Créer l'offre",
+    "loadError": "Impossible de charger les offres.",
+    "created": "Offre créée.",
+    "updated": "Offre mise à jour.",
+    "duplicated": "Offre dupliquée (archivée).",
+    "archivedDone": "Offre archivée.",
+    "deleted": "Offre supprimée.",
+    "deleteError": "Suppression impossible.",
+    "saveError": "Enregistrement impossible.",
+    "featuresHint": "Cochez les capacités facturables incluses dans cette offre (matrice offre × features).",
+    "deleteConfirm": "Supprimer définitivement cette offre ? Une offre utilisée par un client ne peut pas être supprimée — archivez-la.",
+    "archiveConfirm": "Archiver cette offre ? Elle ne sera plus proposée dans le tunnel de souscription.",
+    "field": {
+      "name": "Nom de l'offre",
+      "priceMonthly": "Prix mensuel (€)",
+      "priceYearly": "Prix annuel (€)",
+      "maxEmployees": "Employés inclus",
+      "trialDays": "Jours d'essai",
+      "features": "Features incluses",
+      "isActive": "Offre publiée"
+    },
+    "col": {
+      "name": "Offre",
+      "priceMonthly": "Mensuel",
+      "priceYearly": "Annuel",
+      "maxEmployees": "Employés",
+      "features": "Features",
+      "state": "État"
+    }
   }
 }

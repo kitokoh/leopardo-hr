@@ -26,21 +26,25 @@
   "locales": {
     "fr": {
       "checksum": "ea1f70519f686f8064ba6ef69f7b103d097d41c6aa4650ef5e2106a9a9183f0f",
+      "checksum": "660d9253b8f3d977be0a108d380632fb1f5cdf5f49bdb2a81458979117b8ffc4",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "ar": {
       "checksum": "51f703dc8a28c0bb041283e915dee9b80599fb4163ace2156adc81f5aa042057",
+      "checksum": "451e01784997ec3391e2228ce2ebed9dbb1aa5fe171dc9f15d5f1e9141aca9bc",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "tr": {
       "checksum": "975c01161f3027580c5a2357f6c7e37b10defa7de4b12e26df10586fd399e698",
+      "checksum": "a9789df13bc37f522df0d634db74ebfe96aef4df348a9fe88abc6a87bbd61291",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     },
     "en": {
       "checksum": "7a62a93e71ed777d555afb26d5dc04789f50bd38a6d6afbc278a59bbb4bb2d9a",
+      "checksum": "c538445e79fbe1a9bb288fa0c30dfe256cb222a360fffdf200a586cfbd9a5cec",
       "version": "1.0.0",
       "updated_at": "2026-08-30T15:05:00Z"
     }
@@ -63,6 +67,21 @@
         "tr": "0c40274eff66c0b93e6f9ab5955cdf7045c3b12ce7e56496f910d273ac358c46"
       },
       "updated_at": "2026-09-16T03:50:12.577Z"
+        "ar": "451e01784997ec3391e2228ce2ebed9dbb1aa5fe171dc9f15d5f1e9141aca9bc",
+        "en": "c538445e79fbe1a9bb288fa0c30dfe256cb222a360fffdf200a586cfbd9a5cec",
+        "fr": "660d9253b8f3d977be0a108d380632fb1f5cdf5f49bdb2a81458979117b8ffc4",
+        "tr": "a9789df13bc37f522df0d634db74ebfe96aef4df348a9fe88abc6a87bbd61291"
+      },
+      "updated_at": "2026-09-16T03:58:20.357Z"
+    },
+    "admin": {
+      "checksums": {
+        "ar": "6cecaf24bbbdd5f3531a75928faa50ae137c364791eb0258326ef3e5866ba7e1",
+        "en": "d8fb442bf38a14e728f1298affe155e96d9c70c1e0af5241a38018e72c3e0cc7",
+        "fr": "369993edf85389458ff98365d04e6db4cf0dfbcba5690494f594235d5051e614",
+        "tr": "531093cc92d622ab4eae3cac6687e8d589bcb3a535e09215386608b6acbac6b9"
+      },
+      "updated_at": "2026-09-16T03:58:20.403Z"
     }
   }
 }

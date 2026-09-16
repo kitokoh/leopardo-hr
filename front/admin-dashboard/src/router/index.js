@@ -413,6 +413,18 @@ const routes = [
         }
       },
       {
+        // #7430 — « Offres & tarifs » : le paramétrage des offres passe par
+        // l'UI (CRUD réel), plus par un déploiement. Même groupe « Paramètres »
+        // que les autres écrans de paramétrage (Sidebar).
+        path: '/settings/plans',
+        name: 'settings-plans',
+        component: () => import('@/views/settings/PlansView.vue'),
+        meta: {
+          title: 'plans.nav',
+          icon: 'TagIcon'
+        }
+      },
+      {
         // #7384/#7385 — assistant IA : réglages éditables + suivi (Paramètres › Assistant IA).
         path: '/settings/ai',
         name: 'settings-ai-assistant',

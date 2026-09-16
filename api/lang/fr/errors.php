@@ -295,6 +295,10 @@ return [
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
     // #7322 — Auto-activation d'un module horizontal par le client.
     'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Outil d\'équipe hors du socle d\'un profil indépendant : :module.',
+    'PLAN_NOT_FOUND' => 'Offre introuvable.',
+    'PLAN_NAME_TAKEN' => 'Une offre porte déjà le nom « :name ».',
+    'PLAN_NOTHING_TO_UPDATE' => 'Aucun champ d\'offre à mettre à jour.',
+    'PLAN_IN_USE' => 'Offre utilisée par :count client(s) — archivez-la au lieu de la supprimer.',
     'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
     'MODULE_ACTIVATED' => 'Module activé.',
     'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',

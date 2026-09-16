@@ -36,6 +36,28 @@ Note 2026-09-01 (issue #6662, PR #6663) : nouvelle surface publique « solutions
 Public sans auth (pre-qualification vitrine), throttle 10/min. Couverture : `api/tests/Feature/Solutions/SolutionSurveyEndpointTest.php` (8 tests) + `api/tests/Unit/Core/Solutions/SolutionSurveyEngineTest.php` (4 tests).
 
   
+## Paramétrage des offres tarifaires (#7430)
+
+Les offres ne sont plus seedées : elles se **pilotent** par l'API plateforme
+(super-admin), et chaque écriture est auditée.
+
+| Cas | Attendu |
+|---|---|
+| `POST /platform/plans` (nom, prix, limite, essai, features) | 201, ligne créée, `audit_logs` `plan.created` |
+| nom déjà pris | 422 (`name`), aucune écriture |
+| prix négatif / essai > 365 j | 422 sur le champ concerné |
+| `PATCH /platform/plans/{plan}` partiel | 200, seuls les champs envoyés changent, `plan.updated` avec avant/après |
+| `PATCH` avec un nom déjà pris | 422, aucune écriture |
+| `POST …/duplicate` | 201, copie nommée « … (copie) », **`is_active = false`** |
+| `POST …/archive` | 200, `is_active = false`, la ligne existe toujours |
+| `DELETE …/{plan}` **utilisée** (société rattachée ou abonnement sur le code) | **409**, aucune suppression, message orientant vers l'archivage |
+| `DELETE …/{plan}` libre | 200, ligne supprimée, `plan.deleted` |
+| route appelée par un employé tenant | 401/404 (jamais d'alias tenant — `RouteOwnerGuardTest`) |
+
+Contrat OpenAPI : les 5 routes et les schémas `PlatformPlanWrite` /
+`PlatformPlanResponse` sont déclarés dans `api/openapi.yaml` (garde
+`Route → OpenAPI coverage`).
+
 ## Objectif   
 
 Note 2026-08-26 (issue #5588, lot durcissements) : la surface API kiosque et recrutement public a change —

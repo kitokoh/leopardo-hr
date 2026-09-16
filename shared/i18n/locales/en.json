@@ -1624,7 +1624,8 @@
     "account": "My account",
     "notFound": "Page not found",
     "travelAgency": "Travel agency",
-    "emailTemplates": "Emails"
+    "emailTemplates": "Emails",
+    "settings": "Settings"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
@@ -1738,7 +1739,18 @@
       "travelagency": "Travel agency",
       "accounting": "Accounting",
       "company_showcase": "Showcase website"
-    }
+    },
+    "tabOverview": "Overview",
+    "tabModules": "Modules & verticals",
+    "tabBilling": "Subscription & support",
+    "tabSystem": "System",
+    "tenantFeatures": "Company entitlement",
+    "platformCapabilities": "Platform capabilities (kill switches)",
+    "platformCapabilitiesHint": "These switches are not part of the customer entitlement: they open or cut a capability for the whole platform.",
+    "verticals": "Verticals & tools of this company",
+    "openVertical": "Open",
+    "noVerticalSurface": "No dedicated admin surface",
+    "noVertical": "No vertical enabled for this company."
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -5354,6 +5366,50 @@
       "api_public": "Public API",
       "evaluations": "Evaluations",
       "schema_isolation": "Data isolation"
+    }
+  },
+  "plans": {
+    "nav": "Plans & pricing",
+    "title": "Plans & pricing",
+    "subtitle": "Create, adjust and archive plans — a price change must no longer require a deployment.",
+    "new": "New plan",
+    "edit": "Edit plan",
+    "duplicate": "Duplicate",
+    "archive": "Archive",
+    "delete": "Delete",
+    "active": "Active",
+    "archived": "Archived",
+    "unlimited": "Unlimited",
+    "empty": "No plan",
+    "save": "Save",
+    "create": "Create plan",
+    "loadError": "Unable to load plans.",
+    "created": "Plan created.",
+    "updated": "Plan updated.",
+    "duplicated": "Plan duplicated (archived).",
+    "archivedDone": "Plan archived.",
+    "deleted": "Plan deleted.",
+    "deleteError": "Deletion failed.",
+    "saveError": "Saving failed.",
+    "featuresHint": "Tick the billable capabilities included in this plan (plan × features matrix).",
+    "deleteConfirm": "Permanently delete this plan? A plan used by a customer cannot be deleted — archive it.",
+    "archiveConfirm": "Archive this plan? It will no longer appear in the subscription funnel.",
+    "field": {
+      "name": "Plan name",
+      "priceMonthly": "Monthly price (€)",
+      "priceYearly": "Yearly price (€)",
+      "maxEmployees": "Included employees",
+      "trialDays": "Trial days",
+      "features": "Included features",
+      "isActive": "Published plan"
+    },
+    "col": {
+      "name": "Plan",
+      "priceMonthly": "Monthly",
+      "priceYearly": "Yearly",
+      "maxEmployees": "Employees",
+      "features": "Features",
+      "state": "Status"
     }
   }
 }

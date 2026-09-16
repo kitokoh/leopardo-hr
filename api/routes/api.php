@@ -12,6 +12,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\Controllers\BiometricEnrollmentCont
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\CompanyRequestController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PaymentWebhookController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformCompanySubscriptionController;
+use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPlanAdminController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\PlatformPlanController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\SelfServiceTrialController;
 use App\Modules\Billing\Interfaces\Api\V1\Controllers\StripeWebhookController;
@@ -392,6 +393,16 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/enable', [PlatformAuthController::class, 'enable2fa']);
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
         Route::get('/plans', PlatformPlanController::class);
+        // #7430 (BC-21 BILLING) — les offres sont PARAMÉTRABLES : le seeder
+        // n'est plus le seul chemin. Création, édition (prix, limite
+        // d'employés, matrice de features), duplication, archivage, et
+        // suppression REFUSÉE (409) dès qu'une offre est utilisée — elle
+        // s'archive. Chaque écriture est auditée (AuditLog, société nulle).
+        Route::post('/plans', [PlatformPlanAdminController::class, 'store']);
+        Route::patch('/plans/{plan}', [PlatformPlanAdminController::class, 'update'])->whereNumber('plan');
+        Route::post('/plans/{plan}/duplicate', [PlatformPlanAdminController::class, 'duplicate'])->whereNumber('plan');
+        Route::post('/plans/{plan}/archive', [PlatformPlanAdminController::class, 'archive'])->whereNumber('plan');
+        Route::delete('/plans/{plan}', [PlatformPlanAdminController::class, 'destroy'])->whereNumber('plan');
         Route::get('/country-defaults', PlatformCountryDefaultsController::class);
         Route::get('/companies', [PlatformCompanyController::class, 'index']);
         Route::post('/companies', [PlatformCompanyController::class, 'store']);

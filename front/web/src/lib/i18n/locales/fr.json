@@ -1624,7 +1624,8 @@
     "account": "Mon compte",
     "notFound": "Page non trouvee",
     "travelAgency": "Agence de voyage",
-    "emailTemplates": "E-mails"
+    "emailTemplates": "E-mails",
+    "settings": "Paramètres"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
@@ -1729,6 +1730,37 @@
     "countryCurrency": "Pays / Devise",
     "registeredOn": "Inscrit le",
     "lastActivity": "Derniere Activite"
+    "lastActivity": "Derniere Activite",
+    "features": {
+      "rh": "Ressources Humaines",
+      "finance": "Finance & Gestion",
+      "ai": "Intelligence Artificielle",
+      "cameras": "Surveillance Vidéo",
+      "tracking": "Suivi de Flotte",
+      "planning": "Planning & Équipe",
+      "training": "Centre de Formation",
+      "cabinet": "Placard Numérique",
+      "muhasebe": "Comptabilité (Turquie)",
+      "leo_ai": "Assistant IA Leopardo",
+      "crm": "Relation client (CRM)",
+      "fuel_station": "Stations-service",
+      "edumanager": "Établissement scolaire",
+      "restaurant": "Restauration",
+      "travelagency": "Agence de voyage",
+      "accounting": "Comptabilité",
+      "company_showcase": "Site vitrine"
+    },
+    "tabOverview": "Vue d'ensemble",
+    "tabModules": "Modules & verticales",
+    "tabBilling": "Abonnement & support",
+    "tabSystem": "Système",
+    "tenantFeatures": "Dotation de l'entreprise",
+    "platformCapabilities": "Capacités plateforme (kill switches)",
+    "platformCapabilitiesHint": "Ces interrupteurs ne concernent pas la dotation du client : ils ouvrent ou coupent une capacité pour toute la plateforme.",
+    "verticals": "Verticales & outils de cette entreprise",
+    "openVertical": "Ouvrir",
+    "noVerticalSurface": "Aucune surface admin dédiée",
+    "noVertical": "Aucune verticale activée pour cette entreprise."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -5344,6 +5376,50 @@
       "api_public": "API publique",
       "evaluations": "Évaluations",
       "schema_isolation": "Isolation des données"
+    }
+  },
+  "plans": {
+    "nav": "Offres & tarifs",
+    "title": "Offres & tarifs",
+    "subtitle": "Créer, ajuster et archiver les offres — un changement de prix ne doit plus exiger un déploiement.",
+    "new": "Nouvelle offre",
+    "edit": "Modifier l'offre",
+    "duplicate": "Dupliquer",
+    "archive": "Archiver",
+    "delete": "Supprimer",
+    "active": "Active",
+    "archived": "Archivée",
+    "unlimited": "Illimité",
+    "empty": "Aucune offre",
+    "save": "Enregistrer",
+    "create": "Créer l'offre",
+    "loadError": "Impossible de charger les offres.",
+    "created": "Offre créée.",
+    "updated": "Offre mise à jour.",
+    "duplicated": "Offre dupliquée (archivée).",
+    "archivedDone": "Offre archivée.",
+    "deleted": "Offre supprimée.",
+    "deleteError": "Suppression impossible.",
+    "saveError": "Enregistrement impossible.",
+    "featuresHint": "Cochez les capacités facturables incluses dans cette offre (matrice offre × features).",
+    "deleteConfirm": "Supprimer définitivement cette offre ? Une offre utilisée par un client ne peut pas être supprimée — archivez-la.",
+    "archiveConfirm": "Archiver cette offre ? Elle ne sera plus proposée dans le tunnel de souscription.",
+    "field": {
+      "name": "Nom de l'offre",
+      "priceMonthly": "Prix mensuel (€)",
+      "priceYearly": "Prix annuel (€)",
+      "maxEmployees": "Employés inclus",
+      "trialDays": "Jours d'essai",
+      "features": "Features incluses",
+      "isActive": "Offre publiée"
+    },
+    "col": {
+      "name": "Offre",
+      "priceMonthly": "Mensuel",
+      "priceYearly": "Annuel",
+      "maxEmployees": "Employés",
+      "features": "Features",
+      "state": "État"
     }
   }
 }
