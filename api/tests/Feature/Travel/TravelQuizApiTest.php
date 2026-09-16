@@ -304,7 +304,6 @@ class TravelQuizApiTest extends TestCase
         $this->getJson("/api/v1/travel/quizzes/{$quiz->id}/questions")->assertStatus(403);
     }
 
-
     private function principal(Company $company): Employee
     {
         /** @var Employee $employee */
@@ -318,7 +317,6 @@ class TravelQuizApiTest extends TestCase
 
         return $employee;
     }
-
 
     private function activateTravel(Company $company): void
     {
@@ -356,7 +354,6 @@ class TravelQuizApiTest extends TestCase
         });
     }
 
-
     public function test_correct_answer_is_never_stored_in_clear(): void
     {
         /** @var Company $company */
@@ -375,7 +372,6 @@ class TravelQuizApiTest extends TestCase
             ->assertJsonPath('data.questions.0.has_correct_answer', true)
             ->assertJsonMissingPath('data.questions.0.correct_answer');
     }
-
 
     public function test_participation_is_unique_per_contact(): void
     {
@@ -406,7 +402,6 @@ class TravelQuizApiTest extends TestCase
             'answers' => $answers,
         ])->assertStatus(422);
     }
-
 
     public function test_score_is_consistent_with_wrong_answers(): void
     {

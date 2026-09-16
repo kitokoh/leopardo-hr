@@ -3138,7 +3138,6 @@ trait CreatesMvpSchema
             });
         }
 
-
         // ── BC-19 DEVICE (#7427) — camera_events / camera_alerts ────────────────────
         // Parité fixture ↔ migrations tenant (garde #5443) : la migration
         // `2026_09_15_000002_7427_create_camera_event_alert_tables.php` crée ces

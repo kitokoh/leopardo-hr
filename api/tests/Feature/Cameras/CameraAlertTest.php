@@ -110,7 +110,6 @@ class CameraAlertTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $overrides
-     *
      * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\JsonResponse>
      */
     private function ingest(array $overrides = [], string $secret = self::SECRET): \Illuminate\Testing\TestResponse

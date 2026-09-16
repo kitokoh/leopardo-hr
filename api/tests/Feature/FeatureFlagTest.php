@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Feature\Infrastructure\Services\FeatureFlag;
+use App\Core\Tenant\Domain\Models\Company;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -118,4 +118,3 @@ class FeatureFlagTest extends TestCase
         ];
     }
 }
-
