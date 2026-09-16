@@ -269,6 +269,13 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   // d'apiClient forcerait une redirection vers /auth/login, hors sujet ici.
   const [hasSession, setHasSession] = useState(false)
   useEffect(() => {
+    // Un environnement sans `fetch` (jsdom des tests unitaires, très vieux
+    // navigateur) ne doit pas casser le rendu de la vitrine : l'appel est
+    // SYNCHRONE au moment où il est évalué, donc un `ReferenceError` ici
+    // remonte à React et fait échouer le rendu — `.catch()` ne rattrape que
+    // les rejets asynchrones (même famille de défaut que `persistEvent`,
+    // cf. CHANGELOG #7479). La navigation reste en mode anonyme.
+    if (typeof fetch !== 'function') return undefined
     let active = true
     fetch('/api/v1/auth/me', { headers: { Accept: 'application/json' } })
       .then((res) => {
