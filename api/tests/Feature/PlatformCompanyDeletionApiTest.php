@@ -154,16 +154,50 @@ class PlatformCompanyDeletionApiTest extends TestCase
             'La purge doit laisser zéro ligne tenant derrière elle.'
         );
 
-        // La preuve survit à la purge.
+        // La preuve survit à la purge — y compris la JUSTIFICATION opérateur
+        // (reliquat #7475 : `reason` était validée puis jetée).
         $this->assertDatabaseHas('tenant_deletion_audits', [
             'company_id' => $company->id,
             'mode' => TenantDeletionService::MODE_PURGE,
             'status' => 'completed',
             'actor_email' => $actor->email,
+            'reason' => 'Doublon de test',
         ]);
 
         $this->getJson("/api/v1/platform/companies/{$company->id}/deletion-audits")
             ->assertNotFound();
+    }
+
+    public function test_dedicated_schema_tenant_is_refused_instead_of_deleting_nothing(): void
+    {
+        // Reliquat #7475 : le balayage ne couvre que le schéma `shared_tenants`.
+        // Un tenant historique porté par un schéma DÉDIÉ serait déclaré
+        // « purgé » sans qu'une seule ligne ne soit supprimée — un succès muet.
+        // On refuse explicitement, et la tentative est auditée avec sa raison.
+        $company = $this->suspendedCompany();
+
+        // Ligne historique : la création est verrouillée depuis #7220
+        // (`Company::booted()`), mais des lignes existantes portent encore ce mode.
+        DB::table('public.companies')->where('id', $company->id)->update(['tenancy_type' => 'schema']);
+        $company->refresh();
+
+        $actor = $this->superAdmin();
+        Sanctum::actingAs($actor, ['*'], 'super_admin_api');
+
+        $this->deleteJson("/api/v1/platform/companies/{$company->id}", [
+            'confirm_name' => $company->name,
+            'mode' => TenantDeletionService::MODE_PURGE,
+            'reason' => 'Tenant historique en schéma dédié',
+        ])
+            ->assertStatus(409)
+            ->assertJsonPath('error', 'TENANT_DELETION_UNSUPPORTED_TENANCY');
+
+        $this->assertDatabaseHas('companies', ['id' => $company->id]);
+        $this->assertDatabaseHas('tenant_deletion_audits', [
+            'company_id' => $company->id,
+            'status' => 'refused',
+            'reason' => 'Tenant historique en schéma dédié',
+        ]);
     }
 
     public function test_history_exposes_refused_operations(): void
