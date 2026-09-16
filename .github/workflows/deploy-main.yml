@@ -161,18 +161,23 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const sha = `${{ steps.context.outputs.sha }}`;
+            // Issue #7528 — `web_changed` doit refléter ce qui DÉCLENCHE
+            // réellement « Web CI - Leopardo Admin » (le workflow dont le gate
+            // exige la conclusion), donc les `paths:` de web-ci.yml — et non la
+            // liste `web` de .github/paths-filters.yml, volontairement plus
+            // large (elle ajoute deploy-main.yml et deux docs) pour `tests.yml`.
+            // Constat `d7e11294` : un merge qui ne touchait que des fichiers CI
+            // donnait web_changed=true, aucun run Web CI ne pouvait exister, et
+            // le gate concluait « no-runs » → rouge par construction.
             const isWebPath = (p) =>
               p.startsWith('front/admin-dashboard/') ||
-              p === '.github/workflows/web-ci.yml' ||
-              p === '.github/workflows/deploy-main.yml' ||
-              p === 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md' ||
-              p === 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md';
-            // Issue #7511 — parité STRICTE avec le filtre `api` de
-            // .github/paths-filters.yml (celui qui décide si `tests.yml` est
-            // déclenché). Sans cette mesure, le gate ne pouvait pas distinguer
-            // « aucun run parce que rien d'API n'a changé » (décision : rien à
-            // déployer) de « aucun run alors que l'API a changé » (indécision
-            // réelle) et échouait dans les deux cas.
+              p === '.github/workflows/web-ci.yml';
+            // Issue #7511 — parité STRICTE avec les `paths:` de `tests.yml`
+            // (identiques au filtre `api` de .github/paths-filters.yml) : sans
+            // cette mesure, le gate ne pouvait pas distinguer « aucun run parce
+            // que rien d'API n'a changé » (décision : rien à déployer) de
+            // « aucun run alors que l'API a changé » (indécision réelle) et
+            // échouait dans les deux cas.
             const isApiPath = (p) =>
               p.startsWith('api/') ||
               p === '.github/workflows/tests.yml' ||

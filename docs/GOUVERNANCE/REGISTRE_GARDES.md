@@ -82,7 +82,7 @@
 | `check-render-env-parity.sh` | parité env Render dev/prod | rapporte |
 | `check-public-links.sh` | smoke des URLs publiques `live` (P03) | blocage local/CI future |
 | `verify-deploy-workflows` (action), `check-workflow-paths.sh` | workflows de déploiement cohérents | bloque |
-| `check-deploy-gate-outcome.sh` (+ auto-test, workflow `actionlint.yml`) | verdict du gate de déploiement : `api_changed` mesuré avant le gate, « aucun run requis » qualifié `not-required` (et non `no-runs`), indécision réelle toujours rouge, parité stricte des filtres `api`/`web` entre `paths-filters.yml` et `deploy-main.yml` — issue #7511 | bloque |
+| `check-deploy-gate-outcome.sh` (+ auto-test, workflow `actionlint.yml`) | verdict du gate de déploiement : `api_changed` mesuré avant le gate, « aucun run requis » qualifié `not-required` (et non `no-runs`), indécision réelle toujours rouge, et **le gate n'exige que ce que `tests.yml`/`web-ci.yml` peuvent produire** (union des prédicats ⊇ leurs `paths:`, aucun chemin venu d'ailleurs) — issues #7511 et #7528 | bloque |
 | `check-android-sdk-packages.sh` (+ auto-test, `actionlint.yml` + action `setup-flutter-android`) | paquets Android SDK demandés par la CI mobile : refuse un paquet hérité/inexistant dans cmdline-tools 20.0 (`tools`) — issue #7519 | bloque |
 | smokes : `smoke-post-deploy.sh`, `launch-observability-smoke.sh`, `launch-api-profile-smoke.ps1` | santé post-déploiement | manuel |
 
