@@ -50,12 +50,16 @@
       </template>
       <template #row-actions="{ row }">
         <div class="flex justify-end gap-2">
-          <button class="text-sm font-medium text-indigo-600 hover:text-indigo-800" @click="centerOnVehicle(row)">
-            Localiser
-          </button>
-          <button class="text-sm font-medium text-gray-600 hover:text-gray-800" @click="viewVehicle(row.id)">
-            Detail
-          </button>
+          <RowActionButton
+            :icon="MapPinIcon"
+            :label="$t('fleet.locate', 'Localiser')"
+            @click="centerOnVehicle(row)"
+          />
+          <RowActionButton
+            :icon="EyeIcon"
+            :label="$t('fleet.detail', 'Détail')"
+            @click="viewVehicle(row.id)"
+          />
         </div>
       </template>
     </DataTable>
@@ -91,6 +95,8 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import VehicleDetailModal from '@/components/fleet/VehicleDetailModal.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
+import { MapPinIcon, EyeIcon } from '@heroicons/vue/24/outline'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 
