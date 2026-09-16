@@ -1,67 +1,9 @@
-# Tables déclarées par plusieurs migrations — inventaire (issue #7452)
-
-> Généré par `python3 dev-hub/tools/check-duplicate-schema-create.py --audit`.
-> Ne pas éditer à la main : régénérer.
-
-## Lecture
-
-Un `Schema::create` est gardé par `if (! schemaTableExists('<table>'))`.
-**La première migration exécutée gagne** ; toutes les suivantes sont des no-op
-silencieux. Quand deux générations divergent, le code et les tests écrits contre la
-dernière échouent en `column "x" does not exist` — souvent masqué par une cascade
-`25P02` (« current transaction is aborted »), d'où des suites entières rouges sans
-cause lisible : 223 échecs de `tests/Feature/Travel` (#7452), dérive EduManager
-(#7410), référentiel d'annonces (#7417), fidélité voyage (#7445).
-
-## Traitement
-
-- Pour **rattraper** une colonne attendue par le code : migration dédiée
-  `Schema::table` **idempotente** (`schemaHasColumn`), jamais un second
-  `Schema::create` — la garde `.github/workflows/migration-duplication-guard.yml`
-  refuse désormais toute nouvelle déclaration concurrente.
-- Pour **consolider** : une table = une migration (transformer la génération perdante
-  en `ALTER TABLE` idempotents ou la retirer), module par module.
-- Les en-têtes ci-dessous indiquent, pour chaque table, les migrations concurrentes et
-  les colonnes **absentes du schéma réel** (donc à rattraper côté base).
-
-# Inventaire des tables déclarées plusieurs fois — 40 tables dupliquées, 17 divergentes
+# Inventaire des tables déclarées plusieurs fois — 24 tables dupliquées, 17 divergentes
 
 ## `audit_logs` — 2× (DIVERGENTE)
   - api/database/migrations/tenant/2026_04_01_000104_create_payrolls_tasks_evaluations_notifications.php [action|changes|company_id|created_at|employee_id|id|ip|target_id|target_type]
   - api/database/migrations/tenant/2026_05_10_000001_create_audit_logs_table.php [action|auditable_id|auditable_type|company_id|created_at|ip_address|metadata|new_values|old_values|user_agent|user_id]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : auditable_id, auditable_type, ip_address, metadata, new_values, old_values, user_agent, user_id
-
-## `delivery_cod_settlements` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000800_6283_create_delivery_tables.php [accounting_ref|collected_minor|commission_minor|company_id|driver_id|expected_minor|idempotency_key|route_id|settled_at|status]
-  - api/database/migrations/tenant/2026_08_30_000802_6283_create_delivery_tables.php [accounting_ref|collected_minor|commission_minor|company_id|driver_id|expected_minor|idempotency_key|route_id|settled_at|status]
-
-## `delivery_deliveries` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000800_6283_create_delivery_tables.php [cod_amount_minor|company_id|declared_value_minor|delivered_at|dropoff_address|dropoff_contact|dropoff_phone|failed_at|idempotency_key|pickup_address|pickup_contact|reference|returned_at|source|source_reference|status|type|volume_cm3|weight_grams|window_from|window_to]
-  - api/database/migrations/tenant/2026_08_30_000802_6283_create_delivery_tables.php [cod_amount_minor|company_id|declared_value_minor|delivered_at|dropoff_address|dropoff_contact|dropoff_phone|failed_at|idempotency_key|pickup_address|pickup_contact|reference|returned_at|source|source_reference|status|type|volume_cm3|weight_grams|window_from|window_to]
-
-## `delivery_events` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000800_6283_create_delivery_tables.php [company_id|delivery_id|event_at|idempotency_key|latitude|longitude|origin|payload|type]
-  - api/database/migrations/tenant/2026_08_30_000802_6283_create_delivery_tables.php [company_id|delivery_id|event_at|idempotency_key|latitude|longitude|origin|payload|type]
-
-## `delivery_notifications` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000806_6290_create_delivery_notifications.php [attempts|channel|company_id|delivery_id|event_type|payload|recipient_phone|sent_at|status|template_key]
-  - api/database/migrations/tenant/2026_08_30_001100_6290_create_delivery_notifications.php [attempts|channel|company_id|delivery_id|event_type|payload|recipient_phone|sent_at|status|template_key]
-
-## `delivery_recipient_opt_outs` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000806_6290_create_delivery_notifications.php [company_id|phone]
-  - api/database/migrations/tenant/2026_08_30_001100_6290_create_delivery_notifications.php [company_id|phone]
-
-## `delivery_routes` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000800_6283_create_delivery_tables.php [closed_at|cod_collected_minor|company_id|delivered_count|deliveries_count|driver_id|failed_count|idempotency_key|route_date|status|vehicle_code|zone]
-  - api/database/migrations/tenant/2026_08_30_000802_6283_create_delivery_tables.php [closed_at|cod_collected_minor|company_id|delivered_count|deliveries_count|driver_id|failed_count|idempotency_key|route_date|status|vehicle_code|zone]
-
-## `delivery_stops` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000800_6283_create_delivery_tables.php [address|arrived_at|company_id|contact|delivered_at|delivery_id|eta|etd|phone|proof_id|route_id|sort_order|status]
-  - api/database/migrations/tenant/2026_08_30_000802_6283_create_delivery_tables.php [address|arrived_at|company_id|contact|delivered_at|delivery_id|eta|etd|phone|proof_id|route_id|sort_order|status]
-
-## `delivery_tracking_shares` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000804_6288_create_delivery_tracking_shares.php [company_id|delivery_id|expires_at|share_token]
-  - api/database/migrations/tenant/2026_08_30_000900_6288_create_delivery_tracking_shares.php [company_id|delivery_id|expires_at|share_token]
 
 ## `edge_licenses` — 2× (identique)
   - api/database/migrations/edge/2026_06_29_000001_create_edge_sqlite_tables.php [allowed_features|company_id|edge_node_id|expires_at|id|issued_at|last_validated_at|license_key|max_employees|signed_payload|validation_status]
@@ -73,125 +15,80 @@ cause lisible : 223 échecs de `tests/Feature/Travel` (#7452), dérive EduManage
   - api/database/migrations/tenant/2026_06_30_000001_create_edge_nodes_table.php [alert_muted|company_id|ip_address|last_alert_sent_at|last_seen_at|license_expires_at|license_valid|name|node_id|pending_count|revoked_at|status|sync_requested_at|version]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : alert_muted, ip_address, last_alert_sent_at, license_valid, node_id, pending_count, revoked_at, sync_requested_at, version
 
-## `edu_academic_years` — 4× (DIVERGENTE)
+## `edu_academic_years` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000201_5819_create_edu_academic_years_table.php [company_id|end_date|name|start_date|status]
   - api/database/migrations/tenant/2026_08_30_000705_5819_create_edu_year_class_subject_tables.php [company_id|created_by|end_date|name|notes|start_date|status]
   - api/database/migrations/tenant/2026_08_30_001511_5819_create_edu_year_class_subject_tables.php [company_id|created_by|end_date|name|notes|start_date|status]
-  - api/database/migrations/tenant/2026_08_31_000205_5819_create_edu_year_class_subject_tables.php [company_id|created_by|end_date|name|notes|start_date|status]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : created_by, notes
 
-## `edu_admissions` — 4× (DIVERGENTE)
+## `edu_admissions` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000301_5820_create_edu_admissions_table.php [academic_year_id|admission_number|applicant_name|company_id|consent_at|consent_marketing|contact_reference|decided_at|decided_by|metadata|status|student_id|submitted_at]
   - api/database/migrations/tenant/2026_08_30_000706_5820_create_edu_admissions_table.php [academic_year_id|admission_number|applicant_birth_date|applicant_email|applicant_first_name|applicant_last_name|applicant_phone|applied_at|campus_id|company_id|consent_contact|consented_at|converted_at|created_by|crm_contact_id|external_id|notes|source|status|student_id]
   - api/database/migrations/tenant/2026_08_30_001512_5820_create_edu_admissions_table.php [academic_year_id|admission_number|applicant_birth_date|applicant_email|applicant_first_name|applicant_last_name|applicant_phone|applied_at|campus_id|company_id|consent_contact|consented_at|converted_at|created_by|crm_contact_id|external_id|notes|source|status|student_id]
-  - api/database/migrations/tenant/2026_08_31_000206_5820_create_edu_admissions_table.php [academic_year_id|admission_number|applicant_birth_date|applicant_email|applicant_first_name|applicant_last_name|applicant_phone|applied_at|campus_id|company_id|consent_contact|consented_at|converted_at|created_by|crm_contact_id|external_id|notes|source|status|student_id]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : applicant_birth_date, applicant_email, applicant_first_name, applicant_last_name, applicant_phone, applied_at, campus_id, consent_contact, consented_at, converted_at, created_by, crm_contact_id, external_id, notes, source
 
-## `edu_assessments` — 4× (DIVERGENTE)
+## `edu_assessments` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000409_5823_create_edu_assessment_tables.php [academic_year_id|assessment_date|class_id|coefficient|company_id|created_by|max_score|published_at|subject_id|title|type]
   - api/database/migrations/tenant/2026_08_30_000601_5823_create_edu_assessments_table.php [academic_year_id|assessment_date|assessment_type|class_id|coefficient|company_id|created_by|max_score|published_at|status|subject_id|title]
   - api/database/migrations/tenant/2026_08_30_000709_5823_create_edu_assessment_tables.php [academic_year_id|assessment_date|class_id|coefficient|company_id|created_by|max_score|published_at|subject_id|title|type]
-  - api/database/migrations/tenant/2026_08_31_000209_5823_create_edu_assessment_tables.php [academic_year_id|assessment_date|class_id|coefficient|company_id|created_by|max_score|published_at|subject_id|title|type]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : assessment_type, status
 
-## `edu_attendance_corrections` — 4× (DIVERGENTE)
+## `edu_attendance_corrections` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000402_5821_create_edu_attendance_corrections_table.php [attendance_record_id|company_id|corrected_at|corrected_by|new_status|previous_status|reason]
   - api/database/migrations/tenant/2026_08_30_000707_5821_create_edu_attendance_tables.php [attendance_id|company_id|corrected_by|new_status|previous_status|reason]
   - api/database/migrations/tenant/2026_08_30_001513_5821_create_edu_attendance_tables.php [attendance_id|company_id|corrected_by|new_status|previous_status|reason]
-  - api/database/migrations/tenant/2026_08_31_000207_5821_create_edu_attendance_tables.php [attendance_id|company_id|corrected_by|new_status|previous_status|reason]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : attendance_id
 
-## `edu_attendances` — 3× (identique)
+## `edu_attendances` — 2× (identique)
   - api/database/migrations/tenant/2026_08_30_000707_5821_create_edu_attendance_tables.php [attendance_date|class_id|company_id|justification|reason|recorded_by|status|student_id]
   - api/database/migrations/tenant/2026_08_30_001513_5821_create_edu_attendance_tables.php [attendance_date|class_id|company_id|justification|reason|recorded_by|status|student_id]
-  - api/database/migrations/tenant/2026_08_31_000207_5821_create_edu_attendance_tables.php [attendance_date|class_id|company_id|justification|reason|recorded_by|status|student_id]
 
-## `edu_campuses` — 3× (identique)
-  - api/database/migrations/tenant/2026_08_30_000101_5818_create_edu_campuses_table.php [address|code|company_id|name|status|timezone]
-  - api/database/migrations/tenant/2026_08_30_000701_5818_create_edu_campuses_table.php [address|code|company_id|name|status|timezone]
-  - api/database/migrations/tenant/2026_08_31_000201_5818_create_edu_campuses_table.php [address|code|company_id|name|status|timezone]
-
-## `edu_classes` — 4× (DIVERGENTE)
+## `edu_classes` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000202_5819_create_edu_classes_table.php [academic_year_id|capacity|company_id|grade_level|name|status]
   - api/database/migrations/tenant/2026_08_30_000705_5819_create_edu_year_class_subject_tables.php [academic_year_id|campus_id|capacity|code|company_id|created_by|level|name|status|teacher_id]
   - api/database/migrations/tenant/2026_08_30_001511_5819_create_edu_year_class_subject_tables.php [academic_year_id|campus_id|capacity|code|company_id|created_by|level|name|status|teacher_id]
-  - api/database/migrations/tenant/2026_08_31_000205_5819_create_edu_year_class_subject_tables.php [academic_year_id|campus_id|capacity|code|company_id|created_by|level|name|status|teacher_id]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : campus_id, code, created_by, level, teacher_id
 
-## `edu_course_slots` — 3× (identique)
-  - api/database/migrations/tenant/2026_08_30_000708_5822_create_edu_course_slots_table.php [academic_year_id|class_id|company_id|created_by|day_of_week|end_time|room|start_time|status|subject_id|teacher_id]
-  - api/database/migrations/tenant/2026_08_30_001514_5822_create_edu_course_slots_table.php [academic_year_id|class_id|company_id|created_by|day_of_week|end_time|room|start_time|status|subject_id|teacher_id]
-  - api/database/migrations/tenant/2026_08_31_000208_5822_create_edu_course_slots_table.php [academic_year_id|class_id|company_id|created_by|day_of_week|end_time|room|start_time|status|subject_id|teacher_id]
-
-## `edu_exports` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000711_5833_create_edu_import_tables.php [company_id|exported_by|filename|kind|record_count]
-  - api/database/migrations/tenant/2026_08_31_000211_5833_create_edu_import_tables.php [company_id|exported_by|filename|kind|record_count]
-
-## `edu_fees` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000712_5832_create_edu_fees_table.php [admission_id|amount|company_id|created_by|due_date|external_reference|label|paid_at|payment_reference|status|student_id]
-  - api/database/migrations/tenant/2026_08_31_000212_5832_create_edu_fees_table.php [admission_id|amount|company_id|created_by|due_date|external_reference|label|paid_at|payment_reference|status|student_id]
-
-## `edu_grade_versions` — 4× (DIVERGENTE)
+## `edu_grade_versions` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000409_5823_create_edu_assessment_tables.php [changed_by|comment|company_id|grade_id|score|version]
   - api/database/migrations/tenant/2026_08_30_000603_5823_create_edu_grade_versions_table.php [changed_at|changed_by|company_id|grade_id|new_score|new_status|previous_score|previous_status|reason]
   - api/database/migrations/tenant/2026_08_30_000709_5823_create_edu_assessment_tables.php [changed_by|comment|company_id|grade_id|score|version]
-  - api/database/migrations/tenant/2026_08_31_000209_5823_create_edu_assessment_tables.php [changed_by|comment|company_id|grade_id|score|version]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : changed_at, new_score, new_status, previous_score, previous_status, reason
 
-## `edu_grades` — 4× (DIVERGENTE)
+## `edu_grades` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000409_5823_create_edu_assessment_tables.php [assessment_id|comment|company_id|graded_by|published_at|score|status|student_id|version]
   - api/database/migrations/tenant/2026_08_30_000602_5823_create_edu_grades_table.php [assessment_id|comment|company_id|graded_at|graded_by|score|status|student_id]
   - api/database/migrations/tenant/2026_08_30_000709_5823_create_edu_assessment_tables.php [assessment_id|comment|company_id|graded_by|published_at|score|status|student_id|version]
-  - api/database/migrations/tenant/2026_08_31_000209_5823_create_edu_assessment_tables.php [assessment_id|comment|company_id|graded_by|published_at|score|status|student_id|version]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : graded_at
 
-## `edu_guardian_access_tokens` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000713_5829_create_edu_guardian_access_tokens_table.php [company_id|created_by|expires_at|guardian_id|token_hash|used_at]
-  - api/database/migrations/tenant/2026_08_31_000213_5829_create_edu_guardian_access_tokens_table.php [company_id|created_by|expires_at|guardian_id|token_hash|used_at]
-
-## `edu_guardians` — 3× (identique)
+## `edu_guardians` — 2× (identique)
   - api/database/migrations/tenant/2026_08_30_000103_5818_create_edu_guardians_table.php [company_id|contact_reference|employee_id|first_name|last_name|relationship_code|verified_at]
   - api/database/migrations/tenant/2026_08_30_000703_5818_create_edu_guardians_table.php [company_id|contact_reference|employee_id|first_name|last_name|relationship_code|verified_at]
-  - api/database/migrations/tenant/2026_08_31_000203_5818_create_edu_guardians_table.php [company_id|contact_reference|employee_id|first_name|last_name|relationship_code|verified_at]
 
-## `edu_imports` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_000711_5833_create_edu_import_tables.php [columns|committed_at|committed_by|company_id|created_by|entity_type|error_rows|errors|filename|preview_data|raw_rows|status|total_rows|valid_rows]
-  - api/database/migrations/tenant/2026_08_31_000211_5833_create_edu_import_tables.php [columns|committed_at|committed_by|company_id|created_by|entity_type|error_rows|errors|filename|preview_data|raw_rows|status|total_rows|valid_rows]
-
-## `edu_report_card_lines` — 3× (identique)
+## `edu_report_card_lines` — 2× (identique)
   - api/database/migrations/tenant/2026_08_30_000410_5824_create_edu_report_card_tables.php [assessment_count|average|coefficient|company_id|report_card_id|subject_id]
   - api/database/migrations/tenant/2026_08_30_000710_5824_create_edu_report_card_tables.php [assessment_count|average|coefficient|company_id|report_card_id|subject_id]
-  - api/database/migrations/tenant/2026_08_31_000210_5824_create_edu_report_card_tables.php [assessment_count|average|coefficient|company_id|report_card_id|subject_id]
 
-## `edu_report_cards` — 4× (DIVERGENTE)
+## `edu_report_cards` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000410_5824_create_edu_report_card_tables.php [academic_year_id|company_id|generated_at|period|published_at|status|student_id|validated_at|validated_by]
   - api/database/migrations/tenant/2026_08_30_000710_5824_create_edu_report_card_tables.php [academic_year_id|company_id|generated_at|period|published_at|status|student_id|validated_at|validated_by]
   - api/database/migrations/tenant/2026_08_30_001520_5824_create_edu_report_cards_table.php [academic_year_id|average_score|class_id|company_id|created_by|data|period_end|period_label|period_start|published_at|status|student_id|validated_at|validated_by]
-  - api/database/migrations/tenant/2026_08_31_000210_5824_create_edu_report_card_tables.php [academic_year_id|company_id|generated_at|period|published_at|status|student_id|validated_at|validated_by]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : average_score, class_id, created_by, data, period_end, period_label, period_start
 
-## `edu_student_guardians` — 3× (identique)
-  - api/database/migrations/tenant/2026_08_30_000104_5818_create_edu_student_guardians_table.php [can_receive_notifications|can_view_grades|company_id|guardian_id|relationship_code|student_id]
-  - api/database/migrations/tenant/2026_08_30_000704_5818_create_edu_student_guardians_table.php [can_receive_notifications|can_view_grades|company_id|guardian_id|relationship_code|student_id]
-  - api/database/migrations/tenant/2026_08_31_000204_5818_create_edu_student_guardians_table.php [can_receive_notifications|can_view_grades|company_id|guardian_id|relationship_code|student_id]
-
-## `edu_students` — 3× (identique)
+## `edu_students` — 2× (identique)
   - api/database/migrations/tenant/2026_08_30_000102_5818_create_edu_students_table.php [birth_date_encrypted|company_id|display_name|metadata|status|student_number]
   - api/database/migrations/tenant/2026_08_30_000702_5818_create_edu_students_table.php [birth_date_encrypted|company_id|display_name|metadata|status|student_number]
-  - api/database/migrations/tenant/2026_08_31_000202_5818_create_edu_students_table.php [birth_date_encrypted|company_id|display_name|metadata|status|student_number]
 
-## `edu_subjects` — 4× (DIVERGENTE)
+## `edu_subjects` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000203_5819_create_edu_subjects_table.php [code|company_id|name|status]
   - api/database/migrations/tenant/2026_08_30_000705_5819_create_edu_year_class_subject_tables.php [campus_id|code|company_id|created_by|default_coefficient|name|status]
   - api/database/migrations/tenant/2026_08_30_001511_5819_create_edu_year_class_subject_tables.php [campus_id|code|company_id|created_by|default_coefficient|name|status]
-  - api/database/migrations/tenant/2026_08_31_000205_5819_create_edu_year_class_subject_tables.php [campus_id|code|company_id|created_by|default_coefficient|name|status]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : campus_id, created_by, default_coefficient
 
-## `edu_teacher_subjects` — 4× (DIVERGENTE)
+## `edu_teacher_subjects` — 3× (DIVERGENTE)
   - api/database/migrations/tenant/2026_08_30_000205_5819_create_edu_teacher_subjects_table.php [academic_year_id|company_id|subject_id|teacher_id]
   - api/database/migrations/tenant/2026_08_30_000705_5819_create_edu_year_class_subject_tables.php [class_id|company_id|created_by|status|subject_id|teacher_id]
   - api/database/migrations/tenant/2026_08_30_001511_5819_create_edu_year_class_subject_tables.php [class_id|company_id|created_by|status|subject_id|teacher_id]
-  - api/database/migrations/tenant/2026_08_31_000205_5819_create_edu_year_class_subject_tables.php [class_id|company_id|created_by|status|subject_id|teacher_id]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : class_id, created_by, status
 
 ## `fuel_incidents` — 2× (DIVERGENTE)
@@ -219,10 +116,6 @@ cause lisible : 223 échecs de `tests/Feature/Travel` (#7452), dérive EduManage
   - api/database/migrations/tenant/2026_08_30_001541_5811_create_fuel_report_snapshots_table.php [company_id|created_at|generated_at|generated_by|payload|period_end|period_start|snapshot_type|station_id|updated_at]
   ⚠️ colonnes absentes du schéma réel (1ʳᵉ migration gagnante) : created_at, generated_at, generated_by, period_end, period_start, snapshot_type, updated_at
 
-## `restaurant_public_shop_tokens` — 2× (identique)
-  - api/database/migrations/tenant/2026_08_30_001535_6226_create_restaurant_public_shop_tokens_table.php [active|company_id|last_used_at|name|token_hash]
-  - api/database/migrations/tenant/2026_08_30_001538_6226_create_restaurant_public_shop_tokens_table.php [active|company_id|last_used_at|name|token_hash]
-
 ## `sync_logs` — 2× (identique)
   - api/database/migrations/edge/2026_06_29_000001_create_edge_sqlite_tables.php [conflicts_detected|conflicts_resolved|direction|edge_node_id|error_message|finished_at|id|records_received|records_sent|started_at|status|summary]
   - api/database/migrations/tenant/2026_06_29_000001_create_edge_sync_tables.php [conflicts_detected|conflicts_resolved|direction|edge_node_id|error_message|finished_at|id|records_received|records_sent|started_at|status|summary]
@@ -230,3 +123,4 @@ cause lisible : 223 échecs de `tests/Feature/Travel` (#7452), dérive EduManage
 ## `sync_queue` — 2× (identique)
   - api/database/migrations/edge/2026_06_29_000001_create_edge_sqlite_tables.php [attempt_count|conflict_note|conflict_resolution|edge_node_id|entity_id|entity_type|id|operation|payload|status|synced_at]
   - api/database/migrations/tenant/2026_06_29_000001_create_edge_sync_tables.php [attempt_count|conflict_note|conflict_resolution|edge_node_id|entity_id|entity_type|id|operation|payload|status|synced_at]
+
