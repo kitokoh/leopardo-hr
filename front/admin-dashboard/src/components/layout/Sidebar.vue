@@ -176,22 +176,22 @@ import {
   ChatBubbleLeftRightIcon,
   CogIcon,
   ArrowRightOnRectangleIcon,
-  AcademicCapIcon,
-  TruckIcon,
   SparklesIcon,
-  BoltIcon,
   LinkIcon,
   ArrowDownTrayIcon,
   FunnelIcon,
   LifebuoyIcon,
   ServerIcon,
   ArrowTrendingUpIcon,
-  MegaphoneIcon
+  MegaphoneIcon,
+  TagIcon,
+  CalendarIcon,
+  ScaleIcon,
+  BanknotesIcon
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
-import { useTravelStore } from '@/stores/travel'
 
 // #7305 — ce composant a une racine FRAGMENTAIRE (l'overlay mobile
 // `<transition>` ET la sidebar sont deux nœuds frères). Vue ne peut donc pas
@@ -219,22 +219,28 @@ const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
-const travelStore = useTravelStore()
 const route = useRoute()
 
 /**
- * #7329 — Les écrans des modules d'une entreprise cliente (formations, flotte,
- * stations-service, agence de voyage) n'étaient que des entrées de PREMIER
- * niveau dans ce menu, alors qu'ils ne s'adressent pas à la plateforme mais au
- * périmètre d'une entreprise cliente. Ils sont désormais regroupés sous une
- * section « Modules des entreprises clientes », rattachée à l'entrée
- * « Entreprises ».
+ * #7329 / #7429 — Les écrans des modules d'une entreprise cliente (formations,
+ * flotte, stations-service, agence de voyage) étaient des entrées de PREMIER
+ * niveau : on pouvait ouvrir « Stations-service » sans savoir DE QUELLE
+ * ENTREPRISE on parlait (retour propriétaire du 2026-09-14).
  *
- * La section est repliable mais OUVERTE par défaut : les entrées restent
- * atteignables en un clic (et visibles dans l'arbre d'accessibilité, ce dont
- * dépendent les specs e2e travel-navigation / sidebar-unique-entries).
+ * Décision (#7429) : **aucune verticale à la racine**. Le métier se pilote
+ * depuis la fiche de l'entreprise concernée — onglet « Verticales & modules »
+ * de `CompanyDetailView`, dont les liens portent le contexte (`?company=<id>`),
+ * et onglet « Modules » où l'activation se fait par feature flag.
+ *
+ * Le groupe « Paramètres » (#7430) regroupe tout le paramétrage plateforme :
+ * offres & tarifs, assistant IA, modèles d'e-mails, webhooks, OAuth marketing,
+ * paramétrage paie et comptable. La racine garde l'usage (Chat IA) et la
+ * supervision.
+ *
+ * Le groupe est repliable mais OUVERT par défaut : un repli par défaut
+ * masquerait des écrans existants (régression d'accessibilité).
  */
-const CLIENT_MODULES_GROUP = 'clientModules'
+const SETTINGS_GROUP = 'settings'
 const OPEN_GROUPS_KEY = 'admin.nav.openGroups'
 
 function readOpenGroups() {
@@ -250,7 +256,7 @@ function readOpenGroups() {
 
 // Défaut = ouvert : une section repliée par défaut masquerait des écrans
 // existants (régression d'accessibilité et de discoverabilité).
-const openGroups = ref({ [CLIENT_MODULES_GROUP]: true, ...(readOpenGroups() || {}) })
+const openGroups = ref({ [SETTINGS_GROUP]: true, ...(readOpenGroups() || {}) })
 
 function isGroupOpen(group) {
   if (!group) return true
@@ -266,33 +272,6 @@ function toggleGroup(group) {
     /* stockage indisponible : l'état reste en mémoire */
   }
 }
-
-/**
- * TRAVEL-601 (#6078) — l'entrée « Agence de voyage » n'est proposée que si le
- * flag `travelagency` est ACTIF pour le contexte courant (sondé via le contrat
- * réel GET /travel/ping : 200 = actif, 403 FEATURE_NOT_ENABLED = absent,
- * 401 = hors contexte tenant). Tant que la sonde n'a pas répondu (isReady
- * false) l'entrée reste masquée — elle apparaît uniquement sur 200, et les
- * écrans /travel gèrent eux-mêmes les états explicites (TravelGate).
- */
-let lastProbedUserEmail = null
-watch(
-  () => authStore.user,
-  (user) => {
-    if (!user) {
-      travelStore.reset()
-      lastProbedUserEmail = null
-      return
-    }
-    // Reprobe quand l'identité change (tenant/flag différents par utilisateur).
-    const email = user.email ?? user.id ?? ''
-    if (email !== lastProbedUserEmail) {
-      lastProbedUserEmail = email
-      travelStore.checkFlag(true)
-    }
-  },
-  { immediate: true }
-)
 
 /**
  * Comptabilité — RBAC backend (api.manager:comptable,principal) : le menu
@@ -339,55 +318,25 @@ const navigation = computed(() => [
     path: '/companies',
     icon: BuildingOfficeIcon
   },
-  // #7329 — section des modules d'entreprise cliente : ces écrans ne
-  // s'adressent pas à la plateforme mais au périmètre d'un client.
-  {
-    type: 'section',
-    name: 'section-client-modules',
-    group: CLIENT_MODULES_GROUP,
-    title: t('navigation.clientModules', 'Modules des entreprises clientes')
-  },
-  {
-    name: 'training',
-    title: t('navigation.training', 'Formations'),
-    path: '/training',
-    icon: AcademicCapIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  {
-    name: 'fleet',
-    title: t('navigation.fleet', 'Flotte véhicules'),
-    path: '/fleet',
-    icon: TruckIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  // TRAVEL-601 (#6078) : entrée conditionnée par le flag travelagency réel
-  // (GET /travel/ping → 200). Masquée tant que la sonde n'a pas répondu, si
-  // le flag est inactif (403) ou hors contexte tenant (401).
-  ...(travelStore.isReady && travelStore.flagActive
-    ? [
-        {
-          name: 'travel',
-          title: t('navigation.travelAgency', 'Agence de voyage'),
-          path: '/travel',
-          icon: GlobeAltIcon,
-          group: CLIENT_MODULES_GROUP
-        }
-      ]
-    : []),
-  {
-    name: 'fuelStation',
-    title: t('navigation.fuelStation', 'Stations-service'),
-    path: '/fuel-station',
-    icon: BoltIcon,
-    group: CLIENT_MODULES_GROUP
-  },
-  {
-    name: 'subscriptions',
-    title: t('navigation.subscriptions', 'Abonnements'),
-    path: '/subscriptions',
-    icon: CreditCardIcon
-  },
+  // #7429 — PLUS AUCUNE VERTICALE À LA RACINE.
+  //
+  // Les écrans Formations / Flotte / Agence de voyage / Stations-service sont
+  // des surfaces de PÉRIMÈTRE CLIENT : les proposer ici laissait ouvrir
+  // « Stations-service » sans savoir de quelle entreprise on parlait.
+  // Le métier se pilote désormais depuis la fiche de l'entreprise :
+  // `CompanyDetailView` → onglet « Verticales & modules », dont chaque lien
+  // porte le contexte (`?company=<id>`). Les routes restent déclarées (les
+  // e2e `prod-bugs-6712-6714` et les écrans eux-mêmes les utilisent) mais ne
+  // sont plus des entrées de navigation globales.
+  //
+  // Surfaces admin par verticale (état vérifié, critère 3 de #7429) :
+  //   · fleet        → `/fleet`            (écran dédié)
+  //   · travelagency → `/travel`           (écran dédié, + 8 sous-routes)
+  //   · fuel_station → `/fuel-station`     (écran dédié)
+  //   · training     → `/training`         (écran dédié)
+  //   · restaurant, edumanager → AUCUNE surface admin : leur pilotage se
+  //     limite à la dotation de features sur la fiche entreprise. Absence
+  //     documentée ici pour qu'elle ne soit pas un oubli silencieux.
   {
     name: 'chat',
     title: t('navigation.chat', 'Chat IA'),
@@ -401,34 +350,106 @@ const navigation = computed(() => [
     icon: GlobeAltIcon
   },
   {
-    name: 'webhooks',
-    title: t('navigation.webhooks', 'Webhooks'),
-    path: '/webhooks',
-    icon: LinkIcon
+    name: 'exports',
+    title: t('navigation.exports', 'Exports & Rapports'),
+    path: '/exports',
+    icon: ArrowDownTrayIcon
   },
   {
-    name: 'marketing-oauth',
-    title: t('marketing.oauth.nav_title'),
-    path: '/marketing/oauth',
-    icon: MegaphoneIcon
+    // #7429 (critère 4) — `/solutions/survey-stats` n'était accessible que par
+    // URL directe (aucune entrée de menu). Il est rattaché à la supervision.
+    name: 'solutionSurveyStats',
+    title: t('navigation.surveyStats', 'Sondages solutions'),
+    path: '/solutions/survey-stats',
+    icon: ChatBubbleLeftRightIcon
+  },
+  // ── #7430 — GROUPE PARAMÈTRES ────────────────────────────────────────────
+  // « la partie souscription où on est censé être capable de paramétrer tout ce
+  //   qui est lié à nos offres… c'est du paramétrage, et donc tout ce qui
+  //   relève du paramétrage doit aller là-bas » (propriétaire, 2026-09-14).
+  // La racine garde l'USAGE (Chat IA) et la SUPERVISION (analytics, globe,
+  // monitoring, support) — le paramétrage est regroupé ici.
+  //
+  // Note : il n'existe pas d'écran RBAC dédié dans ce dépôt (la matrice de
+  // rôles vit dans l'écran Utilisateurs, qui reste à la racine car il est
+  // opérationnel) — absence documentée plutôt que silencieuse.
+  {
+    type: 'section',
+    name: 'section-settings',
+    group: SETTINGS_GROUP,
+    title: t('navigation.settings', 'Paramètres')
   },
   {
-    name: 'settings-email-templates',
-    title: t('navigation.emailTemplates'),
-    path: '/settings/emails',
-    icon: EnvelopeIcon
+    name: 'settings-plans',
+    title: t('plans.nav', 'Offres & tarifs'),
+    path: '/settings/plans',
+    icon: TagIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'subscriptions',
+    title: t('navigation.subscriptions', 'Abonnements'),
+    path: '/subscriptions',
+    icon: CreditCardIcon,
+    group: SETTINGS_GROUP
   },
   {
     name: 'settings-ai-assistant',
     title: t('navigation.aiAssistant'),
     path: '/settings/ai',
-    icon: SparklesIcon
+    icon: SparklesIcon,
+    group: SETTINGS_GROUP
   },
   {
-    name: 'exports',
-    title: t('navigation.exports', 'Exports & Rapports'),
-    path: '/exports',
-    icon: ArrowDownTrayIcon
+    name: 'settings-email-templates',
+    title: t('navigation.emailTemplates'),
+    path: '/settings/emails',
+    icon: EnvelopeIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'webhooks',
+    title: t('navigation.webhooks', 'Webhooks'),
+    path: '/webhooks',
+    icon: LinkIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'marketing-oauth',
+    title: t('marketing.oauth.nav_title'),
+    path: '/marketing/oauth',
+    icon: MegaphoneIcon,
+    group: SETTINGS_GROUP
+  },
+  // #7429 (critère 4) — ces quatre écrans de paramétrage paie n'étaient
+  // accessibles QUE par URL directe (routes orphelines) : ils sont rangés ici.
+  {
+    name: 'payroll-holidays',
+    title: t('holidays.nav.title', 'Jours fériés'),
+    path: '/settings/payroll/holidays',
+    icon: CalendarIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'social-contributions',
+    title: t('navigation.contributions', 'Cotisations sociales'),
+    path: '/settings/payroll/social-contributions',
+    icon: BanknotesIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'tax-slabs',
+    title: t('navigation.taxBrackets', "Tranches d'impôt"),
+    path: '/settings/payroll/tax-slabs',
+    icon: ScaleIcon,
+    group: SETTINGS_GROUP
+  },
+  {
+    name: 'tax-rates',
+    title: t('navigation.legalRates', 'Taux légaux'),
+    path: '/settings/payroll/tax-rates',
+    icon: ScaleIcon,
+    group: SETTINGS_GROUP
   },
   ...(canAccessAccounting.value
     ? [
@@ -445,10 +466,14 @@ const navigation = computed(() => [
           icon: ChartBarIcon
         },
         {
+          // #7430 — le paramétrage comptable est du PARAMÉTRAGE : il rejoint
+          // le groupe « Paramètres » (même si l'activation et le tableau de
+          // bord, eux, restent des écrans d'usage à la racine).
           name: 'accounting-settings',
           title: t('navigation.accountingSettings', 'Comptabilité — Paramétrage'),
           path: '/accounting/settings',
-          icon: CogIcon
+          icon: CogIcon,
+          group: SETTINGS_GROUP
         }
       ]
     : []),

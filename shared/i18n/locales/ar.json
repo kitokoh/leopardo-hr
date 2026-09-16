@@ -1597,7 +1597,8 @@
     "account": "حسابي",
     "notFound": "الصفحة غير موجودة",
     "travelAgency": "وكالة السفر",
-    "emailTemplates": "البريد الإلكتروني"
+    "emailTemplates": "البريد الإلكتروني",
+    "settings": "الإعدادات"
   },
   "webhooks": {
     "confirm_delete": "حذف خطاف الويب هذا؟"
@@ -1701,7 +1702,18 @@
       "travelagency": "وكالة سفر",
       "accounting": "المحاسبة",
       "company_showcase": "موقع تعريفي"
-    }
+    },
+    "tabOverview": "نظرة عامة",
+    "tabModules": "الوحدات والقطاعات",
+    "tabBilling": "الاشتراك والدعم",
+    "tabSystem": "النظام",
+    "tenantFeatures": "مخصصات الشركة",
+    "platformCapabilities": "قدرات المنصة (مفاتيح الإيقاف)",
+    "platformCapabilitiesHint": "هذه المفاتيح لا تتعلق بمخصصات العميل: فهي تفتح أو توقف قدرة على مستوى المنصة بأكملها.",
+    "verticals": "قطاعات وأدوات هذه الشركة",
+    "openVertical": "فتح",
+    "noVerticalSurface": "لا توجد واجهة إدارة مخصصة",
+    "noVertical": "لا يوجد قطاع مُفعّل لهذه الشركة."
   },
   "reports": {
     "attendance_title": "ملخص الحضور",
@@ -5149,6 +5161,42 @@
       "api_public": "واجهة برمجية عامة",
       "evaluations": "التقييمات",
       "schema_isolation": "عزل البيانات"
+    }
+  },
+  "plans": {
+    "nav": "العروض والأسعار",
+    "title": "العروض والأسعار",
+    "subtitle": "إنشاء العروض وتعديلها وأرشفتها — تغيير السعر لم يعد يستلزم عملية نشر.",
+    "new": "عرض جديد",
+    "edit": "تعديل العرض",
+    "duplicate": "نسخ",
+    "archive": "أرشفة",
+    "delete": "حذف",
+    "active": "نشط",
+    "archived": "مؤرشف",
+    "unlimited": "غير محدود",
+    "empty": "لا يوجد عرض",
+    "save": "حفظ",
+    "create": "إنشاء العرض",
+    "loadError": "تعذّر تحميل العروض.",
+    "created": "تم إنشاء العرض.",
+    "updated": "تم تحديث العرض.",
+    "duplicated": "تم نسخ العرض (مؤرشف).",
+    "archivedDone": "تمت أرشفة العرض.",
+    "deleted": "تم حذف العرض.",
+    "deleteError": "تعذّر الحذف.",
+    "saveError": "تعذّر الحفظ.",
+    "featuresHint": "حدّد الإمكانات المدفوعة المضمّنة في هذا العرض (مصفوفة العرض × الميزات).",
+    "deleteConfirm": "حذف هذا العرض نهائيًا؟ لا يمكن حذف عرض يستخدمه عميل — قم بأرشفته.",
+    "archiveConfirm": "أرشفة هذا العرض؟ لن يظهر بعد الآن في مسار الاشتراك.",
+    "field": {
+      "name": "اسم العرض",
+      "priceMonthly": "السعر الشهري (€)",
+      "priceYearly": "السعر السنوي (€)",
+      "maxEmployees": "عدد الموظفين المشمولين",
+      "trialDays": "أيام التجربة",
+      "features": "الميزات المضمّنة",
+      "isActive": "عرض منشور"
     }
   }
 }

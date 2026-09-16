@@ -1597,7 +1597,8 @@
     "account": "Hesabim",
     "notFound": "Sayfa bulunamadi",
     "travelAgency": "Seyahat acentesi",
-    "emailTemplates": "E-postalar"
+    "emailTemplates": "E-postalar",
+    "settings": "Ayarlar"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
@@ -1701,7 +1702,18 @@
       "travelagency": "Seyahat acentesi",
       "accounting": "Muhasebe",
       "company_showcase": "Tanıtım sitesi"
-    }
+    },
+    "tabOverview": "Genel bakış",
+    "tabModules": "Modüller ve dikeyler",
+    "tabBilling": "Abonelik ve destek",
+    "tabSystem": "Sistem",
+    "tenantFeatures": "Şirket tahsisi",
+    "platformCapabilities": "Platform yetenekleri (kill switch)",
+    "platformCapabilitiesHint": "Bu anahtarlar müşteri tahsisine dahil değildir: tüm platform için bir yeteneği açar veya kapatır.",
+    "verticals": "Bu şirketin dikeyleri ve araçları",
+    "openVertical": "Aç",
+    "noVerticalSurface": "Özel yönetim ekranı yok",
+    "noVertical": "Bu şirket için etkin dikey yok."
   },
   "reports": {
     "attendance_title": "Yoklama Özeti",
@@ -5149,6 +5161,42 @@
       "api_public": "Herkese açık API",
       "evaluations": "Değerlendirmeler",
       "schema_isolation": "Veri izolasyonu"
+    }
+  },
+  "plans": {
+    "nav": "Teklifler ve fiyatlar",
+    "title": "Teklifler ve fiyatlar",
+    "subtitle": "Teklifleri oluşturun, uyarlayın ve arşivleyin — fiyat değişikliği artık dağıtım gerektirmemeli.",
+    "new": "Yeni teklif",
+    "edit": "Teklifi düzenle",
+    "duplicate": "Çoğalt",
+    "archive": "Arşivle",
+    "delete": "Sil",
+    "active": "Etkin",
+    "archived": "Arşivlendi",
+    "unlimited": "Sınırsız",
+    "empty": "Teklif yok",
+    "save": "Kaydet",
+    "create": "Teklifi oluştur",
+    "loadError": "Teklifler yüklenemedi.",
+    "created": "Teklif oluşturuldu.",
+    "updated": "Teklif güncellendi.",
+    "duplicated": "Teklif çoğaltıldı (arşivlendi).",
+    "archivedDone": "Teklif arşivlendi.",
+    "deleted": "Teklif silindi.",
+    "deleteError": "Silme başarısız.",
+    "saveError": "Kaydetme başarısız.",
+    "featuresHint": "Bu teklife dahil ücretli yetenekleri işaretleyin (teklif × özellik matrisi).",
+    "deleteConfirm": "Bu teklif kalıcı olarak silinsin mi? Bir müşterinin kullandığı teklif silinemez — arşivleyin.",
+    "archiveConfirm": "Bu teklif arşivlensin mi? Abonelik akışında artık görünmeyecek.",
+    "field": {
+      "name": "Teklif adı",
+      "priceMonthly": "Aylık fiyat (€)",
+      "priceYearly": "Yıllık fiyat (€)",
+      "maxEmployees": "Dahil çalışan sayısı",
+      "trialDays": "Deneme günü",
+      "features": "Dahil özellikler",
+      "isActive": "Yayınlanan teklif"
     }
   }
 }

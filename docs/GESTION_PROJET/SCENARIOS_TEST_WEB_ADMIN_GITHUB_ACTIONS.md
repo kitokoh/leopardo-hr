@@ -327,6 +327,63 @@ menu. »
   `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
   La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
 
+### 19. Paramétrage des offres & métier rattaché à l'entreprise (#7429, #7430)
+
+Deux retours du propriétaire, traités ensemble parce qu'ils touchent la même
+navigation admin :
+
+- « les verticales sont liées à **company**, puisque company représente notre
+  terrain » — on pouvait ouvrir « Stations-service » sans savoir de quelle
+  entreprise on parlait ;
+- « tout ce qui relève du paramétrage doit aller » sous Paramètres, et « la
+  partie souscription où on est censé être capable de paramétrer nos offres »
+  n'était pas paramétrable du tout (table `plans` alimentée par un seeder,
+  lecture seule dans l'admin).
+
+**A — Aucune verticale à la racine (#7429)**
+
+- La barre latérale ne propose plus Formations / Flotte / Agence de voyage /
+  Stations-service comme entrées globales.
+- Ouvrir une entreprise (Portefeuille clients → une entreprise) donne accès à
+  l'onglet **« Modules & verticales »**, qui liste les verticales **activées**
+  de CE client avec un lien portant le contexte (`?company=<id>`).
+- Une verticale sans surface admin (Restauration, Établissement scolaire,
+  Caméras) affiche explicitement « aucune surface admin dédiée » — absence
+  documentée, jamais un écran vide.
+- Les routes `/travel`, `/fleet`, `/fuel-station`, `/training` restent
+  déclarées (les écrans et les e2e existants les utilisent) mais ne sont plus
+  des entrées de navigation globales.
+- Écrans de paramétrage paie (`/settings/payroll/*`) et sondages solutions
+  (`/solutions/survey-stats`) : plus aucune route accessible uniquement par
+  URL — ils sont rangés dans le menu.
+
+**B — Groupe Paramètres (#7430)**
+
+- Un groupe « Paramètres » regroupe : Offres & tarifs, Abonnements, Assistant
+  IA, Modèles d'e-mails, Webhooks, OAuth marketing, paramétrage comptable et
+  paramétrage paie. La racine garde l'usage (Chat IA) et la supervision.
+- Fiche entreprise → onglet « Modules & verticales » : la **dotation de
+  l'entreprise** et les **capacités plateforme (kill switches)** sont deux
+  blocs distincts, avec libellé et couleur propres — on ne confond plus un
+  interrupteur global avec un droit accordé au client.
+
+**C — Offres & tarifs : CRUD réel**
+
+- « Nouvelle offre » ouvre un formulaire (nom, prix mensuel/annuel, employés
+  inclus, jours d'essai, matrice offre × features, publication).
+- Une offre se **modifie** (dont son nom, tant qu'il reste unique), se
+  **duplique** (la copie naît **archivée** : elle n'apparaît pas dans le tunnel
+  de souscription), s'**archive**.
+- **Supprimer une offre utilisée par un client est refusé** : l'API répond 409
+  et le message affiché oriente vers l'archivage. Aucune suppression sèche.
+- Chaque écriture est auditée (`AuditLog`, société nulle : décision plateforme).
+
+À vérifier en recette :
+
+- Les 4 locales (fr/en/ar/tr) rendent les libellés, y compris en RTL.
+- `eslint .` et `vite build` verts ; garde `check-admin-action-labels.py` verte.
+- Les actions de ligne de l'écran Offres restent des icônes avec nom accessible.
+
 ## Artefacts obligatoires
 
 - rapport HTML Playwright
