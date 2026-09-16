@@ -62,20 +62,20 @@
         </template>
         <template #row-actions="{ row }">
           <div v-if="entityConfig.canEdit || entityConfig.canDelete" class="flex justify-end gap-2">
-            <button
+                        <RowActionButton
               v-if="entityConfig.canEdit"
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+              :icon="PencilSquareIcon"
+              tone="primary"
+              :label="t('travel.common.edit', 'Modifier')"
               @click="openEdit(row)"
-            >
-              {{ t('travel.common.edit', 'Modifier') }}
-            </button>
-            <button
+            />
+                        <RowActionButton
               v-if="entityConfig.canDelete"
-              class="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400"
+              :icon="TrashIcon"
+              tone="danger"
+              :label="t('travel.common.delete', 'Supprimer')"
               @click="askDelete(row)"
-            >
-              {{ t('travel.common.delete', 'Supprimer') }}
-            </button>
+            />
           </div>
         </template>
       </DataTable>
@@ -111,9 +111,14 @@ import { useTravelStore } from '@/stores/travel'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import {
+  PlusIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/vue/24/outline'
 import { listTravel, createTravel, updateTravel, deleteTravel, travelList } from '@/services/travel'
 
 const localeStore = useLocaleStore()
