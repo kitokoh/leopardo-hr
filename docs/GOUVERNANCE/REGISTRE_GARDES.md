@@ -82,6 +82,7 @@
 | `check-render-env-parity.sh` | parité env Render dev/prod | rapporte |
 | `check-public-links.sh` | smoke des URLs publiques `live` (P03) | blocage local/CI future |
 | `verify-deploy-workflows` (action), `check-workflow-paths.sh` | workflows de déploiement cohérents | bloque |
+| `check-android-sdk-packages.sh` (+ auto-test, `actionlint.yml` + action `setup-flutter-android`) | paquets Android SDK demandés par la CI mobile : refuse un paquet hérité/inexistant dans cmdline-tools 20.0 (`tools`) — issue #7519 | bloque |
 | smokes : `smoke-post-deploy.sh`, `launch-observability-smoke.sh`, `launch-api-profile-smoke.ps1` | santé post-déploiement | manuel |
 
 ## 9. Docs & DevX

@@ -24,7 +24,13 @@
 const { execFileSync } = require('child_process');
 const path = require('path');
 
-const repoRoot = path.resolve(__dirname, '..', '..');
+// Test-only override (issue #7482): the self-test
+// (dev-hub/tools/check-i18n-diff-test.sh) runs this guard against a throwaway
+// git repository of fixtures. In CI the variable is unset and the guard keeps
+// scanning the repository it lives in.
+const repoRoot = process.env.I18N_DIFF_REPO_ROOT
+  ? path.resolve(process.env.I18N_DIFF_REPO_ROOT)
+  : path.resolve(__dirname, '..', '..');
 
 const [baseSha, headSha] = process.argv.slice(2);
 
@@ -110,6 +116,12 @@ function isCssClassList(value) {
   return hyphenatedCount > 0 || tokens.some((token) => bareUtilityWords.has(token));
 }
 
+// Limite connue, volontairement conservée (issue #7482) : un littéral d'un seul
+// mot sans espace est classé « jeton technique ». Un `aria-label="Supprimer"`
+// d'un seul mot passe donc la garde, alors qu'un `aria-label="Supprimer le
+// compte"` est détecté (cas 2 du self-test). Resserrer cette règle créerait de
+// nouveaux faux positifs sur les libellés courts légitimes (états, clés
+// d'API) — exactement ce que l'issue #7482 demande d'arrêter.
 function isTechnicalToken(value) {
   const trimmed = value.trim();
   if (!trimmed) return true;
@@ -137,9 +149,80 @@ function isCodeExpression(value) {
   return false;
 }
 
+// ─── Valeurs d'attribut : distinguer le code du texte (issue #7482) ──────────
+//
+// Constat mesuré (issue #7482) : la garde lisait la VALEUR d'un attribut entre
+// guillemets comme une chaîne utilisateur. Elle signalait donc du code correct :
+// `v-model="form[key]"`, `:class="active ? 'bg-emerald-500' : 'bg-slate-100'"`,
+// `v-if="item.x == null"` — trois faux positifs reproduits dans
+// dev-hub/tools/check-i18n-diff-test.sh.
+//
+// Règle : dans un template, un attribut LIÉ porte une expression
+// (`:class`, `:title`, `v-model`, `v-if`, `@click`, `#default`…) — ses
+// guillemets ne délimitent PAS une chaîne utilisateur, ce sont des délimiteurs
+// de syntaxe. On les retire avant l'extraction des littéraux : seuls les
+// littéraux réellement écrits DANS l'expression sont analysés. C'est ce qui
+// garde `:label="'Supprimer'"` détecté tout en laissant
+// `:class="active ? 'bg-emerald-500' : 'bg-slate-100'"` tranquille (les classes
+// restent filtrées par isCssClassList).
+//
+// Un attribut STATIQUE (`title="Enregistrer la fiche"`,
+// `aria-label="Supprimer"`, `placeholder="Nom de l'entreprise"`) reste, lui, du
+// texte utilisateur : sa valeur est conservée telle quelle et reste analysée.
+//
+// Cas particulier : les attributs purement structurels (style, liaison de
+// modèle, conditions, itération, clés, identifiants, tailles/variantes) ne
+// portent jamais de texte utilisateur, même écrits en statique.
+const structuralAttributes = new Set([
+  'class', ':class', 'className', 'style', ':style',
+  ':value', ':checked', ':selected', ':multiple', ':readonly', ':required',
+  ':clearable', ':filterable', ':loading',
+  ':key', ':id', ':name', ':for', ':type', ':role', ':dir', ':lang', ':tabindex',
+  ':to', ':href', ':src', ':target', ':rel', ':method', ':action',
+  ':size', ':variant', ':density', ':tone', ':color', ':icon', ':width',
+  ':height', ':cols', ':rows', ':colspan', ':rowspan', ':span', ':min',
+  ':max', ':step', ':precision', ':minlength', ':maxlength', ':autocomplete',
+  ':autofocus', ':pattern', ':mask', ':offset', ':gap', ':align', ':justify',
+]);
+
+// Noms d'attribut : `:class`, `@click`, `v-model`, `#default`, `aria-label`…
+const attributeNamePattern = '[:#@a-zA-Z][\\w:.#@-]*';
+const attributeValueRegex = new RegExp(
+  `(^|[\\s<])(${attributeNamePattern})\\s*=\\s*("([^"]*)"|'([^']*)')`,
+  'g',
+);
+
+// Un attribut lié porte une expression JS ; les attributs structurels sont du
+// code par nature, quelle que soit leur écriture.
+function isCodeValuedAttribute(name) {
+  return structuralAttributes.has(name)
+    || name.startsWith(':')
+    || name.startsWith('@')
+    || name.startsWith('v-')
+    || name.startsWith('#');
+}
+
+// Retire les guillemets de délimitation d'une valeur liée (en conservant la
+// longueur de la ligne) pour que l'analyseur ne prenne pas l'expression entière
+// pour une chaîne utilisateur.
+function maskLinkedAttributeValues(line) {
+  if (!line.includes('=')) return line;
+  return line.replace(attributeValueRegex, (match, prefix, name, quoted) => {
+    if (!isCodeValuedAttribute(name)) return match;
+    if (quoted.length < 2) return match;
+    return `${prefix}${name}= ${quoted.slice(1, -1)} `;
+  });
+}
+
+// Chemin de clé de catalogue : `options.0.label`, `settings.billing.title` sont
+// des ADRESSES dans le catalogue, pas du texte utilisateur (constat n°2 de
+// l'issue #7482 — la garde les signalait comme des chaînes en dur).
+const catalogKeyPathPattern = /^[a-zA-Z_][\w-]*(?:\.[\w-]+)+$/;
+
 function classifyLiteral(rawValue) {
   const value = rawValue.trim();
   if (value.length < 4) return null;
+  if (catalogKeyPathPattern.test(value)) return null;
   if (!/[\p{Letter}]/u.test(value)) return null;
   if (isCssClassList(value)) return null;
   if (cssDeclarationPattern.test(value)) return null;
@@ -172,6 +255,17 @@ function ensureCommit(sha) {
       // with a clear git error.
     }
   }
+}
+
+// Motif technique probable vs texte utilisateur : sert uniquement à orienter
+// le message d'erreur (issue #7482, critère 3).
+const technicalConstantPattern = /^[A-Z][A-Z0-9_]*$|^[a-z][\w-]*$|^[\w.-]+\.(?:json|png|svg|jpe?g|webp|pdf|csv|xlsx?|zip)$/i;
+
+function hintFor(literal) {
+  if (technicalConstantPattern.test(literal)) {
+    return 'constante technique probable (enum, slug, nom de fichier) : sortez-la dans une constante nommée hors du template plutôt que de réécrire l\'appel';
+  }
+  return 'texte utilisateur : passez-le par le catalogue i18n (pistes ci-dessous)';
 }
 
 function main() {
@@ -261,9 +355,13 @@ function main() {
     if (translationCallPattern.test(content)) continue;
     if (devLogLinePattern.test(content) || todoLinePattern.test(content)) continue;
 
+    // Issue #7482 : un attribut lié porte une expression, pas une chaîne
+    // utilisateur — on retire ses guillemets de délimitation avant analyse.
+    const scanned = maskLinkedAttributeValues(content);
+
     stringLiteralPattern.lastIndex = 0;
     let match;
-    while ((match = stringLiteralPattern.exec(content)) !== null) {
+    while ((match = stringLiteralPattern.exec(scanned)) !== null) {
       const flagged = classifyLiteral(match[2]);
       if (!flagged) continue;
       // Faux positif de reformatage : le littéral (ou son squelette ASCII)
@@ -291,6 +389,9 @@ function main() {
     console.error(`❌ Found ${violationCount} new hardcoded user-visible string(s):`);
     for (const violation of violations.slice(0, 50)) {
       console.error(`   ${violation.file}:${violation.line} — ${violation.text}`);
+      // Critère 3 de l'issue #7482 : le message dit QUOI FAIRE, pour que
+      // l'agent suivant n'ait pas à redécouvrir le contournement.
+      console.error(`      ↳ ${hintFor(violation.text)}`);
     }
     if (violations.length > 50) {
       console.error(`   ... ${violations.length - 50} more`);
@@ -302,8 +403,12 @@ function main() {
     console.error('  - Next.js web: shared/i18n or front/web/src/lib/i18n catalog');
     console.error('  - Kiosk: data-i18n / shared/i18n catalog (front/zkteco-kiosk)');
     console.error('  - API Blade PDF/emails: __(\'catalog.key\') (api/lang/*.php)');
-    console.error('If this is a false positive (technical constant, enum, log message), adjust the');
-    console.error('literal or open an issue against dev-hub/tools/check-i18n-diff.js heuristics.');
+    console.error('');
+    console.error('If a flagged value really is a technical constant that the heuristics cannot');
+    console.error('recognise (enum, slug, event name, CSS utility), do NOT rewrite correct call');
+    console.error('sites to please the guard (issue #7482): add the pattern to');
+    console.error('dev-hub/tools/check-i18n-diff.js and a fixture to');
+    console.error('dev-hub/tools/check-i18n-diff-test.sh.');
     process.exit(1);
   }
 
