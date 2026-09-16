@@ -352,6 +352,11 @@ api.interceptors.response.use(
           break
 
         case 422:
+          // #7478 : honorer _skipToast aussi dans la branche 422 — les
+          // vues qui gèrent elles-mêmes les erreurs de validation (modale
+          // ouverte, saisie conservée) ne doivent pas recevoir le toast
+          // global en double.
+          if (skipToast) break
           if (data.errors) {
             Object.values(data.errors)
               .flat()
