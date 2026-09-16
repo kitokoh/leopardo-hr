@@ -1470,6 +1470,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/cameras/{camera}/stream-token", options);
     },
 
+    /** Alertes camera (module Surveillance, #7427) */
+    getCamerasAlerts(options = {}) {
+      return request("GET", "/cameras/alerts", options);
+    },
+
+    /** Acquitter une alerte camera (#7427) */
+    postCamerasAlertsByAlertAcknowledge(options = {}) {
+      return request("POST", "/cameras/alerts/{alert}/acknowledge", options);
+    },
+
+    /** Cloturer une alerte camera (#7427) */
+    postCamerasAlertsByAlertResolve(options = {}) {
+      return request("POST", "/cameras/alerts/{alert}/resolve", options);
+    },
+
+    /** Journal des evenements camera (module Surveillance, #7427) */
+    getCamerasEvents(options = {}) {
+      return request("GET", "/cameras/events", options);
+    },
+
     /** Tester une URL RTSP */
     postCamerasTestRtsp(options = {}) {
       return request("POST", "/cameras/test-rtsp", options);
@@ -2820,6 +2840,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/i18n/catalog/{locale}", options);
     },
 
+    /** Ingestion d''un evenement detecte (MediaMTX, #7427) */
+    postInternalCameraEvents(options = {}) {
+      return request("POST", "/internal/camera-events", options);
+    },
+
     /** Verification interne MediaMTX */
     getInternalCameraTokenVerify(options = {}) {
       return request("GET", "/internal/camera-token/verify", options);
@@ -3833,6 +3858,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister le catalogue des plans SaaS */
     getPlatformPlans(options = {}) {
       return request("GET", "/platform/plans", options);
+    },
+
+    /** Creer une offre tarifaire (parametrage plateforme, #7430) */
+    postPlatformPlans(options = {}) {
+      return request("POST", "/platform/plans", options);
+    },
+
+    /** Supprimer une offre non utilisee (409 si des clients y sont rattaches) */
+    deletePlatformPlansByPlan(options = {}) {
+      return request("DELETE", "/platform/plans/{plan}", options);
+    },
+
+    /** Modifier une offre tarifaire (prix, limite, features, publication) */
+    patchPlatformPlansByPlan(options = {}) {
+      return request("PATCH", "/platform/plans/{plan}", options);
+    },
+
+    /** Archiver une offre (elle n'est plus proposee dans le tunnel) */
+    postPlatformPlansByPlanArchive(options = {}) {
+      return request("POST", "/platform/plans/{plan}/archive", options);
+    },
+
+    /** Dupliquer une offre (la copie nait archivee) */
+    postPlatformPlansByPlanDuplicate(options = {}) {
+      return request("POST", "/platform/plans/{plan}/duplicate", options);
     },
 
     /** Lister tous les tickets de support (super-admin, cross-tenant) */

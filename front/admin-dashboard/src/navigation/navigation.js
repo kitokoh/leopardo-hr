@@ -34,6 +34,7 @@ import {
   LinkIcon,
   ArrowDownTrayIcon,
   MegaphoneIcon,
+  TagIcon,
   ClipboardDocumentListIcon,
   CpuChipIcon,
   EnvelopeIcon,
@@ -355,6 +356,18 @@ export const NAV_ENTRIES = [
     permission: null,
     group: 'parametres',
     descKey: 'adminPalette.itemSettingsDesc',
+  },
+  // #7430 (BC-21 BILLING) — les offres sont paramétrables (#7429) : l'écran
+  // « Offres & tarifs » vit sous Paramètres, comme les autres réglages
+  // plateforme. Sonde de permission alignée sur `GET /platform/plans`
+  // (`platform.permission:plans.view`).
+  {
+    name: 'settings-plans',
+    path: '/settings/plans',
+    titleKey: 'plans.nav',
+    icon: TagIcon,
+    permission: 'plans.view',
+    group: 'parametres',
   },
   {
     name: 'settings-email-templates',

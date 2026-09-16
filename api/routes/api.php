@@ -393,7 +393,6 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/auth/2fa/setup', [PlatformAuthController::class, 'setup2fa']);
         Route::post('/auth/2fa/enable', [PlatformAuthController::class, 'enable2fa']);
         Route::post('/auth/2fa/disable', [PlatformAuthController::class, 'disable2fa']);
-        Route::get('/plans', PlatformPlanController::class);
         // #7430 (BC-21 BILLING) — les offres sont PARAMÉTRABLES : le seeder
         // n'est plus le seul chemin. Création, édition (prix, limite
         // d'employés, matrice de features), duplication, archivage, et
