@@ -1,7 +1,12 @@
 import { apiFetch, ApiError } from '@/lib/api-client';
 import {
   CAMERAS_MODULE_KEY,
+  buildCameraViewerUrl,
+  createCameraAccessToken,
+  fetchPublicCameraView,
   isRtspUrl,
+  listCameraAccessTokens,
+  readCameraTokenFromUrl,
   listCameraAccessLogs,
   listCameraPermissions,
   listCameras,
@@ -116,5 +121,68 @@ describe('lib/cameras — contrat client', () => {
 
   it('expose la clé de module attendue par l’allowlist serveur', () => {
     expect(CAMERAS_MODULE_KEY).toBe('cameras');
+  });
+});
+
+describe('lib/cameras — partage et viewer (#7425 tranche 2)', () => {
+  beforeEach(() => {
+    mockedApiFetch.mockReset();
+  });
+
+  it('place le jeton dans le FRAGMENT, jamais dans la chaîne de requête', () => {
+    const url = buildCameraViewerUrl('https://app.leopardo.test', 'jeton-abc');
+
+    expect(url).toBe('https://app.leopardo.test/view/cam#t=jeton-abc');
+    // Un jeton en query string fuit dans les journaux du proxy et le Referer
+    // (#4931/#6560) : c'est la propriété que ce test verrouille.
+    expect(url).not.toContain('?t=');
+    expect(new URL(url).searchParams.has('t')).toBe(false);
+  });
+
+  it('lit le jeton du fragment et signale la forme héritée', () => {
+    expect(readCameraTokenFromUrl('https://app.test/view/cam#t=abc')).toEqual({ token: 'abc', legacy: false });
+    // Fragment sans clé (lien « #abc ») : accepté aussi.
+    expect(readCameraTokenFromUrl('https://app.test/view/cam#t%3Dabc')).toEqual({ token: null, legacy: false });
+    // Ancien lien : jeton en query string → non utilisé, signalé.
+    expect(readCameraTokenFromUrl('https://app.test/view/cam?t=abc')).toEqual({ token: null, legacy: true });
+    expect(readCameraTokenFromUrl('https://app.test/view/cam')).toEqual({ token: null, legacy: false });
+  });
+
+  it('crée un lien de partage et lit la liste des liens', async () => {
+    mockedApiFetch
+      .mockResolvedValueOnce(
+        jsonResponse(201, {
+          data: { id: 3, camera_id: 7, label: 'Assureur', expires_in_minutes: 60, token: 'jeton', share_url: 'https://app.test/view/cam#t=jeton' },
+        }) as unknown as Response,
+      )
+      .mockResolvedValueOnce(jsonResponse(200, { data: [{ id: 3, camera_id: 7, is_revoked: false }] }) as unknown as Response);
+
+    const created = await createCameraAccessToken(7, { label: 'Assureur', expires_in_minutes: 60 });
+    const listed = await listCameraAccessTokens(7);
+
+    expect(created.share_url).toContain('#t=jeton');
+    expect(created.token).toBe('jeton');
+    expect(listed).toHaveLength(1);
+    // Le jeton brut n'est jamais relu en liste.
+    expect(listed[0].token).toBeUndefined();
+  });
+
+  it('appelle GET /view/cam avec l’en-tête X-Token et mappe les refus', async () => {
+    const fetchMock = jest.fn()
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ data: { camera: { id: 1, name: 'Cam', location: null }, stream_url: 'wss://x', stream_token: 'j', expires_at: null, permissions: null, label: null } }) })
+      .mockResolvedValueOnce({ ok: false, status: 404, json: async () => ({ error: 'INVALID_TOKEN' }) })
+      .mockResolvedValueOnce({ ok: false, status: 404, json: async () => ({ error: 'CAMERA_NOT_FOUND' }) });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const ok = await fetchPublicCameraView('jeton');
+    const invalid = await fetchPublicCameraView('jeton-mort');
+    const off = await fetchPublicCameraView('jeton-cam-off');
+
+    expect(ok.ok).toBe(true);
+    expect(invalid).toEqual({ ok: false, reason: 'invalid_token' });
+    expect(off).toEqual({ ok: false, reason: 'camera_unavailable' });
+
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect((init.headers as Record<string, string>)['X-Token']).toBe('jeton');
   });
 });

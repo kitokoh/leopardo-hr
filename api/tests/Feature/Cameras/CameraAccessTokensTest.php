@@ -68,6 +68,44 @@ class CameraAccessTokensTest extends TestCase
         $this->assertTrue((bool) $token->is_revoked);
     }
 
+    /**
+     * #7425 — le lien de partage ne doit JAMAIS transporter le jeton en chaîne
+     * de requête : il est journalisé par les proxys/CDN et transmis dans
+     * l'en-tête `Referer` (#4931/#6560). Le viewer public n'accepte d'ailleurs
+     * plus qu'un jeton en en-tête `X-Token` — un lien `?t=` serait donc à la
+     * fois fuyant ET inutilisable.
+     */
+    public function test_share_url_keeps_the_token_out_of_the_query_string(): void
+    {
+        config(['cameras.public_view_url' => 'https://app.test/view/cam']);
+
+        $company = $this->createCompanyWithCameras();
+        $principal = $this->createManager($company);
+
+        $cam = Camera::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Entrée',
+            'rtsp_url' => 'rtsp://admin:pass@10.0.0.1:554/live',
+            'created_by' => $principal->id,
+        ]);
+
+        $issue = $this->withHeaders($this->authHeaders($principal))
+            ->postJson('/api/v1/cameras/'.$cam->id.'/access-tokens', [
+                'label' => 'Assureur',
+                'expires_in_minutes' => 60,
+            ]);
+
+        $issue->assertStatus(201);
+        $shareUrl = (string) $issue->json('data.share_url');
+        $rawToken = (string) $issue->json('data.token');
+
+        $this->assertStringStartsWith('https://app.test/view/cam#t=', $shareUrl);
+        $this->assertStringContainsString($rawToken, $shareUrl);
+        // Le point qui compte : aucun paramètre de requête ne porte le jeton.
+        $this->assertStringNotContainsString('?t=', $shareUrl);
+        $this->assertSame('', (string) parse_url($shareUrl, PHP_URL_QUERY));
+    }
+
     public function test_disallowed_duration_is_rejected(): void
     {
         $company = $this->createCompanyWithCameras();
