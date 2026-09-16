@@ -90,3 +90,16 @@ jobs:
         run: |
           bash dev-hub/tools/check-android-sdk-packages.sh
           bash dev-hub/tools/check-android-sdk-packages.sh --self-test
+
+      - name: JSON/ARB parsable guard (issue #7583)
+        # Échoue si un fichier .json/.arb SUIVI n'est plus du JSON valide —
+        # dommage typique d'un conflit de catalogue résolu avec
+        # `git merge-file --union` (13 à 17 fichiers cassés pendant le drain
+        # #7562, et les synchronisateurs shared/i18n/sync/*.js plantaient au
+        # démarrage car ils RELISENT versions.json).
+        # Branché ici (check requis, sans filtre de `paths:`) plutôt que dans
+        # i18n-enterprise.yml, qui est filtré : un JSON cassé hors de ces
+        # chemins y échapperait silencieusement.
+        run: |
+          python3 dev-hub/tools/check-json-parsable.py
+          python3 dev-hub/tools/check-json-parsable.py --self-test

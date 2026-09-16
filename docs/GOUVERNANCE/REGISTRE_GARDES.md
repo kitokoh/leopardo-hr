@@ -72,6 +72,7 @@
 | Garde | Vérifie | Bloque / rapporte |
 |---|---|---|
 | `check-i18n-catalog-parity.sh`, `check-hardcoded-accented-messages.sh` | parité catalogues, messages hardcodés | bloque |
+| `check-json-parsable.py` (+ auto-test `--self-test`, workflow `actionlint.yml`) | **syntaxe** de tous les `*.json`/`*.arb` **suivis** : refuse un catalogue cassé par un conflit résolu avec `git merge-file --union` (13 à 17 fichiers invalides pendant le drain #7562, qui faisaient planter `shared/i18n/sync/*.js` au démarrage). Branché sur le check requis sans filtre de `paths:`, donc un JSON cassé hors du périmètre d'`i18n-enterprise.yml` est couvert aussi — issue #7583 | bloque |
 | `check-accounting-i18n.py`, `check-payroll-i18n.py`, `check-governance-mojibake-test.ps1` | i18n par module | bloque |
 
 ## 8. Infra, déploiement & URLs
