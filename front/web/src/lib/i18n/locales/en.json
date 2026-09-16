@@ -1659,6 +1659,25 @@
     "downloading": "Downloading..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "Human resources",
+      "finance": "Finance & management",
+      "ai": "Artificial intelligence",
+      "cameras": "Video surveillance",
+      "tracking": "Fleet tracking",
+      "planning": "Planning & team",
+      "training": "Training centre",
+      "cabinet": "Digital cabinet",
+      "muhasebe": "Accounting (Turkey)",
+      "leo_ai": "Leopardo AI assistant",
+      "crm": "Customer relationship (CRM)",
+      "fuel_station": "Fuel stations",
+      "edumanager": "School management",
+      "restaurant": "Restaurant",
+      "travelagency": "Travel agency",
+      "accounting": "Accounting",
+      "company_showcase": "Showcase website"
+    },
     "analyzing": "Analyzing client data...",
     "retry": "Retry",
     "fieldAdoption": "Field Adoption",
@@ -1682,26 +1701,7 @@
     "slug": "Slug",
     "countryCurrency": "Country / Currency",
     "registeredOn": "Registered on",
-    "lastActivity": "Last activity",
-    "features": {
-      "rh": "Human resources",
-      "finance": "Finance & management",
-      "ai": "Artificial intelligence",
-      "cameras": "Video surveillance",
-      "tracking": "Fleet tracking",
-      "planning": "Planning & team",
-      "training": "Training centre",
-      "cabinet": "Digital cabinet",
-      "muhasebe": "Accounting (Turkey)",
-      "leo_ai": "Leopardo AI assistant",
-      "crm": "Customer relationship (CRM)",
-      "fuel_station": "Fuel stations",
-      "edumanager": "School management",
-      "restaurant": "Restaurant",
-      "travelagency": "Travel agency",
-      "accounting": "Accounting",
-      "company_showcase": "Showcase website"
-    }
+    "lastActivity": "Last activity"
   },
   "reports": {
     "attendance_title": "Attendance Summary",

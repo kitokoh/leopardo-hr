@@ -54,4 +54,20 @@ describe('client-features — modules auto-activables (#7322)', () => {
       expect(isSelfActivable({ key })).toBe(true);
     }
   });
+
+  /**
+   * #7432 — la Formation est un outil horizontal rangé dans le SOUS-MENU RH
+   * (`HR_SUBMENU_KEYS`, `dashboard-nav.ts`). Son groupe d'affichage suivait un
+   * classement mort (`finance`) qui ne correspondait à aucun rendu.
+   */
+  it('range la formation dans le groupe RH (emplacement réel de navigation)', () => {
+    const training = CLIENT_MODULES.find((module) => module.key === 'training');
+
+    expect(training).toBeDefined();
+    expect(training?.group).toBe('hr');
+    // Non-régression : le module reste auto-activable et horizontal.
+    expect(SELF_ACTIVATABLE_MODULE_KEYS).toContain('training');
+    expect(training?.scope ?? 'core').toBe('core');
+    expect(training?.featureKeys).toEqual(['training']);
+  });
 });

@@ -1659,6 +1659,25 @@
     "downloading": "Indiriliyor..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "İnsan kaynakları",
+      "finance": "Finans ve yönetim",
+      "ai": "Yapay zekâ",
+      "cameras": "Video gözetim",
+      "tracking": "Filo takibi",
+      "planning": "Planlama ve ekip",
+      "training": "Eğitim merkezi",
+      "cabinet": "Dijital dolap",
+      "muhasebe": "Muhasebe (Türkiye)",
+      "leo_ai": "Leopardo yapay zekâ asistanı",
+      "crm": "Müşteri ilişkileri (CRM)",
+      "fuel_station": "Akaryakıt istasyonları",
+      "edumanager": "Eğitim kurumu yönetimi",
+      "restaurant": "Restoran",
+      "travelagency": "Seyahat acentesi",
+      "accounting": "Muhasebe",
+      "company_showcase": "Tanıtım sitesi"
+    },
     "analyzing": "Musteri verileri analiz ediliyor...",
     "retry": "Tekrar dene",
     "fieldAdoption": "Saha Benimsemesi",
@@ -1682,26 +1701,7 @@
     "slug": "Slug",
     "countryCurrency": "Ulke / Para birimi",
     "registeredOn": "Kayit tarihi",
-    "lastActivity": "Son aktivite",
-    "features": {
-      "rh": "İnsan kaynakları",
-      "finance": "Finans ve yönetim",
-      "ai": "Yapay zekâ",
-      "cameras": "Video gözetim",
-      "tracking": "Filo takibi",
-      "planning": "Planlama ve ekip",
-      "training": "Eğitim merkezi",
-      "cabinet": "Dijital dolap",
-      "muhasebe": "Muhasebe (Türkiye)",
-      "leo_ai": "Leopardo yapay zekâ asistanı",
-      "crm": "Müşteri ilişkileri (CRM)",
-      "fuel_station": "Akaryakıt istasyonları",
-      "edumanager": "Eğitim kurumu yönetimi",
-      "restaurant": "Restoran",
-      "travelagency": "Seyahat acentesi",
-      "accounting": "Muhasebe",
-      "company_showcase": "Tanıtım sitesi"
-    }
+    "lastActivity": "Son aktivite"
   },
   "reports": {
     "attendance_title": "Yoklama Özeti",

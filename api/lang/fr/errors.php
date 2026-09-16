@@ -294,6 +294,7 @@ return [
     'ONBOARDING_STEP_NOT_DONE' => 'Cette étape ne peut pas être marquée terminée : aucune action correspondante constatée.',
     'COMPANY_CONTEXT_REQUIRED' => 'Un contexte d\'entreprise est requis.',
     // #7322 — Auto-activation d'un module horizontal par le client.
+    'SOLO_TEAM_TOOL_NOT_AVAILABLE' => 'Outil d\'équipe hors du socle d\'un profil indépendant : :module.',
     'INVALID_HORIZONTAL_TOOL' => 'Module inconnu ou non activable en autonomie : :module.',
     'MODULE_ACTIVATED' => 'Module activé.',
     'MODULE_ALREADY_ACTIVE' => 'Ce module est déjà actif.',

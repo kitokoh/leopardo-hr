@@ -25,23 +25,42 @@ describe('client-features — profil d’inscription (#7235)', () => {
     features: { rh: true, finance: false, cameras: false, accounting: false },
   };
 
-  it('un indépendant ne voit aucun outil d’équipe', () => {
+  it('un indépendant garde le plancher RH même si sa sélection ne le coche pas (#7423)', () => {
     const solo: StoredAuthUser = {
       ...legacyUser,
+      // Sélection explicite SANS le socle : le plancher doit primer.
       company: { type: 'solo', modules: { accounting: true, reports: true } },
     };
 
-    for (const key of ['employees', 'attendance', 'attendance_geo', 'absences', 'contracts', 'payroll', 'training']) {
+    for (const key of ['attendance', 'absences', 'payroll']) {
+      const entry = stateOf(solo, key);
+      expect(entry?.state).toBe('available');
+      expect(entry?.enabled).toBe(true);
+    }
+
+    // …et il garde bien ce qu’il a choisi, plus le socle.
+    expect(stateOf(solo, 'dashboard')?.enabled).toBe(true);
+    expect(stateOf(solo, 'accounting')?.state).toBe('available');
+  });
+
+  it('un indépendant ne voit pas les outils de PILOTAGE D’ÉQUIPE (#7235/#7423)', () => {
+    const solo: StoredAuthUser = {
+      ...legacyUser,
+      company: {
+        type: 'solo',
+        modules: { accounting: true, reports: true, employees: true, training: true },
+      },
+    };
+
+    // Même cochés explicitement, ces outils restent fermés : un indépendant
+    // n'a pas d'équipe à piloter.
+    for (const key of ['employees', 'contracts', 'training', 'attendance_geo']) {
       // `entry` et non `module` : la règle Next `no-assign-module-variable`
       // interdit d'affecter une variable de ce nom (lint CI).
       const entry = stateOf(solo, key);
       expect(entry?.state).toBe('locked');
       expect(entry?.enabled).toBe(false);
     }
-
-    // …mais il garde bien ce qu’il a choisi, et le socle.
-    expect(stateOf(solo, 'dashboard')?.enabled).toBe(true);
-    expect(stateOf(solo, 'accounting')?.state).toBe('available');
   });
 
   it('une entreprise ne voit que les outils qu’elle a cochés (la sélection prime sur le repli `rh`)', () => {

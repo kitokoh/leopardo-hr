@@ -1659,6 +1659,25 @@
     "downloading": "جاري التنزيل..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "الموارد البشرية",
+      "finance": "المالية والإدارة",
+      "ai": "الذكاء الاصطناعي",
+      "cameras": "المراقبة بالفيديو",
+      "tracking": "تتبع الأسطول",
+      "planning": "التخطيط والفريق",
+      "training": "مركز التدريب",
+      "cabinet": "الخزانة الرقمية",
+      "muhasebe": "المحاسبة (تركيا)",
+      "leo_ai": "مساعد ليوباردو الذكي",
+      "crm": "إدارة العملاء (CRM)",
+      "fuel_station": "محطات الوقود",
+      "edumanager": "إدارة المؤسسة التعليمية",
+      "restaurant": "المطاعم",
+      "travelagency": "وكالة سفر",
+      "accounting": "المحاسبة",
+      "company_showcase": "موقع تعريفي"
+    },
     "analyzing": "جاري تحليل بيانات العميل...",
     "retry": "إعادة المحاولة",
     "fieldAdoption": "اعتماد الميدان",
@@ -1682,26 +1701,7 @@
     "slug": "المعرف",
     "countryCurrency": "البلد / العملة",
     "registeredOn": "مسجل في",
-    "lastActivity": "آخر نشاط",
-    "features": {
-      "rh": "الموارد البشرية",
-      "finance": "المالية والإدارة",
-      "ai": "الذكاء الاصطناعي",
-      "cameras": "المراقبة بالفيديو",
-      "tracking": "تتبع الأسطول",
-      "planning": "التخطيط والفريق",
-      "training": "مركز التدريب",
-      "cabinet": "الخزانة الرقمية",
-      "muhasebe": "المحاسبة (تركيا)",
-      "leo_ai": "مساعد ليوباردو الذكي",
-      "crm": "إدارة العملاء (CRM)",
-      "fuel_station": "محطات الوقود",
-      "edumanager": "إدارة المؤسسة التعليمية",
-      "restaurant": "المطاعم",
-      "travelagency": "وكالة سفر",
-      "accounting": "المحاسبة",
-      "company_showcase": "موقع تعريفي"
-    }
+    "lastActivity": "آخر نشاط"
   },
   "reports": {
     "attendance_title": "ملخص الحضور",

@@ -1659,6 +1659,25 @@
     "downloading": "Telechargement..."
   },
   "companyDetail": {
+    "features": {
+      "rh": "Ressources Humaines",
+      "finance": "Finance & Gestion",
+      "ai": "Intelligence Artificielle",
+      "cameras": "Surveillance Vidéo",
+      "tracking": "Suivi de Flotte",
+      "planning": "Planning & Équipe",
+      "training": "Centre de Formation",
+      "cabinet": "Placard Numérique",
+      "muhasebe": "Comptabilité (Turquie)",
+      "leo_ai": "Assistant IA Leopardo",
+      "crm": "Relation client (CRM)",
+      "fuel_station": "Stations-service",
+      "edumanager": "Établissement scolaire",
+      "restaurant": "Restauration",
+      "travelagency": "Agence de voyage",
+      "accounting": "Comptabilité",
+      "company_showcase": "Site vitrine"
+    },
     "analyzing": "Analyse des données client...",
     "retry": "Réessayer",
     "fieldAdoption": "Adoption Terrain",
@@ -1682,26 +1701,7 @@
     "slug": "Slug",
     "countryCurrency": "Pays / Devise",
     "registeredOn": "Inscrit le",
-    "lastActivity": "Derniere Activite",
-    "features": {
-      "rh": "Ressources Humaines",
-      "finance": "Finance & Gestion",
-      "ai": "Intelligence Artificielle",
-      "cameras": "Surveillance Vidéo",
-      "tracking": "Suivi de Flotte",
-      "planning": "Planning & Équipe",
-      "training": "Centre de Formation",
-      "cabinet": "Placard Numérique",
-      "muhasebe": "Comptabilité (Turquie)",
-      "leo_ai": "Assistant IA Leopardo",
-      "crm": "Relation client (CRM)",
-      "fuel_station": "Stations-service",
-      "edumanager": "Établissement scolaire",
-      "restaurant": "Restauration",
-      "travelagency": "Agence de voyage",
-      "accounting": "Comptabilité",
-      "company_showcase": "Site vitrine"
-    }
+    "lastActivity": "Derniere Activite"
   },
   "reports": {
     "attendance_title": "Résumé Présences",
