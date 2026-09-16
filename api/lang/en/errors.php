@@ -303,4 +303,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'Unknown module or not self-activatable: :module.',
     'MODULE_ACTIVATED' => 'Module activated.',
     'MODULE_ALREADY_ACTIVE' => 'This module is already active.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'A platform account is required for this action.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'Your platform role does not allow this action (required permissions: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'You cannot change your own platform role.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'Action denied: at least one active super administrator must remain.',
 ];

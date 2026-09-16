@@ -199,6 +199,8 @@ return Application::configure(basePath: dirname(__DIR__))
             // C-PUBLIC #6882 — accès public par slug (catalogue vitrine).
             'catalog.public' => \App\Http\Middleware\Catalog\EnsureCatalogPublicAccess::class,
             'delivery.permission' => \App\Http\Middleware\Delivery\EnsureDeliveryPermissionMiddleware::class,
+            // #7553 — permission interne plateforme (`platform.permission:team.manage`).
+            'platform.permission' => \App\Http\Middleware\EnsurePlatformPermissionMiddleware::class,
             'admin' => AdminMiddleware::class,
             'api.manager' => EnsureApiManagerMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,

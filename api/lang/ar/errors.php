@@ -296,4 +296,10 @@ return [
     'INVALID_HORIZONTAL_TOOL' => 'وحدة غير معروفة أو غير قابلة للتفعيل الذاتي: :module.',
     'MODULE_ACTIVATED' => 'تم تفعيل الوحدة.',
     'MODULE_ALREADY_ACTIVE' => 'هذه الوحدة نشطة بالفعل.',
+
+    // #7553 — rôles internes plateforme (délégation par le super admin).
+    'PLATFORM_ACCOUNT_REQUIRED' => 'مطلوب حساب منصة لهذا الإجراء.',
+    'PLATFORM_PERMISSION_REQUIRED' => 'دورك في المنصة لا يسمح بهذا الإجراء (الأذونات المطلوبة: :permissions).',
+    'CANNOT_CHANGE_OWN_PLATFORM_ROLE' => 'لا يمكنك تغيير دورك في المنصة.',
+    'LAST_SUPER_ADMIN_REQUIRED' => 'تم رفض الإجراء: يجب أن يبقى مسؤول أعلى نشط واحد على الأقل.',
 ];
