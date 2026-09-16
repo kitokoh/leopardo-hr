@@ -63,12 +63,12 @@
         </template>
         <template #row-actions="{ row }">
           <div class="flex justify-end gap-2">
-            <button
-              class="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                        <RowActionButton
+              :icon="ArrowRightIcon"
+              tone="primary"
+              :label="t('travel.contacts.notify', 'Notifier')"
               @click="openNotify(row)"
-            >
-              {{ t('travel.contacts.notify', 'Notifier') }}
-            </button>
+            />
           </div>
         </template>
       </DataTable>
@@ -89,9 +89,12 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+
+import { ArrowRightIcon } from '@heroicons/vue/24/outline'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import DataTable from '@/components/common/DataTable.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
 import TravelFormModal from '@/components/travel/TravelFormModal.vue'
 import TravelGate from '@/components/travel/TravelGate.vue'
 import { listTravel, travelList, notifyTravelContact } from '@/services/travel'
