@@ -24162,30 +24162,6 @@ paths:
           description: Non autorisé
         '404':
           description: Introuvable
-  /notifications/stream:
-    get:
-      tags:
-      - Notifications
-      summary: Flux SSE temps réel des notifications (employee/manager)
-      responses:
-        '200':
-          description: Flux Server-Sent Events
-          content:
-            text/event-stream:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/Error401'
-  /notifications/sse-token:
-    post:
-      tags:
-      - Notifications
-      summary: Émettre un token SSE temporaire pour le flux temps réel
-      responses:
-        '200':
-          description: Token SSE
-        '401':
-          $ref: '#/components/responses/Error401'
   /me/contract:
     get:
       tags:

@@ -2608,14 +2608,6 @@ class LeopardoClient:
         """Marquer toutes les notifications comme lues"""
         return self.request("POST", "/notifications/read-all", **kwargs)
 
-    def post_notifications_sse_token(self, **kwargs):
-        """Émettre un token SSE temporaire pour le flux temps réel"""
-        return self.request("POST", "/notifications/sse-token", **kwargs)
-
-    def get_notifications_stream(self, **kwargs):
-        """Flux SSE temps réel des notifications (employee/manager)"""
-        return self.request("GET", "/notifications/stream", **kwargs)
-
     def get_notifications_unread(self, **kwargs):
         """Notifications non lues de l'employe"""
         return self.request("GET", "/notifications/unread", **kwargs)
