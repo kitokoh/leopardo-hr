@@ -16,6 +16,19 @@ inputs:
     description: Whether the web app changed on this SHA ("true"/"false").
     required: false
     default: 'false'
+  # Issue #7511 — un push sur `main` qui ne touche NI `api/**` NI
+  # `front/admin-dashboard/**` ne déclenche AUCUN des workflows requis
+  # (`tests.yml` et `web-ci.yml` sont filtrés par `.github/paths-filters.yml`) :
+  # le gate ne trouvait alors aucun run pour le SHA et concluait « indécision »
+  # (`no-runs`) → le job « Deploy gate verdict » échouait et `main` était rouge
+  # après chaque merge hors API. Ce n'est pourtant pas une indécision : c'est
+  # la décision « rien à déployer ». L'appelant passe donc ce qu'il a mesuré
+  # (`true`/`false`) ; `''` (défaut) = non renseigné → comportement historique
+  # strict (indécision) conservé pour les appelants qui ne le fournissent pas.
+  api_changed:
+    description: Whether the API changed on this SHA ("true"/"false"/"" = inconnu).
+    required: false
+    default: ''
 
 outputs:
   tests_conclusion:
@@ -63,6 +76,7 @@ runs:
         INPUT_SHA: ${{ inputs.sha }}
         INPUT_REQUIRED_WORKFLOWS: ${{ inputs.required_workflows }}
         INPUT_WEB_CHANGED: ${{ inputs.web_changed }}
+        INPUT_API_CHANGED: ${{ inputs.api_changed }}
       with:
         script: |
           const EVENT = process.env.GITHUB_EVENT_NAME;
@@ -73,6 +87,11 @@ runs:
           }
           const sha = shaRaw;
           const webChanged = core.getInput('web_changed') === 'true';
+          // Issue #7511 — `''` = l'appelant n'a pas mesuré api_changed : on
+          // garde alors le verdict strict (indécision si aucun run).
+          const apiChangedRaw = core.getInput('api_changed');
+          const apiChanged = apiChangedRaw === '' ? null : apiChangedRaw === 'true';
+          const noRunExpected = apiChanged === false && !webChanged;
           const REQUIRED_WORKFLOWS = JSON.parse(core.getInput('required_workflows'));
           const { owner, repo } = context.repo;
 
@@ -121,6 +140,19 @@ runs:
               if (relevant.length === 0) {
                 consecutiveEmpty += 1;
                 if (consecutiveEmpty >= 5) {
+                  // Issue #7511 — rien n'a changé côté `api/**` ni
+                  // `front/admin-dashboard/**` (filtres de chemins) : l'absence
+                  // de run requis n'est pas une indécision mais la décision
+                  // « aucun déploiement attendu ». Sans ce cas, `main` devenait
+                  // rouge après chaque merge hors API (constat : merge #7498).
+                  if (noRunExpected) {
+                    core.notice(`Aucun workflow requis pour le SHA ${sha} : ni api/ ni web n'ont changé — rien à déployer (#7511).`);
+                    core.setOutput('tests_conclusion', 'not-required');
+                    core.setOutput('web_conclusion', 'not-required');
+                    core.setOutput('should_deploy', 'false');
+                    core.setOutput('gate_outcome', 'not-required');
+                    return;
+                  }
                   core.warning(`Deploy skipped — aucun run "${REQUIRED_WORKFLOWS.join('" / ')}" pour le SHA ${sha} (chemin non couvert ou runs non créés).`);
                   core.setOutput('tests_conclusion', 'no-runs');
                   core.setOutput('web_conclusion', webChanged ? 'no-runs' : 'not-required');
