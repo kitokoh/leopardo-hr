@@ -2938,6 +2938,7 @@
     "advanceIncident": "Advance"
   },
   "adminPalette": {
+    "title": "Command palette",
     "appLoading": "Loading the administration…",
     "searchPlaceholder": "Search pages, actions…",
     "noResults": "No results for \"{query}\"",
@@ -4986,6 +4987,11 @@
     "home": "Back to home"
   },
   "navigation": {
+      "fuelStationOperations": "Fuel station operations",
+      "systemHealth": "Platform health",
+      "healthStatus": "Status",
+      "onlineUsers": "Users online",
+      "alerts": "Alerts",
     "groups": {
       "pilotage": "Steering",
       "entreprise": "Client companies",

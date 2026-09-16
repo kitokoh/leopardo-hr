@@ -2938,6 +2938,7 @@
     "advanceIncident": "تقديم"
   },
   "adminPalette": {
+    "title": "لوحة الأوامر",
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
     "searchPlaceholder": "ابحث عن الصفحات والإجراءات…",
     "noResults": "لا توجد نتائج لـ «{query}»",
@@ -4986,6 +4987,11 @@
     "home": "العودة إلى الرئيسية"
   },
   "navigation": {
+      "fuelStationOperations": "عمليات محطات الوقود",
+      "systemHealth": "سلامة المنصة",
+      "healthStatus": "الحالة",
+      "onlineUsers": "المستخدمون المتصلون",
+      "alerts": "التنبيهات",
     "groups": {
       "pilotage": "القيادة",
       "entreprise": "شركات العملاء",

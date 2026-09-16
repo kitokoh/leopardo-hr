@@ -2,6 +2,10 @@
   <Teleport to="body">
     <div
       v-if="isOpen"
+      data-testid="command-palette"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('adminPalette.title')"
       class="fixed inset-0 z-[110] flex items-start justify-center pt-[15vh] bg-slate-950/60 backdrop-blur-md"
       @click.self="close"
       @keydown.escape="close"
@@ -72,29 +76,20 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
+import { useAuthStore } from '@/stores/auth'
+import { useTravelStore } from '@/stores/travel'
 import { translate } from '@/i18n/index.js'
-import {
-  MagnifyingGlassIcon,
-  HomeIcon,
-  UsersIcon,
-  BuildingOfficeIcon,
-  CreditCardIcon,
-  ChartBarIcon,
-  CogIcon,
-  TruckIcon,
-  SunIcon,
-  MoonIcon,
-  ArrowTrendingUpIcon,
-  ServerIcon,
-  GlobeAltIcon,
-  MegaphoneIcon,
-  LifebuoyIcon,
-  PresentationChartLineIcon,
-} from '@heroicons/vue/24/outline'
+// #7554 — source de vérité unique de la navigation (permissions, groupes,
+// chemins) : la palette ne recopie plus une liste parallèle qui dérivait du
+// menu (entrées manquantes, permissions ignorées).
+import { visibleNavEntries, shortcutLabel, THEME_TOGGLE_SHORTCUT } from '@/navigation/navigation.js'
+import { MagnifyingGlassIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+const authStore = useAuthStore()
+const travelStore = useTravelStore()
 
 const isOpen = ref(false)
 const query = ref('')
@@ -108,32 +103,36 @@ const noResultsLabel = computed(() =>
   t('adminPalette.noResults').replace('{query}', query.value)
 )
 
-const itemDefs = [
-  { id: 'dashboard', labelKey: 'itemDashboard', descKey: 'itemDashboardDesc', icon: HomeIcon, route: '/', shortcut: 'Alt+H' },
-  { id: 'analytics', labelKey: 'itemAnalytics', descKey: 'itemAnalyticsDesc', icon: ChartBarIcon, route: '/analytics' },
-  { id: 'users', labelKey: 'itemUsers', descKey: 'itemUsersDesc', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
-  { id: 'companies', labelKey: 'itemCompanies', descKey: 'itemCompaniesDesc', icon: BuildingOfficeIcon, route: '/companies', shortcut: 'Alt+C' },
-  { id: 'subscriptions', labelKey: 'itemSubscriptions', descKey: 'itemSubscriptionsDesc', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
-  // Routes tenant sans endpoints super-admin (#3272) : vues retirées du
-  // routeur — la palette ne propose que des destinations réellement ouvrables.
-  { id: 'settings', labelKey: 'itemSettings', descKey: 'itemSettingsDesc', icon: CogIcon, route: '/settings' },
-  { id: 'growth', labelKey: 'itemGrowth', descKey: 'itemGrowthDesc', icon: ArrowTrendingUpIcon, route: '/growth' },
-  { id: 'edge', labelKey: 'itemEdge', descKey: 'itemEdgeDesc', icon: ServerIcon, route: '/edge' },
-  { id: 'globe', labelKey: 'itemGlobe', descKey: 'itemGlobeDesc', icon: GlobeAltIcon, route: '/globe' },
-  { id: 'fleet', labelKey: 'itemFleet', descKey: 'itemFleetDesc', icon: TruckIcon, route: '/fleet' },
-  { id: 'marketing', labelKey: 'itemMarketing', descKey: 'itemMarketingDesc', icon: MegaphoneIcon, route: '/marketing/oauth' },
-  { id: 'support', labelKey: 'itemSupport', descKey: 'itemSupportDesc', icon: LifebuoyIcon, route: '/support' },
-  { id: 'crm', labelKey: 'itemCrm', descKey: 'itemCrmDesc', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
-  { id: 'toggle-dark', labelKey: 'itemToggleDark', descKey: 'itemToggleDarkDesc', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
-]
-
-const items = computed(() =>
-  itemDefs.map((item) => ({
-    ...item,
-    label: t(`adminPalette.${item.labelKey}`),
-    description: t(`adminPalette.${item.descKey}`),
+/**
+ * Destinations de navigation réellement ouvrables pour le compte courant :
+ * mêmes entrées (et mêmes permissions) que le menu latéral.
+ */
+const navItems = computed(() =>
+  visibleNavEntries({
+    hasPermission: (permission) => authStore.hasPermission(permission),
+    travelFlagReady: travelStore.isReady,
+    travelFlagActive: travelStore.flagActive,
+  }).map((entry) => ({
+    id: entry.name,
+    label: t(entry.titleKey),
+    description: entry.descKey ? t(entry.descKey) : '',
+    icon: entry.icon,
+    route: entry.path,
+    shortcut: entry.shortcut ? shortcutLabel(entry) : '',
   }))
 )
+
+/** Action locale (hors navigation) : bascule du thème sombre. */
+const themeItem = computed(() => ({
+  id: 'toggle-dark',
+  label: t('adminPalette.itemToggleDark'),
+  description: t('adminPalette.itemToggleDarkDesc'),
+  icon: themeStore.isDark ? SunIcon : MoonIcon,
+  action: () => themeStore.toggle(),
+  shortcut: THEME_TOGGLE_SHORTCUT,
+}))
+
+const items = computed(() => [...navItems.value, themeItem.value])
 
 const filteredItems = computed(() => {
   if (!query.value) return items.value

@@ -60,7 +60,12 @@ test.describe('Agence de voyage — navigation par flag (TRAVEL-601)', () => {
 
     await expect(page.getByRole('link', { name: /Agence de voyage/i })).toHaveCount(0)
     // La session admin n'est pas détruite (pattern _skipAuthRedirect #4170).
-    await expect(page.getByText('Super Admin')).toBeVisible()
+    // #7554 : le pied de sidebar (nom d'utilisateur) a été supprimé — on
+    // vérifie que la coquille authentifiée est toujours rendue (menu présent,
+    // jamais renvoyé sur /login).
+    await expect(page.locator('nav[aria-label]')).toBeVisible()
+    await expect(page.getByRole('link', { name: /Entreprises/i })).toBeVisible()
+    await expect(page).not.toHaveURL(/\/login/)
   })
 
   test('accès direct à /travel avec flag inactif → état « module inactif »', async ({ page }) => {

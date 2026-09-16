@@ -256,6 +256,9 @@ import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
+import { useAuthStore } from '@/stores/auth'
+import { useTravelStore } from '@/stores/travel'
+import { visibleNavEntries } from '@/navigation/navigation.js'
 import { useRouter } from 'vue-router'
 import { toIntlLocale, translate } from '@/i18n/index.js'
 
@@ -265,6 +268,8 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+const authStore = useAuthStore()
+const travelStore = useTravelStore()
 // Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 // Issues #3858/#3931 : useRouter() doit être appelé dans setup() (inject), pas
@@ -307,22 +312,22 @@ function handleSearch() {
   const query = searchQuery.value.trim()
   if (!query) return
 
-  // Recherche réelle : filtre la navigation du router (chemin + titre + meta).
+  // #7554 — la recherche cible la source de vérité de navigation, filtrée par
+  // les permissions du compte courant : elle ne peut plus ouvrir un écran
+  // absent du menu (l'ancienne version parcourait TOUTES les routes du
+  // routeur, y compris celles que le compte n'a pas le droit de consulter).
   const normalized = query.toLowerCase()
-  const matches = router.getRoutes().filter((route) => {
-    if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false
-    const haystack = `${route.path} ${route.meta?.title ?? ''} ${route.name ?? ''}`.toLowerCase()
+  const match = visibleNavEntries({
+    hasPermission: (permission) => authStore.hasPermission(permission),
+    travelFlagReady: travelStore.isReady,
+    travelFlagActive: travelStore.flagActive,
+  }).find((entry) => {
+    const haystack = `${entry.path} ${entry.name} ${t(entry.titleKey)}`.toLowerCase()
     return haystack.includes(normalized)
   })
 
-  if (matches.length > 0) {
-    router.push(matches[0].path)
-  } else {
-    // Aucune route : cible la vue liste la plus proche par mot-clé du path.
-    const fallback = router.getRoutes().find(
-      (r) => r.path.includes(normalized) && !r.path.includes(':')
-    )
-    if (fallback) router.push(fallback.path)
+  if (match) {
+    router.push(match.path)
   }
 }
 

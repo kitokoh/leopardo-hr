@@ -3,8 +3,9 @@
  *
  * Issue #7557 — chaque entrée porte la `permission` plateforme qui la protège
  * (contrat `permissions[]` renvoyé par `/platform/auth/me`, cf. #7553) : le
- * menu latéral et la palette de commandes filtrent sur cette donnée au lieu de
- * dupliquer des listes qui dérivent. Une entrée sans permission explicite
+ * menu latéral, la palette de commandes, la recherche de l'en-tête et les
+ * raccourcis clavier filtrent sur cette donnée au lieu de dupliquer des listes
+ * qui dérivent (#7554). Une entrée sans permission explicite
  * (`permission: null`) reste visible pour tout compte plateforme — la garde
  * API reste la source de vérité (un écran atteint par URL répond 403).
  *
@@ -16,6 +17,7 @@ import {
   ChartBarIcon,
   GlobeAltIcon,
   UsersIcon,
+  UserGroupIcon,
   BuildingOfficeIcon,
   CreditCardIcon,
   ChatBubbleLeftRightIcon,
@@ -24,22 +26,56 @@ import {
   ArrowTrendingUpIcon,
   AcademicCapIcon,
   TruckIcon,
+  PaperAirplaneIcon,
   BoltIcon,
+  FireIcon,
   SparklesIcon,
+  PaintBrushIcon,
   LinkIcon,
   ArrowDownTrayIcon,
   MegaphoneIcon,
+  ClipboardDocumentListIcon,
+  CpuChipIcon,
   EnvelopeIcon,
+  UserCircleIcon,
+  BanknotesIcon,
+  ScaleIcon,
+  CalculatorIcon,
+  CalendarIcon,
+  RocketLaunchIcon,
+  PresentationChartLineIcon,
+  WrenchScrewdriverIcon,
   ServerIcon,
   CogIcon,
+  ArrowRightOnRectangleIcon,
 } from '@heroicons/vue/24/outline'
 
 /**
- * Touche modificatrice des raccourcis de navigation. Les raccourcis restent
+ * Touches modificatrices des raccourcis clavier. Les raccourcis restent
  * techniques et ne sont jamais traduits (règle #2755) : leur libellé est
- * composé ici (`shortcutLabel`) plutôt qu'écrit en clair dans la liste.
+ * composé ici (`composeShortcut`) plutôt qu'écrit en clair chez les
+ * consommateurs.
  */
-export const NAV_SHORTCUT_MODIFIER = 'Alt'
+export const SHORTCUT_MODIFIERS = {
+  /** Modificateur des raccourcis de navigation (Alt+H, Alt+U…). */
+  nav: 'Alt',
+  /** Modificateur des raccourcis globaux (Ctrl+D…). */
+  control: 'Ctrl',
+}
+
+/**
+ * Compose un libellé de raccourci affichable.
+ *
+ * @param {string} modifier
+ * @param {string} key
+ * @returns {string}
+ */
+export function composeShortcut(modifier, key) {
+  return `${modifier}+${key}`
+}
+
+/** Raccourci de bascule du thème sombre. */
+export const THEME_TOGGLE_SHORTCUT = composeShortcut(SHORTCUT_MODIFIERS.control, 'D')
 
 /** États de rendu d'une entrée de navigation. */
 export const NAV_STATE_SHOWN = 'shown'
@@ -65,7 +101,8 @@ export const NAV_GROUPS = [
 export const LEGACY_GROUP_IDS = { clientModules: 'modules-clients' }
 
 /**
- * Entrées de navigation.
+ * Entrées de navigation. `name` doit correspondre au `name` de la route
+ * (`src/router/index.js`) : c'est la clé du surlignage actif.
  *
  * @type {{
  *   name: string,
@@ -204,7 +241,7 @@ export const NAV_ENTRIES = [
     name: 'travel',
     path: '/travel',
     titleKey: 'navigation.travelAgency',
-    icon: GlobeAltIcon,
+    icon: PaperAirplaneIcon,
     permission: null,
     group: 'modules-clients',
     flag: 'travelagency',
@@ -215,6 +252,45 @@ export const NAV_ENTRIES = [
     titleKey: 'navigation.fuelStation',
     icon: BoltIcon,
     permission: null,
+    group: 'modules-clients',
+  },
+  // #7554 — page routée mais inatteignable : le hub `fuelStation`
+  // (FuelManagerView) ne proposait aucun lien vers ses opérations.
+  {
+    name: 'fuel-station-operations',
+    path: '/fuel-station/operations',
+    titleKey: 'navigation.fuelStationOperations',
+    icon: FireIcon,
+    permission: null,
+    group: 'modules-clients',
+  },
+  // #7554 — comptabilité : l'ancienne condition d'affichage
+  // (`user.role === 'manager' && manager_role ∈ {comptable, principal}`)
+  // ne pouvait plus jamais être vraie pour une session plateforme (la garde
+  // exige un compte `super_admins`). Les écrans sont désormais rattachés à la
+  // permission plateforme qui couvre le périmètre d'une entreprise cliente.
+  {
+    name: 'accounting-activation',
+    path: '/accounting/activation',
+    titleKey: 'navigation.accountingActivation',
+    icon: RocketLaunchIcon,
+    permission: 'companies.view',
+    group: 'modules-clients',
+  },
+  {
+    name: 'accounting-dashboard',
+    path: '/accounting/dashboard',
+    titleKey: 'navigation.accountingDashboard',
+    icon: PresentationChartLineIcon,
+    permission: 'companies.view',
+    group: 'modules-clients',
+  },
+  {
+    name: 'accounting-settings',
+    path: '/accounting/settings',
+    titleKey: 'navigation.accountingSettings',
+    icon: WrenchScrewdriverIcon,
+    permission: 'companies.view',
     group: 'modules-clients',
   },
 
@@ -228,10 +304,10 @@ export const NAV_ENTRIES = [
     group: 'metier',
   },
   {
-    name: 'showcase',
+    name: 'showcase-editor',
     path: '/showcase',
     titleKey: 'navigation.showcase',
-    icon: GlobeAltIcon,
+    icon: PaintBrushIcon,
     permission: 'showcase.manage',
     group: 'metier',
   },
@@ -260,8 +336,26 @@ export const NAV_ENTRIES = [
     group: 'metier',
     descKey: 'adminPalette.itemMarketingDesc',
   },
+  // #7554 — page routée mais inatteignable (`/solutions/survey-stats`).
+  {
+    name: 'solutionSurveyStats',
+    path: '/solutions/survey-stats',
+    titleKey: 'navigation.surveyStats',
+    icon: ClipboardDocumentListIcon,
+    permission: null,
+    group: 'metier',
+  },
 
   // ── Paramètres ─────────────────────────────────────────────────────────────
+  {
+    name: 'settings',
+    path: '/settings',
+    titleKey: 'navigation.account',
+    icon: UserCircleIcon,
+    permission: null,
+    group: 'parametres',
+    descKey: 'adminPalette.itemSettingsDesc',
+  },
   {
     name: 'settings-email-templates',
     path: '/settings/emails',
@@ -274,8 +368,54 @@ export const NAV_ENTRIES = [
     name: 'settings-ai-assistant',
     path: '/settings/ai',
     titleKey: 'navigation.aiAssistant',
-    icon: SparklesIcon,
+    icon: CpuChipIcon,
     permission: 'companies.manage',
+    group: 'parametres',
+  },
+  // #7554 — pages de paramétrage paie routées mais inatteignables : elles
+  // rejoignent le groupe Paramètres, protégées par la permission de
+  // paramétrage plateforme (même famille que « E-mails » / « Assistant IA »).
+  {
+    name: 'social-contributions',
+    path: '/settings/payroll/social-contributions',
+    titleKey: 'navigation.contributions',
+    icon: BanknotesIcon,
+    permission: 'companies.manage',
+    group: 'parametres',
+  },
+  {
+    name: 'tax-slabs',
+    path: '/settings/payroll/tax-slabs',
+    titleKey: 'navigation.taxBrackets',
+    icon: ScaleIcon,
+    permission: 'companies.manage',
+    group: 'parametres',
+  },
+  {
+    name: 'tax-rates',
+    path: '/settings/payroll/tax-rates',
+    titleKey: 'navigation.legalRates',
+    icon: CalculatorIcon,
+    permission: 'companies.manage',
+    group: 'parametres',
+  },
+  {
+    name: 'payroll-holidays',
+    path: '/settings/payroll/holidays',
+    titleKey: 'holidays.nav.title',
+    icon: CalendarIcon,
+    permission: 'companies.manage',
+    group: 'parametres',
+  },
+  // #7554 — pied de sidebar supprimé : l'identité et la sortie de session
+  // vivent désormais dans le menu (groupe Paramètres), plus dans un bloc
+  // redondant collé en bas de colonne.
+  {
+    name: 'logout',
+    path: '/logout',
+    titleKey: 'navigation.logout',
+    icon: ArrowRightOnRectangleIcon,
+    permission: null,
     group: 'parametres',
   },
 
@@ -301,7 +441,7 @@ export const NAV_ENTRIES = [
     name: 'platform-team',
     path: '/team',
     titleKey: 'navigation.team',
-    icon: UsersIcon,
+    icon: UserGroupIcon,
     permission: 'team.manage',
     group: 'systeme',
   },
@@ -349,10 +489,20 @@ export function visibleNavEntries(capabilities = {}) {
 }
 
 /**
- * Raccourcis clavier des entrées de navigation (Alt+H/U/C/S) — dérivés de la
- * même liste pour ne plus dériver de l'implémentation (#3275/#7554).
+ * Libellé affichable d'un raccourci (ex. « Alt+H »).
  *
- * @returns {{ keys: string, path: string, titleKey: string, permission: string|null }[]}
+ * @param {{ shortcut?: string }} entry
+ * @returns {string}
+ */
+export function shortcutLabel(entry) {
+  return entry.shortcut ? composeShortcut(SHORTCUT_MODIFIERS.nav, entry.shortcut) : ''
+}
+
+/**
+ * Raccourcis clavier des entrées de navigation, dérivés de la même liste pour
+ * ne plus dériver de l'implémentation (#3275/#7554).
+ *
+ * @returns {{ key: string, label: string, path: string, titleKey: string, permission: string|null }[]}
  */
 export function navShortcuts() {
   return NAV_ENTRIES.filter((entry) => entry.shortcut).map((entry) => ({
@@ -362,14 +512,4 @@ export function navShortcuts() {
     titleKey: entry.titleKey,
     permission: entry.permission,
   }))
-}
-
-/**
- * Libellé affichable d'un raccourci (ex. « Alt+H »).
- *
- * @param {{ shortcut?: string }} entry
- * @returns {string}
- */
-export function shortcutLabel(entry) {
-  return entry.shortcut ? `${NAV_SHORTCUT_MODIFIER}+${entry.shortcut}` : ''
 }

@@ -102,11 +102,11 @@
       <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
         <div class="px-3">
           <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-            Système
+            {{ t('navigation.systemHealth') }}
           </h3>
           <div class="mt-3 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Statut</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.healthStatus') }}</span>
               <div class="flex items-center">
                 <div
                   :class="[
@@ -120,12 +120,12 @@
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Utilisateurs en ligne</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.onlineUsers') }}</span>
               <span class="text-xs font-medium text-gray-900 dark:text-gray-200">{{ onlineUsersCount }}</span>
             </div>
 
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">Alertes</span>
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ t('navigation.alerts') }}</span>
               <span
                 :class="[
                   'text-xs font-medium',
@@ -140,34 +140,6 @@
       </div>
     </nav>
 
-    <!-- User info -->
-    <div class="absolute bottom-0 w-full border-t border-slate-200/50 dark:border-slate-800/50 p-4 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-      <div class="flex items-center">
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-          <span class="text-sm font-bold text-slate-700 dark:text-slate-300">
-            {{ userInitials }}
-          </span>
-        </div>
-        <router-link to="/settings" class="ml-3 flex-1 overflow-hidden min-w-0 hover:opacity-80 transition-opacity" title="Mon compte">
-          <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">{{ authStore.userName }}</p>
-          <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ authStore.userRole }}</p>
-        </router-link>
-        <router-link
-          to="/settings"
-          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all duration-200"
-          title="Mon compte"
-        >
-          <CogIcon class="h-5 w-5" />
-        </router-link>
-        <router-link
-          to="/logout"
-          class="ml-2 p-2 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
-          title="Déconnexion"
-        >
-          <ArrowRightOnRectangleIcon class="h-5 w-5" />
-        </router-link>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -176,7 +148,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
-import { ChevronDownIcon, CogIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 // #7557/#7554 — la navigation n'est plus décrite dans ce composant : elle vient
 // de la source de vérité unique `src/navigation/navigation.js`.
 import {
@@ -369,16 +341,6 @@ watch(
 )
 
 // Computed properties
-const userInitials = computed(() => {
-  const name = authStore.userName
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
 const healthStatus = computed(() => dashboardStore.healthStatus)
 const onlineUsersCount = computed(() => realtimeStore.onlineUsers.length)
 const criticalAlertsCount = computed(() => dashboardStore.criticalAlerts.length)

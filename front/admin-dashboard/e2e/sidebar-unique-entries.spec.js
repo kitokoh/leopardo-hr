@@ -15,26 +15,25 @@ const LIVE = process.env.BACKEND_LIVE === '1'
 
 test.describe.configure({ timeout: 120_000 })
 
-const ADMIN_USER = {
-  id: 1,
-  name: 'Agent E2E',
-  email: 'agent.e2e@leopardo.test',
-  role: 'superadmin',
-  language: 'fr',
-}
-
 /**
- * #7329 — le guard du router (`authStore.checkAuth`) exige explicitement
- * `role === 'super_admin'` : une session sans ce rôle est détruite et l'admin
- * est renvoyé sur `/login`. Le bloc ci-dessous simule donc une vraie session
- * super-admin (l'ancien `ADMIN_USER` du bloc #6741 porte 'superadmin', valeur
- * qui ne satisfait pas la garde).
+ * #7553/#7554 — la session plateforme n'est plus validée sur `role` (qui reste
+ * `'super_admin'`, y compris pour les rôles internes) mais sur `platform_role`
+ * et `permissions` : le menu latéral est filtré sur ces permissions. Les specs
+ * simulent donc une session `super_admin` complète avec sa matrice, sinon la
+ * plupart des entrées sont (à juste titre) masquées.
  */
 const SUPER_ADMIN_USER = {
   id: 1,
   name: 'Agent E2E',
   email: 'agent.e2e@leopardo.test',
   role: 'super_admin',
+  platform_role: 'super_admin',
+  permissions: [
+    'companies.view', 'companies.manage', 'companies.provision', 'billing.view', 'billing.manage',
+    'plans.view', 'users.view', 'users.manage', 'impersonate', 'killswitch.manage',
+    'observability.view', 'metrics.view', 'support.manage', 'announcements.manage', 'crm.view',
+    'showcase.manage', 'edge.manage', 'team.manage',
+  ],
   language: 'fr',
 }
 
@@ -51,17 +50,22 @@ test.describe('Sidebar — une entrée par page (#6741)', () => {
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) }),
     )
     await page.route(/^https?:\/\/[^/]+\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: ADMIN_USER }) }),
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: SUPER_ADMIN_USER }) }),
     )
 
-    await page.goto('/dashboard')
+    // La route « dashboard » est servie sur `/` (`src/router/index.js`) :
+    // `/dashboard` tombe sur la route `not-found`, hors du layout — la spec
+    // n'y trouvait aucun menu et échouait dès la première assertion.
+    await page.goto('/')
     await expect(page.getByRole('navigation')).toBeVisible({ timeout: 15_000 })
 
     // Sidebar visible : vérifier l'unicité des entrées (liens de nav).
-    await expect(page.getByRole('navigation').getByText('Stations-service')).toHaveCount(1)
-    await expect(page.getByRole('navigation').getByText('Chat IA')).toHaveCount(1)
+    // #7554 : « Opérations stations-service » est un écran distinct — les
+    // sélecteurs sont ancrés pour ne cibler que l'entrée du hub.
+    await expect(page.getByRole('navigation').getByText('Stations-service', { exact: true })).toHaveCount(1)
+    await expect(page.getByRole('navigation').getByText('Chat IA', { exact: true })).toHaveCount(1)
     // Pas de clé de rendu dupliquée : le lien fuel pointe bien vers /fuel-station.
-    await expect(page.getByRole('navigation').getByRole('link', { name: /Stations-service/i })).toHaveCount(1)
+    await expect(page.getByRole('navigation').getByRole('link', { name: /^Stations-service$/i })).toHaveCount(1)
   })
 })
 
@@ -104,7 +108,12 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', (
     await expect(header).toHaveAttribute('aria-expanded', 'true')
 
     // Les 4 écrans du périmètre client restent atteignables en un clic.
-    const modules = [/Formations/i, /Flotte véhicules/i, /Stations-service/i, /Agence de voyage/i]
+    const modules = [
+      /^Formations$/i,
+      /^Flotte véhicules$/i,
+      /^Stations-service$/i,
+      /^Agence de voyage$/i,
+    ]
     for (const label of modules) {
       await expect(nav.getByRole('link', { name: label })).toBeVisible()
     }
@@ -125,9 +134,138 @@ test.describe('Sidebar — modules d’entreprise cliente regroupés (#7329)', (
     // Le repli est réellement fonctionnel (et réversible).
     await header.click()
     await expect(header).toHaveAttribute('aria-expanded', 'false')
-    await expect(nav.getByRole('link', { name: /Formations/i })).toBeHidden()
+    await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeHidden()
     await header.click()
     await expect(header).toHaveAttribute('aria-expanded', 'true')
-    await expect(nav.getByRole('link', { name: /Formations/i })).toBeVisible()
+    await expect(nav.getByRole('link', { name: /^Formations$/i })).toBeVisible()
+  })
+})
+
+/**
+ * #7554 — cohérence du menu et de la palette : les deux consomment la même
+ * source de vérité (`src/navigation/navigation.js`). Ce bloc pinne les
+ * régressions constatées sur la branche :
+ *  - des pages routées mais INATTEIGNABLES depuis le menu (paramétrage paie,
+ *    surveys de solutions, opérations stations-service) ;
+ *  - un pied de sidebar redondant avec l'entrée « Mon compte » ;
+ *  - un surlignage actif jamais appliqué à la vitrine (l'entrée portait
+ *    `name: 'showcase'` alors que la route s'appelle `showcase-editor`) ;
+ *  - une palette de commandes décrite en dur (12 entrées sur ~30 du menu).
+ */
+const SUPER_ADMIN_ME = {
+  data: {
+    id: 1,
+    name: 'Super Administrateur',
+    email: 'admin@leopardo-rh.com',
+    role: 'super_admin',
+    platform_role: 'super_admin',
+    permissions: [
+      'companies.view', 'companies.manage', 'companies.provision', 'billing.view', 'billing.manage',
+      'plans.view', 'users.view', 'users.manage', 'impersonate', 'killswitch.manage',
+      'observability.view', 'metrics.view', 'support.manage', 'announcements.manage', 'crm.view',
+      'showcase.manage', 'edge.manage', 'team.manage',
+    ],
+  },
+}
+
+const MOCKED_JSON = (body) => ({
+  status: 200,
+  contentType: 'application/json',
+  body: JSON.stringify(body),
+})
+
+async function stubAuthenticatedSuperAdmin(page) {
+  await page.addInitScript(() => {
+    sessionStorage.setItem('admin_token', 'e2e-sidebar-truth-token')
+    localStorage.setItem('admin_locale', 'fr')
+  })
+
+  await page.route('**/api/v1/**', (route) => route.fulfill(MOCKED_JSON({ data: {} })))
+  await page.route(/\/api\/v1\/platform\/auth\/me(\?.*)?$/, (route) => route.fulfill(MOCKED_JSON(SUPER_ADMIN_ME)))
+  await page.route(/\/api\/v1\/travel\/ping(\?.*)?$/, (route) =>
+    route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({}) }))
+
+  // Cockpit plateforme (rendu sur `/`) : les KPI de StatsCard exigent ces
+  // shapes, sinon le rendu échoue et casse la navigation suivante.
+  await page.route(/\/api\/v1\/platform\/metrics\/overview(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({
+      data: {
+        revenue: { currency: 'EUR', mrr: 12345, arr: 148140 },
+        companies: { total: 3, active: 2, trial: 1, suspended: 0, expired: 0 },
+        subscriptions: { total: 2, active: 2 },
+      },
+    })))
+  await page.route(/\/api\/v1\/platform\/companies\/health(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({
+      data: { summary: { active_companies: 2, companies: 3, mrr: 12345, risk: { high: 0, medium: 0, low: 0 } }, items: [] },
+    })))
+  await page.route(/\/api\/v1\/platform\/company-requests(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({ data: [], meta: { total: 0 } })))
+  await page.route(/\/api\/v1\/admin\/dashboard\/stats(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({
+      totalUsers: 4, totalCompanies: 3, activeSubscriptions: 2, monthlyRevenue: 12345,
+      newUsersToday: 0, newCompaniesToday: 0, supportTickets: 0, systemHealth: 'good',
+    })))
+  await page.route(/\/api\/v1\/admin\/dashboard\/(activities|alerts)(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({ data: [] })))
+  await page.route(/\/api\/v1\/notifications(\?.*)?$/, (route) =>
+    route.fulfill(MOCKED_JSON({ data: [], meta: { total: 0 } })))
+}
+
+test.describe('Sidebar — source de vérité unique (#7554)', () => {
+  test.skip(LIVE, 'Skipped: BACKEND_LIVE=1 — tests mock désactivés')
+
+  test('les pages orphelines sont atteignables et le surlignage suit le nom de route', async ({ page }) => {
+    await stubAuthenticatedSuperAdmin(page)
+    await page.goto('/')
+
+    const nav = page.getByRole('navigation')
+    await expect(nav).toBeVisible({ timeout: 15_000 })
+
+    // Pages routées mais inatteignables avant #7554 : une entrée, visible.
+    const orphanPages = [
+      /^Surveys de solutions$/i,
+      /^Opérations stations-service$/i,
+      /^Cotisations sociales$/i,
+      /^Baremes fiscaux$/i,
+      /^Taux legaux$/i,
+      /^Jours fériés$/i,
+    ]
+    for (const label of orphanPages) {
+      await expect(nav.getByRole('link', { name: label })).toHaveCount(1)
+      await expect(nav.getByRole('link', { name: label })).toBeVisible()
+    }
+
+    // Le pied de sidebar redondant a disparu : « Mon compte » et
+    // « Déconnexion » n'existent plus qu'en entrée de menu.
+    await expect(nav.getByRole('link', { name: /^Mon compte$/i })).toHaveCount(1)
+    await expect(nav.getByRole('link', { name: /^Déconnexion$/i })).toHaveCount(1)
+
+    // Surlignage actif : la vitrine porte le `name` de sa route
+    // (`showcase-editor`) — avec `showcase`, le lien n'était jamais actif.
+    await page.goto('/showcase')
+    const showcaseLink = nav.getByRole('link', { name: /^Site vitrine$/i })
+    await expect(showcaseLink).toHaveCount(1)
+    await expect(showcaseLink).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('la palette de commandes propose les mêmes destinations que le menu', async ({ page }) => {
+    await stubAuthenticatedSuperAdmin(page)
+    await page.goto('/')
+    await expect(page.getByRole('navigation')).toBeVisible({ timeout: 15_000 })
+
+    await page.keyboard.press('Control+k')
+    const palette = page.locator('[data-testid="command-palette"]')
+    await expect(palette).toBeVisible({ timeout: 10_000 })
+    const paletteInput = palette.locator('input[type="text"]')
+    await expect(paletteInput).toBeVisible()
+
+    // Entrées absentes de l'ancienne liste `itemDefs` en dur : elles ne
+    // peuvent apparaître que si la palette consomme la source de vérité.
+    await paletteInput.fill('Équipe plateforme')
+    await expect(palette.getByText('Équipe plateforme', { exact: true })).toBeVisible()
+
+    await paletteInput.fill('Jours fériés')
+    await expect(palette.getByText('Jours fériés', { exact: true })).toBeVisible()
   })
 })

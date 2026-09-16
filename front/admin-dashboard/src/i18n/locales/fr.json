@@ -2944,6 +2944,7 @@
     "advanceIncident": "Faire avancer"
   },
   "adminPalette": {
+    "title": "Palette de commandes",
     "appLoading": "Chargement de l'administration…",
     "searchPlaceholder": "Rechercher pages, actions…",
     "noResults": "Aucun résultat pour « {query} »",
@@ -4992,6 +4993,11 @@
     "home": "Retour à l'accueil"
   },
   "navigation": {
+      "fuelStationOperations": "Opérations stations-service",
+      "systemHealth": "Santé de la plateforme",
+      "healthStatus": "Statut",
+      "onlineUsers": "Utilisateurs en ligne",
+      "alerts": "Alertes",
     "groups": {
       "pilotage": "Pilotage",
       "entreprise": "Entreprises clientes",

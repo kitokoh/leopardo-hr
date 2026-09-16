@@ -2944,6 +2944,7 @@
     "advanceIncident": "İlerlet"
   },
   "adminPalette": {
+    "title": "Komut paleti",
     "appLoading": "Yönetim yükleniyor…",
     "searchPlaceholder": "Sayfa ve işlemleri ara…",
     "noResults": "\"{query}\" için sonuç yok",
@@ -4992,6 +4993,11 @@
     "home": "Ana sayfaya dön"
   },
   "navigation": {
+      "fuelStationOperations": "Akaryakıt istasyonu işlemleri",
+      "systemHealth": "Platform sağlığı",
+      "healthStatus": "Durum",
+      "onlineUsers": "Çevrimiçi kullanıcılar",
+      "alerts": "Uyarılar",
     "groups": {
       "pilotage": "Yönetim",
       "entreprise": "Müşteri şirketler",
