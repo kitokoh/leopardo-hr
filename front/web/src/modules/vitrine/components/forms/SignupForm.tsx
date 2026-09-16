@@ -143,9 +143,10 @@ export function SignupForm({
   // formulaire reste minimal dans tous les autres.
   const [showCountryFallback, setShowCountryFallback] = useState(false);
 
-  // Offre choisie sur /pricing (`?plan=<code>`), rappelée à l'utilisateur : le
-  // tunnel démarre par le choix d'une offre, il doit rester lisible jusqu'au
-  // bout. `?plan=` est obligatoire — `/signup` nu redirige vers /pricing.
+  // Offre choisie sur /pricing (`?plan=<code>`), rappelée à l'utilisateur.
+  // #7488 (décision #7487) : le paramètre est OPTIONNEL — `/signup` nu sert le
+  // formulaire directement (fin du choix de plan à l'inscription) ; quand il
+  // est présent (campagne ciblant une offre), le rappel reste affiché.
   const [selectedPlan, setSelectedPlan] = useState('');
   useEffect(() => {
     if (typeof window === 'undefined') return;
