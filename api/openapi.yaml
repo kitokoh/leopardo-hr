@@ -3939,6 +3939,140 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+    post:
+      tags:
+      - Platform
+      summary: Creer une offre tarifaire (parametrage plateforme, #7430)
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPlanWrite'
+      responses:
+        '201':
+          description: Offre creee et auditee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPlanResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+  /platform/plans/{plan}:
+    patch:
+      tags:
+      - Platform
+      summary: Modifier une offre tarifaire (prix, limite, features, publication)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: plan
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformPlanWrite'
+      responses:
+        '200':
+          description: Offre mise a jour (auditee)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPlanResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      tags:
+      - Platform
+      summary: Supprimer une offre non utilisee (409 si des clients y sont rattaches)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: plan
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre supprimee (auditee)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Offre utilisee par des clients — archiver au lieu de supprimer
+  /platform/plans/{plan}/duplicate:
+    post:
+      tags:
+      - Platform
+      summary: Dupliquer une offre (la copie nait archivee)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: plan
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Copie creee, archivee par defaut
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPlanResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /platform/plans/{plan}/archive:
+    post:
+      tags:
+      - Platform
+      summary: Archiver une offre (elle n'est plus proposee dans le tunnel)
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: plan
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Offre archivee (auditee)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformPlanResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /platform/companies/health:
     get:
       tags:
@@ -31149,6 +31283,41 @@ components:
           type: integer
         is_active:
           type: boolean
+    PlatformPlanWrite:
+      type: object
+      required:
+      - name
+      properties:
+        name:
+          type: string
+          maxLength: 50
+        price_monthly:
+          type: number
+          format: float
+          minimum: 0
+        price_yearly:
+          type: number
+          format: float
+          minimum: 0
+        max_employees:
+          type: integer
+          nullable: true
+          minimum: 1
+        trial_days:
+          type: integer
+          minimum: 0
+          maximum: 365
+        is_active:
+          type: boolean
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+    PlatformPlanResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformPlan'
     PlatformPlansResponse:
       type: object
       properties:
