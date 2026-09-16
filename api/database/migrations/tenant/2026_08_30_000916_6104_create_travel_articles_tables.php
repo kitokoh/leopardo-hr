@@ -19,13 +19,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_article_categories', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_article_categories', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_article_categories', 'slug')) {
                     $table->string('slug', 80)->nullable();
                 }
                 if (! schemaHasColumn('travel_article_categories', 'name')) {
-                    $table->string('name', 150)->nullable();
+                    $table->string('name', 150);
                 }
                 if (! schemaHasColumn('travel_article_categories', 'created_at')) {
                     $table->timestamps();
@@ -38,7 +38,7 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_articles', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_articles', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_articles', 'category_id')) {
                     $table->unsignedBigInteger('category_id')->nullable();
@@ -47,10 +47,10 @@ return new class extends Migration
                     $table->string('slug', 100)->nullable();
                 }
                 if (! schemaHasColumn('travel_articles', 'title')) {
-                    $table->string('title', 200)->nullable();
+                    $table->string('title', 200);
                 }
                 if (! schemaHasColumn('travel_articles', 'body_redacted')) {
-                    $table->text('body_redacted')->nullable();
+                    $table->text('body_redacted');
                 }
                 if (! schemaHasColumn('travel_articles', 'status')) {
                     $table->string('status', 20)->default('draft');

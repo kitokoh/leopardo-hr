@@ -23,7 +23,7 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_advert_prices', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_advert_prices', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_advert_prices', 'advert_type_id')) {
                     $table->unsignedBigInteger('advert_type_id')->nullable();
@@ -38,7 +38,7 @@ return new class extends Migration
                     $table->unsignedBigInteger('price_character_minor')->default(0);
                 }
                 if (! schemaHasColumn('travel_advert_prices', 'currency')) {
-                    $table->char('currency', 3)->nullable();
+                    $table->char('currency', 3);
                 }
                 if (! schemaHasColumn('travel_advert_prices', 'created_at')) {
                     $table->timestamps();

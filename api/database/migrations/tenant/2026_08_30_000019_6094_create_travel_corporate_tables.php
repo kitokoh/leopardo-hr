@@ -41,13 +41,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_quotes', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_quotes', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_quotes', 'corporate_account_id')) {
                     $table->unsignedBigInteger('corporate_account_id')->nullable();
                 }
                 if (! schemaHasColumn('travel_quotes', 'trip_id')) {
-                    $table->unsignedBigInteger('trip_id')->nullable();
+                    $table->unsignedBigInteger('trip_id');
                 }
                 if (! schemaHasColumn('travel_quotes', 'class_id')) {
                     $table->unsignedBigInteger('class_id')->nullable();
@@ -56,10 +56,10 @@ return new class extends Migration
                     $table->unsignedInteger('passengers_count')->nullable();
                 }
                 if (! schemaHasColumn('travel_quotes', 'total_amount_minor')) {
-                    $table->unsignedBigInteger('total_amount_minor')->nullable();
+                    $table->unsignedBigInteger('total_amount_minor');
                 }
                 if (! schemaHasColumn('travel_quotes', 'currency')) {
-                    $table->char('currency', 3)->nullable();
+                    $table->char('currency', 3);
                 }
                 if (! schemaHasColumn('travel_quotes', 'status')) {
                     $table->string('status', 20)->default('draft');

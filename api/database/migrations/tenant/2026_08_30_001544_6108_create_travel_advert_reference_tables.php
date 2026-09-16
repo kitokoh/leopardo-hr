@@ -20,13 +20,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_advert_types', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_advert_types', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_advert_types', 'code')) {
-                    $table->string('code', 40)->nullable();
+                    $table->string('code', 40);
                 }
                 if (! schemaHasColumn('travel_advert_types', 'name')) {
-                    $table->string('name', 120)->nullable();
+                    $table->string('name', 120);
                 }
                 if (! schemaHasColumn('travel_advert_types', 'description')) {
                     $table->text('description')->nullable();
@@ -42,13 +42,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_advert_positions', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_advert_positions', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_advert_positions', 'code')) {
-                    $table->string('code', 40)->nullable();
+                    $table->string('code', 40);
                 }
                 if (! schemaHasColumn('travel_advert_positions', 'name')) {
-                    $table->string('name', 120)->nullable();
+                    $table->string('name', 120);
                 }
                 if (! schemaHasColumn('travel_advert_positions', 'description')) {
                     $table->text('description')->nullable();

@@ -23,13 +23,13 @@ return new class extends Migration
             // génération ne rattrape que les colonnes qui lui manquent.
             Schema::table('travel_cities', function (Blueprint $table): void {
                 if (! schemaHasColumn('travel_cities', 'company_id')) {
-                    $table->uuid('company_id')->index()->nullable();
+                    $table->uuid('company_id')->index();
                 }
                 if (! schemaHasColumn('travel_cities', 'country_iso2')) {
-                    $table->char('country_iso2', 2)->nullable();
+                    $table->char('country_iso2', 2);
                 }
                 if (! schemaHasColumn('travel_cities', 'name')) {
-                    $table->string('name', 120)->nullable();
+                    $table->string('name', 120);
                 }
                 if (! schemaHasColumn('travel_cities', 'region')) {
                     $table->string('region', 120)->nullable();
