@@ -141,7 +141,9 @@
       "US": "الولايات المتحدة"
     },
     "required": "مطلوب",
-    "dismiss": "إغلاق"
+    "dismiss": "إغلاق",
+    "actions": "إجراءات",
+    "edit": "تعديل"
   },
   "modules": {
     "attendance": "الحضور",
@@ -1665,7 +1667,16 @@
       "tracking": "تتبع الأسطول",
       "planning": "التخطيط والفريق",
       "training": "مركز التدريب",
-      "cabinet": "خزانة المستندات"
+      "cabinet": "الخزانة الرقمية",
+      "muhasebe": "المحاسبة (تركيا)",
+      "leo_ai": "مساعد ليوباردو الذكي",
+      "crm": "إدارة العملاء (CRM)",
+      "fuel_station": "محطات الوقود",
+      "edumanager": "إدارة المؤسسة التعليمية",
+      "restaurant": "المطاعم",
+      "travelagency": "وكالة سفر",
+      "accounting": "المحاسبة",
+      "company_showcase": "موقع تعريفي"
     },
     "analyzing": "جاري تحليل بيانات العميل...",
     "retry": "إعادة المحاولة",
@@ -5023,7 +5034,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "trial": {
     "trialBadge": "تجريبي",
@@ -5118,5 +5131,24 @@
     "preview": "معاينة",
     "previewFailed": "المعاينة غير متاحة",
     "loadFailed": "تعذّر التحميل"
+  },
+  "fleet": {
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "القياسات الحيوية",
+      "tasks": "المهام",
+      "advanced_reports": "تقارير متقدمة",
+      "excel_export": "تصدير Excel",
+      "bank_export": "تصدير بنكي",
+      "billing_auto": "فوترة تلقائية",
+      "multi_managers": "مديرون متعددون",
+      "photo_attendance": "الحضور بالصورة",
+      "api_public": "واجهة برمجية عامة",
+      "evaluations": "التقييمات",
+      "schema_isolation": "عزل البيانات"
+    }
   }
 }

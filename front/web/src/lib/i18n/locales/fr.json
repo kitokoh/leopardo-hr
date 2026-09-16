@@ -141,7 +141,9 @@
       "US": "États-Unis"
     },
     "required": "Requis",
-    "dismiss": "Fermer"
+    "dismiss": "Fermer",
+    "actions": "Actions",
+    "edit": "Modifier"
   },
   "modules": {
     "attendance": "Pointage",
@@ -1665,7 +1667,16 @@
       "tracking": "Suivi de Flotte",
       "planning": "Planning & Équipe",
       "training": "Centre de Formation",
-      "cabinet": "Coffre documentaire"
+      "cabinet": "Placard Numérique",
+      "muhasebe": "Comptabilité (Turquie)",
+      "leo_ai": "Assistant IA Leopardo",
+      "crm": "Relation client (CRM)",
+      "fuel_station": "Stations-service",
+      "edumanager": "Établissement scolaire",
+      "restaurant": "Restauration",
+      "travelagency": "Agence de voyage",
+      "accounting": "Comptabilité",
+      "company_showcase": "Site vitrine"
     },
     "analyzing": "Analyse des données client...",
     "retry": "Réessayer",
@@ -5023,7 +5034,9 @@
       "medium": "Moyenne",
       "high": "Élevée",
       "critical": "Critique"
-    }
+    },
+    "viewEquipment": "Équipements",
+    "advanceIncident": "Faire avancer"
   },
   "trial": {
     "trialBadge": "Essai",
@@ -5118,5 +5131,24 @@
     "preview": "Aperçu",
     "previewFailed": "Aperçu indisponible",
     "loadFailed": "Chargement impossible"
+  },
+  "fleet": {
+    "locate": "Localiser",
+    "detail": "Détail"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "Biométrie",
+      "tasks": "Tâches",
+      "advanced_reports": "Rapports avancés",
+      "excel_export": "Export Excel",
+      "bank_export": "Export bancaire",
+      "billing_auto": "Facturation automatique",
+      "multi_managers": "Multi-gérants",
+      "photo_attendance": "Pointage photo",
+      "api_public": "API publique",
+      "evaluations": "Évaluations",
+      "schema_isolation": "Isolation des données"
+    }
   }
 }

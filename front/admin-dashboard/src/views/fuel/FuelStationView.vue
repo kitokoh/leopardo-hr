@@ -80,9 +80,11 @@
           <span>{{ value ?? 0 }}</span>
         </template>
         <template #row-actions="{ row }">
-          <button type="button" class="text-sm font-medium text-indigo-600 hover:text-indigo-800" @click="selectStation(row)">
-            {{ t('fuel.viewEquipment', 'Équipements') }}
-          </button>
+          <RowActionButton
+            :icon="WrenchScrewdriverIcon"
+            :label="t('fuel.viewEquipment', 'Équipements')"
+            @click="selectStation(row)"
+          />
         </template>
       </DataTable>
 
@@ -175,14 +177,12 @@
           <StatusBadge :status="value" :map="incidentStatusMap" />
         </template>
         <template #row-actions="{ row }">
-          <button
+          <RowActionButton
             v-if="row.status === 'reported' || row.status === 'assigned' || row.status === 'in_progress'"
-            type="button"
-            class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            :icon="ArrowRightIcon"
+            :label="t('fuel.advanceIncident', 'Faire avancer')"
             @click="advanceIncident(row)"
-          >
-            {{ t('fuel.advanceIncident', 'Faire avancer') }}
-          </button>
+          />
         </template>
       </DataTable>
     </div>
@@ -206,22 +206,19 @@
           <StatusBadge :status="value" :map="alertStatusMap" />
         </template>
         <template #row-actions="{ row }">
-          <button
-            v-if="row.status === 'open'"
-            type="button"
-            class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            @click="ackAlert(row)"
-          >
-            {{ t('fuel.ackAlert', 'Accuser') }}
-          </button>
-          <button
-            v-if="row.status === 'acknowledged'"
-            type="button"
-            class="text-sm font-medium text-gray-600 hover:text-gray-800"
-            @click="resolveAlert(row)"
-          >
-            {{ t('fuel.resolveAlert', 'Résoudre') }}
-          </button>
+                      <RowActionButton
+              v-if="row.status === 'open'"
+              :icon="ArrowRightIcon"
+              tone="primary"
+              :label="t('fuel.ackAlert', 'Accuser')"
+              @click="ackAlert(row)"
+            />
+                      <RowActionButton
+              v-if="row.status === 'acknowledged'"
+              :icon="ArrowRightIcon"
+              :label="t('fuel.resolveAlert', 'Résoudre')"
+              @click="resolveAlert(row)"
+            />
         </template>
       </DataTable>
     </div>
@@ -240,15 +237,14 @@
           <StatusBadge :status="value" :map="exportStatusMap" />
         </template>
         <template #row-actions="{ row }">
-          <button
-            v-if="row.status === 'generated'"
-            type="button"
-            class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            :disabled="downloadingExportId === row.id"
-            @click="downloadExport(row)"
-          >
-            {{ t('fuel.downloadExport', 'Télécharger') }}
-          </button>
+                      <RowActionButton
+              v-if="row.status === 'generated'"
+              :icon="ArrowDownTrayIcon"
+              tone="primary"
+              :label="t('fuel.downloadExport', 'Télécharger')"
+              @click="downloadExport(row)"
+              :disabled="downloadingExportId === row.id"
+            />
         </template>
       </DataTable>
       <button
@@ -270,6 +266,12 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import Pagination from '@/components/common/Pagination.vue'
+import RowActionButton from '@/components/common/RowActionButton.vue'
+import {
+  WrenchScrewdriverIcon,
+  ArrowRightIcon,
+  ArrowDownTrayIcon,
+} from '@heroicons/vue/24/outline'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 

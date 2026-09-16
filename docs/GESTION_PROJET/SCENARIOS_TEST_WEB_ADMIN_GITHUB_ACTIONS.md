@@ -296,7 +296,38 @@ Véracité des états (jamais un état faux affiché comme réel) :
 - `eslint .` et `vite build` restent verts ; `grep -rn "window.confirm\|window.alert" src` est vide.
 - Les nouveaux libellés passent par le catalogue (`check-i18n-diff.js` vert).
 
-### 18. Fiche Entreprise — les libellés de modules sont localisés et la Formation est un vrai switch (#7432)
+### 18. Actions de ligne — une seule convention, icône accessible, en-tête traduit (#7434)
+
+La console mélangeait deux conventions d'action de ligne (icônes dans la table
+des utilisateurs, boutons texte « Modifier »/« Supprimer » dans une vingtaine
+d'autres vues) et écrivait l'en-tête de colonne « Actions » en clair — donc en
+français même en locale `en`/`ar`/`tr`.
+
+Règle (propriétaire, 2026-09-14) : « si tout est icône, pourquoi lui reste-t-il
+son texte ? Les seules choses qui peuvent rester icône **et** texte, c'est le
+menu. »
+
+À vérifier en recette :
+
+- **Partout où une table porte des actions de ligne** (Annonces, Catalogue et
+  hôtels, Réseau, Réservations, Quiz, Référentiel, Sites, Contacts, Billets,
+  Fériés, Cotisations, Webhooks, Fuel, Flotte, Exports, Utilisateurs) :
+  l'action est une **icône seule**, jamais un bouton texte.
+- **Nom accessible** : chaque icône-action porte un `title` ET un `aria-label`
+  (composant `RowActionButton.vue`) — une icône seule sans nom est invisible au
+  lecteur d'écran.
+- **En-tête de colonne** « Actions » traduit dans les 4 locales (fr/en/ar/tr),
+  y compris en RTL.
+- **Aucun changement de comportement** : mêmes actions, mêmes états `disabled`,
+  mêmes confirmations (`ConfirmDialog`) pour les actions destructives.
+- **Couleurs conservées** : les tons (danger/succès/avertissement) restent
+  distincts à l'écran — la sémantique ne doit pas se perdre avec le libellé.
+- **Garde CI** : `python3 dev-hub/tools/check-admin-action-labels.py` doit sortir 0
+  (**bloquant** dans `web-ci.yml`, job `web-lint`) — la garde #7434 unique, autotestée par
+  `dev-hub/tools/check-admin-action-labels-test.sh` (registre `docs/GOUVERNANCE/REGISTRE_GARDES.md`).
+  La garde de branche `check-admin-row-actions.py` de #7461 est **supprimée** : redondante.
+
+### 19. Fiche Entreprise — les libellés de modules sont localisés et la Formation est un vrai switch (#7432)
 
 `CompanyDetailView.vue` affichait les features connues via
 `t('companyDetail.features.<clé>', '<libellé français en dur>')` — or **aucune**

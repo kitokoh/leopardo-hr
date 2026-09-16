@@ -26,7 +26,9 @@ on:
     branches: [main]
     paths:
       - 'dev-hub/tools/check-branch-protection.sh'
+      - 'dev-hub/tools/check-branch-protection-test.sh'
       - 'dev-hub/tools/branch-protection-canonical.json'
+      - 'docs/ops/CHECKS_TIERS_QUOTA.md'
       - '.github/workflows/branch-protection-guard.yml'
 
 permissions:
@@ -49,6 +51,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: false
+
+      - name: Self-test the guard (issues #2011 / #7480)
+        # Le self-test ne dépend ni de l'API ni du token : il tourne donc même
+        # quand `BRANCH_PROTECTION_TOKEN` est absent. Il verrouille l'invariant
+        # « un check tiers n'est jamais requis » et la détection de dérive sur
+        # une protection simulée (issue #7480).
+        run: bash dev-hub/tools/check-branch-protection-test.sh
 
       # Le contexte `secrets` n'est pas disponible dans les `if` de job
       # (actionlint) : la présence du token est testée au niveau step via env.

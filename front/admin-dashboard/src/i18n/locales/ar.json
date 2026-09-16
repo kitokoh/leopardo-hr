@@ -1019,7 +1019,16 @@
       "tracking": "تتبع الأسطول",
       "planning": "التخطيط والفريق",
       "training": "مركز التدريب",
-      "cabinet": "خزانة المستندات"
+      "cabinet": "الخزانة الرقمية",
+      "muhasebe": "المحاسبة (تركيا)",
+      "leo_ai": "مساعد ليوباردو الذكي",
+      "crm": "إدارة العملاء (CRM)",
+      "fuel_station": "محطات الوقود",
+      "edumanager": "إدارة المؤسسة التعليمية",
+      "restaurant": "المطاعم",
+      "travelagency": "وكالة سفر",
+      "accounting": "المحاسبة",
+      "company_showcase": "موقع تعريفي"
     }
   },
   "attendanceCorrectionRequestHint": "سيُرسل الطلب إلى الموارد البشرية للمراجعة.",
@@ -1376,6 +1385,19 @@
       "high": "مخاطر عالية",
       "medium": "مخاطر متوسطة",
       "low": "مخاطر منخفضة"
+    },
+    "features": {
+      "biometric": "القياسات الحيوية",
+      "tasks": "المهام",
+      "advanced_reports": "تقارير متقدمة",
+      "excel_export": "تصدير Excel",
+      "bank_export": "تصدير بنكي",
+      "billing_auto": "فوترة تلقائية",
+      "multi_managers": "مديرون متعددون",
+      "photo_attendance": "الحضور بالصورة",
+      "api_public": "واجهة برمجية عامة",
+      "evaluations": "التقييمات",
+      "schema_isolation": "عزل البيانات"
     }
   },
   "settingsCabinetPublic": "عامة",
@@ -2855,7 +2877,9 @@
       "medium": "متوسطة",
       "high": "عالية",
       "critical": "حرجة"
-    }
+    },
+    "viewEquipment": "المعدات",
+    "advanceIncident": "تقديم"
   },
   "adminPalette": {
     "appLoading": "جارٍ تحميل لوحة الإدارة…",
@@ -3872,7 +3896,9 @@
     "severityCritical": "حرج",
     "unassigned": "غير مُسند",
     "searchVehicle": "ابحث عن مركبة...",
-    "searchAlert": "ابحث عن تنبيه..."
+    "searchAlert": "ابحث عن تنبيه...",
+    "locate": "تحديد الموقع",
+    "detail": "التفاصيل"
   },
   "salaryAdvanceRequest": "طلب",
   "smartAttendanceTodayTitle": "اليوم — {date}",

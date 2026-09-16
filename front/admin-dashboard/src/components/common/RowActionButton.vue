@@ -1,5 +1,18 @@
 <template>
+  <a
+    v-if="href"
+    :href="href"
+    class="inline-flex items-center justify-center rounded-lg p-1.5 transition-all duration-200"
+    :class="toneClass"
+    :title="label"
+    :aria-label="label"
+    :data-testid="testId || undefined"
+  >
+    <component :is="icon" class="h-4 w-4" aria-hidden="true" />
+    <span class="sr-only">{{ label }}</span>
+  </a>
   <button
+    v-else
     type="button"
     class="inline-flex items-center justify-center rounded-lg p-1.5 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40"
     :class="toneClass"
@@ -29,6 +42,11 @@
  *
  * Le libellé est TOUJOURS internationalisé par l'appelant
  * (`t('…')`), jamais écrit en dur ici (garde check-admin-action-labels.py).
+ *
+ * `href` renseigné ⇒ l'action est un LIEN (téléchargement, sortie) rendu en
+ * `<a>` : même convention visuelle et même nom accessible, mais sémantique de
+ * lien conservée (clic milieu, copie d'adresse). C'est le seul cas d'action de
+ * ligne qui ne soit pas un `<button>` — cf. `ExportsView` (#7434).
  */
 import { computed } from 'vue'
 
@@ -60,6 +78,8 @@ const props = defineProps({
   tone: { type: String, default: 'neutral' },
   disabled: { type: Boolean, default: false },
   testId: { type: String, default: '' },
+  // Renseigné ⇒ rendu en lien `<a>` (téléchargement, sortie) au lieu d'un bouton.
+  href: { type: String, default: '' },
 })
 
 defineEmits(['click'])

@@ -141,7 +141,9 @@
       "US": "United States"
     },
     "required": "Required",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "actions": "Actions",
+    "edit": "Edit"
   },
   "modules": {
     "attendance": "Attendance",
@@ -1690,7 +1692,26 @@
     "slug": "Slug",
     "countryCurrency": "Country / Currency",
     "registeredOn": "Registered on",
-    "lastActivity": "Last activity"
+    "lastActivity": "Last activity",
+    "features": {
+      "rh": "Human resources",
+      "finance": "Finance & management",
+      "ai": "Artificial intelligence",
+      "cameras": "Video surveillance",
+      "tracking": "Fleet tracking",
+      "planning": "Planning & team",
+      "training": "Training centre",
+      "cabinet": "Digital cabinet",
+      "muhasebe": "Accounting (Turkey)",
+      "leo_ai": "Leopardo AI assistant",
+      "crm": "Customer relationship (CRM)",
+      "fuel_station": "Fuel stations",
+      "edumanager": "School management",
+      "restaurant": "Restaurant",
+      "travelagency": "Travel agency",
+      "accounting": "Accounting",
+      "company_showcase": "Showcase website"
+    }
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -5023,7 +5044,9 @@
       "medium": "Medium",
       "high": "High",
       "critical": "Critical"
-    }
+    },
+    "viewEquipment": "Equipment",
+    "advanceIncident": "Advance"
   },
   "trial": {
     "trialBadge": "Trial",
@@ -5118,5 +5141,24 @@
     "preview": "Preview",
     "previewFailed": "Preview unavailable",
     "loadFailed": "Could not load"
+  },
+  "fleet": {
+    "locate": "Locate",
+    "detail": "Details"
+  },
+  "subscriptions": {
+    "features": {
+      "biometric": "Biometrics",
+      "tasks": "Tasks",
+      "advanced_reports": "Advanced reports",
+      "excel_export": "Excel export",
+      "bank_export": "Bank export",
+      "billing_auto": "Automatic billing",
+      "multi_managers": "Multiple managers",
+      "photo_attendance": "Photo attendance",
+      "api_public": "Public API",
+      "evaluations": "Evaluations",
+      "schema_isolation": "Data isolation"
+    }
   }
 }
