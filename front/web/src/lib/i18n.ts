@@ -130,6 +130,10 @@ export type CopyTree = {
     businessSection: string;
     /** #7328 — libellé du menu RH (regroupe les modules RH en sous-menus) */
     hrMenu: string;
+    /** #7556 — nom accessible du point d'entrée de navigation (tiroir mobile) */
+    navMenu: string;
+    /** #7556 — titre de la section « Compte » du tiroir mobile */
+    accountSection: string;
     /** #7225 — libellés de navigation localisés (le libellé du module est data, pas une string FR) */
     modules: {
       dashboard: string; employees: string; attendance: string; attendance_geo: string;
@@ -760,6 +764,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Reprendre la configuration',
       businessSection: 'Mon métier',
       hrMenu: 'RH',
+      navMenu: 'Menu',
+      accountSection: 'Compte',
       modules: {
         dashboard: 'Tableau de bord',
         employees: 'Employés',
@@ -1434,6 +1440,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ استئناف الإعداد',
       businessSection: 'قطاع عملك',
       hrMenu: 'الموارد البشرية',
+      navMenu: 'القائمة',
+      accountSection: 'الحساب',
       modules: {
         dashboard: 'لوحة القيادة',
         employees: 'الموظفون',
@@ -2104,6 +2112,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Yapılandırmaya devam et',
       businessSection: 'İş kolunuz',
       hrMenu: 'İK',
+      navMenu: 'Menü',
+      accountSection: 'Hesap',
       modules: {
         dashboard: 'Panel',
         employees: 'Çalışanlar',
@@ -2774,6 +2784,8 @@ const copy: Record<AppLocale, CopyTree> = {
       resumeOnboarding: '▶ Resume setup',
       businessSection: 'Your business',
       hrMenu: 'HR',
+      navMenu: 'Menu',
+      accountSection: 'Account',
       modules: {
         dashboard: 'Dashboard',
         employees: 'Employees',
